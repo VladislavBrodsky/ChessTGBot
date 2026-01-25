@@ -24,13 +24,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" data-theme="dark">
+        <html lang="en">
             <head>
                 <script src="https://telegram.org/js/telegram-web-app.js" async />
             </head>
             <body
                 className={`${inter.variable} ${robotoMono.variable} antialiased`}
-                style={{ backgroundColor: '#000000', color: '#ffffff', margin: 0 }}
             >
                 <ThemeProvider>
                     {children}
