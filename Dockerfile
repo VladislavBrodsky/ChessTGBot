@@ -43,5 +43,14 @@ COPY --from=frontend-builder /app/frontend/out ./static_frontend
 EXPOSE 8000
 
 # Run Application
+# Create a non-root user
+RUN adduser --disabled-password --gecos "" appuser
+
+# Change ownership of the app directory
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
 # Run Application
 CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
