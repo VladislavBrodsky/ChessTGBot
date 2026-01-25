@@ -24,11 +24,11 @@ class Settings(BaseSettings):
 
     # Deployment
     WEBAPP_URL: str = "https://chesstgbot-production.up.railway.app"
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"
 
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "allow"
 
 @lru_cache
 def get_settings():
