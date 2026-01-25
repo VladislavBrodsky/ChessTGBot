@@ -6,8 +6,8 @@ WORKDIR /app/frontend
 
 # Copy frontend dependency files
 COPY frontend/package.json frontend/package-lock.json* frontend/yarn.lock* ./
-# Install deps - use legacy peer deps to avoid conflicts if any
-RUN npm install --legacy-peer-deps
+# Install deps
+RUN npm install
 
 # Copy frontend source
 COPY frontend/ ./

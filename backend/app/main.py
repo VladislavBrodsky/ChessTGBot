@@ -81,6 +81,10 @@ def create_application() -> FastAPI:
 
 app = create_application()
 
+@app.get("/version")
+async def get_version():
+    return {"version": settings.VERSION, "status": "deployed"}
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "version": settings.VERSION}

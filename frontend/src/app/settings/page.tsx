@@ -34,7 +34,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="glass-panel p-6 rounded-[2rem] space-y-4"
+                    className="glass-panel p-6 rounded-4xl space-y-4"
                 >
                     <div className="flex items-center space-x-3 mb-2">
                         <FaPalette className="text-nebula-purple text-xl drop-shadow-[0_0_8px_rgba(123,44,191,0.5)]" />
@@ -60,7 +60,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="glass-panel p-6 rounded-[2rem] flex items-center justify-between"
+                    className="glass-panel p-6 rounded-4xl flex items-center justify-between"
                 >
                     <div className="flex items-center space-x-3">
                         <FaVolumeUp className="text-nebula-cyan text-xl drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" />
