@@ -5,15 +5,27 @@ from app.schemas.game_state import GameState
 @sio.event
 async def join_room(sid, data):
     """
-    Data expects: {'room': 'game_id'}
+    Data expects: {'room': 'game_id', 'user_id': 12345}
     """
     room = data.get('room')
+    user_id = data.get('user_id')
+    
     if room:
         await sio.enter_room(sid, room)
-        print(f"Socket {sid} joined room {room}")
+        print(f"Socket {sid} joined room {room} with user_id {user_id}")
         
-        # Send current state
         service = GameService()
+        
+        # Try to join/assign player if user_id provided
+        if user_id:
+            try:
+                # user_id comes as int or string, ensure int
+                uid = int(user_id)
+                await service.join_game(room, uid)
+            except ValueError:
+                pass
+
+        # Send current state
         state = await service.get_game_state(room)
         if state:
             await sio.emit('game_state', state.model_dump(), room=sid)

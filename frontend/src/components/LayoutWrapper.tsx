@@ -21,7 +21,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-nebula-cyan opacity-10 blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
 
                 {/* Grid Overlay (Optional for Cyberpunk feel) */}
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url('/grid.svg')" }} />
             </div>
 
             {/* Content Container */}
