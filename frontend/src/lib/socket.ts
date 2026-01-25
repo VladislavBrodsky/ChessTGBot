@@ -1,7 +1,7 @@
-import io, { type Socket } from "socket.io-client";
+import io from "socket.io-client";
 
 // Prevent multiple connections
-let socket: Socket;
+let socket: ReturnType<typeof io>;
 
 export const getSocket = () => {
     if (!socket) {
