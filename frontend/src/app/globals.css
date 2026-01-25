@@ -1,69 +1,76 @@
 @import "tailwindcss";
 
 @theme {
-  --color-nebula-dark: var(--bg-secondary);
-  --color-nebula-purple: var(--accent-primary);
-  --color-nebula-cyan: var(--accent-secondary);
-  --color-nebula-void: var(--bg-primary);
-  --shadow-neon: 0 0 15px rgba(123, 44, 191, 0.6), 0 0 30px rgba(123, 44, 191, 0.3);
-  --shadow-neon-cyan: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 30px rgba(0, 240, 255, 0.3);
+  --color-antigravity-void: #000000;
+  --color-antigravity-surface: #16181C;
+  --color-antigravity-border: #2F3336;
+  --color-antigravity-text-gray: #71767B;
+  --shadow-neon: 0 0 15px rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 255, 255, 0.05);
 }
 
 :root {
-  --font-geist-sans: "Inter", sans-serif;
-  --font-geist-mono: "Roboto Mono", monospace;
+  --font-inter: "Inter", sans-serif;
+  --font-mono: "Roboto Mono", monospace;
 
-  /* Force Premium Dark Mode as Global Constant */
-  --bg-primary: #050014;
-  --bg-secondary: #0B001F;
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --accent-primary: #7B2CBF;
-  --accent-secondary: #00F0FF;
+  /* Luxury Dark Palette */
+  --bg-primary: #000000;
+  --bg-surface: #16181C;
+  --border-muted: #2F3336;
+  --text-primary: #FFFFFF;
+  --text-muted: #71767B;
 
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-
-  --nebula-cyan: #00F0FF;
-  --nebula-purple: #7B2CBF;
+  --accent-silver: linear-gradient(90deg, #FFFFFF 0%, #D1D1D1 100%);
+  --accent-glow: rgba(255, 255, 255, 0.1);
 }
 
-/* Fallback cleanup - ensure background is ALWAYS dark */
 body {
   color: var(--text-primary) !important;
   background-color: var(--bg-primary) !important;
-  font-family: var(--font-geist-sans);
-  transition: color 0.3s, background-color 0.3s;
+  font-family: var(--font-inter);
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  letter-spacing: -0.01em;
 }
 
 @layer components {
   .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-muted) !important;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
   }
 
   .glass-button {
     position: relative;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.03) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-muted) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     color: var(--text-primary) !important;
+    border-radius: 12px;
   }
 
   .glass-button:hover {
-    background: rgba(123, 44, 191, 0.15) !important;
-    border-color: var(--accent-secondary) !important;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.05) !important;
-    transform: translateY(-2px);
+    border-color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: translateY(-1px);
+  }
+
+  .action-button {
+    background: var(--accent-silver) !important;
+    color: #000000 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none !important;
+    border-radius: 12px;
+    transition: all 0.3s ease !important;
+  }
+
+  .action-button:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-1px);
   }
 
   .shimmer {
@@ -85,7 +92,7 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -93,10 +100,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
+  background: var(--border-muted);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
+  background: var(--text-muted);
 }

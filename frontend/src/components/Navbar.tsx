@@ -19,7 +19,7 @@ export default function Navbar() {
 
     return (
         <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-            <nav className="pointer-events-auto flex items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-2 py-2 rounded-4xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden">
+            <nav className="pointer-events-auto flex items-center bg-black/40 backdrop-blur-3xl border border-white/10 px-2 py-2 rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.8)] relative overflow-hidden">
                 {/* Glossy overlay */}
                 <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none" />
 
@@ -29,11 +29,11 @@ export default function Navbar() {
                         return (
                             <li key={item.href} className="relative">
                                 <Link href={item.href}>
-                                    <div className="relative px-6 py-3 flex flex-col items-center justify-center transition-colors duration-300">
+                                    <div className="relative px-6 py-3 flex flex-col items-center justify-center transition-all duration-300">
                                         {isActive && (
                                             <motion.div
                                                 layoutId="liquid-bg"
-                                                className="absolute inset-0 bg-white/10 rounded-2xl border border-white/5 shadow-inner"
+                                                className="absolute inset-0 bg-white/10 rounded-xl border border-white/5"
                                                 transition={{
                                                     type: "spring",
                                                     stiffness: 400,
@@ -43,10 +43,10 @@ export default function Navbar() {
                                         )}
                                         <motion.span
                                             animate={{
-                                                scale: isActive ? 1.2 : 1,
-                                                color: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.4)"
+                                                scale: isActive ? 1.1 : 1,
+                                                color: isActive ? "#ffffff" : "#71767B"
                                             }}
-                                            className="text-xl relative z-20 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                                            className="text-xl relative z-20"
                                         >
                                             {item.icon}
                                         </motion.span>
@@ -55,7 +55,7 @@ export default function Navbar() {
                                                 opacity: isActive ? 1 : 0,
                                                 y: isActive ? 0 : 5
                                             }}
-                                            className="text-[10px] font-black uppercase tracking-tighter mt-1 text-white/80 absolute -bottom-1"
+                                            className="text-[9px] font-bold uppercase tracking-widest mt-1 text-white absolute -bottom-1"
                                         >
                                             {item.name}
                                         </motion.span>
