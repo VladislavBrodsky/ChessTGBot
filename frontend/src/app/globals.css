@@ -25,28 +25,7 @@
   --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%);
 }
 
-/* Light Theme Variables */
-[data-theme="light"] {
-  /* Light Palette */
-  --bg-primary: #FFFFFF;
-  --bg-surface: #F8F9FA;
-  --bg-elevated: #F1F3F5;
-  --border-muted: #DEE2E6;
-  --text-primary: #212529;
-  --text-muted: #6C757D;
 
-  --accent-silver: linear-gradient(180deg, #495057 0%, #212529 100%);
-
-  /* Light theme specific shadows */
-  --color-brand-void: #FFFFFF;
-  --color-brand-surface: #F8F9FA;
-  --color-brand-elevated: #F1F3F5;
-  --color-brand-border: #DEE2E6;
-  --color-brand-text-gray: #6C757D;
-  --shadow-neon: 0 0 20px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.02);
-  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
-  --shadow-inner-glow: inset 0 0 15px rgba(0, 0, 0, 0.02);
-}
 
 body {
   color: var(--text-primary) !important;
