@@ -19,6 +19,11 @@ class EndGameRequest(BaseModel):
     loser_id: int
     draw: bool = False
 
+class EndGameResponse(BaseModel):
+    status: str
+    winner_new_elo: int
+    loser_new_elo: int
+
 @router.post("/create", response_model=CreateGameResponse)
 async def create_game():
     game_id = str(uuid.uuid4())[:8] # Short ID
@@ -37,7 +42,7 @@ async def create_game():
 
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
 
-@router.post("/end")
+@router.post("/end", response_model=EndGameResponse)
 async def end_game(req: EndGameRequest, db: AsyncSession = Depends(get_db)):
     service = GameService()
     
@@ -62,8 +67,8 @@ async def end_game(req: EndGameRequest, db: AsyncSession = Depends(get_db)):
     await user_crud.update_elo(db, winner, new_winner_elo, 'draw' if req.draw else 'win')
     await user_crud.update_elo(db, loser, new_loser_elo, 'draw' if req.draw else 'loss')
 
-    return {
-        "status": "success",
-        "winner_new_elo": new_winner_elo,
-        "loser_new_elo": new_loser_elo
-    }
+    return EndGameResponse(
+        status="success",
+        winner_new_elo=new_winner_elo,
+        loser_new_elo=new_loser_elo
+    )

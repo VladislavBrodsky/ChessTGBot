@@ -2,7 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, Request
 from app.core.config import get_settings
 from app.core.socket import sio_app
 import app.socket_events # Register events
@@ -37,6 +38,14 @@ def create_application() -> FastAPI:
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
+        )
+
+    @application.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception):
+        print(f"Global Exception: {exc}")
+        return JSONResponse(
+            status_code=500,
+            content={"message": "Internal Server Error"},
         )
 
     # API Routers

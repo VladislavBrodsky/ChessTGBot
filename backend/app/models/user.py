@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, BigInteger
+from sqlalchemy import Column, Integer, String, BigInteger, Boolean, DateTime
 from app.core.database import Base
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -14,3 +15,8 @@ class User(Base):
     wins = Column(Integer, default=0)
     losses = Column(Integer, default=0)
     draws = Column(Integer, default=0)
+    
+    # Subscription fields
+    is_premium = Column(Boolean, default=False)
+    premium_tier = Column(String, nullable=True) # basic, premium, premium_plus
+    premium_expires_at = Column(DateTime, nullable=True)

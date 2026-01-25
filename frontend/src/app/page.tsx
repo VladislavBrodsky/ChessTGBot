@@ -8,7 +8,7 @@ import { FaChessPawn, FaGraduationCap, FaCog, FaRobot } from "react-icons/fa";
 
 export default function Home() {
     const [tgUser, setTgUser] = useState<any>(null);
-    const [elo, setElo] = useState<number>(1000); // Default ELO
+    const [stats, setStats] = useState<any>(null);
 
     useEffect(() => {
         // Init Telegram WebApp
@@ -30,19 +30,19 @@ export default function Home() {
                 fetch(`/api/v1/users/${tg.initDataUnsafe.user.id}`)
                     .then(res => res.json())
                     .then(data => {
-                        setElo(data.elo);
+                        setStats(data);
                     })
-                    .catch(err => console.error("Failed to fetch ELO", err));
+                    .catch(err => console.error("Failed to fetch Stats", err));
             }
         } else {
             // Dev Mode Mock Fetch
             fetch(`/api/v1/users/12345`)
                 .then(res => res.json())
                 .then(data => {
-                    setElo(data.elo);
+                    setStats(data);
                     setTgUser({ first_name: data.first_name, photo_url: null });
                 })
-                .catch(err => console.error("Failed to fetch ELO (Dev)", err));
+                .catch(err => console.error("Failed to fetch Stats (Dev)", err));
         }
     }, []);
 
@@ -67,93 +67,128 @@ export default function Home() {
             <div className="flex flex-col items-center w-full max-w-md space-y-8">
                 {/* Header / Profile Section */}
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full glass-panel p-6 rounded-3xl flex flex-col items-center relative overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="w-full glass-panel p-6 rounded-[2.5rem] flex flex-col items-center relative overflow-hidden group"
                 >
-                    <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-accent-secondary to-transparent opacity-50" />
+                    <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-nebula-cyan to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
 
-                    <div className="w-20 h-20 rounded-full bg-nebula-dark border-2 border-accent-primary p-1 mb-4 shadow-neon relative">
+                    {/* Inner subtle glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-nebula-purple/5 to-transparent pointer-events-none" />
+
+                    <div className="w-24 h-24 rounded-full bg-black/40 border-4 border-nebula-purple p-1 mb-4 shadow-neon relative group-hover:scale-105 transition-transform duration-500">
                         {/* Avatar Placeholder or TG Photo */}
                         {tgUser?.photo_url ? (
                             <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
                         ) : (
-                            <div className="w-full h-full rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-2xl font-bold text-white">
+                            <div className="w-full h-full rounded-full bg-gradient-to-br from-nebula-purple to-nebula-cyan flex items-center justify-center text-3xl font-bold text-white">
                                 {tgUser?.first_name?.[0] || "P"}
                             </div>
                         )}
-                        <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-2 border-nebula-dark rounded-full" />
+                        <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-nebula-void rounded-full shadow-lg" />
                     </div>
 
-                    <h2 className="text-xl font-bold mb-1">
-                        {tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}` : "Player"}
-                    </h2>
-                    <div className="flex items-center space-x-2 text-accent-secondary font-mono backdrop-blur-sm bg-black/20 px-3 py-1 rounded-full border border-white/10">
-                        <span className="text-yellow-400">★</span>
-                        <span>{elo} ELO</span>
+                    <div className="flex items-center space-x-2 mb-2 relative">
+                        <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">
+                            {tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}` : "Player"}
+                        </h2>
+                        {stats?.is_premium && (
+                            <motion.span
+                                initial={{ rotate: -20, scale: 0 }}
+                                animate={{ rotate: 0, scale: 1 }}
+                                className="text-nebula-cyan"
+                            >
+                                <svg className="w-6 h-6 inline drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M22.5 12.5L20.85 10.61L21.08 8.12L18.66 7.57L17.38 5.43L15 6.43L12.62 5.43L11.34 7.57L8.92 8.12L9.15 10.61L7.5 12.5L9.15 14.39L8.92 16.88L11.34 17.43L12.62 19.57L15 18.57L17.38 19.57L18.66 17.43L21.08 16.88L20.85 14.39L22.5 12.5ZM10.29 15.34L7.85 12.89L8.91 11.83L10.29 13.22L14.07 9.44L15.13 10.5L10.29 15.34Z" />
+                                </svg>
+                            </motion.span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center space-x-3 px-5 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-inner">
+                        <span className="text-yellow-400 text-lg animate-pulse-slow">★</span>
+                        <span className="font-mono font-bold text-nebula-cyan tracking-wider">{stats?.elo || 1000} ELO</span>
                     </div>
                 </motion.div>
 
                 {/* Main Actions */}
-                <div className="w-full grid grid-cols-1 gap-4">
+                <div className="w-full grid grid-cols-1 gap-5">
                     <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={createGame}
-                        className="glass-button w-full py-5 rounded-2xl flex items-center justify-center space-x-4 group"
+                        className="glass-button w-full py-6 rounded-[2rem] flex items-center justify-center space-x-5 border-nebula-cyan/30 group relative overflow-hidden"
                     >
-                        <div className="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center group-hover:bg-accent-primary/40 transition-colors">
-                            <FaChessPawn className="text-accent-secondary text-xl" />
+                        <div className="absolute inset-0 bg-nebula-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="w-14 h-14 rounded-2xl bg-nebula-cyan/20 flex items-center justify-center group-hover:bg-nebula-cyan/30 transition-all duration-300 transform group-hover:rotate-12">
+                            <FaChessPawn className="text-nebula-cyan text-2xl drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
                         </div>
-                        <div className="flex flex-col items-start">
-                            <span className="text-lg font-bold tracking-wide">Play Online</span>
-                            <span className="text-xs opacity-70">Challenge a friend</span>
+                        <div className="flex flex-col items-start relative z-10">
+                            <span className="text-xl font-black tracking-tight text-white uppercase">Play Online</span>
+                            <span className="text-sm font-medium text-white/50">Challenge anyone globally</span>
                         </div>
                     </motion.button>
 
                     <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="glass-button w-full py-5 rounded-2xl flex items-center justify-center space-x-4 group grayscale opacity-70 hover:grayscale-0 hover:opacity-100"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="glass-button w-full py-6 rounded-[2rem] flex items-center justify-center space-x-5 border-white/5 group relative overflow-hidden grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all duration-500"
                         onClick={() => alert("AI Opponent coming soon!")}
                     >
-                        <div className="w-10 h-10 rounded-full bg-accent-secondary/20 flex items-center justify-center group-hover:bg-accent-secondary/40 transition-colors">
-                            <FaRobot className="text-purple-400 text-xl" />
+                        <div className="w-14 h-14 rounded-2xl bg-nebula-purple/20 flex items-center justify-center group-hover:bg-nebula-purple/30 transition-all duration-300 transform group-hover:scale-110">
+                            <FaRobot className="text-nebula-purple text-2xl drop-shadow-[0_0_10px_rgba(123,44,191,0.5)]" />
                         </div>
-                        <div className="flex flex-col items-start">
-                            <span className="text-lg font-bold tracking-wide">Play Computer</span>
-                            <span className="text-xs opacity-70">Stockfish 16 (Coming Soon)</span>
+                        <div className="flex flex-col items-start relative z-10">
+                            <span className="text-xl font-black tracking-tight text-white uppercase opacity-70 group-hover:opacity-100">Play Computer</span>
+                            <span className="text-sm font-medium text-white/40 group-hover:text-white/60">Stockfish 16 Engine</span>
                         </div>
                     </motion.button>
                 </div>
 
                 {/* Secondary Actions (Grid) */}
-                <div className="w-full grid grid-cols-2 gap-4">
+                <div className="w-full grid grid-cols-2 gap-5">
                     <Link href="/academy" className="w-full">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            whileHover={{ scale: 1.05, y: -5 }}
                             whileTap={{ scale: 0.95 }}
-                            className="glass-button w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-2 h-32"
+                            className="glass-panel w-full py-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-pink-500/30 transition-colors"
                         >
-                            <FaGraduationCap className="text-3xl text-pink-500 mb-1" />
-                            <span className="font-medium">Academy</span>
-                        </motion.button>
+                            <div className="w-16 h-16 rounded-full bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-all">
+                                <FaGraduationCap className="text-4xl text-pink-500 drop-shadow-[0_0_15px_rgba(236,72,153,0.4)]" />
+                            </div>
+                            <span className="font-bold tracking-tight uppercase text-white/80 group-hover:text-white">Academy</span>
+                        </motion.div>
                     </Link>
 
                     <Link href="/settings" className="w-full">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            whileHover={{ scale: 1.05, y: -5 }}
                             whileTap={{ scale: 0.95 }}
-                            className="glass-button w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-2 h-32"
+                            className="glass-panel w-full py-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-gray-400/30 transition-colors"
                         >
-                            <FaCog className="text-3xl text-gray-400 mb-1" />
-                            <span className="font-medium">Settings</span>
-                        </motion.button>
+                            <div className="w-16 h-16 rounded-full bg-gray-500/10 flex items-center justify-center group-hover:bg-gray-500/20 transition-all">
+                                <FaCog className="text-4xl text-gray-400 drop-shadow-[0_0_15px_rgba(156,163,175,0.4)]" />
+                            </div>
+                            <span className="font-bold tracking-tight uppercase text-white/80 group-hover:text-white">Settings</span>
+                        </motion.div>
                     </Link>
                 </div>
 
-                <div className="text-xs opacity-50 mt-8 font-mono">
-                    v1.0.0 • Antigravity
+                <div className="text-[10px] font-black tracking-[0.2em] uppercase opacity-30 mt-12 py-2 px-4 rounded-full border border-white/10">
+                    Engineered by Antigravity • v1.1.0
                 </div>
             </div>
         </LayoutWrapper>

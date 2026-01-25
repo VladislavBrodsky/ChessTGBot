@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.user import User
+from datetime import datetime
 
 async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int):
     result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
@@ -12,12 +13,23 @@ async def create_user(db: AsyncSession, telegram_id: int, first_name: str, usern
         first_name=first_name,
         username=username,
         photo_url=photo_url,
-        elo=1000
+        elo=1000,
+        is_premium=False
     )
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
     return db_user
+
+async def update_subscription(db: AsyncSession, user: User, tier: str, expires_at: datetime = None):
+    user.is_premium = True
+    user.premium_tier = tier
+    user.premium_expires_at = expires_at
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
     """
