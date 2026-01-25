@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-geist-sans: "Inter", sans-serif;
+  --font-geist-mono: "Roboto Mono", monospace;
+  --nebula-glow: 0 0 20px rgba(123, 44, 191, 0.4);
+
+  /* Telegram Defaults */
+  --tg-bg: #0B001F;
+  --tg-text: #ffffff;
+  --tg-button: #7B2CBF;
+  --tg-button-text: #ffffff;
+}
+
+body {
+  color: #fff;
+  background: #0B001F;
+  background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #000000 100%);
+  min-height: 100vh;
+  font-family: var(--font-geist-sans);
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-button {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+/* Antigravity Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.neon-text {
+  text-shadow: 0 0 10px rgba(123, 44, 191, 0.7), 0 0 20px rgba(123, 44, 191, 0.5);
+}
