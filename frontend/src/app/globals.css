@@ -6,7 +6,24 @@
   --font-geist-sans: "Inter", sans-serif;
   --font-geist-mono: "Roboto Mono", monospace;
 
-  /* Light Mode Defaults */
+  /* Force Premium Dark Mode as Default */
+  --bg-primary: #050014;
+  --bg-secondary: #0B001F;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --accent-primary: #7B2CBF;
+  --accent-secondary: #00F0FF;
+
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  --nebula-cyan: #00F0FF;
+  --nebula-purple: #7B2CBF;
+}
+
+/* Optional Light Mode for accessibility, but the default is now Premium Dark */
+[data-theme='light'] {
   --bg-primary: #ffffff;
   --bg-secondary: #f3f4f6;
   --text-primary: #111827;
@@ -19,25 +36,12 @@
   --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme='dark'] {
-  /* Dark Mode Defaults */
-  --bg-primary: #050014;
-  --bg-secondary: #0B001F;
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --accent-primary: #7B2CBF;
-  --accent-secondary: #00F0FF;
-
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
 body {
   color: var(--text-primary);
   background-color: var(--bg-primary);
   font-family: var(--font-geist-sans);
   transition: color 0.3s, background-color 0.3s;
+  min-height: 100vh;
 }
 
 @layer components {

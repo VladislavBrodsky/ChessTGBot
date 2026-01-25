@@ -24,7 +24,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" data-theme="dark">
             <head>
                 <script src="https://telegram.org/js/telegram-web-app.js" async />
             </head>
