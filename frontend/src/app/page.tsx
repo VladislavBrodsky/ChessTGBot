@@ -156,7 +156,7 @@ export default function Home() {
                 {/* Actions */}
                 <motion.button
                     whileTap={{ scale: 0.97 }}
-                    onClick={createGame}
+                    onClick={() => createGame('online')}
                     className="w-full py-8 rounded-4xl relative overflow-hidden group"
                 >
                     <div className="absolute inset-0 bg-[#ffffff] transition-all group-hover:bg-[#f0f0f0]" />
@@ -172,7 +172,10 @@ export default function Home() {
                 </motion.button>
 
                 <div className="w-full grid grid-cols-2 gap-4">
-                    <button className="glass-panel p-5 rounded-4xl border-white/5 flex flex-col items-start gap-4 group hover:bg-white/5 transition-all outline-none">
+                    <button
+                        onClick={() => createGame('computer')}
+                        className="glass-panel p-5 rounded-4xl border-white/5 flex flex-col items-start gap-4 group hover:bg-white/5 transition-all outline-none"
+                    >
                         <div className="w-10 h-10 rounded-xl bg-nebula-purple/20 flex items-center justify-center">
                             <FaRobot className="text-nebula-purple" />
                         </div>
