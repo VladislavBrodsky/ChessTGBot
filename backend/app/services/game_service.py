@@ -11,10 +11,12 @@ class GameService:
     def __init__(self):
         self.session_manager = SessionManager()
 
-    async def create_game(self, game_id: str) -> GameState:
+    async def create_game(self, game_id: str, is_bot_game: bool = False) -> GameState:
         """Initialize a new game and save to Redis."""
         engine = GameEngine() # Starts with new board
         state = engine.get_state()
+        if is_bot_game:
+            state.black_player_id = -1 # Special ID for bot
         await self.session_manager.save_game(game_id, state)
         return state
 
@@ -35,6 +37,9 @@ class GameService:
         elif not state.black_player_id and state.white_player_id != user_id:
             state.black_player_id = user_id
             changed = True
+        
+        # If it's a bot game, ensure player 1 is white or black correctly
+        # Usually player 1 is white in bot games for mobile simplicity
         
         if changed:
             await self.session_manager.save_game(game_id, state)
@@ -67,9 +72,39 @@ class GameService:
             # Check for Game Over
             if new_state.is_game_over:
                 await self.end_game(game_id, new_state)
+            
+            # 5. Handle Bot Move if applicable
+            if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
+                # Trigger bot move asynchronously? For simplicity now, let's do it in a separate call or wait
+                # In SocketIO context, it's better to trigger it after a small delay
+                pass
 
             return new_state
         
+        return None
+
+    async def make_bot_move(self, game_id: str) -> Optional[GameState]:
+        """Calculates and applies the best move for the bot."""
+        current_state = await self.session_manager.get_game(game_id)
+        if not current_state or current_state.is_game_over:
+            return None
+
+        board = chess.Board(current_state.fen)
+        engine = GameEngine()
+        engine.board = board
+
+        bot_move_uci = engine.get_best_move()
+        if bot_move_uci and engine.make_move(bot_move_uci):
+            new_state = engine.get_state()
+            new_state.white_player_id = current_state.white_player_id
+            new_state.black_player_id = current_state.black_player_id
+
+            await self.session_manager.save_game(game_id, new_state)
+            
+            if new_state.is_game_over:
+                await self.end_game(game_id, new_state)
+
+            return new_state
         return None
 
     def calculate_new_elo(self, rating1: int, rating2: int, actual_score: float, k: int = 32) -> int:
@@ -83,11 +118,11 @@ class GameService:
             black_id = state.black_player_id
             
             # Fetch users
-            white_user = await user_crud.get_user_by_telegram_id(session, white_id) if white_id else None
-            black_user = await user_crud.get_user_by_telegram_id(session, black_id) if black_id else None
+            white_user = await user_crud.get_user_by_telegram_id(session, white_id) if white_id and white_id != -1 else None
+            black_user = await user_crud.get_user_by_telegram_id(session, black_id) if black_id and black_id != -1 else None
 
-            if not white_user or not black_user:
-                 # TODO: Handle Case where one user is missing (e.g. anonymous)
+            if not white_user or (not black_user and black_id != -1):
+                 # One player is missing or bot game (skip ELO for bot games for now)
                  return
 
             # Determine Result
