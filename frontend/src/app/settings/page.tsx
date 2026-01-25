@@ -12,95 +12,126 @@ export default function SettingsPage() {
     const [soundEnabled, setSoundEnabled] = useState(true);
 
     return (
-        <LayoutWrapper>
-            <div className="w-full flex justify-start mb-6">
-                <Link href="/">
-                    <button className="text-white hover:text-nebula-cyan transition-colors flex items-center space-x-2">
-                        <FaArrowLeft />
-                        <span>Back</span>
-                    </button>
-                </Link>
-            </div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-lg space-y-6"
-            >
-                <h1 className="text-3xl font-bold mb-8">Settings</h1>
-
-                {/* Theme Section */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="glass-panel p-6 rounded-4xl space-y-4"
-                >
-                    <div className="flex items-center space-x-3 mb-2">
-                        <FaPalette className="text-nebula-purple text-xl drop-shadow-[0_0_8px_rgba(123,44,191,0.5)]" />
-                        <h2 className="text-lg font-bold tracking-tight uppercase opacity-80">Appearance</h2>
+        <LayoutWrapper className="justify-start pt-8 pb-32">
+            <div className="w-full max-w-md flex flex-col items-start px-4">
+                {/* Immersive Header */}
+                <div className="w-full flex justify-between items-center mb-10">
+                    <Link href="/">
+                        <motion.button
+                            whileHover={{ x: -2 }}
+                            className="text-white/40 hover:text-white transition-colors flex items-center space-x-2 text-xs font-black uppercase tracking-widest"
+                        >
+                            <FaArrowLeft className="text-[10px]" />
+                            <span>Return</span>
+                        </motion.button>
+                    </Link>
+                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] font-black text-white/40 uppercase tracking-widest">
+                        Configuration v1.2
                     </div>
+                </div>
 
-                    <button
-                        onClick={toggleTheme}
-                        className="w-full py-5 px-6 rounded-2xl border border-white/5 bg-white/5 flex items-center justify-between hover:bg-white/10 hover:border-nebula-cyan/30 transition-all duration-300 group"
-                    >
-                        <span className="flex items-center gap-3">
-                            {theme === 'dark' ? <FaMoon className="text-nebula-purple group-hover:scale-110 transition-transform" /> : <FaSun className="text-yellow-400 group-hover:scale-110 transition-transform" />}
-                            <span className="font-bold tracking-tight">{theme === 'dark' ? 'Dark' : 'Light'} Mode</span>
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-500 ${theme === 'dark' ? 'bg-nebula-purple' : 'bg-gray-600'}`}>
-                            <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-500 ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
-                        </div>
-                    </button>
-                </motion.div>
+                <div className="mb-10">
+                    <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase mb-2">Neural Preferences</h1>
+                    <p className="text-xs font-medium text-white/40 uppercase tracking-[0.2em]">System parameters & visual protocols</p>
+                </div>
 
-                {/* Sound Section */}
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="glass-panel p-6 rounded-4xl flex items-center justify-between"
-                >
-                    <div className="flex items-center space-x-3">
-                        <FaVolumeUp className="text-nebula-cyan text-xl drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" />
-                        <h2 className="text-lg font-bold tracking-tight uppercase opacity-80">Sound Effects</h2>
-                    </div>
+                {/* Section: Appearance */}
+                <div className="w-full space-y-6 mb-12">
+                    <h3 className="text-[10px] font-black uppercase text-nebula-cyan tracking-[0.3em] ml-2">Visual Sync</h3>
 
-                    <button
-                        onClick={() => setSoundEnabled(!soundEnabled)}
-                        className={`w-14 h-8 rounded-full flex items-center px-1 transition-all duration-500 ${soundEnabled ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-gray-600'
-                            }`}
-                    >
-                        <div className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-500 ${soundEnabled ? 'translate-x-6' : 'translate-x-0'
-                            }`} />
-                    </button>
-                </motion.div>
-
-                {/* Premium Section */}
-                <Link href="/membership" className="block">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.3 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="glass-panel p-6 rounded-4xl flex items-center justify-between border-nebula-purple/30 relative overflow-hidden group"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full glass-panel p-5 rounded-4xl border-white/5 transition-all"
                     >
-                        <div className="absolute inset-0 bg-linear-to-r from-nebula-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center space-x-4 relative">
-                            <div className="w-12 h-12 rounded-full bg-nebula-purple/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                                <span className="text-2xl drop-shadow-[0_0_10px_rgba(123,44,191,0.6)]">⭐</span>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-2xl bg-nebula-purple/10 flex items-center justify-center text-nebula-purple">
+                                    {theme === 'dark' ? <FaMoon /> : <FaSun />}
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-black text-white uppercase tracking-tight">Luminance Mode</span>
+                                    <span className="text-[9px] font-black text-white/30 tracking-widest uppercase">{theme === 'dark' ? 'Deep Void' : 'Solar Flare'}</span>
+                                </div>
                             </div>
-                            <div className="flex flex-col">
-                                <h2 className="text-lg font-black tracking-tight uppercase italic text-white group-hover:text-nebula-cyan transition-colors">Premium Membership</h2>
-                                <p className="text-xs text-white/40 group-hover:text-white/60 transition-colors">Unlock the full galactic experience</p>
-                            </div>
+
+                            {/* Liquid Toggle */}
+                            <button
+                                onClick={toggleTheme}
+                                className={`w-14 h-8 rounded-full p-1 transition-all duration-500 relative ${theme === 'dark' ? 'bg-nebula-purple shadow-[0_0_15px_rgba(123,44,191,0.4)]' : 'bg-gray-800'}`}
+                            >
+                                <motion.div
+                                    layout
+                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    className="w-6 h-6 rounded-full bg-white shadow-xl"
+                                />
+                            </button>
                         </div>
-                        <FaArrowLeft className="rotate-180 opacity-30 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
                     </motion.div>
-                </Link>
-            </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="w-full glass-panel p-5 rounded-4xl border-white/5 transition-all"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-2xl bg-nebula-cyan/10 flex items-center justify-center text-nebula-cyan text-lg">
+                                    <FaVolumeUp />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-black text-white uppercase tracking-tight">Audio Protocol</span>
+                                    <span className="text-[9px] font-black text-white/30 tracking-widest uppercase">{soundEnabled ? 'Sync Active' : 'Muted'}</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setSoundEnabled(!soundEnabled)}
+                                className={`w-14 h-8 rounded-full p-1 transition-all duration-500 relative ${soundEnabled ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-gray-800'}`}
+                            >
+                                <motion.div
+                                    layout
+                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    className="w-6 h-6 rounded-full bg-white shadow-xl"
+                                />
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Section: Premium Status */}
+                <div className="w-full space-y-6">
+                    <h3 className="text-[10px] font-black uppercase text-nebula-purple tracking-[0.3em] ml-2">Legacy & Status</h3>
+
+                    <Link href="/membership" className="w-full">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full p-1 rounded-4xl bg-linear-to-r from-nebula-cyan via-nebula-purple to-pink-500"
+                        >
+                            <div className="w-full h-full glass-panel-dark p-6 rounded-4xl bg-black/90 flex items-center justify-between">
+                                <div className="flex items-center gap-5">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-2xl">
+                                        ⭐
+                                    </div>
+                                    <div className="flex flex-col text-left">
+                                        <span className="text-lg font-black text-white italic tracking-tighter uppercase leading-none mb-1">X Premium</span>
+                                        <span className="text-[9px] font-black text-nebula-cyan uppercase tracking-widest">Elevated Access Verified</span>
+                                    </div>
+                                </div>
+                                <FaArrowLeft className="rotate-180 text-white/20" />
+                            </div>
+                        </motion.button>
+                    </Link>
+                </div>
+
+                {/* Legal / versioning */}
+                <div className="w-full mt-20 flex flex-col items-center opacity-20 scale-90 text-center">
+                    <span className="text-[9px] font-black tracking-[0.5em] uppercase mb-1 underline cursor-pointer">Protocol Terms</span>
+                    <span className="text-[8px] font-bold tracking-[0.2em] italic">Authorized for Neural Matrix Interface Build v1.2</span>
+                </div>
+            </div>
         </LayoutWrapper>
     );
 }
