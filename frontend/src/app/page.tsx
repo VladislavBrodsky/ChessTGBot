@@ -64,7 +64,17 @@ export default function Home() {
 
     return (
         <LayoutWrapper>
-            <div className="flex flex-col items-center w-full max-w-md space-y-8">
+            <div className="flex flex-col items-center w-full max-w-md space-y-8 pt-4">
+                {/* Brand Identity / Metallic X */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mb-2 metallic-text text-5xl font-black italic tracking-tighter select-none"
+                    style={{ fontFamily: 'system-ui' }}
+                >
+                    X
+                </motion.div>
+
                 {/* Header / Profile Section */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
