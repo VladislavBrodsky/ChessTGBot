@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import Navbar from './Navbar';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -10,7 +9,7 @@ interface LayoutWrapperProps {
 
 export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-nebula-void text-white font-sans selection:bg-nebula-cyan selection:text-nebula-dark">
+        <div className="relative min-h-screen w-full overflow-hidden bg-nebula-void text-white font-sans selection:bg-nebula-cyan selection:text-nebula-dark pb-32">
             {/* Ambient Background Effects */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 {/* Main Gradient */}
@@ -41,6 +40,9 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                     {children}
                 </motion.div>
             </main>
+
+            {/* Global Navigation */}
+            <Navbar />
         </div>
     );
 }
