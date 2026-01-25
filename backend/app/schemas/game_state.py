@@ -15,6 +15,8 @@ class GameState(BaseModel):
     is_game_over: bool
     winner: Optional[str] = None  # 'w', 'b', or None
     legal_moves: List[str]
+    white_player_id: Optional[int] = None
+    black_player_id: Optional[int] = None
 
 class JoinGameRequest(BaseModel):
     game_id: str

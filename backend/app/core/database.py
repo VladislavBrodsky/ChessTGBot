@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import get_settings
+# Import models so Base.metadata.create_all finds them
+from app.models.user import User
 
 settings = get_settings()
 
