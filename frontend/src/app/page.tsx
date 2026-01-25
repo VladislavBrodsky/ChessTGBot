@@ -18,7 +18,7 @@ export default function Home() {
             const startParam = tg.initDataUnsafe?.start_param;
             if (startParam) {
                 console.log("Auto-joining game:", startParam);
-                window.location.href = `/game/${startParam}`;
+                window.location.href = `/game?id=${startParam}`;
             }
 
             // Theme Params Integration
@@ -46,7 +46,7 @@ export default function Home() {
             } else {
                 alert(`Dev Mode: Game created! ID: ${data.game_id}`);
                 // Redirect to game page for testing (simulate joining)
-                window.location.href = `/game/${data.game_id}`;
+                window.location.href = `/game?id=${data.game_id}`;
             }
         } catch (e) {
             console.error("Failed to create game", e);

@@ -1,20 +1,21 @@
 'use client';
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import ChessBoardComponent from "@/components/game/ChessBoard";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import { motion } from "framer-motion";
 
-export default function GamePage() {
-    const params = useParams();
-    const gameId = params.id as string;
+function GameContent() {
+    const searchParams = useSearchParams();
+    const gameId = searchParams.get("id") || "";
     const { fen, makeMove, isConnected, error } = useGameSocket(gameId);
     const [copied, setCopied] = useState(false);
 
     // Copy Game Link
     const copyLink = () => {
-        const link = `https://t.me/YourBotName?startapp=${gameId}`;
+        // Current URL already has ?id=...
+        const link = typeof window !== 'undefined' ? window.location.href : "";
         navigator.clipboard.writeText(link);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -105,5 +106,13 @@ export default function GamePage() {
             </motion.div>
 
         </main>
+    );
+}
+
+export default function GamePage() {
+    return (
+        <Suspense fallback={<div className="text-white text-center mt-20">Loading Board...</div>}>
+            <GameContent />
+        </Suspense>
     );
 }
