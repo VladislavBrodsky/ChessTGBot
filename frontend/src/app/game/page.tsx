@@ -25,93 +25,113 @@ function GameContent() {
     };
 
     return (
-        <LayoutWrapper>
-            {/* Header / Nav */}
-            <div className="w-full max-w-md flex justify-between items-center mb-6 relative z-10 px-2">
+        <LayoutWrapper className="justify-start pt-8 pb-32">
+            {/* Immersive Header */}
+            <div className="w-full max-w-md flex justify-between items-center mb-10 px-4">
                 <Link href="/">
-                    <button className="text-white hover:text-nebula-cyan transition-colors flex items-center space-x-2 text-sm">
-                        <FaArrowLeft />
-                        <span>Quit</span>
-                    </button>
+                    <motion.button
+                        whileHover={{ x: -2 }}
+                        className="text-white/40 hover:text-white transition-colors flex items-center space-x-2 text-xs font-black uppercase tracking-widest"
+                    >
+                        <FaArrowLeft className="text-[10px]" />
+                        <span>Abstain</span>
+                    </motion.button>
                 </Link>
 
-                <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
-                    <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
-                    <span className="text-[10px] font-mono tracking-widest text-gray-300">
-                        {isConnected ? 'LIVE' : 'OFFLINE'}
+                <div className="flex items-center space-x-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-2xl">
+                    <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-nebula-cyan shadow-[0_0_10px_#00f0ff]' : 'bg-red-500 shadow-[0_0_10px_#ef4444]'} animate-pulse`} />
+                    <span className="text-[10px] font-black tracking-[0.2em] text-white/60 uppercase">
+                        {isConnected ? 'Neural Sync Active' : 'Link Severed'}
                     </span>
                 </div>
             </div>
 
-            {/* Error Toast */}
-            {error && (
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-500/20 border border-red-500 text-red-100 px-6 py-2 rounded-full text-sm backdrop-blur-md z-50 shadow-lg"
-                >
-                    {error}
-                </motion.div>
-            )}
+            {/* Combatant 1 (Opponent) */}
+            <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="w-full max-w-md px-4 mb-4"
+            >
+                <div className="glass-panel p-4 rounded-3xl border-white/5 bg-linear-to-br from-white/5 to-transparent flex items-center justify-between group">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center relative overflow-hidden">
+                            <span className="text-xl opacity-20 group-hover:opacity-40 transition-opacity">?</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="text-sm font-black text-white/50 group-hover:text-white/80 transition-colors uppercase tracking-tight">Antagonist</div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <div className="h-1.5 w-24 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full w-[40%] bg-red-500/30" />
+                                </div>
+                                <span className="text-xs font-mono text-white/20">ELO 1200</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="text-2xl font-black text-white/20 italic tracking-tighter">10:00</div>
+                </div>
+            </motion.div>
 
-            {/* Board Container */}
-            <div className="w-full max-w-md relative z-20 mb-6 flex justify-center">
-                <div className="p-1 rounded-lg bg-gradient-to-br from-white/10 to-transparent backdrop-blur-sm border border-white/5 shadow-2xl">
+            {/* Neural Matrix: Chessboard */}
+            <div className="w-full max-w-md relative z-20 mb-4 px-4">
+                <div className="p-2 rounded-4xl bg-linear-to-br from-white/10 via-black to-white/5 border border-white/10 shadow-premium overflow-hidden group">
+                    <div className="absolute inset-0 bg-nebula-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     <ChessBoardComponent
                         fen={fen}
                         onMove={makeMove}
-                        orientation="white" // TODO: Detect player color
+                        orientation="white"
                     />
                 </div>
             </div>
 
-            {/* Game Info Panel */}
+            {/* Combatant 2 (You) */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="glass-panel w-full max-w-md p-5 rounded-2xl space-y-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="w-full max-w-md px-4 mb-8"
             >
-                {/* Player 1 (You) */}
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-nebula-purple to-indigo-600 flex items-center justify-center font-bold text-sm shadow-md border border-white/10">
-                            You
+                <div className="glass-panel p-4 rounded-3xl border-nebula-cyan/30 bg-linear-to-br from-nebula-cyan/5 to-transparent flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-nebula-cyan/10 border border-nebula-cyan/30 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(0,240,255,0.1)]">
+                            <span className="text-xl text-nebula-cyan font-black italic">M</span>
                         </div>
-                        <div>
-                            <div className="text-sm font-bold text-white">Player 1</div>
-                            <div className="text-[10px] text-nebula-cyan uppercase tracking-wider">White</div>
-                        </div>
-                    </div>
-                    <div className="text-xl font-mono text-white/90 bg-black/20 px-2 py-1 rounded">10:00</div>
-                </div>
-
-                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-                {/* Player 2 (Opponent) */}
-                <div className="flex justify-between items-center opacity-60">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold text-lg text-gray-400 border border-white/5">
-                            ?
-                        </div>
-                        <div>
-                            <div className="text-sm font-bold text-gray-400">Opponent</div>
-                            <div className="text-[10px] text-gray-500 uppercase tracking-wider">Black</div>
+                        <div className="flex flex-col">
+                            <div className="text-sm font-black text-white uppercase tracking-tight">Protagonist</div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <div className="h-1.5 w-32 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full w-[75%] bg-nebula-cyan shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
+                                </div>
+                                <span className="text-xs font-mono text-nebula-cyan font-bold tracking-widest">1240</span>
+                            </div>
                         </div>
                     </div>
-                    <div className="text-xl font-mono text-gray-500 bg-black/10 px-2 py-1 rounded">10:00</div>
+                    <div className="text-2xl font-black text-white italic tracking-tighter">09:54</div>
                 </div>
+            </motion.div>
 
-                {/* Invite Button */}
+            {/* Tactical Console (Action Bar) */}
+            <div className="w-full max-w-md px-4 grid grid-cols-2 gap-3 pb-8">
                 <button
                     onClick={copyLink}
-                    className="w-full mt-2 glass-button py-3 rounded-xl text-nebula-cyan text-sm font-medium tracking-wide flex items-center justify-center gap-3 group"
+                    className="glass-panel py-4 rounded-2xl border-white/5 flex flex-col items-center justify-center gap-2 group hover:bg-white/5 transition-all active:scale-95"
                 >
-                    {copied ? <FaCheck /> : <FaCopy />}
-                    <span>{copied ? "Link Copied!" : "Copy Invite Link"}</span>
+                    <div className="text-nebula-cyan text-lg">
+                        {copied ? <FaCheck className="animate-bounce" /> : <FaCopy />}
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-nebula-cyan transition-colors">
+                        {copied ? "Sync Success" : "Link Node"}
+                    </span>
                 </button>
-            </motion.div>
+
+                <button
+                    className="glass-panel py-4 rounded-2xl border-white/5 flex flex-col items-center justify-center gap-2 group hover:bg-white/5 transition-all opacity-40 italic active:scale-95"
+                >
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Resign</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Surrender</span>
+                </button>
+            </div>
         </LayoutWrapper>
+    );
+        </LayoutWrapper >
     );
 }
 

@@ -206,7 +206,7 @@ export default function Home() {
     </div>
 
     {/* Footer Brand */ }
-    <div className="flex flex-col items-center pt-8 opacity-20 scale-90">
+    <div className="flex flex-col items-center pt-8 opacity-20 scale-90 mb-12">
         <span className="text-[9px] font-black tracking-[0.5em] uppercase mb-1">Neural Chess Matrix</span>
         <span className="text-[8px] font-bold tracking-[0.2em]">Build 2501 ALPHA • GALAXY CLOUD</span>
     </div>

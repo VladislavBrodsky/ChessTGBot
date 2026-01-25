@@ -1,3 +1,4 @@
+import asyncio
 from app.core.socket import sio
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
@@ -44,5 +45,13 @@ async def make_move(sid, data):
         if new_state:
             # Broadcast to room
             await sio.emit('game_state', new_state.model_dump(), room=game_id)
+            
+            # Check if it's a bot's turn
+            if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
+                # Small delay for bot move realism
+                await asyncio.sleep(1)
+                bot_state = await service.make_bot_move(game_id)
+                if bot_state:
+                    await sio.emit('game_state', bot_state.model_dump(), room=game_id)
         else:
             await sio.emit('error', {'message': 'Illegal move or game not found'}, room=sid)

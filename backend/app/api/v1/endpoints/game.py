@@ -25,20 +25,27 @@ class EndGameResponse(BaseModel):
     loser_new_elo: int
 
 @router.post("/create", response_model=CreateGameResponse)
-async def create_game():
+async def create_game(type: str = "online"):
     game_id = str(uuid.uuid4())[:8] # Short ID
     service = GameService()
     
+    is_bot_game = (type == "computer")
+    
     # Initialize Game in Redis
-    await service.create_game(game_id)
+    await service.create_game(game_id, is_bot_game=is_bot_game)
     
     # Generate Telegram Invite Link
-    try:
-        invite_link = await TelegramService.create_invite_link(game_id)
-    except Exception as e:
-        # Fallback if bot request fails (e.g. network)
-        print(f"Failed to generate link: {e}")
-        invite_link = f"https://t.me/placeholder_bot?startapp={game_id}"
+    if is_bot_game:
+        # No invite link for bot game, or link back to the app?
+        invite_link = f"{settings.WEBAPP_URL}?startapp={game_id}"
+    else:
+        try:
+            invite_link = await TelegramService.create_invite_link(game_id)
+        except Exception as e:
+            # Fallback if bot request fails (e.g. network)
+            print(f"Failed to generate link: {e}")
+            # Ensure we use a valid T.me link if possible
+            invite_link = f"https://t.me/placeholder_bot?startapp={game_id}"
 
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
 
