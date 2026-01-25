@@ -35,7 +35,7 @@ class TelegramService:
 
     @classmethod
     async def start_bot(cls):
-        """Start the bot application with retry logic."""
+        """Start the bot application with conflict prevention."""
         if not settings.TELEGRAM_BOT_TOKEN:
             logger.warning("TELEGRAM_BOT_TOKEN not set. Bot will not start.")
             return
@@ -43,28 +43,41 @@ class TelegramService:
         import asyncio
         from telegram.error import Conflict
 
+        # Prevent multiple instances
+        if cls.application:
+            logger.warning("Bot already initialized. Skipping duplicate start.")
+            return
+
         cls.application = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
         cls.application.add_handler(CommandHandler("start", cls.start_command))
         
         await cls.application.initialize()
         await cls.application.start()
         
+        # CRITICAL: Delete any existing webhooks before polling
+        # This prevents conflicts with previous deployments
+        try:
+            await cls.application.bot.delete_webhook(drop_pending_updates=True)
+            logger.info("Cleared any existing webhooks")
+        except Exception as e:
+            logger.warning(f"Could not clear webhooks: {e}")
+        
         # Robust Polling Start (Handle Conflict from rolling updates)
         max_retries = 3
         retry_delay = 5 # seconds
         for attempt in range(max_retries):
             try:
-                await cls.application.updater.start_polling()
-                logger.info("Telegram Bot Started with Polling")
+                await cls.application.updater.start_polling(drop_pending_updates=True)
+                logger.info("✅ Telegram Bot Started Successfully with Polling")
                 return
             except Conflict:
-                logger.warning(f"Telegram Bot Conflict Alert (Attempt {attempt+1}/{max_retries}). Retrying in {retry_delay}s...")
+                logger.warning(f"⚠️ Bot Conflict (Attempt {attempt+1}/{max_retries}). Previous instance still active. Retrying in {retry_delay}s...")
                 await asyncio.sleep(retry_delay)
             except Exception as e:
-                logger.error(f"Unexpected error starting bot: {e}")
+                logger.error(f"❌ Unexpected error starting bot: {e}")
                 break
         
-        logger.error("Failed to start Telegram Bot polling after multiple attempts. Application will continue without Bot functionality.")
+        logger.error("❌ Failed to start Telegram Bot after retries. App continues without bot.")
 
     @classmethod
     async def stop_bot(cls):

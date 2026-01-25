@@ -70,6 +70,7 @@ def create_application() -> FastAPI:
             return FileResponse(f"{static_dir}/index.html")
 
         @application.get("/{full_path:path}")
+        @application.head("/{full_path:path}")
         async def serve_frontend(full_path: str):
             # Check if file exists (e.g. favicon.ico)
             potential_file = f"{static_dir}/{full_path}"
@@ -82,9 +83,11 @@ def create_application() -> FastAPI:
 app = create_application()
 
 @app.get("/version")
+@app.head("/version")
 async def get_version():
     return {"version": settings.VERSION, "status": "deployed"}
 
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     return {"status": "ok", "version": settings.VERSION}
