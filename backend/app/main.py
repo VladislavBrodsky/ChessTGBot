@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.core.config import get_settings
 from app.core.socket import sio_app
 import app.socket_events # Register events
+import os
 
 settings = get_settings()
 
@@ -23,12 +26,33 @@ def create_application() -> FastAPI:
             allow_headers=["*"],
         )
 
-    # Mount Socket.IO
-    application.mount("/", sio_app)
-
     # API Routers
     from app.api.v1.endpoints import game
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
+
+    # Mount Socket.IO (Must be before static catch-all)
+    application.mount("/socket.io", sio_app) # Explicitly mount at /socket.io for cleaner routing
+
+    # Static Frontend Serving (Unified Monolith)
+    # We check if the 'static_frontend' directory exists (created by Docker)
+    static_dir = "static_frontend"
+    if os.path.isdir(static_dir):
+        # Mount assets (Next.js config usually puts them in _next)
+        application.mount("/_next", StaticFiles(directory=f"{static_dir}/_next"), name="next-assets")
+        
+        # SPA Catch-All
+        # We need a custom route logic to fallback to index.html for unknown routes (like /game/123)
+        @application.exception_handler(404)
+        async def custom_404_handler(_, __):
+            return FileResponse(f"{static_dir}/index.html")
+
+        @application.get("/{full_path:path}")
+        async def serve_frontend(full_path: str):
+            # Check if file exists (e.g. favicon.ico)
+            potential_file = f"{static_dir}/{full_path}"
+            if os.path.isfile(potential_file):
+                return FileResponse(potential_file)
+            return FileResponse(f"{static_dir}/index.html")
 
     return application
 

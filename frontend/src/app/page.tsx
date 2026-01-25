@@ -34,8 +34,8 @@ export default function Home() {
 
     const createGame = async () => {
         try {
-            // Direct call to backend
-            const res = await fetch("http://localhost:8000/api/v1/game/create", {
+            // Direct call to backend (Relative API URL)
+            const res = await fetch("/api/v1/game/create", {
                 method: "POST"
             });
             const data = await res.json();
