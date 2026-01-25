@@ -125,6 +125,10 @@ class GameService:
                  # One player is missing or bot game (skip ELO for bot games for now)
                  return
 
+            # Store current ELO before changes
+            white_elo_before = white_user.elo
+            black_elo_before = black_user.elo
+
             # Determine Result
             score_white = 0.5
             if state.winner == 'w':
@@ -146,3 +150,31 @@ class GameService:
             else:
                  await user_crud.update_elo(session, white_user, new_white_elo, 'draw')
                  await user_crud.update_elo(session, black_user, new_black_elo, 'draw')
+            
+            # Save game history
+            from app.crud import game_history as game_history_crud
+            
+            # Calculate total moves (approximate from FEN or board state)
+            total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
+            
+            # Determine result type
+            result_type = 'draw'
+            if state.winner:
+                result_type = 'checkmate'  # Can be enhanced later with resignation, timeout, etc.
+            
+            await game_history_crud.create_game_history(
+                db=session,
+                game_id=game_id,
+                white_player_id=white_id,
+                black_player_id=black_id,
+                winner=state.winner,
+                result_type=result_type,
+                white_elo_before=white_elo_before,
+                white_elo_after=new_white_elo,
+                black_elo_before=black_elo_before,
+                black_elo_after=new_black_elo,
+                total_moves=total_moves,
+                duration_seconds=None,  # Can be tracked later by storing game start time
+                final_fen=state.fen,
+                game_type='online'
+            )

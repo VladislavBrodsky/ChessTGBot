@@ -5,9 +5,32 @@ from sqlalchemy import pool
 
 from alembic import context
 
+# Import environment variables
+import os
+from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+# Add backend directory to path
+backend_dir = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(backend_dir))
+
+# Load .env file
+env_path = backend_dir / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Override sqlalchemy.url with DATABASE_URL from environment
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    # Fix for Railway/Heroku style URLs
+    if database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -16,9 +39,20 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+
+# Import models to register them with Base
+from app.models.user import User
+from app.models.game_history import GameHistory
+
+# Override the Base in the models
+User.metadata = Base.metadata
+GameHistory.metadata = Base.metadata
+
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

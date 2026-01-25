@@ -24,6 +24,7 @@ async def get_db():
 async def init_db():
     # Import models here to avoid circular import with Base
     from app.models.user import User
+    from app.models.game_history import GameHistory  # Import the new model
     from sqlalchemy import text
     
     async with engine.begin() as conn:
