@@ -7,6 +7,10 @@ settings = get_settings()
 # Use settings directly
 DATABASE_URL = settings.DATABASE_URL
 
+# Fix for Heroku/Railway style URLs which often omit the driver
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
