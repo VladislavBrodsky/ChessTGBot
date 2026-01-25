@@ -188,7 +188,7 @@ export default function Home() {
                 </div>
 
                 <div className="text-[10px] font-black tracking-[0.2em] uppercase opacity-30 mt-12 py-2 px-4 rounded-full border border-white/10">
-                    Engineered by Antigravity • v1.1.0
+                    Engineered by Antigravity • v1.2.0-PREMIUM
                 </div>
             </div>
         </LayoutWrapper>

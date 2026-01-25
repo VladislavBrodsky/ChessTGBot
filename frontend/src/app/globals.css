@@ -1,12 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-nebula-dark: var(--bg-secondary);
+  --color-nebula-purple: var(--accent-primary);
+  --color-nebula-cyan: var(--accent-secondary);
+  --color-nebula-void: var(--bg-primary);
+  --shadow-neon: 0 0 15px rgba(123, 44, 191, 0.6), 0 0 30px rgba(123, 44, 191, 0.3);
+  --shadow-neon-cyan: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 30px rgba(0, 240, 255, 0.3);
+}
 
 :root {
   --font-geist-sans: "Inter", sans-serif;
   --font-geist-mono: "Roboto Mono", monospace;
 
-  /* Force Premium Dark Mode as Default */
+  /* Force Premium Dark Mode as Global Constant */
   --bg-primary: #050014;
   --bg-secondary: #0B001F;
   --text-primary: #ffffff;
@@ -22,83 +29,41 @@
   --nebula-purple: #7B2CBF;
 }
 
-/* Optional Light Mode for accessibility, but the default is now Premium Dark */
-[data-theme='light'] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f3f4f6;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --accent-primary: #7B2CBF;
-  --accent-secondary: #00F0FF;
-
-  --glass-bg: rgba(0, 0, 0, 0.05);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
+/* Fallback cleanup - ensure background is ALWAYS dark */
 body {
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+  color: var(--text-primary) !important;
+  background-color: var(--bg-primary) !important;
   font-family: var(--font-geist-sans);
   transition: color 0.3s, background-color 0.3s;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 @layer components {
   .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-
-  .premium-border {
-    position: relative;
-  }
-
-  .premium-border::after {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    background: linear-gradient(45deg, transparent, rgba(123, 44, 191, 0.3), transparent);
-    border-radius: inherit;
-    z-index: -1;
-    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
   }
 
   .glass-button {
     position: relative;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--text-primary) !important;
   }
 
   .glass-button:hover {
-    background: rgba(123, 44, 191, 0.15);
-    border-color: var(--accent-secondary);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.05);
+    background: rgba(123, 44, 191, 0.15) !important;
+    border-color: var(--accent-secondary) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.05) !important;
     transform: translateY(-2px);
-  }
-
-  .glass-button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.8s ease;
-  }
-
-  .glass-button:hover::before {
-    transform: translateX(100%);
-  }
-
-  .neon-text {
-    text-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary);
   }
 
   .shimmer {
@@ -118,7 +83,7 @@ body {
   }
 }
 
-/* Custom Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
