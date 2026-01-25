@@ -17,10 +17,8 @@ class TelegramService:
         start_param = args[0] if args else None
         
         # Railway URL (Replace with dynamic URL if needed or use from settings)
-        # Ideally this should be configurable or detected, but for now hardcoded or from env
-        # Since we are inside the container, we don't know the public URL easily without env var
-        # Let's assume the user has set it or we default to a placeholder that works if BotFather is set up.
-        web_app_url = "https://chess-app.up.railway.app" 
+        # We use the properly configured environment variable now.
+        web_app_url = settings.WEBAPP_URL
 
         if start_param:
              web_app_url += f"?startapp={start_param}"

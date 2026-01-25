@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "development_secret_key"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
+    # Deployment
+    WEBAPP_URL: str = "https://chesstgbot-production.up.railway.app"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
