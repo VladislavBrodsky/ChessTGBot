@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaTrophy, FaStar } from "react-icons/fa";
+import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaStar } from "react-icons/fa";
 
 export default function Home() {
     const [tgUser, setTgUser] = useState<any>(null);
@@ -64,112 +64,132 @@ export default function Home() {
     };
 
     return (
-        <LayoutWrapper className="pb-24">
-            <div className="flex flex-col items-center w-full max-w-md space-y-6">
-                {/* Compact Brand Section */}
-                <div className="flex flex-col items-center w-full mt-4">
+        <LayoutWrapper>
+            <div className="flex flex-col items-center w-full max-w-sm mx-auto space-y-6 px-4">
+                {/* Minimalist Brand Section */}
+                <div className="flex flex-col items-center w-full pt-6">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-white text-4xl font-black italic tracking-tighter select-none mb-1"
-                        style={{ fontFamily: 'system-ui' }}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-white text-3xl font-black italic tracking-tighter select-none mb-0.5"
                     >
-                        X
+                        CHESS APP
                     </motion.div>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30">Antigravity AI</span>
+                    <div className="h-px w-12 bg-white/20 mb-1" />
+                    <span className="text-[8px] font-bold uppercase tracking-[0.5em] text-white/30">Neural Chess Matrix</span>
                 </div>
 
-                {/* Profile Widget */}
+                {/* Ultra-Compact Profile Widget */}
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full glass-panel p-5 flex items-center justify-between group shadow-2xl relative"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full glass-panel p-4 flex items-center justify-between shadow-premium relative overflow-hidden"
                 >
-                    <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 rounded-2xl bg-black border border-white/10 p-1 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                        <FaChessPawn size={60} />
+                    </div>
+
+                    <div className="flex items-center space-x-3.5 relative z-10">
+                        <div className="w-12 h-12 rounded-xl bg-brand-elevated border border-white/5 p-0.5 relative">
                             {tgUser?.photo_url ? (
-                                <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-xl object-cover" />
+                                <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-[10px] object-cover" />
                             ) : (
-                                <div className="w-full h-full rounded-xl bg-linear-to-br from-white/10 to-white/5 flex items-center justify-center text-2xl font-black text-white/40">
-                                    {tgUser?.first_name?.[0] || "P"}
+                                <div className="w-full h-full rounded-[10px] bg-linear-to-br from-white/5 to-transparent flex items-center justify-center text-lg font-black text-white/20">
+                                    {tgUser?.first_name?.[0] || "?"}
+                                </div>
+                            )}
+                            {stats?.is_premium && (
+                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-[8px] text-black border-2 border-black">
+                                    <FaStar />
                                 </div>
                             )}
                         </div>
                         <div className="flex flex-col">
-                            <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                                {tgUser ? `${tgUser.first_name}` : "Player"}
-                                {stats?.is_premium && (
-                                    <span className="text-white text-sm"><FaStar /></span>
-                                )}
+                            <h2 className="text-base font-bold tracking-tight text-white flex items-center gap-1.5 leading-none mb-1">
+                                {tgUser?.first_name || "Unknown"}
                             </h2>
-                            <div className="flex items-center gap-2 text-xs font-medium text-white/40">
-                                <span className="flex items-center gap-1"> {stats?.wins || 0} Wins</span>
-                                <span className="w-1 h-1 bg-white/10 rounded-full" />
-                                <span>{stats?.elo || 1000} ELO</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{stats?.elo || 1000} ELO</span>
+                                <div className="w-1 h-1 rounded-full bg-white/10" />
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{stats?.wins || 0} Victories</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1">
-                        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                            <span className="text-[10px] font-bold text-white tracking-widest uppercase">Master</span>
+                    <div className="flex flex-col items-end gap-1 relative z-10">
+                        <div className="px-2 py-0.5 rounded-md border border-white/10 bg-white/5">
+                            <span className="text-[9px] font-black text-white tracking-widest uppercase">RANK:001</span>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Primary Action Button */}
-                <motion.button
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => createGame('online')}
-                    className="w-full h-40 action-button flex flex-col items-center justify-center gap-3 group relative"
-                    disabled={isCreating}
-                >
-                    <div className="w-12 h-12 rounded-xl bg-black/10 flex items-center justify-center transition-all group-hover:scale-110">
-                        <FaChessPawn className="text-black text-2xl" />
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <span className="text-lg font-black tracking-widest uppercase">Execute Online</span>
-                        <span className="text-[9px] font-bold text-black/40 tracking-[0.2em] uppercase">Matchmaking Logic</span>
-                    </div>
-                </motion.button>
-
-                {/* Secondary Actions */}
-                <div className="w-full grid grid-cols-2 gap-4">
+                {/* Main Control Interface */}
+                <div className="w-full space-y-3">
                     <motion.button
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => createGame('computer')}
-                        className="glass-button w-full py-6 rounded-2xl flex flex-col items-center justify-center gap-3 group"
+                        onClick={() => createGame('online')}
+                        className="w-full h-32 action-button relative overflow-hidden flex flex-col items-center justify-center group shadow-premium"
                         disabled={isCreating}
                     >
-                        <FaRobot className="text-xl text-white/40 group-hover:text-white transition-colors" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">A.I. Combat</span>
+                        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-50" />
+                        <div className="relative z-10 flex flex-col items-center gap-2">
+                            <div className="w-10 h-10 rounded-lg bg-black/5 flex items-center justify-center border border-black/10 group-hover:scale-110 transition-transform">
+                                <FaChessPawn size={20} className="text-black/80" />
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <span className="text-base font-black tracking-[0.15em]">CORE MATCHMAKING</span>
+                                <span className="text-[8px] font-bold opacity-40 -mt-1 tracking-[0.3em]">INITIATE PROTOCOL</span>
+                            </div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-black/10" />
                     </motion.button>
 
-                    <Link href="/academy" className="w-full">
-                        <motion.div
-                            whileHover={{ scale: 1.02 }}
+                    <div className="grid grid-cols-2 gap-3">
+                        <motion.button
+                            whileHover={{ y: -1 }}
                             whileTap={{ scale: 0.98 }}
-                            className="glass-panel w-full py-6 flex flex-col items-center justify-center gap-3 cursor-pointer group"
+                            onClick={() => createGame('computer')}
+                            className="glass-button w-full py-5 flex flex-col items-center justify-center gap-2.5 group"
+                            disabled={isCreating}
                         >
-                            <FaGraduationCap className="text-xl text-white/40 group-hover:text-white transition-colors" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Academy</span>
-                        </motion.div>
+                            <FaRobot className="text-lg text-white/30 group-hover:text-white transition-colors" />
+                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] leading-none">AI Training</span>
+                        </motion.button>
+
+                        <Link href="/academy" className="w-full">
+                            <motion.div
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="glass-panel w-full py-5 flex flex-col items-center justify-center gap-2.5 group cursor-pointer"
+                            >
+                                <FaGraduationCap className="text-lg text-white/30 group-hover:text-white transition-colors" />
+                                <span className="text-[9px] font-bold uppercase tracking-[0.2em] leading-none">Academy</span>
+                            </motion.div>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* System Controls */}
+                <div className="w-full pt-2">
+                    <Link href="/settings" className="flex items-center justify-between p-3.5 border border-white/5 rounded-xl bg-white/1 hover:bg-white/3 transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+                                <FaCog className="text-white/30 group-hover:text-white/60 transition-colors text-xs" />
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/50 transition-colors">Configuration</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-20 group-hover:opacity-40 transition-opacity">
+                            <span className="text-[8px] font-black uppercase tracking-tighter">V.01.52</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        </div>
                     </Link>
                 </div>
 
-                {/* Configuration item */}
-                <Link href="/settings" className="w-full p-4 border border-white/10 rounded-2xl flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <div className="flex items-center gap-3">
-                        <FaCog className="text-white/20" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Configuration Control</span>
-                    </div>
-                    <span className="text-[9px] font-black text-white/20 uppercase">V1.5.0-ALPHA</span>
-                </Link>
-
-                <div className="flex flex-col items-center space-y-2 pt-4 opacity-10">
-                    <span className="text-[9px] font-bold tracking-[0.5em] uppercase text-white">Antigravity Neural Matrix</span>
+                {/* Footer Decor */}
+                <div className="flex flex-col items-center py-4 select-none pointer-events-none opacity-5">
+                    <div className="w-24 h-px bg-white mb-2" />
+                    <span className="text-[7px] font-bold tracking-[1em] uppercase text-white">Neural Override Active</span>
                 </div>
             </div>
         </LayoutWrapper>

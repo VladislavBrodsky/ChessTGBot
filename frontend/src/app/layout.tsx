@@ -14,7 +14,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Antigravity Chess",
+    title: "Chess Game",
     description: "Real-time Multiplayer Chess on Telegram",
 };
 

@@ -29,13 +29,12 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                     position={fen}
                     onPieceDrop={onDrop}
                     boardOrientation={orientation}
-                    customDarkSquareStyle={{ backgroundColor: "#16181C" }}
-                    customLightSquareStyle={{ backgroundColor: "#26292E" }}
+                    customDarkSquareStyle={{ backgroundColor: "#050505" }}
+                    customLightSquareStyle={{ backgroundColor: "#1F1F1F" }}
                     customBoardStyle={{
-                        borderRadius: "12px",
-                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
+                        borderRadius: "8px",
                     }}
-                    animationDuration={300}
+                    animationDuration={250}
                 />
             </div>
         </div>

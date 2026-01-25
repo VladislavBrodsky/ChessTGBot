@@ -132,7 +132,7 @@ function GameContent() {
 
 export default function GamePage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-nebula-cyan animate-pulse">Loading Board...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/20 font-black uppercase tracking-[0.5em] animate-pulse">Initializing Board...</div>}>
             <GameContent />
         </Suspense>
     );

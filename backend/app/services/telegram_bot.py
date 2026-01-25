@@ -29,7 +29,7 @@ class TelegramService:
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         await update.message.reply_text(
-            "Welcome to Antigravity Chess! ♟️🚀\n\nClick below to start playing in our Mini App.",
+            "Welcome to Chess Game! ♟️🚀\n\nClick below to start playing in our Mini App.",
             reply_markup=reply_markup
         )
 

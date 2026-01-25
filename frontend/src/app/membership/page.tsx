@@ -81,42 +81,30 @@ export default function MembershipPage() {
     };
 
     return (
-        <LayoutWrapper>
-            <div className="w-full max-w-md flex flex-col items-center bg-[#000000] min-h-screen pb-16 font-sans selection:bg-white selection:text-black">
-                {/* Header */}
-                <div className="w-full flex items-center justify-between p-4 mb-2">
-                    <Link href="/">
-                        <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            className="text-white hover:text-gray-300 transition-colors"
-                        >
-                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </motion.button>
-                    </Link>
+        <LayoutWrapper className="pb-32 pt-6">
+            <div className="w-full max-w-sm flex flex-col items-center mx-auto space-y-8 px-4">
+                {/* Header / Brand */}
+                <div className="flex flex-col items-center w-full">
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-white text-3xl font-black italic tracking-tighter select-none"
+                    >
+                        CHESS PREMIUM+
+                    </motion.div>
+                    <div className="h-px w-10 bg-white/20 my-2" />
+                    <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-white/30">Premium Access Matrix</span>
                 </div>
 
-                {/* Metallic X Logo */}
-                <div className="mb-6 relative pointer-events-none">
-                    <div className="text-[100px] font-black italic tracking-tighter metallic-text leading-none" style={{ fontFamily: 'system-ui' }}>
-                        X
-                    </div>
-                </div>
-
-                <h1 className="text-3xl font-black text-white mb-8 text-center px-4 tracking-tight">
-                    Subscribe to Premium
-                </h1>
-
-                {/* Tier Selector Tabs */}
-                <div className="w-[90%] bg-[#121212] p-1.5 rounded-[20px] flex mb-8 border border-white/5">
+                {/* Tier Selector */}
+                <div className="w-full glass-panel p-1 rounded-2xl flex border-white/5 bg-white/5">
                     {TIERS.map((tier) => (
                         <button
                             key={tier.id}
                             onClick={() => setSelectedTier(tier)}
-                            className={`flex-1 py-3 text-[14px] font-black rounded-[15px] transition-all duration-200 uppercase tracking-tight ${selectedTier.id === tier.id
-                                ? "bg-[#212121] text-white shadow-lg"
-                                : "text-gray-500 hover:text-gray-300"
+                            className={`flex-1 py-3 text-[9px] font-black rounded-xl transition-all duration-300 uppercase tracking-widest ${selectedTier.id === tier.id
+                                ? "bg-white text-black shadow-premium"
+                                : "text-white/40 hover:text-white/60"
                                 }`}
                         >
                             {tier.name}
@@ -125,24 +113,24 @@ export default function MembershipPage() {
                 </div>
 
                 {/* Feature Container */}
-                <div className="w-[90%] bg-[#121212] rounded-[32px] p-7 mb-8 border border-white/5">
+                <div className="w-full glass-panel rounded-3xl p-6 border-white/5 bg-linear-to-b from-white/5 to-transparent shadow-premium">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={selectedTier.id}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.02 }}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
                             transition={{ duration: 0.2 }}
-                            className="space-y-7"
+                            className="space-y-6"
                         >
                             {selectedTier.features.map((feature, idx) => (
-                                <div key={idx} className="flex items-start space-x-5">
-                                    <div className="w-11 h-11 rounded-xl bg-[#212121] flex items-center justify-center text-white shrink-0 shadow-inner">
-                                        <span className="text-xl opacity-90">{feature.icon}</span>
+                                <div key={idx} className="flex items-start space-x-4">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-white/40 shrink-0">
+                                        <span className="text-lg">{feature.icon}</span>
                                     </div>
                                     <div className="flex flex-col pt-0.5">
-                                        <span className="text-[17px] font-black text-white leading-tight">{feature.title}</span>
-                                        <span className="text-[14px] font-medium text-gray-500 leading-snug mt-1">{feature.desc}</span>
+                                        <span className="text-sm font-black text-white uppercase tracking-tight leading-none mb-1">{feature.title}</span>
+                                        <span className="text-[10px] font-medium text-white/30 tracking-tight leading-snug">{feature.desc}</span>
                                     </div>
                                 </div>
                             ))}
@@ -150,55 +138,55 @@ export default function MembershipPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Pricing Selection Horizontal Grid */}
-                <div className="w-[90%] grid grid-cols-2 gap-4 mb-10">
+                {/* Pricing Options */}
+                <div className="w-full grid grid-cols-2 gap-3">
                     <button
                         onClick={() => setBillingPeriod('monthly')}
-                        className={`p-5 rounded-[24px] text-left transition-all border-[3px] flex flex-col justify-between h-32 ${billingPeriod === 'monthly'
-                            ? "bg-[#121212] border-white"
-                            : "bg-transparent border-white/10 opacity-40 hover:opacity-60"
+                        className={`p-5 rounded-2xl text-left transition-all border flex flex-col justify-between h-32 relative group overflow-hidden ${billingPeriod === 'monthly'
+                            ? "bg-white border-white text-black"
+                            : "bg-white/1 border-white/5 text-white/40 hover:bg-white/3"
                             }`}
                     >
-                        <span className="text-[15px] font-black text-gray-300">Monthly</span>
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'monthly' ? "text-black/60" : "text-white/20"}`}>Monthly</span>
                         <div>
-                            <span className="text-[28px] font-black text-white leading-none">${selectedTier.monthly}</span>
-                            <span className="text-[14px] font-bold text-gray-500 ml-1">/ month</span>
+                            <span className="text-3xl font-black italic tracking-tighter leading-none">${selectedTier.monthly}</span>
+                            <span className={`text-[10px] font-bold block mt-1 ${billingPeriod === 'monthly' ? "text-black/40" : "text-white/20"}`}>PER QUARTER</span>
                         </div>
                     </button>
 
                     <button
                         onClick={() => setBillingPeriod('annual')}
-                        className={`p-5 rounded-[24px] text-left transition-all border-[3px] flex flex-col justify-between h-32 relative ${billingPeriod === 'annual'
-                            ? "bg-[#121212] border-white"
-                            : "bg-transparent border-white/10 opacity-40 hover:opacity-60"
+                        className={`p-5 rounded-2xl text-left transition-all border flex flex-col justify-between h-32 relative group overflow-hidden ${billingPeriod === 'annual'
+                            ? "bg-white border-white text-black"
+                            : "bg-white/1 border-white/5 text-white/40 hover:bg-white/3"
                             }`}
                     >
-                        <div className="absolute top-4 right-4 bg-[#1b3a27] text-[#4edb8a] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
-                            SAVE 16%
+                        <div className={`absolute top-0 right-0 px-2 py-1 rounded-bl-lg text-[8px] font-black uppercase tracking-tighter ${billingPeriod === 'annual' ? "bg-black text-white" : "bg-white/10 text-white/40"}`}>
+                            -16% OFF
                         </div>
-                        <span className="text-[15px] font-black text-gray-300">Annual</span>
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-black/60" : "text-white/20"}`}>Annual</span>
                         <div className="flex flex-col">
                             <div>
-                                <span className="text-[28px] font-black text-white leading-none">${selectedTier.annual}</span>
-                                <span className="text-[14px] font-bold text-gray-500 ml-1">/ year</span>
+                                <span className="text-3xl font-black italic tracking-tighter leading-none">${selectedTier.annual}</span>
+                                <span className={`text-[10px] font-bold block mt-1 ${billingPeriod === 'annual' ? "text-black/40" : "text-white/20"}`}>PER ANNUM</span>
                             </div>
-                            <span className="text-[11px] font-bold text-gray-600 mt-0.5">${(selectedTier.annual / 12).toFixed(2)} / month</span>
                         </div>
                     </button>
                 </div>
 
-                {/* Giant CTA Button */}
+                {/* Confirm Action */}
                 <motion.button
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleSubscribe}
-                    className="w-[90%] py-6 rounded-full font-black text-black text-xl uppercase tracking-tighter bg-linear-to-b from-white via-gray-200 to-gray-400 shadow-2xl hover:brightness-110 active:brightness-90 transition-all font-sans"
+                    className="w-full py-6 action-button flex items-center justify-center shadow-premium"
                 >
-                    Subscribe & pay
+                    <span className="text-base font-black italic tracking-[0.2em]">INITIALIZE SYNC</span>
                 </motion.button>
 
-                {/* Footer Disclaimer */}
-                <p className="w-[90%] text-[10px] text-gray-600 text-left leading-[1.4] font-bold mt-10 px-2 italic uppercase tracking-tighter">
-                    By subscribing, you agree to our <span className="text-gray-400 underline">Purchaser Terms</span>, and that subscriptions auto-renew until you cancel. <span className="text-gray-400 underline">Cancel anytime</span>. Price subject to change. <span className="text-gray-400 underline">Manage subscription</span>.
+                {/* Footer Legal */}
+                <p className="w-full text-[8px] text-white/10 text-center leading-[1.6] font-bold uppercase tracking-widest px-4">
+                    Subscriptions auto-renew until cancelled. Neural access is subject to decentralized core protocols.
                 </p>
             </div>
         </LayoutWrapper>
