@@ -82,41 +82,41 @@ export default function MembershipPage() {
 
     return (
         <LayoutWrapper>
-            <div className="w-full max-w-md flex flex-col items-center bg-[#000000] min-h-screen pb-20 font-sans selection:bg-white selection:text-black">
+            <div className="w-full max-w-md flex flex-col items-center bg-[#000000] min-h-screen pb-16 font-sans selection:bg-white selection:text-black">
                 {/* Header */}
-                <div className="w-full flex items-center justify-between p-4 -mb-4">
+                <div className="w-full flex items-center justify-between p-4 mb-2">
                     <Link href="/">
                         <motion.button
-                            whileHover={{ x: -2 }}
-                            className="text-white/60 hover:text-white transition-colors"
+                            whileHover={{ scale: 1.1 }}
+                            className="text-white hover:text-gray-300 transition-colors"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </motion.button>
                     </Link>
                 </div>
 
-                {/* X Metallic Logo */}
-                <div className="mb-4 mt-2 relative select-none">
-                    <div className="text-8xl font-black italic tracking-tighter metallic-text" style={{ fontFamily: 'system-ui' }}>
+                {/* Metallic X Logo */}
+                <div className="mb-6 relative pointer-events-none">
+                    <div className="text-[100px] font-black italic tracking-tighter metallic-text leading-none" style={{ fontFamily: 'system-ui' }}>
                         X
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-white mb-8 text-center px-4">
+                <h1 className="text-3xl font-black text-white mb-8 text-center px-4 tracking-tight">
                     Subscribe to Premium
                 </h1>
 
-                {/* Tier Selector Pills */}
-                <div className="w-[90%] bg-[#121212] p-1 rounded-2xl flex mb-8 border border-white/5">
+                {/* Tier Selector Tabs */}
+                <div className="w-[90%] bg-[#121212] p-1.5 rounded-[20px] flex mb-8 border border-white/5">
                     {TIERS.map((tier) => (
                         <button
                             key={tier.id}
                             onClick={() => setSelectedTier(tier)}
-                            className={`flex-1 py-3 px-2 text-[15px] font-bold rounded-xl transition-all duration-300 ${selectedTier.id === tier.id
-                                ? "bg-[#212121] text-white"
-                                : "text-white/40 hover:text-white/60"
+                            className={`flex-1 py-3 text-[14px] font-black rounded-[15px] transition-all duration-200 uppercase tracking-tight ${selectedTier.id === tier.id
+                                ? "bg-[#212121] text-white shadow-lg"
+                                : "text-gray-500 hover:text-gray-300"
                                 }`}
                         >
                             {tier.name}
@@ -124,24 +124,25 @@ export default function MembershipPage() {
                     ))}
                 </div>
 
-                {/* Features List */}
-                <div className="w-[90%] bg-[#121212] rounded-3xl p-6 mb-8 border border-white/5 shadow-2xl">
+                {/* Feature Container */}
+                <div className="w-[90%] bg-[#121212] rounded-[32px] p-7 mb-8 border border-white/5">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={selectedTier.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="space-y-6"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                            className="space-y-7"
                         >
                             {selectedTier.features.map((feature, idx) => (
-                                <div key={idx} className="flex items-start space-x-4">
-                                    <div className="w-10 h-10 rounded-lg bg-[#212121] flex items-center justify-center text-white shrink-0 border border-white/5">
-                                        <span className="text-lg opacity-80">{feature.icon}</span>
+                                <div key={idx} className="flex items-start space-x-5">
+                                    <div className="w-11 h-11 rounded-xl bg-[#212121] flex items-center justify-center text-white shrink-0 shadow-inner">
+                                        <span className="text-xl opacity-90">{feature.icon}</span>
                                     </div>
                                     <div className="flex flex-col pt-0.5">
-                                        <span className="text-white font-bold text-[16px] leading-tight">{feature.title}</span>
-                                        <span className="text-white/40 text-[14px] leading-tight mt-1">{feature.desc}</span>
+                                        <span className="text-[17px] font-black text-white leading-tight">{feature.title}</span>
+                                        <span className="text-[14px] font-medium text-gray-500 leading-snug mt-1">{feature.desc}</span>
                                     </div>
                                 </div>
                             ))}
@@ -149,55 +150,55 @@ export default function MembershipPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Pricing Selection */}
-                <div className="w-[90%] grid grid-cols-1 gap-3 mb-8">
+                {/* Pricing Selection Horizontal Grid */}
+                <div className="w-[90%] grid grid-cols-2 gap-4 mb-10">
                     <button
                         onClick={() => setBillingPeriod('monthly')}
-                        className={`p-5 rounded-2xl text-left transition-all border-2 relative overflow-hidden ${billingPeriod === 'monthly'
-                            ? "bg-[#121212] border-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-                            : "bg-transparent border-white/10 opacity-60"
+                        className={`p-5 rounded-[24px] text-left transition-all border-[3px] flex flex-col justify-between h-32 ${billingPeriod === 'monthly'
+                            ? "bg-[#121212] border-white"
+                            : "bg-transparent border-white/10 opacity-40 hover:opacity-60"
                             }`}
                     >
-                        <div className="text-[14px] text-white/80 font-bold mb-1">Monthly</div>
-                        <div className="flex items-baseline space-x-1">
-                            <span className="text-2xl font-black text-white">${selectedTier.monthly}</span>
-                            <span className="text-[14px] text-white/40 font-bold">/ month</span>
+                        <span className="text-[15px] font-black text-gray-300">Monthly</span>
+                        <div>
+                            <span className="text-[28px] font-black text-white leading-none">${selectedTier.monthly}</span>
+                            <span className="text-[14px] font-bold text-gray-500 ml-1">/ month</span>
                         </div>
                     </button>
 
                     <button
                         onClick={() => setBillingPeriod('annual')}
-                        className={`p-5 rounded-2xl text-left transition-all border-2 relative overflow-hidden ${billingPeriod === 'annual'
-                            ? "bg-[#121212] border-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-                            : "bg-transparent border-white/10 opacity-60"
+                        className={`p-5 rounded-[24px] text-left transition-all border-[3px] flex flex-col justify-between h-32 relative ${billingPeriod === 'annual'
+                            ? "bg-[#121212] border-white"
+                            : "bg-transparent border-white/10 opacity-40 hover:opacity-60"
                             }`}
                     >
-                        <div className="absolute top-4 right-4 bg-[#1b3a27] text-[#4edb8a] text-[11px] font-black px-2.5 py-1 rounded-full">
+                        <div className="absolute top-4 right-4 bg-[#1b3a27] text-[#4edb8a] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
                             SAVE 16%
                         </div>
-                        <div className="text-[14px] text-white/80 font-bold mb-1">Annual</div>
+                        <span className="text-[15px] font-black text-gray-300">Annual</span>
                         <div className="flex flex-col">
-                            <div className="flex items-baseline space-x-1">
-                                <span className="text-2xl font-black text-white">${selectedTier.annual}</span>
-                                <span className="text-[14px] text-white/40 font-bold">/ year</span>
+                            <div>
+                                <span className="text-[28px] font-black text-white leading-none">${selectedTier.annual}</span>
+                                <span className="text-[14px] font-bold text-gray-500 ml-1">/ year</span>
                             </div>
-                            <span className="text-[12px] text-white/40 font-bold mt-1">${(selectedTier.annual / 12).toFixed(2)} / month</span>
+                            <span className="text-[11px] font-bold text-gray-600 mt-0.5">${(selectedTier.annual / 12).toFixed(2)} / month</span>
                         </div>
                     </button>
                 </div>
 
-                {/* CTA Button */}
+                {/* Giant CTA Button */}
                 <motion.button
-                    whileTap={{ scale: 0.98 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={handleSubscribe}
-                    className="w-[90%] py-4.5 rounded-full font-black text-black text-lg bg-gradient-to-b from-[#ffffff] to-[#cccccc] shadow-[0_4px_10px_rgba(0,0,0,0.5)] active:to-[#999999] transition-all"
+                    className="w-[90%] py-6 rounded-full font-black text-black text-xl uppercase tracking-tighter bg-gradient-to-b from-white via-gray-200 to-gray-400 shadow-2xl hover:brightness-110 active:brightness-90 transition-all font-sans"
                 >
                     Subscribe & pay
                 </motion.button>
 
                 {/* Footer Disclaimer */}
-                <p className="w-[90%] text-[11px] text-white/40 text-left leading-[1.3] font-medium mt-10 px-2">
-                    By subscribing, you agree to our <span className="text-white/80 hover:underline cursor-pointer">Purchaser Terms</span>, and that subscriptions auto-renew until you cancel. <span className="text-white/80 hover:underline cursor-pointer">Cancel anytime</span>, at least 24 hours prior to renewal to avoid additional charges. Price subject to change. <span className="text-white/80 hover:underline cursor-pointer">Manage your subscription</span> through the platform you subscribed on.
+                <p className="w-[90%] text-[10px] text-gray-600 text-left leading-[1.4] font-bold mt-10 px-2 italic uppercase tracking-tighter">
+                    By subscribing, you agree to our <span className="text-gray-400 underline">Purchaser Terms</span>, and that subscriptions auto-renew until you cancel. <span className="text-gray-400 underline">Cancel anytime</span>. Price subject to change. <span className="text-gray-400 underline">Manage subscription</span>.
                 </p>
             </div>
         </LayoutWrapper>
