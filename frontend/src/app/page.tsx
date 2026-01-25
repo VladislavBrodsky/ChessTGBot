@@ -70,19 +70,19 @@ export default function Home() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
-                    className="w-full glass-panel p-6 rounded-[2.5rem] flex flex-col items-center relative overflow-hidden group"
+                    className="w-full glass-panel p-6 rounded-4xl flex flex-col items-center relative overflow-hidden group"
                 >
-                    <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-nebula-cyan to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute top-0 w-full h-1 bg-linear-to-r from-transparent via-nebula-cyan to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
 
                     {/* Inner subtle glow */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-nebula-purple/5 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-linear-to-br from-nebula-purple/5 to-transparent pointer-events-none" />
 
                     <div className="w-24 h-24 rounded-full bg-black/40 border-4 border-nebula-purple p-1 mb-4 shadow-neon relative group-hover:scale-105 transition-transform duration-500">
                         {/* Avatar Placeholder or TG Photo */}
                         {tgUser?.photo_url ? (
                             <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
                         ) : (
-                            <div className="w-full h-full rounded-full bg-gradient-to-br from-nebula-purple to-nebula-cyan flex items-center justify-center text-3xl font-bold text-white">
+                            <div className="w-full h-full rounded-full bg-linear-to-br from-nebula-purple to-nebula-cyan flex items-center justify-center text-3xl font-bold text-white">
                                 {tgUser?.first_name?.[0] || "P"}
                             </div>
                         )}
@@ -90,7 +90,7 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center space-x-2 mb-2 relative">
-                        <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">
+                        <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/70">
                             {tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}` : "Player"}
                         </h2>
                         {stats?.is_premium && (
@@ -121,7 +121,7 @@ export default function Home() {
                         whileHover={{ scale: 1.03, y: -2 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={createGame}
-                        className="glass-button w-full py-6 rounded-[2rem] flex items-center justify-center space-x-5 border-nebula-cyan/30 group relative overflow-hidden"
+                        className="glass-button w-full py-6 rounded-4xl flex items-center justify-center space-x-5 border-nebula-cyan/30 group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-nebula-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="w-14 h-14 rounded-2xl bg-nebula-cyan/20 flex items-center justify-center group-hover:bg-nebula-cyan/30 transition-all duration-300 transform group-hover:rotate-12">
@@ -139,7 +139,7 @@ export default function Home() {
                         transition={{ delay: 0.3 }}
                         whileHover={{ scale: 1.03, y: -2 }}
                         whileTap={{ scale: 0.97 }}
-                        className="glass-button w-full py-6 rounded-[2rem] flex items-center justify-center space-x-5 border-white/5 group relative overflow-hidden grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all duration-500"
+                        className="glass-button w-full py-6 rounded-4xl flex items-center justify-center space-x-5 border-white/5 group relative overflow-hidden grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all duration-500"
                         onClick={() => alert("AI Opponent coming soon!")}
                     >
                         <div className="w-14 h-14 rounded-2xl bg-nebula-purple/20 flex items-center justify-center group-hover:bg-nebula-purple/30 transition-all duration-300 transform group-hover:scale-110">
@@ -161,7 +161,7 @@ export default function Home() {
                             transition={{ delay: 0.4 }}
                             whileHover={{ scale: 1.05, y: -5 }}
                             whileTap={{ scale: 0.95 }}
-                            className="glass-panel w-full py-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-pink-500/30 transition-colors"
+                            className="glass-panel w-full py-6 rounded-4xl flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-pink-500/30 transition-colors"
                         >
                             <div className="w-16 h-16 rounded-full bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-all">
                                 <FaGraduationCap className="text-4xl text-pink-500 drop-shadow-[0_0_15px_rgba(236,72,153,0.4)]" />
@@ -177,7 +177,7 @@ export default function Home() {
                             transition={{ delay: 0.5 }}
                             whileHover={{ scale: 1.05, y: -5 }}
                             whileTap={{ scale: 0.95 }}
-                            className="glass-panel w-full py-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-gray-400/30 transition-colors"
+                            className="glass-panel w-full py-6 rounded-4xl flex flex-col items-center justify-center gap-3 h-40 group cursor-pointer border-white/5 hover:border-gray-400/30 transition-colors"
                         >
                             <div className="w-16 h-16 rounded-full bg-gray-500/10 flex items-center justify-center group-hover:bg-gray-500/20 transition-all">
                                 <FaCog className="text-4xl text-gray-400 drop-shadow-[0_0_15px_rgba(156,163,175,0.4)]" />
