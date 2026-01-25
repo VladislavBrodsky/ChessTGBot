@@ -131,8 +131,6 @@ function GameContent() {
             </div>
         </LayoutWrapper>
     );
-        </LayoutWrapper >
-    );
 }
 
 export default function GamePage() {
