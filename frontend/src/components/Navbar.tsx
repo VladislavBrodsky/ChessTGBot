@@ -4,21 +4,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaStar } from 'react-icons/fa';
+import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home', icon: <FaChessPawn />, href: '/' },
+    { name: 'Home', icon: <FaChessPawn />, href: '/home' },
     { name: 'Play', icon: <FaGamepad />, href: '/game' },
     { name: 'Academy', icon: <FaGraduationCap />, href: '/academy' },
     { name: 'Settings', icon: <FaCog />, href: '/settings' },
-    { name: 'Premium', icon: <FaStar />, href: '/membership' },
 ];
 
 export default function Navbar() {
     const pathname = usePathname();
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-black/80 backdrop-blur-2xl border border-white/5 px-2 py-2 rounded-2xl shadow-premium min-w-[320px] max-w-[95%] justify-center mx-auto">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-black/80 backdrop-blur-2xl border border-white/5 px-2 py-2 rounded-2xl shadow-premium min-w-[280px] max-w-[95%] justify-center mx-auto">
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none rounded-2xl" />
 
