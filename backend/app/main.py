@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,14 +7,24 @@ from app.core.config import get_settings
 from app.core.socket import sio_app
 import app.socket_events # Register events
 import os
+from app.services.telegram_bot import TelegramService
 
 settings = get_settings()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await TelegramService.start_bot()
+    yield
+    # Shutdown
+    await TelegramService.stop_bot()
 
 def create_application() -> FastAPI:
     application = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.VERSION,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        lifespan=lifespan
     )
 
     # Set all CORS enabled origins
