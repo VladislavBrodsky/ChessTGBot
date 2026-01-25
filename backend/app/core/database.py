@@ -4,8 +4,8 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# Default to localhost if not set, but respect env var
-DATABASE_URL = getattr(settings, "DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost/chess_db")
+# Use settings directly
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

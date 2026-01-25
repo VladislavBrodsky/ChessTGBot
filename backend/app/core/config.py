@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = ["*"]
 
+    # Database
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"
+
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
