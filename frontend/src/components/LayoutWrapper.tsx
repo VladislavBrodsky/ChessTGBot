@@ -1,5 +1,4 @@
-'use client';
-
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
 interface LayoutWrapperProps {
@@ -22,11 +21,11 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 }} />
 
                 {/* Dynamic Nebula Clouds */}
-                <div className="absolute top-[-20%] left-[-10%] w-[100vw] h-[100vw] rounded-full bg-nebula-purple opacity-[0.15] blur-[150px] animate-pulse-slow mix-blend-screen" />
+                <div className="absolute top-[-20%] left-[-10%] w-screen h-[100vw] rounded-full bg-nebula-purple opacity-[0.15] blur-[150px] animate-pulse-slow mix-blend-screen" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[80vw] h-[80vw] rounded-full bg-nebula-cyan opacity-[0.08] blur-[120px] animate-pulse-slow mix-blend-screen" style={{ animationDelay: '3s' }} />
 
                 {/* Subtle Scanlines */}
-                <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06))] bg-[length:100%_2px,3px_100%]" />
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06))] bg-size-[100%_2px,3px_100%]" />
             </div>
 
             {/* Content Container */}

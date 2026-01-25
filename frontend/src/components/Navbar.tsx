@@ -19,7 +19,7 @@ export default function Navbar() {
 
     return (
         <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-            <nav className="pointer-events-auto flex items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-2 py-2 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden">
+            <nav className="pointer-events-auto flex items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-2 py-2 rounded-4xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden">
                 {/* Glossy overlay */}
                 <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none" />
 

@@ -191,7 +191,7 @@ export default function MembershipPage() {
                 <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={handleSubscribe}
-                    className="w-[90%] py-6 rounded-full font-black text-black text-xl uppercase tracking-tighter bg-gradient-to-b from-white via-gray-200 to-gray-400 shadow-2xl hover:brightness-110 active:brightness-90 transition-all font-sans"
+                    className="w-[90%] py-6 rounded-full font-black text-black text-xl uppercase tracking-tighter bg-linear-to-b from-white via-gray-200 to-gray-400 shadow-2xl hover:brightness-110 active:brightness-90 transition-all font-sans"
                 >
                     Subscribe & pay
                 </motion.button>
