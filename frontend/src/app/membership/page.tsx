@@ -123,7 +123,7 @@ export default function MembershipPage() {
                 </div>
 
                 {/* Features List */}
-                <div className="w-[92%] glass-panel rounded-[2.5rem] p-8 mb-10 bg-gradient-to-br from-white/5 to-transparent relative overflow-hidden border-white/10 shadow-2xl">
+                <div className="w-[92%] glass-panel rounded-4xl p-8 mb-10 bg-linear-to-br from-white/5 to-transparent relative overflow-hidden border-white/10 shadow-2xl">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-nebula-purple/20 blur-3xl rounded-full -z-10" />
                     <AnimatePresence mode="wait">
                         <motion.div

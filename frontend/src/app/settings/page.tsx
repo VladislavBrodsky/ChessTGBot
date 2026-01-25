@@ -85,9 +85,9 @@ export default function SettingsPage() {
                         transition={{ delay: 0.3 }}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="glass-panel p-6 rounded-[2rem] flex items-center justify-between border-nebula-purple/30 relative overflow-hidden group"
+                        className="glass-panel p-6 rounded-4xl flex items-center justify-between border-nebula-purple/30 relative overflow-hidden group"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-nebula-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-linear-to-r from-nebula-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center space-x-4 relative">
                             <div className="w-12 h-12 rounded-full bg-nebula-purple/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                                 <span className="text-2xl drop-shadow-[0_0_10px_rgba(123,44,191,0.6)]">⭐</span>
