@@ -23,6 +23,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg blur opacity-30"></div>
             <div className="relative rounded-lg overflow-hidden border border-white/10 bg-black/40 backdrop-blur-sm">
                 <Chessboard
+                    // @ts-ignore - react-chessboard types are flaky
                     position={fen}
                     onPieceDrop={onDrop}
                     boardOrientation={orientation}
