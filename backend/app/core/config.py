@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str
 
     # Security
-    SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    SECRET_KEY: str = "development_secret_key"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
     class Config:
         env_file = ".env"
