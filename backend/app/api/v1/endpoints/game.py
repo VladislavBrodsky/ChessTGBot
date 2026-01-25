@@ -6,6 +6,9 @@ import uuid
 from app.core.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud import user as user_crud
+from app.core.config import get_settings
+
+settings = get_settings()
 
 router = APIRouter()
 

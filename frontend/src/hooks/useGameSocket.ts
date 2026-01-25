@@ -7,6 +7,7 @@ export const useGameSocket = (gameId: string) => {
     const [chess] = useState(new Chess());
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [gameState, setGameState] = useState<any>(null);
 
     useEffect(() => {
         const socket = getSocket();
@@ -14,8 +15,9 @@ export const useGameSocket = (gameId: string) => {
         const onConnect = () => setIsConnected(true);
         const onDisconnect = () => setIsConnected(false);
 
-        const onGameState = (data: { fen: string, last_move?: string }) => {
+        const onGameState = (data: any) => {
             console.log("Game State Received:", data);
+            setGameState(data);
             setFen(data.fen);
             try {
                 chess.load(data.fen);
@@ -73,5 +75,5 @@ export const useGameSocket = (gameId: string) => {
         return false;
     }, [chess, gameId]);
 
-    return { fen, makeMove, isConnected, error };
+    return { fen, makeMove, isConnected, error, gameState };
 };

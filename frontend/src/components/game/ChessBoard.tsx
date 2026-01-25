@@ -19,21 +19,23 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     }
 
     return (
-        <div className="w-full max-w-[400px] aspect-square relative z-10 filter drop-shadow-[0_0_15px_rgba(123,44,191,0.3)]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg blur opacity-30"></div>
-            <div className="relative rounded-lg overflow-hidden border border-white/10 bg-black/40 backdrop-blur-sm">
+        <div className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700">
+            {/* Subtle Metallic Outer Glow */}
+            <div className="absolute -inset-[2px] bg-linear-to-b from-white/20 to-transparent rounded-2xl blur-[1px] opacity-30"></div>
+
+            <div className="relative rounded-2xl overflow-hidden border border-white/5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
                 <Chessboard
-                    // @ts-ignore - react-chessboard types are flaky
+                    // @ts-ignore
                     position={fen}
                     onPieceDrop={onDrop}
                     boardOrientation={orientation}
-                    customDarkSquareStyle={{ backgroundColor: "rgba(123, 44, 191, 0.2)" }}
-                    customLightSquareStyle={{ backgroundColor: "rgba(0, 240, 255, 0.05)" }}
+                    customDarkSquareStyle={{ backgroundColor: "#16181C" }}
+                    customLightSquareStyle={{ backgroundColor: "#26292E" }}
                     customBoardStyle={{
-                        borderRadius: "4px",
-                        boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+                        borderRadius: "12px",
+                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
                     }}
-                    customPieces={undefined} // Can implement custom pieces later
+                    animationDuration={300}
                 />
             </div>
         </div>

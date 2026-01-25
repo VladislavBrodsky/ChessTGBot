@@ -13,7 +13,7 @@ function GameContent() {
     const searchParams = useSearchParams();
     const gameId = searchParams.get("id") || "";
     // @ts-ignore
-    const { fen, makeMove, isConnected, error } = useGameSocket(gameId);
+    const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
     const [copied, setCopied] = useState(false);
 
     // Share / Copy Game Link
@@ -27,6 +27,8 @@ function GameContent() {
             setTimeout(() => setCopied(false), 2000);
         }
     };
+
+    const isBotGame = gameState?.black_player_id === -1;
 
     return (
         <LayoutWrapper className="pb-12">
@@ -68,11 +70,19 @@ function GameContent() {
                 <div className="w-full flex justify-between items-center px-4 py-4 glass-panel group opacity-60">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center overflow-hidden">
-                            <span className="text-xl font-bold text-white/20">?</span>
+                            {isBotGame ? (
+                                <FaRobot className="text-xl text-white/40" />
+                            ) : (
+                                <span className="text-xl font-bold text-white/20">?</span>
+                            )}
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-xs font-bold text-white uppercase tracking-tight">Opponent</span>
-                            <span className="text-[10px] font-medium text-white/30 uppercase tracking-[0.2em]">Rank 04 • 2400</span>
+                            <span className="text-xs font-bold text-white uppercase tracking-tight">
+                                {isBotGame ? "A.I. Combatant" : "Opponent"}
+                            </span>
+                            <span className="text-[10px] font-medium text-white/30 uppercase tracking-[0.2em]">
+                                {isBotGame ? "Neural Engine v16" : "Rank 04 • 2400"}
+                            </span>
                         </div>
                     </div>
                     <div className="text-2xl font-black text-white/20 italic tracking-tighter">10:00</div>
@@ -104,15 +114,17 @@ function GameContent() {
                 </div>
 
                 {/* Action Bar */}
-                <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={shareGame}
-                    className="w-full action-button py-5 rounded-xl uppercase flex items-center justify-center gap-3"
-                >
-                    {copied ? <FaCheck /> : <FaCopy />}
-                    <span>{copied ? "Sync Success" : "Establish Link"}</span>
-                </motion.button>
+                {!isBotGame && (
+                    <motion.button
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={shareGame}
+                        className="w-full action-button py-5 rounded-xl uppercase flex items-center justify-center gap-3"
+                    >
+                        {copied ? <FaCheck /> : <FaCopy />}
+                        <span>{copied ? "Sync Success" : "Establish Link"}</span>
+                    </motion.button>
+                )}
             </div>
         </LayoutWrapper>
     );
