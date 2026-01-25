@@ -14,6 +14,8 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    from app.core.database import init_db
+    await init_db()
     await TelegramService.start_bot()
     yield
     # Shutdown
@@ -38,8 +40,9 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game
+    from app.api.v1.endpoints import game, users
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
+    application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
     # Mount Socket.IO (Must be before static catch-all)
     application.mount("/socket.io", sio_app) # Explicitly mount at /socket.io for cleaner routing

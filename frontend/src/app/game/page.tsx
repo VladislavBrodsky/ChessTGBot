@@ -5,16 +5,19 @@ import { useEffect, useState, Suspense } from "react";
 import ChessBoardComponent from "@/components/game/ChessBoard";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import { motion } from "framer-motion";
+import LayoutWrapper from "@/components/LayoutWrapper";
+import Link from "next/link";
+import { FaArrowLeft, FaCopy, FaCheck } from "react-icons/fa";
 
 function GameContent() {
     const searchParams = useSearchParams();
     const gameId = searchParams.get("id") || "";
+    // @ts-ignore - Assuming hook exists and works as before
     const { fen, makeMove, isConnected, error } = useGameSocket(gameId);
     const [copied, setCopied] = useState(false);
 
     // Copy Game Link
     const copyLink = () => {
-        // Current URL already has ?id=...
         const link = typeof window !== 'undefined' ? window.location.href : "";
         navigator.clipboard.writeText(link);
         setCopied(true);
@@ -22,96 +25,99 @@ function GameContent() {
     };
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-start p-4 relative overflow-hidden bg-[#0B001F]">
+        <LayoutWrapper>
+            {/* Header / Nav */}
+            <div className="w-full max-w-md flex justify-between items-center mb-6 relative z-10 px-2">
+                <Link href="/">
+                    <button className="text-white hover:text-nebula-cyan transition-colors flex items-center space-x-2 text-sm">
+                        <FaArrowLeft />
+                        <span>Quit</span>
+                    </button>
+                </Link>
 
-            {/* Background Ambience */}
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-purple-900 rounded-full blur-[150px] opacity-20 animate-pulse" />
-                <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] bg-cyan-900 rounded-full blur-[150px] opacity-20 animate-pulse" />
-            </div>
-
-            {/* Header */}
-            <header className="w-full max-w-md flex justify-between items-center mb-8 relative z-10 p-4">
-                <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500 shadow-[0_0_10px_#ef4444]'}`} />
-                    <span className="text-xs font-mono tracking-widest text-gray-400">
-                        {isConnected ? 'ONLINE' : 'CONNECTING...'}
+                <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
+                    <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
+                    <span className="text-[10px] font-mono tracking-widest text-gray-300">
+                        {isConnected ? 'LIVE' : 'OFFLINE'}
                     </span>
                 </div>
-                <div className="text-white/50 text-xs font-mono">ID: {gameId}</div>
-            </header>
+            </div>
 
             {/* Error Toast */}
             {error && (
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-full text-sm backdrop-blur-md z-50"
+                    className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-500/20 border border-red-500 text-red-100 px-6 py-2 rounded-full text-sm backdrop-blur-md z-50 shadow-lg"
                 >
                     {error}
                 </motion.div>
             )}
 
             {/* Board Container */}
-            <div className="w-full max-w-md relative z-20 mb-8">
-                <ChessBoardComponent
-                    fen={fen}
-                    onMove={makeMove}
-                    orientation="white" // TODO: Detect player color
-                />
+            <div className="w-full max-w-md relative z-20 mb-6 flex justify-center">
+                <div className="p-1 rounded-lg bg-gradient-to-br from-white/10 to-transparent backdrop-blur-sm border border-white/5 shadow-2xl">
+                    <ChessBoardComponent
+                        fen={fen}
+                        onMove={makeMove}
+                        orientation="white" // TODO: Detect player color
+                    />
+                </div>
             </div>
 
             {/* Game Info Panel */}
             <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="glass-panel w-full max-w-md p-6 rounded-2xl space-y-4"
+                className="glass-panel w-full max-w-md p-5 rounded-2xl space-y-4"
             >
+                {/* Player 1 (You) */}
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-lg">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-nebula-purple to-indigo-600 flex items-center justify-center font-bold text-sm shadow-md border border-white/10">
                             You
                         </div>
                         <div>
                             <div className="text-sm font-bold text-white">Player 1</div>
-                            <div className="text-xs text-purple-300">White</div>
+                            <div className="text-[10px] text-nebula-cyan uppercase tracking-wider">White</div>
                         </div>
                     </div>
-                    <div className="text-2xl font-mono text-white/80">10:00</div>
+                    <div className="text-xl font-mono text-white/90 bg-black/20 px-2 py-1 rounded">10:00</div>
                 </div>
 
-                <div className="h-[1px] w-full bg-white/10" />
+                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-                <div className="flex justify-between items-center opacity-50">
+                {/* Player 2 (Opponent) */}
+                <div className="flex justify-between items-center opacity-60">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-lg text-gray-400">
+                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold text-lg text-gray-400 border border-white/5">
                             ?
                         </div>
                         <div>
                             <div className="text-sm font-bold text-gray-400">Opponent</div>
-                            <div className="text-xs text-gray-500">Black</div>
+                            <div className="text-[10px] text-gray-500 uppercase tracking-wider">Black</div>
                         </div>
                     </div>
-                    <div className="text-2xl font-mono text-gray-500">10:00</div>
+                    <div className="text-xl font-mono text-gray-500 bg-black/10 px-2 py-1 rounded">10:00</div>
                 </div>
 
                 {/* Invite Button */}
                 <button
                     onClick={copyLink}
-                    className="w-full mt-4 glass-button py-3 rounded-xl text-cyan-400 text-sm font-medium tracking-wide flex items-center justify-center gap-2 hover:bg-cyan-500/10"
+                    className="w-full mt-2 glass-button py-3 rounded-xl text-nebula-cyan text-sm font-medium tracking-wide flex items-center justify-center gap-3 group"
                 >
-                    {copied ? "Link Copied!" : "Share Invite Link"}
+                    {copied ? <FaCheck /> : <FaCopy />}
+                    <span>{copied ? "Link Copied!" : "Copy Invite Link"}</span>
                 </button>
             </motion.div>
-
-        </main>
+        </LayoutWrapper>
     );
 }
 
 export default function GamePage() {
     return (
-        <Suspense fallback={<div className="text-white text-center mt-20">Loading Board...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-nebula-cyan animate-pulse">Loading Board...</div>}>
             <GameContent />
         </Suspense>
     );

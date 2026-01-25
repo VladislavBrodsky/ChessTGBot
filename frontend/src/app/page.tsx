@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import LayoutWrapper from "@/components/LayoutWrapper";
+import Link from "next/link";
+import { FaChessPawn, FaGraduationCap, FaCog, FaRobot } from "react-icons/fa";
 
 export default function Home() {
     const [tgUser, setTgUser] = useState<any>(null);
+    const [elo, setElo] = useState<number>(1000); // Default ELO
 
     useEffect(() => {
         // Init Telegram WebApp
@@ -21,31 +25,35 @@ export default function Home() {
                 window.location.href = `/game?id=${startParam}`;
             }
 
-            // Theme Params Integration
-            if (tg.themeParams) {
-                const root = document.documentElement;
-                if (tg.themeParams.bg_color) root.style.setProperty('--tg-bg', tg.themeParams.bg_color);
-                if (tg.themeParams.text_color) root.style.setProperty('--tg-text', tg.themeParams.text_color);
-                if (tg.themeParams.button_color) root.style.setProperty('--tg-button', tg.themeParams.button_color);
-                if (tg.themeParams.button_text_color) root.style.setProperty('--tg-button-text', tg.themeParams.button_text_color);
+            // Fetch User Stats
+            if (tg.initDataUnsafe?.user?.id) {
+                fetch(`/api/v1/users/${tg.initDataUnsafe.user.id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        setElo(data.elo);
+                    })
+                    .catch(err => console.error("Failed to fetch ELO", err));
             }
+        } else {
+            // Dev Mode Mock Fetch
+            fetch(`/api/v1/users/12345`)
+                .then(res => res.json())
+                .then(data => {
+                    setElo(data.elo);
+                    setTgUser({ first_name: data.first_name, photo_url: null });
+                })
+                .catch(err => console.error("Failed to fetch ELO (Dev)", err));
         }
     }, []);
 
     const createGame = async () => {
         try {
-            // Direct call to backend (Relative API URL)
-            const res = await fetch("/api/v1/game/create", {
-                method: "POST"
-            });
+            const res = await fetch("/api/v1/game/create", { method: "POST" });
             const data = await res.json();
 
-            // Use Telegram's switchInlineQuery to share
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.switchInlineQuery(data.game_id, ["users", "groups", "channels"]);
             } else {
-                alert(`Dev Mode: Game created! ID: ${data.game_id}`);
-                // Redirect to game page for testing (simulate joining)
                 window.location.href = `/game?id=${data.game_id}`;
             }
         } catch (e) {
@@ -55,45 +63,99 @@ export default function Home() {
     };
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30">
-                <div className="absolute top-[10%] left-[20%] w-[300px] h-[300px] bg-purple-600 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[10%] right-[20%] w-[250px] h-[250px] bg-cyan-500 rounded-full blur-[100px]" />
-            </div>
+        <LayoutWrapper>
+            <div className="flex flex-col items-center w-full max-w-md space-y-8">
+                {/* Header / Profile Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full glass-panel p-6 rounded-3xl flex flex-col items-center relative overflow-hidden"
+                >
+                    <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-accent-secondary to-transparent opacity-50" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="glass-panel p-8 rounded-3xl w-full max-w-md text-center border-t border-white/10"
-            >
-                <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
-                    Antigravity Chess
-                </h1>
-                <p className="text-gray-400 mb-8 font-light">
-                    Experience the void.
-                </p>
+                    <div className="w-20 h-20 rounded-full bg-nebula-dark border-2 border-accent-primary p-1 mb-4 shadow-neon relative">
+                        {/* Avatar Placeholder or TG Photo */}
+                        {tgUser?.photo_url ? (
+                            <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-2xl font-bold text-white">
+                                {tgUser?.first_name?.[0] || "P"}
+                            </div>
+                        )}
+                        <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-2 border-nebula-dark rounded-full" />
+                    </div>
 
-                <div className="space-y-4">
-                    <button
+                    <h2 className="text-xl font-bold mb-1">
+                        {tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}` : "Player"}
+                    </h2>
+                    <div className="flex items-center space-x-2 text-accent-secondary font-mono backdrop-blur-sm bg-black/20 px-3 py-1 rounded-full border border-white/10">
+                        <span className="text-yellow-400">★</span>
+                        <span>{elo} ELO</span>
+                    </div>
+                </motion.div>
+
+                {/* Main Actions */}
+                <div className="w-full grid grid-cols-1 gap-4">
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={createGame}
-                        className="w-full glass-button py-4 px-6 rounded-xl text-lg font-medium tracking-wide text-white hover:text-cyan-300"
+                        className="glass-button w-full py-5 rounded-2xl flex items-center justify-center space-x-4 group"
                     >
-                        Create Match
-                    </button>
+                        <div className="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center group-hover:bg-accent-primary/40 transition-colors">
+                            <FaChessPawn className="text-accent-secondary text-xl" />
+                        </div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-lg font-bold tracking-wide">Play Online</span>
+                            <span className="text-xs opacity-70">Challenge a friend</span>
+                        </div>
+                    </motion.button>
 
-                    <button className="w-full glass-button py-4 px-6 rounded-xl text-lg font-medium tracking-wide text-gray-400 hover:text-white">
-                        Leaderboard
-                    </button>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="glass-button w-full py-5 rounded-2xl flex items-center justify-center space-x-4 group grayscale opacity-70 hover:grayscale-0 hover:opacity-100"
+                        onClick={() => alert("AI Opponent coming soon!")}
+                    >
+                        <div className="w-10 h-10 rounded-full bg-accent-secondary/20 flex items-center justify-center group-hover:bg-accent-secondary/40 transition-colors">
+                            <FaRobot className="text-purple-400 text-xl" />
+                        </div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-lg font-bold tracking-wide">Play Computer</span>
+                            <span className="text-xs opacity-70">Stockfish 16 (Coming Soon)</span>
+                        </div>
+                    </motion.button>
                 </div>
 
-                {tgUser && (
-                    <div className="mt-8 text-xs text-gray-600">
-                        Logged in as {tgUser.first_name}
-                    </div>
-                )}
-            </motion.div>
-        </main>
+                {/* Secondary Actions (Grid) */}
+                <div className="w-full grid grid-cols-2 gap-4">
+                    <Link href="/academy" className="w-full">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="glass-button w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-2 h-32"
+                        >
+                            <FaGraduationCap className="text-3xl text-pink-500 mb-1" />
+                            <span className="font-medium">Academy</span>
+                        </motion.button>
+                    </Link>
+
+                    <Link href="/settings" className="w-full">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="glass-button w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-2 h-32"
+                        >
+                            <FaCog className="text-3xl text-gray-400 mb-1" />
+                            <span className="font-medium">Settings</span>
+                        </motion.button>
+                    </Link>
+                </div>
+
+                <div className="text-xs opacity-50 mt-8 font-mono">
+                    v1.0.0 • Antigravity
+                </div>
+            </div>
+        </LayoutWrapper>
     );
 }

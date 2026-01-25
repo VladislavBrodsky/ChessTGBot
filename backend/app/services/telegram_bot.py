@@ -57,13 +57,21 @@ class TelegramService:
             await cls.application.shutdown()
             logger.info("Telegram Bot Stopped")
 
-    @staticmethod
-    async def create_invite_link(game_id: str) -> str:
+    @classmethod
+    async def create_invite_link(cls, game_id: str) -> str:
         """
         Generates a direct StartApp link for the Telegram Mini App.
         Format: https://t.me/YourBotName/appname?startapp=game_id
         """
-        # Note: We return a generic deep link structure.
-        # Ideally we fetch the bot username once.
-        # But this method is static, so we do a best effort or rely on client side composition.
-        return f"https://t.me/share/url?url=https://t.me/YourBotName/chess?startapp={game_id}"
+        # Note: We attempt to get the bot username if the app is initialized.
+        bot_username = "YourBotName"
+        try:
+            if cls.application:
+                # We need to access the bot object. 
+                # Ideally, we should cache the username at startup.
+                me = await cls.application.bot.get_me()
+                bot_username = me.username
+        except Exception as e:
+            logger.warning(f"Could not fetch bot username: {e}")
+
+        return f"https://t.me/share/url?url=https://t.me/{bot_username}/chess?startapp={game_id}"

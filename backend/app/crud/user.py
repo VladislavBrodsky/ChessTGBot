@@ -1,0 +1,38 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from app.models.user import User
+
+async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int):
+    result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+    return result.scalars().first()
+
+async def create_user(db: AsyncSession, telegram_id: int, first_name: str, username: str = None, photo_url: str = None):
+    db_user = User(
+        telegram_id=telegram_id,
+        first_name=first_name,
+        username=username,
+        photo_url=photo_url,
+        elo=1000
+    )
+    db.add(db_user)
+    await db.commit()
+    await db.refresh(db_user)
+    return db_user
+
+async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
+    """
+    result: 'win', 'loss', 'draw'
+    """
+    user.elo = new_elo
+    user.games_played += 1
+    if result == 'win':
+        user.wins += 1
+    elif result == 'loss':
+        user.losses += 1
+    elif result == 'draw':
+        user.draws += 1
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
