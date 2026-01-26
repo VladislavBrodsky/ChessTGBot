@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.crud import user as user_crud
 from pydantic import BaseModel
+from app.models.user import User
+from app.api.v1.deps import get_current_user
 
 router = APIRouter()
 
@@ -138,6 +140,7 @@ async def sync_user(
 async def get_leaderboard(db: AsyncSession = Depends(get_db)):
     top_users = await user_crud.get_top_users(db, limit=50)
     
+    # Return leaderboard data
     return [
         LeaderboardItem(
             telegram_id=user.telegram_id,
