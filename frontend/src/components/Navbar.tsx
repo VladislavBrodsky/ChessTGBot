@@ -24,9 +24,9 @@ export default function Navbar() {
     }));
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-brand-void/80 backdrop-blur-2xl border border-brand-primary/5 px-2 py-2 rounded-2xl shadow-premium min-w-[280px] max-w-[95%] justify-center mx-auto">
+        <nav className="fixed bottom-0 left-0 w-full z-50 flex items-center bg-brand-void/90 backdrop-blur-3xl border-t border-brand-primary/10 px-6 py-3 rounded-t-2xl shadow-premium justify-between">
             {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-linear-to-b from-brand-primary/5 to-transparent pointer-events-none rounded-2xl" />
+            <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none rounded-t-2xl" />
 
             <ul className="flex items-center relative z-10 w-full justify-around space-x-1">
                 {localizedItems.map((item) => {

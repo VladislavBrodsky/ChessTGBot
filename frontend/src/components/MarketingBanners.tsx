@@ -42,7 +42,7 @@ export default function MarketingBanners() {
     };
 
     return (
-        <div className="w-full space-y-4 px-1" style={{ perspective: '1000px' }}>
+        <div className="w-full space-y-2 px-1" style={{ perspective: '1000px' }}>
             {BANNERS.map((banner, idx) => (
                 <motion.div
                     key={banner.id}
@@ -51,7 +51,7 @@ export default function MarketingBanners() {
                     animate={{ opacity: 1, rotateX: 0, y: 0 }}
                     whileHover={{ scale: 1.02, rotateY: 2, rotateX: -2 }}
                     transition={{ delay: idx * 0.1, type: "spring", stiffness: 300, damping: 20 }}
-                    className={`relative overflow-hidden rounded-3xl p-6 bg-linear-to-br ${banner.color} shadow-2xl group cursor-pointer`}
+                    className={`relative overflow-hidden rounded-xl p-4 bg-linear-to-br ${banner.color} shadow-2xl group cursor-pointer`}
                 >
                     {/* Noise Overlay */}
                     <div className="absolute inset-0 opacity-[0.12] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat mix-blend-overlay" />
@@ -70,7 +70,7 @@ export default function MarketingBanners() {
                                 >
                                     {banner.icon}
                                 </motion.div>
-                                <h3 className="text-2xl font-black italic tracking-tighter text-white uppercase drop-shadow-md">
+                                <h3 className="text-xl font-black italic tracking-tighter text-white uppercase drop-shadow-md">
                                     {banner.title}
                                 </h3>
                             </div>
@@ -81,7 +81,7 @@ export default function MarketingBanners() {
                                 <motion.div
                                     whileHover={{ x: 5, scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-xl bg-white text-brand-void text-[11px] font-black uppercase tracking-widest shadow-xl ring-4 ring-white/10"
+                                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-white text-brand-void text-[10px] font-black uppercase tracking-widest shadow-xl ring-2 ring-white/10"
                                 >
                                     {banner.cta}
                                     <FaArrowRight fontSize={10} />
