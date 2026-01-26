@@ -38,42 +38,43 @@ class TelegramService:
         from sqlalchemy import select
         from app.core.database import AsyncSessionLocal
 
-        async with AsyncSessionLocal() as db:
-            result = await db.execute(select(User).where(User.telegram_id == user.id))
-            db_user = result.scalars().first()
-            
-            if not db_user:
-                # Basic creation logic
-                db_user = User(
-                    telegram_id=user.id,
-                    first_name=user.first_name,
-                    username=user.username,
-                    photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot)
-                )
-                db.add(db_user)
-                try:
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(select(User).where(User.telegram_id == user.id))
+                db_user = result.scalars().first()
+                
+                if not db_user:
+                    # Basic creation logic
+                    db_user = User(
+                        telegram_id=user.id,
+                        first_name=user.first_name,
+                        last_name=user.last_name, 
+                        username=user.username,
+                        photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot)
+                    )
+                    db.add(db_user)
                     await db.commit()
-                except Exception as e:
-                    logger.error(f"Error creating user: {e}")
-                    await db.rollback()
 
-            lang = db_user.preferred_language if db_user else 'en'
-        
-        # Railway URL
-        web_app_url = f"{settings.WEBAPP_URL}?lang={lang}"
+                lang = db_user.preferred_language if db_user else 'en'
+            
+            # Railway URL
+            web_app_url = f"{settings.WEBAPP_URL}?lang={lang}"
 
-        if start_param:
-             web_app_url += f"&startapp={start_param}" # Append as standard param
+            if start_param:
+                 web_app_url += f"&startapp={start_param}" # Append as standard param
 
-        keyboard = [
-            [InlineKeyboardButton("Play Chess ♟️", web_app={ "url": web_app_url })]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        await update.message.reply_text(
-            "Welcome to Chess Game! ♟️🚀\n\nClick below to start playing in our Mini App.",
-            reply_markup=reply_markup
-        )
+            keyboard = [
+                [InlineKeyboardButton("Play Chess ♟️", web_app={ "url": web_app_url })]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await update.message.reply_text(
+                "Welcome to Chess Game! ♟️🚀\n\nClick below to start playing in our Mini App.",
+                reply_markup=reply_markup
+            )
+        except Exception as e:
+            logger.error(f"Error in start command: {e}")
+            await update.message.reply_text("An error occurred while starting the bot. Please try again later.")
 
     @staticmethod
     async def language_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
