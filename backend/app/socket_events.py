@@ -48,10 +48,15 @@ async def make_move(sid, data):
             
             # Check if it's a bot's turn
             if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
-                # Small delay for bot move realism
-                await asyncio.sleep(1)
-                bot_state = await service.make_bot_move(game_id)
-                if bot_state:
-                    await sio.emit('game_state', bot_state.model_dump(), room=game_id)
+                # Move bot logic to a separate task to avoid blocking this event
+                asyncio.create_task(handle_bot_turn(game_id))
         else:
             await sio.emit('error', {'message': 'Illegal move or game not found'}, room=sid)
+
+async def handle_bot_turn(game_id: str):
+    """Wait briefly, then make bot move and broadcast."""
+    await asyncio.sleep(0.8) # Realism delay
+    service = GameService()
+    bot_state = await service.make_bot_move(game_id)
+    if bot_state:
+        await sio.emit('game_state', bot_state.model_dump(), room=game_id)

@@ -8,6 +8,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     telegram_id = Column(BigInteger, unique=True, index=True)
     first_name = Column(String)
+    last_name = Column(String, nullable=True)
     username = Column(String, nullable=True)
     photo_url = Column(String, nullable=True)
     elo = Column(Integer, default=1000)

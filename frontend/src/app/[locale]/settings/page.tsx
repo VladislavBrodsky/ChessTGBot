@@ -6,12 +6,13 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
 import { FaArrowLeft, FaPalette, FaVolumeUp, FaMoon, FaSun } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function SettingsPage() {
     const t = useTranslations('Settings');
-    const { theme, toggleTheme } = useTheme();
+    const locale = useLocale();
+    const { theme, toggleTheme, setTheme } = useTheme();
     const [soundEnabled, setSoundEnabled] = useState(true);
 
     return (
@@ -19,7 +20,7 @@ export default function SettingsPage() {
             <div className="w-full max-w-sm flex flex-col items-start px-4 mx-auto">
                 {/* Immersive Header */}
                 <div className="w-full flex justify-between items-center mb-10">
-                    <Link href="/">
+                    <Link href={`/${locale}/home`}>
                         <motion.button
                             whileHover={{ x: -2 }}
                             className="text-brand-primary/40 hover:text-brand-primary transition-colors flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest"
@@ -54,7 +55,9 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-xs font-black text-brand-primary uppercase tracking-tight leading-none mb-1">{t('luminance_mode')}</span>
-                                    <span className="text-[9px] font-bold text-brand-primary/20 tracking-widest uppercase">{theme === 'dark' ? t('deep_void') : t('solar_flare')}</span>
+                                    <span className="text-[9px] font-bold text-brand-primary/20 tracking-widest uppercase">
+                                        {theme === 'dark' ? t('deep_void') : theme === 'light' ? t('solar_flare') : t('nebula_protocol')}
+                                    </span>
                                 </div>
                             </div>
 
@@ -129,7 +132,7 @@ export default function SettingsPage() {
                                     ⭐
                                 </div>
                                 <div className="flex flex-col text-left">
-                                    <span className="text-sm font-black text-brand-primary italic tracking-tighter uppercase leading-none mb-1">{t('premium_plus')}</span>
+                                    <span className="text-sm font-black text-brand-primary italic tracking-tighter uppercase leading-none mb-1">Premium Status</span>
                                     <span className="text-[9px] font-bold text-brand-primary/20 uppercase tracking-widest">{t('enhanced_access')}</span>
                                 </div>
                             </div>

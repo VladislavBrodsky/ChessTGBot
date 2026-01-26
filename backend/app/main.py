@@ -10,13 +10,17 @@ import app.socket_events # Register events
 import os
 import logging
 from app.services.telegram_bot import TelegramService
+from app.core.logger import setup_logging, LoggingMiddleware
+from app.middleware.head_middleware import HeadMiddleware
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger = logging.getLogger("uvicorn")
     logger.info(f"🚀 Starting App Version: {settings.VERSION}")
     
     # Verify Database Connection
@@ -32,7 +36,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
          logger.error(f"❌ Database Connection Failed: {e}")
 
-    await init_db()
+    # await init_db() # We now use Alembic migrations in Dockerfile for schema management
     await TelegramService.start_bot()
     yield
     # Shutdown
@@ -56,6 +60,9 @@ def create_application() -> FastAPI:
             allow_headers=["*"],
         )
 
+    application.add_middleware(LoggingMiddleware)
+    application.add_middleware(HeadMiddleware)
+
     @application.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
         print(f"Global Exception: {exc}")
@@ -72,12 +79,10 @@ def create_application() -> FastAPI:
     application.include_router(gamification.router, prefix="/api/v1/gamification", tags=["gamification"])
 
     @application.get("/version")
-    @application.head("/version")
     async def get_version():
         return {"version": settings.VERSION, "status": "deployed"}
 
     @application.get("/health")
-    @application.head("/health")
     async def health_check():
         return {"status": "ok", "version": settings.VERSION}
 
@@ -98,7 +103,6 @@ def create_application() -> FastAPI:
             return FileResponse(f"{static_dir}/index.html")
 
         @application.get("/{full_path:path}")
-        @application.head("/{full_path:path}")
         async def serve_frontend(full_path: str):
             # Check if file exists (e.g. favicon.ico)
             potential_file = f"{static_dir}/{full_path}"

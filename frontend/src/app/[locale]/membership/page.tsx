@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaCheck, FaRocket, FaFolder, FaDownload, FaEdit, FaChevronLeft } from "react-icons/fa";
 import Link from "next/link";
+import TierComparison from "@/components/TierComparison";
 
 const TIERS = [
     {
@@ -30,18 +31,6 @@ const TIERS = [
         ],
         monthly: 120,
         annual: 1200,
-    },
-    {
-        id: 'premium_plus',
-        name: 'Premium+',
-        features: [
-            { icon: <FaRocket />, title: 'Ultimate experience', desc: 'No ads and priority support.' },
-            { icon: <FaFolder />, title: 'Unlimited folders', desc: 'Maximum organization.' },
-            { icon: <FaDownload />, title: 'Background play', desc: 'Listen while using other apps.' },
-            { icon: <FaEdit />, title: 'Creator Tools', desc: 'Full access to analytics.' },
-        ],
-        monthly: 200,
-        annual: 2000,
     }
 ];
 
@@ -90,7 +79,7 @@ export default function MembershipPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-brand-primary text-3xl font-black italic tracking-tighter select-none"
                     >
-                        CHESS PREMIUM+
+                        CHESS PREMIUM
                     </motion.div>
                     <div className="h-px w-10 bg-brand-primary/20 my-2" />
                     <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-brand-primary/30">Premium Access Matrix</span>
@@ -173,6 +162,9 @@ export default function MembershipPage() {
                         </div>
                     </button>
                 </div>
+
+                {/* Tier Comparison Matrix */}
+                <TierComparison />
 
                 {/* Confirm Action */}
                 <motion.button

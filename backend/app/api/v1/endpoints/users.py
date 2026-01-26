@@ -9,6 +9,14 @@ router = APIRouter()
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
+class LeaderboardItem(BaseModel):
+    telegram_id: int
+    first_name: str
+    last_name: Optional[str] = None
+    photo_url: Optional[str] = None
+    elo: int
+    rank: int
+
 class OpponentInfo(BaseModel):
     name: str
     elo: int
@@ -32,6 +40,8 @@ class BestStreak(BaseModel):
 class UserStats(BaseModel):
     telegram_id: int
     first_name: str
+    last_name: Optional[str] = None
+    photo_url: Optional[str] = None
     elo: int
     games_played: int
     wins: int
@@ -46,13 +56,48 @@ class UserStats(BaseModel):
     current_streak: CurrentStreak
     best_streak: BestStreak
     recent_games: List[RecentGame]
+    referral_code: Optional[str] = None
 
 @router.get("/{telegram_id}", response_model=UserStats)
-async def get_user_stats(telegram_id: int, db: AsyncSession = Depends(get_db)):
+async def get_user_stats(
+    telegram_id: int, 
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+    username: Optional[str] = None,
+    photo_url: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
     user = await user_crud.get_user_by_telegram_id(db, telegram_id)
     if not user:
-        # Create default user if not exists (auto-register on first fetch)
-        user = await user_crud.create_user(db, telegram_id, f"User_{telegram_id}")
+        # Create user if not exists
+        user = await user_crud.create_user(
+            db, 
+            telegram_id, 
+            first_name or f"User_{telegram_id}",
+            last_name=last_name,
+            username=username,
+            photo_url=photo_url
+        )
+    else:
+        # Update user info if provided (sync with Telegram)
+        update_needed = False
+        if first_name and user.first_name != first_name:
+            user.first_name = first_name
+            update_needed = True
+        if last_name and user.last_name != last_name:
+            user.last_name = last_name
+            update_needed = True
+        if username and user.username != username:
+            user.username = username
+            update_needed = True
+        if photo_url and user.photo_url != photo_url:
+            user.photo_url = photo_url
+            update_needed = True
+        
+        if update_needed:
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
     
     # Calculate enhanced stats
     from app.services.user_stats import calculate_user_stats
@@ -61,6 +106,8 @@ async def get_user_stats(telegram_id: int, db: AsyncSession = Depends(get_db)):
     return UserStats(
         telegram_id=user.telegram_id,
         first_name=user.first_name,
+        last_name=user.last_name,
+        photo_url=user.photo_url,
         elo=user.elo,
         games_played=user.games_played,
         wins=user.wins,
@@ -72,8 +119,25 @@ async def get_user_stats(telegram_id: int, db: AsyncSession = Depends(get_db)):
         win_rate=enhanced_stats["win_rate"],
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
-        recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]]
+        recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
+        referral_code=user.referral_code
     )
+
+@router.get("/leaderboard", response_model=List[LeaderboardItem])
+async def get_leaderboard(db: AsyncSession = Depends(get_db)):
+    top_users = await user_crud.get_top_users(db, limit=50)
+    
+    return [
+        LeaderboardItem(
+            telegram_id=user.telegram_id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            photo_url=user.photo_url,
+            elo=user.elo,
+            rank=idx + 1
+        )
+        for idx, user in enumerate(top_users)
+    ]
 
 class SubscriptionRequest(BaseModel):
     telegram_id: int

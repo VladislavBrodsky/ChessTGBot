@@ -34,12 +34,12 @@
         "luminance_mode": "Luminance Mode",
         "deep_void": "Deep Void",
         "solar_flare": "Solar Flare",
+        "nebula_protocol": "Nebula Protocol",
         "audio_protocol": "Audio Protocol",
         "active_sync": "Active Sync",
         "muted": "Muted",
         "language_matrix": "Language Matrix",
         "neural_tier": "Neural Tier",
-        "premium_plus": "Premium+",
         "enhanced_access": "Enhanced Access Active",
         "footer": "Authorized for Neural Matrix Interface Build v1.5.02"
     },

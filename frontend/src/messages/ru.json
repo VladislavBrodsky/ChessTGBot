@@ -34,12 +34,12 @@
         "luminance_mode": "Режим Яркости",
         "deep_void": "Глубокая Пустота",
         "solar_flare": "Солнечная Вспышка",
+        "nebula_protocol": "Протокол Небула",
         "audio_protocol": "Аудио Протокол",
         "active_sync": "Активная Синхр.",
         "muted": "Без звука",
         "language_matrix": "Языковая Матрица",
         "neural_tier": "Нейронный Уровень",
-        "premium_plus": "Премиум+",
         "enhanced_access": "Расширенный Доступ Активен",
         "footer": "Авторизовано для Neural Matrix Interface Build v1.5.02"
     },

@@ -7,10 +7,11 @@ async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int):
     result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
     return result.scalars().first()
 
-async def create_user(db: AsyncSession, telegram_id: int, first_name: str, username: str = None, photo_url: str = None):
+async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_name: str = None, username: str = None, photo_url: str = None):
     db_user = User(
         telegram_id=telegram_id,
         first_name=first_name,
+        last_name=last_name,
         username=username,
         photo_url=photo_url,
         elo=1000,
@@ -48,3 +49,11 @@ async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
     await db.commit()
     await db.refresh(user)
     return user
+
+async def get_top_users(db: AsyncSession, limit: int = 50):
+    result = await db.execute(
+        select(User)
+        .order_by(User.elo.desc())
+        .limit(limit)
+    )
+    return result.scalars().all()

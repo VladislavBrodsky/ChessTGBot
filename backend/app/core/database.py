@@ -26,28 +26,10 @@ async def init_db():
     from app.models.user import User
     from app.models.game_history import GameHistory
     from app.models.gamification import Task, UserTask, Referral
-    from sqlalchemy import text
     
     async with engine.begin() as conn:
-        # Create tables if not exist
+        # In a fully migrated environment, we should only use Alembic.
+        # However, for the first run or dev, we can keep create_all if needed,
+        # but the goal is to move to Alembic exclusively.
         await conn.run_sync(Base.metadata.create_all)
-        
-        # Hot Patch: Ensure new columns exist (Self-healing schema)
-        try:
-            # Subscription
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE"))
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_tier VARCHAR"))
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_expires_at TIMESTAMP WITHOUT TIME ZONE"))
-            
-            # Gamification
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1"))
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0"))
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR"))
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language VARCHAR DEFAULT 'en'"))
-            
-            # Create indexes/constraints potentially if missing (simplified here)
-            await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_referral_code ON users (referral_code)"))
-            
-            print("Database Schema Sync: Columns verified.")
-        except Exception as e:
-            print(f"Database Schema Sync Warning: {e}")
+        print("Database Schema: Tables verified via Base metadata.")

@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # CORS
-    BACKEND_CORS_ORIGINS: list[str] = ["*"]
+    # In production, this should be a list of specific origins like ["https://myapp.com"]
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
     # Database
     # Default to localhost for dev, but in production (Railways) this MUST be set via env vars.
@@ -21,7 +22,8 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str
 
     # Security
-    SECRET_KEY: str = "development_secret_key"
+    # In production, this MUST be set as an environment variable.
+    SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
     # Deployment

@@ -95,8 +95,22 @@ def _calculate_best_streak(games: List, user_telegram_id: int) -> Dict[str, Any]
     return {"wins": max_streak, "date": max_streak_date}
 
 async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: int) -> List[Dict[str, Any]]:
-    """Format recent games for frontend display."""
-    from app.crud import user as user_crud
+    """Format recent games for frontend display with optimized bulk-fetching."""
+    from sqlalchemy.future import select
+    from app.models.user import User
+    
+    if not games:
+        return []
+    
+    # 1. Collect all unique opponent IDs
+    opponent_ids = {
+        game.black_player_id if game.white_player_id == user_telegram_id else game.white_player_id
+        for game in games
+    }
+    
+    # 2. Bulk fetch all opponents in one query
+    result = await db.execute(select(User).filter(User.telegram_id.in_(opponent_ids)))
+    opponents_map = {u.telegram_id: u for u in result.scalars().all()}
     
     formatted_games = []
     
@@ -104,8 +118,7 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
         is_white = game.white_player_id == user_telegram_id
         opponent_id = game.black_player_id if is_white else game.white_player_id
         
-        # Fetch opponent info
-        opponent = await user_crud.get_user_by_telegram_id(db, opponent_id)
+        opponent = opponents_map.get(opponent_id)
         opponent_name = opponent.first_name if opponent else f"User_{opponent_id}"
         opponent_elo = opponent.elo if opponent else 1000
         

@@ -69,16 +69,11 @@ class GameService:
             # 4. Save to Redis
             await self.session_manager.save_game(game_id, new_state)
             
-            # Check for Game Over
+            # 5. Handle Game Over in Background
             if new_state.is_game_over:
-                await self.end_game(game_id, new_state)
+                import asyncio
+                asyncio.create_task(self.end_game(game_id, new_state))
             
-            # 5. Handle Bot Move if applicable
-            if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
-                # Trigger bot move asynchronously? For simplicity now, let's do it in a separate call or wait
-                # In SocketIO context, it's better to trigger it after a small delay
-                pass
-
             return new_state
         
         return None

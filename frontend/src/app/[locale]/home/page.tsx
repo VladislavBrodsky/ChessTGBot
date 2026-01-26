@@ -4,15 +4,20 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaStar, FaChessKnight, FaTimes, FaMoon, FaSun, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
-import { useTranslations } from 'next-intl';
+import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaStar, FaChessKnight, FaTimes, FaMoon, FaSun, FaVolumeUp, FaVolumeMute, FaShareAlt } from "react-icons/fa";
+import { useTranslations, useLocale } from 'next-intl';
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import { useTheme } from "@/context/ThemeContext";
 import { AnimatePresence } from "framer-motion";
+import MarketingBanners from "@/components/MarketingBanners";
+import NewsSection from "@/components/NewsSection";
+import Leaderboard from "@/components/Leaderboard";
+import ReferralSection from "@/components/ReferralSection";
 
 export default function Home() {
     const t = useTranslations('Index');
+    const locale = useLocale();
     const [tgUser, setTgUser] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -34,9 +39,16 @@ export default function Home() {
                 window.location.href = `/game?id=${startParam}`;
             }
 
-            // Fetch User Stats
+            // Fetch User Stats and Sync Profile
             if (tg.initDataUnsafe?.user?.id) {
-                fetch(`/api/v1/users/${tg.initDataUnsafe.user.id}`)
+                const user = tg.initDataUnsafe.user;
+                const params = new URLSearchParams({
+                    first_name: user.first_name,
+                    last_name: user.last_name || '',
+                    username: user.username || '',
+                    photo_url: user.photo_url || ''
+                });
+                fetch(`/api/v1/users/${user.id}?${params.toString()}`)
                     .then(res => res.json())
                     .then(data => {
                         setStats(data);
@@ -63,6 +75,21 @@ export default function Home() {
             });
         }
     }, []);
+
+    const handleShareResult = (game: any) => {
+        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+            const tg = (window as any).Telegram.WebApp;
+            const resultText = game.result === 'win' ? 'Just secured a VICTORY' : game.result === 'loss' ? 'Fought a tough battle' : 'Reached a stalemate';
+            const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
+            const message = `${resultText} against ${game.opponent.name}! 📈 Neural Ranking: ${eloText} ELO. \n\nJoin the FinChess matrix and start earning: https://t.me/FinChessBot?start=${stats?.referral_code || ''}`;
+
+            tg.switchInlineQuery(message, ["users", "groups", "channels"]);
+
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+    };
 
     const createGame = async (type: 'online' | 'computer' = 'online') => {
         if (isCreating) return;
@@ -96,7 +123,9 @@ export default function Home() {
                             <FaChessKnight className="text-brand-primary" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-widest leading-none mb-1">{tgUser?.first_name || "Guest"}</span>
+                            <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-widest leading-none mb-1">
+                                {tgUser?.first_name} {tgUser?.last_name || ""}
+                            </span>
                             <span className="text-sm font-black text-brand-primary italic tracking-tighter">{stats?.elo || 1000} ELO</span>
                         </div>
                     </div>
@@ -147,7 +176,7 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col justify-center">
                                 <h2 className="text-base font-extrabold tracking-tight text-brand-primary flex items-center gap-2 leading-none mb-1">
-                                    {tgUser?.first_name || "Unknown"}
+                                    {tgUser?.first_name} {tgUser?.last_name || ""}
                                 </h2>
                                 <div className="flex items-center gap-2.5">
                                     <div className="flex flex-col">
@@ -248,14 +277,22 @@ export default function Home() {
                                             </div>
                                         </div>
 
-                                        {/* ELO Change */}
-                                        <div className="flex flex-col items-end">
-                                            <span className={`text-[11px] font-black ${game.elo_change > 0 ? 'text-emerald-400' :
-                                                game.elo_change < 0 ? 'text-red-400' : 'text-brand-primary/40'
-                                                }`}>
-                                                {game.elo_change > 0 ? '+' : ''}{game.elo_change}
-                                            </span>
-                                            <span className="text-[8px] font-medium text-brand-primary/30 uppercase tracking-wider">{t('elo')}</span>
+                                        {/* ELO Change & Share */}
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex flex-col items-end">
+                                                <span className={`text-[11px] font-black ${game.elo_change > 0 ? 'text-emerald-400' :
+                                                    game.elo_change < 0 ? 'text-red-400' : 'text-brand-primary/40'
+                                                    }`}>
+                                                    {game.elo_change > 0 ? '+' : ''}{game.elo_change}
+                                                </span>
+                                                <span className="text-[8px] font-medium text-brand-primary/30 uppercase tracking-wider">{t('elo')}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleShareResult(game)}
+                                                className="w-8 h-8 rounded-lg bg-brand-primary/5 flex items-center justify-center hover:bg-brand-primary/10 hover:text-brand-primary transition-all text-brand-primary/20"
+                                            >
+                                                <FaShareAlt size={10} />
+                                            </button>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -264,10 +301,22 @@ export default function Home() {
                     )}
                 </div>
 
+                {/* Marketing Banners */}
+                <MarketingBanners />
+
+                {/* Referral Protocol */}
+                {stats?.referral_code && <ReferralSection referralCode={stats.referral_code} />}
+
                 {/* Daily Tasks Widget */}
                 <div className="w-full">
                     <DailyTasks />
                 </div>
+
+                {/* News Section */}
+                <NewsSection />
+
+                {/* Global Leaderboard */}
+                <Leaderboard />
 
                 {/* Primary Action Button */}
                 <div className="w-full grid grid-cols-1 gap-4">
@@ -322,7 +371,7 @@ export default function Home() {
 
                 {/* System Control Panel */}
                 <div className="w-full pt-3 border-t border-brand-primary/5">
-                    <Link href="/settings" className="flex items-center justify-between p-3 rounded-2xl bg-brand-surface/50 border border-brand-primary/5 hover:bg-brand-primary/5 hover:border-brand-primary/10 transition-all group">
+                    <Link href={`/${locale}/settings`} className="flex items-center justify-between p-3 rounded-2xl bg-brand-surface/50 border border-brand-primary/5 hover:bg-brand-primary/5 hover:border-brand-primary/10 transition-all group">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-brand-primary/5 group-hover:bg-brand-primary/10 group-hover:rotate-45 transition-all duration-500">
                                 <FaCog className="text-sm text-brand-primary/40 group-hover:text-brand-primary transition-colors" />
@@ -408,12 +457,17 @@ export default function Home() {
                                                 </div>
                                                 <span className="text-[11px] font-bold text-brand-primary uppercase tracking-wider">{tSettings('luminance_mode')}</span>
                                             </div>
-                                            <button
-                                                onClick={toggleTheme}
-                                                className={`w-10 h-5 rounded-full p-1 transition-all ${theme === 'dark' ? 'bg-brand-primary' : 'bg-brand-primary/10'}`}
-                                            >
-                                                <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'ml-auto bg-brand-void' : 'bg-brand-primary/40'}`} />
-                                            </button>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <button
+                                                    onClick={toggleTheme}
+                                                    className={`w-10 h-5 rounded-full p-1 transition-all ${theme === 'dark' ? 'bg-brand-primary' : theme === 'light' ? 'bg-brand-primary/40' : 'bg-brand-primary'}`}
+                                                >
+                                                    <div className={`w-3 h-3 rounded-full transition-all ${theme === 'dark' ? 'ml-auto bg-brand-void' : theme === 'light' ? 'bg-brand-void' : 'mx-auto bg-brand-void'}`} />
+                                                </button>
+                                                <span className="text-[7px] font-bold text-brand-primary/40 uppercase">
+                                                    {theme === 'dark' ? tSettings('deep_void') : theme === 'light' ? tSettings('solar_flare') : tSettings('nebula_protocol')}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {/* Audio Toggle */}

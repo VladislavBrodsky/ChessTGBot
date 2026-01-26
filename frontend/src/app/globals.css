@@ -46,6 +46,27 @@
   --shadow-inner-glow: inset 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme='nebula'] {
+  --bg-primary: #050014;
+  --bg-surface: #0B001F;
+  --bg-elevated: #150035;
+  --border-muted: #2D0066;
+  --text-primary: #FFFFFF;
+  --text-muted: #A088FF;
+
+  --color-brand-void: #050014;
+  --color-brand-surface: #0B001F;
+  --color-brand-elevated: #150035;
+  --color-brand-border: #2D0066;
+  --color-brand-text-gray: #A088FF;
+
+  --accent-silver: linear-gradient(180deg, #00F0FF 0%, #7B2CBF 100%);
+
+  --shadow-neon: 0 0 20px rgba(123, 44, 191, 0.3), 0 0 40px rgba(0, 240, 255, 0.2);
+  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 1px rgba(123, 44, 191, 0.4);
+  --shadow-inner-glow: inset 0 0 15px rgba(123, 44, 191, 0.2);
+}
+
 
 
 body {
