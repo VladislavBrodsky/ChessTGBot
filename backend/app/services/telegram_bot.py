@@ -146,7 +146,8 @@ class TelegramService:
             webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
             logger.info(f"Attempting to set webhook to: {webhook_url}")
             try:
-                await cls.application.bot.set_webhook(url=webhook_url)
+                # drop_pending_updates=True helps clear the queue if the bot was down/conflicted
+                await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
                 logger.info(f"✅ Telegram Bot Started with Webhook")
                 return
             except Exception as e:
@@ -178,12 +179,18 @@ class TelegramService:
 
     @classmethod
     async def stop_bot(cls):
-        """Stop the bot application."""
+        """Stop the bot application gracefully."""
         if cls.application:
-            await cls.application.updater.stop()
-            await cls.application.stop()
-            await cls.application.shutdown()
-            logger.info("Telegram Bot Stopped")
+            try:
+                if cls.application.updater and cls.application.updater.running:
+                    await cls.application.updater.stop()
+                await cls.application.stop()
+                await cls.application.shutdown()
+                logger.info("✅ Telegram Bot Stopped")
+            except Exception as e:
+                logger.error(f"Error stopping bot: {e}")
+            finally:
+                cls.application = None
 
     @classmethod
     async def create_invite_link(cls, game_id: str) -> str:

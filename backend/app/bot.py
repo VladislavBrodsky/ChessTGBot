@@ -35,7 +35,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.info(f"Created new user {user.id} in DB")
 
     # URL for the Mini App
-    web_app = WebAppInfo(url="https://google.com") # Placeholder for now, or use an env var
+    web_app = WebAppInfo(url=settings.WEBAPP_URL)
     
     keyboard = [
         [InlineKeyboardButton("Play Chess ♟️", web_app=web_app)]
