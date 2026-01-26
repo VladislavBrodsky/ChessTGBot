@@ -66,7 +66,7 @@ export default function AcademyPage() {
                             progress={30}
                             difficulty="Beginner"
                             duration="10 min"
-                            onClick={() => console.log('Open Lesson')}
+                            onClick={() => window.location.href = '/academy/lesson/opening-principles'}
                         />
                         <LessonCard
                             title="Tactical Patterns"
