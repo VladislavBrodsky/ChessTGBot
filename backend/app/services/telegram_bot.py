@@ -63,11 +63,22 @@ class TelegramService:
             if start_param:
                  web_app_url += f"&startapp={start_param}" # Append as standard param
 
+            # Fix: Use WebAppInfo object instead of dict
             keyboard = [
-                [InlineKeyboardButton("Play Chess ♟️", web_app={ "url": web_app_url })]
+                [InlineKeyboardButton("Play Chess ♟️", web_app=WebAppInfo(url=web_app_url))]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             
+            # Update the persistent Menu Button for this user (or globally if needed, but per-chat is safer for language)
+            # We set it to default Web App for now
+            try:
+                await context.bot.set_chat_menu_button(
+                    chat_id=user.id,
+                    menu_button=MenuButtonWebApp(text="Play Chess ♟️", web_app=WebAppInfo(url=web_app_url)) 
+                )
+            except Exception as menu_error:
+                logger.warning(f"Could not set menu button: {menu_error}")
+
             # Personalize greeting
             name = user.first_name
             if user.last_name:
