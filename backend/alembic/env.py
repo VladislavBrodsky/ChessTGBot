@@ -1,7 +1,9 @@
+import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
@@ -17,8 +19,13 @@ sys.path.insert(0, str(backend_dir))
 
 # Load .env file
 env_path = backend_dir / ".env"
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
+try:
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+except PermissionError:
+    print(f"Warning: Permission denied reading {env_path}. Assuming env vars are set.")
+except Exception as e:
+    print(f"Warning: Error reading {env_path}: {e}")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -38,27 +45,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
-# for 'autogenerate' support
-from sqlalchemy.orm import DeclarativeBase
-
-class Base(DeclarativeBase):
-    pass
-
-# Import models to register them with Base
+from app.core.database import Base
 from app.models.user import User
 from app.models.game_history import GameHistory
-
-# Override the Base in the models
-User.metadata = Base.metadata
-GameHistory.metadata = Base.metadata
+from app.models.gamification import Task, UserTask, Referral
 
 target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -84,26 +76,35 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+def do_run_migrations(connection: Connection) -> None:
+    context.configure(connection=connection, target_metadata=target_metadata)
 
-    In this scenario we need to create an Engine
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def run_async_migrations() -> None:
+    """In this scenario we need to create an Engine
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
+
+    connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
 
-        with context.begin_transaction():
-            context.run_migrations()
+    await connectable.dispose()
+
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
+
+    asyncio.run(run_async_migrations())
 
 
 if context.is_offline_mode():

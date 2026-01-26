@@ -25,6 +25,27 @@
   --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%);
 }
 
+[data-theme='light'] {
+  --bg-primary: #FFFFFF;
+  --bg-surface: #F3F4F6;
+  --bg-elevated: #E5E7EB;
+  --border-muted: #D1D5DB;
+  --text-primary: #111827;
+  --text-muted: #6B7280;
+
+  --color-brand-void: #FFFFFF;
+  --color-brand-surface: #F3F4F6;
+  --color-brand-elevated: #E5E7EB;
+  --color-brand-border: #D1D5DB;
+  --color-brand-text-gray: #6B7280;
+
+  --accent-silver: linear-gradient(180deg, #F3F4F6 0%, #D1D5DB 100%);
+
+  --shadow-neon: 0 0 20px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
+  --shadow-inner-glow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
 
 
 body {

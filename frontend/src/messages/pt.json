@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "Xadrez App",
+        "subtitle": "Protocolo Matriz Neural",
+        "rating": "Classificação",
+        "win_rate": "Taxa de Vitória",
+        "level": "NÍVEL",
+        "current_streak": "Sequência Atual",
+        "best_streak": "Melhor Sequência",
+        "wins": "VITÓRIAS",
+        "losses": "DERROTAS",
+        "none": "NENHUMA",
+        "recent_activity": "Atividade Recente",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "INICIAR PARTIDA",
+        "protocol_beta": "Protocolo Beta-7",
+        "ai_training": "Treino IA",
+        "academy": "Academia",
+        "configuration": "Configuração",
+        "system_parameters": "Parâmetros do Sistema v1.2",
+        "active": "ATIVO",
+        "play": "Jogar Xadrez",
+        "daily_tasks": "Tarefas Diárias",
+        "friends": "Amigos",
+        "leaderboard": "Classificação"
+    },
+    "Settings": {
+        "return": "Voltar",
+        "config_core": "CONFIG NÚCLEO • V1.5",
+        "title": "Preferências Neurais",
+        "subtitle": "Parâmetros do sistema e protocolos visuais",
+        "visual_matrix": "Matriz Visual",
+        "luminance_mode": "Modo Luminância",
+        "deep_void": "Vazio Profundo",
+        "solar_flare": "Clarão Solar",
+        "audio_protocol": "Protocolo de Áudio",
+        "active_sync": "Sincronização Ativa",
+        "muted": "Mudo",
+        "language_matrix": "Matriz de Idioma",
+        "neural_tier": "Nível Neural",
+        "premium_plus": "Premium+",
+        "enhanced_access": "Acesso Melhorado Ativo",
+        "footer": "Autorizado para Interface Matriz Neural Build v1.5.02"
+    },
+    "Language": {
+        "select": "Escolher Idioma"
+    }
+}

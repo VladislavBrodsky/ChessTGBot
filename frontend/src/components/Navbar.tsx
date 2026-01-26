@@ -9,7 +9,7 @@ import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog } from 'react-icons/fa';
 const NAV_ITEMS = [
     { name: 'Home', icon: <FaChessPawn />, href: '/home' },
     { name: 'Play', icon: <FaGamepad />, href: '/game' },
-    { name: 'Academy', icon: <FaGraduationCap />, href: '/academy' },
+    { name: 'Challenges', icon: <FaGraduationCap />, href: '/challenges' },
     { name: 'Settings', icon: <FaCog />, href: '/settings' },
 ];
 
@@ -17,9 +17,9 @@ export default function Navbar() {
     const pathname = usePathname();
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-black/80 backdrop-blur-2xl border border-white/5 px-2 py-2 rounded-2xl shadow-premium min-w-[280px] max-w-[95%] justify-center mx-auto">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-brand-void/80 backdrop-blur-2xl border border-brand-primary/5 px-2 py-2 rounded-2xl shadow-premium min-w-[280px] max-w-[95%] justify-center mx-auto">
             {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none rounded-2xl" />
+            <div className="absolute inset-0 bg-linear-to-b from-brand-primary/5 to-transparent pointer-events-none rounded-2xl" />
 
             <ul className="flex items-center relative z-10 w-full justify-around space-x-1">
                 {NAV_ITEMS.map((item) => {
@@ -31,7 +31,7 @@ export default function Navbar() {
                                     {isActive && (
                                         <motion.div
                                             layoutId="nav-active-indicator"
-                                            className="absolute inset-[2px] bg-white/5 rounded-xl border border-white/5 shadow-inner-glow"
+                                            className="absolute inset-[2px] bg-brand-primary/5 rounded-xl border border-brand-primary/5 shadow-inner-glow"
                                             initial={false}
                                             transition={{
                                                 type: "spring",
@@ -43,7 +43,7 @@ export default function Navbar() {
                                     <motion.div
                                         animate={{
                                             scale: isActive ? 1.25 : 1,
-                                            color: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.25)"
+                                            color: isActive ? "var(--text-primary)" : "var(--text-muted)"
                                         }}
                                         transition={{ duration: 0.3 }}
                                         className="text-xl relative z-20"

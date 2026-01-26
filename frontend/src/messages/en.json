@@ -1,0 +1,60 @@
+{
+    "Index": {
+        "title": "Chess App",
+        "subtitle": "Neural Matrix Protocol",
+        "rating": "Rating",
+        "win_rate": "Win Rate",
+        "level": "LVL",
+        "current_streak": "Current Streak",
+        "best_streak": "Best Streak",
+        "wins": "WINS",
+        "losses": "LOSSES",
+        "none": "NONE",
+        "recent_activity": "Recent Activity",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "EXECUTE MATCHMAKING",
+        "protocol_beta": "Protocol Beta-7",
+        "ai_training": "AI Training",
+        "academy": "Academy",
+        "configuration": "Configuration",
+        "system_parameters": "System Parameters v1.2",
+        "active": "ACTIVE",
+        "play": "Play Chess",
+        "daily_tasks": "Daily Tasks",
+        "friends": "Friends",
+        "leaderboard": "Leaderboard"
+    },
+    "Settings": {
+        "return": "Return",
+        "config_core": "CONFIG CORE • V1.5",
+        "title": "Neural Preferences",
+        "subtitle": "System parameters & visual protocols",
+        "visual_matrix": "Visual Matrix",
+        "luminance_mode": "Luminance Mode",
+        "deep_void": "Deep Void",
+        "solar_flare": "Solar Flare",
+        "audio_protocol": "Audio Protocol",
+        "active_sync": "Active Sync",
+        "muted": "Muted",
+        "language_matrix": "Language Matrix",
+        "neural_tier": "Neural Tier",
+        "premium_plus": "Premium+",
+        "enhanced_access": "Enhanced Access Active",
+        "footer": "Authorized for Neural Matrix Interface Build v1.5.02"
+    },
+    "Language": {
+        "select": "Choose Language"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
+    }
+}

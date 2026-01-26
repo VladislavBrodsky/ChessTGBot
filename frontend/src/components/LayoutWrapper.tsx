@@ -8,7 +8,7 @@ interface LayoutWrapperProps {
 
 export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
     return (
-        <div className="relative min-h-screen w-full overflow-x-hidden bg-black text-white font-sans selection:bg-white selection:text-black">
+        <div className="relative min-h-screen w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
             {/* Ambient Starfield */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 opacity-[0.05]" style={{

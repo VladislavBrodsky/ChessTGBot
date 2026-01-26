@@ -1,0 +1,60 @@
+{
+    "Index": {
+        "title": "Ajedrez App",
+        "subtitle": "Protocolo Matriz Neural",
+        "rating": "Puntuación",
+        "win_rate": "Tasa de Victoria",
+        "level": "NIVEL",
+        "current_streak": "Racha Actual",
+        "best_streak": "Mejor Racha",
+        "wins": "VICTORIAS",
+        "losses": "DERROTAS",
+        "none": "NINGUNA",
+        "recent_activity": "Actividad Reciente",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "INICIAR PARTIDA",
+        "protocol_beta": "Protocolo Beta-7",
+        "ai_training": "Entrenamiento IA",
+        "academy": "Academia",
+        "configuration": "Configuración",
+        "system_parameters": "Parámetros del Sistema v1.2",
+        "active": "ACTIVO",
+        "play": "Jugar Ajedrez",
+        "daily_tasks": "Tareas Diarias",
+        "friends": "Amigos",
+        "leaderboard": "Clasificación"
+    },
+    "Settings": {
+        "return": "Voltar",
+        "config_core": "CONFIG NÚCLEO • V1.5",
+        "title": "Preferencias Neurales",
+        "subtitle": "Parámetros del sistema y protocolos visuales",
+        "visual_matrix": "Matriz Visual",
+        "luminance_mode": "Modo Luminancia",
+        "deep_void": "Vacío Profundo",
+        "solar_flare": "Llamarada Solar",
+        "audio_protocol": "Protocolo de Audio",
+        "active_sync": "Sincronización Activa",
+        "muted": "Silenciado",
+        "language_matrix": "Matriz de Idioma",
+        "neural_tier": "Nivel Neural",
+        "premium_plus": "Premium+",
+        "enhanced_access": "Acceso Mejorado Activo",
+        "footer": "Autorizado para Interfaz Matriz Neural Build v1.5.02"
+    },
+    "Language": {
+        "select": "Elige Idioma"
+    },
+    "Gamification": {
+        "daily_missions": "Protocolos Diarios",
+        "claim": "Reclamar",
+        "daily_win": "Protocolo Victoria",
+        "daily_play": "Entrenamiento Combate",
+        "daily_login": "Sincronización Sistema",
+        "referral_program": "Red de Referidos",
+        "invite_friend": "Invitar Neuro-Enlace",
+        "copy_code": "Copiar Código",
+        "copied": "¡Copiado!"
+    }
+}

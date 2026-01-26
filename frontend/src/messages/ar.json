@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "تطبيق الشطرنج",
+        "subtitle": "بروتوكول المصفوفة العصبية",
+        "rating": "التقييم",
+        "win_rate": "معدل الفوز",
+        "level": "مستوى",
+        "current_streak": "السلسلة الحالية",
+        "best_streak": "أفضل سلسلة",
+        "wins": "انتصارات",
+        "losses": "خسائر",
+        "none": "لا يوجد",
+        "recent_activity": "النشاط الأخير",
+        "vs": "ضد",
+        "elo": "ELO",
+        "execute_matchmaking": "ابدأ المباراة",
+        "protocol_beta": "بروتوكول بيتا-7",
+        "ai_training": "تدريب الذكاء الاصطناعي",
+        "academy": "الأكاديمية",
+        "configuration": "الإعدادات",
+        "system_parameters": "معلمات النظام v1.2",
+        "active": "نشط",
+        "play": "العب الشطرنج",
+        "daily_tasks": "المهام اليومية",
+        "friends": "الأصدقاء",
+        "leaderboard": "لائحة المتصدرين"
+    },
+    "Settings": {
+        "return": "عودة",
+        "config_core": "تكوين النواة • V1.5",
+        "title": "تفضيلات عصبية",
+        "subtitle": "معلمات النظام والبروتوكولات المرئية",
+        "visual_matrix": "المصفوفة المرئية",
+        "luminance_mode": "وضع السطوع",
+        "deep_void": "فراغ عميق",
+        "solar_flare": "توهج شمسي",
+        "audio_protocol": "بروتوكول الصوت",
+        "active_sync": "مزامنة نشطة",
+        "muted": "صامت",
+        "language_matrix": "مصفوفة اللغة",
+        "neural_tier": "المستوى العصبي",
+        "premium_plus": "بريميوم+",
+        "enhanced_access": "الوصول المحسن نشط",
+        "footer": "مخول لبناء واجهة المصفوفة العصبية v1.5.02"
+    },
+    "Language": {
+        "select": "اختر اللغة"
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "チェスアプリ",
+        "subtitle": "ニューラル・マトリックス・プロトコル",
+        "rating": "レーティング",
+        "win_rate": "勝率",
+        "level": "レベル",
+        "current_streak": "現在の連勝",
+        "best_streak": "最高連勝",
+        "wins": "勝利",
+        "losses": "敗北",
+        "none": "なし",
+        "recent_activity": "最近のアクティビティ",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "マッチメイキング実行",
+        "protocol_beta": "プロトコル Beta-7",
+        "ai_training": "AIトレーニング",
+        "academy": "アカデミー",
+        "configuration": "設定",
+        "system_parameters": "システムパラメータ v1.2",
+        "active": "アクティブ",
+        "play": "チェスをプレイ",
+        "daily_tasks": "デイリータスク",
+        "friends": "フレンド",
+        "leaderboard": "リーダーボード"
+    },
+    "Settings": {
+        "return": "戻る",
+        "config_core": "コア設定 • V1.5",
+        "title": "ニューラル設定",
+        "subtitle": "システムパラメータ & 視覚プロトコル",
+        "visual_matrix": "ビジュアル・マトリックス",
+        "luminance_mode": "輝度モード",
+        "deep_void": "ディープ・ヴォイド",
+        "solar_flare": "ソーラー・フレア",
+        "audio_protocol": "オーディオ・プロトコル",
+        "active_sync": "アクティブ同期",
+        "muted": "ミュート",
+        "language_matrix": "言語マトリックス",
+        "neural_tier": "ニューラル・ティア",
+        "premium_plus": "プレミアム+",
+        "enhanced_access": "拡張アクセス有効",
+        "footer": "ニューラル・マトリックス・インターフェース Build v1.5.02 認証済み"
+    },
+    "Language": {
+        "select": "言語を選択"
+    }
+}

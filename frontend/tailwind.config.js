@@ -14,6 +14,12 @@ export default {
                     elevated: "var(--color-brand-elevated)",
                     border: "var(--color-brand-border)",
                     "text-gray": "var(--color-brand-text-gray)",
+                    primary: "var(--text-primary)", // Main text color
+                    muted: "var(--text-muted)",     // Muted text color
+                },
+                theme: {
+                    bg: "var(--bg-primary)",
+                    surface: "var(--bg-surface)",
                 },
                 gray: "#71767B",
                 nebula: {

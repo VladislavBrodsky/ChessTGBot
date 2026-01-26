@@ -24,7 +24,8 @@ async def get_db():
 async def init_db():
     # Import models here to avoid circular import with Base
     from app.models.user import User
-    from app.models.game_history import GameHistory  # Import the new model
+    from app.models.game_history import GameHistory
+    from app.models.gamification import Task, UserTask, Referral
     from sqlalchemy import text
     
     async with engine.begin() as conn:
@@ -32,12 +33,21 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
         
         # Hot Patch: Ensure new columns exist (Self-healing schema)
-        # This is a robust way to handle model updates without heavy Alembic in small projects
         try:
-            # Check if premium columns exist, add if missing
+            # Subscription
             await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE"))
             await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_tier VARCHAR"))
             await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_expires_at TIMESTAMP WITHOUT TIME ZONE"))
-            print("Database Schema Sync: Premium columns verified.")
+            
+            # Gamification
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1"))
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS xp BIGINT DEFAULT 0"))
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR"))
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language VARCHAR DEFAULT 'en'"))
+            
+            # Create indexes/constraints potentially if missing (simplified here)
+            await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_referral_code ON users (referral_code)"))
+            
+            print("Database Schema Sync: Columns verified.")
         except Exception as e:
             print(f"Database Schema Sync Warning: {e}")

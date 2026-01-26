@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "国际象棋应用",
+        "subtitle": "神经矩阵协议",
+        "rating": "评分",
+        "win_rate": "胜率",
+        "level": "等级",
+        "current_streak": "当前连胜",
+        "best_streak": "最佳连胜",
+        "wins": "胜",
+        "losses": "负",
+        "none": "无",
+        "recent_activity": "近期活动",
+        "vs": "对",
+        "elo": "ELO",
+        "execute_matchmaking": "开始匹配",
+        "protocol_beta": "协议 Beta-7",
+        "ai_training": "AI 训练",
+        "academy": "学院",
+        "configuration": "配置",
+        "system_parameters": "系统参数 v1.2",
+        "active": "活跃",
+        "play": "下棋",
+        "daily_tasks": "每日任务",
+        "friends": "好友",
+        "leaderboard": "排行榜"
+    },
+    "Settings": {
+        "return": "返回",
+        "config_core": "核心配置 • V1.5",
+        "title": "神经偏好",
+        "subtitle": "系统参数与视觉协议",
+        "visual_matrix": "视觉矩阵",
+        "luminance_mode": "亮度模式",
+        "deep_void": "深渊虚空",
+        "solar_flare": "太阳耀斑",
+        "audio_protocol": "音频协议",
+        "active_sync": "主动同步",
+        "muted": "静音",
+        "language_matrix": "语言矩阵",
+        "neural_tier": "神经层级",
+        "premium_plus": "高级+",
+        "enhanced_access": "增强访问已激活",
+        "footer": "授权用于神经矩阵接口 Build v1.5.02"
+    },
+    "Language": {
+        "select": "选择语言"
+    }
+}

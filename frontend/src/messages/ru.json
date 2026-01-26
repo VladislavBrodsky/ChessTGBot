@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "Шахматы",
+        "subtitle": "Нейронный Протокол",
+        "rating": "Рейтинг",
+        "win_rate": "Винрейт",
+        "level": "УР",
+        "current_streak": "Текущая Серия",
+        "best_streak": "Лучшая Серия",
+        "wins": "ПОБЕДЫ",
+        "losses": "ПОРАЖЕНИЯ",
+        "none": "НЕТ",
+        "recent_activity": "Недавняя Активность",
+        "vs": "против",
+        "elo": "ELO",
+        "execute_matchmaking": "НАЧАТЬ ПОИСК",
+        "protocol_beta": "Протокол Бета-7",
+        "ai_training": "Тренировка с ИИ",
+        "academy": "Академия",
+        "configuration": "Конфигурация",
+        "system_parameters": "Системные Параметры v1.2",
+        "active": "АКТИВЕН",
+        "play": "Играть",
+        "daily_tasks": "Ежедневные Задания",
+        "friends": "Друзья",
+        "leaderboard": "Лидеры"
+    },
+    "Settings": {
+        "return": "Назад",
+        "config_core": "КОНФИГ ЯДРО • V1.5",
+        "title": "Нейронные Настройки",
+        "subtitle": "Системные параметры и визуальные протоколы",
+        "visual_matrix": "Визуальная Матрица",
+        "luminance_mode": "Режим Яркости",
+        "deep_void": "Глубокая Пустота",
+        "solar_flare": "Солнечная Вспышка",
+        "audio_protocol": "Аудио Протокол",
+        "active_sync": "Активная Синхр.",
+        "muted": "Без звука",
+        "language_matrix": "Языковая Матрица",
+        "neural_tier": "Нейронный Уровень",
+        "premium_plus": "Премиум+",
+        "enhanced_access": "Расширенный Доступ Активен",
+        "footer": "Авторизовано для Neural Matrix Interface Build v1.5.02"
+    },
+    "Language": {
+        "select": "Выберите Язык"
+    }
+}

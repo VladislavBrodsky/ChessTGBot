@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "Application Échecs",
+        "subtitle": "Protocole Matrice Neurale",
+        "rating": "Classement",
+        "win_rate": "Taux de Victoire",
+        "level": "NIV",
+        "current_streak": "Série Actuelle",
+        "best_streak": "Meilleure Série",
+        "wins": "VICTOIRES",
+        "losses": "DÉFAITES",
+        "none": "AUCUNE",
+        "recent_activity": "Activité Récente",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "LANCER MATCHMAKING",
+        "protocol_beta": "Protocole Beta-7",
+        "ai_training": "Entraînement IA",
+        "academy": "Académie",
+        "configuration": "Configuration",
+        "system_parameters": "Paramètres Système v1.2",
+        "active": "ACTIF",
+        "play": "Jouer aux Échecs",
+        "daily_tasks": "Tâches Quotidiennes",
+        "friends": "Amis",
+        "leaderboard": "Classement"
+    },
+    "Settings": {
+        "return": "Retour",
+        "config_core": "CONFIG NOYAU • V1.5",
+        "title": "Préférences Neurales",
+        "subtitle": "Paramètres système & protocoles visuels",
+        "visual_matrix": "Matrice Visuelle",
+        "luminance_mode": "Mode Luminance",
+        "deep_void": "Vide Profond",
+        "solar_flare": "Éruption Solaire",
+        "audio_protocol": "Protocole Audio",
+        "active_sync": "Sync Active",
+        "muted": "Muet",
+        "language_matrix": "Matrice de Langue",
+        "neural_tier": "Niveau Neural",
+        "premium_plus": "Premium+",
+        "enhanced_access": "Accès Amélioré Actif",
+        "footer": "Autorisé pour Interface Matrice Neurale Build v1.5.02"
+    },
+    "Language": {
+        "select": "Choisir la Langue"
+    }
+}

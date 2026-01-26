@@ -20,3 +20,9 @@ class User(Base):
     is_premium = Column(Boolean, default=False)
     premium_tier = Column(String, nullable=True) # basic, premium, premium_plus
     premium_expires_at = Column(DateTime, nullable=True)
+
+    # Gamification & i18n
+    level = Column(Integer, default=1)
+    xp = Column(BigInteger, default=0)
+    referral_code = Column(String, unique=True, index=True, nullable=True)
+    preferred_language = Column(String, default='en')

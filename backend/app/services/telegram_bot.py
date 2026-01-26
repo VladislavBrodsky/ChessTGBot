@@ -10,18 +10,60 @@ class TelegramService:
     application: Application = None
 
     @staticmethod
+    async def get_user_profile_photo(user_id: int, bot):
+        """Get user profile photo URL."""
+        try:
+            photos = await bot.get_user_profile_photos(user_id, limit=1)
+            if photos.total_count > 0:
+                # Get the largest version of the first photo
+                file = await bot.get_file(photos.photos[0][-1].file_id)
+                return file.file_path
+        except Exception:
+            return None
+        return None
+
+    @staticmethod
     async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /start command."""
+        user = update.effective_user
+        if not user:
+            return
+            
         # Check if deep-linked arguments exist (e.g. /start game_123)
         args = context.args
         start_param = args[0] if args else None
         
-        # Railway URL (Replace with dynamic URL if needed or use from settings)
-        # We use the properly configured environment variable now.
-        web_app_url = settings.WEBAPP_URL
+        # Determine language preferences if user exists in DB
+        from app.models.user import User
+        from sqlalchemy import select
+        from app.core.database import AsyncSessionLocal
+
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(select(User).where(User.telegram_id == user.id))
+            db_user = result.scalars().first()
+            
+            if not db_user:
+                # Basic creation logic
+                db_user = User(
+                    telegram_id=user.id,
+                    first_name=user.first_name,
+                    username=user.username,
+                    photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot)
+                )
+                db.add(db_user)
+                try:
+                    await db.commit()
+                except Exception as e:
+                    logger.error(f"Error creating user: {e}")
+                    await db.rollback()
+
+            lang = db_user.preferred_language if db_user else 'en'
+        
+        # Railway URL
+        web_app_url = f"{settings.WEBAPP_URL}?lang={lang}"
 
         if start_param:
-             web_app_url += f"?startapp={start_param}"
+             web_app_url += f"&startapp={start_param}" # Append as standard param
 
         keyboard = [
             [InlineKeyboardButton("Play Chess ♟️", web_app={ "url": web_app_url })]
@@ -33,23 +75,65 @@ class TelegramService:
             reply_markup=reply_markup
         )
 
+    @staticmethod
+    async def language_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle /language command"""
+        keyboard = [
+            [
+                InlineKeyboardButton("🇺🇸 English", callback_data="lang_en"),
+                InlineKeyboardButton("🇪🇸 Español", callback_data="lang_es")
+            ],
+            [
+                InlineKeyboardButton("🇫🇷 Français", callback_data="lang_fr"),
+                InlineKeyboardButton("🇩🇪 Deutsch", callback_data="lang_de")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text("Choose your language:", reply_markup=reply_markup)
+
+    @staticmethod
+    async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle language selection callback"""
+        query = update.callback_query
+        await query.answer()
+        
+        lang_code = query.data.split("_")[1] # lang_en -> en
+        user_id = query.from_user.id
+        
+        from app.models.user import User
+        from sqlalchemy import select
+        from app.core.database import AsyncSessionLocal
+        
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(select(User).where(User.telegram_id == user_id))
+            db_user = result.scalars().first()
+            if db_user:
+                db_user.preferred_language = lang_code
+                await db.commit()
+                await query.edit_message_text(text=f"Language updated to {lang_code.upper()}! ✅")
+            else:
+                await query.edit_message_text(text="User not found. Please type /start first.")
+
     @classmethod
     async def start_bot(cls):
         """Start the bot application with conflict prevention."""
         if not settings.TELEGRAM_BOT_TOKEN:
             logger.warning("TELEGRAM_BOT_TOKEN not set. Bot will not start.")
             return
-
+ 
         import asyncio
         from telegram.error import Conflict
-
+        from telegram.ext import CallbackQueryHandler
+ 
         # Prevent multiple instances
         if cls.application:
             logger.warning("Bot already initialized. Skipping duplicate start.")
             return
-
+ 
         cls.application = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
         cls.application.add_handler(CommandHandler("start", cls.start_command))
+        cls.application.add_handler(CommandHandler("language", cls.language_command))
+        cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
         
         await cls.application.initialize()
         await cls.application.start()

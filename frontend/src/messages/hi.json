@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "शतरंज ऐप",
+        "subtitle": "न्यूरल मैट्रिक्स प्रोटोकॉल",
+        "rating": "रेटिंग",
+        "win_rate": "जीत दर",
+        "level": "स्तर",
+        "current_streak": "वर्तमान लकीर",
+        "best_streak": "सर्वोत्तम लकीर",
+        "wins": "जीत",
+        "losses": "हार",
+        "none": "कोई नहीं",
+        "recent_activity": "हाल की गतिविधि",
+        "vs": "बनाम",
+        "elo": "ELO",
+        "execute_matchmaking": "मैच शुरू करें",
+        "protocol_beta": "प्रोटोकॉल बीटा-7",
+        "ai_training": "एआई प्रशिक्षण",
+        "academy": "अकादमी",
+        "configuration": "विन्यास",
+        "system_parameters": "सिस्टम पैरामीटर v1.2",
+        "active": "सक्रिय",
+        "play": "शतरंज खेलें",
+        "daily_tasks": "दैनिक कार्य",
+        "friends": "मित्र",
+        "leaderboard": "लीडरबोर्ड"
+    },
+    "Settings": {
+        "return": "वापस",
+        "config_core": "कॉन्फ़िग कोर • V1.5",
+        "title": "न्यूरल प्राथमिकताएं",
+        "subtitle": "सिस्टम पैरामीटर और विज़ुअल प्रोटोकॉल",
+        "visual_matrix": "विज़ुअल मैट्रिक्स",
+        "luminance_mode": "चमक मोड",
+        "deep_void": "डीप वॉयड",
+        "solar_flare": "सोलर फ्लेयर",
+        "audio_protocol": "ऑडियो प्रोटोकॉल",
+        "active_sync": "सक्रिय सिंक",
+        "muted": "म्यूट",
+        "language_matrix": "भाषा मैट्रिक्स",
+        "neural_tier": "न्यूरल टियर",
+        "premium_plus": "प्रीमियम+",
+        "enhanced_access": "एन्हांस्ड एक्सेस सक्रिय",
+        "footer": "न्यूरल मैट्रिक्स इंटरफ़ेस बिल्ड v1.5.02 के लिए अधिकृत"
+    },
+    "Language": {
+        "select": "भाषा चुनें"
+    }
+}

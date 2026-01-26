@@ -1,0 +1,32 @@
+# Comprehensive Stack Audit
+
+## Frontend
+**Core Framework:** Next.js 16.1.4
+- **Configuration:** Static Export (`output: 'export'`)
+- **Language:** TypeScript 5.9.3
+- **UI Library:** React 19.2.3
+- **Styling:** Tailwind CSS 4.1.18 + PostCSS 8.5.6
+
+**Key Libraries:**
+- `react-chessboard` (5.8.6): Game visualization
+- `framer-motion` (12.29.0): Animations
+- `socket.io-client` (4.8.3): Real-time communication
+
+## Backend
+**Core Framework:** FastAPI 0.110.0
+- **Language:** Python 3.12 (via Docker `python:3.12-slim`)
+- **Server:** Uvicorn 0.29.0
+
+**Data & logic:**
+- **Database ORM:** SQLAlchemy 2.0.0
+- **Database Driver:** asyncpg 0.29.0
+- **Game Logic:** python-chess 1.9.4
+- **Real-time:** python-socketio 5.11.0 (Redis 5.0.3 support)
+- **Telegram:** python-telegram-bot 21.0
+
+## Infrastructure
+- **Containerization:** Single Dockerfile (Multi-stage)
+  - Stage 1: Node.js 20-alpine (Frontend Builder)
+  - Stage 2: Python 3.12-slim (Runtime & Backend)
+- **Execution:** Non-root user `appuser`
+- **Exposed Port:** 8000

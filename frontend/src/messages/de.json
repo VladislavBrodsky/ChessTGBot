@@ -1,0 +1,49 @@
+{
+    "Index": {
+        "title": "Schach App",
+        "subtitle": "Neural Matrix Protokoll",
+        "rating": "Bewertung",
+        "win_rate": "Siegesrate",
+        "level": "LVL",
+        "current_streak": "Aktuelle Serie",
+        "best_streak": "Beste Serie",
+        "wins": "SIEGE",
+        "losses": "NIEDERLAGEN",
+        "none": "KEINE",
+        "recent_activity": "Letzte Aktivität",
+        "vs": "vs",
+        "elo": "ELO",
+        "execute_matchmaking": "MATCHMAKING STARTEN",
+        "protocol_beta": "Protokoll Beta-7",
+        "ai_training": "KI Training",
+        "academy": "Akademie",
+        "configuration": "Konfiguration",
+        "system_parameters": "Systemparameter v1.2",
+        "active": "AKTIV",
+        "play": "Schach Spielen",
+        "daily_tasks": "Tägliche Aufgaben",
+        "friends": "Freunde",
+        "leaderboard": "Bestenliste"
+    },
+    "Settings": {
+        "return": "Zurück",
+        "config_core": "KONFIG KERN • V1.5",
+        "title": "Neurale Einstellungen",
+        "subtitle": "Systemparameter & visuelle Protokolle",
+        "visual_matrix": "Visuelle Matrix",
+        "luminance_mode": "Luminanz Modus",
+        "deep_void": "Tiefe Leere",
+        "solar_flare": "Sonneneruption",
+        "audio_protocol": "Audio Protokoll",
+        "active_sync": "Aktive Sync",
+        "muted": "Stumm",
+        "language_matrix": "Sprachmatrix",
+        "neural_tier": "Neural Stufe",
+        "premium_plus": "Premium+",
+        "enhanced_access": "Erweiterter Zugang Aktiv",
+        "footer": "Autorisiert für Neural Matrix Interface Build v1.5.02"
+    },
+    "Language": {
+        "select": "Sprache Wählen"
+    }
+}
