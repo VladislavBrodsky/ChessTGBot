@@ -16,10 +16,12 @@ class User(Base):
     losses = Column(Integer, default=0)
     draws = Column(Integer, default=0)
     
-    # Subscription fields
+    # Subscription & Payments
     is_premium = Column(Boolean, default=False)
     premium_tier = Column(String, nullable=True) # basic, premium, premium_plus
     premium_expires_at = Column(DateTime, nullable=True)
+    balance = Column(Integer, default=0) # Stored in cents/smallest unit to avoid float issues
+    wallet_address = Column(String, nullable=True) # TON Wallet Address
 
     # Gamification & i18n
     level = Column(Integer, default=1)

@@ -4,16 +4,22 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaStar, FaChessKnight } from "react-icons/fa";
+import { FaChessPawn, FaGraduationCap, FaCog, FaRobot, FaStar, FaChessKnight, FaTimes, FaMoon, FaSun, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { useTranslations } from 'next-intl';
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
+import { useTheme } from "@/context/ThemeContext";
+import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
     const t = useTranslations('Index');
     const [tgUser, setTgUser] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);
     const [isCreating, setIsCreating] = useState(false);
+    const [showGameSection, setShowGameSection] = useState(false);
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    const { theme, toggleTheme } = useTheme();
+    const tSettings = useTranslations('Settings');
 
     useEffect(() => {
         // Init Telegram WebApp Data
@@ -268,7 +274,7 @@ export default function Home() {
                     <motion.button
                         whileHover={{ scale: 1.01, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => createGame('online')}
+                        onClick={() => setShowGameSection(true)}
                         className="w-full h-28 action-button relative overflow-hidden flex flex-col items-center justify-center group shadow-premium"
                         disabled={isCreating}
                     >
@@ -342,6 +348,120 @@ export default function Home() {
                     </div>
                 </footer>
             </div>
+
+            {/* Game Section Overlay */}
+            <AnimatePresence>
+                {showGameSection && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/90 backdrop-blur-xl"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="w-full max-w-sm glass-panel overflow-hidden flex flex-col shadow-2xl border-brand-primary/20"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-brand-primary/10">
+                                <div className="flex flex-col">
+                                    <h2 className="text-2xl font-black text-brand-primary italic tracking-tighter uppercase leading-none mb-1">Game Section</h2>
+                                    <span className="text-[10px] font-bold text-brand-primary/30 uppercase tracking-[0.3em]">Dashboard & Settings</span>
+                                </div>
+                                <motion.button
+                                    whileHover={{ scale: 1.1, rotate: 90 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => setShowGameSection(false)}
+                                    className="w-10 h-10 rounded-full bg-brand-primary/5 flex items-center justify-center text-brand-primary/40 hover:text-brand-primary transition-colors"
+                                >
+                                    <FaTimes />
+                                </motion.button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-6 space-y-8 max-h-[70vh]">
+                                {/* Mini Dashboard */}
+                                <section className="space-y-4">
+                                    <h3 className="text-[9px] font-black uppercase text-brand-primary/20 tracking-[0.5em] ml-1">Live Dashboard</h3>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/5 flex flex-col items-center">
+                                            <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest mb-1">{t('rating')}</span>
+                                            <span className="text-xl font-black text-brand-primary leading-none">{stats?.elo || 1000}</span>
+                                        </div>
+                                        <div className="p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/5 flex flex-col items-center">
+                                            <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest mb-1">{t('win_rate')}</span>
+                                            <span className="text-xl font-black text-brand-primary leading-none">{stats?.win_rate?.toFixed(1) || 0}%</span>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Settings Quick Access */}
+                                <section className="space-y-4">
+                                    <h3 className="text-[9px] font-black uppercase text-brand-primary/20 tracking-[0.5em] ml-1">Neural Parameters</h3>
+                                    <div className="space-y-3">
+                                        {/* Theme Toggle */}
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-brand-void flex items-center justify-center text-brand-primary/40">
+                                                    {theme === 'dark' ? <FaMoon size={14} /> : <FaSun size={14} />}
+                                                </div>
+                                                <span className="text-[11px] font-bold text-brand-primary uppercase tracking-wider">{tSettings('luminance_mode')}</span>
+                                            </div>
+                                            <button
+                                                onClick={toggleTheme}
+                                                className={`w-10 h-5 rounded-full p-1 transition-all ${theme === 'dark' ? 'bg-brand-primary' : 'bg-brand-primary/10'}`}
+                                            >
+                                                <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'ml-auto bg-brand-void' : 'bg-brand-primary/40'}`} />
+                                            </button>
+                                        </div>
+
+                                        {/* Audio Toggle */}
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-brand-void flex items-center justify-center text-brand-primary/40">
+                                                    {soundEnabled ? <FaVolumeUp size={14} /> : <FaVolumeMute size={14} />}
+                                                </div>
+                                                <span className="text-[11px] font-bold text-brand-primary uppercase tracking-wider">{tSettings('audio_protocol')}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => setSoundEnabled(!soundEnabled)}
+                                                className={`w-10 h-5 rounded-full p-1 transition-all ${soundEnabled ? 'bg-brand-primary' : 'bg-brand-primary/10'}`}
+                                            >
+                                                <div className={`w-3 h-3 rounded-full ${soundEnabled ? 'ml-auto bg-brand-void' : 'bg-brand-primary/40'}`} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+
+                            {/* Footer Actions */}
+                            <div className="p-6 bg-brand-primary/5 space-y-3">
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => { setShowGameSection(false); createGame('online'); }}
+                                    className="w-full py-4 bg-brand-primary text-brand-void font-black text-xs uppercase tracking-[0.2em] rounded-xl shadow-lg flex items-center justify-center gap-2"
+                                    disabled={isCreating}
+                                >
+                                    <FaChessPawn />
+                                    <span>Matchmaking Online</span>
+                                </motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => { setShowGameSection(false); createGame('computer'); }}
+                                    className="w-full py-4 bg-brand-void border border-brand-primary/20 text-brand-primary font-black text-xs uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2"
+                                    disabled={isCreating}
+                                >
+                                    <FaRobot />
+                                    <span>Combat AI</span>
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </LayoutWrapper>
     );
 }

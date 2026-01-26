@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     # This URL should be the production URL of your app
     WEBAPP_URL: str = "https://chesstgbot-production.up.railway.app"
 
+    # Payments
+    STRIPE_SECRET_KEY: str | None = None
+    STRIPE_WEBHOOK_SECRET: str | None = None
+    TON_API_KEY: str | None = None # For TON Center or similar
+
     class Config:
         env_file = ".env"
         case_sensitive = True
