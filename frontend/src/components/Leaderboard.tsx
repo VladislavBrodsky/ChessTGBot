@@ -18,7 +18,13 @@ export default function Leaderboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/v1/users/leaderboard')
+        const initData = typeof window !== "undefined" ? (window.Telegram?.WebApp as any)?.initData : "";
+
+        fetch('/api/v1/users/leaderboard', {
+            headers: {
+                'X-Telegram-Init-Data': initData || ""
+            }
+        })
             .then(res => res.json())
             .then(data => {
                 setPlayers(Array.isArray(data) ? data : []);

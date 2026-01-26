@@ -52,11 +52,15 @@ export default function MembershipPage() {
         }
 
         try {
+            const initData = typeof window !== "undefined" ? (window.Telegram?.WebApp as any)?.initData : "";
+
             const res = await fetch("/api/v1/users/subscribe", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    'X-Telegram-Init-Data': initData || ""
+                },
                 body: JSON.stringify({
-                    telegram_id: tgUser.id,
                     tier: selectedTier.id
                 })
             });

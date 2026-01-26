@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import TelegramInit from "@/components/TelegramInit";
+import Providers from "@/components/Providers";
 
 const inter = Inter({
     variable: "--font-geist-sans",
@@ -54,8 +55,10 @@ export default async function LocaleLayout({
             >
                 <NextIntlClientProvider messages={messages}>
                     <ThemeProvider>
-                        <TelegramInit />
-                        {children}
+                        <Providers>
+                            <TelegramInit />
+                            {children}
+                        </Providers>
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

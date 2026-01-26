@@ -22,7 +22,12 @@ export default function ProfilePage() {
             setTgUser(user);
 
             if (user?.id) {
-                fetch(`/api/v1/users/${user.id}`)
+                fetch(`/api/v1/users/sync`, {
+                    method: "POST",
+                    headers: {
+                        'X-Telegram-Init-Data': (tg as any).initData || ""
+                    }
+                })
                     .then(res => res.json())
                     .then(data => setStats(data))
                     .catch(err => console.error("Failed to fetch Stats", err));

@@ -14,6 +14,7 @@ import MarketingBanners from "@/components/MarketingBanners";
 import NewsSection from "@/components/NewsSection";
 import Leaderboard from "@/components/Leaderboard";
 import ReferralSection from "@/components/ReferralSection";
+import WalletConnect from "@/components/WalletConnect";
 
 export default function Home() {
     const t = useTranslations('Index');
@@ -41,14 +42,12 @@ export default function Home() {
 
             // Fetch User Stats and Sync Profile
             if (tg.initDataUnsafe?.user?.id) {
-                const user = tg.initDataUnsafe.user;
-                const params = new URLSearchParams({
-                    first_name: user.first_name,
-                    last_name: user.last_name || '',
-                    username: user.username || '',
-                    photo_url: user.photo_url || ''
-                });
-                fetch(`/api/v1/users/${user.id}?${params.toString()}`)
+                fetch(`/api/v1/users/sync`, {
+                    method: "POST",
+                    headers: {
+                        'X-Telegram-Init-Data': (tg as any).initData || ""
+                    }
+                })
                     .then(res => res.json())
                     .then(data => {
                         setStats(data);
@@ -95,7 +94,13 @@ export default function Home() {
         if (isCreating) return;
         setIsCreating(true);
         try {
-            const res = await fetch(`/api/v1/game/create?type=${type}`, { method: "POST" });
+            const initData = typeof window !== "undefined" ? (window.Telegram?.WebApp as any)?.initData : "";
+            const res = await fetch(`/api/v1/game/create?type=${type}`, {
+                method: "POST",
+                headers: {
+                    'X-Telegram-Init-Data': initData || ""
+                }
+            });
             if (!res.ok) throw new Error("Backend error");
             const data = await res.json();
 

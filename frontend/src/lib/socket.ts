@@ -9,11 +9,20 @@ export const getSocket = () => {
         // In dev, we might need localhost:8000 if running separately.
         const url = process.env.NEXT_PUBLIC_API_URL || "";
 
+        // Retrieve initData from window.Telegram.WebApp (client-side only)
+        let initData = "";
+        if (typeof window !== "undefined" && window.Telegram?.WebApp) {
+            initData = (window.Telegram.WebApp as any).initData;
+        }
+
         socket = io(url, {
             transports: ["websocket"],
             autoConnect: true,
             path: "/socket.io/", // Standard Socket.IO path
             reconnectionAttempts: 5,
+            auth: {
+                initData: initData
+            }
         });
 
         socket.on("connect", () => {
