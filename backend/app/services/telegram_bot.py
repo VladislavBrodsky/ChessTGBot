@@ -68,8 +68,13 @@ class TelegramService:
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             
+            # Personalize greeting
+            name = user.first_name
+            if user.last_name:
+                name += f" {user.last_name}"
+
             await update.message.reply_text(
-                "Welcome to Chess Game! ♟️🚀\n\nClick below to start playing in our Mini App.",
+                f"Welcome {name}! ♟️🚀\n\nClick below to start playing in our Mini App.",
                 reply_markup=reply_markup
             )
         except Exception as e:

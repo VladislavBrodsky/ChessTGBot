@@ -1,6 +1,7 @@
 {
     "Index": {
         "title": "Chess App",
+        "welcome": "Welcome, {name}",
         "subtitle": "Neural Matrix Protocol",
         "rating": "Rating",
         "win_rate": "Win Rate",

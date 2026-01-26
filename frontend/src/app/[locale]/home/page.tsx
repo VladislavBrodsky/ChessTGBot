@@ -153,6 +153,13 @@ export default function Home() {
                     >
                         {t('title')}
                     </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-lg font-bold text-brand-primary/80 mb-2"
+                    >
+                        {t('welcome', { name: tgUser?.first_name || 'Player' })}
+                    </motion.div>
                     <div className="h-px w-16 bg-brand-primary/10 mb-2" />
                     <span className="text-[10px] font-bold uppercase tracking-[0.6em] text-brand-primary/20">{t('subtitle')}</span>
                 </div>
