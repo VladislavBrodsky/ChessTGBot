@@ -34,6 +34,9 @@ def upgrade() -> None:
         column('icon', sa.String)
     )
 
+    # Remove existing daily tasks to avoid duplicates if re-run
+    op.execute("DELETE FROM tasks WHERE title_key IN ('daily_login', 'daily_play', 'daily_win')")
+
     # Insert Data
     op.bulk_insert(
         tasks_table,
@@ -43,7 +46,7 @@ def upgrade() -> None:
                 'description_key': 'daily_login_desc',
                 'xp_reward': 10,
                 'required_level': 1,
-                'task_type': 'LOGIN', # Enum mapped as string usually works in bulk_insert if type matches
+                'task_type': 'LOGIN', 
                 'target_count': 1,
                 'is_daily': True,
                 'icon': 'FaBolt'

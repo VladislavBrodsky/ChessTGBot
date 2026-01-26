@@ -16,18 +16,29 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [c['name'] for c in inspector.get_columns('users')]
+
     # Add subscription columns
-    op.add_column('users', sa.Column('is_premium', sa.Boolean(), nullable=True, server_default='false'))
-    op.add_column('users', sa.Column('premium_tier', sa.String(), nullable=True))
-    op.add_column('users', sa.Column('premium_expires_at', sa.DateTime(), nullable=True))
+    if 'is_premium' not in columns:
+        op.add_column('users', sa.Column('is_premium', sa.Boolean(), nullable=True, server_default='false'))
+    if 'premium_tier' not in columns:
+        op.add_column('users', sa.Column('premium_tier', sa.String(), nullable=True))
+    if 'premium_expires_at' not in columns:
+        op.add_column('users', sa.Column('premium_expires_at', sa.DateTime(), nullable=True))
     
     # Add balance and wallet columns
-    op.add_column('users', sa.Column('balance', sa.Integer(), nullable=True, server_default='0'))
-    op.add_column('users', sa.Column('wallet_address', sa.String(), nullable=True))
+    if 'balance' not in columns:
+        op.add_column('users', sa.Column('balance', sa.Integer(), nullable=True, server_default='0'))
+    if 'wallet_address' not in columns:
+        op.add_column('users', sa.Column('wallet_address', sa.String(), nullable=True))
     
-    # Update server defaults if needed (optional since we set them above)
-    op.alter_column('users', 'is_premium', server_default=None)
-    op.alter_column('users', 'balance', server_default=None)
+    # Update server defaults if needed
+    if 'is_premium' in columns:
+        op.alter_column('users', 'is_premium', server_default=None)
+    if 'balance' in columns:
+        op.alter_column('users', 'balance', server_default=None)
 
 def downgrade() -> None:
     op.drop_column('users', 'wallet_address')
