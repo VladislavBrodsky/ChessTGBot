@@ -3,7 +3,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Chess Mini App"
-    VERSION: str = "1.2.1"
+    VERSION: str = "1.0.1"
     API_V1_STR: str = "/api/v1"
     
     # CORS

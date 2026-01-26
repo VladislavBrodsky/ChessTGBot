@@ -139,6 +139,11 @@ export default function Home() {
                     </div>
                 </div>
 
+
+
+                {/* Wallet Connection Protocol */}
+                <WalletConnect />
+
                 {/* Minimalist Brand Section */}
                 <div className="flex flex-col items-center w-full">
                     <motion.div
@@ -521,6 +526,6 @@ export default function Home() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </LayoutWrapper>
+        </LayoutWrapper >
     );
 }

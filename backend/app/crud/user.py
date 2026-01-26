@@ -50,6 +50,13 @@ async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
     await db.refresh(user)
     return user
 
+async def update_wallet_address(db: AsyncSession, user: User, wallet_address: str):
+    user.wallet_address = wallet_address
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
 async def get_top_users(db: AsyncSession, limit: int = 50):
     result = await db.execute(
         select(User)

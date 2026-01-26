@@ -148,7 +148,30 @@ async def get_leaderboard(db: AsyncSession = Depends(get_db)):
             rank=idx + 1
         )
         for idx, user in enumerate(top_users)
+    return [
+        LeaderboardItem(
+            telegram_id=user.telegram_id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            photo_url=user.photo_url,
+            elo=user.elo,
+            rank=idx + 1
+        )
+        for idx, user in enumerate(top_users)
     ]
+
+class WalletLinkRequest(BaseModel):
+    telegram_id: int
+    wallet_address: str
+
+@router.post("/wallet")
+async def link_wallet(request: WalletLinkRequest, db: AsyncSession = Depends(get_db)):
+    user = await user_crud.get_user_by_telegram_id(db, request.telegram_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    updated_user = await user_crud.update_wallet_address(db, user, request.wallet_address)
+    return {"status": "success", "wallet_address": updated_user.wallet_address}
 
 class SubscriptionRequest(BaseModel):
     tier: str
