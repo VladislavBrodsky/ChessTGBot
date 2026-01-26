@@ -54,15 +54,28 @@ class TelegramService:
         await cls.application.initialize()
         await cls.application.start()
         
-        # CRITICAL: Delete any existing webhooks before polling
-        # This prevents conflicts with previous deployments
+        # Decision: Polling vs Webhook
+        # If we are on a deployed environment (inferred), use Webhooks to avoid Conflict errors from multiple replicas.
+        use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
+
+        if use_webhook:
+            webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
+            logger.info(f"Attempting to set webhook to: {webhook_url}")
+            try:
+                await cls.application.bot.set_webhook(url=webhook_url)
+                logger.info(f"✅ Telegram Bot Started with Webhook")
+                return
+            except Exception as e:
+                logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
+        
+        # Fallback / Local Development: Robust Polling Start (Handle Conflict from rolling updates)
+        # CRITICAL: Delete any existing webhooks before polling if we are forced to poll
         try:
             await cls.application.bot.delete_webhook(drop_pending_updates=True)
-            logger.info("Cleared any existing webhooks")
+            logger.info("Cleared any existing webhooks for polling")
         except Exception as e:
             logger.warning(f"Could not clear webhooks: {e}")
-        
-        # Robust Polling Start (Handle Conflict from rolling updates)
+
         max_retries = 3
         retry_delay = 5 # seconds
         for attempt in range(max_retries):

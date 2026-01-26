@@ -49,9 +49,10 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game, users
+    from app.api.v1.endpoints import game, users, webhook
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
+    application.include_router(webhook.router, prefix="/api/v1/webhook", tags=["webhook"])
 
     @application.get("/version")
     @application.head("/version")
