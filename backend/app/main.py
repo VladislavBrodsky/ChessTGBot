@@ -53,6 +53,16 @@ def create_application() -> FastAPI:
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
+    @application.get("/version")
+    @application.head("/version")
+    async def get_version():
+        return {"version": settings.VERSION, "status": "deployed"}
+
+    @application.get("/health")
+    @application.head("/health")
+    async def health_check():
+        return {"status": "ok", "version": settings.VERSION}
+
     # Mount Socket.IO (Must be before static catch-all)
     application.mount("/socket.io", sio_app) # Explicitly mount at /socket.io for cleaner routing
 
@@ -81,13 +91,3 @@ def create_application() -> FastAPI:
     return application
 
 app = create_application()
-
-@app.get("/version")
-@app.head("/version")
-async def get_version():
-    return {"version": settings.VERSION, "status": "deployed"}
-
-@app.get("/health")
-@app.head("/health")
-async def health_check():
-    return {"status": "ok", "version": settings.VERSION}
