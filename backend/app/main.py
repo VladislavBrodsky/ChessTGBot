@@ -8,6 +8,7 @@ from app.core.config import get_settings
 from app.core.socket import sio_app
 import app.socket_events # Register events
 import os
+import logging
 from app.services.telegram_bot import TelegramService
 
 settings = get_settings()
@@ -15,7 +16,22 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    from app.core.database import init_db
+    logger = logging.getLogger("uvicorn")
+    logger.info(f"🚀 Starting App Version: {settings.VERSION}")
+    
+    # Verify Database Connection
+    from app.core.database import init_db, engine
+    from sqlalchemy import text
+    try:
+        async with engine.connect() as conn:
+            result = await conn.execute(text("SELECT inet_server_addr()"))
+            db_host = result.scalar()
+            logger.info(f"✅ Database Connected. Host: {db_host}")
+            if str(db_host) in ["127.0.0.1", "::1"] and "railway" in settings.WEBAPP_URL:
+                 logger.warning("⚠️  WARNING: Production App connected to Localhost DB! Ensure DATABASE_URL is set.")
+    except Exception as e:
+         logger.error(f"❌ Database Connection Failed: {e}")
+
     await init_db()
     await TelegramService.start_bot()
     yield
