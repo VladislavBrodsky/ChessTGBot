@@ -12,11 +12,9 @@ export default function Home() {
     const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
-        // Init Telegram WebApp
+        // Init Telegram WebApp Data
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
             setTgUser(tg.initDataUnsafe?.user);
 
             // Check for deep link (Auto-Join)
@@ -159,7 +157,7 @@ export default function Home() {
                                 <div className="flex items-baseline gap-1.5">
                                     <span className="text-xl font-black text-white">{stats?.current_streak?.count || 0}</span>
                                     <span className={`text-[10px] font-bold uppercase tracking-wider ${stats?.current_streak?.type === 'win' ? 'text-emerald-400' :
-                                            stats?.current_streak?.type === 'loss' ? 'text-red-400' : 'text-white/40'
+                                        stats?.current_streak?.type === 'loss' ? 'text-red-400' : 'text-white/40'
                                         }`}>
                                         {stats?.current_streak?.type === 'win' ? 'WINS' :
                                             stats?.current_streak?.type === 'loss' ? 'LOSSES' : 'NONE'}
@@ -206,8 +204,8 @@ export default function Home() {
                                         <div className="flex items-center gap-2.5">
                                             {/* Result Indicator */}
                                             <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black ${game.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
-                                                    game.result === 'loss' ? 'bg-red-500/20 text-red-400' :
-                                                        'bg-amber-500/20 text-amber-400'
+                                                game.result === 'loss' ? 'bg-red-500/20 text-red-400' :
+                                                    'bg-amber-500/20 text-amber-400'
                                                 }`}>
                                                 {game.result === 'win' ? 'W' : game.result === 'loss' ? 'L' : 'D'}
                                             </div>
@@ -226,7 +224,7 @@ export default function Home() {
                                         {/* ELO Change */}
                                         <div className="flex flex-col items-end">
                                             <span className={`text-[11px] font-black ${game.elo_change > 0 ? 'text-emerald-400' :
-                                                    game.elo_change < 0 ? 'text-red-400' : 'text-white/40'
+                                                game.elo_change < 0 ? 'text-red-400' : 'text-white/40'
                                                 }`}>
                                                 {game.elo_change > 0 ? '+' : ''}{game.elo_change}
                                             </span>

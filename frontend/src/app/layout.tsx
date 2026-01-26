@@ -18,6 +18,8 @@ export const metadata: Metadata = {
     description: "Real-time Multiplayer Chess on Telegram",
 };
 
+import TelegramInit from "@/components/TelegramInit";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -32,6 +34,7 @@ export default function RootLayout({
                 className={`${inter.variable} ${robotoMono.variable} antialiased`}
             >
                 <ThemeProvider>
+                    <TelegramInit />
                     {children}
                 </ThemeProvider>
             </body>
