@@ -6,6 +6,11 @@ declare global {
             WebApp: {
                 ready: () => void;
                 expand: () => void;
+                close: () => void;
+                enableClosingConfirmation: () => void;
+                disableClosingConfirmation: () => void;
+                setHeaderColor: (color: string) => void;
+                setBackgroundColor: (color: string) => void;
                 initDataUnsafe?: {
                     user?: any;
                     start_param?: string;
