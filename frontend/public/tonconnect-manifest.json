@@ -1,7 +1,7 @@
 {
-    "url": "https://finchess-app.com",
+    "url": "https://chesstgbot-production.up.railway.app",
     "name": "FinChess Protocol",
-    "iconUrl": "https://finchess-app.com/icon.png",
-    "termsOfUseUrl": "https://finchess-app.com/terms",
-    "privacyPolicyUrl": "https://finchess-app.com/privacy"
+    "iconUrl": "https://chesstgbot-production.up.railway.app/icon.svg",
+    "termsOfUseUrl": "https://chesstgbot-production.up.railway.app/terms",
+    "privacyPolicyUrl": "https://chesstgbot-production.up.railway.app/privacy"
 }
