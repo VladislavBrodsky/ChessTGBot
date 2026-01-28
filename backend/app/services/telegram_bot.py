@@ -1,4 +1,4 @@
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application
 from app.core.config import get_settings
 import logging
