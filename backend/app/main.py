@@ -104,10 +104,24 @@ def create_application() -> FastAPI:
 
         @application.get("/{full_path:path}")
         async def serve_frontend(full_path: str):
-            # Check if file exists (e.g. favicon.ico)
+            # 1. Exact file match
             potential_file = f"{static_dir}/{full_path}"
             if os.path.isfile(potential_file):
                 return FileResponse(potential_file)
+            
+            # 2. HTML file match (clean URLs)
+            # e.g. /en/home -> /en/home.html
+            potential_html = f"{static_dir}/{full_path}.html"
+            if os.path.isfile(potential_html):
+                return FileResponse(potential_html)
+
+            # 3. Directory index match
+            # e.g. /en/home -> /en/home/index.html
+            potential_index = f"{static_dir}/{full_path}/index.html"
+            if os.path.isfile(potential_index):
+                return FileResponse(potential_index)
+
+            # 4. Fallback to SPA root (for client-side routing if static file not found)
             return FileResponse(f"{static_dir}/index.html")
 
     return application
