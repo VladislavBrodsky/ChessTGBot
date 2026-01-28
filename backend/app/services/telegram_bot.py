@@ -133,20 +133,22 @@ class TelegramService:
 
     @classmethod
     async def start_bot(cls):
-        """Start the bot application with conflict prevention."""
+        """Start the bot application with conflict prevention using Redis leader election."""
         if not settings.TELEGRAM_BOT_TOKEN:
             logger.warning("TELEGRAM_BOT_TOKEN not set. Bot will not start.")
             return
- 
+
         import asyncio
+        import redis.asyncio as redis
         from telegram.error import Conflict
         from telegram.ext import CallbackQueryHandler
- 
-        # Prevent multiple instances
+
+        # Prevent multiple instances in same process
         if cls.application:
             logger.warning("Bot already initialized. Skipping duplicate start.")
             return
- 
+
+        # 1. Initialize Bot (Sender Role - All Instances)
         cls.application = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
         cls.application.add_handler(CommandHandler("start", cls.start_command))
         cls.application.add_handler(CommandHandler("language", cls.language_command))
@@ -154,45 +156,67 @@ class TelegramService:
         
         await cls.application.initialize()
         await cls.application.start()
-        
-        # Decision: Polling vs Webhook
-        # If we are on a deployed environment (inferred), use Webhooks to avoid Conflict errors from multiple replicas.
-        use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
+        logger.info("✅ Telegram Bot Initialized (Sender Mode)")
 
-        if use_webhook:
-            webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
-            logger.info(f"Attempting to set webhook to: {webhook_url}")
-            try:
-                # drop_pending_updates=True helps clear the queue if the bot was down/conflicted
-                await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
-                logger.info(f"✅ Telegram Bot Started with Webhook")
-                return
-            except Exception as e:
-                logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
-        
-        # Fallback / Local Development: Robust Polling Start (Handle Conflict from rolling updates)
-        # CRITICAL: Delete any existing webhooks before polling if we are forced to poll
+        # 2. Leader Election for Receiver Role (Polling/Webhook)
+        # Only one instance should handle updates to avoid Conflict errors.
         try:
-            await cls.application.bot.delete_webhook(drop_pending_updates=True)
-            logger.info("Cleared any existing webhooks for polling")
-        except Exception as e:
-            logger.warning(f"Could not clear webhooks: {e}")
+            redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+            lock_key = "telegram_bot_leader"
+            leader_id = f"instance_{settings.PROJECT_NAME}_{asyncio.get_event_loop().time()}" # Simple unique ID
+            
+            # Try to acquire leadership
+            is_leader = await redis_client.set(lock_key, leader_id, nx=True, ex=30)
+            
+            if is_leader:
+                logger.info("👑 Acquired Bot Leadership. Starting Receiver...")
+                
+                # Start Heartbeat in background
+                async def heartbeat():
+                    while True:
+                        try:
+                            # Refresh lock
+                            await redis_client.expire(lock_key, 30)
+                            await asyncio.sleep(10)
+                        except asyncio.CancelledError:
+                            # Release lock on shutdown
+                            current_leader = await redis_client.get(lock_key)
+                            if current_leader == leader_id:
+                                await redis_client.delete(lock_key)
+                            break
+                        except Exception as e:
+                            logger.error(f"Heartbeat error: {e}")
+                            await asyncio.sleep(5)
 
-        max_retries = 3
-        retry_delay = 5 # seconds
-        for attempt in range(max_retries):
-            try:
-                await cls.application.updater.start_polling(drop_pending_updates=True)
-                logger.info("✅ Telegram Bot Started Successfully with Polling")
-                return
-            except Conflict:
-                logger.warning(f"⚠️ Bot Conflict (Attempt {attempt+1}/{max_retries}). Previous instance still active. Retrying in {retry_delay}s...")
-                await asyncio.sleep(retry_delay)
-            except Exception as e:
-                logger.error(f"❌ Unexpected error starting bot: {e}")
-                break
-        
-        logger.error("❌ Failed to start Telegram Bot after retries. App continues without bot.")
+                asyncio.create_task(heartbeat())
+                
+                # Verify environment
+                use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
+                
+                if use_webhook:
+                    webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
+                    try:
+                        await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+                        logger.info(f"✅ Webhook set to: {webhook_url}")
+                        return
+                    except Exception as e:
+                        logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
+
+                # Polling Fallback (Only Leader)
+                try:
+                    await cls.application.bot.delete_webhook(drop_pending_updates=True)
+                    # We use start_polling but we must be careful not to block strictly if we want the app to run?
+                    # updater.start_polling() is non-blocking (asyncio) usually? 
+                    # Wrapper around asyncio.create_task usually.
+                    await cls.application.updater.start_polling(drop_pending_updates=True)
+                    logger.info("✅ Bot Polling Started (Leader)")
+                except Exception as e:
+                    logger.error(f"Failed to start polling: {e}")
+            else:
+                logger.info("💤 Bot Leadership not acquired. Running in Passive Mode (Sender only).")
+
+        except Exception as e:
+            logger.error(f"Redis Leader Election Failed: {e}. Bot will not receive updates.")
 
     @classmethod
     async def stop_bot(cls):
@@ -215,15 +239,14 @@ class TelegramService:
         Generates a direct StartApp link for the Telegram Mini App.
         Format: https://t.me/YourBotName/appname?startapp=game_id
         """
-        # Note: We attempt to get the bot username if the app is initialized.
         bot_username = "YourBotName"
         try:
             if cls.application:
                 # We need to access the bot object. 
-                # Ideally, we should cache the username at startup.
                 me = await cls.application.bot.get_me()
                 bot_username = me.username
         except Exception as e:
             logger.warning(f"Could not fetch bot username: {e}")
 
         return f"https://t.me/share/url?url=https://t.me/{bot_username}/chess?startapp={game_id}"
+

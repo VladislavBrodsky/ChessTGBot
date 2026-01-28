@@ -1,20 +1,25 @@
-from fastapi import Request
+from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
+from starlette.types import Message
 
 class HeadMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.method == "HEAD":
-            # Change method to GET for internal processing
             request.scope["method"] = "GET"
             response = await call_next(request)
-            # Revert method back to HEAD
             request.scope["method"] = "HEAD"
-            # Return response with empty body but same headers
+            
+            # Create a new response with no content but same headers/status
+            # We must be careful with Content-Length if we strip the body
+            headers = dict(response.headers)
+            
+            # If the original response had a Content-Length, we should technically keep it 
+            # to match what a GET would return, but send no body.
+            
             return Response(
                 content=b"",
                 status_code=response.status_code,
-                headers=dict(response.headers),
+                headers=headers,
                 media_type=response.media_type,
             )
         return await call_next(request)
