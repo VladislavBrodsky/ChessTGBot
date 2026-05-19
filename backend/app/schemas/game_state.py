@@ -17,6 +17,7 @@ class GameState(BaseModel):
     legal_moves: List[str]
     white_player_id: Optional[int] = None
     black_player_id: Optional[int] = None
+    bid_amount: int = 0
 
 class JoinGameRequest(BaseModel):
     game_id: str

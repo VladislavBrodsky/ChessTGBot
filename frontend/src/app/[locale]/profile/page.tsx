@@ -3,6 +3,7 @@
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { useTranslations } from 'next-intl';
 import { motion } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
@@ -22,11 +23,8 @@ export default function ProfilePage() {
             setTgUser(user);
 
             if (user?.id) {
-                fetch(`/api/v1/users/sync`, {
-                    method: "POST",
-                    headers: {
-                        'X-Telegram-Init-Data': (tg as any).initData || ""
-                    }
+                apiFetch(`/api/v1/users/sync`, {
+                    method: "POST"
                 })
                     .then(res => res.json())
                     .then(data => setStats(data))

@@ -72,11 +72,12 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game, users, webhook, gamification
+    from app.api.v1.endpoints import game, users, webhook, gamification, wallet
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
     application.include_router(webhook.router, prefix="/api/v1/webhook", tags=["webhook"])
     application.include_router(gamification.router, prefix="/api/v1/gamification", tags=["gamification"])
+    application.include_router(wallet.router, prefix="/api/v1/wallet", tags=["wallet"])
 
     @application.get("/version")
     async def get_version():
@@ -99,7 +100,12 @@ def create_application() -> FastAPI:
         # SPA Catch-All
         # We need a custom route logic to fallback to index.html for unknown routes (like /game/123)
         @application.exception_handler(404)
-        async def custom_404_handler(_, __):
+        async def custom_404_handler(request: Request, exc: Exception):
+            if request.url.path.startswith("/api/"):
+                return JSONResponse(
+                    status_code=404,
+                    content={"detail": getattr(exc, "detail", "Not Found")}
+                )
             return FileResponse(f"{static_dir}/index.html")
 
         @application.get("/{full_path:path}")

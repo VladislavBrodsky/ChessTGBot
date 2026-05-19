@@ -1,25 +1,23 @@
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import Message
+class HeadMiddleware:
+    def __init__(self, app):
+        self.app = app
 
-class HeadMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        if request.method == "HEAD":
-            request.scope["method"] = "GET"
-            response = await call_next(request)
-            request.scope["method"] = "HEAD"
+    async def __call__(self, scope, receive, send):
+        # Only process HTTP HEAD requests
+        if scope["type"] == "http" and scope["method"] == "HEAD":
+            # Temporarily rewrite to GET so routing works automatically
+            scope["method"] = "GET"
             
-            # Create a new response with no content but same headers/status
-            # We must be careful with Content-Length if we strip the body
-            headers = dict(response.headers)
-            
-            # If the original response had a Content-Length, we should technically keep it 
-            # to match what a GET would return, but send no body.
-            
-            return Response(
-                content=b"",
-                status_code=response.status_code,
-                headers=headers,
-                media_type=response.media_type,
-            )
-        return await call_next(request)
+            # Intercept response to strip body
+            async def send_no_body(message):
+                if message["type"] == "http.response.body":
+                    # Send empty body back to client
+                    message["body"] = b""
+                await send(message)
+
+            await self.app(scope, receive, send_no_body)
+            return
+
+        # Let all other requests (GET, POST, websocket, etc.) pass through completely untouched
+        await self.app(scope, receive, send)
+

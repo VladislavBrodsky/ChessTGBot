@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 
 class TelegramService:
     application: Application = None
+    is_currently_leader = False
+    receiver_active = False
+    receiver_type = None
 
     @staticmethod
     async def get_user_profile_photo(user_id: int, bot):
@@ -132,15 +135,59 @@ class TelegramService:
                 await query.edit_message_text(text="User not found. Please type /start first.")
 
     @classmethod
+    async def start_receiver(cls):
+        """Start receiving updates via webhook or polling (Only Leader handles this)."""
+        if not cls.application:
+            return
+        
+        use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
+        if use_webhook:
+            webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
+            try:
+                await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+                logger.info(f"👑 Bot Webhook Successfully Set: {webhook_url}")
+                cls.receiver_active = True
+                cls.receiver_type = "webhook"
+                return
+            except Exception as e:
+                logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
+
+        # Polling fallback (Only Leader)
+        try:
+            await cls.application.bot.delete_webhook(drop_pending_updates=True)
+            await cls.application.updater.start_polling(drop_pending_updates=True)
+            logger.info("👑 Bot Polling Successfully Started")
+            cls.receiver_active = True
+            cls.receiver_type = "polling"
+        except Exception as e:
+            logger.error(f"Failed to start polling: {e}")
+
+    @classmethod
+    async def stop_receiver(cls):
+        """Stop receiving updates (Node demoted to passive/sender mode)."""
+        if not cls.application:
+            return
+        
+        try:
+            if cls.receiver_active:
+                if cls.receiver_type == "polling" and cls.application.updater and cls.application.updater.running:
+                    await cls.application.updater.stop()
+                    logger.info("💤 Bot Polling Suspended (Demoted to Passive)")
+                elif cls.receiver_type == "webhook":
+                    await cls.application.bot.delete_webhook()
+                    logger.info("💤 Bot Webhook Removed (Demoted to Passive)")
+                cls.receiver_active = False
+        except Exception as e:
+            logger.error(f"Error stopping receiver: {e}")
+
+    @classmethod
     async def start_bot(cls):
-        """Start the bot application with conflict prevention using Redis leader election."""
+        """Start the bot application with dynamic conflict prevention using self-healing Redis leader election."""
         if not settings.TELEGRAM_BOT_TOKEN:
             logger.warning("TELEGRAM_BOT_TOKEN not set. Bot will not start.")
             return
 
         import asyncio
-        import redis.asyncio as redis
-        from telegram.error import Conflict
         from telegram.ext import CallbackQueryHandler
 
         # Prevent multiple instances in same process
@@ -156,78 +203,66 @@ class TelegramService:
         
         await cls.application.initialize()
         await cls.application.start()
-        logger.info("✅ Telegram Bot Initialized (Sender Mode)")
+        logger.info("✅ Telegram Bot Initialized (Sender Mode Active)")
 
-        # 2. Leader Election for Receiver Role (Polling/Webhook)
-        # Only one instance should handle updates to avoid Conflict errors.
-        try:
-            redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+        # 2. Self-Healing Background Leader Election Loop
+        async def election_loop():
+            import redis.asyncio as redis
+            import os
+            
+            instance_id = f"bot_{settings.PROJECT_NAME}_{os.getpid()}_{asyncio.get_event_loop().time()}"
             lock_key = "telegram_bot_leader"
-            leader_id = f"instance_{settings.PROJECT_NAME}_{asyncio.get_event_loop().time()}" # Simple unique ID
             
-            # Try to acquire leadership
-            is_leader = await redis_client.set(lock_key, leader_id, nx=True, ex=30)
-            
-            if is_leader:
-                logger.info("👑 Acquired Bot Leadership. Starting Receiver...")
-                
-                # Start Heartbeat in background
-                async def heartbeat():
-                    while True:
-                        try:
-                            # Refresh lock
-                            await redis_client.expire(lock_key, 30)
-                            await asyncio.sleep(10)
-                        except asyncio.CancelledError:
-                            # Release lock on shutdown
-                            current_leader = await redis_client.get(lock_key)
-                            if current_leader == leader_id:
-                                await redis_client.delete(lock_key)
-                            break
-                        except Exception as e:
-                            logger.error(f"Heartbeat error: {e}")
-                            await asyncio.sleep(5)
-
-                asyncio.create_task(heartbeat())
-                
-                # Verify environment
-                use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
-                
-                if use_webhook:
-                    webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
-                    try:
-                        await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
-                        logger.info(f"✅ Webhook set to: {webhook_url}")
-                        return
-                    except Exception as e:
-                        logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
-
-                # Polling Fallback (Only Leader)
+            while True:
                 try:
-                    await cls.application.bot.delete_webhook(drop_pending_updates=True)
-                    # We use start_polling but we must be careful not to block strictly if we want the app to run?
-                    # updater.start_polling() is non-blocking (asyncio) usually? 
-                    # Wrapper around asyncio.create_task usually.
-                    await cls.application.updater.start_polling(drop_pending_updates=True)
-                    logger.info("✅ Bot Polling Started (Leader)")
+                    redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+                    
+                    # Try to acquire or extend leadership lease
+                    # Lock holds for 20 seconds, we check/renew every 10 seconds.
+                    acquired = await redis_client.set(lock_key, instance_id, nx=True, ex=20)
+                    
+                    if acquired:
+                        if not cls.is_currently_leader:
+                            logger.info(f"👑 [LEADER ELECTION] Acquired lock. Promoting instance {instance_id} to ACTIVE leader...")
+                            cls.is_currently_leader = True
+                            await cls.start_receiver()
+                    else:
+                        # Check if we already own it
+                        current_owner = await redis_client.get(lock_key)
+                        if current_owner == instance_id:
+                            # Renew lease
+                            await redis_client.expire(lock_key, 20)
+                            if not cls.is_currently_leader:
+                                cls.is_currently_leader = True
+                                await cls.start_receiver()
+                        else:
+                            # Someone else is the leader
+                            if cls.is_currently_leader:
+                                logger.warning(f"⚠️ [LEADER ELECTION] Leadership lost to {current_owner}. Demoting to PASSIVE...")
+                                cls.is_currently_leader = False
+                                await cls.stop_receiver()
+                            
+                    await redis_client.close()
                 except Exception as e:
-                    logger.error(f"Failed to start polling: {e}")
-            else:
-                logger.info("💤 Bot Leadership not acquired. Running in Passive Mode (Sender only).")
+                    logger.error(f"[LEADER ELECTION] Error in loop: {e}")
+                    # In case of Redis outage, suspend receiver to avoid duplicate update polling conflicts
+                    if cls.is_currently_leader:
+                        cls.is_currently_leader = False
+                        await cls.stop_receiver()
+                
+                await asyncio.sleep(10)
 
-        except Exception as e:
-            logger.error(f"Redis Leader Election Failed: {e}. Bot will not receive updates.")
+        asyncio.create_task(election_loop())
 
     @classmethod
     async def stop_bot(cls):
         """Stop the bot application gracefully."""
         if cls.application:
             try:
-                if cls.application.updater and cls.application.updater.running:
-                    await cls.application.updater.stop()
+                await cls.stop_receiver()
                 await cls.application.stop()
                 await cls.application.shutdown()
-                logger.info("✅ Telegram Bot Stopped")
+                logger.info("✅ Telegram Bot Fully Stopped")
             except Exception as e:
                 logger.error(f"Error stopping bot: {e}")
             finally:
@@ -237,16 +272,39 @@ class TelegramService:
     async def create_invite_link(cls, game_id: str) -> str:
         """
         Generates a direct StartApp link for the Telegram Mini App.
-        Format: https://t.me/YourBotName/appname?startapp=game_id
         """
         bot_username = "YourBotName"
         try:
             if cls.application:
-                # We need to access the bot object. 
                 me = await cls.application.bot.get_me()
                 bot_username = me.username
         except Exception as e:
             logger.warning(f"Could not fetch bot username: {e}")
 
         return f"https://t.me/share/url?url=https://t.me/{bot_username}/chess?startapp={game_id}"
+
+    @classmethod
+    async def send_notification(cls, telegram_id: int, text: str):
+        """
+        Send direct push notifications to a user via the Telegram Bot API.
+        Does not crash if bot is not configured or token is empty.
+        """
+        if not settings.TELEGRAM_BOT_TOKEN:
+            logger.warning("Bot notification skipped: TELEGRAM_BOT_TOKEN not configured.")
+            return
+
+        try:
+            # If the application is already running, reuse its bot client.
+            # Otherwise, instantiate a one-off bot client.
+            bot = cls.application.bot if (cls.application and cls.application.bot) else None
+            if not bot:
+                from telegram import Bot
+                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+
+            # Fire-and-forget notification
+            await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
+            logger.info(f"✉️ Telegram Notification successfully pushed to user {telegram_id}")
+        except Exception as e:
+            logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
+
 

@@ -4,6 +4,7 @@ import { TonConnectButton, useTonWallet } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import { FaWallet } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
+import { apiFetch } from '@/lib/api';
 
 export default function WalletConnect() {
     const wallet = useTonWallet();
@@ -12,6 +13,37 @@ export default function WalletConnect() {
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (mounted && wallet?.account?.address) {
+            let telegramId = null;
+            if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                telegramId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+            }
+
+            // Fallback for local testing/development
+            if (!telegramId) {
+                telegramId = 123456789;
+            }
+
+            apiFetch('/api/v1/users/wallet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    telegram_id: telegramId,
+                    wallet_address: wallet.account.address
+                })
+            })
+                .then(res => {
+                    if (res.ok) {
+                        console.log("✅ Wallet successfully synced with platform database.");
+                    }
+                })
+                .catch(err => console.error("❌ Failed to sync wallet with backend", err));
+        }
+    }, [wallet, mounted]);
 
     // Function to generate the shortened address safely
     const getShortAddress = (address: string) => {

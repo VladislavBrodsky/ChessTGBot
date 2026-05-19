@@ -21,7 +21,10 @@ async def create_game_history(
     final_fen: Optional[str] = None,
     game_type: str = 'online',
     created_at: Optional[datetime] = None,
-    ended_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None,
+    bid_amount: int = 0,
+    platform_rake: int = 0,
+    payout_amount: int = 0
 ) -> GameHistory:
     """Create a new game history record."""
     db_game = GameHistory(
@@ -39,7 +42,10 @@ async def create_game_history(
         final_fen=final_fen,
         game_type=game_type,
         created_at=created_at or datetime.utcnow(),
-        ended_at=ended_at or datetime.utcnow()
+        ended_at=ended_at or datetime.utcnow(),
+        bid_amount=bid_amount,
+        platform_rake=platform_rake,
+        payout_amount=payout_amount
     )
     db.add(db_game)
     await db.commit()

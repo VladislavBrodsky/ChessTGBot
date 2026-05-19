@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NextIntlClientProvider } from 'next-intl';
@@ -8,15 +7,8 @@ import { notFound } from 'next/navigation';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 
-const inter = Inter({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const robotoMono = Roboto_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
+const inter = { variable: "--font-geist-sans" };
+const robotoMono = { variable: "--font-geist-mono" };
 
 export const metadata: Metadata = {
     title: "Chess Game",

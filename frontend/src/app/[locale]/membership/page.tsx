@@ -6,6 +6,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaCheck, FaRocket, FaFolder, FaDownload, FaEdit, FaChevronLeft } from "react-icons/fa";
 import Link from "next/link";
 import TierComparison from "@/components/TierComparison";
+import { apiFetch } from "@/lib/api";
 
 const TIERS = [
     {
@@ -52,14 +53,8 @@ export default function MembershipPage() {
         }
 
         try {
-            const initData = typeof window !== "undefined" ? (window.Telegram?.WebApp as any)?.initData : "";
-
-            const res = await fetch("/api/v1/users/subscribe", {
+            const res = await apiFetch("/api/v1/users/subscribe", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'X-Telegram-Init-Data': initData || ""
-                },
                 body: JSON.stringify({
                     tier: selectedTier.id
                 })

@@ -31,3 +31,8 @@ class GameHistory(Base):
     game_type = Column(String, default='online')  # 'online', 'computer'
     created_at = Column(DateTime, default=datetime.utcnow)
     ended_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Web3 Betting
+    bid_amount = Column(Integer, default=0)  # In cents (smallest unit)
+    platform_rake = Column(Integer, default=0)  # In cents (3% of pool)
+    payout_amount = Column(Integer, default=0)  # In cents (97% of pool)

@@ -64,3 +64,13 @@ async def get_top_users(db: AsyncSession, limit: int = 50):
         .limit(limit)
     )
     return result.scalars().all()
+
+async def update_balance(db: AsyncSession, user: User, amount: int):
+    """
+    amount: Positive for deposits/wins, negative for wagers/withdrawals (in cents)
+    """
+    user.balance += amount
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

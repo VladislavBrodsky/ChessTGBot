@@ -5,11 +5,12 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog } from 'react-icons/fa';
+import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaWallet } from 'react-icons/fa';
 
 const NAV_ITEMS = [
     { name: 'Home', icon: <FaChessPawn />, href: '/home' },
     { name: 'Play', icon: <FaGamepad />, href: '/game' },
+    { name: 'Wallet', icon: <FaWallet />, href: '/wallet' },
     { name: 'Challenges', icon: <FaGraduationCap />, href: '/challenges' },
     { name: 'Settings', icon: <FaCog />, href: '/settings' },
 ];

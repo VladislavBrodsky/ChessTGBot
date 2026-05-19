@@ -19,11 +19,11 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Telegram
-    TELEGRAM_BOT_TOKEN: str
+    TELEGRAM_BOT_TOKEN: str = ""
 
     # Security
     # In production, this MUST be set as an environment variable.
-    SECRET_KEY: str
+    SECRET_KEY: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
     # Deployment
@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: str | None = None
     STRIPE_WEBHOOK_SECRET: str | None = None
     TON_API_KEY: str | None = None # For TON Center or similar
+
+    # Web3 Wallets Configuration
+    MASTER_WALLET_ADDRESS: str = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2"  # Game deposits pool
+    COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
 
     class Config:
         env_file = ".env"

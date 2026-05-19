@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
+import { apiFetch } from '@/lib/api';
 
 interface LeaderboardItem {
     telegram_id: number;
@@ -18,13 +19,7 @@ export default function Leaderboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const initData = typeof window !== "undefined" ? (window.Telegram?.WebApp as any)?.initData : "";
-
-        fetch('/api/v1/users/leaderboard', {
-            headers: {
-                'X-Telegram-Init-Data': initData || ""
-            }
-        })
+        apiFetch('/api/v1/users/leaderboard')
             .then(res => res.json())
             .then(data => {
                 setPlayers(Array.isArray(data) ? data : []);

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, BigInteger, Boolean, DateTime
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import datetime
 
@@ -29,3 +30,6 @@ class User(Base):
     xp = Column(BigInteger, default=0)
     referral_code = Column(String, unique=True, index=True, nullable=True)
     preferred_language = Column(String, default='en')
+
+    # Relationships
+    transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")

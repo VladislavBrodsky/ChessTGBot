@@ -64,15 +64,49 @@ from app.api.v1.deps import get_current_user
 
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
-    telegram_id: int, 
+    telegram_id: int,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+    username: Optional[str] = None,
+    photo_url: Optional[str] = None,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Get user stats. Read-only.
+    Get user stats. Auto-registers user if they do not exist and first_name is provided.
+    Also synchronizes any updated profile fields (name, username, photo) on-the-fly.
     """
     user = await user_crud.get_user_by_telegram_id(db, telegram_id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        if first_name:
+            user = await user_crud.create_user(
+                db,
+                telegram_id=telegram_id,
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                photo_url=photo_url
+            )
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    else:
+        # Sync profile information if provided and different
+        updated = False
+        if first_name and user.first_name != first_name:
+            user.first_name = first_name
+            updated = True
+        if last_name and user.last_name != last_name:
+            user.last_name = last_name
+            updated = True
+        if username and user.username != username:
+            user.username = username
+            updated = True
+        if photo_url and user.photo_url != photo_url:
+            user.photo_url = photo_url
+            updated = True
+        if updated:
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
     
     # Calculate enhanced stats
     from app.services.user_stats import calculate_user_stats

@@ -8,7 +8,7 @@ const withNextIntl = createNextIntlPlugin(
 const nextConfig = {
     reactStrictMode: true,
     transpilePackages: ['react-chessboard'],
-    output: 'export', // Enabled for Docker deployment
+    ...(process.env.STATIC_EXPORT === 'true' ? { output: 'export' } : {}),
     images: {
         unoptimized: true,
     },
