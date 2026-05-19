@@ -13,7 +13,7 @@ RUN npm install
 COPY frontend/ ./
 
 # Build static output (out folder)
-RUN npm run build
+RUN STATIC_EXPORT=true npm run build
 
 # ==========================================
 # Stage 2: Build Backend & Serve
