@@ -23,7 +23,9 @@
         "play": "Jogar Xadrez",
         "daily_tasks": "Tarefas Diárias",
         "friends": "Amigos",
-        "leaderboard": "Classificação"
+        "leaderboard": "Classificação",
+        "welcome": "Bem-vindo, {name}",
+        "back": "Voltar"
     },
     "Settings": {
         "return": "Voltar",
@@ -40,9 +42,21 @@
         "language_matrix": "Matriz de Idioma",
         "neural_tier": "Nível Neural",
         "enhanced_access": "Acesso Melhorado Ativo",
-        "footer": "Autorizado para Interface Matriz Neural Build v1.5.02"
+        "footer": "Autorizado para Interface Matriz Neural Build v1.5.02",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "Escolher Idioma"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }

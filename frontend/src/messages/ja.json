@@ -23,7 +23,9 @@
         "play": "チェスをプレイ",
         "daily_tasks": "デイリータスク",
         "friends": "フレンド",
-        "leaderboard": "リーダーボード"
+        "leaderboard": "リーダーボード",
+        "welcome": "ようこそ、{name}",
+        "back": "戻る"
     },
     "Settings": {
         "return": "戻る",
@@ -40,9 +42,21 @@
         "language_matrix": "言語マトリックス",
         "neural_tier": "ニューラル・ティア",
         "enhanced_access": "拡張アクセス有効",
-        "footer": "ニューラル・マトリックス・インターフェース Build v1.5.02 認証済み"
+        "footer": "ニューラル・マトリックス・インターフェース Build v1.5.02 認証済み",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "言語を選択"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }

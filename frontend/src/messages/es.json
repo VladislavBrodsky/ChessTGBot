@@ -23,7 +23,9 @@
         "play": "Jugar Ajedrez",
         "daily_tasks": "Tareas Diarias",
         "friends": "Amigos",
-        "leaderboard": "Clasificación"
+        "leaderboard": "Clasificación",
+        "welcome": "Bienvenido, {name}",
+        "back": "Atrás"
     },
     "Settings": {
         "return": "Voltar",
@@ -40,7 +42,8 @@
         "language_matrix": "Matriz de Idioma",
         "neural_tier": "Nivel Neural",
         "enhanced_access": "Acceso Mejorado Activo",
-        "footer": "Autorizado para Interfaz Matriz Neural Build v1.5.02"
+        "footer": "Autorizado para Interfaz Matriz Neural Build v1.5.02",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "Elige Idioma"

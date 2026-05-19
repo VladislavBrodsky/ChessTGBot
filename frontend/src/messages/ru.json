@@ -23,7 +23,9 @@
         "play": "Играть",
         "daily_tasks": "Ежедневные Задания",
         "friends": "Друзья",
-        "leaderboard": "Лидеры"
+        "leaderboard": "Лидеры",
+        "welcome": "Добро пожаловать, {name}",
+        "back": "Назад"
     },
     "Settings": {
         "return": "Назад",
@@ -45,5 +47,16 @@
     },
     "Language": {
         "select": "Выберите Язык"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }

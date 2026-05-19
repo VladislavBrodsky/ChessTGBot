@@ -23,7 +23,9 @@
         "play": "शतरंज खेलें",
         "daily_tasks": "दैनिक कार्य",
         "friends": "मित्र",
-        "leaderboard": "लीडरबोर्ड"
+        "leaderboard": "लीडरबोर्ड",
+        "welcome": "स्वागत है, {name}",
+        "back": "पीछे"
     },
     "Settings": {
         "return": "वापस",
@@ -40,9 +42,21 @@
         "language_matrix": "भाषा मैट्रिक्स",
         "neural_tier": "न्यूरल टियर",
         "enhanced_access": "एन्हांस्ड एक्सेस सक्रिय",
-        "footer": "न्यूरल मैट्रिक्स इंटरफ़ेस बिल्ड v1.5.02 के लिए अधिकृत"
+        "footer": "न्यूरल मैट्रिक्स इंटरफ़ेस बिल्ड v1.5.02 के लिए अधिकृत",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "भाषा चुनें"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }

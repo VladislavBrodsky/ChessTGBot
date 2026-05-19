@@ -23,7 +23,9 @@
         "play": "Schach Spielen",
         "daily_tasks": "Tägliche Aufgaben",
         "friends": "Freunde",
-        "leaderboard": "Bestenliste"
+        "leaderboard": "Bestenliste",
+        "welcome": "Willkommen, {name}",
+        "back": "Zurück"
     },
     "Settings": {
         "return": "Zurück",
@@ -40,9 +42,21 @@
         "language_matrix": "Sprachmatrix",
         "neural_tier": "Neural Stufe",
         "enhanced_access": "Erweiterter Zugang Aktiv",
-        "footer": "Autorisiert für Neural Matrix Interface Build v1.5.02"
+        "footer": "Autorisiert für Neural Matrix Interface Build v1.5.02",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "Sprache Wählen"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }

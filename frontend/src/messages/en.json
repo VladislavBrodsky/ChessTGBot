@@ -24,7 +24,8 @@
         "play": "Play Chess",
         "daily_tasks": "Daily Tasks",
         "friends": "Friends",
-        "leaderboard": "Leaderboard"
+        "leaderboard": "Leaderboard",
+        "back": "Back"
     },
     "Settings": {
         "return": "Return",

@@ -23,7 +23,9 @@
         "play": "العب الشطرنج",
         "daily_tasks": "المهام اليومية",
         "friends": "الأصدقاء",
-        "leaderboard": "لائحة المتصدرين"
+        "leaderboard": "لائحة المتصدرين",
+        "welcome": "أهلاً بك، {name}",
+        "back": "رجوع"
     },
     "Settings": {
         "return": "عودة",
@@ -40,9 +42,21 @@
         "language_matrix": "مصفوفة اللغة",
         "neural_tier": "المستوى العصبي",
         "enhanced_access": "الوصول المحسن نشط",
-        "footer": "مخول لبناء واجهة المصفوفة العصبية v1.5.02"
+        "footer": "مخول لبناء واجهة المصفوفة العصبية v1.5.02",
+        "nebula_protocol": "Nebula Protocol"
     },
     "Language": {
         "select": "اختر اللغة"
+    },
+    "Gamification": {
+        "daily_missions": "Daily Protocols",
+        "claim": "Claim",
+        "daily_win": "Victory Protocol",
+        "daily_play": "Combat Training",
+        "daily_login": "System Sync",
+        "referral_program": "Referral Network",
+        "invite_friend": "Invite Neuro-Link",
+        "copy_code": "Copy Code",
+        "copied": "Copied!"
     }
 }
