@@ -37,6 +37,17 @@ export default function Home() {
     const [searchTimer, setSearchTimer] = useState<number>(0);
     const [matchmakingError, setMatchmakingError] = useState<string>("");
     const [walletBalance, setWalletBalance] = useState<number>(0);
+    const [showReferralPopup, setShowReferralPopup] = useState<boolean>(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (Math.random() > 0.3) {
+                setShowReferralPopup(true);
+                setTimeout(() => setShowReferralPopup(false), 5000);
+            }
+        }, 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         // Init Telegram WebApp Data
@@ -749,6 +760,35 @@ export default function Home() {
                                 </div>
                             )}
                         </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Holographic Referral Gold-Dust Popup */}
+            <AnimatePresence>
+                {showReferralPopup && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                        transition={{ type: "spring", damping: 20 }}
+                        className="fixed bottom-24 left-4 right-4 z-50 pointer-events-none"
+                    >
+                        <div className="w-full max-w-sm mx-auto p-4 rounded-2xl border border-[#FFD700]/30 bg-gradient-to-r from-[#FFD700]/10 via-[#FFD700]/5 to-transparent backdrop-blur-md shadow-[0_0_40px_rgba(255,215,0,0.2)] flex items-center gap-4 relative overflow-hidden">
+                            {/* Shimmer effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                            
+                            <div className="w-12 h-12 rounded-xl bg-[#FFD700]/20 flex items-center justify-center border border-[#FFD700]/50 relative z-10">
+                                <FaCoins className="text-[#FFD700] text-xl animate-bounce" />
+                                <div className="absolute inset-0 bg-[#FFD700] blur-xl opacity-20" />
+                            </div>
+                            
+                            <div className="flex flex-col relative z-10">
+                                <span className="text-[10px] font-black text-[#FFD700] uppercase tracking-[0.2em] mb-0.5">Referral Commission</span>
+                                <span className="text-sm font-black text-white italic tracking-wide">+$2.45 USDT</span>
+                                <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-1">From: Player "Grandmaster"</span>
+                            </div>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

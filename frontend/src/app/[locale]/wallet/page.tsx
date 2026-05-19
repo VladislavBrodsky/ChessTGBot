@@ -384,74 +384,57 @@ export default function WalletPage() {
                                 {/* 1. DEPOSIT MODAL */}
                                 {activeModal === 'deposit' && (
                                     <div className="space-y-4">
-                                        <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Top-Up Web3 Balance</h3>
-                                        <p className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-wider">
-                                            Specify how much USDT to top up. The platform automatically takes a 5% topup commission fee.
+                                        <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Web3 Deposit Invoice</h3>
+                                        <p className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-wider text-center">
+                                            Send TON to the Master Wallet below. Ensure you include the exact unique comment, or your deposit will be lost.
                                         </p>
 
-                                        {/* Preset selectors */}
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {["1", "5", "10", "50", "100", "500", "1000"].map((preset) => (
-                                                <button
-                                                    key={preset}
-                                                    onClick={() => setDepositAmount(preset)}
-                                                    className={`py-1.5 rounded-lg border text-[11px] font-black uppercase tracking-wider transition-all ${
-                                                        depositAmount === preset 
-                                                            ? 'border-brand-primary bg-brand-primary/10 text-brand-primary' 
-                                                            : 'border-brand-primary/10 bg-brand-surface hover:bg-brand-primary/5 text-brand-primary/60'
-                                                    }`}
-                                                >
-                                                    ${preset}
-                                                </button>
-                                            ))}
-                                            <button 
-                                                onClick={() => setDepositAmount("")} 
-                                                className="py-1.5 rounded-lg border border-brand-primary/10 bg-brand-surface text-[11px] font-black uppercase tracking-wider text-brand-primary/60"
-                                            >
-                                                Other
-                                            </button>
+                                        <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-primary/20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
+                                            <div className="absolute inset-0 bg-brand-primary/5 animate-pulse pointer-events-none" />
+                                            <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10">
+                                                {/* Simulated QR Code using CSS grid or simple image */}
+                                                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ton://transfer/EQA_MasterWallet_Neural_Hash_String_1x9?text=ref_1029384`} alt="QR Code" className="w-full h-full object-contain" />
+                                            </div>
+                                            <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary/40 pt-1">Scan to send via Tonkeeper</div>
                                         </div>
 
-                                        {/* Input field */}
-                                        <div className="flex flex-col space-y-1">
-                                            <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">Amount (USD)</label>
-                                            <input 
-                                                type="number"
-                                                value={depositAmount}
-                                                onChange={(e) => setDepositAmount(e.target.value)}
-                                                className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-sm font-bold focus:outline-none focus:border-brand-primary"
-                                                placeholder="Custom amount..."
-                                            />
+                                        <div className="flex flex-col space-y-3">
+                                            <div className="flex flex-col space-y-1">
+                                                <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">Master Destination Address</label>
+                                                <div className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold font-mono tracking-wider flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText("EQA_MasterWallet_Neural_Hash_String_1x9")}>
+                                                    <span className="truncate">EQA_MasterWallet_Neural_...</span>
+                                                    <FaCopy className="text-brand-primary/40" />
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col space-y-1">
+                                                <label className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Required Transfer Comment / Memo</label>
+                                                <div className="cyber-input w-full p-2.5 rounded-lg border border-emerald-500/40 bg-emerald-500/5 text-emerald-400 text-xs font-black font-mono tracking-widest flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText("ref_1029384")}>
+                                                    <span>ref_1029384</span>
+                                                    <FaCopy className="text-emerald-500/60" />
+                                                </div>
+                                            </div>
                                         </div>
 
                                         {/* Commission Alert */}
-                                        {parseFloat(depositAmount) > 0 && (
-                                            <div className="p-3 rounded-lg border border-brand-primary/10 bg-brand-primary/5 flex flex-col space-y-1 text-[10px] font-bold text-brand-primary/80 uppercase tracking-wider">
-                                                <div className="flex justify-between">
-                                                    <span>Top-Up Amount:</span>
-                                                    <span>${parseFloat(depositAmount).toFixed(2)}</span>
-                                                </div>
-                                                <div className="flex justify-between text-rose-400">
-                                                    <span>Platform Fee (5%):</span>
-                                                    <span>-${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
-                                                </div>
-                                                <div className="flex justify-between text-emerald-400 border-t border-brand-primary/10 pt-1 mt-1">
-                                                    <span>Credited Payout:</span>
-                                                    <span>${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
-                                                </div>
-                                            </div>
-                                        )}
+                                        <div className="p-3 rounded-lg border border-brand-primary/10 bg-brand-primary/5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary/80 uppercase tracking-wider">
+                                            <span>Platform Gateway Fee: <strong className="text-brand-primary">5%</strong></span>
+                                        </div>
 
-                                        {successMessage && <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider">{successMessage}</div>}
-                                        {errorMessage && <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider">{errorMessage}</div>}
+                                        {/* Simulator Button */}
+                                        <div className="w-full pt-2">
+                                            {successMessage && <div className="p-2.5 mb-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+                                            {errorMessage && <div className="p-2.5 mb-2 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
-                                        <button
-                                            onClick={handleDepositSubmit}
-                                            disabled={processing}
-                                            className="w-full py-2.5 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-primary/10 hover:bg-brand-primary-hover transition-all"
-                                        >
-                                            {processing ? "Sending Web3 Invoice..." : "Authorize Web3 Deposit"}
-                                        </button>
+                                            <button
+                                                onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
+                                                disabled={processing}
+                                                className="w-full py-3 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
+                                                <span>{processing ? "Listening for Web3 TX..." : "Simulate $10 Web3 Deposit"}</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
@@ -460,9 +443,9 @@ export default function WalletPage() {
                                     <div className="space-y-4">
                                         <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Withdraw Web3 Balance</h3>
                                         
-                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-primary/5 rounded-xl border border-brand-primary/10">
                                             <span className="text-brand-primary/60">Available Balance:</span>
-                                            <span className="text-brand-primary">${(balance / 100).toFixed(2)}</span>
+                                            <span className="text-sm font-black text-brand-primary">${(balance / 100).toFixed(2)}</span>
                                         </div>
 
                                         {/* Input amount */}
@@ -472,7 +455,7 @@ export default function WalletPage() {
                                                 type="number"
                                                 value={withdrawAmount}
                                                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                                                className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-sm font-bold focus:outline-none"
+                                                className="cyber-input w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-sm font-bold focus:outline-none focus:border-brand-primary transition-all"
                                                 placeholder="Amount to withdraw..."
                                             />
                                         </div>
@@ -484,9 +467,21 @@ export default function WalletPage() {
                                                 type="text"
                                                 value={withdrawAddress}
                                                 onChange={(e) => setWithdrawAddress(e.target.value)}
-                                                className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold focus:outline-none"
+                                                className="cyber-input w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary transition-all"
                                                 placeholder="EQB..."
                                             />
+                                        </div>
+
+                                        {/* Safety Checklist */}
+                                        <div className="flex flex-col space-y-2 pt-2">
+                                            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary/60 uppercase tracking-widest cursor-pointer">
+                                                <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+                                                <span>I confirm the destination is a valid TON network address.</span>
+                                            </label>
+                                            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary/60 uppercase tracking-widest cursor-pointer">
+                                                <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+                                                <span>I understand that blockchain transfers are irreversible.</span>
+                                            </label>
                                         </div>
 
                                         {/* Insufficient Funds Trigger */}
@@ -496,13 +491,13 @@ export default function WalletPage() {
                                             </div>
                                         )}
 
-                                        {successMessage && <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider">{successMessage}</div>}
-                                        {errorMessage && <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider">{errorMessage}</div>}
+                                        {successMessage && <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+                                        {errorMessage && <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
                                         <button
                                             onClick={handleWithdrawSubmit}
                                             disabled={processing || parseFloat(withdrawAmount) * 100 > balance}
-                                            className="w-full py-2.5 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-xs font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all"
+                                            className="w-full mt-2 py-3 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all disabled:opacity-50"
                                         >
                                             {processing ? "Signing TON transaction..." : "Request TON Withdrawal"}
                                         </button>
