@@ -28,6 +28,7 @@ export default function Home() {
     const [soundEnabled, setSoundEnabled] = useState(true);
     const { theme, toggleTheme } = useTheme();
     const tSettings = useTranslations('Settings');
+    const [activeTab, setActiveTab] = useState<'play' | 'quests' | 'leaderboard'>('play');
 
     // Web3 Wager Autosearch Matchmaking
     const [selectedWager, setSelectedWager] = useState<number>(100); // default $1.00 (in cents)
@@ -219,298 +220,279 @@ export default function Home() {
     };
 
     return (
-        <LayoutWrapper className="pb-32 px-4 md:px-6">
-            <div className="flex flex-col items-center w-full max-w-sm md:max-w-md mx-auto space-y-6 py-6">
+        <LayoutWrapper className="pb-12 px-4 md:px-6">
+            <div className="flex flex-col items-center w-full max-w-sm md:max-w-md mx-auto space-y-5 py-4">
 
-                {/* HUD / Status Bar */}
-                <div className="w-full glass-panel p-4 rounded-2xl border-brand-primary/10 flex items-center justify-between shadow-premium">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-brand-surface border border-brand-primary/10 flex items-center justify-center">
-                            <FaChessKnight className="text-brand-primary" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-widest leading-none mb-1">
-                                {tgUser?.first_name} {tgUser?.last_name || ""}
-                            </span>
-                            <span className="text-sm font-black text-brand-primary italic tracking-tighter">{stats?.elo || 1000} ELO</span>
-                        </div>
-                    </div>
-                    <div className="w-32">
-                        <XPProgressBar xp={stats?.xp || 850} level={stats?.level || 5} />
-                    </div>
+                {/* Dashboard Welcome Header */}
+                <div className="w-full text-left px-1 mb-1">
+                    <h1 className="text-xl font-black italic tracking-tighter text-brand-primary leading-none uppercase">
+                        {t('welcome', { name: tgUser?.first_name || 'Combatant' })}
+                    </h1>
+                    <p className="text-[8px] font-black text-brand-primary/20 uppercase tracking-[0.4em] mt-2">
+                        {t('subtitle')}
+                    </p>
                 </div>
 
+                {/* Unified Premium Profile Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full glass-panel p-5 rounded-2xl border-brand-primary/10 shadow-premium relative overflow-hidden group"
+                >
+                    {/* Decorative background chess piece */}
+                    <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
+                        <FaChessKnight size={140} />
+                    </div>
 
-
-                {/* Wallet Connection Protocol */}
-                <WalletConnect />
-
-                {/* Minimalist Brand Section */}
-                <div className="flex flex-col items-center w-full">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-brand-primary text-4xl md:text-5xl font-black italic tracking-tighter select-none mb-1 shadow-neon"
-                    >
-                        {t('title')}
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-lg font-bold text-brand-primary/80 mb-2"
-                    >
-                        {t('welcome', { name: tgUser?.first_name || 'Player' })}
-                    </motion.div>
-                    <div className="h-px w-16 bg-brand-primary/10 mb-2" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.6em] text-brand-primary/20">{t('subtitle')}</span>
-                </div>
-
-                {/* Profile Widget Container */}
-                <div className="w-full space-y-4">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="w-full glass-panel p-4 flex items-center justify-between shadow-premium relative overflow-hidden group"
-                    >
-                        {/* Decorative background element */}
-                        <div className="absolute -top-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
-                            <FaChessPawn size={120} />
-                        </div>
-
-                        <div className="flex items-center space-x-3 relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-brand-elevated border border-brand-primary/5 p-1 relative shadow-inner-glow">
+                    <div className="flex items-center justify-between mb-4 relative z-10">
+                        <div className="flex items-center space-x-3.5">
+                            <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-primary/10 p-0.5 relative shadow-inner-glow">
                                 {tgUser?.photo_url ? (
-                                    <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-xl object-cover" />
+                                    <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-lg object-cover" />
                                 ) : (
-                                    <div className="w-full h-full rounded-xl bg-linear-to-br from-white/10 to-transparent flex items-center justify-center text-xl font-black text-brand-primary/30">
+                                    <div className="w-full h-full rounded-lg bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center text-lg font-black text-brand-primary/30">
                                         {tgUser?.first_name?.[0] || "?"}
                                     </div>
                                 )}
                                 {stats?.is_premium && (
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[9px] text-brand-void border-2 border-brand-void">
+                                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
                                         <FaStar />
                                     </div>
                                 )}
                             </div>
                             <div className="flex flex-col justify-center">
-                                <h2 className="text-base font-extrabold tracking-tight text-brand-primary flex items-center gap-2 leading-none mb-1">
+                                <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
                                     {tgUser?.first_name} {tgUser?.last_name || ""}
                                 </h2>
-                                <div className="flex items-center gap-2.5">
-                                    <div className="flex flex-col">
-                                        <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest leading-none mb-0.5">{t('rating')}</span>
-                                        <span className="text-[11px] font-black text-brand-primary/90">{stats?.elo || 1000} {t('elo')}</span>
-                                    </div>
-                                    <div className="w-px h-5 bg-brand-primary/5" />
-                                    <div className="flex flex-col">
-                                        <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest leading-none mb-0.5">{t('win_rate')}</span>
-                                        <span className="text-[11px] font-black text-brand-primary/90">{stats?.win_rate?.toFixed(1) || 0}%</span>
-                                    </div>
-                                </div>
+                                <span className="text-[11px] font-black text-brand-primary/50 tracking-widest uppercase leading-none">
+                                    {stats?.elo || 1000} {t('elo')}
+                                </span>
                             </div>
                         </div>
 
-                        <div className="flex flex-col items-end justify-center relative z-10">
-                            <div className="px-2 py-0.5 rounded-lg border border-brand-primary/10 bg-brand-primary/5 shadow-inner-glow">
-                                <span className="text-[9px] font-black text-brand-primary/60 tracking-tighter uppercase whitespace-nowrap">{t('level')} 0{Math.floor((stats?.elo || 1000) / 200)}</span>
-                            </div>
+                        <div className="px-2.5 py-1 rounded-lg border border-brand-primary/10 bg-brand-primary/5 shadow-inner-glow">
+                            <span className="text-[9px] font-black text-brand-primary/70 tracking-widest uppercase">
+                                {t('level')} {stats?.level || 1}
+                            </span>
                         </div>
-                    </motion.div>
-
-                    {/* Streak & Stats Cards */}
-                    <div className="w-full grid grid-cols-2 gap-3">
-                        {/* Current Streak */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="glass-panel p-3 relative overflow-hidden"
-                        >
-                            <div className="flex flex-col">
-                                <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest mb-1.5">{t('current_streak')}</span>
-                                <div className="flex items-baseline gap-1.5">
-                                    <span className="text-xl font-black text-brand-primary">{stats?.current_streak?.count || 0}</span>
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${stats?.current_streak?.type === 'win' ? 'text-emerald-400' :
-                                        stats?.current_streak?.type === 'loss' ? 'text-red-400' : 'text-brand-primary/40'
-                                        }`}>
-                                        {stats?.current_streak?.type === 'win' ? t('wins') :
-                                            stats?.current_streak?.type === 'loss' ? t('losses') : t('none')}
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Best Streak */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 }}
-                            className="glass-panel p-3 relative overflow-hidden"
-                        >
-                            <div className="flex flex-col">
-                                <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest mb-1.5">{t('best_streak')}</span>
-                                <div className="flex items-baseline gap-1.5">
-                                    <span className="text-xl font-black text-brand-primary">{stats?.best_streak?.wins || 0}</span>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">{t('wins')}</span>
-                                </div>
-                            </div>
-                        </motion.div>
                     </div>
 
-                    {/* Recent Games Section */}
-                    {stats?.recent_games && stats.recent_games.length > 0 && (
+                    {/* XP Progress Bar */}
+                    <div className="mb-4 relative z-10">
+                        <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
+                    </div>
+
+                    <div className="h-px w-full bg-brand-primary/10 mb-4" />
+
+                    {/* Compact Stats Row */}
+                    <div className="grid grid-cols-3 gap-2 text-center relative z-10">
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest leading-none mb-1">Win Rate</span>
+                            <span className="text-xs font-black text-brand-primary">{stats?.win_rate?.toFixed(1) || 0}%</span>
+                        </div>
+                        <div className="w-px h-5 bg-brand-primary/10 self-center justify-self-center" />
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest leading-none mb-1">Streak</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs font-black text-brand-primary">{stats?.current_streak?.count || 0}</span>
+                                <span className={`text-[8px] font-black uppercase tracking-wider ${stats?.current_streak?.type === 'win' ? 'text-emerald-400' : 'text-brand-primary/40'}`}>
+                                    {stats?.current_streak?.type === 'win' ? 'W' : 'L'}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="w-px h-5 bg-brand-primary/10 self-center justify-self-center" />
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-bold text-brand-primary/30 uppercase tracking-widest leading-none mb-1">W/L/D</span>
+                            <span className="text-xs font-black text-brand-primary">
+                                {stats?.wins || 0}/{stats?.losses || 0}/{stats?.draws || 0}
+                            </span>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Cyber Sliding Tabs */}
+                <div className="w-full flex border-b border-brand-primary/10 pt-2 mb-2">
+                    {[
+                        { id: 'play', label: '🎮 PLAY' },
+                        { id: 'quests', label: '🎁 QUESTS' },
+                        { id: 'leaderboard', label: '🏆 RANKING' }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`flex-1 pb-3 text-[10px] font-black tracking-widest text-center transition-all duration-300 relative ${activeTab === tab.id ? 'text-brand-primary' : 'text-brand-primary/40 hover:text-brand-primary/60'}`}
+                        >
+                            {tab.label}
+                            {activeTab === tab.id && (
+                                <motion.div
+                                    layoutId="active-tab-line"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+                                />
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Tab Content Rendering */}
+                <AnimatePresence mode="wait">
+                    {activeTab === 'play' && (
                         <motion.div
+                            key="play-tab"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="w-full space-y-2"
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-full space-y-4"
                         >
-                            <h3 className="text-[9px] font-black uppercase tracking-widest text-brand-primary/40 px-1">{t('recent_activity')}</h3>
-                            <div className="space-y-2">
-                                {stats.recent_games.slice(0, 3).map((game: any, idx: number) => (
-                                    <motion.div
-                                        key={game.game_id}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.25 + idx * 0.05 }}
-                                        className="glass-panel p-2.5 flex items-center justify-between hover:bg-brand-primary/5 transition-colors"
+                            {/* Wallet Connection Protocol */}
+                            <WalletConnect />
+
+                            {/* Matchmaking Command Deck */}
+                            <div className="w-full space-y-3">
+                                <motion.button
+                                    whileHover={{ scale: 1.01, y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setShowGameSection(true)}
+                                    className="w-full h-24 action-button relative overflow-hidden flex flex-col items-center justify-center group shadow-premium"
+                                    disabled={isCreating}
+                                >
+                                    <div className="absolute inset-0 bg-linear-to-t from-brand-void/20 via-transparent to-brand-primary/5 opacity-50" />
+                                    <div className="relative z-10 flex flex-col items-center gap-1.5">
+                                        <div className="w-8 h-8 rounded-lg bg-brand-void/5 flex items-center justify-center border border-black/10 group-hover:scale-110 group-hover:bg-brand-void/10 transition-all duration-300">
+                                            <FaChessPawn size={16} className="text-brand-void/70" />
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-base font-black tracking-[0.2em]">{t('execute_matchmaking')}</span>
+                                            <span className="text-[7px] font-bold opacity-30 tracking-[0.4em] mt-0.5 uppercase">{t('protocol_beta')}</span>
+                                        </div>
+                                    </div>
+                                </motion.button>
+
+                                <div className="grid grid-cols-2 gap-3 w-full">
+                                    <motion.button
+                                        whileHover={{ y: -2, scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => createGame('computer')}
+                                        className="glass-button w-full py-4 flex flex-col items-center justify-center gap-2 group border-brand-primary/5 hover:border-brand-primary/20 transition-all"
+                                        disabled={isCreating}
                                     >
-                                        <div className="flex items-center gap-2.5">
-                                            {/* Result Indicator */}
-                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black ${game.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
-                                                game.result === 'loss' ? 'bg-red-500/20 text-red-400' :
-                                                    'bg-amber-500/20 text-amber-400'
-                                                }`}>
-                                                {game.result === 'win' ? 'W' : game.result === 'loss' ? 'L' : 'D'}
-                                            </div>
+                                        <FaRobot className="text-base text-brand-primary/40 group-hover:text-brand-primary transition-colors animate-pulse" />
+                                        <span className="text-[8px] font-extrabold uppercase tracking-widest">{t('ai_training')}</span>
+                                    </motion.button>
 
-                                            {/* Game Info */}
-                                            <div className="flex flex-col">
-                                                <span className="text-[11px] font-bold text-brand-primary/90 leading-none mb-0.5">
-                                                    {t('vs')} {game.opponent.name}
-                                                </span>
-                                                <span className="text-[9px] font-medium text-brand-primary/40">
-                                                    {game.opponent.elo} {t('elo')}
-                                                </span>
-                                            </div>
-                                        </div>
+                                    <Link href={`/${locale}/academy`} className="w-full">
+                                        <motion.div
+                                            whileHover={{ y: -2, scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="glass-panel w-full py-4 flex flex-col items-center justify-center gap-2 cursor-pointer group border-brand-primary/5 hover:border-brand-primary/20 transition-all shadow-none"
+                                        >
+                                            <FaGraduationCap className="text-base text-brand-primary/40 group-hover:text-brand-primary transition-colors" />
+                                            <span className="text-[8px] font-extrabold uppercase tracking-widest">{t('academy')}</span>
+                                        </motion.div>
+                                    </Link>
+                                </div>
+                            </div>
 
-                                        {/* ELO Change & Share */}
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex flex-col items-end">
-                                                <span className={`text-[11px] font-black ${game.elo_change > 0 ? 'text-emerald-400' :
-                                                    game.elo_change < 0 ? 'text-red-400' : 'text-brand-primary/40'
-                                                    }`}>
-                                                    {game.elo_change > 0 ? '+' : ''}{game.elo_change}
-                                                </span>
-                                                <span className="text-[8px] font-medium text-brand-primary/30 uppercase tracking-wider">{t('elo')}</span>
-                                            </div>
-                                            <button
-                                                onClick={() => handleShareResult(game)}
-                                                className="w-8 h-8 rounded-lg bg-brand-primary/5 flex items-center justify-center hover:bg-brand-primary/10 hover:text-brand-primary transition-all text-brand-primary/20"
+                            {/* Recent Activity Log */}
+                            {stats?.recent_games && stats.recent_games.length > 0 && (
+                                <div className="w-full space-y-2">
+                                    <h3 className="text-[8px] font-black uppercase tracking-widest text-brand-primary/40 px-1">{t('recent_activity')}</h3>
+                                    <div className="space-y-2">
+                                        {stats.recent_games.slice(0, 3).map((game: any, idx: number) => (
+                                            <motion.div
+                                                key={game.game_id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className="glass-panel p-3 flex items-center justify-between hover:bg-brand-primary/5 transition-colors"
                                             >
-                                                <FaShareAlt size={10} />
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black ${game.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
+                                                        game.result === 'loss' ? 'bg-red-500/20 text-red-400' :
+                                                            'bg-amber-500/20 text-amber-400'
+                                                        }`}>
+                                                        {game.result === 'win' ? 'W' : game.result === 'loss' ? 'L' : 'D'}
+                                                    </div>
+
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[11px] font-bold text-brand-primary/90 leading-none mb-1">
+                                                            {t('vs')} {game.opponent.name}
+                                                        </span>
+                                                        <span className="text-[8px] font-medium text-brand-primary/30 uppercase tracking-wider">
+                                                            {game.opponent.elo} {t('elo')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex flex-col items-end">
+                                                        <span className={`text-[11px] font-black ${game.elo_change > 0 ? 'text-emerald-400' :
+                                                            game.elo_change < 0 ? 'text-red-400' : 'text-brand-primary/40'
+                                                            }`}>
+                                                            {game.elo_change > 0 ? '+' : ''}{game.elo_change}
+                                                        </span>
+                                                        <span className="text-[7px] font-bold text-brand-primary/30 uppercase tracking-widest">ELO</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleShareResult(game)}
+                                                        className="w-8 h-8 rounded-lg bg-brand-primary/5 flex items-center justify-center hover:bg-brand-primary/10 hover:text-brand-primary transition-all text-brand-primary/20"
+                                                    >
+                                                        <FaShareAlt size={9} />
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'quests' && (
+                        <motion.div
+                            key="quests-tab"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-full space-y-4"
+                        >
+                            {/* Daily Tasks Protocol */}
+                            <DailyTasks />
+
+                            {/* Referral Protocol */}
+                            {stats?.referral_code && <ReferralSection referralCode={stats.referral_code} />}
+
+                            {/* Marketing Banners */}
+                            <div className="pt-2">
+                                <MarketingBanners />
                             </div>
                         </motion.div>
                     )}
-                </div>
 
-                {/* Marketing Banners */}
-                <MarketingBanners />
-
-                {/* Referral Protocol */}
-                {stats?.referral_code && <ReferralSection referralCode={stats.referral_code} />}
-
-                {/* Daily Tasks Widget */}
-                <div className="w-full">
-                    <DailyTasks />
-                </div>
-
-                {/* News Section */}
-                <NewsSection />
-
-                {/* Global Leaderboard */}
-                <Leaderboard />
-
-                {/* Primary Action Button */}
-                <div className="w-full grid grid-cols-1 gap-4">
-                    <motion.button
-                        whileHover={{ scale: 1.01, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setShowGameSection(true)}
-                        className="w-full h-28 action-button relative overflow-hidden flex flex-col items-center justify-center group shadow-premium"
-                        disabled={isCreating}
-                    >
-                        <div className="absolute inset-0 bg-linear-to-t from-brand-void/20 via-transparent to-brand-primary/5 opacity-50" />
-                        <div className="relative z-10 flex flex-col items-center gap-2.5">
-                            <div className="w-10 h-10 rounded-xl bg-brand-void/5 flex items-center justify-center border border-black/10 group-hover:scale-110 group-hover:bg-brand-void/10 transition-all duration-300">
-                                <FaChessPawn size={20} className="text-brand-void/70" />
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <span className="text-lg font-black tracking-[0.2em]">{t('execute_matchmaking')}</span>
-                                <span className="text-[8px] font-bold opacity-30 tracking-[0.4em] mt-0.5 uppercase">{t('protocol_beta')}</span>
-                            </div>
-                        </div>
-                    </motion.button>
-                </div>
-
-                {/* Secondary Tactical Actions */}
-                <div className="w-full grid grid-cols-2 gap-4">
-                    <motion.button
-                        whileHover={{ y: -2, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => createGame('computer')}
-                        className="glass-button w-full py-5 flex flex-col items-center justify-center gap-2.5 group border-brand-primary/5 hover:border-brand-primary/20 transition-all"
-                        disabled={isCreating}
-                    >
-                        <div className="p-2 rounded-lg bg-brand-primary/5 group-hover:bg-brand-primary/10 transition-colors">
-                            <FaRobot className="text-lg text-brand-primary/40 group-hover:text-brand-primary transition-colors" />
-                        </div>
-                        <span className="text-[9px] font-extrabold uppercase tracking-widest">{t('ai_training')}</span>
-                    </motion.button>
-
-                    <Link href="/academy" className="w-full">
+                    {activeTab === 'leaderboard' && (
                         <motion.div
-                            whileHover={{ y: -2, scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="glass-panel w-full py-5 flex flex-col items-center justify-center gap-2.5 cursor-pointer group border-brand-primary/5 hover:border-brand-primary/20 transition-all shadow-none"
+                            key="leaderboard-tab"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-full space-y-5"
                         >
-                            <div className="p-2 rounded-lg bg-brand-primary/5 group-hover:bg-brand-primary/10 transition-colors">
-                                <FaGraduationCap className="text-lg text-brand-primary/40 group-hover:text-brand-primary transition-colors" />
-                            </div>
-                            <span className="text-[9px] font-extrabold uppercase tracking-widest">{t('academy')}</span>
-                        </motion.div>
-                    </Link>
-                </div>
+                            {/* Global Leaderboard */}
+                            <Leaderboard />
 
-                {/* System Control Panel */}
-                <div className="w-full pt-3 border-t border-brand-primary/5">
-                    <Link href={`/${locale}/settings`} className="flex items-center justify-between p-3 rounded-2xl bg-brand-surface/50 border border-brand-primary/5 hover:bg-brand-primary/5 hover:border-brand-primary/10 transition-all group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-brand-primary/5 group-hover:bg-brand-primary/10 group-hover:rotate-45 transition-all duration-500">
-                                <FaCog className="text-sm text-brand-primary/40 group-hover:text-brand-primary transition-colors" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/30 group-hover:text-brand-primary/60 transition-colors">{t('configuration')}</span>
-                                <span className="text-[7px] font-bold text-brand-primary/10 uppercase tracking-tighter">{t('system_parameters')}</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                            <span className="text-[8px] font-black text-brand-primary/10 group-hover:text-brand-primary/30 transition-colors">{t('active')}</span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/30 animate-pulse" />
-                        </div>
-                    </Link>
-                </div>
+                            {/* News Section */}
+                            <NewsSection />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Footer Decor */}
-                <footer className="flex flex-col items-center py-6 select-none pointer-events-none opacity-10 w-full">
+                <footer className="flex flex-col items-center py-6 select-none pointer-events-none opacity-5 w-full">
                     <div className="flex items-center gap-4 w-full px-8">
                         <div className="h-px flex-1 bg-linear-to-r from-transparent to-brand-primary/20" />
-                        <span className="text-[8px] font-black tracking-[1.5em] uppercase text-brand-primary/40 shrink-0">ANTIGRAVITY</span>
+                        <span className="text-[7px] font-black tracking-[1.5em] uppercase text-brand-primary/30 shrink-0">ANTIGRAVITY</span>
                         <div className="h-px flex-1 bg-linear-to-l from-transparent to-brand-primary/20" />
                     </div>
                 </footer>
