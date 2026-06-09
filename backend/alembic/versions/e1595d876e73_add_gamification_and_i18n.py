@@ -24,6 +24,22 @@ def upgrade() -> None:
     inspector = sa.inspect(conn)
     tables = inspector.get_table_names()
     
+    if 'users' not in tables:
+        op.create_table(
+            'users',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('telegram_id', sa.BigInteger(), nullable=False),
+            sa.Column('first_name', sa.String(), nullable=False),
+            sa.Column('elo', sa.Integer(), nullable=False, server_default='1000'),
+            sa.Column('games_played', sa.Integer(), nullable=False, server_default='0'),
+            sa.Column('wins', sa.Integer(), nullable=False, server_default='0'),
+            sa.Column('losses', sa.Integer(), nullable=False, server_default='0'),
+            sa.Column('draws', sa.Integer(), nullable=False, server_default='0'),
+            sa.PrimaryKeyConstraint('id')
+        )
+        op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
+        op.create_index(op.f('ix_users_telegram_id'), 'users', ['telegram_id'], unique=True)
+    
     # Create Tasks table
     if 'tasks' not in tables:
         op.create_table('tasks',
@@ -100,4 +116,8 @@ def downgrade() -> None:
     
     op.drop_index(op.f('ix_tasks_id'), table_name='tasks')
     op.drop_table('tasks')
+    
+    op.drop_index(op.f('ix_users_telegram_id'), table_name='users')
+    op.drop_index(op.f('ix_users_id'), table_name='users')
+    op.drop_table('users')
     # ### end Alembic commands ###
