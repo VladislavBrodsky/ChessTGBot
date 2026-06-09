@@ -6,6 +6,8 @@ declare global {
             WebApp: {
                 ready: () => void;
                 expand: () => void;
+                requestFullscreen?: () => void;
+                exitFullscreen?: () => void;
                 close: () => void;
                 enableClosingConfirmation: () => void;
                 disableClosingConfirmation: () => void;

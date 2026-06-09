@@ -13,6 +13,16 @@ export default function TelegramInit() {
             // Expand the Mini App to the maximum available height
             tg.expand();
 
+            // Request fullscreen mode if supported (Telegram Bot API 8.0+)
+            try {
+                if (tg.requestFullscreen) {
+                    tg.requestFullscreen();
+                    console.log('Telegram WebApp Fullscreen requested');
+                }
+            } catch (e) {
+                console.warn('Failed to request fullscreen', e);
+            }
+
             // Configure the Mini App header color to match the app theme
             try {
                 tg.setHeaderColor('#000000'); // Matches bg-primary
