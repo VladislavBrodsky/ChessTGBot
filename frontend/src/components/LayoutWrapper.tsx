@@ -41,46 +41,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full flex flex-col items-center min-h-screen pt-4 pb-32 ${className}`}>
-                {/* Unified Cyber-Top Bar */}
-                <div className="w-full max-w-sm flex justify-between items-center px-4 py-2 mb-4 relative z-20">
-                    <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest italic">NEURAL CHESS</span>
-                    
-                    <div className="flex items-center space-x-2">
-                        <Link href={`/${locale}/wallet`}>
-                            <motion.div 
-                                whileHover={{ scale: 1.04 }}
-                                whileTap={{ scale: 0.96 }}
-                                className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-primary/10 bg-brand-surface/40 hover:bg-brand-primary/5 transition-all cursor-pointer shadow-premium"
-                            >
-                                <FaWallet className="text-[10px] text-brand-primary/60" />
-                                <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary">
-                                    ${(balance / 100).toFixed(2)}
-                                </span>
-                            </motion.div>
-                        </Link>
-
-                        <motion.button
-                            onClick={toggleTheme}
-                            whileHover={{ scale: 1.08 }}
-                            whileTap={{ scale: 0.92 }}
-                            className="w-7 h-7 flex items-center justify-center rounded-full border border-brand-primary/10 bg-brand-surface/40 hover:bg-brand-primary/5 transition-all cursor-pointer text-brand-primary/60 hover:text-brand-primary"
-                            title="Toggle Theme"
-                        >
-                            <AnimatePresence mode="wait" initial={false}>
-                                <motion.div
-                                    key={theme}
-                                    initial={{ y: -8, opacity: 0, rotate: -45 }}
-                                    animate={{ y: 0, opacity: 1, rotate: 0 }}
-                                    exit={{ y: 8, opacity: 0, rotate: 45 }}
-                                    transition={{ duration: 0.15 }}
-                                >
-                                    {theme === 'dark' ? <FaMoon size={14} /> : theme === 'light' ? <FaSun size={14} /> : <FaStar size={14} className="text-purple-400" />}
-                                </motion.div>
-                            </AnimatePresence>
-                        </motion.button>
-                    </div>
-                </div>
+            <main className={`relative z-10 w-full flex flex-col items-center min-h-screen pt-[calc(24px+env(safe-area-inset-top,0px))] pb-[calc(100px+env(safe-area-inset-bottom,0px))] ${className}`}>
 
                 {children}
             </main>

@@ -30,7 +30,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 </span>
             </div>
 
-            <div className="w-full h-3 bg-brand-surface rounded-full overflow-hidden border border-brand-border-opacity-10 relative">
+            <div className="w-full h-3 bg-brand-void rounded-full overflow-hidden border border-brand-border-opacity-20 relative">
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-brand-bg-opacity-5"></div>
 
@@ -39,13 +39,13 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercentage}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 relative"
+                    className="h-full bg-brand-primary relative"
                 >
                     {/* Shimmer Effect */}
                     <motion.div
                         animate={{ x: ["-100%", "200%"] }}
                         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-1/2"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.3)] to-transparent w-1/2"
                     />
                 </motion.div>
             </div>

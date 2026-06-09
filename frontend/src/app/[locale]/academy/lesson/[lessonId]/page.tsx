@@ -8,6 +8,7 @@ export function generateStaticParams() {
     ];
 }
 
-export default function LessonPage() {
-    return <LessonClient />;
+export default async function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
+    const { lessonId } = await params;
+    return <LessonClient lessonId={lessonId} />;
 }

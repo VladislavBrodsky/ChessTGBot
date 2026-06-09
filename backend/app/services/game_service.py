@@ -116,9 +116,17 @@ class GameService:
             white_user = await user_crud.get_user_by_telegram_id(session, white_id) if white_id and white_id != -1 else None
             black_user = await user_crud.get_user_by_telegram_id(session, black_id) if black_id and black_id != -1 else None
 
-            if not white_user or (not black_user and black_id != -1):
-                 # One player is missing or bot game (skip ELO for bot games for now)
-                 return
+            if not white_user:
+                return
+
+            if not black_user or black_id == -1:
+                # Bot game / Training: update tasks progress, skip ELO & financial wager transfers
+                from app.services.gamification_service import GamificationService, TaskType
+                await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
+                if state.winner == 'w':
+                    await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+                await session.commit()
+                return
 
             # Store current ELO before changes
             white_elo_before = white_user.elo
@@ -145,6 +153,15 @@ class GameService:
             else:
                  await user_crud.update_elo(session, white_user, new_white_elo, 'draw')
                  await user_crud.update_elo(session, black_user, new_black_elo, 'draw')
+            
+            # Update Daily Tasks Progress for online games
+            from app.services.gamification_service import GamificationService, TaskType
+            await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
+            await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY)
+            if state.winner == 'w':
+                await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+            elif state.winner == 'b':
+                await GamificationService.update_task_progress(session, black_user.id, TaskType.WIN)
             
             # Settle Web3 Bids / Wagers & Rakes
             bid_amount = getattr(state, "bid_amount", 0)

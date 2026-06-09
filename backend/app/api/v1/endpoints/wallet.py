@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import desc
@@ -214,6 +214,7 @@ class TonWebhookPayload(BaseModel):
 @router.post("/webhook")
 async def receive_ton_deposit_webhook(
     payload: TonWebhookPayload,
+    x_webhook_secret: Optional[str] = Header(None, alias="X-Webhook-Secret"),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -222,6 +223,14 @@ async def receive_ton_deposit_webhook(
     """
     from app.core.config import get_settings
     settings = get_settings()
+
+    # Verify webhook secret signature
+    webhook_secret = getattr(settings, "WEBHOOK_SECRET", "dev_webhook_secret")
+    if not x_webhook_secret or x_webhook_secret != webhook_secret:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized webhook signature"
+        )
 
     # 1. Verify destination address matches our Master Wallet
     if payload.destination.lower() != settings.MASTER_WALLET_ADDRESS.lower():

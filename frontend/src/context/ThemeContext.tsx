@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'nebula';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
     theme: Theme;
@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Check local storage or system preference
         const savedTheme = localStorage.getItem('theme') as Theme;
-        if (savedTheme) {
+        if (savedTheme === 'light' || savedTheme === 'dark') {
             setTheme(savedTheme);
         } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
             setTheme('light');
@@ -32,11 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => {
-            if (prev === 'dark') return 'light';
-            if (prev === 'light') return 'nebula';
-            return 'dark';
-        });
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
     };
 
     return (

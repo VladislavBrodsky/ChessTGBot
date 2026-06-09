@@ -123,3 +123,37 @@ class GamificationService:
         
         await db.commit()
         return updated_user, "Success"
+
+    @staticmethod
+    async def update_task_progress(db: AsyncSession, user_id: int, task_type: TaskType, increment: int = 1):
+        """
+        Increment progress for a specific task type (WIN, PLAY, etc.) for the user.
+        If the task becomes completed, mark it.
+        """
+        result = await db.execute(
+            select(UserTask)
+            .join(Task, UserTask.task_id == Task.id)
+            .where(
+                and_(
+                    UserTask.user_id == user_id,
+                    UserTask.completed == False,
+                    Task.task_type == task_type
+                )
+            )
+        )
+        
+        user_tasks = result.scalars().all()
+        for user_task in user_tasks:
+            task_def_result = await db.execute(select(Task).where(Task.id == user_task.task_id))
+            task_def = task_def_result.scalars().first()
+            if not task_def:
+                continue
+                
+            user_task.progress += increment
+            if user_task.progress >= task_def.target_count:
+                user_task.progress = task_def.target_count
+                user_task.completed = True
+            user_task.updated_at = datetime.utcnow()
+            db.add(user_task)
+            
+        await db.commit()

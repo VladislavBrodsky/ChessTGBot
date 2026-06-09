@@ -38,12 +38,13 @@ export default async function LocaleLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
+        <html lang={locale} suppressHydrationWarning>
             <head>
                 <script src="https://telegram.org/js/telegram-web-app.js" async />
             </head>
             <body
                 className={`${inter.variable} ${robotoMono.variable} antialiased`}
+                suppressHydrationWarning
             >
                 <NextIntlClientProvider messages={messages}>
                     <ThemeProvider>

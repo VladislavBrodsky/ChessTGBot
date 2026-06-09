@@ -9,538 +9,564 @@ import { FaWallet, FaArrowUp, FaArrowDown, FaHistory, FaChevronLeft, FaTimes, Fa
 import Link from "next/link";
 
 interface Transaction {
-    id: number;
-    type: string;
-    amount: number;
-    fee: number;
-    status: string;
-    reference_id: string;
-    created_at: string;
+ id: number;
+ type: string;
+ amount: number;
+ fee: number;
+ status: string;
+ reference_id: string;
+ created_at: string;
 }
 
 export default function WalletPage() {
-    const t = useTranslations('Index');
+ const t = useTranslations('Index');
+ const tw = useTranslations('Wallet');
 
-    // Balance & wallet state
-    const [balance, setBalance] = useState<number>(0);
-    const [walletAddress, setWalletAddress] = useState<string>("");
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+ // Balance & wallet state
+ const [balance, setBalance] = useState<number>(0);
+ const [walletAddress, setWalletAddress] = useState<string>("");
+ const [transactions, setTransactions] = useState<Transaction[]>([]);
+ const [loading, setLoading] = useState<boolean>(true);
 
-    // Modals
-    const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
-    const [depositAmount, setDepositAmount] = useState<string>("10");
-    const [withdrawAmount, setWithdrawAmount] = useState<string>("10");
-    const [withdrawAddress, setWithdrawAddress] = useState<string>("");
-    const [connectAddressInput, setConnectAddressInput] = useState<string>("");
+ // Modals
+ const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
+ const [depositAmount, setDepositAmount] = useState<string>("10");
+ const [withdrawAmount, setWithdrawAmount] = useState<string>("10");
+ const [withdrawAddress, setWithdrawAddress] = useState<string>("");
+ const [connectAddressInput, setConnectAddressInput] = useState<string>("");
 
-    // Processing status
-    const [processing, setProcessing] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
+ // Processing status
+ const [processing, setProcessing] = useState<boolean>(false);
+ const [successMessage, setSuccessMessage] = useState<string>("");
+ const [errorMessage, setErrorMessage] = useState<string>("");
+ const [tgUser, setTgUser] = useState<any>(null);
 
-    useEffect(() => {
-        fetchWalletData();
-    }, []);
+ useEffect(() => {
+ fetchWalletData();
+ if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+ setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
+ }
+ }, []);
 
-    const fetchWalletData = async () => {
-        try {
-            setLoading(true);
-            const balRes = await apiFetch("/api/v1/wallet/balance");
-            if (balRes.ok) {
-                const balData = await balRes.json();
-                setBalance(balData.balance);
-                setWalletAddress(balData.wallet_address || "");
-                if (balData.wallet_address) {
-                    setConnectAddressInput(balData.wallet_address);
-                    setWithdrawAddress(balData.wallet_address);
-                }
-            }
+ const fetchWalletData = async () => {
+ try {
+ setLoading(true);
+ const balRes = await apiFetch("/api/v1/wallet/balance");
+ if (balRes.ok) {
+ const balData = await balRes.json();
+ setBalance(balData.balance);
+ setWalletAddress(balData.wallet_address || "");
+ if (balData.wallet_address) {
+ setConnectAddressInput(balData.wallet_address);
+ setWithdrawAddress(balData.wallet_address);
+ }
+ }
 
-            const txRes = await apiFetch("/api/v1/wallet/transactions");
-            if (txRes.ok) {
-                const txData = await txRes.json();
-                setTransactions(txData);
-            }
-        } catch (err) {
-            console.error("Failed to fetch wallet data", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+ const txRes = await apiFetch("/api/v1/wallet/transactions");
+ if (txRes.ok) {
+ const txData = await txRes.json();
+ setTransactions(txData);
+ }
+ } catch (err) {
+ console.error("Failed to fetch wallet data", err);
+ } finally {
+ setLoading(false);
+ }
+ };
 
-    // Deposit Simulation
-    const handleDepositSubmit = async () => {
-        const amt = parseFloat(depositAmount);
-        if (isNaN(amt) || amt <= 0) {
-            setErrorMessage("Please enter a valid deposit amount.");
-            return;
-        }
+ // Deposit Simulation
+ const handleDepositSubmit = async () => {
+ const amt = parseFloat(depositAmount);
+ if (isNaN(amt) || amt <= 0) {
+ setErrorMessage("Please enter a valid deposit amount.");
+ return;
+ }
 
-        setProcessing(true);
-        setErrorMessage("");
-        setSuccessMessage("");
+ setProcessing(true);
+ setErrorMessage("");
+ setSuccessMessage("");
 
-        try {
-            const res = await apiFetch("/api/v1/wallet/deposit", {
-                method: "POST",
-                body: JSON.stringify({ amount: Math.round(amt * 100) }) // to cents
-            });
+ const tgId = tgUser?.id || 1029384;
+ const mockTxHash = `sim_tx_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 
-            if (res.ok) {
-                const data = await res.json();
-                setBalance(data.new_balance);
-                setSuccessMessage(`Simulated deposit of $${amt.toFixed(2)} successful! Platform credited $${(data.credited_amount / 100).toFixed(2)} after 5% platform fee.`);
-                fetchWalletData();
-                setTimeout(() => {
-                    setActiveModal('none');
-                    setSuccessMessage("");
-                }, 3000);
-            } else {
-                const errData = await res.json();
-                setErrorMessage(errData.detail || "Deposit failed.");
-            }
-        } catch (err) {
-            setErrorMessage("Network error during deposit processing.");
-        } finally {
-            setProcessing(false);
-        }
-    };
+ try {
+ const res = await apiFetch("/api/v1/wallet/webhook", {
+ method: "POST",
+ headers: {
+ "X-Webhook-Secret": "dev_webhook_secret",
+ "Content-Type": "application/json"
+ },
+ body: JSON.stringify({
+ event: "transfer",
+ tx_hash: mockTxHash,
+ sender: walletAddress || "EQ_SenderAddress_Simulated_xxxx",
+ destination: "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2",
+ amount_cents: Math.round(amt * 100),
+ comment: `ref_${tgId}`
+ })
+ });
 
-    // Withdrawal Simulation
-    const handleWithdrawSubmit = async () => {
-        const amt = parseFloat(withdrawAmount);
-        if (isNaN(amt) || amt <= 0) {
-            setErrorMessage("Please enter a valid withdrawal amount.");
-            return;
-        }
+ if (res.ok) {
+ const data = await res.json();
+ setBalance(data.new_balance);
+ setSuccessMessage(`Simulated deposit of $${amt.toFixed(2)} successful! Platform credited $${(data.credited_amount / 100).toFixed(2)} after 5% platform fee.`);
+ fetchWalletData();
+ setTimeout(() => {
+ setActiveModal('none');
+ setSuccessMessage("");
+ }, 3000);
+ } else {
+ const errData = await res.json();
+ setErrorMessage(errData.detail || "Deposit failed.");
+ }
+ } catch (err) {
+ setErrorMessage("Network error during deposit processing.");
+ } finally {
+ setProcessing(false);
+ }
+ };
 
-        if (Math.round(amt * 100) > balance) {
-            setErrorMessage("Insufficient funds in your platform balance.");
-            return;
-        }
+ // Withdrawal Simulation
+ const handleWithdrawSubmit = async () => {
+ const amt = parseFloat(withdrawAmount);
+ if (isNaN(amt) || amt <= 0) {
+ setErrorMessage("Please enter a valid withdrawal amount.");
+ return;
+ }
 
-        if (!withdrawAddress.trim()) {
-            setErrorMessage("Please specify a target TON Wallet address.");
-            return;
-        }
+ if (Math.round(amt * 100) > balance) {
+ setErrorMessage("Insufficient funds in your platform balance.");
+ return;
+ }
 
-        setProcessing(true);
-        setErrorMessage("");
-        setSuccessMessage("");
+ if (!withdrawAddress.trim()) {
+ setErrorMessage("Please specify a target TON Wallet address.");
+ return;
+ }
 
-        try {
-            const res = await apiFetch("/api/v1/wallet/withdraw", {
-                method: "POST",
-                body: JSON.stringify({
-                    amount: Math.round(amt * 100),
-                    address: withdrawAddress
-                })
-            });
+ setProcessing(true);
+ setErrorMessage("");
+ setSuccessMessage("");
 
-            if (res.ok) {
-                const data = await res.json();
-                setBalance(data.new_balance);
-                setSuccessMessage(`Simulated withdrawal of $${amt.toFixed(2)} successfully sent to TON Network.`);
-                fetchWalletData();
-                setTimeout(() => {
-                    setActiveModal('none');
-                    setSuccessMessage("");
-                }, 3000);
-            } else {
-                const errData = await res.json();
-                setErrorMessage(errData.detail || "Withdrawal failed.");
-            }
-        } catch (err) {
-            setErrorMessage("Network error during withdrawal processing.");
-        } finally {
-            setProcessing(false);
-        }
-    };
+ try {
+ const res = await apiFetch("/api/v1/wallet/withdraw", {
+ method: "POST",
+ body: JSON.stringify({
+ amount: Math.round(amt * 100),
+ address: withdrawAddress
+ })
+ });
 
-    // Connect Wallet Simulation
-    const handleConnectSubmit = async () => {
-        if (!connectAddressInput.trim()) {
-            setErrorMessage("Please enter a valid wallet address.");
-            return;
-        }
+ if (res.ok) {
+ const data = await res.json();
+ setBalance(data.new_balance);
+ setSuccessMessage(`Simulated withdrawal of $${amt.toFixed(2)} successfully sent to TON Network.`);
+ fetchWalletData();
+ setTimeout(() => {
+ setActiveModal('none');
+ setSuccessMessage("");
+ }, 3000);
+ } else {
+ const errData = await res.json();
+ setErrorMessage(errData.detail || "Withdrawal failed.");
+ }
+ } catch (err) {
+ setErrorMessage("Network error during withdrawal processing.");
+ } finally {
+ setProcessing(false);
+ }
+ };
 
-        setProcessing(true);
-        setErrorMessage("");
-        setSuccessMessage("");
+ // Connect Wallet Simulation
+ const handleConnectSubmit = async () => {
+ if (!connectAddressInput.trim()) {
+ setErrorMessage("Please enter a valid wallet address.");
+ return;
+ }
 
-        try {
-            const res = await apiFetch("/api/v1/wallet/connect", {
-                method: "POST",
-                body: JSON.stringify({ wallet_address: connectAddressInput })
-            });
+ setProcessing(true);
+ setErrorMessage("");
+ setSuccessMessage("");
 
-            if (res.ok) {
-                const data = await res.json();
-                setWalletAddress(data.wallet_address);
-                setWithdrawAddress(data.wallet_address);
-                setSuccessMessage("TON Web3 Wallet linked successfully!");
-                setTimeout(() => {
-                    setActiveModal('none');
-                    setSuccessMessage("");
-                }, 2000);
-            } else {
-                setErrorMessage("Failed to link wallet.");
-            }
-        } catch (err) {
-            setErrorMessage("Network error linking wallet.");
-        } finally {
-            setProcessing(false);
-        }
-    };
+ try {
+ const res = await apiFetch("/api/v1/wallet/connect", {
+ method: "POST",
+ body: JSON.stringify({ wallet_address: connectAddressInput })
+ });
 
-    return (
-        <LayoutWrapper className="justify-start pt-6 pb-32">
-            <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-6">
-                
-                {/* Header Back Link */}
-                <div className="w-full flex items-center justify-between">
-                    <Link href="/home" className="flex items-center text-brand-primary/60 hover:text-brand-primary text-xs font-bold uppercase tracking-wider space-x-1">
-                        <FaChevronLeft className="text-xs" />
-                        <span>{t('back')}</span>
-                    </Link>
-                    <span className="text-xs font-black text-brand-primary/40 uppercase tracking-widest">Web3 Wallet HUD</span>
-                </div>
+ if (res.ok) {
+ const data = await res.json();
+ setWalletAddress(data.wallet_address);
+ setWithdrawAddress(data.wallet_address);
+ setSuccessMessage("TON Web3 Wallet linked successfully!");
+ setTimeout(() => {
+ setActiveModal('none');
+ setSuccessMessage("");
+ }, 2000);
+ } else {
+ setErrorMessage("Failed to link wallet.");
+ }
+ } catch (err) {
+ setErrorMessage("Network error linking wallet.");
+ } finally {
+ setProcessing(false);
+ }
+ };
 
-                {/* HOLOGRAPHIC CYBER-CARD */}
-                <motion.div 
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full relative overflow-hidden rounded-2xl p-6 glass-panel border border-brand-primary/20 bg-gradient-to-br from-brand-surface/80 via-brand-surface/40 to-brand-primary/5 shadow-2xl flex flex-col justify-between h-48"
-                >
-                    {/* Matrix cyber grid overlay */}
-                    <div className="absolute inset-0 bg-cyber-grid opacity-[0.03] pointer-events-none" />
-                    
-                    {/* Card Top */}
-                    <div className="flex justify-between items-start z-10">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">TON Network Connected</span>
-                            <div className="flex items-center space-x-2">
-                                <FaCoins className="text-brand-primary text-sm animate-pulse" />
-                                <span className="text-xs font-bold text-brand-primary/80 uppercase tracking-wider">USDT Balance</span>
-                            </div>
-                        </div>
-                        <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
-                            <FaWallet className="text-brand-primary text-sm" />
-                        </div>
-                    </div>
+ return (
+ <LayoutWrapper className="justify-start pt-6 pb-32">
+ <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-6">
+ 
+ {/* Header Back Link */}
+ <div className="w-full flex items-center justify-between">
+ <Link href="/home" className="flex items-center text-brand-primary opacity-60 hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
+ <FaChevronLeft className="text-xs" />
+ <span>{t('back')}</span>
+ </Link>
+ <span className="text-xs font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('title')}</span>
+ </div>
 
-                    {/* Card Middle Balance */}
-                    <div className="z-10 my-auto">
-                        <h2 className="text-3xl font-black text-brand-primary tracking-tighter italic uppercase">
-                            ${(balance / 100).toFixed(2)}
-                        </h2>
-                    </div>
+ {/* HOLOGRAPHIC CYBER-CARD */}
+ <motion.div 
+ initial={{ opacity: 0, y: -20 }}
+ animate={{ opacity: 1, y: 0 }}
+ className="w-full relative overflow-hidden rounded-2xl p-6 glass-panel border border-brand-border-opacity-20 bg-cyber-card shadow-2xl flex flex-col justify-between h-48"
+ >
+ {/* Matrix cyber grid overlay */}
+ <div className="absolute inset-0 bg-cyber-grid opacity-[0.03] pointer-events-none" />
+ 
+ {/* Card Top */}
+ <div className="flex justify-between items-start z-10">
+ <div className="flex flex-col">
+ <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest mb-0.5">{tw('connected_status')}</span>
+ <div className="flex items-center space-x-2">
+ <FaCoins className="text-brand-primary text-sm animate-pulse" />
+ <span className="text-xs font-bold text-brand-primary opacity-80 uppercase tracking-wider">{tw('usdt_balance')}</span>
+ </div>
+ </div>
+ <div className="w-8 h-8 rounded-lg bg-brand-bg-opacity-10 flex items-center justify-center border border-brand-border-opacity-20">
+ <FaWallet className="text-brand-primary text-sm" />
+ </div>
+ </div>
 
-                    {/* Card Bottom Linked Wallet */}
-                    <div className="flex justify-between items-center z-10 pt-2 border-t border-brand-primary/5">
-                        <div className="flex items-center space-x-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 absolute" />
-                            <span className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest">
-                                {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "No Wallet Connected"}
-                            </span>
-                        </div>
-                        <span className="text-[9px] font-black text-brand-primary/20 uppercase tracking-widest">ChessPay v1</span>
-                    </div>
-                </motion.div>
+ {/* Card Middle Balance */}
+ <div className="z-10 my-auto">
+ <h2 className="text-3xl font-black text-brand-primary tracking-tighter uppercase">
+ ${(balance / 100).toFixed(2)}
+ </h2>
+ </div>
 
-                {/* QUICK ACTION TRIGGER BUTTONS */}
-                <div className="w-full grid grid-cols-3 gap-2">
-                    <button 
-                        onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('connect'); }}
-                        className="py-2.5 rounded-xl border border-brand-primary/10 bg-brand-surface hover:bg-brand-primary/5 transition-all text-[11px] font-black uppercase tracking-wider text-brand-primary flex flex-col items-center justify-center space-y-1"
-                    >
-                        <FaNetworkWired className="text-xs text-brand-primary/60" />
-                        <span>Link TON</span>
-                    </button>
-                    <button 
-                        onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('deposit'); }}
-                        className="py-2.5 rounded-xl border border-brand-primary/20 bg-brand-primary hover:bg-brand-primary-hover transition-all text-[11px] font-black uppercase tracking-wider text-brand-void flex flex-col items-center justify-center space-y-1 shadow-lg shadow-brand-primary/10"
-                    >
-                        <FaArrowDown className="text-xs" />
-                        <span>Deposit</span>
-                    </button>
-                    <button 
-                        onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('withdraw'); }}
-                        className="py-2.5 rounded-xl border border-brand-primary/10 bg-brand-surface hover:bg-brand-primary/5 transition-all text-[11px] font-black uppercase tracking-wider text-brand-primary flex flex-col items-center justify-center space-y-1"
-                    >
-                        <FaArrowUp className="text-xs text-brand-primary/60" />
-                        <span>Withdraw</span>
-                    </button>
-                </div>
+ {/* Card Bottom Linked Wallet */}
+ <div className="flex justify-between items-center z-10 pt-2 border-t border-brand-border-opacity-5">
+ <div className="flex items-center space-x-2">
+ <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+ <span className="w-2 h-2 rounded-full bg-emerald-500 absolute" />
+ <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest">
+ {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : tw('no_wallet')}
+ </span>
+ </div>
+ <span className="text-[9px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
+ </div>
+ </motion.div>
 
-                {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-                <div className="w-full p-3 rounded-xl border border-brand-primary/5 bg-brand-surface/40 flex items-center justify-between text-[10px] font-bold text-brand-primary/60 uppercase tracking-wider">
-                    <span>Deposit Fee: <strong className="text-brand-primary">5%</strong></span>
-                    <span>•</span>
-                    <span>Game Rake: <strong className="text-brand-primary">3%</strong></span>
-                    <span>•</span>
-                    <span>Withdraw fee: <strong className="text-brand-primary">FREE</strong></span>
-                </div>
+ {/* QUICK ACTION TRIGGER BUTTONS */}
+ <div className="w-full grid grid-cols-3 gap-2">
+ <button 
+ onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('connect'); }}
+ className="py-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 transition-all text-[10px] font-black uppercase tracking-widest text-brand-primary flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
+ >
+ <FaNetworkWired className="text-xs text-brand-primary opacity-60" />
+ <span>{tw('link_ton')}</span>
+ </button>
+ <button 
+ onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('deposit'); }}
+ className="py-3.5 rounded-2xl border border-brand-border-opacity-20 bg-brand-primary hover:bg-brand-primary-hover transition-all text-[10px] font-black uppercase tracking-widest text-brand-void flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-md"
+ >
+ <FaArrowDown className="text-xs" />
+ <span>{tw('deposit')}</span>
+ </button>
+ <button 
+ onClick={() => { setErrorMessage(""); setSuccessMessage(""); setActiveModal('withdraw'); }}
+ className="py-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 transition-all text-[10px] font-black uppercase tracking-widest text-brand-primary flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
+ >
+ <FaArrowUp className="text-xs text-brand-primary opacity-60" />
+ <span>{tw('withdraw')}</span>
+ </button>
+ </div>
 
-                {/* TRANSACTION LEDGER SECTION */}
-                <div className="w-full flex flex-col space-y-3 pt-2">
-                    <div className="flex items-center justify-between px-1">
-                        <div className="flex items-center space-x-2 text-brand-primary/80">
-                            <FaHistory className="text-xs" />
-                            <h3 className="text-xs font-black uppercase tracking-widest">Transaction Ledger</h3>
-                        </div>
-                        <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-widest">Sorted: Recent</span>
-                    </div>
+ {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
+ <div className="w-full p-3 rounded-xl border border-brand-border-opacity-5 bg-brand-surface flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">
+ <span>{tw('deposit_fee')} <strong className="text-brand-primary">5%</strong></span>
+ <span>•</span>
+ <span>{tw('game_rake')} <strong className="text-brand-primary">3%</strong></span>
+ <span>•</span>
+ <span>{tw('withdraw_fee')} <strong className="text-brand-primary">{tw('free')}</strong></span>
+ </div>
 
-                    {loading ? (
-                        <div className="w-full text-center py-8 text-xs font-bold text-brand-primary/40 uppercase tracking-widest animate-pulse">
-                            Loading transaction records...
-                        </div>
-                    ) : transactions.length === 0 ? (
-                        <div className="w-full glass-panel rounded-xl p-8 text-center text-xs font-bold text-brand-primary/30 uppercase tracking-widest">
-                            No ledger entries found
-                        </div>
-                    ) : (
-                        <div className="w-full flex flex-col space-y-2 max-h-72 overflow-y-auto">
-                            {transactions.map((tx) => {
-                                const isPositive = tx.amount > 0;
-                                const formattedAmt = `$${(Math.abs(tx.amount) / 100).toFixed(2)}`;
-                                const formattedFee = tx.fee > 0 ? `($${(tx.fee / 100).toFixed(2)} fee)` : "";
-                                
-                                return (
-                                    <motion.div 
-                                        key={tx.id}
-                                        layout
-                                        className="w-full p-3 rounded-xl glass-panel border border-brand-primary/5 flex items-center justify-between bg-brand-surface/20"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                                                tx.type === 'game_win' ? 'bg-emerald-500/10 text-emerald-400' :
-                                                tx.type === 'deposit' ? 'bg-cyan-500/10 text-cyan-400' :
-                                                tx.type === 'game_wager' ? 'bg-rose-500/10 text-rose-400' :
-                                                'bg-amber-500/10 text-amber-400'
-                                            }`}>
-                                                {isPositive ? <FaArrowDown /> : <FaArrowUp />}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-[11px] font-black uppercase tracking-wide text-brand-primary">
-                                                    {tx.type === 'deposit' ? 'Wallet Deposit' :
-                                                     tx.type === 'withdrawal' ? 'TON Withdrawal' :
-                                                     tx.type === 'game_wager' ? 'Match Bid Wager' :
-                                                     tx.type === 'game_win' ? 'Chess Match Win' : tx.type}
-                                                </span>
-                                                <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-widest">
-                                                    {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col items-end">
-                                            <span className={`text-[12px] font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                                {isPositive ? '+' : '-'}{formattedAmt}
-                                            </span>
-                                            {tx.fee > 0 && (
-                                                <span className="text-[8px] font-bold text-brand-primary/40 uppercase tracking-widest">
-                                                    {formattedFee}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
+ {/* TRANSACTION LEDGER SECTION */}
+ <div className="w-full flex flex-col space-y-3 pt-2">
+ <div className="flex items-center justify-between px-1">
+ <div className="flex items-center space-x-2 text-brand-primary opacity-80">
+ <FaHistory className="text-xs" />
+ <h3 className="text-xs font-black uppercase tracking-widest">{tw('ledger')}</h3>
+ </div>
+ <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
+ </div>
 
-                {/* MODALS */}
-                <AnimatePresence>
-                    {activeModal !== 'none' && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                            {/* Backdrop */}
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => { if(!processing) setActiveModal('none'); }}
-                                className="absolute inset-0 bg-brand-void/80 backdrop-blur-sm"
-                            />
-                            
-                            {/* Content */}
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                className="w-full max-w-sm rounded-2xl glass-panel border border-brand-primary/20 bg-brand-surface p-6 shadow-2xl z-10 flex flex-col relative"
-                            >
-                                <button 
-                                    onClick={() => setActiveModal('none')}
-                                    disabled={processing}
-                                    className="absolute top-4 right-4 text-brand-primary/40 hover:text-brand-primary"
-                                >
-                                    <FaTimes />
-                                </button>
+ {loading ? (
+ <div className="w-full text-center py-8 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
+ {tw('loading')}
+ </div>
+ ) : transactions.length === 0 ? (
+ <div className="w-full glass-panel rounded-xl p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+ {tw('no_entries')}
+ </div>
+ ) : (
+ <div className="w-full flex flex-col space-y-2 max-h-72 overflow-y-auto">
+ {transactions.map((tx) => {
+ const isPositive = tx.amount > 0;
+ const formattedAmt = `$${(Math.abs(tx.amount) / 100).toFixed(2)}`;
+ const formattedFee = tx.fee > 0 ? `($${(tx.fee / 100).toFixed(2)} fee)` : "";
+ 
+ return (
+ <motion.div 
+ key={tx.id}
+ layout
+ className="w-full p-3 rounded-xl glass-panel border border-brand-border-opacity-5 flex items-center justify-between bg-brand-surface"
+ >
+ <div className="flex items-center space-x-3">
+ <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
+ tx.type === 'game_win' ? 'bg-brand-emerald-opacity-10 text-emerald-500' :
+ tx.type === 'deposit' ? 'bg-brand-cyan-opacity-10 text-cyan-500' :
+ tx.type === 'game_wager' ? 'bg-brand-rose-opacity-10 text-rose-500' :
+ 'bg-brand-amber-opacity-10 text-amber-500'
+ }`}>
+ {isPositive ? <FaArrowDown /> : <FaArrowUp />}
+ </div>
+ <div className="flex flex-col">
+ <span className="text-[11px] font-black uppercase tracking-wide text-brand-primary">
+ {tx.type === 'deposit' ? tw('tx_deposit') :
+ tx.type === 'withdrawal' ? tw('tx_withdrawal') :
+ tx.type === 'game_wager' ? tw('tx_wager') :
+ tx.type === 'game_win' ? tw('tx_win') : tx.type}
+ </span>
+ <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+ {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+ </span>
+ </div>
+ </div>
+ <div className="flex flex-col items-end">
+ <span className={`text-[12px] font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+ {isPositive ? '+' : '-'}{formattedAmt}
+ </span>
+ {tx.fee > 0 && (
+ <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+ {formattedFee}
+ </span>
+ )}
+ </div>
+ </motion.div>
+ );
+ })}
+ </div>
+ )}
+ </div>
 
-                                {/* 1. DEPOSIT MODAL */}
-                                {activeModal === 'deposit' && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Web3 Deposit Invoice</h3>
-                                        <p className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-wider text-center">
-                                            Send TON to the Master Wallet below. Ensure you include the exact unique comment, or your deposit will be lost.
-                                        </p>
+ {/* MODALS (Bottom Drawer Sheets) */}
+ <AnimatePresence>
+ {activeModal !== 'none' && (
+ <div className="bottom-drawer-backdrop z-50">
+ {/* Backdrop */}
+ <motion.div 
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ onClick={() => { if(!processing) setActiveModal('none'); }}
+ className="absolute inset-0 bg-[rgba(0,0,0,0.4)]"
+ />
+ 
+ {/* Content */}
+ <motion.div 
+ initial={{ y: "100%" }}
+ animate={{ y: 0 }}
+ exit={{ y: "100%" }}
+ transition={{ type: "spring", damping: 30, stiffness: 350 }}
+ className="bottom-drawer-sheet relative z-10"
+ >
+ <div className="bottom-drawer-handle" />
+ <button 
+ onClick={() => setActiveModal('none')}
+ disabled={processing}
+ className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary"
+ >
+ <FaTimes />
+ </button>
+ 
+ {/* 1. DEPOSIT MODAL */}
+ {activeModal === 'deposit' && (() => {
+ const tgId = tgUser?.id || 1029384;
+ const memoComment = `ref_${tgId}`;
+ const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
+ return (
+ <div className="space-y-4">
+ <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('deposit_invoice')}</h3>
+ <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+ {tw('deposit_desc')}
+ </p>
 
-                                        <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-primary/20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-brand-primary/5 animate-pulse pointer-events-none" />
-                                            <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10">
-                                                {/* Simulated QR Code using CSS grid or simple image */}
-                                                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ton://transfer/EQA_MasterWallet_Neural_Hash_String_1x9?text=ref_1029384`} alt="QR Code" className="w-full h-full object-contain" />
-                                            </div>
-                                            <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary/40 pt-1">Scan to send via Tonkeeper</div>
-                                        </div>
+ <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-border-opacity-20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
+ <div className="absolute inset-0 bg-brand-bg-opacity-5 animate-pulse pointer-events-none" />
+ <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10">
+ {/* Simulated QR Code using CSS grid or simple image */}
+ <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ton://transfer/${masterWallet}?text=${memoComment}`} alt="QR Code" className="w-full h-full object-contain" />
+ </div>
+ <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary opacity-40 pt-1">{tw('scan_info')}</div>
+ </div>
 
-                                        <div className="flex flex-col space-y-3">
-                                            <div className="flex flex-col space-y-1">
-                                                <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">Master Destination Address</label>
-                                                <div className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold font-mono tracking-wider flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText("EQA_MasterWallet_Neural_Hash_String_1x9")}>
-                                                    <span className="truncate">EQA_MasterWallet_Neural_...</span>
-                                                    <FaCopy className="text-brand-primary/40" />
-                                                </div>
-                                            </div>
+ <div className="flex flex-col space-y-3">
+ <div className="flex flex-col space-y-1">
+ <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
+ <div className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-xs font-bold font-mono tracking-wider flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText(masterWallet)}>
+ <span className="truncate">{masterWallet.slice(0, 22)}...</span>
+ <FaCopy className="text-brand-primary opacity-40" />
+ </div>
+ </div>
 
-                                            <div className="flex flex-col space-y-1">
-                                                <label className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Required Transfer Comment / Memo</label>
-                                                <div className="cyber-input w-full p-2.5 rounded-lg border border-emerald-500/40 bg-emerald-500/5 text-emerald-400 text-xs font-black font-mono tracking-widest flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText("ref_1029384")}>
-                                                    <span>ref_1029384</span>
-                                                    <FaCopy className="text-emerald-500/60" />
-                                                </div>
-                                            </div>
-                                        </div>
+ <div className="flex flex-col space-y-1">
+ <label className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
+ <div className="cyber-input w-full p-2.5 rounded-lg border border-emerald-500 bg-emerald-500/5 text-emerald-400 text-xs font-black font-mono tracking-widest flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText(memoComment)}>
+ <span>{memoComment}</span>
+ <FaCopy className="text-emerald-500 opacity-60" />
+ </div>
+ </div>
+ </div>
 
-                                        {/* Commission Alert */}
-                                        <div className="p-3 rounded-lg border border-brand-primary/10 bg-brand-primary/5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary/80 uppercase tracking-wider">
-                                            <span>Platform Gateway Fee: <strong className="text-brand-primary">5%</strong></span>
-                                        </div>
+ {/* Commission Alert */}
+ <div className="p-3 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider">
+ <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+ </div>
 
-                                        {/* Simulator Button */}
-                                        <div className="w-full pt-2">
-                                            {successMessage && <div className="p-2.5 mb-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
-                                            {errorMessage && <div className="p-2.5 mb-2 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
+ {/* Simulator Button */}
+ <div className="w-full pt-2">
+ {successMessage && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+ {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
-                                            <button
-                                                onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
-                                                disabled={processing}
-                                                className="w-full py-3 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2"
-                                            >
-                                                <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
-                                                <span>{processing ? "Listening for Web3 TX..." : "Simulate $10 Web3 Deposit"}</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+ <button
+ onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
+ disabled={processing}
+ className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2"
+ >
+ <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
+ <span>{processing ? tw('listening_tx') : tw('simulate_deposit')}</span>
+ </button>
+ </div>
+ </div>
+ );
+ })()}
 
-                                {/* 2. WITHDRAW MODAL */}
-                                {activeModal === 'withdraw' && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Withdraw Web3 Balance</h3>
-                                        
-                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-primary/5 rounded-xl border border-brand-primary/10">
-                                            <span className="text-brand-primary/60">Available Balance:</span>
-                                            <span className="text-sm font-black text-brand-primary">${(balance / 100).toFixed(2)}</span>
-                                        </div>
+ {/* 2. WITHDRAW MODAL */}
+ {activeModal === 'withdraw' && (
+ <div className="space-y-4">
+ <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('withdraw_title')}</h3>
+ 
+ <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-10">
+ <span className="text-brand-primary opacity-60">{tw('available_balance')}</span>
+ <span className="text-sm font-black text-brand-primary">${(balance / 100).toFixed(2)}</span>
+ </div>
 
-                                        {/* Input amount */}
-                                        <div className="flex flex-col space-y-1">
-                                            <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">Withdrawal Amount (USD)</label>
-                                            <input 
-                                                type="number"
-                                                value={withdrawAmount}
-                                                onChange={(e) => setWithdrawAmount(e.target.value)}
-                                                className="cyber-input w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-sm font-bold focus:outline-none focus:border-brand-primary transition-all"
-                                                placeholder="Amount to withdraw..."
-                                            />
-                                        </div>
+ {/* Input amount */}
+ <div className="flex flex-col space-y-1">
+ <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('withdraw_amount')}</label>
+ <input 
+ type="number"
+ value={withdrawAmount}
+ onChange={(e) => setWithdrawAmount(e.target.value)}
+ className="cyber-input w-full p-3 rounded-xl border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-sm font-bold focus:outline-none focus:border-brand-primary transition-all"
+ placeholder={tw('amount_placeholder')}
+ />
+ </div>
 
-                                        {/* Input Target Wallet */}
-                                        <div className="flex flex-col space-y-1">
-                                            <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">Target TON Wallet Address</label>
-                                            <input 
-                                                type="text"
-                                                value={withdrawAddress}
-                                                onChange={(e) => setWithdrawAddress(e.target.value)}
-                                                className="cyber-input w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary transition-all"
-                                                placeholder="EQB..."
-                                            />
-                                        </div>
+ {/* Input Target Wallet */}
+ <div className="flex flex-col space-y-1">
+ <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('target_address')}</label>
+ <input 
+ type="text"
+ value={withdrawAddress}
+ onChange={(e) => setWithdrawAddress(e.target.value)}
+ className="cyber-input w-full p-3 rounded-xl border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-xs font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary transition-all"
+ placeholder={tw('target_placeholder')}
+ />
+ </div>
 
-                                        {/* Safety Checklist */}
-                                        <div className="flex flex-col space-y-2 pt-2">
-                                            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary/60 uppercase tracking-widest cursor-pointer">
-                                                <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
-                                                <span>I confirm the destination is a valid TON network address.</span>
-                                            </label>
-                                            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary/60 uppercase tracking-widest cursor-pointer">
-                                                <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
-                                                <span>I understand that blockchain transfers are irreversible.</span>
-                                            </label>
-                                        </div>
+ {/* Safety Checklist */}
+ <div className="flex flex-col space-y-2 pt-2">
+ <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+ <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+ <span>{tw('check1')}</span>
+ </label>
+ <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+ <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+ <span>{tw('check2')}</span>
+ </label>
+ </div>
 
-                                        {/* Insufficient Funds Trigger */}
-                                        {parseFloat(withdrawAmount) * 100 > balance && (
-                                            <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[9px] font-black uppercase tracking-wider text-center animate-bounce">
-                                                🚨 INSUFFICIENT PLATFORM BALANCE
-                                            </div>
-                                        )}
+ {/* Insufficient Funds Trigger */}
+ {parseFloat(withdrawAmount) * 100 > balance && (
+ <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[9px] font-black uppercase tracking-wider text-center animate-bounce">
+ {tw('insufficient_balance')}
+ </div>
+ )}
 
-                                        {successMessage && <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
-                                        {errorMessage && <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
+ {successMessage && <div className="p-2.5 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+ {errorMessage && <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
-                                        <button
-                                            onClick={handleWithdrawSubmit}
-                                            disabled={processing || parseFloat(withdrawAmount) * 100 > balance}
-                                            className="w-full mt-2 py-3 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all disabled:opacity-50"
-                                        >
-                                            {processing ? "Signing TON transaction..." : "Request TON Withdrawal"}
-                                        </button>
-                                    </div>
-                                )}
+ <button
+ onClick={handleWithdrawSubmit}
+ disabled={processing || parseFloat(withdrawAmount) * 100 > balance}
+ className="w-full mt-2 py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all disabled:opacity-50"
+ >
+ {processing ? tw('signing_tx') : tw('request_withdraw')}
+ </button>
+ </div>
+ )}
 
-                                {/* 3. LINK WALLET MODAL */}
-                                {activeModal === 'connect' && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-base font-black uppercase tracking-widest text-brand-primary italic">Connect TON Wallet</h3>
-                                        <p className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-wider text-center">
-                                            Connect or input your TON Wallet address (Tonkeeper, Telegram Wallet) to verify deposits and payouts.
-                                        </p>
+ {/* 3. LINK WALLET MODAL */}
+ {activeModal === 'connect' && (
+ <div className="space-y-4">
+ <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('connect_title')}</h3>
+ <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+ {tw('connect_desc')}
+ </p>
 
-                                        <div className="flex flex-col space-y-1">
-                                            <label className="text-[9px] font-black text-brand-primary/40 uppercase tracking-widest">TON Wallet Address</label>
-                                            <input 
-                                                type="text"
-                                                value={connectAddressInput}
-                                                onChange={(e) => setConnectAddressInput(e.target.value)}
-                                                className="cyber-input w-full p-2.5 rounded-lg border border-brand-primary/20 bg-brand-void/50 text-brand-primary text-xs font-bold focus:outline-none"
-                                                placeholder="Enter TON wallet address (EQ...)"
-                                            />
-                                        </div>
+ <div className="flex flex-col space-y-1">
+ <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('ton_address')}</label>
+ <input 
+ type="text"
+ value={connectAddressInput}
+ onChange={(e) => setConnectAddressInput(e.target.value)}
+ className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-xs font-bold focus:outline-none"
+ placeholder={tw('ton_placeholder')}
+ />
+ </div>
 
-                                        {successMessage && <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-bold uppercase tracking-wider">{successMessage}</div>}
-                                        {errorMessage && <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider">{errorMessage}</div>}
+ {successMessage && <div className="p-2.5 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider">{successMessage}</div>}
+ {errorMessage && <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider">{errorMessage}</div>}
 
-                                        <button
-                                            onClick={handleConnectSubmit}
-                                            disabled={processing}
-                                            className="w-full py-2.5 rounded-xl border border-brand-primary/20 bg-brand-primary text-brand-void text-xs font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all"
-                                        >
-                                            {processing ? "Linking Web3 Address..." : "Verify & Link TON Wallet"}
-                                        </button>
-                                    </div>
-                                )}
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
+ <button
+ onClick={handleConnectSubmit}
+ disabled={processing}
+ className="w-full py-2.5 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-xs font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all"
+ >
+ {processing ? tw('linking_address') : tw('verify_link')}
+ </button>
+ </div>
+ )}
+ </motion.div>
+ </div>
+ )}
+ </AnimatePresence>
 
-            </div>
-        </LayoutWrapper>
-    );
+ </div>
+ </LayoutWrapper>
+ );
 }

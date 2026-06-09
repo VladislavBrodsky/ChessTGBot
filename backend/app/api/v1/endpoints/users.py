@@ -59,8 +59,25 @@ class UserStats(BaseModel):
     best_streak: BestStreak
     recent_games: List[RecentGame]
     referral_code: Optional[str] = None
+    xp: int = 0
+    level: int = 1
 
-from app.api.v1.deps import get_current_user
+@router.get("/leaderboard", response_model=List[LeaderboardItem])
+async def get_leaderboard(db: AsyncSession = Depends(get_db)):
+    top_users = await user_crud.get_top_users(db, limit=50)
+    
+    # Return leaderboard data
+    return [
+        LeaderboardItem(
+            telegram_id=user.telegram_id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            photo_url=user.photo_url,
+            elo=user.elo,
+            rank=idx + 1
+        )
+        for idx, user in enumerate(top_users)
+    ]
 
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
@@ -129,7 +146,9 @@ async def get_user_stats(
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
-        referral_code=user.referral_code
+        referral_code=user.referral_code,
+        xp=user.xp,
+        level=user.level
     )
 
 @router.post("/sync", response_model=UserStats)
@@ -167,25 +186,11 @@ async def sync_user(
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
-        referral_code=current_user.referral_code
+        referral_code=current_user.referral_code,
+        xp=current_user.xp,
+        level=current_user.level
     )
 
-@router.get("/leaderboard", response_model=List[LeaderboardItem])
-async def get_leaderboard(db: AsyncSession = Depends(get_db)):
-    top_users = await user_crud.get_top_users(db, limit=50)
-    
-    # Return leaderboard data
-    return [
-        LeaderboardItem(
-            telegram_id=user.telegram_id,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            photo_url=user.photo_url,
-            elo=user.elo,
-            rank=idx + 1
-        )
-        for idx, user in enumerate(top_users)
-    ]
 
 
 class WalletLinkRequest(BaseModel):
@@ -211,13 +216,40 @@ async def subscribe_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Mock subscription endpoint.
+    Purchase subscription using platform balance.
     Authorized user only.
     """
-    # Mock subscription logic: set it to expire in 30 days
-    # In a real app, verify payment provider callback here.
     from datetime import timedelta
-    expires_at = datetime.utcnow() + timedelta(days=30)
+    from app.models.transaction import Transaction
+
+    # Map tier pricing (in cents)
+    tier_pricing = {
+        "basic": 50,
+        "premium": 120,
+        "premium_plus": 250
+    }
+    price = tier_pricing.get(request.tier.lower(), 50)
     
+    if current_user.balance < price:
+        raise HTTPException(
+            status_code=400, 
+            detail="Insufficient balance for premium subscription"
+        )
+        
+    current_user.balance -= price
+    db.add(current_user)
+
+    # Log Transaction
+    tx = Transaction(
+        user_id=current_user.telegram_id,
+        type="subscription",
+        amount=-price,
+        fee=0,
+        status="completed",
+        reference_id=f"sub_{request.tier.lower()}_{int(datetime.utcnow().timestamp())}"
+    )
+    db.add(tx)
+
+    expires_at = datetime.utcnow() + timedelta(days=30)
     updated_user = await user_crud.update_subscription(db, current_user, request.tier, expires_at)
     return {"status": "success", "tier": updated_user.premium_tier}

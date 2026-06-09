@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
+    WEBHOOK_SECRET: str = "dev_webhook_secret"
 
     class Config:
         env_file = ".env"

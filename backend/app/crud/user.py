@@ -8,6 +8,8 @@ async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int):
     return result.scalars().first()
 
 async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_name: str = None, username: str = None, photo_url: str = None):
+    from app.services.gamification_service import GamificationService
+    ref_code = await GamificationService.generate_referral_code(db)
     db_user = User(
         telegram_id=telegram_id,
         first_name=first_name,
@@ -15,7 +17,8 @@ async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_
         username=username,
         photo_url=photo_url,
         elo=1000,
-        is_premium=False
+        is_premium=False,
+        referral_code=ref_code
     )
     db.add(db_user)
     await db.commit()

@@ -56,27 +56,27 @@ export default function WalletConnect() {
         <div className="w-full">
             <motion.div
                 whileHover={{ scale: 1.01 }}
-                className="glass-panel p-1 rounded-2xl border-brand-primary/20 bg-brand-primary/5 flex items-center justify-between overflow-hidden relative"
+                className="glass-panel p-1.5 rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex items-center justify-between overflow-hidden relative shadow-sm"
             >
                 {/* Custom styling wrapper for TonConnectButton */}
-                <div className="w-full flex items-center justify-between pl-4 pr-1 py-1">
-                    <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-primary/10 text-brand-primary/40'}`}>
-                            <FaWallet size={14} />
+                <div className="w-full flex items-center justify-between pl-3 pr-1 py-1 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-10 text-brand-primary opacity-60'}`}>
+                            <FaWallet size={12} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/60">
-                                {wallet ? 'Link Established' : 'Neural Link'}
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-40 truncate">
+                                {wallet ? 'Link Active' : 'Neural Link'}
                             </span>
-                            <span className="text-[12px] font-black italic text-brand-primary tracking-tighter">
-                                {wallet ? getShortAddress(wallet.account.address) : 'CONNECT WALLET'}
+                            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary truncate">
+                                {wallet ? getShortAddress(wallet.account.address) : 'UNLINKED'}
                             </span>
                         </div>
                     </div>
 
                     {/* The actual button, styled via CSS override in globals or passed props if supported, 
                         but standard button is robust. We wrap it to control layout */}
-                    <div className="ton-connect-wrapper">
+                    <div className="ton-connect-wrapper shrink-0">
                         <TonConnectButton />
                     </div>
                 </div>

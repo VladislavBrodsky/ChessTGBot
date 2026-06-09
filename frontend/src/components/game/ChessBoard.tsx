@@ -69,21 +69,24 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             </div>}
 
             {/* Subtle Metallic Outer Glow */}
-            <div className="absolute -inset-[2px] bg-linear-to-b from-white/20 to-transparent rounded-2xl blur-[1px] opacity-30"></div>
+            <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30"></div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-white/5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
-                <Chessboard
-                    // @ts-ignore
-                    position={fen}
-                    onPieceDrop={onDrop}
-                    boardOrientation={orientation}
-                    customDarkSquareStyle={{ backgroundColor: "#050505" }}
-                    customLightSquareStyle={{ backgroundColor: "#1F1F1F" }}
-                    customBoardStyle={{
-                        borderRadius: "8px",
-                    }}
-                    animationDuration={250}
-                />
+            <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
+                <div className="rounded-xl overflow-hidden w-full h-full">
+                    <Chessboard
+                        // @ts-ignore
+                        position={fen}
+                        onPieceDrop={onDrop}
+                        boardOrientation={orientation}
+                        customDarkSquareStyle={{ backgroundColor: "#050505" }}
+                        customLightSquareStyle={{ backgroundColor: "#1F1F1F" }}
+                        customBoardStyle={{
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                        }}
+                        animationDuration={250}
+                    />
+                </div>
             </div>
         </div>
     );
