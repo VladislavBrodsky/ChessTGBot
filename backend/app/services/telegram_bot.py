@@ -140,9 +140,10 @@ class TelegramService:
         if not cls.application:
             return
         
-        use_webhook = settings.WEBAPP_URL and "localhost" not in settings.WEBAPP_URL and "127.0.0.1" not in settings.WEBAPP_URL
+        base_url = settings.BACKEND_URL or settings.WEBAPP_URL
+        use_webhook = base_url and "localhost" not in base_url and "127.0.0.1" not in base_url
         if use_webhook:
-            webhook_url = f"{settings.WEBAPP_URL}/api/v1/webhook/telegram"
+            webhook_url = f"{base_url}/api/v1/webhook/telegram"
             try:
                 await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
                 logger.info(f"👑 Bot Webhook Successfully Set: {webhook_url}")

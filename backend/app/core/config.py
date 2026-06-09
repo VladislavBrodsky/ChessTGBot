@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     # Deployment
     # This URL should be the production URL of your app
     WEBAPP_URL: str = "https://chesstgbot-production.up.railway.app"
+    BACKEND_URL: str = ""
 
     # Payments
     STRIPE_SECRET_KEY: str | None = None
