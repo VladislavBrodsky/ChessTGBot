@@ -141,6 +141,9 @@ class TelegramService:
             return
         
         base_url = settings.BACKEND_URL or settings.WEBAPP_URL
+        if base_url and not base_url.startswith("http://") and not base_url.startswith("https://"):
+            base_url = f"https://{base_url}"
+            
         use_webhook = base_url and "localhost" not in base_url and "127.0.0.1" not in base_url
         if use_webhook:
             webhook_url = f"{base_url}/api/v1/webhook/telegram"
