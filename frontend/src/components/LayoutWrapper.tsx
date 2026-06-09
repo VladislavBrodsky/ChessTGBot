@@ -75,7 +75,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                                     exit={{ y: 8, opacity: 0, rotate: 45 }}
                                     transition={{ duration: 0.15 }}
                                 >
-                                    {theme === 'dark' ? <FaMoon size={10} /> : theme === 'light' ? <FaSun size={10} /> : <FaStar size={10} className="text-purple-400" />}
+                                    {theme === 'dark' ? <FaMoon size={14} /> : theme === 'light' ? <FaSun size={14} /> : <FaStar size={14} className="text-purple-400" />}
                                 </motion.div>
                             </AnimatePresence>
                         </motion.button>

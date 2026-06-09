@@ -25,7 +25,7 @@ export default function Navbar() {
     }));
 
     return (
-        <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void/90 backdrop-blur-3xl border border-brand-primary/10 px-6 py-3 rounded-2xl shadow-premium justify-between">
+        <nav className="fixed bottom-[calc(16px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void/95 backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-2xl shadow-premium justify-between">
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-white/5 to-transparent pointer-events-none rounded-2xl" />
 
@@ -39,7 +39,7 @@ export default function Navbar() {
                                     {isActive && (
                                         <motion.div
                                             layoutId="nav-active-indicator"
-                                            className="absolute inset-[2px] bg-brand-primary/5 rounded-xl border border-brand-primary/5 shadow-inner-glow"
+                                            className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-5 shadow-inner-glow"
                                             initial={false}
                                             transition={{
                                                 type: "spring",

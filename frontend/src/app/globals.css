@@ -1,14 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-void: #000000;
-  --color-brand-surface: #0A0A0A;
-  --color-brand-elevated: #111111;
-  --color-brand-border: #1F1F1F;
-  --color-brand-text-gray: #71767B;
-  --shadow-neon: 0 0 20px rgba(255, 255, 255, 0.05), 0 0 40px rgba(255, 255, 255, 0.02);
-  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 1px rgba(255, 255, 255, 0.1);
-  --shadow-inner-glow: inset 0 0 15px rgba(255, 255, 255, 0.05);
+  --color-brand-void: var(--color-brand-void);
+  --color-brand-surface: var(--color-brand-surface);
+  --color-brand-elevated: var(--color-brand-elevated);
+  --color-brand-border: var(--color-brand-border);
+  --color-brand-text-gray: var(--color-brand-text-gray);
+  
+  --color-brand-primary: var(--text-primary);
+  --color-brand-muted: var(--text-muted);
+
+  --color-brand-border-opacity-5: var(--color-border-opacity-5);
+  --color-brand-border-opacity-10: var(--color-border-opacity-10);
+  --color-brand-border-opacity-20: var(--color-border-opacity-20);
+  --color-brand-bg-opacity-5: var(--color-bg-opacity-5);
+  --color-brand-bg-opacity-10: var(--color-bg-opacity-10);
+  --color-brand-bg-opacity-20: var(--color-bg-opacity-20);
+
+  --shadow-neon: var(--shadow-neon);
+  --shadow-premium: var(--shadow-premium);
+  --shadow-inner-glow: var(--shadow-inner-glow);
 }
 
 :root {
@@ -25,29 +36,61 @@
   --text-primary: #FFFFFF;
   --text-muted: #71767B;
 
+  --color-brand-void: #000000;
+  --color-brand-surface: #0A0A0A;
+  --color-brand-elevated: #111111;
+  --color-brand-border: #1F1F1F;
+  --color-brand-text-gray: #71767B;
+
   --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%);
+
+  --color-border-opacity-5: rgba(255, 255, 255, 0.05);
+  --color-border-opacity-10: rgba(255, 255, 255, 0.1);
+  --color-border-opacity-20: rgba(255, 255, 255, 0.2);
+  --color-bg-opacity-5: rgba(255, 255, 255, 0.05);
+  --color-bg-opacity-10: rgba(255, 255, 255, 0.1);
+  --color-bg-opacity-20: rgba(255, 255, 255, 0.2);
+
+  --shadow-neon: 0 0 20px rgba(255, 255, 255, 0.05), 0 0 40px rgba(255, 255, 255, 0.02);
+  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 1px rgba(255, 255, 255, 0.1);
+  --shadow-inner-glow: inset 0 0 15px rgba(255, 255, 255, 0.05);
+
+  --glass-button-hover-bg: rgba(255, 255, 255, 0.04);
+  --glass-button-hover-border: rgba(255, 255, 255, 0.15);
+  --glass-button-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme='light'] {
-  --bg-primary: #FFFFFF;
-  --bg-surface: #F8F9FA;
-  --bg-elevated: #E5E7EB;
-  --border-muted: #E2E8F0;
+  --bg-primary: #F3F4F6;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #FAFBFB;
+  --border-muted: rgba(0, 0, 0, 0.06);
   --border-hover: rgba(0, 0, 0, 0.12);
   --text-primary: #0F172A;
   --text-muted: #64748B;
 
-  --color-brand-void: #FFFFFF;
-  --color-brand-surface: #F3F4F6;
-  --color-brand-elevated: #E5E7EB;
-  --color-brand-border: #D1D5DB;
-  --color-brand-text-gray: #6B7280;
+  --color-brand-void: #F3F4F6;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-elevated: #FAFBFB;
+  --color-brand-border: rgba(0, 0, 0, 0.06);
+  --color-brand-text-gray: #64748B;
 
-  --accent-silver: linear-gradient(180deg, #F3F4F6 0%, #D1D5DB 100%);
+  --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #E5E7EB 100%);
 
-  --shadow-neon: 0 0 20px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.02);
-  --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
-  --shadow-inner-glow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+  --color-border-opacity-5: rgba(15, 23, 42, 0.05);
+  --color-border-opacity-10: rgba(15, 23, 42, 0.1);
+  --color-border-opacity-20: rgba(15, 23, 42, 0.2);
+  --color-bg-opacity-5: rgba(15, 23, 42, 0.03);
+  --color-bg-opacity-10: rgba(15, 23, 42, 0.06);
+  --color-bg-opacity-20: rgba(15, 23, 42, 0.12);
+
+  --shadow-neon: 0 0 20px rgba(0, 0, 0, 0.01), 0 0 40px rgba(0, 0, 0, 0.005);
+  --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  --shadow-inner-glow: inset 0 0 10px rgba(0, 0, 0, 0.005);
+
+  --glass-button-hover-bg: rgba(0, 0, 0, 0.03);
+  --glass-button-hover-border: rgba(0, 0, 0, 0.08);
+  --glass-button-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme='nebula'] {
@@ -67,12 +110,21 @@
 
   --accent-silver: linear-gradient(180deg, #00F0FF 0%, #7B2CBF 100%);
 
+  --color-border-opacity-5: rgba(160, 136, 255, 0.05);
+  --color-border-opacity-10: rgba(160, 136, 255, 0.1);
+  --color-border-opacity-20: rgba(160, 136, 255, 0.2);
+  --color-bg-opacity-5: rgba(160, 136, 255, 0.05);
+  --color-bg-opacity-10: rgba(160, 136, 255, 0.1);
+  --color-bg-opacity-20: rgba(160, 136, 255, 0.2);
+
   --shadow-neon: 0 0 20px rgba(123, 44, 191, 0.3), 0 0 40px rgba(0, 240, 255, 0.2);
   --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 1px rgba(123, 44, 191, 0.4);
   --shadow-inner-glow: inset 0 0 15px rgba(123, 44, 191, 0.2);
+
+  --glass-button-hover-bg: rgba(160, 136, 255, 0.06);
+  --glass-button-hover-border: rgba(160, 136, 255, 0.2);
+  --glass-button-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
-
-
 
 body {
   color: var(--text-primary) !important;
@@ -84,6 +136,8 @@ body {
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @layer components {
@@ -112,32 +166,53 @@ body {
   }
 
   .glass-button:hover {
-    border-color: rgba(255, 255, 255, 0.15) !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    box-shadow: var(--shadow-inner-glow), 0 10px 20px rgba(0, 0, 0, 0.4);
+    border-color: var(--glass-button-hover-border) !important;
+    background: var(--glass-button-hover-bg) !important;
+    box-shadow: var(--shadow-inner-glow), var(--glass-button-hover-shadow) !important;
     transform: translateY(-2px);
   }
 
   .action-button {
-    background: var(--accent-silver) !important;
-    color: #000000 !important;
-    font-weight: 800;
+    background: linear-gradient(135deg, #7B2CBF 0%, #00F0FF 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     border: none !important;
     border-radius: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 8px 25px rgba(123, 44, 191, 0.3) !important;
   }
 
   .action-button:hover {
-    box-shadow: 0 20px 45px rgba(255, 255, 255, 0.2) !important;
-    transform: scale(1.01) translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 240, 255, 0.45) !important;
+    transform: scale(1.02) translateY(-2px);
   }
 
   .action-button:active {
     transform: scale(0.98);
   }
+}
+
+/* TonConnect UI Overrides */
+.ton-connect-wrapper button {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+  font-family: var(--font-inter) !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  height: 36px !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ton-connect-wrapper button:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Scrollbar */
