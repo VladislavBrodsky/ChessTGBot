@@ -69,13 +69,23 @@ export default function ChallengesPage() {
  const levelProgressXp = user.xp - currentLevelMinXp;
  const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 200) * 100));
 
- const userCode = user.referral_code || "KING-8292";
- const inviteLink = `https://t.me/FinChess_bot/app?startapp=ref_${userCode}`;
+ const userCode = user.referral_code || "";
+ const botUsername = "FinChess_bot";
+ const inviteLink = userCode
+   ? `https://t.me/${botUsername}?start=ref_${userCode}`
+   : `https://t.me/${botUsername}`;
 
  const handleCopyReferral = () => {
- navigator.clipboard.writeText(inviteLink);
- setCopied(true);
- setTimeout(() => setCopied(false), 2000);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(inviteLink);
+  }
+  // Also share via Telegram if available
+  if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+    const tg = (window as any).Telegram.WebApp;
+    tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join me on FinChess and earn crypto while playing chess! 🎯♟️')}`);
+  }
+  setCopied(true);
+  setTimeout(() => setCopied(false), 2000);
  };
 
  return (
@@ -221,13 +231,18 @@ export default function ChallengesPage() {
  <div className="absolute right-0 top-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
  <FaUserFriends className="text-6xl text-brand-primary" />
  </div>
- <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight mb-1">Recruit Agents</h3>
- <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-6 max-w-[75%]">Invite friends to your squad and earn 50 XP per recruit.</p>
+ <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight mb-1">Invite Friend to Play</h3>
+ <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4 max-w-[75%]">Share your unique link and earn 50 XP per recruit.</p>
+ {userCode && (
+ <div className="w-full py-2 px-3 mb-3 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
+   {inviteLink}
+ </div>
+ )}
  <button 
  onClick={handleCopyReferral}
  className="w-full py-3 rounded-xl bg-brand-primary text-brand-void hover:bg-brand-primary-hover transition-all text-[10px] font-black uppercase tracking-[0.2em] cursor-pointer shadow-sm"
  >
- {copied ? "Copied!" : "Copy Referral Link"}
+ {copied ? "Copied! ✓" : "Copy & Share Invite Link"}
  </button>
  </div>
  </div>

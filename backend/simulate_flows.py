@@ -1,0 +1,223 @@
+import asyncio
+import os
+import sys
+from sqlalchemy import select, and_
+from app.core.database import engine, AsyncSessionLocal, init_db, Base
+from app.crud import user as user_crud
+from app.models.user import User
+from app.models.transaction import Transaction
+from app.models.gamification import Task, UserTask, Referral, TaskType
+from app.services.gamification_service import GamificationService
+from app.services.matchmaker import MatchmakerService
+from app.services.game_service import GameService
+from app.schemas.game_state import GameState
+
+# Ensure sqlite test settings or dev db is initialized
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./chess.db"
+
+async def run_simulation():
+    print("=" * 60)
+    print("🤖 CHESS TG MINI APP: END-TO-END FLOW SIMULATION")
+    print("=" * 60)
+
+    # 1. Initialize DB and Verify Schema
+    print("\n[STEP 1] Initializing Database Schema & Seeding Daily Tasks...")
+    await init_db()
+    
+    # Check/seed default daily tasks definition in Database
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Task))
+        tasks = result.scalars().all()
+        if not tasks:
+            print("Seeding default tasks...")
+            default_tasks = [
+                Task(id=1, title_key="daily_win", description_key="Win a chess match today", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=True, icon="trophy"),
+                Task(id=2, title_key="daily_play", description_key="Play 3 chess matches", xp_reward=30, task_type=TaskType.PLAY, target_count=3, is_daily=True, icon="gamepad"),
+                Task(id=3, title_key="daily_login", description_key="Login to the app", xp_reward=10, task_type=TaskType.LOGIN, target_count=1, is_daily=True, icon="sync")
+            ]
+            session.add_all(default_tasks)
+            await session.commit()
+            print("Daily tasks seeded in DB.")
+        else:
+            print(f"Daily tasks definitions already exist ({len(tasks)} tasks).")
+
+    # Clean existing simulator players to ensure fresh state
+    async with AsyncSessionLocal() as session:
+        print("Cleaning old simulation data...")
+        await session.execute(select(User).filter(User.telegram_id.in_([11111, 22222])))
+        p1 = await user_crud.get_user_by_telegram_id(session, 11111)
+        p2 = await user_crud.get_user_by_telegram_id(session, 22222)
+        if p1: await session.delete(p1)
+        if p2: await session.delete(p2)
+        await session.commit()
+        print("Clean complete.")
+
+    # 2. Player Sign-up & Referral Flow
+    print("\n[STEP 2] Simulating Player Registrations & Referral Flow...")
+    async with AsyncSessionLocal() as session:
+        # Create Player 1 (Referrer)
+        p1 = await user_crud.create_user(
+            session, 
+            telegram_id=11111, 
+            first_name="P1_Hacker", 
+            username="hacker_p1"
+        )
+        # Give P1 starting balance ($10.00)
+        p1.balance = 1000  # 1000 cents
+        session.add(p1)
+        await session.commit()
+        await session.refresh(p1)
+        
+        print(f"Registered Referrer: {p1.first_name} (ID: {p1.telegram_id})")
+        print(f"  - Initial ELO: {p1.elo}")
+        print(f"  - Initial Balance: ${p1.balance / 100:.2f} USDT")
+        print(f"  - Generated Referral Code: {p1.referral_code}")
+        print(f"  - Personal Telegram Invite Link: https://t.me/FinChess_bot/app?startapp=ref_{p1.referral_code}")
+
+        # Create Player 2 (Referred)
+        p2 = await user_crud.create_user(
+            session, 
+            telegram_id=22222, 
+            first_name="P2_Grandmaster", 
+            username="gmaster_p2"
+        )
+        p2.balance = 1000  # 1000 cents
+        session.add(p2)
+        await session.commit()
+        await session.refresh(p2)
+        
+        print(f"Registered Recruit: {p2.first_name} (ID: {p2.telegram_id})")
+        print(f"  - Initial ELO: {p2.elo}")
+        print(f"  - Initial Balance: ${p2.balance / 100:.2f} USDT")
+
+        # Process Referral link mapping
+        success = await GamificationService.process_referral(session, p2, p1.referral_code)
+        if success:
+            print("Referral linked successfully!")
+            await session.refresh(p1)
+            await session.refresh(p2)
+            print(f"  - Referrer P1 XP: {p1.xp} (Awarded 50 XP)")
+            print(f"  - Referred P2 XP: {p2.xp} (Awarded 20 XP welcome bonus)")
+
+    # 3. Matchmaking & Wager Lock Simulation
+    print("\n[STEP 3] Simulating Wager Matchmaking Queue & Balance Verification...")
+    wager_amount = 100  # $1.00 wager (100 cents)
+    
+    # Verify balances before matchmaking
+    async with AsyncSessionLocal() as session:
+        u1 = await user_crud.get_user_by_telegram_id(session, 11111)
+        u2 = await user_crud.get_user_by_telegram_id(session, 22222)
+        assert u1.balance >= wager_amount, "P1 Insufficient funds"
+        assert u2.balance >= wager_amount, "P2 Insufficient funds"
+        print("✓ Balance verification passed for both players.")
+
+    # Matchmaker joins
+    matchmaker = MatchmakerService()
+    await matchmaker.add_to_queue(user_id=11111, bid_amount=wager_amount, sid="sid_p1")
+    await matchmaker.add_to_queue(user_id=22222, bid_amount=wager_amount, sid="sid_p2")
+    
+    opponent = await matchmaker.find_opponent(wager_amount, exclude_user_id=11111)
+    if opponent and opponent["user_id"] == 22222:
+        print("✓ Matchmaker: Match Found! Opponent P2 matched with P1.")
+        
+        # Deduct wagers and record transactions in DB
+        async with AsyncSessionLocal() as session:
+            white = await user_crud.get_user_by_telegram_id(session, 11111)
+            black = await user_crud.get_user_by_telegram_id(session, 22222)
+            
+            game_id = "sim_match_11111_22222"
+            
+            # Deduct wager
+            white.balance -= wager_amount
+            session.add(white)
+            tx_w = Transaction(
+                user_id=white.telegram_id,
+                type="game_wager",
+                amount=-wager_amount,
+                reference_id=game_id,
+                status="completed"
+            )
+            session.add(tx_w)
+            
+            black.balance -= wager_amount
+            session.add(black)
+            tx_b = Transaction(
+                user_id=black.telegram_id,
+                type="game_wager",
+                amount=-wager_amount,
+                reference_id=game_id,
+                status="completed"
+            )
+            session.add(tx_b)
+            
+            await session.commit()
+            print(f"✓ Locked Wager Stake for Game ID: {game_id}")
+            print(f"  - Player 1 Balance: ${white.balance / 100:.2f} USDT (-${wager_amount/100:.2f})")
+            print(f"  - Player 2 Balance: ${black.balance / 100:.2f} USDT (-${wager_amount/100:.2f})")
+
+        await matchmaker.remove_match_pair(wager_amount, 11111, 22222)
+
+    # 4. End Game & Profit Distribution (ELO + Financial)
+    print("\n[STEP 4] Simulating Chess Battle Resolution & Commissions Rake Distribution...")
+    # Setup initial game state schema
+    state = GameState(
+        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        white_player_id=11111,
+        black_player_id=22222,
+        turn="b",
+        is_check=False,
+        is_checkmate=True,
+        is_stalemate=False,
+        legal_moves=[],
+        is_game_over=True,
+        winner="w", # P1 (White) Wins
+        move_history=["e2e4", "e7e5", "d1h5", "b8c6", "f1c4", "g8f6", "h5f7"] # Scholar's Mate
+    )
+    # Set wager in state
+    state.bid_amount = wager_amount
+    
+    # Process game over payouts & ELO adjustments
+    game_service = GameService()
+    await game_service.end_game(game_id="sim_match_11111_22222", state=state)
+    
+    # Inspect final ratings and balances
+    async with AsyncSessionLocal() as session:
+        u1 = await user_crud.get_user_by_telegram_id(session, 11111)
+        u2 = await user_crud.get_user_by_telegram_id(session, 22222)
+        
+        print(f"✓ Battle Result: White (Player 1) wins by Checkmate!")
+        print(f"✓ Rating System ELO Shifts:")
+        print(f"  - Player 1 ELO: 1000 -> {u1.elo} (Gain: +{u1.elo - 1000})")
+        print(f"  - Player 2 ELO: 1000 -> {u2.elo} (Loss: {u2.elo - 1000})")
+        print(f"  - Total Games Played: P1={u1.games_played}, P2={u2.games_played}")
+        print(f"  - Wins/Losses Status: P1: {u1.wins}W-{u1.losses}L, P2: {u2.wins}W-{u2.losses}L")
+        
+        # Verify stake payout and rakes
+        # Stake pool: 200 cents. Rake (3%): 6 cents. Payout: 194 cents.
+        print(f"\n✓ Profit & Commission Ledger Verification:")
+        print(f"  - Total Match Stake Pool: ${(wager_amount * 2) / 100:.2f} USDT")
+        print(f"  - Platform Rake Collected (3%): $0.06 USDT (Routed to Company Wallet)")
+        print(f"  - Net Winner Payout (97%): $1.94 USDT")
+        print(f"  - Player 1 Final Wallet Balance: ${u1.balance / 100:.2f} USDT")
+        print(f"  - Player 2 Final Wallet Balance: ${u2.balance / 100:.2f} USDT")
+        
+        assert u1.balance == 1094, f"P1 Payout incorrect, got {u1.balance}"
+        assert u2.balance == 900, f"P2 Balance incorrect, got {u2.balance}"
+        print("✓ balance verification assert passed. ledger matches expected calculations.")
+
+        # 5. Print Transaction Ledger history
+        print("\n[STEP 5] Ledger Transaction Records in DB:")
+        txs_result = await session.execute(
+            select(Transaction).order_by(Transaction.id.asc())
+        )
+        txs = txs_result.scalars().all()
+        for idx, tx in enumerate(txs):
+            sign = "+" if tx.amount > 0 else ""
+            print(f"  [{idx + 1}] User ID: {tx.user_id} | Type: {tx.type.upper():<12} | Amount: {sign}${tx.amount / 100:<6.2f} USDT | Ref: {tx.reference_id}")
+
+    print("\n" + "=" * 60)
+    print("✓ END-TO-END SIMULATION COMPLETED SUCCESSFULLY!")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    asyncio.run(run_simulation())

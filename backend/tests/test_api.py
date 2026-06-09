@@ -23,3 +23,11 @@ async def test_get_user_stats_syncs_profile(client, db_session):
     data = response.json()
     assert data["first_name"] == "NewName"
     assert data["photo_url"] == "new_url"
+
+@pytest.mark.asyncio
+async def test_create_game_computer(client):
+    response = await client.post("/api/v1/game/create?type=computer")
+    assert response.status_code == 200
+    data = response.json()
+    assert "game_id" in data
+

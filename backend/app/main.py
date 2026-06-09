@@ -55,15 +55,15 @@ def create_application() -> FastAPI:
         lifespan=lifespan
     )
 
-    # Set all CORS enabled origins
-    if settings.BACKEND_CORS_ORIGINS:
-        application.add_middleware(
-            CORSMiddleware,
-            allow_origins=settings.BACKEND_CORS_ORIGINS,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+    # Set all CORS enabled origins - use wildcard for Telegram WebApp compatibility
+    # Telegram Mini Apps run in iframes and may have null or web.telegram.org origin
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,  # Must be False when allow_origins=["*"]
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     application.add_middleware(LoggingMiddleware)
     application.add_middleware(HeadMiddleware)

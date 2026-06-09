@@ -8,8 +8,15 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # CORS
-    # In production, this should be a list of specific origins like ["https://myapp.com"]
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    # Includes localhost for dev and production Railway URL.
+    # Telegram WebApp runs in an iframe with null or Telegram origin - use wildcard for compatibility.
+    BACKEND_CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "https://chesstgbot-production.up.railway.app",
+        "https://web.telegram.org",
+        "https://telegram.org",
+        "*"
+    ]
 
     # Database
     # Default to localhost for dev, but in production (Railways) this MUST be set via env vars.
