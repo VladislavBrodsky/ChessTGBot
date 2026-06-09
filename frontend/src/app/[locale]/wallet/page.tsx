@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { FaWallet, FaArrowUp, FaArrowDown, FaHistory, FaChevronLeft, FaTimes, FaCoins, FaNetworkWired } from "react-icons/fa";
+import { FaWallet, FaArrowUp, FaArrowDown, FaHistory, FaChevronLeft, FaTimes, FaCoins, FaNetworkWired, FaCopy } from "react-icons/fa";
 import Link from "next/link";
 
 interface Transaction {
