@@ -27,16 +27,21 @@ async def lifespan(app: FastAPI):
     from app.core.database import init_db, engine
     from sqlalchemy import text
     try:
-        async with engine.connect() as conn:
-            result = await conn.execute(text("SELECT inet_server_addr()"))
-            db_host = result.scalar()
-            logger.info(f"✅ Database Connected. Host: {db_host}")
-            if str(db_host) in ["127.0.0.1", "::1"] and "railway" in settings.WEBAPP_URL:
-                 logger.warning("⚠️  WARNING: Production App connected to Localhost DB! Ensure DATABASE_URL is set.")
+        is_sqlite = engine.url.drivername.startswith("sqlite")
+        if is_sqlite:
+            logger.info("✅ SQLite Database detected. Initializing schema...")
+            await init_db()
+            logger.info("✅ SQLite Schema Initialized successfully.")
+        else:
+            async with engine.connect() as conn:
+                result = await conn.execute(text("SELECT inet_server_addr()"))
+                db_host = result.scalar()
+                logger.info(f"✅ Database Connected. Host: {db_host}")
+                if str(db_host) in ["127.0.0.1", "::1"] and "railway" in settings.WEBAPP_URL:
+                     logger.warning("⚠️  WARNING: Production App connected to Localhost DB! Ensure DATABASE_URL is set.")
     except Exception as e:
          logger.error(f"❌ Database Connection Failed: {e}")
 
-    # await init_db() # We now use Alembic migrations in Dockerfile for schema management
     await TelegramService.start_bot()
     yield
     # Shutdown

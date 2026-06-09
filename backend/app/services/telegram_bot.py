@@ -249,10 +249,18 @@ class TelegramService:
                     await redis_client.close()
                 except Exception as e:
                     logger.error(f"[LEADER ELECTION] Error in loop: {e}")
-                    # In case of Redis outage, suspend receiver to avoid duplicate update polling conflicts
-                    if cls.is_currently_leader:
-                        cls.is_currently_leader = False
-                        await cls.stop_receiver()
+                    # Local fallback: if Redis connection fails and we are running in localhost/development,
+                    # we should still allow the bot to run to make local testing easy.
+                    if "localhost" in settings.WEBAPP_URL or "127.0.0.1" in settings.WEBAPP_URL:
+                        if not cls.is_currently_leader:
+                            logger.info("ℹ️ Local/Development environment detected. Bypassing Redis leader election and promoting to ACTIVE leader.")
+                            cls.is_currently_leader = True
+                            await cls.start_receiver()
+                    else:
+                        # In case of Redis outage in production, suspend receiver to avoid duplicate update polling conflicts
+                        if cls.is_currently_leader:
+                            cls.is_currently_leader = False
+                            await cls.stop_receiver()
                 
                 await asyncio.sleep(10)
 
