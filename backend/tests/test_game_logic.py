@@ -123,3 +123,52 @@ async def test_game_service_draw():
     assert state.is_game_over
     assert state.winner is None
     assert state.result_type == 'draw'
+
+@pytest.mark.asyncio
+async def test_daily_task_reset(db_session):
+    from app.services.gamification_service import GamificationService
+    from app.models.gamification import Task, UserTask, TaskType
+    from datetime import datetime, timedelta
+    
+    # Skip if using mock session to prevent table insert issues
+    if hasattr(db_session, "users"):
+        return
+
+    # 1. Create a dummy daily task
+    task = Task(
+        id=99,
+        title_key="test_daily",
+        description_key="Test daily task",
+        xp_reward=10,
+        task_type=TaskType.PLAY,
+        target_count=1,
+        is_daily=True
+    )
+    db_session.add(task)
+    await db_session.commit()
+    
+    # 2. Assign the task to user 123 (marked as completed and claimed yesterday)
+    yesterday = datetime.utcnow() - timedelta(days=1, hours=2)
+    user_task = UserTask(
+        user_id=123,
+        task_id=99,
+        progress=1,
+        completed=True,
+        claimed=True,
+        updated_at=yesterday
+    )
+    db_session.add(user_task)
+    await db_session.commit()
+    
+    # 3. Call get_or_create_daily_tasks (should trigger reset since updated_at is yesterday)
+    user_tasks = await GamificationService.get_or_create_daily_tasks(db_session, 123)
+    
+    # Verify it has been reset
+    assert len(user_tasks) > 0
+    test_task = next((ut for ut in user_tasks if ut.task_id == 99), None)
+    assert test_task is not None
+    assert test_task.progress == 0
+    assert not test_task.completed
+    assert not test_task.claimed
+    assert test_task.updated_at.date() == datetime.utcnow().date()
+

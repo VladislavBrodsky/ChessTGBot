@@ -31,7 +31,16 @@ class GamificationService:
             if not user_task:
                 user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=0, completed=False, claimed=False)
                 db.add(user_task)
-            # Else: Reset logic for daily tasks would go here (e.g. if last updated yesterday, reset)
+            else:
+                # Reset logic for daily tasks: if last updated on a previous UTC day, reset progress & completion
+                last_update = user_task.updated_at
+                now_utc = datetime.utcnow()
+                if not last_update or last_update.date() < now_utc.date():
+                    user_task.progress = 0
+                    user_task.completed = False
+                    user_task.claimed = False
+                    user_task.updated_at = now_utc
+                    db.add(user_task)
             
             user_tasks.append(user_task)
         
