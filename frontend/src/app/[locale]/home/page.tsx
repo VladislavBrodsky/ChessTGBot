@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { apiFetch } from "@/lib/api";
@@ -18,10 +19,29 @@ import NewsSection from "@/components/NewsSection";
 export default function Home() {
  const t = useTranslations('Index');
  const locale = useLocale();
+ const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
  const [stats, setStats] = useState<any>(null);
  const [walletBalance, setWalletBalance] = useState<number>(0);
  const [showReferralPopup, setShowReferralPopup] = useState<boolean>(false);
+
+ useEffect(() => {
+   if (typeof window !== 'undefined') {
+     let startParam = '';
+     if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
+       startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+     } else {
+       const params = new URLSearchParams(window.location.search);
+       startParam = params.get('startapp') || params.get('start') || '';
+     }
+     
+     if (startParam) {
+       if (!startParam.startsWith('ref_')) {
+         router.push(`/${locale}/game?id=${startParam}`);
+       }
+     }
+   }
+ }, [locale, router]);
 
  useEffect(() => {
  const timer = setTimeout(() => {
@@ -322,43 +342,34 @@ export default function Home() {
  <AnimatePresence>
  {showReferralPopup && (
  <motion.div
- initial={{ opacity: 0, y: 50, scale: 0.9 }}
+ initial={{ opacity: 0, y: -50, scale: 0.95 }}
  animate={{ opacity: 1, y: 0, scale: 1 }}
  exit={{ opacity: 0, y: -20, scale: 0.95 }}
  transition={{ type: "spring", damping: 20 }}
- className="fixed bottom-24 left-4 right-4 z-50 pointer-events-none"
+ className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
  >
  <div 
- style={{ 
- background: 'radial-gradient(circle at 10% 50%, var(--bg-primary) 0%, transparent 60%), var(--bg-surface)' 
- }}
- className="w-full max-w-sm mx-auto p-4.5 rounded-2xl border border-amber-500/30 dark:border-amber-400/20 shadow-2xl backdrop-blur-xl flex items-center gap-4 relative overflow-hidden pointer-events-auto"
+ className="w-[90vw] max-w-[300px] p-3 rounded-2xl border border-amber-500/20 bg-brand-surface/95 backdrop-blur-xl shadow-premium flex items-center gap-3 relative overflow-hidden pointer-events-auto"
  >
  <div 
- style={{ backgroundImage: 'linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent)' }}
- className="absolute inset-0 -translate-x-full animate-shimmer pointer-events-none" 
- />
- 
- <div 
- className="w-12 h-12 rounded-xl flex items-center justify-center border border-amber-500/30 bg-amber-500/10 dark:border-amber-400/30 dark:bg-amber-400/10 relative z-10"
+ className="w-8 h-8 rounded-lg flex items-center justify-center border border-amber-500/30 bg-amber-500/10 dark:border-amber-400/30 dark:bg-amber-400/10 relative z-10 shrink-0"
  >
- <FaCoins className="text-amber-500 dark:text-amber-400 text-xl animate-bounce" />
- <div className="absolute inset-0 bg-amber-500 blur-xl opacity-20" />
+ <FaCoins className="text-amber-500 dark:text-amber-400 text-sm" />
  </div>
  
- <div className="flex flex-col relative z-10">
- <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] mb-0.5">{t('referral_commission')}</span>
- <span className="text-sm font-black text-brand-primary tracking-wide">+$2.45 USDT</span>
- <span className="text-[9px] font-bold text-brand-primary opacity-60 dark:opacity-40 uppercase tracking-widest mt-1">{t('from_player', { name: 'Grandmaster' })}</span>
+ <div className="flex flex-col relative z-10 min-w-0 flex-1 pr-4">
+ <span className="text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-0.5">{t('referral_commission')}</span>
+ <span className="text-xs font-black text-brand-primary tracking-wide">+$2.45 USDT</span>
+ <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest truncate mt-0.5">{t('from_player', { name: 'Grandmaster' })}</span>
  </div>
 
  {/* Close Button */}
  <button
  onClick={() => setShowReferralPopup(false)}
- className="absolute top-3 right-3 text-brand-primary opacity-30 hover:opacity-100 transition-opacity p-1 cursor-pointer z-20"
+ className="absolute top-3 right-3 text-brand-primary opacity-30 hover:opacity-100 transition-opacity p-0.5 cursor-pointer z-20"
  aria-label="Close notification"
  >
- <FaTimes size={10} />
+ <FaTimes size={8} />
  </button>
  </div>
  </motion.div>

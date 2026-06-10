@@ -141,7 +141,12 @@
         "protocol_draw": "PROTOCOL DRAW",
         "players_online_count": "876 プレイヤーオンライン",
         "active_users_label": "アクティブユーザー",
-        "active_users_count": "1175"
+        "active_users_count": "1175",
+        "time_control": "持ち時間",
+        "play_friend": "友達と対局",
+        "create_friend_match": "招待リンクを作成",
+        "invite_link_title": "対局招待リンク",
+        "custom_time_desc": "持ち時間はAI対局およびフレンド対局に適用されます。"
     },
     "Wallet": {
         "title": "Web3ウォレット",

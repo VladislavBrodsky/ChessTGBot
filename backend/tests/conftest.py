@@ -34,6 +34,12 @@ class MockAsyncSession:
         self.users = {}
         self.transactions = []
 
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
     async def execute(self, statement):
         stmt_str = str(statement)
         
@@ -134,3 +140,20 @@ async def client(db_session):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
+
+@pytest.fixture(scope="session", autouse=True)
+def patch_database_sessions(test_engine):
+    import app.services.game_service
+    import app.core.database
+    
+    if test_engine is None:
+        class MockSessionFactory:
+            def __call__(self):
+                return MockAsyncSession()
+        
+        app.services.game_service.AsyncSessionLocal = MockSessionFactory()
+        app.core.database.AsyncSessionLocal = MockSessionFactory()
+    else:
+        session_factory = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
+        app.services.game_service.AsyncSessionLocal = session_factory
+        app.core.database.AsyncSessionLocal = session_factory

@@ -141,7 +141,12 @@
         "protocol_draw": "PROTOCOL DRAW",
         "players_online_count": "876 玩家在线",
         "active_users_label": "活跃用户",
-        "active_users_count": "1175"
+        "active_users_count": "1175",
+        "time_control": "时间控制",
+        "play_friend": "与好友对局",
+        "create_friend_match": "创建邀请链接",
+        "invite_link_title": "比赛邀请链接",
+        "custom_time_desc": "时间控制适用于人机训练和好友对局。"
     },
     "Wallet": {
         "title": "Web3 钱包",

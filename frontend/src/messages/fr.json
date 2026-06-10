@@ -141,7 +141,12 @@
         "protocol_draw": "PROTOCOL DRAW",
         "players_online_count": "876 Joueurs en Ligne",
         "active_users_label": "Utilisateurs Actifs",
-        "active_users_count": "1175"
+        "active_users_count": "1175",
+        "time_control": "Contrôle du temps",
+        "play_friend": "Jouer avec un ami",
+        "create_friend_match": "Créer un lien",
+        "invite_link_title": "Lien d'invitation",
+        "custom_time_desc": "Le temps s'applique à l'entraînement IA et aux duels."
     },
     "Wallet": {
         "title": "Portefeuille Web3",

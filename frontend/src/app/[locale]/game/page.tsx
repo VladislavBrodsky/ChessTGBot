@@ -238,16 +238,20 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  </div>
  </div>
 
- {/* Error Toast */}
- {error && (
- <motion.div
- initial={{ opacity: 0, y: -20 }}
- animate={{ opacity: 1, y: 0 }}
- className="fixed top-20 left-1/2 -translate-x-1/2 bg-brand-primary text-brand-void px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest z-50 shadow-2xl"
- >
- {error}
- </motion.div>
- )}
+  {/* Error Toast */}
+  {error && (
+  <motion.div
+  initial={{ opacity: 0, y: -50, scale: 0.95 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+  className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90vw] max-w-[280px]"
+  >
+  <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface/95 backdrop-blur-xl shadow-premium text-center pointer-events-auto">
+  <span className="text-[8px] font-black text-red-500 uppercase tracking-widest block mb-0.5">System Warning</span>
+  <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wide leading-tight">{error}</span>
+  </div>
+  </motion.div>
+  )}
 
  {/* Main Game Area */}
  <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
@@ -431,6 +435,12 @@ function PlayLobby() {
  const [matchmakingError, setMatchmakingError] = useState<string>("");
  const [isCreating, setIsCreating] = useState(false);
 
+ // Time control and Friend invite configs
+ const [timeControl, setTimeControl] = useState<number>(600); // 10 minutes default
+ const [inviteLink, setInviteLink] = useState<string>("");
+ const [showInviteDrawer, setShowInviteDrawer] = useState<boolean>(false);
+ const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
  useEffect(() => {
  syncBalance();
  // Init Telegram WebApp Data
@@ -531,7 +541,7 @@ function PlayLobby() {
  if (isCreating) return;
  setIsCreating(true);
  try {
- const res = await apiFetch(`/api/v1/game/create?type=computer`, {
+ const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}`, {
  method: "POST"
  });
  if (!res.ok) throw new Error("Backend error");
@@ -542,6 +552,41 @@ function PlayLobby() {
  setMatchmakingError("Failed to initiate training session.");
  } finally {
  setIsCreating(false);
+ }
+ };
+
+ const playVsFriend = async () => {
+ if (isCreating) return;
+ setIsCreating(true);
+ setMatchmakingError("");
+ try {
+ const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}`, {
+ method: "POST"
+ });
+ if (!res.ok) throw new Error("Backend error");
+ const data = await res.json();
+ setInviteLink(data.invite_link);
+ setShowInviteDrawer(true);
+ } catch (e) {
+ console.error("Failed to create friend game", e);
+ setMatchmakingError("Failed to generate invite link.");
+ } finally {
+ setIsCreating(false);
+ }
+ };
+
+ const shareInviteLink = () => {
+ const shareUrl = inviteLink;
+ const shareText = `Join my chess match! ♟️\nTime control: ${timeControl / 60} minutes.`;
+ const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+ 
+ if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+ window.Telegram.WebApp.openTelegramLink(fullUrl);
+ if (window.Telegram.WebApp.HapticFeedback) {
+ window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+ }
+ } else {
+ window.open(fullUrl, '_blank');
  }
  };
 
@@ -726,6 +771,39 @@ function PlayLobby() {
  )}
  </div>
 
+ {/* Time Control Config Card */}
+ <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm space-y-4">
+ <div className="flex justify-between items-center">
+ <div className="flex items-center space-x-2">
+ <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">{tg('time_control')}</span>
+ </div>
+ </div>
+ <div className="h-px w-full bg-brand-border-opacity-10" />
+ <div className="grid grid-cols-4 gap-1.5">
+ {[
+ { label: "5 Min", val: 300 },
+ { label: "10 Min", val: 600 },
+ { label: "15 Min", val: 900 },
+ { label: "30 Min", val: 1800 }
+ ].map((opt) => (
+ <button
+ key={opt.val}
+ onClick={() => setTimeControl(opt.val)}
+ className={`py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+ timeControl === opt.val
+ ? 'border-brand-primary bg-brand-primary text-brand-void shadow-sm'
+ : 'border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 text-brand-primary opacity-60 hover:opacity-100'
+ }`}
+ >
+ {opt.label}
+ </button>
+ ))}
+ </div>
+ <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-wider mt-1 text-center">
+ {tg('custom_time_desc')}
+ </p>
+ </div>
+
  {/* Wagers Launch buttons */}
  <div className="w-full flex flex-col space-y-3">
  <motion.button
@@ -748,20 +826,105 @@ function PlayLobby() {
  </div>
  </div>
  </motion.button>
-
+ 
+ <div className="grid grid-cols-2 gap-3 w-full">
  <motion.button
  whileHover={{ scale: 1.01 }}
  whileTap={{ scale: 0.99 }}
  onClick={playVsComputer}
  disabled={isCreating}
- className="w-full py-4.5 glass-button text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+ className="w-full py-4 glass-button text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
  >
- <FaRobot className="text-base text-brand-primary opacity-40" />
+ <FaRobot className="text-sm text-brand-primary opacity-40" />
  <span>{tg('train_ai')}</span>
+ </motion.button>
+
+ <motion.button
+ whileHover={{ scale: 1.01 }}
+ whileTap={{ scale: 0.99 }}
+ onClick={playVsFriend}
+ disabled={isCreating}
+ className="w-full py-4 glass-button text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+ >
+ <FaShareAlt className="text-sm text-brand-primary opacity-40" />
+ <span>{tg('play_friend')}</span>
  </motion.button>
  </div>
  </div>
+ </div>
  )}
+
+ {/* Friend Duel Invite Bottom Drawer */}
+ <AnimatePresence>
+ {showInviteDrawer && (
+ <div className="bottom-drawer-backdrop z-50">
+ <motion.div 
+ initial={{ opacity: 0 }} 
+ animate={{ opacity: 1 }} 
+ exit={{ opacity: 0 }} 
+ onClick={() => setShowInviteDrawer(false)}
+ className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
+ />
+ <motion.div 
+ initial={{ y: "100%" }} 
+ animate={{ y: 0 }} 
+ exit={{ y: "100%" }} 
+ transition={{ type: "spring", damping: 30, stiffness: 350 }}
+ className="bottom-drawer-sheet relative z-10"
+ >
+ <div className="bottom-drawer-handle" />
+ 
+ <div className="flex flex-col items-center text-center mt-2">
+ <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+ {tg('invite_link_title')}
+ </h2>
+ <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+ Send this link to a friend to start the duel
+ </p>
+ </div>
+ 
+ <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
+ <div className="w-full py-2 px-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
+ {inviteLink}
+ </div>
+ </div>
+ 
+ <div className="w-full flex flex-col gap-3">
+ <motion.button
+ whileTap={{ scale: 0.98 }}
+ onClick={shareInviteLink}
+ className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+ >
+ <FaShareAlt size={12} />
+ <span>{tg('share_invite')}</span>
+ </motion.button>
+ 
+ <div className="grid grid-cols-2 gap-3 w-full">
+ <motion.button
+ whileTap={{ scale: 0.98 }}
+ onClick={() => {
+ navigator.clipboard.writeText(inviteLink);
+ setCopiedLink(true);
+ setTimeout(() => setCopiedLink(false), 2000);
+ }}
+ className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
+ >
+ <span>{copiedLink ? "Copied! ✓" : tg('copy_code')}</span>
+ </motion.button>
+ 
+ <motion.button
+ whileTap={{ scale: 0.98 }}
+ onClick={() => setShowInviteDrawer(false)}
+ className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+ >
+ <span>{tg('back')}</span>
+ </motion.button>
+ </div>
+ </div>
+ </motion.div>
+ </div>
+ )}
+ </AnimatePresence>
  </div>
  </LayoutWrapper>
  );

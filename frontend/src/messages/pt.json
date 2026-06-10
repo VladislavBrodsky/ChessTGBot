@@ -141,7 +141,12 @@
         "protocol_draw": "PROTOCOL DRAW",
         "players_online_count": "876 Jogadores Online",
         "active_users_label": "Usuários Ativos",
-        "active_users_count": "1175"
+        "active_users_count": "1175",
+        "time_control": "Controle de tempo",
+        "play_friend": "Jogar com um amigo",
+        "create_friend_match": "Criar link de convite",
+        "invite_link_title": "Link de convite",
+        "custom_time_desc": "O controle de tempo se aplica a treinos de IA e duelos."
     },
     "Wallet": {
         "title": "Carteira Web3",

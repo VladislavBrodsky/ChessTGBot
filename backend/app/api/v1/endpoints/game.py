@@ -29,14 +29,14 @@ class EndGameResponse(BaseModel):
     loser_new_elo: int
 
 @router.post("/create", response_model=CreateGameResponse)
-async def create_game(type: str = "online"):
+async def create_game(type: str = "online", time_control: int = 600):
     game_id = str(uuid.uuid4())[:8] # Short ID
     service = GameService()
     
     is_bot_game = (type == "computer")
     
     # Initialize Game in Redis
-    await service.create_game(game_id, is_bot_game=is_bot_game)
+    await service.create_game(game_id, is_bot_game=is_bot_game, time_control_seconds=time_control)
     
     # Generate Telegram Invite Link
     if is_bot_game:

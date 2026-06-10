@@ -141,7 +141,12 @@
         "protocol_draw": "ПРОТОКОЛ НИЧЬЕЙ",
         "players_online_count": "876 Игроков Онлайн",
         "active_users_label": "Активные Игроки",
-        "active_users_count": "1175"
+        "active_users_count": "1175",
+        "time_control": "Контроль времени",
+        "play_friend": "Играть с другом",
+        "create_friend_match": "Создать ссылку",
+        "invite_link_title": "Ссылка на матч",
+        "custom_time_desc": "Настройки времени действуют для игр с ИИ и дуэлей с друзьями."
     },
     "Wallet": {
         "title": "Web3-кошелек",
