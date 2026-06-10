@@ -15,7 +15,7 @@ export default function TelegramInit() {
 
             // Request fullscreen mode if supported (Telegram Bot API 8.0+)
             try {
-                if (tg.requestFullscreen) {
+                if (tg.isVersionAtLeast && tg.isVersionAtLeast('8.0') && tg.requestFullscreen) {
                     tg.requestFullscreen();
                     console.log('Telegram WebApp Fullscreen requested');
                 }

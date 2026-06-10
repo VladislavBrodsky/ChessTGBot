@@ -93,7 +93,7 @@ def create_application() -> FastAPI:
         return {"status": "ok", "version": settings.VERSION}
 
     # Mount Socket.IO (Must be before static catch-all)
-    application.mount("/socket.io", sio_app) # Explicitly mount at /socket.io for cleaner routing
+    application.mount("/", sio_app)
 
     # Static Frontend Serving (Unified Monolith)
     # We check if the 'static_frontend' directory exists (created by Docker)
