@@ -11,7 +11,7 @@ export default function Providers({ children }: { children: ReactNode }) {
             const isProd = window.location.hostname === 'chesstgbot-production.up.railway.app';
             const url = isProd
                 ? `${window.location.origin}/tonconnect-manifest.json`
-                : 'https://raw.githubusercontent.com/VladislavBrodsky/ChessTGBot/main/frontend/public/tonconnect-manifest-dev.json';
+                : 'https://raw.githubusercontent.com/VladislavBrodsky/ChessTGBot/main/frontend/public/tonconnect-manifest-dev.json?v=2';
             setManifestUrl(url);
         }
     }, []);
