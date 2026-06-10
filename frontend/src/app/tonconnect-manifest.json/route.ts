@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     url: baseUrl,
     name: "FinChess Protocol",
-    iconUrl: `${baseUrl}/icon.svg`,
+    iconUrl: `${baseUrl}/icon.png`,
     termsOfUseUrl: `${baseUrl}/terms`,
     privacyPolicyUrl: `${baseUrl}/privacy`
   });
