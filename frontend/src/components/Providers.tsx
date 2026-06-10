@@ -8,10 +8,10 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const useLocalManifest = window.location.protocol === 'https:';
-            const url = useLocalManifest
+            const isProd = window.location.hostname === 'chesstgbot-production.up.railway.app';
+            const url = isProd
                 ? `${window.location.origin}/tonconnect-manifest.json`
-                : 'https://raw.githubusercontent.com/VladislavBrodsky/ChessTGBot/main/frontend/public/tonconnect-manifest-dev.json?v=2';
+                : 'https://raw.githubusercontent.com/VladislavBrodsky/ChessTGBot/main/frontend/public/tonconnect-manifest-dev.json?v=3';
             setManifestUrl(url);
         }
     }, []);
