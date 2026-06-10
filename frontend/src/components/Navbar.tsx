@@ -25,7 +25,7 @@ export default function Navbar() {
     }));
 
     return (
-        <nav className="fixed bottom-[calc(16px+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-2xl shadow-premium justify-between">
+        <nav className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-2xl shadow-premium justify-between">
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-2xl" />
 

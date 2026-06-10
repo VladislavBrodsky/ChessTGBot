@@ -41,7 +41,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full flex flex-col items-center min-h-screen pt-[calc(24px+env(safe-area-inset-top,0px))] pb-[calc(100px+env(safe-area-inset-bottom,0px))] ${className}`}>
+            <main className={`relative z-10 w-full flex flex-col items-center min-h-screen pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] ${className}`}>
 
                 {children}
             </main>
