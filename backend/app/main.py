@@ -115,6 +115,13 @@ def create_application() -> FastAPI:
 
         @application.get("/{full_path:path}")
         async def serve_frontend(full_path: str):
+            # Exclude api and socket paths from fallback serving
+            if full_path.startswith("api/") or full_path == "api" or full_path.startswith("socket.io"):
+                return JSONResponse(
+                    status_code=404,
+                    content={"detail": "Not Found"}
+                )
+
             # 1. Exact file match
             potential_file = f"{static_dir}/{full_path}"
             if os.path.isfile(potential_file):

@@ -50,6 +50,14 @@ async def get_current_user(
             username=telegram_user.get("username"),
             photo_url=photo_url or telegram_user.get("photo_url")
         )
+        
+        start_param = telegram_user.get("start_param")
+        if start_param:
+            try:
+                from app.services.gamification_service import GamificationService
+                await GamificationService.process_referral(db, user, start_param)
+            except Exception as e:
+                print(f"Error processing referral for user {user_id}: {e}")
     else:
         # Sync profile information if different
         updated = False

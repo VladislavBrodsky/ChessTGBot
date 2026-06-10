@@ -47,7 +47,10 @@ def validate_init_data(init_data: str) -> dict:
         if not user_data_str:
              raise HTTPException(status_code=400, detail="Missing user data in initData")
         
-        return json.loads(user_data_str)
+        user_data = json.loads(user_data_str)
+        if 'start_param' in data_dict:
+            user_data['start_param'] = data_dict['start_param']
+        return user_data
 
     except HTTPException:
         raise

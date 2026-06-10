@@ -30,4 +30,4 @@ Log Audit and Debugging/
 # Build
 frontend/out/
 *.db
-chess.db
+chess.db*
