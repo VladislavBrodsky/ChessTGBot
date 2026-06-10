@@ -15,16 +15,33 @@ async def connect(sid, environ, auth):
     Handle connection with auth handshake.
     """
     try:
-        if not auth:
-             raise Exception("Auth missing")
-             
-        init_data = auth.get('initData')
-        if not init_data:
-             raise Exception("initData missing")
-             
-        user_data = validate_init_data(init_data)
-        user_id = user_data.get('id')
+        user_id = None
+        user_data = None
         
+        # Check if we have auth and initData
+        if auth and auth.get('initData'):
+            init_data = auth.get('initData')
+            try:
+                user_data = validate_init_data(init_data)
+                user_id = user_data.get('id')
+            except Exception as e:
+                # If validation fails but we are on SQLite (dev), use fallback
+                from app.core.database import engine
+                if engine.url.drivername.startswith("sqlite"):
+                    print(f"Dev fallback: InitData validation failed: {e}")
+                else:
+                    raise e
+        
+        # If no user_id found (e.g. testing in desktop browser tab), check if we are in dev (SQLite)
+        if not user_id:
+            from app.core.database import engine
+            if engine.url.drivername.startswith("sqlite"):
+                user_id = 123456789
+                user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
+                print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")
+            else:
+                raise Exception("Unauthorized: initData missing or invalid")
+                
         # Save user_id to session
         await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data})
         print(f"Socket {sid} connected as User {user_id}")
