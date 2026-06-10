@@ -43,3 +43,11 @@ class Referral(Base):
     referrer_id = Column(Integer, ForeignKey("users.id"))
     referred_user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class UnlockedLesson(Base):
+    __tablename__ = "unlocked_lessons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    lesson_id = Column(String, index=True)
+    unlocked_at = Column(DateTime, default=datetime.utcnow)

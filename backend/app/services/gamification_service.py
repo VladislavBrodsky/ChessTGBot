@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from app.models.user import User
-from app.models.gamification import Task, UserTask, Referral, TaskType
+from app.models.gamification import Task, UserTask, Referral, TaskType, UnlockedLesson
 from datetime import datetime, timedelta
 import random
 import string
@@ -166,3 +166,61 @@ class GamificationService:
             db.add(user_task)
             
         await db.commit()
+
+    @staticmethod
+    async def unlock_lesson(db: AsyncSession, user: User, lesson_id: str):
+        """
+        Deduct 100 XP to unlock an advanced lesson.
+        """
+        # Check if already unlocked
+        result = await db.execute(
+            select(UnlockedLesson).where(
+                and_(UnlockedLesson.user_id == user.id, UnlockedLesson.lesson_id == lesson_id)
+            )
+        )
+        existing = result.scalars().first()
+        if existing:
+            return user, "Lesson already unlocked"
+
+        if user.xp < 100:
+            return None, "Insufficient XP. Need 100 XP to unlock."
+            
+        # Deduct XP
+        user.xp -= 100
+        
+        # Create unlock entry
+        unlock = UnlockedLesson(user_id=user.id, lesson_id=lesson_id)
+        db.add(unlock)
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return user, "Success"
+
+    @staticmethod
+    async def upgrade_premium_with_xp(db: AsyncSession, user: User):
+        """
+        Deduct 500 XP to upgrade user to Premium status.
+        """
+        if user.is_premium:
+            return user, "Already Premium"
+            
+        if user.xp < 500:
+            return None, "Insufficient XP. Need 500 XP to upgrade."
+            
+        # Deduct XP
+        user.xp -= 500
+        user.is_premium = True
+        user.premium_tier = "premium"
+        
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return user, "Success"
+
+    @staticmethod
+    async def complete_academy_task(db: AsyncSession, user: User, task_type: str, item_id: str = ""):
+        """
+        Award 50 XP to the user for completing a lesson/puzzle.
+        """
+        updated_user = await GamificationService.add_xp(db, user, 50)
+        return updated_user, "Success"

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
+import { apiFetch } from "@/lib/api";
 
 const OPENING_LESSON_STEPS: LessonStep[] = [
  {
@@ -124,9 +125,18 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
  const details = getLessonDetails();
 
- const handleComplete = () => {
- setCompleted(true);
- };
+  const handleComplete = async () => {
+    try {
+      await apiFetch("/api/v1/gamification/academy/complete-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
+      });
+    } catch (e) {
+      console.error("Failed to submit lesson completion", e);
+    }
+    setCompleted(true);
+  };
 
  if (completed) {
  return (

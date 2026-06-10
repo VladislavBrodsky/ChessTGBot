@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { apiFetch } from "@/lib/api";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
 import { FaArrowLeft } from "react-icons/fa";
@@ -39,12 +40,23 @@ export default function PuzzlePage() {
  </div>
 
  <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
- <PuzzleBoard
- initialFen={PUZZLE.fen}
- solution={PUZZLE.solution}
- onSolve={() => setSolved(true)}
- onFail={() => console.log('Wrong move')}
- />
+            <PuzzleBoard
+              initialFen={PUZZLE.fen}
+              solution={PUZZLE.solution}
+              onSolve={async () => {
+                try {
+                  await apiFetch("/api/v1/gamification/academy/complete-task", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ task_type: "puzzle", item_id: "daily-puzzle" })
+                  });
+                } catch (e) {
+                  console.error("Failed to submit puzzle completion", e);
+                }
+                setSolved(true);
+              }}
+              onFail={() => console.log('Wrong move')}
+            />
  </div>
 
  {solved && (

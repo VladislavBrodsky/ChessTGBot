@@ -273,8 +273,14 @@ class GameService:
                 # Bot game / Training: update tasks progress, skip ELO & financial wager transfers
                 from app.services.gamification_service import GamificationService, TaskType
                 await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
+                # Award XP for playing AI game
+                ai_xp = 5  # Draw
                 if state.winner == 'w':
                     await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+                    ai_xp = 10  # Win
+                elif state.winner == 'b':
+                    ai_xp = 2  # Loss
+                await GamificationService.add_xp(session, white_user, ai_xp)
                 await session.commit()
                 return
 
@@ -308,10 +314,21 @@ class GameService:
             from app.services.gamification_service import GamificationService, TaskType
             await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
             await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY)
+            
+            # Award XP for playing PVP match
+            white_match_xp = 10  # Draw
+            black_match_xp = 10  # Draw
             if state.winner == 'w':
                 await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+                white_match_xp = 20  # Win
+                black_match_xp = 5  # Loss
             elif state.winner == 'b':
                 await GamificationService.update_task_progress(session, black_user.id, TaskType.WIN)
+                white_match_xp = 5  # Loss
+                black_match_xp = 20  # Win
+                
+            await GamificationService.add_xp(session, white_user, white_match_xp)
+            await GamificationService.add_xp(session, black_user, black_match_xp)
             
             # Settle Web3 Bids / Wagers & Rakes
             bid_amount = getattr(state, "bid_amount", 0)

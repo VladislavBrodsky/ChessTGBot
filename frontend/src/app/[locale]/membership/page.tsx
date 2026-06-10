@@ -41,15 +41,56 @@ export default function MembershipPage() {
    }
   ];
 
- const [selectedTier, setSelectedTier] = useState(TIERS[0]);
- const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
- const [tgUser, setTgUser] = useState<any>(null);
+  const [selectedTier, setSelectedTier] = useState(TIERS[0]);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
+  const [tgUser, setTgUser] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
 
- useEffect(() => {
- if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
- setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
- }
- }, []);
+  const fetchStats = async () => {
+    try {
+      const res = await apiFetch("/api/v1/users/sync", { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
+    }
+    fetchStats();
+  }, []);
+
+  const handleXpUpgrade = async () => {
+    const currentXp = stats?.xp || 0;
+    if (currentXp < 500) {
+      alert(`Upgrading to Premium requires 500 XP. You currently have ${currentXp} XP.`);
+      return;
+    }
+
+    const confirmUpgrade = confirm(`Upgrade to Premium by spending 500 XP? (You have ${currentXp} XP)`);
+    if (!confirmUpgrade) return;
+
+    try {
+      const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", {
+        method: "POST"
+      });
+      const data = await res.json();
+      if (res.ok && data.status === "success") {
+        alert("Premium activated successfully!");
+        fetchStats();
+      } else {
+        alert(data.detail || "Failed to upgrade with XP");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Upgrade failed");
+    }
+  };
 
  const handleSubscribe = async () => {
  if (!tgUser?.id) {
@@ -179,10 +220,36 @@ export default function MembershipPage() {
  </button>
  </div>
 
- {/* Tier Comparison Matrix */}
- <TierComparison />
+  {/* Tier Comparison Matrix */}
+  <TierComparison />
 
- {/* Confirm Action */}
+  {/* XP Upgrade Protocol */}
+  {stats && !stats.is_premium && (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full glass-panel p-5 rounded-3xl border border-brand-border-opacity-15 bg-brand-surface relative overflow-hidden text-center shadow-md space-y-4"
+    >
+      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-primary opacity-50">PRO REGISTRATION MATRIX</div>
+      <h3 className="text-xl font-black text-brand-primary uppercase">ACTIVATION PROTOCOL</h3>
+      <p className="text-xs text-brand-primary opacity-60 px-2 leading-relaxed">
+        You can use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.
+      </p>
+      
+      <div className="bg-brand-void rounded-2xl py-3 border border-brand-border-opacity-5 w-fit px-8 mx-auto text-xs font-black uppercase text-brand-primary tracking-widest shadow-inner">
+        COST: 500 XP (Balance: {stats.xp} XP)
+      </div>
+
+      <button
+        onClick={handleXpUpgrade}
+        className="w-full py-4.5 rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
+      >
+        Unlock Premium with 500 XP
+      </button>
+    </motion.div>
+  )}
+
+  {/* Confirm Action */}
  <motion.button
  whileHover={{ scale: 1.01 }}
  whileTap={{ scale: 0.98 }}
