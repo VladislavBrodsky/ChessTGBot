@@ -127,7 +127,6 @@ export default function Home() {
    src={stats?.photo_url || tgUser.photo_url} 
    alt="Profile" 
    className="w-full h-full rounded-lg object-cover"
-   crossOrigin="anonymous"
    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
  />
  ) : null}

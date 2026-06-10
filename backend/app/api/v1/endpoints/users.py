@@ -161,10 +161,19 @@ async def sync_user(
     The user is automatically created/retrieved by the get_current_user dependency 
     which validates the X-Telegram-Init-Data header.
     """
-    # In the future, we can update the user's name/photo here if we pass them 
-    # or parse them from the initData again. 
-    # For now, get_current_user ensures registration.
-    
+    # Refresh photo URL dynamically from Telegram Bot API on sync (as URLs expire after 1 hour)
+    try:
+        from app.services.telegram_bot import TelegramService
+        if TelegramService.application and TelegramService.application.bot:
+            photo_url = await TelegramService.get_user_profile_photo(current_user.telegram_id, TelegramService.application.bot)
+            if photo_url and current_user.photo_url != photo_url:
+                current_user.photo_url = photo_url
+                db.add(current_user)
+                await db.commit()
+                await db.refresh(current_user)
+    except Exception:
+        pass
+
     # Calculate enhanced stats
     from app.services.user_stats import calculate_user_stats
     enhanced_stats = await calculate_user_stats(db, current_user, current_user.telegram_id)
