@@ -26,17 +26,84 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
  const [copied, setCopied] = useState(false);
  const [userId, setUserId] = useState<number | null>(null);
- const locale = useLocale();
- const tg = useTranslations('Game');
+  const locale = useLocale();
+  const tg = useTranslations('Game');
 
- useEffect(() => {
- if (typeof window !== "undefined" && window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
- setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
- }
- }, []);
+  const [whiteTime, setWhiteTime] = useState<number>(600);
+  const [blackTime, setBlackTime] = useState<number>(600);
 
- const prevFenRef = useRef<string | null>(null);
- const prevStatusRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (gameState) {
+      setWhiteTime(Math.ceil(gameState.white_time_left ?? 600));
+      setBlackTime(Math.ceil(gameState.black_time_left ?? 600));
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    if (!gameState || gameState.is_game_over) return;
+
+    const interval = setInterval(() => {
+      const turn = gameState.turn; // 'w' or 'b'
+      if (turn === 'w') {
+        setWhiteTime((prev) => Math.max(0, prev - 1));
+      } else {
+        setBlackTime((prev) => Math.max(0, prev - 1));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameState]);
+
+  useEffect(() => {
+    if (!gameState) return;
+    const socket = getSocket();
+    
+    const onDrawOffered = (data: { game_id: string; offered_by: number }) => {
+      if (data.offered_by !== userId) {
+        if (confirm("Your opponent has offered a draw. Do you accept?")) {
+          socket.emit("accept_draw", { game_id: gameId });
+        }
+      }
+    };
+
+    socket.on("draw_offered", onDrawOffered);
+    return () => {
+      socket.off("draw_offered", onDrawOffered);
+    };
+  }, [gameId, userId, gameState]);
+
+  const handleResign = () => {
+    if (confirm("Are you sure you want to resign this match?")) {
+      const socket = getSocket();
+      socket.emit("resign", { game_id: gameId });
+    }
+  };
+
+  const handleOfferDraw = () => {
+    if (confirm("Offer a draw to your opponent?")) {
+      const socket = getSocket();
+      socket.emit("offer_draw", { game_id: gameId });
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const isWhite = gameState ? gameState.white_player_id === userId : true;
+  const myTime = isWhite ? whiteTime : blackTime;
+  const opponentTime = isWhite ? blackTime : whiteTime;
+
+  useEffect(() => {
+  if (typeof window !== "undefined" && window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+  setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
+  }
+  }, []);
+
+  const prevFenRef = useRef<string | null>(null);
+  const prevStatusRef = useRef<string | null>(null);
 
  // Immersive Chess SFX Engine
  useEffect(() => {
@@ -128,17 +195,40 @@ function ActiveGame({ gameId }: ActiveGameProps) {
 
  return (
  <LayoutWrapper className="pb-12">
- {/* Header / Nav */}
- <div className="w-full max-w-sm flex justify-between items-center mb-6 relative z-10 px-2 mt-2 mx-auto">
- <Link href={`/${locale}/home`}>
- <motion.button
- whileTap={{ scale: 0.95 }}
- className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
- >
- <FaArrowLeft />
- <span>{tg('resign')}</span>
- </motion.button>
- </Link>
+  {/* Header / Nav */}
+  <div className="w-full max-w-sm flex justify-between items-center mb-6 relative z-10 px-2 mt-2 mx-auto">
+  <div className="flex items-center gap-3">
+  {!isGameOver ? (
+    <motion.button
+    whileTap={{ scale: 0.95 }}
+    onClick={handleResign}
+    className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer bg-transparent border-0"
+    >
+    <FaArrowLeft />
+    <span>{tg('resign')}</span>
+    </motion.button>
+  ) : (
+    <Link href={`/${locale}/home`}>
+      <motion.button
+      whileTap={{ scale: 0.95 }}
+      className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+      >
+      <FaArrowLeft />
+      <span>{tg('back')}</span>
+      </motion.button>
+    </Link>
+  )}
+  
+  {!isBotGame && !isGameOver && (
+    <motion.button
+    whileTap={{ scale: 0.95 }}
+    onClick={handleOfferDraw}
+    className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity text-[10px] font-bold uppercase tracking-widest cursor-pointer ml-4 bg-transparent border-0"
+    >
+    <span>Draw</span>
+    </motion.button>
+  )}
+  </div>
 
  <div className="flex items-center gap-2 bg-brand-surface px-4 py-1.5 rounded-full border border-brand-border-opacity-10 shadow-sm">
  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
@@ -162,52 +252,56 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  {/* Main Game Area */}
  <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
 
- {/* Opponent Widget */}
- <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
- <div className="flex items-center gap-4">
- <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
- {isBotGame ? (
- <FaRobot className="text-xl text-brand-primary opacity-40" />
- ) : (
- <span className="text-xl font-bold text-brand-primary opacity-20">?</span>
- )}
- </div>
- <div className="flex flex-col">
- <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
- {isBotGame ? tg('ai_combatant') : tg('opponent')}
- </span>
- <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
- {isBotGame ? tg('neural_engine') : tg('opponent_rank')}
- </span>
- </div>
- </div>
- <div className="text-xl font-black text-brand-primary opacity-60 tracking-tighter">10:00</div>
- </div>
+  {/* Opponent Widget */}
+  <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
+  <div className="flex items-center gap-4">
+  <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
+  {isBotGame ? (
+  <FaRobot className="text-xl text-brand-primary opacity-40" />
+  ) : (
+  <span className="text-xl font-bold text-brand-primary opacity-20">?</span>
+  )}
+  </div>
+  <div className="flex flex-col">
+  <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+  {isBotGame ? tg('ai_combatant') : tg('opponent')}
+  </span>
+  <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+  {isBotGame ? tg('neural_engine') : tg('opponent_rank')}
+  </span>
+  </div>
+  </div>
+  <div className={`text-xl font-black tracking-tighter ${opponentTime < 30 ? 'text-red-500 animate-pulse' : 'text-brand-primary opacity-60'}`}>
+    {formatTime(opponentTime)}
+  </div>
+  </div>
 
- {/* Board Container */}
- <div className="w-full relative z-20 flex justify-center px-1">
- <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
- <ChessBoardComponent
- fen={fen}
- onMove={makeMove}
- orientation="white"
- />
- </div>
- </div>
+  {/* Board Container */}
+  <div className="w-full relative z-20 flex justify-center px-1">
+  <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
+  <ChessBoardComponent
+  fen={fen}
+  onMove={makeMove}
+  orientation={isWhite ? "white" : "black"}
+  />
+  </div>
+  </div>
 
- {/* Player Widget */}
- <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
- <div className="flex items-center gap-4">
- <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
- <span className="text-xs font-black text-brand-void uppercase tracking-tighter ">{tg('you')}</span>
- </div>
- <div className="flex flex-col">
- <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">Protagonist</span>
- <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">MASTER • 1200</span>
- </div>
- </div>
- <div className="text-xl font-black text-brand-primary tracking-tighter">09:42</div>
- </div>
+  {/* Player Widget */}
+  <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
+  <div className="flex items-center gap-4">
+  <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
+  <span className="text-xs font-black text-brand-void uppercase tracking-tighter ">{tg('you')}</span>
+  </div>
+  <div className="flex flex-col">
+  <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">Protagonist</span>
+  <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">MASTER • 1200</span>
+  </div>
+  </div>
+  <div className={`text-xl font-black tracking-tighter ${myTime < 30 ? 'text-red-500 animate-pulse' : 'text-brand-primary'}`}>
+    {formatTime(myTime)}
+  </div>
+  </div>
 
  {/* Action Bar */}
  {!isBotGame && !isGameOver && (

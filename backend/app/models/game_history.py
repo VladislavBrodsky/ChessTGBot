@@ -36,3 +36,5 @@ class GameHistory(Base):
     bid_amount = Column(Integer, default=0)  # In cents (smallest unit)
     platform_rake = Column(Integer, default=0)  # In cents (3% of pool)
     payout_amount = Column(Integer, default=0)  # In cents (97% of pool)
+    moves_json = Column(String, nullable=True)  # JSON representation of all moves
+

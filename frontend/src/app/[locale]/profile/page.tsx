@@ -1,7 +1,8 @@
 'use client';
 
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
@@ -12,6 +13,8 @@ import ReferralCard from "@/components/ReferralCard";
 
 export default function ProfilePage() {
  const t = useTranslations('Index');
+ const locale = useLocale();
+ const router = useRouter();
 
  const [tgUser, setTgUser] = useState<any>(null);
  const [stats, setStats] = useState<any>(null);
@@ -91,6 +94,70 @@ export default function ProfilePage() {
  {/* Gamification Sections */}
  <DailyTasks />
  <ReferralCard />
+
+ {/* Recent Games History */}
+ <div className="w-full space-y-4">
+   <h2 className="text-sm font-black text-brand-primary uppercase tracking-[0.2em]">{t('recent_activity')}</h2>
+   
+   {stats?.recent_games && stats.recent_games.length > 0 ? (
+     <div className="flex flex-col gap-3">
+       {stats.recent_games.map((game: any) => {
+         const isWin = game.result === 'win';
+         const isLoss = game.result === 'loss';
+         const badgeColor = isWin 
+           ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" 
+           : isLoss 
+             ? "border-red-500/20 bg-red-500/10 text-red-400" 
+             : "border-brand-primary/20 bg-brand-primary/10 text-brand-primary opacity-60";
+         
+         return (
+           <motion.div
+             key={game.game_id}
+             whileHover={{ scale: 1.01 }}
+             whileTap={{ scale: 0.99 }}
+             onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
+             className="glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface flex justify-between items-center cursor-pointer hover:border-brand-primary/20 transition-all"
+           >
+             <div className="flex items-center gap-3">
+               <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
+                 <FaChessPawn className="text-brand-primary opacity-40" />
+               </div>
+               <div className="flex flex-col">
+                 <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+                   vs {game.opponent?.name || "AI Engine"}
+                 </span>
+                 <span className="text-[9px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                   Opponent ELO: {game.opponent?.elo || 1000}
+                 </span>
+               </div>
+             </div>
+             
+             <div className="flex items-center gap-4">
+               <div className="flex flex-col items-end">
+                 <span className={`px-2 py-0.5 rounded border text-[8px] font-black uppercase tracking-widest ${badgeColor}`}>
+                   {game.result}
+                 </span>
+                 <span className="text-[9px] font-black text-brand-primary mt-1">
+                   {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
+                 </span>
+               </div>
+               <span className="text-brand-primary opacity-30 text-xs">▶</span>
+             </div>
+           </motion.div>
+         );
+       })}
+     </div>
+   ) : (
+     <div className="glass-panel p-6 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center">
+       <span className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-1">
+         No games logged
+       </span>
+       <span className="text-[10px] font-medium text-brand-primary opacity-20 uppercase tracking-widest">
+         Initiate combat to update history
+       </span>
+     </div>
+   )}
+ </div>
 
  </div>
  </LayoutWrapper>

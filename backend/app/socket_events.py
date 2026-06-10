@@ -275,3 +275,48 @@ async def handle_bot_turn(game_id: str):
     bot_state = await service.make_bot_move(game_id)
     if bot_state:
         await sio.emit('game_state', bot_state.model_dump(), room=game_id)
+
+@sio.event
+async def resign(sid, data):
+    """
+    Data expects: {'game_id': '...'}
+    """
+    game_id = data.get('game_id')
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    
+    if game_id and user_id:
+        service = GameService()
+        resigned_state = await service.resign_game(game_id, user_id)
+        if resigned_state:
+            await sio.emit('game_state', resigned_state.model_dump(), room=game_id)
+
+@sio.event
+async def offer_draw(sid, data):
+    """
+    Data expects: {'game_id': '...'}
+    """
+    game_id = data.get('game_id')
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    
+    if game_id and user_id:
+        state = await GameService().get_game_state(game_id)
+        if state and not state.is_game_over:
+            await sio.emit('draw_offered', {'game_id': game_id, 'offered_by': user_id}, room=game_id)
+
+@sio.event
+async def accept_draw(sid, data):
+    """
+    Data expects: {'game_id': '...'}
+    """
+    game_id = data.get('game_id')
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    
+    if game_id and user_id:
+        service = GameService()
+        draw_state = await service.settle_draw(game_id)
+        if draw_state:
+            await sio.emit('game_state', draw_state.model_dump(), room=game_id)
+

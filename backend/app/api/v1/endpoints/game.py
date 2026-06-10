@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
 from app.services.game_service import GameService
 from app.services.telegram_bot import TelegramService
 from pydantic import BaseModel
@@ -82,3 +83,81 @@ async def end_game(req: EndGameRequest, db: AsyncSession = Depends(get_db)):
         winner_new_elo=new_winner_elo,
         loser_new_elo=new_loser_elo
     )
+
+class GameHistoryDetails(BaseModel):
+    game_id: str
+    white_player_id: int
+    black_player_id: int
+    winner: Optional[str]
+    result_type: str
+    white_name: str
+    black_name: str
+    white_elo_before: int
+    white_elo_after: int
+    black_elo_before: int
+    black_elo_after: int
+    total_moves: int
+    final_fen: Optional[str]
+    moves: List[str]
+    game_type: str
+    ended_at: str
+
+from typing import List, Optional
+
+@router.get("/history/{game_id}", response_model=GameHistoryDetails)
+async def get_game_history(game_id: str, db: AsyncSession = Depends(get_db)):
+    from app.models.game_history import GameHistory
+    from app.models.user import User
+    from sqlalchemy.future import select
+    import json
+
+    stmt = select(GameHistory).where(GameHistory.game_id == game_id)
+    res = await db.execute(stmt)
+    history = res.scalars().first()
+    if not history:
+        raise HTTPException(status_code=404, detail="Game history not found")
+
+    # Fetch Player Names
+    white_name = "White Player"
+    black_name = "Black Player"
+
+    if history.white_player_id == -1:
+        white_name = "AI Engine"
+    else:
+        white_res = await db.execute(select(User).where(User.telegram_id == history.white_player_id))
+        white_user = white_res.scalars().first()
+        if white_user:
+            white_name = white_user.first_name
+
+    if history.black_player_id == -1:
+        black_name = "AI Engine"
+    else:
+        black_res = await db.execute(select(User).where(User.telegram_id == history.black_player_id))
+        black_user = black_res.scalars().first()
+        if black_user:
+            black_name = black_user.first_name
+
+    try:
+        moves_list = json.loads(history.moves_json) if history.moves_json else []
+    except Exception:
+        moves_list = []
+
+    return GameHistoryDetails(
+        game_id=history.game_id,
+        white_player_id=history.white_player_id,
+        black_player_id=history.black_player_id,
+        winner=history.winner,
+        result_type=history.result_type or "checkmate",
+        white_name=white_name,
+        black_name=black_name,
+        white_elo_before=history.white_elo_before,
+        white_elo_after=history.white_elo_after,
+        black_elo_before=history.black_elo_before,
+        black_elo_after=history.black_elo_after,
+        total_moves=history.total_moves,
+        final_fen=history.final_fen,
+        moves=moves_list,
+        game_type=history.game_type,
+        ended_at=history.ended_at.isoformat()
+    )
+

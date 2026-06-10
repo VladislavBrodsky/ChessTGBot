@@ -33,3 +33,93 @@ async def test_game_engine_moves():
     
     # Invalid move
     assert not engine.make_move("e2e5") # e2e5 is not legal for white on first move
+
+@pytest.mark.asyncio
+async def test_game_service_clock():
+    service = GameService()
+    game_id = "test_clock_game"
+    
+    # Create game with 10s time control
+    await service.create_game(game_id, is_bot_game=False, time_control_seconds=10)
+    
+    # Assign players
+    await service.join_game(game_id, 1111) # White
+    await service.join_game(game_id, 2222) # Black
+    
+    # Initial move (e2e4)
+    state1 = await service.make_move(game_id, "e2e4")
+    assert state1 is not None
+    assert state1.white_time_left == 10.0
+    assert state1.last_move_at is not None
+    
+    # Simulate black waiting 1.5 seconds
+    import time
+    state1.last_move_at = time.time() - 1.5
+    await service.session_manager.save_game(game_id, state1)
+    
+    # Black moves (e7e5)
+    state2 = await service.make_move(game_id, "e7e5")
+    assert state2 is not None
+    # Black time left should decrease by at least 1.4 seconds
+    assert state2.black_time_left <= 8.6
+    assert state2.white_time_left == 10.0
+
+@pytest.mark.asyncio
+async def test_game_service_timeout():
+    service = GameService()
+    game_id = "test_timeout_game"
+    
+    # Create game with 1s time control
+    await service.create_game(game_id, is_bot_game=False, time_control_seconds=1)
+    
+    # Join players
+    await service.join_game(game_id, 1111) # White
+    await service.join_game(game_id, 2222) # Black
+    
+    # Make a move, white clock starts ticking for black's turn
+    state1 = await service.make_move(game_id, "e2e4")
+    assert state1 is not None
+    
+    # Simulate waiting 2 seconds (exceeding time control)
+    import time
+    state1.last_move_at = time.time() - 2.0
+    await service.session_manager.save_game(game_id, state1)
+    
+    # Get game state (should trigger lazy timeout check)
+    final_state = await service.get_game_state(game_id)
+    assert final_state is not None
+    assert final_state.is_game_over
+    assert final_state.winner == 'w' # White wins because Black timed out
+    assert final_state.result_type == 'timeout'
+
+@pytest.mark.asyncio
+async def test_game_service_resignation():
+    service = GameService()
+    game_id = "test_resign_game"
+    
+    await service.create_game(game_id, is_bot_game=False, time_control_seconds=600)
+    await service.join_game(game_id, 1111) # White
+    await service.join_game(game_id, 2222) # Black
+    
+    # White resigns
+    state = await service.resign_game(game_id, 1111)
+    assert state is not None
+    assert state.is_game_over
+    assert state.winner == 'b'
+    assert state.result_type == 'resignation'
+
+@pytest.mark.asyncio
+async def test_game_service_draw():
+    service = GameService()
+    game_id = "test_draw_game"
+    
+    await service.create_game(game_id, is_bot_game=False, time_control_seconds=600)
+    await service.join_game(game_id, 1111) # White
+    await service.join_game(game_id, 2222) # Black
+    
+    # Mutual agreement draw
+    state = await service.settle_draw(game_id)
+    assert state is not None
+    assert state.is_game_over
+    assert state.winner is None
+    assert state.result_type == 'draw'

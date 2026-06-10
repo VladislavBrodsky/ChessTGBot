@@ -11,18 +11,53 @@ class GameService:
     def __init__(self):
         self.session_manager = SessionManager()
 
-    async def create_game(self, game_id: str, is_bot_game: bool = False) -> GameState:
+    async def create_game(self, game_id: str, is_bot_game: bool = False, time_control_seconds: int = 600) -> GameState:
         """Initialize a new game and save to Redis."""
         engine = GameEngine() # Starts with new board
         state = engine.get_state()
         if is_bot_game:
             state.black_player_id = -1 # Special ID for bot
+        state.time_control_seconds = time_control_seconds
+        state.white_time_left = float(time_control_seconds)
+        state.black_time_left = float(time_control_seconds)
+        state.last_move_at = None
+        state.move_history = []
+        state.result_type = None
         await self.session_manager.save_game(game_id, state)
         return state
 
     async def get_game_state(self, game_id: str) -> Optional[GameState]:
         """Fetch current state from Redis."""
-        return await self.session_manager.get_game(game_id)
+        state = await self.session_manager.get_game(game_id)
+        if not state or state.is_game_over:
+            return state
+
+        # Lazy clock timeout check
+        if state.last_move_at is not None:
+            import time
+            now = time.time()
+            elapsed = now - state.last_move_at
+            
+            if state.turn == 'w':
+                time_left = max(0.0, state.white_time_left - elapsed)
+                if time_left <= 0.0:
+                    state.white_time_left = 0.0
+                    state.is_game_over = True
+                    state.winner = 'b'
+                    state.result_type = 'timeout'
+                    await self.session_manager.save_game(game_id, state)
+                    await self.end_game(game_id, state)
+            else:
+                time_left = max(0.0, state.black_time_left - elapsed)
+                if time_left <= 0.0:
+                    state.black_time_left = 0.0
+                    state.is_game_over = True
+                    state.winner = 'w'
+                    state.result_type = 'timeout'
+                    await self.session_manager.save_game(game_id, state)
+                    await self.end_game(game_id, state)
+                    
+        return state
 
     async def join_game(self, game_id: str, user_id: int) -> Optional[GameState]:
         """Assign user to White or Black if available."""
@@ -62,9 +97,46 @@ class GameService:
         if engine.make_move(uci):
             new_state = engine.get_state()
             
-            # Preserve Players
+            # Preserve Players and Configs
             new_state.white_player_id = current_state.white_player_id
             new_state.black_player_id = current_state.black_player_id
+            new_state.time_control_seconds = current_state.time_control_seconds
+            new_state.move_history = current_state.move_history + [uci]
+            new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+
+            # Update Clocks
+            import time
+            now = time.time()
+            if current_state.last_move_at is not None:
+                elapsed = now - current_state.last_move_at
+                if current_state.turn == 'w':  # White just moved
+                    new_state.white_time_left = max(0.0, current_state.white_time_left - elapsed)
+                    new_state.black_time_left = current_state.black_time_left
+                else:  # Black just moved
+                    new_state.black_time_left = max(0.0, current_state.black_time_left - elapsed)
+                    new_state.white_time_left = current_state.white_time_left
+            else:
+                new_state.white_time_left = current_state.white_time_left
+                new_state.black_time_left = current_state.black_time_left
+            
+            new_state.last_move_at = now
+
+            # Check for Timeouts
+            if new_state.white_time_left <= 0:
+                new_state.is_game_over = True
+                new_state.winner = 'b'
+                new_state.result_type = 'timeout'
+            elif new_state.black_time_left <= 0:
+                new_state.is_game_over = True
+                new_state.winner = 'w'
+                new_state.result_type = 'timeout'
+
+            # If ended by normal checkmate or stalemate
+            if new_state.is_game_over and not new_state.result_type:
+                if new_state.winner:
+                    new_state.result_type = 'checkmate'
+                else:
+                    new_state.result_type = 'draw'
 
             # 4. Save to Redis
             await self.session_manager.save_game(game_id, new_state)
@@ -93,6 +165,43 @@ class GameService:
             new_state = engine.get_state()
             new_state.white_player_id = current_state.white_player_id
             new_state.black_player_id = current_state.black_player_id
+            new_state.time_control_seconds = current_state.time_control_seconds
+            new_state.move_history = current_state.move_history + [bot_move_uci]
+            new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+
+            # Update Clocks
+            import time
+            now = time.time()
+            if current_state.last_move_at is not None:
+                elapsed = now - current_state.last_move_at
+                if current_state.turn == 'w':  # White just moved
+                    new_state.white_time_left = max(0.0, current_state.white_time_left - elapsed)
+                    new_state.black_time_left = current_state.black_time_left
+                else:  # Black just moved
+                    new_state.black_time_left = max(0.0, current_state.black_time_left - elapsed)
+                    new_state.white_time_left = current_state.white_time_left
+            else:
+                new_state.white_time_left = current_state.white_time_left
+                new_state.black_time_left = current_state.black_time_left
+            
+            new_state.last_move_at = now
+
+            # Check for Timeouts
+            if new_state.white_time_left <= 0:
+                new_state.is_game_over = True
+                new_state.winner = 'b'
+                new_state.result_type = 'timeout'
+            elif new_state.black_time_left <= 0:
+                new_state.is_game_over = True
+                new_state.winner = 'w'
+                new_state.result_type = 'timeout'
+
+            # If ended by checkmate or stalemate
+            if new_state.is_game_over and not new_state.result_type:
+                if new_state.winner:
+                    new_state.result_type = 'checkmate'
+                else:
+                    new_state.result_type = 'draw'
 
             await self.session_manager.save_game(game_id, new_state)
             
@@ -101,6 +210,47 @@ class GameService:
 
             return new_state
         return None
+
+    async def resign_game(self, game_id: str, player_id: int) -> Optional[GameState]:
+        """Mark game as resigned by player_id and distribute payouts."""
+        state = await self.session_manager.get_game(game_id)
+        if not state or state.is_game_over:
+            return None
+
+        # Determine winner
+        if state.white_player_id == player_id:
+            state.winner = 'b'
+        elif state.black_player_id == player_id:
+            state.winner = 'w'
+        else:
+            return None # Player not in game
+
+        state.is_game_over = True
+        state.result_type = 'resignation'
+        
+        # Save to Redis
+        await self.session_manager.save_game(game_id, state)
+        
+        # Settle game payouts and ELO changes
+        await self.end_game(game_id, state)
+        return state
+
+    async def settle_draw(self, game_id: str) -> Optional[GameState]:
+        """Manually settle game as a draw by mutual agreement."""
+        state = await self.session_manager.get_game(game_id)
+        if not state or state.is_game_over:
+            return None
+
+        state.is_game_over = True
+        state.winner = None
+        state.result_type = 'draw'
+        
+        # Save to Redis
+        await self.session_manager.save_game(game_id, state)
+        
+        # Settle refunds
+        await self.end_game(game_id, state)
+        return state
 
     def calculate_new_elo(self, rating1: int, rating2: int, actual_score: float, k: int = 32) -> int:
         expected_score = 1 / (1 + 10 ** ((rating2 - rating1) / 400))
@@ -321,10 +471,13 @@ class GameService:
             total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
             
             # Determine result type
-            result_type = 'draw'
-            if state.winner:
-                result_type = 'checkmate'  # Can be enhanced later with resignation, timeout, etc.
+            result_type = getattr(state, "result_type", None)
+            if not result_type:
+                result_type = 'checkmate' if state.winner else 'draw'
             
+            import json
+            moves_json = json.dumps(getattr(state, 'move_history', []))
+
             await game_history_crud.create_game_history(
                 db=session,
                 game_id=game_id,
@@ -342,5 +495,6 @@ class GameService:
                 game_type='online',
                 bid_amount=bid_amount,
                 platform_rake=platform_rake,
-                payout_amount=payout_amount
+                payout_amount=payout_amount,
+                moves_json=moves_json
             )
