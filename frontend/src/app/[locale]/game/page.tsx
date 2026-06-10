@@ -233,7 +233,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  <div className="flex items-center gap-2 bg-brand-surface px-4 py-1.5 rounded-full border border-brand-border-opacity-10 shadow-sm">
  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
  <span className="text-[9px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
- {isConnected ? tg('neural_sync') : tg('isolated')}
+ {isConnected ? tg('active_sync') : tg('isolated')}
  </span>
  </div>
  </div>
@@ -271,7 +271,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   {isBotGame ? tg('ai_combatant') : tg('opponent')}
   </span>
   <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
-  {isBotGame ? tg('neural_engine') : tg('opponent_rank')}
+  {isBotGame ? tg('ai_engine') : tg('opponent_rank')}
   </span>
   </div>
   </div>

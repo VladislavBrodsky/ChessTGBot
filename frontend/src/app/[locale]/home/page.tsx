@@ -104,7 +104,7 @@ export default function Home() {
  const tg = (window as any).Telegram.WebApp;
  const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
  const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
- const message = `${resultText} ${t('against')} ${game.opponent.name}! 📈 ${t('neural_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/FinChessBot?start=${stats?.referral_code || ''}`;
+ const message = `${resultText} ${t('against')} ${game.opponent.name}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/FinChessBot?start=${stats?.referral_code || ''}`;
 
  tg.switchInlineQuery(message, ["users", "groups", "channels"]);
 

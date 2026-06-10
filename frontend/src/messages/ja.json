@@ -30,7 +30,6 @@
         "referral_commission": "Referral Commission",
         "from_player": "From: Player \"{name}\"",
         "grandmaster": "GrandMaster",
-        "neural_knight": "Cyber Knight",
         "node_recruitment": "紹介者",
         "referral_protocol": "紹介リンク",
         "referral_desc": "友達を招待してプレイしよう！アクティブな友達1人につき50 XPと10%のブーストを獲得できます。",
@@ -44,11 +43,11 @@
         "fought_battle": "Fought a tough battle",
         "reached_stalemate": "Reached a stalemate",
         "against": "against",
-        "neural_ranking": "Global Ranking",
         "join_matrix": "Join the FinChess matrix and start earning",
         "return": "Return",
         "daily_missions": "デイリータスク",
-        "claim": "Claim"
+        "claim": "Claim",
+        "cyber_knight": "Cyber Knight"
     },
     "Settings": {
         "return": "戻る",
@@ -63,10 +62,10 @@
         "active_sync": "アクティブ同期",
         "muted": "ミュート",
         "language_matrix": "言語選択",
-        "neural_tier": "メンバーシップ・ティア",
         "enhanced_access": "プレミアムステータス：アクティブ",
         "footer": "チェスミニアプリ v1.5.0",
-        "nebula_protocol": "Nebula Protocol"
+        "nebula_protocol": "Nebula Protocol",
+        "membership_tier": "メンバーシップ・ティア"
     },
     "Language": {
         "select": "言語を選択"
@@ -122,11 +121,9 @@
         "train_ai": "Train against A.I.",
         "initializing_board": "Initializing Board...",
         "resign": "Resign",
-        "neural_sync": "Active Sync",
         "isolated": "Isolated",
         "ai_combatant": "A.I. Combatant",
         "opponent": "Opponent",
-        "neural_engine": "A.I. Engine v16",
         "opponent_rank": "Rank 04 • 2400",
         "you": "YOU",
         "verification_complete": "Match Verification Complete",
@@ -146,7 +143,9 @@
         "play_friend": "友達と対局",
         "create_friend_match": "招待リンクを作成",
         "invite_link_title": "対局招待リンク",
-        "custom_time_desc": "持ち時間はAI対局およびフレンド対局に適用されます。"
+        "custom_time_desc": "持ち時間はAI対局およびフレンド対局に適用されます。",
+        "active_sync": "Active Sync",
+        "ai_engine": "A.I. Engine v16"
     },
     "Wallet": {
         "title": "Web3ウォレット",

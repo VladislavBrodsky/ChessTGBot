@@ -30,7 +30,6 @@
         "referral_commission": "Referral Commission",
         "from_player": "From: Player \"{name}\"",
         "grandmaster": "GrandMaster",
-        "neural_knight": "Cyber Knight",
         "node_recruitment": "推荐好友",
         "referral_protocol": "推荐链接",
         "referral_desc": "邀请好友一起玩！每邀请一位活跃好友即可获得 50 XP 和 10% 经验加成。",
@@ -44,11 +43,11 @@
         "fought_battle": "Fought a tough battle",
         "reached_stalemate": "Reached a stalemate",
         "against": "against",
-        "neural_ranking": "Global Ranking",
         "join_matrix": "Join the FinChess matrix and start earning",
         "return": "Return",
         "daily_missions": "每日任务",
-        "claim": "Claim"
+        "claim": "Claim",
+        "cyber_knight": "Cyber Knight"
     },
     "Settings": {
         "return": "返回",
@@ -63,10 +62,10 @@
         "active_sync": "主动同步",
         "muted": "静音",
         "language_matrix": "选择语言",
-        "neural_tier": "会员等级",
         "enhanced_access": "高级会员状态：已激活",
         "footer": "象棋小程序 v1.5.0",
-        "nebula_protocol": "Nebula Protocol"
+        "nebula_protocol": "Nebula Protocol",
+        "membership_tier": "会员等级"
     },
     "Language": {
         "select": "选择语言"
@@ -122,11 +121,9 @@
         "train_ai": "Train against A.I.",
         "initializing_board": "Initializing Board...",
         "resign": "Resign",
-        "neural_sync": "Active Sync",
         "isolated": "Isolated",
         "ai_combatant": "A.I. Combatant",
         "opponent": "Opponent",
-        "neural_engine": "A.I. Engine v16",
         "opponent_rank": "Rank 04 • 2400",
         "you": "YOU",
         "verification_complete": "Match Verification Complete",
@@ -146,7 +143,9 @@
         "play_friend": "与好友对局",
         "create_friend_match": "创建邀请链接",
         "invite_link_title": "比赛邀请链接",
-        "custom_time_desc": "时间控制适用于人机训练和好友对局。"
+        "custom_time_desc": "时间控制适用于人机训练和好友对局。",
+        "active_sync": "Active Sync",
+        "ai_engine": "A.I. Engine v16"
     },
     "Wallet": {
         "title": "Web3 钱包",

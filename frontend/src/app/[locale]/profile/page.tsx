@@ -58,7 +58,7 @@ export default function ProfilePage() {
  </div>
  {/* Premium overlay badge */}
  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border-opacity-20 bg-brand-surface text-brand-primary text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
- 👑 {stats?.elo > 1500 ? t('grandmaster') : t('neural_knight')}
+ 👑 {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
  </div>
  </div>
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">

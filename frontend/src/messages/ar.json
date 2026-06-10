@@ -30,7 +30,6 @@
         "referral_commission": "Referral Commission",
         "from_player": "From: Player \"{name}\"",
         "grandmaster": "GrandMaster",
-        "neural_knight": "Cyber Knight",
         "node_recruitment": "الإحالات",
         "referral_protocol": "رابط الإحالة",
         "referral_desc": "دعوة الأصدقاء للعب! كسب 50 XP و 10% زيادة لكل صديق نشط.",
@@ -44,11 +43,11 @@
         "fought_battle": "Fought a tough battle",
         "reached_stalemate": "Reached a stalemate",
         "against": "against",
-        "neural_ranking": "Global Ranking",
         "join_matrix": "Join the FinChess matrix and start earning",
         "return": "Return",
         "daily_missions": "مهام يومية",
-        "claim": "Claim"
+        "claim": "Claim",
+        "cyber_knight": "Cyber Knight"
     },
     "Settings": {
         "return": "عودة",
@@ -63,10 +62,10 @@
         "active_sync": "مزامنة نشطة",
         "muted": "صامت",
         "language_matrix": "اختر اللغة",
-        "neural_tier": "مستوى العضوية",
         "enhanced_access": "حالة الاشتراك المميز: نشط",
         "footer": "تطبيق شطرنج مصغر v1.5.0",
-        "nebula_protocol": "Nebula Protocol"
+        "nebula_protocol": "Nebula Protocol",
+        "membership_tier": "مستوى العضوية"
     },
     "Language": {
         "select": "اختر اللغة"
@@ -122,11 +121,9 @@
         "train_ai": "Train against A.I.",
         "initializing_board": "Initializing Board...",
         "resign": "Resign",
-        "neural_sync": "Active Sync",
         "isolated": "Isolated",
         "ai_combatant": "A.I. Combatant",
         "opponent": "Opponent",
-        "neural_engine": "A.I. Engine v16",
         "opponent_rank": "Rank 04 • 2400",
         "you": "YOU",
         "verification_complete": "Match Verification Complete",
@@ -146,7 +143,9 @@
         "play_friend": "اللعب مع صديق",
         "create_friend_match": "إنشاء رابط دعوة",
         "invite_link_title": "رابط دعوة المباراة",
-        "custom_time_desc": "ينطبق التحكم في الوقت على تدريب الذكاء الاصطناعي ومباريات الأصدقاء."
+        "custom_time_desc": "ينطبق التحكم في الوقت على تدريب الذكاء الاصطناعي ومباريات الأصدقاء.",
+        "active_sync": "Active Sync",
+        "ai_engine": "A.I. Engine v16"
     },
     "Wallet": {
         "title": "محفظة Web3",

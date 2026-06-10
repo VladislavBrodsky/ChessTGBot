@@ -30,7 +30,6 @@
         "referral_commission": "Реферальная комиссия",
         "from_player": "От: Игрока \"{name}\"",
         "grandmaster": "Гроссмейстер",
-        "neural_knight": "Кибер-рыцарь",
         "node_recruitment": "Рефералы",
         "referral_protocol": "Реферальная ссылка",
         "referral_desc": "Приглашайте друзей в игру! Получайте 50 XP и 10% буст за каждого активного друга.",
@@ -44,11 +43,11 @@
         "fought_battle": "Провел сложный бой",
         "reached_stalemate": "Сыграл вничью",
         "against": "против",
-        "neural_ranking": "Глобальный рейтинг",
         "join_matrix": "Присоединяйтесь к матрице FinChess и зарабатывайте",
         "return": "Вернуться",
         "daily_missions": "Ежедневные задания",
-        "claim": "Забрать"
+        "claim": "Забрать",
+        "cyber_knight": "Кибер-рыцарь"
     },
     "Settings": {
         "return": "Назад",
@@ -64,9 +63,9 @@
         "active_sync": "Включены",
         "muted": "Выключены",
         "language_matrix": "Выбор языка",
-        "neural_tier": "Статус подписки",
         "enhanced_access": "Премиум-статус: Активен",
-        "footer": "Мини-приложение Шахматы v1.5.0"
+        "footer": "Мини-приложение Шахматы v1.5.0",
+        "membership_tier": "Статус подписки"
     },
     "Language": {
         "select": "Выберите Язык"
@@ -122,11 +121,9 @@
         "train_ai": "Тренировка с ИИ",
         "initializing_board": "Инициализация доски...",
         "resign": "Сдаться",
-        "neural_sync": "Активная синхронизация",
         "isolated": "Изолировано",
         "ai_combatant": "ИИ Оппонент",
         "opponent": "Соперник",
-        "neural_engine": "ИИ-движок v16",
         "opponent_rank": "Ранг 04 • 2400",
         "you": "ВЫ",
         "verification_complete": "Верификация матча завершена",
@@ -146,7 +143,9 @@
         "play_friend": "Играть с другом",
         "create_friend_match": "Создать ссылку",
         "invite_link_title": "Ссылка на матч",
-        "custom_time_desc": "Настройки времени действуют для игр с ИИ и дуэлей с друзьями."
+        "custom_time_desc": "Настройки времени действуют для игр с ИИ и дуэлей с друзьями.",
+        "active_sync": "Активная синхронизация",
+        "ai_engine": "ИИ-движок v16"
     },
     "Wallet": {
         "title": "Web3-кошелек",

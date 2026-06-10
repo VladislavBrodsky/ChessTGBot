@@ -30,7 +30,6 @@
         "referral_commission": "Referral Commission",
         "from_player": "From: Player \"{name}\"",
         "grandmaster": "GrandMaster",
-        "neural_knight": "Cyber Knight",
         "node_recruitment": "रेफरल्स",
         "referral_protocol": "रेफरल लिंक",
         "referral_desc": "दोस्तों को खेलने के लिए आमंत्रित करें! प्रत्येक सक्रिय मित्र के लिए 50 XP और 10% बढ़ावा अर्जित करें।",
@@ -44,11 +43,11 @@
         "fought_battle": "Fought a tough battle",
         "reached_stalemate": "Reached a stalemate",
         "against": "against",
-        "neural_ranking": "Global Ranking",
         "join_matrix": "Join the FinChess matrix and start earning",
         "return": "Return",
         "daily_missions": "दैनिक कार्य",
-        "claim": "Claim"
+        "claim": "Claim",
+        "cyber_knight": "Cyber Knight"
     },
     "Settings": {
         "return": "वापस",
@@ -63,10 +62,10 @@
         "active_sync": "सक्रिय सिंक",
         "muted": "म्यूट",
         "language_matrix": "भाषा चुनें",
-        "neural_tier": "सदस्यता टियर",
         "enhanced_access": "प्रीमियम एक्सेस सक्रिय",
         "footer": "FinChess मैट्रिक्स इंटरफ़ेस बिल्ड v1.5.02 के लिए अधिकृत",
-        "nebula_protocol": "Nebula Protocol"
+        "nebula_protocol": "Nebula Protocol",
+        "membership_tier": "सदस्यता टियर"
     },
     "Language": {
         "select": "भाषा चुनें"
@@ -122,11 +121,9 @@
         "train_ai": "Train against A.I.",
         "initializing_board": "Initializing Board...",
         "resign": "Resign",
-        "neural_sync": "Active Sync",
         "isolated": "Isolated",
         "ai_combatant": "A.I. Combatant",
         "opponent": "Opponent",
-        "neural_engine": "A.I. Engine v16",
         "opponent_rank": "Rank 04 • 2400",
         "you": "YOU",
         "verification_complete": "Match Verification Complete",
@@ -146,7 +143,9 @@
         "play_friend": "मित्र के साथ खेलें",
         "create_friend_match": "आमंत्रण लिंक बनाएं",
         "invite_link_title": "मैच आमंत्रण लिंक",
-        "custom_time_desc": "समय नियंत्रण ए.आई. प्रशिक्षण और मित्र द्वंद्व पर लागू होता है।"
+        "custom_time_desc": "समय नियंत्रण ए.आई. प्रशिक्षण और मित्र द्वंद्व पर लागू होता है।",
+        "active_sync": "Active Sync",
+        "ai_engine": "A.I. Engine v16"
     },
     "Wallet": {
         "title": "Web3 वॉलेट",
