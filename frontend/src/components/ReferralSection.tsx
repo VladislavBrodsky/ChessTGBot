@@ -25,7 +25,7 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
 
  const handleShare = () => {
  if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
- const text = "Connect to the Neural Matrix and play Move-to-Earn Chess with me! 🚀💻";
+ const text = "Connect to the FinChess Matrix and play Move-to-Earn Chess with me! 🚀💻";
  (window as any).Telegram.WebApp.switchInlineQuery(inviteLink, ["users", "groups", "channels"]);
  }
  };
@@ -47,7 +47,7 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
  <div className="flex flex-col">
  <span className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-1">Referral Protocol</span>
  <p className="text-[9px] text-brand-primary opacity-40 font-bold uppercase leading-relaxed max-w-[80%]">
- Expand the neural network. Earn 50 XP and 10% Boost for every node synchronized via your code.
+ Expand the FinChess network. Earn 50 XP and 10% Boost for every node synchronized via your code.
  </p>
  </div>
 

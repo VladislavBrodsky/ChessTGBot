@@ -41,7 +41,7 @@ export default function ReferralCard({ referralCode }: ReferralCardProps) {
     };
 
     const handleInvite = () => {
-        const text = encodeURIComponent("Join me in Neural Chess! ♟️🚀");
+        const text = encodeURIComponent("Join me in FinChess! ♟️🚀");
         const url = encodeURIComponent(inviteLink);
         window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
     };

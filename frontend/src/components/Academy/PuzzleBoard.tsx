@@ -136,7 +136,7 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail }: P
  className="text-center"
  >
  <h3 className="text-xl font-black text-green-400">PUZZLE SOLVED!</h3>
- <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Neural XP</p>
+ <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
  </motion.div>
  )}
  </div>

@@ -23,7 +23,7 @@ jest.mock('next-intl', () => ({
     useTranslations: () => (key: string, variables?: any) => {
         const translations: Record<string, string> = {
             welcome: `Welcome, ${variables?.name || ''}`,
-            subtitle: 'Neural Matrix Protocol',
+            subtitle: 'FinChess Matrix Protocol',
             elo: 'ELO',
             play: 'Play Chess',
             academy: 'Academy',

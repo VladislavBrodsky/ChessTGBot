@@ -75,7 +75,7 @@ export default function WalletConnect() {
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-40 truncate">
-                                {wallet ? 'Link Active' : 'Neural Link'}
+                                {wallet ? 'Link Active' : 'Wallet Link'}
                             </span>
                             <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary truncate">
                                 {wallet ? getShortAddress(wallet.account.address) : 'UNLINKED'}
