@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin(
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
+    reactStrictMode: false,
     transpilePackages: ['react-chessboard'],
     ...(process.env.STATIC_EXPORT === 'true' ? { output: 'export' } : {}),
     images: {

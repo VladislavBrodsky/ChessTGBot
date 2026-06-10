@@ -23,18 +23,29 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp;
             const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
+            const isBackButtonSupported = tg.isVersionAtLeast && tg.isVersionAtLeast('6.1') && tg.BackButton;
 
-            if (isHomePage) {
-                tg.BackButton.hide();
-            } else {
-                tg.BackButton.show();
-                const handleBackClick = () => {
-                    router.back();
-                };
-                tg.BackButton.onClick(handleBackClick);
-                return () => {
-                    tg.BackButton.offClick(handleBackClick);
-                };
+            if (isBackButtonSupported) {
+                try {
+                    if (isHomePage) {
+                        tg.BackButton.hide();
+                    } else {
+                        tg.BackButton.show();
+                        const handleBackClick = () => {
+                            router.back();
+                        };
+                        tg.BackButton.onClick(handleBackClick);
+                        return () => {
+                            try {
+                                tg.BackButton.offClick(handleBackClick);
+                            } catch (err) {
+                                console.warn('Telegram BackButton offClick failed', err);
+                            }
+                        };
+                    }
+                } catch (err) {
+                    console.warn('Telegram BackButton operation failed', err);
+                }
             }
         }
     }, [pathname, locale, router]);

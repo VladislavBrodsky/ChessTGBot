@@ -24,11 +24,21 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
  };
 
  const handleShare = () => {
- if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
- const text = "Connect to the FinChess Matrix and play Move-to-Earn Chess with me! 🚀💻";
- (window as any).Telegram.WebApp.switchInlineQuery(inviteLink, ["users", "groups", "channels"]);
- }
- };
+    let success = false;
+    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+      try {
+        (window as any).Telegram.WebApp.switchInlineQuery(inviteLink, ["users", "groups", "channels"]);
+        success = true;
+      } catch (err) {
+        console.warn("Telegram switchInlineQuery failed", err);
+      }
+    }
+    if (!success) {
+      navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
  return (
  <div className="w-full space-y-4">

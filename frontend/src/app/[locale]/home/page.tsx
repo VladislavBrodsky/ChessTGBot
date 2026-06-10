@@ -99,20 +99,33 @@ export default function Home() {
  }
  };
 
- const handleShareResult = (game: any) => {
- if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
- const tg = (window as any).Telegram.WebApp;
- const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
- const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
- const message = `${resultText} ${t('against')} ${game.opponent.name}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/FinChessBot?start=${stats?.referral_code || ''}`;
+  const handleShareResult = (game: any) => {
+    const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
+    const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
+    const message = `${resultText} ${t('against')} ${game.opponent.name}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/FinChessBot?start=${stats?.referral_code || ''}`;
 
- tg.switchInlineQuery(message, ["users", "groups", "channels"]);
-
- if (tg.HapticFeedback) {
- tg.HapticFeedback.impactOccurred('medium');
- }
- }
- };
+    let success = false;
+    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+      const tg = (window as any).Telegram.WebApp;
+      try {
+        tg.switchInlineQuery(message, ["users", "groups", "channels"]);
+        success = true;
+        if (tg.HapticFeedback) {
+          try {
+            tg.HapticFeedback.impactOccurred('medium');
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.warn("Telegram switchInlineQuery failed", err);
+      }
+    }
+    if (!success) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(message);
+        alert("Share link copied to clipboard!");
+      }
+    }
+  };
 
  return (
  <LayoutWrapper className="pb-12 px-4 md:px-6">

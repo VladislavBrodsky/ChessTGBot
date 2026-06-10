@@ -21,6 +21,12 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     useEffect(() => {
         if (typeof window !== "undefined") {
             setWindowDimension({ width: window.innerWidth, height: window.innerHeight });
+            
+            const handleResize = () => {
+                setWindowDimension({ width: window.innerWidth, height: window.innerHeight });
+            };
+            window.addEventListener("resize", handleResize);
+            return () => window.removeEventListener("resize", handleResize);
         }
     }, []);
 
@@ -48,12 +54,36 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
         }
     }, [fen, prevFen, play]);
 
-    function onDrop(sourceSquare: string, targetSquare: string) {
+    function onDrop({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) {
+        if (!targetSquare) return false;
+        console.log("ChessBoardComponent onDrop called:", sourceSquare, targetSquare);
+        try {
+            fetch("/api/v1/client-log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    level: "INFO",
+                    message: `ChessBoardComponent onDrop called: from=${sourceSquare}, to=${targetSquare}`
+                })
+            }).catch(() => {});
+        } catch (e) {}
+
         const moveResult = onMove({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q",
         });
+        console.log("ChessBoardComponent onDrop moveResult:", moveResult);
+        try {
+            fetch("/api/v1/client-log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    level: "INFO",
+                    message: `ChessBoardComponent onDrop moveResult: ${moveResult}`
+                })
+            }).catch(() => {});
+        } catch (e) {}
 
         // If move was successful locally (before server confirms), play sound? 
         // Actually, useEffect above relies on FEN prop change from server.
@@ -70,22 +100,23 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             </div>}
 
             {/* Subtle Metallic Outer Glow */}
-            <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30"></div>
+            <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30 pointer-events-none"></div>
 
             <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
                 <div className="rounded-xl overflow-hidden w-full h-full">
                     <Chessboard
-                        // @ts-ignore
-                        position={fen}
-                        onPieceDrop={onDrop}
-                        boardOrientation={orientation}
-                        customDarkSquareStyle={{ backgroundColor: "#050505" }}
-                        customLightSquareStyle={{ backgroundColor: "#1F1F1F" }}
-                        customBoardStyle={{
-                            borderRadius: "12px",
-                            overflow: "hidden",
+                        options={{
+                            id: "liveChessBoard",
+                            position: fen === "start" ? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" : fen,
+                            onPieceDrop: onDrop,
+                            boardOrientation: orientation,
+                            allowDragging: true,
+                            boardStyle: {
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                            },
+                            animationDurationInMs: 250,
                         }}
-                        animationDuration={250}
                     />
                 </div>
             </div>

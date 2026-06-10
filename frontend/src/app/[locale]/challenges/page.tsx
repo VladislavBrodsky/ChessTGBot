@@ -82,7 +82,11 @@ export default function ChallengesPage() {
   // Also share via Telegram if available
   if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
     const tg = (window as any).Telegram.WebApp;
-    tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join me on FinChess and earn crypto while playing chess! 🎯♟️')}`);
+    try {
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join me on FinChess and earn crypto while playing chess! 🎯♟️')}`);
+    } catch (err) {
+      console.warn("Telegram openTelegramLink failed", err);
+    }
   }
   setCopied(true);
   setTimeout(() => setCopied(false), 2000);

@@ -97,9 +97,13 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   const opponentTime = isWhite ? blackTime : whiteTime;
 
   useEffect(() => {
-  if (typeof window !== "undefined" && window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-  setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
-  }
+    if (typeof window !== "undefined") {
+      if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+        setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
+      } else if (process.env.NODE_ENV === 'development') {
+        setUserId(123456789);
+      }
+    }
   }, []);
 
   const prevFenRef = useRef<string | null>(null);
@@ -153,17 +157,24 @@ function ActiveGame({ gameId }: ActiveGameProps) {
    prevStatusRef.current = currentStatus;
  }, [gameState, userId]);
 
- // Share / Copy Game Link
- const shareGame = () => {
- if (window.Telegram?.WebApp) {
- window.Telegram.WebApp.switchInlineQuery(gameId, ["users", "groups", "channels"]);
- } else {
- const link = typeof window !== 'undefined' ? window.location.href : "";
- navigator.clipboard.writeText(link);
- setCopied(true);
- setTimeout(() => setCopied(false), 2000);
- }
- };
+  // Share / Copy Game Link
+  const shareGame = () => {
+    let success = false;
+    if (window.Telegram?.WebApp) {
+      try {
+        window.Telegram.WebApp.switchInlineQuery(gameId, ["users", "groups", "channels"]);
+        success = true;
+      } catch (err) {
+        console.warn("Telegram switchInlineQuery failed", err);
+      }
+    }
+    if (!success) {
+      const link = typeof window !== 'undefined' ? window.location.href : "";
+      navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
  const isBotGame = gameState?.black_player_id === -1;
  const isGameOver = gameState?.status === 'completed' || gameState?.status === 'aborted';
@@ -575,20 +586,27 @@ function PlayLobby() {
  }
  };
 
- const shareInviteLink = () => {
- const shareUrl = inviteLink;
- const shareText = `Join my chess match! ♟️\nTime control: ${timeControl / 60} minutes.`;
- const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
- 
- if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
- window.Telegram.WebApp.openTelegramLink(fullUrl);
- if (window.Telegram.WebApp.HapticFeedback) {
- window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
- }
- } else {
- window.open(fullUrl, '_blank');
- }
- };
+  const shareInviteLink = () => {
+    const shareUrl = inviteLink;
+    const shareText = `Join my chess match! ♟️\nTime control: ${timeControl / 60} minutes.`;
+    const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+    
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      try {
+        window.Telegram.WebApp.openTelegramLink(fullUrl);
+        if (window.Telegram.WebApp.HapticFeedback) {
+          try {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.warn("Telegram openTelegramLink failed", err);
+        window.open(fullUrl, '_blank');
+      }
+    } else {
+      window.open(fullUrl, '_blank');
+    }
+  };
 
  const chosenWager = isCustomWager 
  ? Math.round(parseFloat(customWagerInput) * 100) 

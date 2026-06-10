@@ -84,6 +84,17 @@ def create_application() -> FastAPI:
     application.include_router(gamification.router, prefix="/api/v1/gamification", tags=["gamification"])
     application.include_router(wallet.router, prefix="/api/v1/wallet", tags=["wallet"])
 
+    @application.post("/api/v1/client-log")
+    async def client_log(request: Request):
+        try:
+            data = await request.json()
+            message = data.get("message")
+            level = data.get("level", "INFO")
+            print(f"[CLIENT {level}] {message}")
+            return {"status": "logged"}
+        except Exception as e:
+            return {"status": "error", "detail": str(e)}
+
     @application.get("/version")
     async def get_version():
         return {"version": settings.VERSION, "status": "deployed"}

@@ -229,15 +229,14 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
             <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-black p-1">
               <Chessboard
-                // @ts-ignore
-                position={fens[currentStep]}
-                arePiecesDraggable={false}
-                boardOrientation="white"
-                customDarkSquareStyle={{ backgroundColor: "#050505" }}
-                customLightSquareStyle={{ backgroundColor: "#1F1F1F" }}
-                customBoardStyle={{
-                  borderRadius: "12px",
-                  overflow: "hidden",
+                options={{
+                  position: fens[currentStep],
+                  allowDragging: false,
+                  boardOrientation: "white",
+                  boardStyle: {
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                  }
                 }}
               />
             </div>
