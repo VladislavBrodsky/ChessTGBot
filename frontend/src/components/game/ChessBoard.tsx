@@ -26,8 +26,9 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
 
     useEffect(() => {
         if (fen !== prevFen) {
-            const game = new Chess(fen);
-            const prevGame = new Chess(prevFen);
+            const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            const game = new Chess(fen === "start" ? START_FEN : fen);
+            const prevGame = new Chess(prevFen === "start" ? START_FEN : prevFen);
 
             // Simple move detection
             // Note: This logic is simple; better to rely on socket events for specific sounds (win/capture) 
