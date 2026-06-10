@@ -11,9 +11,10 @@ interface PuzzleBoardProps {
  solution: string[]; // Array of UCI moves e.g., ['e2e4', 'e7e5']
  onSolve: () => void;
  onFail: () => void;
+ orientation?: 'white' | 'black';
 }
 
-export default function PuzzleBoard({ initialFen, solution, onSolve, onFail }: PuzzleBoardProps) {
+export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, orientation = 'white' }: PuzzleBoardProps) {
  const [game, setGame] = useState(new Chess(initialFen));
  const [moveIndex, setMoveIndex] = useState(0);
  const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
@@ -112,11 +113,11 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail }: P
 
  return (
  <div className="flex flex-col items-center gap-6 w-full">
- <div className={`relative p-1 rounded-3xl transition-all duration-300 ${status === 'correct' ? 'bg-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.3)]' : status === 'wrong' ? 'bg-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]' : ''}`}>
+ <div className={`w-full max-w-[400px] aspect-square relative p-1 rounded-3xl transition-all duration-300 ${status === 'correct' ? 'bg-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.3)]' : status === 'wrong' ? 'bg-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]' : ''}`}>
  <ChessBoardComponent
  fen={game.fen()}
  onMove={onMove}
- orientation={game.turn() === 'w' ? 'white' : 'black'}
+ orientation={orientation}
  />
  </div>
 

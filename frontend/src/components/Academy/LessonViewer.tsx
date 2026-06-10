@@ -116,6 +116,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  solution={currentStep.solution || []}
  onSolve={markComplete}
  onFail={() => { }}
+ orientation={currentStep.boardOrientation || 'white'}
  />
  </div>
  )}
