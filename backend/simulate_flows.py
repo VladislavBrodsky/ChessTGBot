@@ -1,5 +1,8 @@
-import asyncio
 import os
+# Ensure sqlite test settings or dev db is initialized
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./chess.db"
+
+import asyncio
 import sys
 from sqlalchemy import select, and_
 from app.core.database import engine, AsyncSessionLocal, init_db, Base
@@ -11,9 +14,6 @@ from app.services.gamification_service import GamificationService
 from app.services.matchmaker import MatchmakerService
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
-
-# Ensure sqlite test settings or dev db is initialized
-os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./chess.db"
 
 async def run_simulation():
     print("=" * 60)

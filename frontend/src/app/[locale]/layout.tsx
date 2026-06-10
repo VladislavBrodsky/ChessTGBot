@@ -15,6 +15,13 @@ export const metadata: Metadata = {
     description: "Real-time Multiplayer Chess on Telegram",
 };
 
+export const viewport = {
+    width: "device-width",
+    initialScale: 1.0,
+    maximumScale: 1.0,
+    userScalable: false,
+};
+
 export function generateStaticParams() {
     return ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'].map((locale) => ({ locale }));
 }

@@ -101,7 +101,7 @@ export default function Home() {
  {/* Dashboard Welcome Header */}
  <div className="w-full text-center px-1 mb-1">
  <h1 className="text-xl font-black tracking-tighter text-brand-primary leading-none uppercase animate-float">
- {t('welcome', { name: tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant' })}
+ {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
  </h1>
  <p className="text-[8px] font-black text-brand-muted uppercase tracking-[0.4em] mt-2">
  {t('subtitle')}
@@ -122,17 +122,17 @@ export default function Home() {
  <div className="flex items-center justify-between mb-4 relative z-10">
  <div className="flex items-center space-x-3.5">
  <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
- {tgUser?.photo_url ? (
+ {(stats?.photo_url || tgUser?.photo_url) ? (
  <img 
-   src={tgUser.photo_url} 
+   src={stats?.photo_url || tgUser.photo_url} 
    alt="Profile" 
    className="w-full h-full rounded-lg object-cover"
    crossOrigin="anonymous"
    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
  />
  ) : null}
- <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${tgUser?.photo_url ? 'hidden' : ''}`}>
- {tgUser?.first_name?.[0] || "?"}
+ <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${(stats?.photo_url || tgUser?.photo_url) ? 'hidden' : ''}`}>
+ {stats?.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
  </div>
  {stats?.is_premium && (
  <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
@@ -142,7 +142,7 @@ export default function Home() {
  </div>
  <div className="flex flex-col justify-center">
  <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
- {tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant"}
+ {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
  </h2>
  <span className="text-[11px] font-black text-brand-primary opacity-50 tracking-widest uppercase leading-none">
  {stats?.elo || 1000} {t('elo')}

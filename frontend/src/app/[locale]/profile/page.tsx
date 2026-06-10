@@ -47,8 +47,8 @@ export default function ProfilePage() {
  {/* Outer rotating/pulsing ring */}
  <div className="absolute inset-0 rounded-full border border-brand-primary opacity-10 animate-pulse scale-105" />
  <div className="w-24 h-24 rounded-full bg-brand-surface border border-brand-border-opacity-20 flex items-center justify-center relative overflow-hidden shadow-premium">
- {tgUser?.photo_url ? (
- <img src={tgUser.photo_url} alt="Profile" className="w-full h-full object-cover" />
+ {(stats?.photo_url || tgUser?.photo_url) ? (
+ <img src={stats?.photo_url || tgUser.photo_url} alt="Profile" className="w-full h-full object-cover" />
  ) : (
  <FaChessKing className="text-4xl text-brand-primary opacity-40" />
  )}
@@ -59,7 +59,7 @@ export default function ProfilePage() {
  </div>
  </div>
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
- {tgUser?.first_name} {tgUser?.last_name || ""}
+ {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
  </h1>
  <div className="mb-6 w-full max-w-[200px]">
  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />

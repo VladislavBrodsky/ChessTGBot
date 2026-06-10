@@ -1,6 +1,6 @@
 'use client';
 
-import { TonConnectButton, useTonWallet } from '@tonconnect/ui-react';
+import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import { FaWallet } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
@@ -8,7 +8,16 @@ import { apiFetch } from '@/lib/api';
 
 export default function WalletConnect() {
     const wallet = useTonWallet();
+    const [tonConnectUI] = useTonConnectUI();
     const [mounted, setMounted] = useState(false);
+
+    const handleWalletAction = async () => {
+        if (wallet) {
+            await tonConnectUI.disconnect();
+        } else {
+            await tonConnectUI.openModal();
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -74,11 +83,12 @@ export default function WalletConnect() {
                         </div>
                     </div>
 
-                    {/* The actual button, styled via CSS override in globals or passed props if supported, 
-                        but standard button is robust. We wrap it to control layout */}
-                    <div className="ton-connect-wrapper shrink-0">
-                        <TonConnectButton />
-                    </div>
+                    <button
+                        onClick={handleWalletAction}
+                        className="py-1.5 px-3 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                    >
+                        {wallet ? 'Disconnect' : 'Connect'}
+                    </button>
                 </div>
 
                 {wallet && (
