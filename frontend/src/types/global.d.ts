@@ -8,6 +8,7 @@ declare global {
                 expand: () => void;
                 requestFullscreen?: () => void;
                 exitFullscreen?: () => void;
+                isVersionAtLeast?: (version: string) => boolean;
                 close: () => void;
                 enableClosingConfirmation: () => void;
                 disableClosingConfirmation: () => void;
