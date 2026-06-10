@@ -1,16 +1,23 @@
 'use client';
 
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
-import { ReactNode } from 'react';
-
-// Manifest URL must be absolute and publicly accessible
-// For dev/testing, we can use a relative path if hosted on the same domain, or a public URL
-// In production, this should be the real deployed URL
-const MANIFEST_URL = 'https://chesstgbot-production.up.railway.app/tonconnect-manifest.json';
+import { ReactNode, useEffect, useState } from 'react';
 
 export default function Providers({ children }: { children: ReactNode }) {
+    const [manifestUrl, setManifestUrl] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setManifestUrl(`${window.location.origin}/tonconnect-manifest.json`);
+        }
+    }, []);
+
+    if (!manifestUrl) {
+        return <>{children}</>;
+    }
+
     return (
-        <TonConnectUIProvider manifestUrl={MANIFEST_URL}>
+        <TonConnectUIProvider manifestUrl={manifestUrl}>
             {children}
         </TonConnectUIProvider>
     );
