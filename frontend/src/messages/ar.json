@@ -106,7 +106,6 @@
     },
     "Game": {
         "battle_arena": "BATTLE ARENA",
-        "matchmaking_hub": "Neural Matchmaking Hub",
         "searching_matchmaker": "Searching Matchmaker",
         "searching_opponent": "Searching for Opponent...",
         "wager_tier": "Wager Tier",

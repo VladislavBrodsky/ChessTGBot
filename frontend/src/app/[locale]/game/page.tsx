@@ -471,8 +471,6 @@ function PlayLobby() {
  <FaChessKnight className="text-2xl opacity-80" />
  {tg('battle_arena')}
  </motion.div>
- <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
- <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30">{tg('matchmaking_hub')}</span>
  </div>
 
  {/* Holographic Stats Badge */}

@@ -106,7 +106,6 @@
     },
     "Game": {
         "battle_arena": "БАТТЛ АРЕНА",
-        "matchmaking_hub": "Центр нейронного подбора",
         "searching_matchmaker": "Нейро-поиск",
         "searching_opponent": "Поиск соперника...",
         "wager_tier": "Разряд ставки",
