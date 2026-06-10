@@ -10,14 +10,17 @@ logger = logging.getLogger(__name__)
 class SessionManager:
     _memory_store = {}
     _use_memory = False
+    _redis_client = None
 
     def __init__(self):
-        try:
-            self.redis = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
-        except Exception as e:
-            logger.warning(f"Failed to initialize Redis client: {e}. Falling back to in-memory store.")
-            self.redis = None
-            SessionManager._use_memory = True
+        if not SessionManager._use_memory and SessionManager._redis_client is None:
+            try:
+                SessionManager._redis_client = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+            except Exception as e:
+                logger.warning(f"Failed to initialize Redis client: {e}. Falling back to in-memory store.")
+                SessionManager._redis_client = None
+                SessionManager._use_memory = True
+        self.redis = SessionManager._redis_client
         self.ttl = 3600 * 24 # 24 hours
 
     async def save_game(self, game_id: str, state: GameState):

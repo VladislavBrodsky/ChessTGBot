@@ -232,6 +232,13 @@ async def receive_ton_deposit_webhook(
             detail="Unauthorized webhook signature"
         )
 
+    # Validate deposit amount
+    if payload.amount_cents <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Deposit amount must be positive"
+        )
+
     # 1. Verify destination address matches our Master Wallet
     if payload.destination.lower() != settings.MASTER_WALLET_ADDRESS.lower():
         raise HTTPException(
