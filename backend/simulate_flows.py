@@ -113,10 +113,10 @@ async def run_simulation():
 
     # Matchmaker joins
     matchmaker = MatchmakerService()
-    await matchmaker.add_to_queue(user_id=11111, bid_amount=wager_amount, sid="sid_p1")
-    await matchmaker.add_to_queue(user_id=22222, bid_amount=wager_amount, sid="sid_p2")
+    await matchmaker.add_to_queue(user_id=11111, bid_amount=wager_amount, sid="sid_p1", elo=1000)
+    await matchmaker.add_to_queue(user_id=22222, bid_amount=wager_amount, sid="sid_p2", elo=1000)
     
-    opponent = await matchmaker.find_opponent(wager_amount, exclude_user_id=11111)
+    opponent = await matchmaker.find_opponent(wager_amount, exclude_user_id=11111, user_elo=1000)
     if opponent and opponent["user_id"] == 22222:
         print("✓ Matchmaker: Match Found! Opponent P2 matched with P1.")
         

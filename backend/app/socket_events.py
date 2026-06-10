@@ -107,6 +107,7 @@ async def join_matchmaking(sid, data):
             await sio.emit('matchmaking_error', {'message': 'Invalid bid amount'}, room=sid)
             return
 
+        user_elo = 1000
         # 1. Verify player balance
         async with AsyncSessionLocal() as db:
             user = await user_crud.get_user_by_telegram_id(db, user_id)
@@ -115,17 +116,18 @@ async def join_matchmaking(sid, data):
                     'message': 'Insufficient funds. Please top up your Web3 Wallet.'
                 }, room=sid)
                 return
+            user_elo = getattr(user, 'elo', 1000)
 
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
-        await matchmaker.add_to_queue(user_id, bid_amount, sid)
+        await matchmaker.add_to_queue(user_id, bid_amount, sid, elo=user_elo)
         await sio.emit('matchmaking_status', {
             'status': 'searching',
             'bid_amount': bid_amount
         }, room=sid)
 
         # 3. Find matching opponent
-        opponent = await matchmaker.find_opponent(bid_amount, exclude_user_id=user_id)
+        opponent = await matchmaker.find_opponent(bid_amount, exclude_user_id=user_id, user_elo=user_elo)
         if opponent:
             # Opponent matched!
             opponent_id = opponent['user_id']
