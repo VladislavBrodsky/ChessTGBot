@@ -12,7 +12,10 @@ export const useGameSocket = (gameId: string) => {
     useEffect(() => {
         const socket = getSocket();
 
-        const onConnect = () => setIsConnected(true);
+        const onConnect = () => {
+            setIsConnected(true);
+            socket.emit("join_room", { room: gameId });
+        };
         const onDisconnect = () => setIsConnected(false);
 
         const onGameState = (data: any) => {
@@ -39,10 +42,6 @@ export const useGameSocket = (gameId: string) => {
         // Join the room
         if (socket.connected) {
             socket.emit("join_room", { room: gameId });
-        } else {
-            socket.once("connect", () => {
-                socket.emit("join_room", { room: gameId });
-            });
         }
 
         return () => {

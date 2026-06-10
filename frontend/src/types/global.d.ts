@@ -30,6 +30,12 @@ declare global {
                     button_text_color?: string;
                 };
                 switchInlineQuery: (query: string, choose_chat_types?: string[]) => void;
+                BackButton: {
+                    show: () => void;
+                    hide: () => void;
+                    onClick: (cb: () => void) => void;
+                    offClick: (cb: () => void) => void;
+                };
             }
         }
     }

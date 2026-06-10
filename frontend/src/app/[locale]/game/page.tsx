@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, useRef, Suspense, useCallback } from "react";
 import ChessBoardComponent from "@/components/game/ChessBoard";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +34,57 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
  }
  }, []);
+
+ const prevFenRef = useRef<string | null>(null);
+ const prevStatusRef = useRef<string | null>(null);
+
+ // Immersive Chess SFX Engine
+ useEffect(() => {
+   if (!gameState) return;
+
+   const playSound = (soundName: string) => {
+     try {
+       const audio = new Audio(`/sounds/${soundName}.mp3`);
+       audio.play().catch(() => {});
+     } catch (e) {}
+   };
+
+   const currentFen = gameState.fen;
+   const currentStatus = gameState.status || 'active';
+   const isCheck = gameState.is_check;
+   const isGameOver = gameState.is_game_over || currentStatus === 'completed' || currentStatus === 'aborted';
+
+   // Game Start Trigger
+   if (prevStatusRef.current === null && currentStatus === 'active') {
+     playSound('start');
+   }
+   // Game End Trigger
+   else if (prevStatusRef.current === 'active' && isGameOver) {
+     if (gameState.winner_id === userId) {
+       playSound('win');
+     } else if (gameState.winner_id && gameState.winner_id !== userId) {
+       playSound('loss');
+     } else {
+       playSound('move');
+     }
+   }
+   // Live Move/Capture/Check SFX
+   else if (prevFenRef.current && prevFenRef.current !== currentFen && !isGameOver) {
+     if (isCheck) {
+       playSound('check');
+     } else {
+       const getPieceCount = (f: string) => f.split(' ')[0].replace(/[^a-zA-Z]/g, '').length;
+       if (getPieceCount(currentFen) < getPieceCount(prevFenRef.current)) {
+         playSound('capture');
+       } else {
+         playSound('move');
+       }
+     }
+   }
+
+   prevFenRef.current = currentFen;
+   prevStatusRef.current = currentStatus;
+ }, [gameState, userId]);
 
  // Share / Copy Game Link
  const shareGame = () => {

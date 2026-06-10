@@ -6,6 +6,7 @@ import { FaWallet, FaMoon, FaSun, FaStar } from 'react-icons/fa';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -14,7 +15,29 @@ interface LayoutWrapperProps {
 
 export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
     const locale = useLocale();
+    const pathname = usePathname();
+    const router = useRouter();
     const [balance, setBalance] = useState<number>(0);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+            const tg = window.Telegram.WebApp;
+            const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
+
+            if (isHomePage) {
+                tg.BackButton.hide();
+            } else {
+                tg.BackButton.show();
+                const handleBackClick = () => {
+                    router.back();
+                };
+                tg.BackButton.onClick(handleBackClick);
+                return () => {
+                    tg.BackButton.offClick(handleBackClick);
+                };
+            }
+        }
+    }, [pathname, locale, router]);
 
     useEffect(() => {
         // Sync balance on layout mount
