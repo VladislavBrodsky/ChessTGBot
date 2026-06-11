@@ -15,6 +15,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import XPProgressBar from "@/components/XPProgressBar";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
+import Onboarding from "@/components/Onboarding";
 
 export default function Home() {
  const t = useTranslations('Index');
@@ -24,6 +25,7 @@ export default function Home() {
  const [stats, setStats] = useState<any>(null);
  const [walletBalance, setWalletBalance] = useState<number>(0);
  const [showReferralPopup, setShowReferralPopup] = useState<boolean>(false);
+ const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -54,9 +56,15 @@ export default function Home() {
  }, []);
 
  useEffect(() => {
- syncBalance();
- // Init Telegram WebApp Data
- if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+   if (typeof window !== 'undefined') {
+     const completed = localStorage.getItem("onboarding_completed");
+     if (completed !== "true") {
+       setShowOnboarding(true);
+     }
+   }
+   syncBalance();
+   // Init Telegram WebApp Data
+   if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
  const tg = window.Telegram.WebApp;
  setTgUser(tg.initDataUnsafe?.user);
 
@@ -387,6 +395,13 @@ export default function Home() {
  </button>
  </div>
  </motion.div>
+ )}
+ </AnimatePresence>
+ 
+ {/* Onboarding Flow Overlay */}
+ <AnimatePresence>
+ {showOnboarding && (
+   <Onboarding onClose={() => setShowOnboarding(false)} />
  )}
  </AnimatePresence>
  </LayoutWrapper >
