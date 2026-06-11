@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { getSocket } from "@/lib/socket";
+import { apiFetch } from "@/lib/api";
 import { Chess, Move } from "chess.js";
 
 export const useGameSocket = (gameId: string) => {
@@ -23,7 +24,7 @@ export const useGameSocket = (gameId: string) => {
             
             // Post log to server for diagnostics
             try {
-                fetch("/api/v1/client-log", {
+                apiFetch("/api/v1/client-log", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -40,7 +41,7 @@ export const useGameSocket = (gameId: string) => {
             } catch (e: any) {
                 console.error("Invalid FEN:", data.fen);
                 try {
-                    fetch("/api/v1/client-log", {
+                    apiFetch("/api/v1/client-log", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -56,7 +57,7 @@ export const useGameSocket = (gameId: string) => {
             setError(data.message);
             setTimeout(() => setError(null), 3000);
             try {
-                fetch("/api/v1/client-log", {
+                apiFetch("/api/v1/client-log", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -93,7 +94,7 @@ export const useGameSocket = (gameId: string) => {
             const currentTurn = chess.turn();
             const pieceAtSource = chess.get(move.from as any);
             console.log("makeMove attempt:", { move, currentTurn, pieceAtSource, currentFen: chess.fen() });
-            fetch("/api/v1/client-log", {
+            apiFetch("/api/v1/client-log", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -142,7 +143,7 @@ export const useGameSocket = (gameId: string) => {
                 return true;
             } else {
                 try {
-                    fetch("/api/v1/client-log", {
+                    apiFetch("/api/v1/client-log", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -155,7 +156,7 @@ export const useGameSocket = (gameId: string) => {
         } catch (e: any) {
             console.error("Client move error:", e);
             try {
-                fetch("/api/v1/client-log", {
+                apiFetch("/api/v1/client-log", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({

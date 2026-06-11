@@ -22,6 +22,10 @@ export const getSocket = () => {
             reconnectionAttempts: 5,
             auth: {
                 initData: initData
+            },
+            // @ts-ignore
+            extraHeaders: {
+                "bypass-tunnel-reminder": "true"
             }
         });
 

@@ -14,6 +14,7 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
   }
 
   const headers = new Headers(options.headers || {});
+  headers.set('bypass-tunnel-reminder', 'true');
   if (initData) {
     headers.set('X-Telegram-Init-Data', initData);
   }
