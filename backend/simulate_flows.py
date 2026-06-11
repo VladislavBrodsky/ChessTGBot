@@ -44,9 +44,21 @@ async def run_simulation():
     # Clean existing simulator players to ensure fresh state
     async with AsyncSessionLocal() as session:
         print("Cleaning old simulation data...")
-        await session.execute(select(User).filter(User.telegram_id.in_([11111, 22222])))
         p1 = await user_crud.get_user_by_telegram_id(session, 11111)
         p2 = await user_crud.get_user_by_telegram_id(session, 22222)
+        p1_id = p1.id if p1 else None
+        p2_id = p2.id if p2 else None
+        if p1_id or p2_id:
+            referrals_result = await session.execute(
+                select(Referral).where(
+                    (Referral.referrer_id == p1_id) | 
+                    (Referral.referrer_id == p2_id) | 
+                    (Referral.referred_user_id == p1_id) | 
+                    (Referral.referred_user_id == p2_id)
+                )
+            )
+            for ref in referrals_result.scalars().all():
+                await session.delete(ref)
         if p1: await session.delete(p1)
         if p2: await session.delete(p2)
         await session.commit()
@@ -120,12 +132,13 @@ async def run_simulation():
     if opponent and opponent["user_id"] == 22222:
         print("✓ Matchmaker: Match Found! Opponent P2 matched with P1.")
         
+        import time
+        game_id = f"sim_match_11111_22222_{int(time.time())}"
+
         # Deduct wagers and record transactions in DB
         async with AsyncSessionLocal() as session:
             white = await user_crud.get_user_by_telegram_id(session, 11111)
             black = await user_crud.get_user_by_telegram_id(session, 22222)
-            
-            game_id = "sim_match_11111_22222"
             
             # Deduct wager
             white.balance -= wager_amount
@@ -178,7 +191,7 @@ async def run_simulation():
     
     # Process game over payouts & ELO adjustments
     game_service = GameService()
-    await game_service.end_game(game_id="sim_match_11111_22222", state=state)
+    await game_service.end_game(game_id=game_id, state=state)
     
     # Inspect final ratings and balances
     async with AsyncSessionLocal() as session:
