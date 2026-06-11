@@ -82,10 +82,27 @@ class GamificationService:
 
     @staticmethod
     async def process_referral(db: AsyncSession, new_user: User, referral_code: str):
-        result = await db.execute(select(User).where(User.referral_code == referral_code))
+        if not referral_code:
+            return False
+            
+        # Strip any deep link prefix (like "ref_")
+        clean_code = referral_code
+        if clean_code.startswith("ref_"):
+            clean_code = clean_code[4:]
+            
+        result = await db.execute(select(User).where(User.referral_code == clean_code))
         referrer = result.scalars().first()
         
         if referrer and referrer.id != new_user.id:
+            # Check if this referral already exists to prevent duplicate rewards
+            referral_exists_result = await db.execute(
+                select(Referral).where(
+                    and_(Referral.referrer_id == referrer.id, Referral.referred_user_id == new_user.id)
+                )
+            )
+            if referral_exists_result.scalars().first():
+                return False
+                
             referral = Referral(referrer_id=referrer.id, referred_user_id=new_user.id)
             db.add(referral)
             
@@ -97,6 +114,7 @@ class GamificationService:
             
             await db.commit()
             return True
+        return False
     @staticmethod
     async def claim_task(db: AsyncSession, user_id: int, task_id: int):
         # Find the specific user task

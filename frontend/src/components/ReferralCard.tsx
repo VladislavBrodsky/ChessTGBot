@@ -13,26 +13,31 @@ interface ReferralCardProps {
 export default function ReferralCard({ referralCode }: ReferralCardProps) {
     const t = useTranslations('Gamification');
     const [userCode, setUserCode] = useState(referralCode || "");
+    const [botUsername, setBotUsername] = useState("FinChess_bot");
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        if (referralCode) {
-            setUserCode(referralCode);
-        } else {
-            // Fetch profile stats to get the real referral code
-            apiFetch("/api/v1/users/sync", { method: "POST" })
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.referral_code) {
+        apiFetch("/api/v1/users/sync", { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    if (data.referral_code && !referralCode) {
                         setUserCode(data.referral_code);
                     }
-                })
-                .catch(err => console.error("Failed to fetch referral code in ReferralCard:", err));
+                    if (data.bot_username) {
+                        setBotUsername(data.bot_username);
+                    }
+                }
+            })
+            .catch(err => console.error("Failed to fetch referral code in ReferralCard:", err));
+
+        if (referralCode) {
+            setUserCode(referralCode);
         }
     }, [referralCode]);
 
-    const displayCode = userCode || "KING-8292";
-    const inviteLink = `https://t.me/FinChess_bot/app?startapp=ref_${displayCode}`;
+    const displayCode = userCode || "MATRIX-CORE";
+    const inviteLink = `https://t.me/${botUsername}/app?startapp=ref_${displayCode}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(inviteLink);

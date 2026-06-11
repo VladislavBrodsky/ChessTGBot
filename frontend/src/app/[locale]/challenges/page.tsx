@@ -70,7 +70,7 @@ export default function ChallengesPage() {
  const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 200) * 100));
 
  const userCode = user.referral_code || "";
- const botUsername = "FinChess_bot";
+ const botUsername = user.bot_username || "FinChess_bot";
  const inviteLink = userCode
    ? `https://t.me/${botUsername}?start=ref_${userCode}`
    : `https://t.me/${botUsername}`;

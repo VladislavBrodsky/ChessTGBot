@@ -285,7 +285,7 @@ class TelegramService:
         """
         Generates a direct StartApp link for the Telegram Mini App.
         """
-        bot_username = "YourBotName"
+        bot_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
         try:
             if cls.application:
                 me = await cls.application.bot.get_me()

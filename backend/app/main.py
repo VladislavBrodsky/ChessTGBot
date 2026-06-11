@@ -103,6 +103,14 @@ def create_application() -> FastAPI:
     async def health_check():
         return {"status": "ok", "version": settings.VERSION}
 
+    # API Fallback Route (To return JSON 404 instead of falling through to Socket.IO mount at '/')
+    @application.api_route("/api/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
+    async def api_catch_all(path_name: str):
+        return JSONResponse(
+            status_code=404,
+            content={"detail": "Not Found"}
+        )
+
     # Mount Socket.IO (Must be before static catch-all)
     application.mount("/", sio_app)
 

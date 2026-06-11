@@ -5,6 +5,9 @@ from app.crud import user as user_crud
 from pydantic import BaseModel
 from app.models.user import User
 from app.api.v1.deps import get_current_user
+from app.core.config import get_settings
+
+settings = get_settings()
 
 router = APIRouter()
 
@@ -61,6 +64,7 @@ class UserStats(BaseModel):
     referral_code: Optional[str] = None
     xp: int = 0
     level: int = 1
+    bot_username: str = "FinChess_bot"
 
 @router.get("/leaderboard", response_model=List[LeaderboardItem])
 async def get_leaderboard(db: AsyncSession = Depends(get_db)):
@@ -148,7 +152,8 @@ async def get_user_stats(
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
         referral_code=user.referral_code,
         xp=user.xp,
-        level=user.level
+        level=user.level,
+        bot_username=settings.TELEGRAM_BOT_USERNAME
     )
 
 @router.post("/sync", response_model=UserStats)
@@ -197,7 +202,8 @@ async def sync_user(
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
         referral_code=current_user.referral_code,
         xp=current_user.xp,
-        level=current_user.level
+        level=current_user.level,
+        bot_username=settings.TELEGRAM_BOT_USERNAME
     )
 
 
