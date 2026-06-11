@@ -55,12 +55,13 @@ def create_application() -> FastAPI:
         lifespan=lifespan
     )
 
-    # Set all CORS enabled origins - use wildcard for Telegram WebApp compatibility
-    # Telegram Mini Apps run in iframes and may have null or web.telegram.org origin
+    # Set all CORS enabled origins - use regex for Telegram WebApp compatibility
+    # This dynamically echoes back any origin (including "null" or WebView schemes)
+    # which is required by iOS Safari/WKWebView to complete CORS preflights.
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=False,  # Must be False when allow_origins=["*"]
+        allow_origin_regex=".*",
+        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
