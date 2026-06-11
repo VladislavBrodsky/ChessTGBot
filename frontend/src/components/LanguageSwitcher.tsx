@@ -80,7 +80,7 @@ export default function LanguageSwitcher() {
             {/* Bottom Drawer Sheet */}
             <AnimatePresence>
                 {isOpen && (
-                    <div className="bottom-drawer-backdrop z-50">
+                    <div className="bottom-drawer-backdrop z-[100]">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}

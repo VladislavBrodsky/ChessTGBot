@@ -5,16 +5,31 @@ from app.services.game_engine import GameEngine
 def test_elo_calculation():
     service = GameService()
     # P1: 1000, P2: 1000, P1 wins -> P1 should gain ELO
-    new_elo_win = service.calculate_new_elo(1000, 1000, 1.0)
+    new_elo_win = service.calculate_new_elo(1000, 1000, 1.0, k=32)
     assert new_elo_win > 1000
     
     # P1: 1000, P2: 1000, P1 loses -> P1 should lose ELO
-    new_elo_loss = service.calculate_new_elo(1000, 1000, 0.0)
+    new_elo_loss = service.calculate_new_elo(1000, 1000, 0.0, k=32)
     assert new_elo_loss < 1000
     
     # P1: 1000, P2: 1000, Draw -> Should be close to 1000 (standard K=32)
-    new_elo_draw = service.calculate_new_elo(1000, 1000, 0.5)
+    new_elo_draw = service.calculate_new_elo(1000, 1000, 0.5, k=32)
     assert new_elo_draw == 1000
+
+    # Test dynamic K-factors
+    # New player (games < 30) -> K=40
+    assert service.calculate_k_factor(1500, 10) == 40
+    assert service.calculate_k_factor(2500, 10) == 40
+    # Elite player (games >= 30, ELO >= 2400) -> K=10
+    assert service.calculate_k_factor(2400, 30) == 10
+    assert service.calculate_k_factor(2500, 50) == 10
+    # Regular player (games >= 30, ELO < 2400) -> K=20
+    assert service.calculate_k_factor(1500, 30) == 20
+    assert service.calculate_k_factor(2399, 40) == 20
+
+    # Test rating floor (minimum ELO 100)
+    assert service.calculate_new_elo(100, 2000, 0.0, k=40) == 100
+    assert service.calculate_new_elo(105, 100, 0.0, k=40) == 100
 
 @pytest.mark.asyncio
 async def test_game_engine_init():

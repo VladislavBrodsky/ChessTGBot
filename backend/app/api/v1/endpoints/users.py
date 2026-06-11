@@ -53,11 +53,16 @@ class UserStats(BaseModel):
     losses: int
     draws: int
     is_premium: bool
-    premium_tier: Optional[str]
-    premium_expires_at: Optional[datetime]
+    premium_tier: Optional[str] = None
+    premium_expires_at: Optional[datetime] = None
     
-    # Enhanced stats (Phase 1)
+    # Enhanced stats
     win_rate: float
+    loss_rate: float
+    draw_rate: float
+    global_rank: int
+    percentile: float
+    total_score: float
     current_streak: CurrentStreak
     best_streak: BestStreak
     recent_games: List[RecentGame]
@@ -147,6 +152,11 @@ async def get_user_stats(
         premium_tier=user.premium_tier,
         premium_expires_at=user.premium_expires_at,
         win_rate=enhanced_stats["win_rate"],
+        loss_rate=enhanced_stats["loss_rate"],
+        draw_rate=enhanced_stats["draw_rate"],
+        global_rank=enhanced_stats["global_rank"],
+        percentile=enhanced_stats["percentile"],
+        total_score=enhanced_stats["total_score"],
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
@@ -197,6 +207,11 @@ async def sync_user(
         premium_tier=current_user.premium_tier,
         premium_expires_at=current_user.premium_expires_at,
         win_rate=enhanced_stats["win_rate"],
+        loss_rate=enhanced_stats["loss_rate"],
+        draw_rate=enhanced_stats["draw_rate"],
+        global_rank=enhanced_stats["global_rank"],
+        percentile=enhanced_stats["percentile"],
+        total_score=enhanced_stats["total_score"],
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],

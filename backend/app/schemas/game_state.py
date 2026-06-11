@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from typing import Optional, List
 
 class ChessMove(BaseModel):
@@ -24,6 +24,27 @@ class GameState(BaseModel):
     last_move_at: Optional[float] = None
     move_history: List[str] = []
     result_type: Optional[str] = None
+
+    @computed_field
+    @property
+    def status(self) -> str:
+        if self.is_game_over:
+            return 'aborted' if self.result_type == 'aborted' else 'completed'
+        return 'active'
+
+    @computed_field
+    @property
+    def winner_id(self) -> Optional[int]:
+        if self.winner == 'w':
+            return self.white_player_id
+        if self.winner == 'b':
+            return self.black_player_id
+        return None
+
+    @computed_field
+    @property
+    def wager_amount(self) -> int:
+        return self.bid_amount
 
 class JoinGameRequest(BaseModel):
     game_id: str

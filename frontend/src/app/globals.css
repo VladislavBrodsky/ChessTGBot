@@ -181,16 +181,24 @@
   --glass-button-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
+html {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  scrollbar-gutter: stable;
+}
+
 body {
   color: var(--text-primary) !important;
   background-color: var(--bg-primary) !important;
   font-family: var(--font-inter);
   min-height: 100vh;
+  max-width: 100vw;
   margin: 0;
   padding: 0;
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  scrollbar-gutter: stable;
   padding-top: var(--tg-content-safe-area-inset-top, var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)));
   padding-bottom: var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
@@ -367,4 +375,13 @@ body {
 /* Disable italic slanting globally as per premium UI guidelines */
 .italic {
   font-style: normal !important;
+}
+
+/* Hide scrollbars for premium horizontal rollers */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

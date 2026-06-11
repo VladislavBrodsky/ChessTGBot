@@ -48,8 +48,34 @@ class GamificationService:
         return user_tasks
 
     @staticmethod
-    async def add_xp(db: AsyncSession, user: User, amount: int):
-        user.xp += amount
+    async def get_or_create_achievements(db: AsyncSession, user_id: int):
+        # Fetch all permanent tasks definitions
+        result = await db.execute(select(Task).where(Task.is_daily == False))
+        achievement_defs = result.scalars().all()
+        
+        user_tasks = []
+        for task_def in achievement_defs:
+            # Check if user already has this achievement assigned
+            result_ut = await db.execute(select(UserTask).where(
+                and_(UserTask.user_id == user_id, UserTask.task_id == task_def.id)
+            ))
+            user_task = result_ut.scalars().first()
+            
+            if not user_task:
+                user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=0, completed=False, claimed=False)
+                db.add(user_task)
+                user_tasks.append(user_task)
+                
+        if user_tasks:
+            await db.commit()
+
+    @staticmethod
+    async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True):
+        xp_earned = amount
+        if apply_booster and user.is_premium and amount > 0:
+            xp_earned = amount * 2
+            
+        user.xp += xp_earned
         
         # Simple Level Formula: Level = sqrt(XP) * Constant or Step
         # Let's use: Level N requires 100 * (N-1)^2 XP? 
@@ -70,6 +96,38 @@ class GamificationService:
             # Trigger "Level Up" event/notification logic here
             
         await db.commit()
+
+        # Multi-Tier XP Kickbacks
+        if trigger_kickback and xp_earned > 0:
+            current_user_id = user.id
+            percentages = [0.10, 0.05, 0.025]
+            
+            for tier, pct in enumerate(percentages, 1):
+                # Find referrer of current_user_id
+                stmt = select(Referral).where(Referral.referred_user_id == current_user_id)
+                res = await db.execute(stmt)
+                referral = res.scalars().first()
+                if not referral:
+                    break
+                
+                # Fetch referrer User
+                stmt_user = select(User).where(User.id == referral.referrer_id)
+                res_user = await db.execute(stmt_user)
+                referrer = res_user.scalars().first()
+                if not referrer:
+                    break
+                
+                # Check if referrer is Premium
+                if referrer.is_premium:
+                    # Calculate kickback
+                    kickback_amount = round(xp_earned * pct)
+                    if kickback_amount > 0:
+                        # Award kickback to referrer
+                        await GamificationService.add_xp(db, referrer, kickback_amount, trigger_kickback=False, apply_booster=False)
+                
+                # Update current_user_id
+                current_user_id = referrer.id
+            
         return user
 
     @staticmethod
@@ -107,10 +165,12 @@ class GamificationService:
             db.add(referral)
             
             # Award XP to referrer
-            await GamificationService.add_xp(db, referrer, 50) # 50 XP for referral
+            referrer_xp = 100 if referrer.is_premium else 50
+            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False)
             
             # Award XP to new user
-            await GamificationService.add_xp(db, new_user, 20) # 20 XP bonus
+            new_user_xp = 50 if new_user.is_premium else 20
+            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False)
             
             await db.commit()
             return True
@@ -146,7 +206,7 @@ class GamificationService:
         user_result = await db.execute(select(User).where(User.id == user_id))
         user = user_result.scalars().first()
         
-        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward)
+        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward, trigger_kickback=False, apply_booster=True)
         
         await db.commit()
         return updated_user, "Success"
@@ -157,6 +217,9 @@ class GamificationService:
         Increment progress for a specific task type (WIN, PLAY, etc.) for the user.
         If the task becomes completed, mark it.
         """
+        # Ensure achievements are generated before updating progress
+        await GamificationService.get_or_create_achievements(db, user_id)
+
         result = await db.execute(
             select(UserTask)
             .join(Task, UserTask.task_id == Task.id)
@@ -240,5 +303,5 @@ class GamificationService:
         """
         Award 50 XP to the user for completing a lesson/puzzle.
         """
-        updated_user = await GamificationService.add_xp(db, user, 50)
+        updated_user = await GamificationService.add_xp(db, user, 50, trigger_kickback=True, apply_booster=True)
         return updated_user, "Success"

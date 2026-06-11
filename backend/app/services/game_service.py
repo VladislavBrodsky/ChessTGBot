@@ -4,6 +4,7 @@ from app.services.game_engine import GameEngine
 from app.services.session_manager import SessionManager
 from app.schemas.game_state import GameState
 from typing import Optional
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db, AsyncSessionLocal
 from app.crud import user as user_crud
 
@@ -252,9 +253,43 @@ class GameService:
         await self.end_game(game_id, state)
         return state
 
+    def calculate_k_factor(self, rating: int, games_played: int) -> int:
+        if games_played < 30:
+            return 40
+        if rating >= 2400:
+            return 10
+        return 20
+
     def calculate_new_elo(self, rating1: int, rating2: int, actual_score: float, k: int = 32) -> int:
         expected_score = 1 / (1 + 10 ** ((rating2 - rating1) / 400))
-        return round(rating1 + k * (actual_score - expected_score))
+        new_rating = round(rating1 + k * (actual_score - expected_score))
+        return max(100, new_rating)
+
+    async def get_user_win_streak(self, db: AsyncSession, telegram_id: int) -> int:
+        from app.models.game_history import GameHistory
+        from sqlalchemy import select
+        # Select last matches ended, ordered by ended_at desc
+        stmt = select(GameHistory).where(
+            (GameHistory.white_player_id == telegram_id) | (GameHistory.black_player_id == telegram_id)
+        ).order_by(GameHistory.ended_at.desc()).limit(15)
+        
+        res = await db.execute(stmt)
+        histories = res.scalars().all()
+        
+        streak = 0
+        for h in histories:
+            user_won = False
+            if h.winner == 'w' and h.white_player_id == telegram_id:
+                user_won = True
+            elif h.winner == 'b' and h.black_player_id == telegram_id:
+                user_won = True
+                
+            if user_won:
+                streak += 1
+            else:
+                break
+                
+        return streak
 
     async def end_game(self, game_id: str, state: GameState):
         """Process game result and update ELO."""
@@ -280,7 +315,7 @@ class GameService:
                     ai_xp = 10  # Win
                 elif state.winner == 'b':
                     ai_xp = 2  # Loss
-                await GamificationService.add_xp(session, white_user, ai_xp)
+                await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True)
                 await session.commit()
                 return
 
@@ -295,9 +330,13 @@ class GameService:
             elif state.winner == 'b':
                 score_white = 0.0
             
+            # Calculate dynamic K-factors
+            k_white = self.calculate_k_factor(white_user.elo, white_user.games_played)
+            k_black = self.calculate_k_factor(black_user.elo, black_user.games_played)
+
             # Calculate ELO change
-            new_white_elo = self.calculate_new_elo(white_user.elo, black_user.elo, score_white)
-            new_black_elo = self.calculate_new_elo(black_user.elo, white_user.elo, 1.0 - score_white)
+            new_white_elo = self.calculate_new_elo(white_user.elo, black_user.elo, score_white, k=k_white)
+            new_black_elo = self.calculate_new_elo(black_user.elo, white_user.elo, 1.0 - score_white, k=k_black)
 
             # Update DB
             if state.winner == 'w':
@@ -315,6 +354,63 @@ class GameService:
             await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
             await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY)
             
+            # Calculate win streaks (retrieve streak before this game ends)
+            white_streak = await self.get_user_win_streak(session, white_user.telegram_id)
+            black_streak = await self.get_user_win_streak(session, black_user.telegram_id)
+
+            # Determine dynamic bonuses
+            white_streak_xp = 0
+            white_comeback_xp = 0
+            white_blitz_xp = 0
+            white_bonuses = []
+
+            black_streak_xp = 0
+            black_comeback_xp = 0
+            black_blitz_xp = 0
+            black_bonuses = []
+
+            # 1. Win Streak Bonus (requires the player to win this game)
+            if state.winner == 'w':
+                new_streak = white_streak + 1
+                if new_streak >= 10:
+                    white_streak_xp = 35
+                    white_bonuses.append(f"Chess God Win Streak ({new_streak} wins): +35 XP")
+                elif new_streak >= 5:
+                    white_streak_xp = 15
+                    white_bonuses.append(f"On Fire Win Streak ({new_streak} wins): +15 XP")
+                elif new_streak >= 3:
+                    white_streak_xp = 5
+                    white_bonuses.append(f"Hot Win Streak ({new_streak} wins): +5 XP")
+            elif state.winner == 'b':
+                new_streak = black_streak + 1
+                if new_streak >= 10:
+                    black_streak_xp = 35
+                    black_bonuses.append(f"Chess God Win Streak ({new_streak} wins): +35 XP")
+                elif new_streak >= 5:
+                    black_streak_xp = 15
+                    black_bonuses.append(f"On Fire Win Streak ({new_streak} wins): +15 XP")
+                elif new_streak >= 3:
+                    black_streak_xp = 5
+                    black_bonuses.append(f"Hot Win Streak ({new_streak} wins): +5 XP")
+
+            # 2. David vs Goliath Comeback Bonus
+            if state.winner == 'w' and black_elo_before - white_elo_before >= 150:
+                white_comeback_xp = 15
+                white_bonuses.append(f"David vs Goliath Comeback: +15 XP")
+            elif state.winner == 'b' and white_elo_before - black_elo_before >= 150:
+                black_comeback_xp = 15
+                black_bonuses.append(f"David vs Goliath Comeback: +15 XP")
+
+            # 3. Blitzkrieg Victory Bonus
+            total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
+            if state.winner and 0 < total_moves <= 24: # <= 12 full moves
+                if state.winner == 'w':
+                    white_blitz_xp = 10
+                    white_bonuses.append(f"Blitzkrieg Victory (under 12 moves): +10 XP")
+                elif state.winner == 'b':
+                    black_blitz_xp = 10
+                    black_bonuses.append(f"Blitzkrieg Victory (under 12 moves): +10 XP")
+
             # Award XP for playing PVP match
             white_match_xp = 10  # Draw
             black_match_xp = 10  # Draw
@@ -327,8 +423,57 @@ class GameService:
                 white_match_xp = 5  # Loss
                 black_match_xp = 20  # Win
                 
-            await GamificationService.add_xp(session, white_user, white_match_xp)
-            await GamificationService.add_xp(session, black_user, black_match_xp)
+            # Wager scaling bonus
+            bid_amount = getattr(state, "bid_amount", 0)
+            wager_bonus = 0
+            if bid_amount > 0:
+                wager_bonus = (bid_amount // 100) * 5
+                white_match_xp += wager_bonus
+                black_match_xp += wager_bonus
+
+            # Add dynamic bonuses
+            white_match_xp += white_streak_xp + white_comeback_xp + white_blitz_xp
+            black_match_xp += black_streak_xp + black_comeback_xp + black_blitz_xp
+
+            # Calculate final rewarded XP
+            white_final_xp = white_match_xp * 2 if white_user.is_premium else white_match_xp
+            black_final_xp = black_match_xp * 2 if black_user.is_premium else black_match_xp
+                
+            await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True)
+            await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True)
+
+            # Construct XP breakdown strings for white and black
+            white_xp_breakdown = (
+                f"✨ <b>XP Breakdown:</b>\n"
+                f"• Base Game XP: +{'10' if state.winner is None else ('20' if state.winner == 'w' else '5')} XP\n"
+            )
+            if wager_bonus > 0:
+                white_xp_breakdown += f"• Wager Bonus: +{wager_bonus} XP\n"
+            if white_streak_xp > 0:
+                white_xp_breakdown += f"• Streak Bonus: +{white_streak_xp} XP\n"
+            if white_comeback_xp > 0:
+                white_xp_breakdown += f"• Comeback Bonus: +{white_comeback_xp} XP\n"
+            if white_blitz_xp > 0:
+                white_xp_breakdown += f"• Blitzkrieg Bonus: +{white_blitz_xp} XP\n"
+            if white_user.is_premium:
+                white_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
+            white_xp_breakdown += f"• <b>Total Gained:</b> +{white_final_xp} XP\n\n"
+
+            black_xp_breakdown = (
+                f"✨ <b>XP Breakdown:</b>\n"
+                f"• Base Game XP: +{'10' if state.winner is None else ('20' if state.winner == 'b' else '5')} XP\n"
+            )
+            if wager_bonus > 0:
+                black_xp_breakdown += f"• Wager Bonus: +{wager_bonus} XP\n"
+            if black_streak_xp > 0:
+                black_xp_breakdown += f"• Streak Bonus: +{black_streak_xp} XP\n"
+            if black_comeback_xp > 0:
+                black_xp_breakdown += f"• Comeback Bonus: +{black_comeback_xp} XP\n"
+            if black_blitz_xp > 0:
+                black_xp_breakdown += f"• Blitzkrieg Bonus: +{black_blitz_xp} XP\n"
+            if black_user.is_premium:
+                black_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
+            black_xp_breakdown += f"• <b>Total Gained:</b> +{black_final_xp} XP\n\n"
             
             # Settle Web3 Bids / Wagers & Rakes
             bid_amount = getattr(state, "bid_amount", 0)
@@ -381,6 +526,7 @@ class GameService:
                             f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
                             f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
                             f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                            f"{white_xp_breakdown}"
                             f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
                         )
                         await TelegramService.send_notification(white_user.telegram_id, win_msg)
@@ -389,6 +535,7 @@ class GameService:
                             f"<b>💀 Chess Match Defeat</b>\n\n"
                             f"• <b>Game ID:</b> <code>{game_id}</code>\n"
                             f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+                            f"{black_xp_breakdown}"
                             f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
                         )
                         await TelegramService.send_notification(black_user.telegram_id, lose_msg)
@@ -439,6 +586,7 @@ class GameService:
                             f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
                             f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
                             f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                            f"{black_xp_breakdown}"
                             f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
                         )
                         await TelegramService.send_notification(black_user.telegram_id, win_msg)
@@ -447,6 +595,7 @@ class GameService:
                             f"<b>💀 Chess Match Defeat</b>\n\n"
                             f"• <b>Game ID:</b> <code>{game_id}</code>\n"
                             f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+                            f"{white_xp_breakdown}"
                             f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
                         )
                         await TelegramService.send_notification(white_user.telegram_id, lose_msg)
@@ -478,14 +627,22 @@ class GameService:
                     # Automated notifications
                     try:
                         from app.services.telegram_bot import TelegramService
-                        draw_msg = (
+                        draw_msg_w = (
                             f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
                             f"• <b>Game ID:</b> <code>{game_id}</code>\n"
                             f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"{white_xp_breakdown}"
                             f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
                         )
-                        await TelegramService.send_notification(white_user.telegram_id, draw_msg)
-                        await TelegramService.send_notification(black_user.telegram_id, draw_msg)
+                        draw_msg_b = (
+                            f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"{black_xp_breakdown}"
+                            f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
+                        )
+                        await TelegramService.send_notification(white_user.telegram_id, draw_msg_w)
+                        await TelegramService.send_notification(black_user.telegram_id, draw_msg_b)
                     except Exception as e:
                         pass
                 

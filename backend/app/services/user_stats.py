@@ -6,6 +6,8 @@ from datetime import datetime
 
 async def calculate_user_stats(db: AsyncSession, user: User, telegram_id: int) -> Dict[str, Any]:
     """Calculate comprehensive user statistics."""
+    from sqlalchemy import select, func
+    from app.models.user import User as UserModel
     
     # Basic stats from user model
     total_games = user.games_played
@@ -13,9 +15,26 @@ async def calculate_user_stats(db: AsyncSession, user: User, telegram_id: int) -
     losses = user.losses
     draws = user.draws
     
-    # Calculate win rate
-    win_rate = round((wins / total_games * 100), 1) if total_games > 0 else 0.0
+    # Calculate global rank and percentile
+    total_users_stmt = select(func.count(UserModel.id))
+    total_users_res = await db.execute(total_users_stmt)
+    total_users = total_users_res.scalars().first() or 1
+
+    higher_elo_stmt = select(func.count(UserModel.id)).where(UserModel.elo > user.elo)
+    higher_elo_res = await db.execute(higher_elo_stmt)
+    higher_elo_count = higher_elo_res.scalars().first() or 0
+    global_rank = higher_elo_count + 1
+
+    percentile = round(((total_users - global_rank) / total_users * 100), 1) if total_users > 0 else 100.0
     
+    # Calculate rates
+    win_rate = round((wins / total_games * 100), 1) if total_games > 0 else 0.0
+    loss_rate = round((losses / total_games * 100), 1) if total_games > 0 else 0.0
+    draw_rate = round((draws / total_games * 100), 1) if total_games > 0 else 0.0
+    
+    # Chess.com standard score: win = 1.0, draw = 0.5, loss = 0.0
+    total_score = float(wins * 1.0 + draws * 0.5)
+
     # Calculate current streak
     recent_games = await game_history_crud.get_user_recent_games(db, telegram_id, limit=20)
     current_streak = _calculate_current_streak(recent_games, telegram_id)
@@ -28,6 +47,11 @@ async def calculate_user_stats(db: AsyncSession, user: User, telegram_id: int) -
     
     return {
         "win_rate": win_rate,
+        "loss_rate": loss_rate,
+        "draw_rate": draw_rate,
+        "global_rank": global_rank,
+        "percentile": percentile,
+        "total_score": total_score,
         "current_streak": current_streak,
         "best_streak": best_streak,
         "recent_games": recent_games_display,

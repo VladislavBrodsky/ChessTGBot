@@ -71,8 +71,11 @@ async def end_game(req: EndGameRequest, db: AsyncSession = Depends(get_db)):
     win_score = 0.5 if req.draw else 1.0
     lose_score = 0.5 if req.draw else 0.0
 
-    new_winner_elo = service.calculate_new_elo(winner.elo, loser.elo, win_score)
-    new_loser_elo = service.calculate_new_elo(loser.elo, winner.elo, lose_score)
+    k_winner = service.calculate_k_factor(winner.elo, winner.games_played)
+    k_loser = service.calculate_k_factor(loser.elo, loser.games_played)
+
+    new_winner_elo = service.calculate_new_elo(winner.elo, loser.elo, win_score, k=k_winner)
+    new_loser_elo = service.calculate_new_elo(loser.elo, winner.elo, lose_score, k=k_loser)
 
     # Update DB
     await user_crud.update_elo(db, winner, new_winner_elo, 'draw' if req.draw else 'win')

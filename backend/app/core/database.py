@@ -35,17 +35,26 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
         print("Database Schema: Tables verified via Base metadata.")
 
-    # Seed default tasks if empty
+    # Seed default tasks & achievements idempotently by ID
     async with AsyncSessionLocal() as session:
         from sqlalchemy import select
-        result = await session.execute(select(Task))
-        existing_tasks = result.scalars().all()
-        if not existing_tasks:
-            default_tasks = [
-                Task(id=1, title_key="daily_win", description_key="Win a chess match today", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=True, icon="trophy"),
-                Task(id=2, title_key="daily_play", description_key="Play 3 chess matches", xp_reward=30, task_type=TaskType.PLAY, target_count=3, is_daily=True, icon="gamepad"),
-                Task(id=3, title_key="daily_login", description_key="Login to the app", xp_reward=10, task_type=TaskType.LOGIN, target_count=1, is_daily=True, icon="sync")
-            ]
-            session.add_all(default_tasks)
+        default_tasks = [
+            Task(id=1, title_key="daily_win", description_key="Win a chess match today", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=True, icon="trophy"),
+            Task(id=2, title_key="daily_play", description_key="Play 3 chess matches", xp_reward=30, task_type=TaskType.PLAY, target_count=3, is_daily=True, icon="gamepad"),
+            Task(id=3, title_key="daily_login", description_key="Login to the app", xp_reward=10, task_type=TaskType.LOGIN, target_count=1, is_daily=True, icon="sync"),
+            Task(id=101, title_key="ach_first_win", description_key="First Blood: Win your first chess match", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=False, icon="award"),
+            Task(id=102, title_key="ach_win_10", description_key="Novice Victor: Win 10 chess matches", xp_reward=150, task_type=TaskType.WIN, target_count=10, is_daily=False, icon="shield"),
+            Task(id=103, title_key="ach_play_25", description_key="Chess Enthusiast: Play 25 chess matches", xp_reward=250, task_type=TaskType.PLAY, target_count=25, is_daily=False, icon="book"),
+            Task(id=104, title_key="ach_refer_5", description_key="Network Builder: Invite 5 friends to FinChess", xp_reward=500, task_type=TaskType.REFER, target_count=5, is_daily=False, icon="users")
+        ]
+        
+        seeded = 0
+        for task in default_tasks:
+            result = await session.execute(select(Task).where(Task.id == task.id))
+            if not result.scalars().first():
+                session.add(task)
+                seeded += 1
+                
+        if seeded > 0:
             await session.commit()
-            print("Database Seeding: Default daily tasks seeded successfully.")
+            print(f"Database Seeding: {seeded} default tasks/achievements seeded successfully.")

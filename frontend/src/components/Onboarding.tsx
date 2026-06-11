@@ -68,11 +68,15 @@ export default function Onboarding({ onClose }: OnboardingProps) {
     onClose();
   };
 
-  // Prevent background scroll when overlay is active
+  // Prevent background scroll when overlay is active, restoring original style rules on cleanup
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalOverflowX = document.body.style.overflowX;
     document.body.style.overflow = 'hidden';
+    document.body.style.overflowX = 'hidden';
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overflowX = originalOverflowX;
     };
   }, []);
 

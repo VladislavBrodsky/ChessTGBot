@@ -10,7 +10,7 @@ import Link from "next/link";
 import { 
  FaArrowLeft, FaCopy, FaCheck, FaRobot, FaShareAlt, 
  FaRedo, FaWallet, FaChessKnight, FaChessPawn, FaTimes, 
- FaTrophy, FaStar 
+ FaTrophy, FaStar, FaCrown, FaCoins 
 } from "react-icons/fa";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
@@ -28,6 +28,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  const [userId, setUserId] = useState<number | null>(null);
   const locale = useLocale();
   const tg = useTranslations('Game');
+  const tIndex = useTranslations('Index');
 
   const [whiteTime, setWhiteTime] = useState<number>(600);
   const [blackTime, setBlackTime] = useState<number>(600);
@@ -177,7 +178,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
  const isBotGame = gameState?.black_player_id === -1;
- const isGameOver = gameState?.status === 'completed' || gameState?.status === 'aborted';
+ const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
  
  // Match Over Logic
  let matchResultLabel = tg('protocol_draw');
@@ -225,7 +226,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
       >
       <FaArrowLeft />
-      <span>{tg('back')}</span>
+      <span>{tIndex('back')}</span>
       </motion.button>
     </Link>
   )}
@@ -298,6 +299,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   fen={fen}
   onMove={makeMove}
   orientation={isWhite ? "white" : "black"}
+  showConfetti={isGameOver && gameState?.winner_id === userId}
   />
   </div>
   </div>
@@ -335,7 +337,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  {/* Premium Match Over Overlay Modal */}
  <AnimatePresence>
  {isGameOver && (
- <div className="bottom-drawer-backdrop z-50">
+ <div className="bottom-drawer-backdrop z-[100]">
  {/* Backdrop */}
  <motion.div
  initial={{ opacity: 0 }}
@@ -451,6 +453,78 @@ function PlayLobby() {
  const [inviteLink, setInviteLink] = useState<string>("");
  const [showInviteDrawer, setShowInviteDrawer] = useState<boolean>(false);
  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+ // Refs for scroll container alignment
+ const wagerScrollRef = useRef<HTMLDivElement>(null);
+ const timeScrollRef = useRef<HTMLDivElement>(null);
+
+ // Smoothly center selected wager item in scroll view
+ useEffect(() => {
+   if (!wagerScrollRef.current) return;
+   const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]');
+   if (activeEl) {
+     activeEl.scrollIntoView({
+       behavior: 'smooth',
+       block: 'nearest',
+       inline: 'center'
+     });
+   }
+ }, [selectedWager, isCustomWager]);
+
+ // Smoothly center selected time control item in scroll view
+ useEffect(() => {
+   if (!timeScrollRef.current) return;
+   const activeEl = timeScrollRef.current.querySelector('[data-active="true"]');
+   if (activeEl) {
+     activeEl.scrollIntoView({
+       behavior: 'smooth',
+       block: 'nearest',
+       inline: 'center'
+     });
+   }
+ }, [timeControl]);
+
+ // Visual Header Stats states (Players Online & Active Users)
+ const [playersOnline, setPlayersOnline] = useState<number>(782);
+ const [activeUsers, setActiveUsers] = useState<number>(3768);
+
+ useEffect(() => {
+   const calcPlayersOnline = () => {
+     const now = Date.now();
+     const fiveMinutesMs = 5 * 60 * 1000;
+     const intervalIndex = Math.floor(now / fiveMinutesMs);
+     const seed = intervalIndex * 98765;
+     const rand = (seed % 101) / 100;
+     return Math.floor(rand * (845 - 761 + 1)) + 761;
+   };
+
+   const calcActiveUsers = () => {
+     const startEpoch = new Date("2026-06-01T00:00:00Z").getTime();
+     const now = Date.now();
+     const elapsedMs = Math.max(0, now - startEpoch);
+     const sixHoursMs = 6 * 60 * 60 * 1000;
+     const intervals = Math.floor(elapsedMs / sixHoursMs);
+     
+     let totalIncrement = 0;
+     for (let i = 0; i < intervals; i++) {
+       const seed = (i + 7) * 12345;
+       const rand = (seed % 103) / 102;
+       const increment = Math.floor(rand * (315 - 213 + 1)) + 213;
+       totalIncrement += increment;
+     }
+     return 3768 + totalIncrement;
+   };
+
+   setPlayersOnline(calcPlayersOnline());
+   setActiveUsers(calcActiveUsers());
+
+   const interval = setInterval(() => {
+     setPlayersOnline(calcPlayersOnline());
+     setActiveUsers(calcActiveUsers());
+   }, 10000);
+
+   return () => clearInterval(interval);
+ }, []);
 
  useEffect(() => {
  syncBalance();
@@ -615,336 +689,381 @@ function PlayLobby() {
  const hasSufficient = walletBalance >= chosenWager;
 
  return (
- <LayoutWrapper className="justify-start pt-6 pb-32">
- <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-6">
- 
- {/* Visual Header */}
- <div className="flex flex-col items-center w-full mb-2">
- <motion.div
- initial={{ opacity: 0, y: -10 }}
- animate={{ opacity: 1, y: 0 }}
- className="flex items-center gap-3 text-brand-primary text-3xl font-black tracking-tighter select-none"
- >
- <FaChessKnight className="text-2xl opacity-80" />
- {tg('battle_arena')}
- </motion.div>
- </div>
+  <LayoutWrapper className="justify-start pt-4 pb-20">
+  <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-4">
+  
+  {/* Visual Header */}
+  <div className="flex flex-col items-center w-full mt-2 space-y-1">
+    <div className="flex items-center gap-2 text-brand-primary text-2xl font-black tracking-tighter select-none">
+      <FaChessKnight className="text-xl opacity-80" />
+      <span>{tg('battle_arena')}</span>
+    </div>
+    
+    {/* Sleek 2026-style Metadata Stats */}
+    <div className="flex items-center gap-3 text-[8px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
+      <div className="flex items-center gap-1">
+        <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+        <span className="text-emerald-400">{playersOnline} ONLINE</span>
+      </div>
+      <span className="opacity-30">|</span>
+      <span>{activeUsers.toLocaleString()} ACTIVE USERS</span>
+    </div>
+  </div>
 
- {/* Holographic Stats Badge */}
- <div className="flex items-center justify-center gap-4.5 w-full text-[9px] font-black uppercase tracking-widest relative z-10">
- <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-border-opacity-10 bg-brand-bg-opacity-5 backdrop-blur-md shadow-sm">
- <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
- <span className="text-emerald-400">{tg('players_online_count')}</span>
- </div>
- <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-border-opacity-10 bg-brand-bg-opacity-5 backdrop-blur-md shadow-sm">
- <span className="text-brand-primary opacity-45">{tg('active_users_label')}:</span>
- <span className="text-brand-primary">{tg('active_users_count')}</span>
- </div>
- </div>
+  {/* Cyber Radar Search Interface */}
+  {matchmakingState === 'searching' ? (
+  <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-6 text-center shadow-lg relative overflow-hidden">
+  <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bg-opacity-5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+  
+  {/* Conic sonar radar widget */}
+  <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-border-opacity-10 overflow-hidden bg-brand-void shadow-inner-glow">
+  <div className="absolute inset-0 bg-conic-radar animate-spin pointer-events-none" />
+  <div className="absolute w-32 h-32 rounded-full border border-brand-border-opacity-10 animate-ping opacity-60" />
+  <div className="absolute w-24 h-24 rounded-full border border-brand-border-opacity-5" />
+  <div className="absolute w-12 h-12 rounded-full border border-brand-border-opacity-20 animate-pulse bg-brand-bg-opacity-5" />
 
- {/* Cyber Radar Search Interface */}
- {matchmakingState === 'searching' ? (
- <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-6 text-center shadow-lg relative overflow-hidden">
- <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bg-opacity-5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
- 
- {/* Conic sonar radar widget */}
- <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-border-opacity-10 overflow-hidden bg-brand-void shadow-inner-glow">
- <div className="absolute inset-0 bg-conic-radar animate-spin pointer-events-none" />
- <div className="absolute w-32 h-32 rounded-full border border-brand-border-opacity-10 animate-ping opacity-60" />
- <div className="absolute w-24 h-24 rounded-full border border-brand-border-opacity-5" />
- <div className="absolute w-12 h-12 rounded-full border border-brand-border-opacity-20 animate-pulse bg-brand-bg-opacity-5" />
+  <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-primary flex items-center justify-center shadow-premium">
+  <FaChessKnight className="text-lg text-brand-primary animate-bounce" />
+  </div>
+  </div>
 
- <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-primary flex items-center justify-center shadow-premium">
- <FaChessKnight className="text-lg text-brand-primary animate-bounce" />
- </div>
- </div>
+  <div className="flex flex-col space-y-1">
+  <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('searching_matchmaker')}</span>
+  <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
+  <span className="text-2xl font-black text-brand-primary opacity-80 tracking-tighter">
+  {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
+  </span>
+  </div>
 
- <div className="flex flex-col space-y-1">
- <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('searching_matchmaker')}</span>
- <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
- <span className="text-2xl font-black text-brand-primary opacity-80 tracking-tighter">
- {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
- </span>
- </div>
+  <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
+  <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
+  <span className="text-sm font-black text-brand-primary">
+  ${(chosenWager / 100).toFixed(2)} USDT
+  </span>
+  </div>
 
- <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
- <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
- <span className="text-sm font-black text-brand-primary">
- ${(chosenWager / 100).toFixed(2)} USDT
- </span>
- </div>
+  <button
+  onClick={cancelMatchmaking}
+  className="w-full py-3 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 hover:bg-brand-rose-opacity-20 text-rose-400 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
+  >
+  {tg('disconnect_search')}
+  </button>
+  </div>
+  ) : (
+  /* Config / Lobby View */
+  <div className="w-full space-y-4">
+  
+  {/* Wallet & Balance Dashboard Row */}
+  <div className="grid grid-cols-2 gap-3 w-full items-stretch">
+    <WalletConnect />
+    <Link href={`/${locale}/wallet`} className="block w-full">
+      <motion.div
+        whileHover={{ scale: 1.01 }}
+        className="glass-panel p-2 h-full rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex flex-col justify-center px-4 shadow-sm"
+      >
+        <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-45">
+          <FaWallet size={10} className="shrink-0" />
+          <span>{tg('cyber_balance')}</span>
+        </div>
+        <span className="text-xs font-black text-brand-primary tracking-wider mt-0.5">
+          ${(walletBalance / 100).toFixed(2)}
+        </span>
+      </motion.div>
+    </Link>
+  </div>
 
- <button
- onClick={cancelMatchmaking}
- className="w-full py-3 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 hover:bg-brand-rose-opacity-20 text-rose-400 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
- >
- {tg('disconnect_search')}
- </button>
- </div>
- ) : (
- /* Config / Lobby View */
- <div className="w-full space-y-5">
- 
- {/* Connected TON Wallet status block */}
- <WalletConnect />
+  {/* Unified Modern Battle Arena Panel */}
+  <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium space-y-5">
+    
+    {/* SECTION 1: WAGER DIAL */}
+    <div className="space-y-2">
+      <div className="flex justify-between items-center px-1">
+        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('select_wager')}</span>
+        <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide">{tg('commission')}</span>
+      </div>
 
- {/* Balance Hud and Quick Wager preset picker */}
- <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm space-y-4">
- 
- <div className="flex justify-between items-center">
- <div className="flex items-center space-x-2">
- <FaWallet className="text-xs text-brand-primary opacity-60" />
- <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">{tg('cyber_balance')}</span>
- </div>
- <Link href={`/${locale}/wallet`}>
- <span className="text-xs font-black text-brand-primary hover:underline cursor-pointer">
- ${(walletBalance / 100).toFixed(2)}
- </span>
- </Link>
- </div>
+      {/* Scroll Roller Container */}
+      <div className="relative flex items-center w-full">
+        {/* Center selector frame overlay */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[72px] h-[72px] rounded-full border border-brand-primary/20 pointer-events-none z-10 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border-2 border-brand-primary/10 scale-105 animate-pulse" />
+          <div className="absolute -top-1 w-1.5 h-1 bg-brand-primary/40 rounded-full" />
+          <div className="absolute -bottom-1 w-1.5 h-1 bg-brand-primary/40 rounded-full" />
+        </div>
 
- <div className="h-px w-full bg-brand-border-opacity-10" />
+        <div
+          ref={wagerScrollRef}
+          className="w-full flex gap-4 overflow-x-auto py-3 scrollbar-none snap-x snap-mandatory px-[calc(50%-28px)]"
+        >
+          {[
+            { label: "$1", val: 100, color: "text-emerald-400" },
+            { label: "$5", val: 500, color: "text-rose-400" },
+            { label: "$10", val: 1000, color: "text-blue-400" },
+            { label: "$25", val: 2500, color: "text-cyan-400" },
+            { label: "$50", val: 5000, color: "text-slate-300" },
+            { label: "$100", val: 10000, color: "text-purple-400" },
+            { label: "$250", val: 25000, color: "text-amber-400" },
+            { label: "$500", val: 50000, color: "text-orange-400" },
+            { label: "$1000", val: 100000, color: "text-yellow-400" }
+          ].map((opt) => {
+            const isSelected = !isCustomWager && selectedWager === opt.val;
+            return (
+              <button
+                key={opt.val}
+                data-active={isSelected ? "true" : "false"}
+                onClick={() => {
+                  setSelectedWager(opt.val);
+                  setIsCustomWager(false);
+                }}
+                className={`relative w-14 h-14 rounded-full shrink-0 flex flex-col items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+                  isSelected
+                    ? 'border-brand-primary scale-110 shadow-neon bg-brand-elevated text-brand-primary ring-4 ring-brand-primary/15'
+                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105'
+                }`}
+              >
+                <div className={`absolute inset-1 rounded-full border border-dashed opacity-10 ${isSelected ? 'border-brand-primary' : 'border-current'}`} />
+                <div className="absolute inset-2.5 rounded-full bg-black/20" />
+                
+                {opt.val === 100000 && <FaCrown className="text-[7px] text-yellow-400 absolute -top-1 animate-bounce" />}
+                <span className={`text-[9px] font-black tracking-tight z-10 ${isSelected ? 'text-brand-primary' : opt.color}`}>{opt.label}</span>
+              </button>
+            );
+          })}
 
- {/* Wagers configurationpresets */}
- <div className="space-y-3">
- <div className="flex justify-between items-center">
- <span className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-widest">{tg('select_wager')}</span>
- <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase">{tg('commission')}</span>
- </div>
+          {/* Custom OTHER Chip */}
+          <button
+            data-active={isCustomWager ? "true" : "false"}
+            onClick={() => setIsCustomWager(true)}
+            className={`relative w-14 h-14 rounded-full shrink-0 flex flex-col items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+              isCustomWager
+                ? 'border-brand-primary scale-110 shadow-neon bg-brand-elevated text-brand-primary ring-4 ring-brand-primary/15'
+                : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105'
+            }`}
+          >
+            <div className="absolute inset-1 rounded-full border border-dashed border-current opacity-10" />
+            <div className="absolute inset-2.5 rounded-full bg-black/20" />
+            <FaCoins className="text-[8px] z-10 opacity-70 mb-0.5" />
+            <span className="text-[8px] font-black tracking-tight z-10 uppercase">{tg('other')}</span>
+          </button>
+        </div>
+      </div>
 
- <div className="grid grid-cols-4 gap-1.5">
- {[
- { label: "$1", val: 100 },
- { label: "$5", val: 500 },
- { label: "$10", val: 1000 },
- { label: "$50", val: 5000 },
- { label: "$100", val: 10000 },
- { label: "$500", val: 50000 },
- { label: "$1000", val: 100000 }
- ].map((opt) => (
- <button
- key={opt.val}
- onClick={() => {
- setSelectedWager(opt.val);
- setIsCustomWager(false);
- }}
- className={`py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
- (!isCustomWager && selectedWager === opt.val)
- ? 'border-brand-primary bg-brand-primary text-brand-void shadow-sm'
- : 'border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 text-brand-primary opacity-60 hover:opacity-100'
- }`}
- >
- {opt.label}
- </button>
- ))}
- <button
- onClick={() => setIsCustomWager(true)}
- className={`py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
- isCustomWager
- ? 'border-brand-primary bg-brand-primary text-brand-void shadow-sm'
- : 'border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 text-brand-primary opacity-60 hover:opacity-100'
- }`}
- >
- {tg('other')}
- </button>
- </div>
+      {isCustomWager && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col space-y-1 pt-1 max-w-[200px] mx-auto"
+        >
+          <input
+            type="number"
+            value={customWagerInput}
+            onChange={(e) => setCustomWagerInput(e.target.value)}
+            className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-xs font-black focus:outline-none shadow-inner tracking-wider"
+            placeholder={tg('enter_amount')}
+          />
+        </motion.div>
+      )}
+    </div>
 
- {isCustomWager && (
- <div className="flex flex-col space-y-1.5 pt-1.5">
- <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('custom_amount')}</label>
- <input
- type="number"
- value={customWagerInput}
- onChange={(e) => setCustomWagerInput(e.target.value)}
- className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-xs font-bold focus:outline-none"
- placeholder={tg('enter_amount')}
- />
- </div>
- )}
- </div>
+    {/* SECTION 2: DURATION PICKER */}
+    <div className="space-y-2">
+      <div className="flex justify-between items-center px-1">
+        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('time_control')}</span>
+      </div>
 
- {/* Fund Validation indicators */}
- {chosenWager > 0 && (
- <div className={`p-3 rounded-xl border flex flex-col space-y-1 text-[9px] font-bold uppercase tracking-wider ${
- hasSufficient ? 'border-brand-border-opacity-20 bg-brand-bg-opacity-5 text-brand-primary' : 'border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400'
- }`}>
- <div className="flex justify-between">
- <span>{tg('active_wager')}</span>
- <span>${(chosenWager / 100).toFixed(2)}</span>
- </div>
- <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 mt-1 font-black">
- {hasSufficient ? (
- <span className="text-brand-primary opacity-80">{tg('balance_verified')}</span>
- ) : (
- <span className="text-rose-400 animate-pulse">{tg('insufficient_funds')}</span>
- )}
- </div>
- </div>
- )}
+      {/* Time Scroll Roller Container */}
+      <div className="relative flex items-center w-full">
+        {/* Center selector frame overlay */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88px] h-[34px] rounded-full border border-brand-primary/20 pointer-events-none z-10">
+          <div className="absolute inset-0 rounded-full border-2 border-brand-primary/10 scale-105 animate-pulse" />
+        </div>
 
- {matchmakingError && (
- <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[9px] font-bold uppercase tracking-wider text-center">
- {matchmakingError}
- </div>
- )}
- </div>
+        <div
+          ref={timeScrollRef}
+          className="w-full flex gap-3 overflow-x-auto py-1 scrollbar-none snap-x snap-mandatory px-[calc(50%-40px)]"
+        >
+          {[
+            { label: "1 min", val: 60 },
+            { label: "3 min", val: 180 },
+            { label: "5 min", val: 300 },
+            { label: "10 min", val: 600 },
+            { label: "15 min", val: 900 },
+            { label: "30 min", val: 1800 },
+            { label: "60 min", val: 3600 }
+          ].map((opt) => {
+            const isSelected = timeControl === opt.val;
+            return (
+              <button
+                key={opt.val}
+                data-active={isSelected ? "true" : "false"}
+                onClick={() => setTimeControl(opt.val)}
+                className={`w-20 h-8 rounded-full shrink-0 flex items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+                  isSelected
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon font-black scale-105'
+                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100'
+                }`}
+              >
+                <span className="text-[9px] uppercase tracking-wider">{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
 
- {/* Time Control Config Card */}
- <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm space-y-4">
- <div className="flex justify-between items-center">
- <div className="flex items-center space-x-2">
- <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">{tg('time_control')}</span>
- </div>
- </div>
- <div className="h-px w-full bg-brand-border-opacity-10" />
- <div className="grid grid-cols-4 gap-1.5">
- {[
- { label: "5 Min", val: 300 },
- { label: "10 Min", val: 600 },
- { label: "15 Min", val: 900 },
- { label: "30 Min", val: 1800 }
- ].map((opt) => (
- <button
- key={opt.val}
- onClick={() => setTimeControl(opt.val)}
- className={`py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
- timeControl === opt.val
- ? 'border-brand-primary bg-brand-primary text-brand-void shadow-sm'
- : 'border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 text-brand-primary opacity-60 hover:opacity-100'
- }`}
- >
- {opt.label}
- </button>
- ))}
- </div>
- <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-wider mt-1 text-center">
- {tg('custom_time_desc')}
- </p>
- </div>
+    {/* SECTION 3: LAUNCHER BUTTON */}
+    <div className="pt-2">
+      <motion.button
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+        onClick={startMatchmaking}
+        disabled={!hasSufficient || isCreating}
+        className={`w-full action-button py-4.5 rounded-2xl flex flex-col items-center justify-center gap-1 group shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden ${
+          chosenWager === 100000 ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
+        }`}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+        
+        <div className="flex items-center gap-2">
+          <FaChessKnight size={14} className="text-current animate-bounce" />
+          <span className="text-xs font-black tracking-[0.25em] text-current uppercase">{t('execute_matchmaking')}</span>
+        </div>
 
- {/* Wagers Launch buttons */}
- <div className="w-full flex flex-col space-y-3">
- <motion.button
- whileHover={{ scale: 1.01, y: -2 }}
- whileTap={{ scale: 0.98 }}
- onClick={startMatchmaking}
- disabled={!hasSufficient || isCreating}
- className="w-full h-24 action-button relative overflow-hidden flex flex-col items-center justify-center group shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
- >
- <div className="absolute inset-0 bg-black opacity-[0.03] group-hover:opacity-[0.08] transition-opacity" />
- <div className="relative z-10 flex flex-col items-center gap-1.5">
- <div 
- style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.2)' }}
- className="w-8 h-8 rounded-lg flex items-center justify-center border group-hover:scale-110 transition-all duration-300"
- >
- <FaChessPawn size={14} className="text-current" />
- </div>
- <div className="flex flex-col items-center">
- <span className="text-sm font-black tracking-[0.2em] text-current">{t('execute_matchmaking')}</span>
- </div>
- </div>
- </motion.button>
- 
- <div className="grid grid-cols-2 gap-3 w-full">
- <motion.button
- whileHover={{ scale: 1.01 }}
- whileTap={{ scale: 0.99 }}
- onClick={playVsComputer}
- disabled={isCreating}
- className="w-full py-4 glass-button text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
- >
- <FaRobot className="text-sm text-brand-primary opacity-40" />
- <span>{tg('train_ai')}</span>
- </motion.button>
+        <div className="text-[8px] font-black tracking-[0.15em] opacity-80 text-current uppercase flex items-center gap-1.5 mt-0.5">
+          <span>{timeControl >= 60 ? `${timeControl / 60} MINS` : `${timeControl} SECS`}</span>
+          <span className="opacity-40">•</span>
+          <span>STAKE: ${(chosenWager / 100).toFixed(2)} USDT</span>
+        </div>
+      </motion.button>
+    </div>
 
- <motion.button
- whileHover={{ scale: 1.01 }}
- whileTap={{ scale: 0.99 }}
- onClick={playVsFriend}
- disabled={isCreating}
- className="w-full py-4 glass-button text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
- >
- <FaShareAlt className="text-sm text-brand-primary opacity-40" />
- <span>{tg('play_friend')}</span>
- </motion.button>
- </div>
- </div>
- </div>
- )}
+  </div>
 
- {/* Friend Duel Invite Bottom Drawer */}
- <AnimatePresence>
- {showInviteDrawer && (
- <div className="bottom-drawer-backdrop z-50">
- <motion.div 
- initial={{ opacity: 0 }} 
- animate={{ opacity: 1 }} 
- exit={{ opacity: 0 }} 
- onClick={() => setShowInviteDrawer(false)}
- className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
- />
- <motion.div 
- initial={{ y: "100%" }} 
- animate={{ y: 0 }} 
- exit={{ y: "100%" }} 
- transition={{ type: "spring", damping: 30, stiffness: 350 }}
- className="bottom-drawer-sheet relative z-10"
- >
- <div className="bottom-drawer-handle" />
- 
- <div className="flex flex-col items-center text-center mt-2">
- <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
- {tg('invite_link_title')}
- </h2>
- <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
- Send this link to a friend to start the duel
- </p>
- </div>
- 
- <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
- <div className="w-full py-2 px-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
- {inviteLink}
- </div>
- </div>
- 
- <div className="w-full flex flex-col gap-3">
- <motion.button
- whileTap={{ scale: 0.98 }}
- onClick={shareInviteLink}
- className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
- >
- <FaShareAlt size={12} />
- <span>{tg('share_invite')}</span>
- </motion.button>
- 
- <div className="grid grid-cols-2 gap-3 w-full">
- <motion.button
- whileTap={{ scale: 0.98 }}
- onClick={() => {
- navigator.clipboard.writeText(inviteLink);
- setCopiedLink(true);
- setTimeout(() => setCopiedLink(false), 2000);
- }}
- className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
- >
- <span>{copiedLink ? "Copied! ✓" : tg('copy_code')}</span>
- </motion.button>
- 
- <motion.button
- whileTap={{ scale: 0.98 }}
- onClick={() => setShowInviteDrawer(false)}
- className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
- >
- <span>{tg('back')}</span>
- </motion.button>
- </div>
- </div>
- </motion.div>
- </div>
- )}
- </AnimatePresence>
- </div>
- </LayoutWrapper>
+  {/* Fund Validation Bar & Matchmaking Errors */}
+  <div className="flex flex-col space-y-2 w-full">
+    {chosenWager > 0 && (
+      <div className={`w-full py-2 px-4 rounded-2xl border text-[9px] font-black uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
+        hasSufficient
+          ? 'border-emerald-500/10 bg-emerald-950/10 text-emerald-400'
+          : 'border-rose-500/10 bg-rose-950/10 text-rose-400'
+      }`}>
+        <span className="opacity-60">{tg('active_wager')} ${(chosenWager / 100).toFixed(2)} USDT</span>
+        {hasSufficient ? (
+          <span>✓ {tg('balance_verified')}</span>
+        ) : (
+          <span className="animate-pulse">🚨 {tg('insufficient_funds')}</span>
+        )}
+      </div>
+    )}
+
+    {matchmakingError && (
+      <div className="p-3 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-2xl text-rose-400 text-[10px] font-black uppercase tracking-wider text-center shadow-sm">
+        {matchmakingError}
+      </div>
+    )}
+  </div>
+
+  {/* Train AI & Invite Friend split row */}
+  <div className="grid grid-cols-2 gap-3 w-full">
+    <motion.button
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={playVsComputer}
+      disabled={isCreating}
+      className="w-full py-3 glass-button text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+    >
+      <FaRobot className="text-sm text-brand-primary opacity-40" />
+      <span>{tg('train_ai')}</span>
+    </motion.button>
+
+    <motion.button
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={playVsFriend}
+      disabled={isCreating}
+      className="w-full py-3 glass-button text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+    >
+      <FaShareAlt className="text-sm text-brand-primary opacity-40" />
+      <span>{tg('play_friend')}</span>
+    </motion.button>
+  </div>
+
+  </div>
+  )}
+
+  {/* Friend Duel Invite Bottom Drawer */}
+  <AnimatePresence>
+  {showInviteDrawer && (
+  <div className="bottom-drawer-backdrop z-[100]">
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    exit={{ opacity: 0 }} 
+    onClick={() => setShowInviteDrawer(false)}
+    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
+  />
+  <motion.div 
+    initial={{ y: "100%" }} 
+    animate={{ y: 0 }} 
+    exit={{ y: "100%" }} 
+    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+    className="bottom-drawer-sheet relative z-10"
+  >
+  <div className="bottom-drawer-handle" />
+  
+  <div className="flex flex-col items-center text-center mt-2">
+  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+  {tg('invite_link_title')}
+  </h2>
+  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+  Send this link to a friend to start the duel
+  </p>
+  </div>
+  
+  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
+  <div className="w-full py-2 px-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
+  {inviteLink}
+  </div>
+  </div>
+  
+  <div className="w-full flex flex-col gap-3">
+  <motion.button
+  whileTap={{ scale: 0.98 }}
+  onClick={shareInviteLink}
+  className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+  >
+  <FaShareAlt size={12} />
+  <span>{tg('share_invite')}</span>
+  </motion.button>
+  
+  <div className="grid grid-cols-2 gap-3 w-full">
+  <motion.button
+  whileTap={{ scale: 0.98 }}
+  onClick={() => {
+  navigator.clipboard.writeText(inviteLink);
+  setCopiedLink(true);
+  setTimeout(() => setCopiedLink(false), 2000);
+  }}
+  className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
+  >
+  <span>{copiedLink ? "Copied! ✓" : tg('copy_code')}</span>
+  </motion.button>
+  
+  <motion.button
+  whileTap={{ scale: 0.98 }}
+  onClick={() => setShowInviteDrawer(false)}
+  className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+  >
+  <span>{t('back')}</span>
+  </motion.button>
+  </div>
+  </div>
+  </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+  </div>
+  </LayoutWrapper>
  );
 }
 

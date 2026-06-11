@@ -29,6 +29,9 @@ async def connect(sid, environ, auth):
                 from app.core.database import engine
                 if engine.url.drivername.startswith("sqlite"):
                     print(f"Dev fallback: InitData validation failed: {e}")
+                    from app.core.security import parse_init_data_unverified
+                    user_data = parse_init_data_unverified(init_data)
+                    user_id = user_data.get('id')
                 else:
                     raise e
         

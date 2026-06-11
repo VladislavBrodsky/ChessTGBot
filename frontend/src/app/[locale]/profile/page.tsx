@@ -16,6 +16,22 @@ export default function ProfilePage() {
  const locale = useLocale();
  const router = useRouter();
 
+ // Dynamic locales mapping for Chess.com-style metric parameters
+ const localizedLabels: Record<string, Record<string, string>> = {
+   en: { global_rank: "Global Rank", percentile: "Percentile", games_played: "Games Played", total_score: "Total Score", breakdown: "W - D - L Breakdown", wins: "Wins", losses: "Losses", draws: "Draws" },
+   es: { global_rank: "Rango Global", percentile: "Percentil", games_played: "Partidas Jugadas", total_score: "Puntaje Total", breakdown: "Desglose V - E - D", wins: "Victorias", losses: "Derrotas", draws: "Empates" },
+   fr: { global_rank: "Rang Global", percentile: "Centile", games_played: "Parties Jouées", total_score: "Score Total", breakdown: "Détails V - N - D", wins: "Victoires", losses: "Défaites", draws: "Nuls" },
+   de: { global_rank: "Globaler Rang", percentile: "Perzentil", games_played: "Spiele Gespielt", total_score: "Gesamtpunktzahl", breakdown: "S - U - N Details", wins: "Siege", losses: "Niederlagen", draws: "Remis" },
+   ru: { global_rank: "Глобальный Ранг", percentile: "Процентиль", games_played: "Сыграно Игр", total_score: "Всего Очков", breakdown: "Статистика В - Н - П", wins: "Победы", draws: "Ничьи", losses: "Поражения" },
+   ar: { global_rank: "الترتيب العالمي", percentile: "النسبة المئوية", games_played: "المباريات الملعوبة", total_score: "النتيجة الإجمالية", breakdown: "تفاصيل الفوز - التعادل - الخسارة", wins: "فوز", losses: "خسارة", draws: "تعادل" },
+   hi: { global_rank: "वैश्विक रैंक", percentile: "प्रतिशतक", games_played: "खेले गए खेल", total_score: "कुल स्कोर", breakdown: "जीत - ड्रा - हार विवरण", wins: "जीत", losses: "हार", draws: "ड्रा" },
+   ja: { global_rank: "グローバルランク", percentile: "パーセンタイル", games_played: "プレイ済みのゲーム", total_score: "トータルスコア", breakdown: "勝 - 分 - 敗 詳細", wins: "勝利", losses: "敗北", draws: "引き分け" },
+   pt: { global_rank: "Classificação Global", percentile: "Percentil", games_played: "Jogos Jogados", total_score: "Pontuação Total", breakdown: "Detalhes V - E - D", wins: "Vitórias", losses: "Derrotas", draws: "Empates" },
+   zh: { global_rank: "全球排名", percentile: "百分位数", games_played: "已玩游戏", total_score: "总积分", breakdown: "胜 - 平 - 负 详情", wins: "获胜", losses: "失败", draws: "平局" }
+ };
+
+ const labels = localizedLabels[locale] || localizedLabels['en'];
+
  const [tgUser, setTgUser] = useState<any>(null);
  const [stats, setStats] = useState<any>(null);
 
@@ -36,7 +52,22 @@ export default function ProfilePage() {
  } else {
  // Mock for dev
  setTgUser({ first_name: "Grand", last_name: "Master", photo_url: null });
- setStats({ elo: 1450, xp: 850, level: 5, win_rate: 58 });
+ setStats({
+   elo: 1450,
+   xp: 850,
+   level: 5,
+   games_played: 28,
+   wins: 16,
+   losses: 8,
+   draws: 4,
+   win_rate: 57.1,
+   loss_rate: 28.6,
+   draw_rate: 14.3,
+   global_rank: 42,
+   percentile: 96.8,
+   total_score: 18.0,
+   recent_games: []
+ });
  }
  }, []);
 
@@ -69,27 +100,68 @@ export default function ProfilePage() {
  </div>
  </div>
 
- {/* Stats Grid */}
- <div className="w-full grid grid-cols-2 gap-3">
- <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface">
- <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1.5">{t('elo')}</span>
- <div className="flex items-baseline space-x-1.5">
- <span className="text-2xl font-black text-brand-primary">{stats?.elo || 1000}</span>
- <span className="text-[9px] font-bold text-brand-primary opacity-60 flex items-center gap-0.5">
- <FaChartLine className="text-[8px]" /> +24
- </span>
- </div>
- </div>
- <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface">
- <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1.5">{t('win_rate')}</span>
- <div className="flex items-baseline space-x-1.5">
- <span className="text-2xl font-black text-brand-primary">{stats?.win_rate?.toFixed(0) || 0}%</span>
- <span className="text-[9px] font-bold text-brand-primary opacity-60 flex items-center gap-0.5">
- ▲ 1.2%
- </span>
- </div>
- </div>
- </div>
+  {/* Stats Grid */}
+  <div className="w-full grid grid-cols-2 gap-3">
+    {/* ELO & Rank Card */}
+    <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
+      <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
+      <span className="text-2xl font-black text-brand-primary leading-tight">{stats?.elo || 1000}</span>
+      <div className="flex items-center gap-1.5 mt-1.5 text-[8.5px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <span>{labels.global_rank} #{stats?.global_rank || 1}</span>
+        <span>•</span>
+        <span>{stats?.percentile?.toFixed(0) || 100}%</span>
+      </div>
+    </div>
+
+    {/* Games Played & Total Score Card */}
+    <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
+      <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
+      <span className="text-2xl font-black text-brand-primary leading-tight">{stats?.games_played || 0}</span>
+      <div className="flex items-center gap-1 mt-1.5 text-[8.5px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <span>{labels.total_score}: {stats?.total_score?.toFixed(1) || "0.0"} PTS</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Visual W - D - L Breakdown Bar */}
+  <div className="w-full glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface space-y-3.5">
+    <div className="flex justify-between items-center px-0.5">
+      <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{labels.breakdown}</span>
+      <span className="text-[9px] font-black text-emerald-400 uppercase tracking-wider">{stats?.win_rate?.toFixed(1) || 0}% WR</span>
+    </div>
+
+    {/* Segmented Progress Bar */}
+    <div className="w-full h-2 rounded-full overflow-hidden flex bg-brand-void/50 border border-brand-border-opacity-5">
+      {stats?.games_played > 0 ? (
+        <>
+          <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${stats.win_rate}%` }} title={`Wins: ${stats.win_rate}%`} />
+          <div className="h-full bg-slate-500 transition-all duration-500" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
+          <div className="h-full bg-rose-500 transition-all duration-500" style={{ width: `${stats.loss_rate}%` }} title={`Losses: ${stats.loss_rate}%`} />
+        </>
+      ) : (
+        <div className="h-full bg-brand-border-opacity-10 w-full" />
+      )}
+    </div>
+
+    {/* Metric readouts */}
+    <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
+      <div className="flex flex-col">
+        <span className="text-[8px] font-black uppercase text-emerald-500 tracking-widest">{labels.wins}</span>
+        <span className="text-xs font-black text-brand-primary mt-0.5">{stats?.wins || 0}</span>
+        <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats?.win_rate?.toFixed(0) || 0}%)</span>
+      </div>
+      <div className="flex flex-col border-x border-brand-border-opacity-10">
+        <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{labels.draws}</span>
+        <span className="text-xs font-black text-brand-primary mt-0.5">{stats?.draws || 0}</span>
+        <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats?.draw_rate?.toFixed(0) || 0}%)</span>
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[8px] font-black uppercase text-rose-500 tracking-widest">{labels.losses}</span>
+        <span className="text-xs font-black text-brand-primary mt-0.5">{stats?.losses || 0}</span>
+        <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats?.loss_rate?.toFixed(0) || 0}%)</span>
+      </div>
+    </div>
+  </div>
 
  {/* Gamification Sections */}
  <DailyTasks />

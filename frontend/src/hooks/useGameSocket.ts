@@ -111,6 +111,16 @@ export const useGameSocket = (gameId: string) => {
             const isPromotionRank = move.to.endsWith("8") || move.to.endsWith("1");
             const isPromotion = isPawn && isPromotionRank;
 
+            // Check if the move is in the list of legal moves
+            const legalMoves = chess.moves({ verbose: true });
+            const isLegal = legalMoves.some(
+                (m) => m.from === move.from && m.to === move.to
+            );
+            if (!isLegal) {
+                console.warn("Illegal move attempted:", move);
+                return false;
+            }
+
             // Construct clean move object
             const cleanMove: any = {
                 from: move.from,

@@ -35,6 +35,7 @@ async def get_my_tasks(
 
     # Verify tasks generated
     await GamificationService.get_or_create_daily_tasks(db, current_user.id)
+    await GamificationService.get_or_create_achievements(db, current_user.id)
 
     # Fetch with joined details
     result = await db.execute(

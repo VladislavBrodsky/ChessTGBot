@@ -2,7 +2,7 @@
 
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
-import { FaWallet } from 'react-icons/fa';
+import { FaWallet, FaTimes } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 
@@ -85,9 +85,12 @@ export default function WalletConnect() {
 
                     <button
                         onClick={handleWalletAction}
-                        className="py-1.5 px-3 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                        className={wallet 
+                          ? "w-7 h-7 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
+                          : "py-1.5 px-3 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                        }
                     >
-                        {wallet ? 'Disconnect' : 'Connect'}
+                        {wallet ? <FaTimes size={10} /> : 'Connect'}
                     </button>
                 </div>
 

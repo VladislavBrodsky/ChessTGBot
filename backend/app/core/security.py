@@ -56,3 +56,30 @@ def validate_init_data(init_data: str) -> dict:
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
+
+
+def parse_init_data_unverified(init_data: str) -> dict:
+    """
+    Parses Telegram WebApp initData string without validating the signature.
+    Useful for local dev testing with real Telegram accounts when bot token is not configured.
+    """
+    if not init_data:
+        return {}
+    try:
+        data_dict = {}
+        for part in init_data.split('&'):
+            if '=' in part:
+                key, value = part.split('=', 1)
+                data_dict[key] = unquote(value)
+        
+        user_data_str = data_dict.get('user')
+        if not user_data_str:
+            return {}
+        
+        user_data = json.loads(user_data_str)
+        if 'start_param' in data_dict:
+            user_data['start_param'] = data_dict['start_param']
+        return user_data
+    except Exception:
+        return {}
+

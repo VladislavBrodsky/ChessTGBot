@@ -375,7 +375,7 @@ export default function WalletPage() {
  {/* MODALS (Bottom Drawer Sheets) */}
  <AnimatePresence>
  {activeModal !== 'none' && (
- <div className="bottom-drawer-backdrop z-50">
+ <div className="bottom-drawer-backdrop z-[100]">
  {/* Backdrop */}
  <motion.div 
  initial={{ opacity: 0 }}

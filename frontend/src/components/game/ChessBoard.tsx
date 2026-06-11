@@ -1,22 +1,21 @@
 'use client';
 
 import { Chessboard } from "react-chessboard";
-import { useAudio } from "@/hooks/useAudio";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
+import { motion } from "framer-motion";
 
 interface ChessBoardProps {
     fen: string;
     onMove: (move: { from: string; to: string; promotion?: string }) => boolean;
     orientation?: "white" | "black";
+    showConfetti?: boolean;
 }
 
-export default function ChessBoardComponent({ fen, onMove, orientation = "white" }: ChessBoardProps) {
-    const { play } = useAudio();
-    const [prevFen, setPrevFen] = useState(fen);
-    const [showConfetti, setShowConfetti] = useState(false);
+export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
+    const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -30,74 +29,116 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
         }
     }, []);
 
-    useEffect(() => {
-        if (fen !== prevFen) {
-            const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-            const game = new Chess(fen === "start" ? START_FEN : fen);
-            const prevGame = new Chess(prevFen === "start" ? START_FEN : prevFen);
-
-            // Simple move detection
-            // Note: This logic is simple; better to rely on socket events for specific sounds (win/capture) 
-            // but for client-side feedback this works.
-
-            if (game.isCheckmate() || (game.isDraw() && !prevGame.isDraw())) {
-                play('win'); // For now, treat end as 'win' sound event or we can differentiate
-                setShowConfetti(true);
-                setTimeout(() => setShowConfetti(false), 5000);
-            } else if (game.inCheck()) {
-                play('check');
-            } else {
-                play('move');
-            }
-
-            setPrevFen(fen);
-        }
-    }, [fen, prevFen, play]);
-
     function onDrop({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) {
         if (!targetSquare) return false;
-        console.log("ChessBoardComponent onDrop called:", sourceSquare, targetSquare);
-        try {
-            fetch("/api/v1/client-log", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    level: "INFO",
-                    message: `ChessBoardComponent onDrop called: from=${sourceSquare}, to=${targetSquare}`
-                })
-            }).catch(() => {});
-        } catch (e) {}
+
+        const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const game = new Chess(fen === "start" ? START_FEN : fen);
+        
+        // Check if this is a pawn promotion move
+        const piece = game.get(sourceSquare as any);
+        const isPawn = piece && piece.type === "p";
+        const isPromotionRank = targetSquare.endsWith("8") || targetSquare.endsWith("1");
+        
+        if (isPawn && isPromotionRank) {
+            try {
+                const legalMoves = game.moves({ verbose: true });
+                const isPromoMove = legalMoves.some(
+                    (m) => m.from === sourceSquare && m.to === targetSquare && m.promotion
+                );
+                if (isPromoMove) {
+                    // Store details and open custom selection dialog; block immediate move
+                    setPromotionMove({ from: sourceSquare, to: targetSquare });
+                    return false;
+                }
+            } catch (e) {
+                console.error("Error checking promotion legality:", e);
+            }
+        }
 
         const moveResult = onMove({
             from: sourceSquare,
             to: targetSquare,
-            promotion: "q",
         });
-        console.log("ChessBoardComponent onDrop moveResult:", moveResult);
-        try {
-            fetch("/api/v1/client-log", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    level: "INFO",
-                    message: `ChessBoardComponent onDrop moveResult: ${moveResult}`
-                })
-            }).catch(() => {});
-        } catch (e) {}
-
-        // If move was successful locally (before server confirms), play sound? 
-        // Actually, useEffect above relies on FEN prop change from server.
-        // We can play immediate feedback here too if we want zero-latency feel but risk double sound.
-        // Let's rely on FEN change for authoritative state sound or use optimistic updates.
-
         return moveResult;
     }
+
+    const handleSelectPromotion = (pieceType: "q" | "r" | "b" | "n") => {
+        if (promotionMove) {
+            onMove({
+                from: promotionMove.from,
+                to: promotionMove.to,
+                promotion: pieceType,
+            });
+            setPromotionMove(null);
+        }
+    };
 
     return (
         <div className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700">
             {showConfetti && <div className="fixed inset-0 pointer-events-none z-50">
                 <Confetti width={windowDimension.width} height={windowDimension.height} recycle={false} numberOfPieces={500} gravity={0.3} />
             </div>}
+
+            {/* Custom Promotion Dialog Overlay */}
+            {promotionMove && (
+                <div className="absolute inset-0 bg-brand-void/80 backdrop-blur-md z-30 flex items-center justify-center rounded-2xl p-6">
+                    <div className="glass-panel p-6 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface max-w-[280px] w-full text-center space-y-5 shadow-premium">
+                        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+                            Pawn Promotion
+                        </span>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleSelectPromotion("q")}
+                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                            >
+                                <span className="text-2xl text-brand-primary">♛</span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Queen</span>
+                            </motion.button>
+                            
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleSelectPromotion("n")}
+                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                            >
+                                <span className="text-2xl text-brand-primary">♞</span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Knight</span>
+                            </motion.button>
+                            
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleSelectPromotion("r")}
+                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                            >
+                                <span className="text-2xl text-brand-primary">♜</span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Rook</span>
+                            </motion.button>
+                            
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleSelectPromotion("b")}
+                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                            >
+                                <span className="text-2xl text-brand-primary">♝</span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Bishop</span>
+                            </motion.button>
+                        </div>
+                        
+                        <button
+                            onClick={() => setPromotionMove(null)}
+                            className="w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-brand-rose-opacity-20"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Subtle Metallic Outer Glow */}
             <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30 pointer-events-none"></div>
