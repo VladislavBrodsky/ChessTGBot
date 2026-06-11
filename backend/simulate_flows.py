@@ -44,65 +44,68 @@ async def run_simulation():
     # Clean existing simulator players to ensure fresh state
     async with AsyncSessionLocal() as session:
         print("Cleaning old simulation data...")
-        p1 = await user_crud.get_user_by_telegram_id(session, 11111)
-        p2 = await user_crud.get_user_by_telegram_id(session, 22222)
-        p1_id = p1.id if p1 else None
-        p2_id = p2.id if p2 else None
-        if p1_id or p2_id:
-            referrals_result = await session.execute(
-                select(Referral).where(
-                    (Referral.referrer_id == p1_id) | 
-                    (Referral.referrer_id == p2_id) | 
-                    (Referral.referred_user_id == p1_id) | 
-                    (Referral.referred_user_id == p2_id)
+        for tid in [11111, 22222, 55555, 66666, 77777]:
+            u = await user_crud.get_user_by_telegram_id(session, tid)
+            if u:
+                # Delete any referral referencing this user's id
+                referrals_result = await session.execute(
+                    select(Referral).where(
+                        (Referral.referrer_id == u.id) | (Referral.referred_user_id == u.id)
+                    )
                 )
-            )
-            for ref in referrals_result.scalars().all():
-                await session.delete(ref)
-        if p1: await session.delete(p1)
-        if p2: await session.delete(p2)
+                for ref in referrals_result.scalars().all():
+                    await session.delete(ref)
+                await session.delete(u)
         await session.commit()
         print("Clean complete.")
 
     # 2. Player Sign-up & Referral Flow
     print("\n[STEP 2] Simulating Player Registrations & Referral Flow...")
     async with AsyncSessionLocal() as session:
-        # Create Player 1 (Referrer)
-        p1 = await user_crud.create_user(
-            session, 
-            telegram_id=11111, 
-            first_name="P1_Hacker", 
-            username="hacker_p1"
-        )
-        # Give P1 starting balance ($10.00)
-        p1.balance = 1000  # 1000 cents
+        # Create Ancestor, Grandparent, Parent, P1 and P2
+        ancestor = await user_crud.create_user(session, telegram_id=77777, first_name="P_Ancestor", username="ancestor")
+        ancestor.is_premium = True
+        ancestor.balance = 0
+        session.add(ancestor)
+
+        grandparent = await user_crud.create_user(session, telegram_id=66666, first_name="P_Grandparent", username="grandparent")
+        grandparent.is_premium = True
+        grandparent.balance = 0
+        session.add(grandparent)
+
+        parent = await user_crud.create_user(session, telegram_id=55555, first_name="P_Parent", username="parent")
+        parent.is_premium = True
+        parent.balance = 0
+        session.add(parent)
+
+        p1 = await user_crud.create_user(session, telegram_id=11111, first_name="P1_Hacker", username="hacker_p1")
+        p1.is_premium = True
+        p1.balance = 10000  # $100.00
         session.add(p1)
-        await session.commit()
-        await session.refresh(p1)
-        
-        print(f"Registered Referrer: {p1.first_name} (ID: {p1.telegram_id})")
-        print(f"  - Initial ELO: {p1.elo}")
-        print(f"  - Initial Balance: ${p1.balance / 100:.2f} USDT")
-        print(f"  - Generated Referral Code: {p1.referral_code}")
-        print(f"  - Personal Telegram Invite Link: https://t.me/FinChess_bot/app?startapp=ref_{p1.referral_code}")
 
-        # Create Player 2 (Referred)
-        p2 = await user_crud.create_user(
-            session, 
-            telegram_id=22222, 
-            first_name="P2_Grandmaster", 
-            username="gmaster_p2"
-        )
-        p2.balance = 1000  # 1000 cents
+        p2 = await user_crud.create_user(session, telegram_id=22222, first_name="P2_Grandmaster", username="gmaster_p2")
+        p2.is_premium = True
+        p2.balance = 10000  # $100.00
         session.add(p2)
-        await session.commit()
-        await session.refresh(p2)
-        
-        print(f"Registered Recruit: {p2.first_name} (ID: {p2.telegram_id})")
-        print(f"  - Initial ELO: {p2.elo}")
-        print(f"  - Initial Balance: ${p2.balance / 100:.2f} USDT")
 
-        # Process Referral link mapping
+        await session.commit()
+        await session.refresh(ancestor)
+        await session.refresh(grandparent)
+        await session.refresh(parent)
+        await session.refresh(p1)
+        await session.refresh(p2)
+
+        # Build 3-tier parent referral chain
+        session.add(Referral(referrer_id=ancestor.id, referred_user_id=grandparent.id))
+        session.add(Referral(referrer_id=grandparent.id, referred_user_id=parent.id))
+        session.add(Referral(referrer_id=parent.id, referred_user_id=p1.id))
+        
+        await session.commit()
+        
+        # Simulating P1 inviting P2
+        print(f"Registered Referrer Chain: Ancestor (77777) -> Grandparent (66666) -> Parent (55555) -> P1_Hacker (11111)")
+        print(f"Registered Recruit: {p2.first_name} (ID: {p2.telegram_id})")
+
         success = await GamificationService.process_referral(session, p2, p1.referral_code)
         if success:
             print("Referral linked successfully!")
@@ -113,7 +116,7 @@ async def run_simulation():
 
     # 3. Matchmaking & Wager Lock Simulation
     print("\n[STEP 3] Simulating Wager Matchmaking Queue & Balance Verification...")
-    wager_amount = 100  # $1.00 wager (100 cents)
+    wager_amount = 5000  # $50.00 wager (5000 cents)
     
     # Verify balances before matchmaking
     async with AsyncSessionLocal() as session:
@@ -197,25 +200,37 @@ async def run_simulation():
     async with AsyncSessionLocal() as session:
         u1 = await user_crud.get_user_by_telegram_id(session, 11111)
         u2 = await user_crud.get_user_by_telegram_id(session, 22222)
+        parent = await user_crud.get_user_by_telegram_id(session, 55555)
+        grandparent = await user_crud.get_user_by_telegram_id(session, 66666)
+        ancestor = await user_crud.get_user_by_telegram_id(session, 77777)
         
         print(f"✓ Battle Result: White (Player 1) wins by Checkmate!")
         print(f"✓ Rating System ELO Shifts:")
         print(f"  - Player 1 ELO: 1000 -> {u1.elo} (Gain: +{u1.elo - 1000})")
         print(f"  - Player 2 ELO: 1000 -> {u2.elo} (Loss: {u2.elo - 1000})")
-        print(f"  - Total Games Played: P1={u1.games_played}, P2={u2.games_played}")
-        print(f"  - Wins/Losses Status: P1: {u1.wins}W-{u1.losses}L, P2: {u2.wins}W-{u2.losses}L")
         
         # Verify stake payout and rakes
-        # Stake pool: 200 cents. Rake (3%): 6 cents. Payout: 194 cents.
+        # Stake pool: 10000 cents ($100.00). Rake (3%): 300 cents ($3.00). Payout: 9700 cents ($97.00).
+        # Referral payouts:
+        # P1 gets Tier 1 commission from P2's wager = int(150 * 0.10) = 15 cents
+        # Parent gets Tier 1 from P1's wager (15 cents) + Tier 2 from P2's wager (7 cents) = 22 cents
+        # Grandparent gets Tier 2 from P1's wager (7 cents) + Tier 3 from P2's wager (3 cents) = 10 cents
+        # Ancestor gets Tier 3 from P1's wager (3 cents) = 3 cents
         print(f"\n✓ Profit & Commission Ledger Verification:")
         print(f"  - Total Match Stake Pool: ${(wager_amount * 2) / 100:.2f} USDT")
-        print(f"  - Platform Rake Collected (3%): $0.06 USDT (Routed to Company Wallet)")
-        print(f"  - Net Winner Payout (97%): $1.94 USDT")
-        print(f"  - Player 1 Final Wallet Balance: ${u1.balance / 100:.2f} USDT")
-        print(f"  - Player 2 Final Wallet Balance: ${u2.balance / 100:.2f} USDT")
+        print(f"  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from this rake)")
+        print(f"  - Net Winner Payout (97%): $97.00 USDT")
+        print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $147.15 USDT)")
+        print(f"  - Player 2 (Loser) Final Wallet Balance: ${u2.balance / 100:.2f} USDT (Expected $50.00 USDT)")
+        print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $0.22 USDT)")
+        print(f"  - Grandparent (Tier 2 Referrer) Balance: ${grandparent.balance / 100:.2f} USDT (Expected $0.10 USDT)")
+        print(f"  - Ancestor (Tier 3 Referrer) Balance: ${ancestor.balance / 100:.2f} USDT (Expected $0.03 USDT)")
         
-        assert u1.balance == 1094, f"P1 Payout incorrect, got {u1.balance}"
-        assert u2.balance == 900, f"P2 Balance incorrect, got {u2.balance}"
+        assert u1.balance == 14715, f"P1 Balance incorrect, got {u1.balance}"
+        assert u2.balance == 5000, f"P2 Balance incorrect, got {u2.balance}"
+        assert parent.balance == 22, f"Parent Balance incorrect, got {parent.balance}"
+        assert grandparent.balance == 10, f"Grandparent Balance incorrect, got {grandparent.balance}"
+        assert ancestor.balance == 3, f"Ancestor Balance incorrect, got {ancestor.balance}"
         print("✓ balance verification assert passed. ledger matches expected calculations.")
 
         # 5. Print Transaction Ledger history
@@ -226,7 +241,7 @@ async def run_simulation():
         txs = txs_result.scalars().all()
         for idx, tx in enumerate(txs):
             sign = "+" if tx.amount > 0 else ""
-            print(f"  [{idx + 1}] User ID: {tx.user_id} | Type: {tx.type.upper():<12} | Amount: {sign}${tx.amount / 100:<6.2f} USDT | Ref: {tx.reference_id}")
+            print(f"  [{idx + 1}] User ID: {tx.user_id} | Type: {tx.type.upper():<20} | Amount: {sign}${tx.amount / 100:<6.2f} USDT | Ref: {tx.reference_id}")
 
     print("\n" + "=" * 60)
     print("✓ END-TO-END SIMULATION COMPLETED SUCCESSFULLY!")

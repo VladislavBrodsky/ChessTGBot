@@ -367,6 +367,11 @@ class GameService:
                     )
                     session.add(rake_tx)
 
+                    # Distribute referral commissions for both players
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount)
+
                     # Automated notifications
                     try:
                         from app.services.telegram_bot import TelegramService
@@ -419,6 +424,11 @@ class GameService:
                         status="completed"
                     )
                     session.add(rake_tx)
+
+                    # Distribute referral commissions for both players
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount)
 
                     # Automated notifications
                     try:

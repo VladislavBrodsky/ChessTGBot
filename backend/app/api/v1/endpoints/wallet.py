@@ -37,7 +37,7 @@ class WithdrawResponse(BaseModel):
 
 class TransactionItem(BaseModel):
     id: int
-    type: str  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake'
+    type: str  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake', 'referral_commission'
     amount: int
     fee: int
     status: str

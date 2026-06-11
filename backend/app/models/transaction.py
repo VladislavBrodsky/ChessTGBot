@@ -8,7 +8,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(BigInteger, ForeignKey("users.telegram_id"), index=True)
-    type = Column(String)  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake'
+    type = Column(String)  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake', 'referral_commission'
     amount = Column(Integer)  # In cents (e.g., 100 = $1.00)
     fee = Column(Integer, default=0)  # Any fee charged for this transaction
     status = Column(String, default="completed")  # 'pending', 'completed', 'failed'

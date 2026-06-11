@@ -189,3 +189,145 @@ async def test_get_user_stats_returns_bot_username(client: AsyncClient, db_sessi
     
     assert "bot_username" in data
     assert data["bot_username"] == settings.TELEGRAM_BOT_USERNAME
+
+
+@pytest.mark.asyncio
+async def test_three_tier_referral_commission(db_session: AsyncSession):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
+
+    from app.services.referral_commission_service import ReferralCommissionService
+    from app.models.transaction import Transaction
+
+    # 1. Create a 3-tier referrer structure
+    # Tier 3 Referrer (Grandparent) - Premium
+    r3 = User(telegram_id=300001, first_name="R3", referral_code="R3CODE", is_premium=True, balance=0)
+    db_session.add(r3)
+    
+    # Tier 2 Referrer (Parent) - Premium
+    r2 = User(telegram_id=200001, first_name="R2", referral_code="R2CODE", is_premium=True, balance=0)
+    db_session.add(r2)
+
+    # Tier 1 Referrer (Direct) - Premium
+    r1 = User(telegram_id=100001, first_name="R1", referral_code="R1CODE", is_premium=True, balance=0)
+    db_session.add(r1)
+
+    # Player (Referred by R1)
+    player = User(telegram_id=400001, first_name="Player", referral_code="PLAYCODE", is_premium=False, balance=0)
+    db_session.add(player)
+    
+    await db_session.commit()
+    await db_session.refresh(r3)
+    await db_session.refresh(r2)
+    await db_session.refresh(r1)
+    await db_session.refresh(player)
+
+    # Create Referral records to link them
+    # R3 referred R2
+    ref_3_2 = Referral(referrer_id=r3.id, referred_user_id=r2.id)
+    db_session.add(ref_3_2)
+    # R2 referred R1
+    ref_2_1 = Referral(referrer_id=r2.id, referred_user_id=r1.id)
+    db_session.add(ref_2_1)
+    # R1 referred Player
+    ref_1_p = Referral(referrer_id=r1.id, referred_user_id=player.id)
+    db_session.add(ref_1_p)
+    await db_session.commit()
+
+    # Distribute wager commissions (Wager = 10000 cents / $100.00)
+    # Individual rake = 10000 * 0.03 = 300 cents.
+    # Tier 1 (R1) gets 10% of 300 = 30 cents.
+    # Tier 2 (R2) gets 5% of 300 = 15 cents.
+    # Tier 3 (R3) gets 2.5% of 300 = 7 cents.
+    wager = 10000
+    await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm", player.id, wager)
+    await db_session.commit()
+
+    await db_session.refresh(r1)
+    await db_session.refresh(r2)
+    await db_session.refresh(r3)
+
+    assert r1.balance == 30
+    assert r2.balance == 15
+    assert r3.balance == 7
+
+    # Verify transaction entries
+    txs_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "test_game_comm")
+    )
+    txs = txs_result.scalars().all()
+    assert len(txs) == 3
+    
+    # Check types and amounts
+    r1_tx = next(t for t in txs if t.user_id == r1.telegram_id)
+    assert r1_tx.type == "referral_commission"
+    assert r1_tx.amount == 30
+
+    r2_tx = next(t for t in txs if t.user_id == r2.telegram_id)
+    assert r2_tx.type == "referral_commission"
+    assert r2_tx.amount == 15
+
+    r3_tx = next(t for t in txs if t.user_id == r3.telegram_id)
+    assert r3_tx.type == "referral_commission"
+    assert r3_tx.amount == 7
+
+
+@pytest.mark.asyncio
+async def test_three_tier_referral_commission_non_premium_skipped(db_session: AsyncSession):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
+
+    from app.services.referral_commission_service import ReferralCommissionService
+    from app.models.transaction import Transaction
+
+    # 1. Create a 3-tier referrer structure where Tier 2 is NOT premium
+    r3 = User(telegram_id=300002, first_name="R3_P", referral_code="R3P", is_premium=True, balance=0)
+    db_session.add(r3)
+    
+    r2 = User(telegram_id=200002, first_name="R2_NP", referral_code="R2NP", is_premium=False, balance=0)
+    db_session.add(r2)
+
+    r1 = User(telegram_id=100002, first_name="R1_P", referral_code="R1P", is_premium=True, balance=0)
+    db_session.add(r1)
+
+    player = User(telegram_id=400002, first_name="Player2", referral_code="PLAY2", is_premium=False, balance=0)
+    db_session.add(player)
+    
+    await db_session.commit()
+    await db_session.refresh(r3)
+    await db_session.refresh(r2)
+    await db_session.refresh(r1)
+    await db_session.refresh(player)
+
+    # Link referrals
+    db_session.add(Referral(referrer_id=r3.id, referred_user_id=r2.id))
+    db_session.add(Referral(referrer_id=r2.id, referred_user_id=r1.id))
+    db_session.add(Referral(referrer_id=r1.id, referred_user_id=player.id))
+    await db_session.commit()
+
+    # Distribute commissions
+    wager = 10000
+    await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm_np", player.id, wager)
+    await db_session.commit()
+
+    await db_session.refresh(r1)
+    await db_session.refresh(r2)
+    await db_session.refresh(r3)
+
+    # R1 (Tier 1 - Premium) gets 30
+    assert r1.balance == 30
+    # R2 (Tier 2 - Non-Premium) gets 0
+    assert r2.balance == 0
+    # R3 (Tier 3 - Premium) gets 7
+    assert r3.balance == 7
+
+    # Verify transaction entries
+    txs_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "test_game_comm_np")
+    )
+    txs = txs_result.scalars().all()
+    # R2 is skipped, so only 2 transaction ledger records should exist
+    assert len(txs) == 2
+
