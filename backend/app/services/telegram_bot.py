@@ -200,14 +200,19 @@ class TelegramService:
             return
 
         # 1. Initialize Bot (Sender Role - All Instances)
-        cls.application = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
-        cls.application.add_handler(CommandHandler("start", cls.start_command))
-        cls.application.add_handler(CommandHandler("language", cls.language_command))
-        cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
-        
-        await cls.application.initialize()
-        await cls.application.start()
-        logger.info("✅ Telegram Bot Initialized (Sender Mode Active)")
+        try:
+            cls.application = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
+            cls.application.add_handler(CommandHandler("start", cls.start_command))
+            cls.application.add_handler(CommandHandler("language", cls.language_command))
+            cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
+            
+            await cls.application.initialize()
+            await cls.application.start()
+            logger.info("✅ Telegram Bot Initialized (Sender Mode Active)")
+        except Exception as bot_err:
+            logger.error(f"❌ Failed to initialize Telegram Bot: {bot_err}. Running web app without active Telegram listener.")
+            cls.application = None
+            return
 
         # 2. Self-Healing Background Leader Election Loop
         async def election_loop():
