@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi import FastAPI, Request
@@ -17,6 +16,91 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+
+class RawCORSMiddleware:
+    """Raw ASGI middleware that handles CORS at the protocol level.
+    
+    This bypasses all higher-level middleware abstractions and directly
+    handles OPTIONS preflights and injects CORS headers into every HTTP
+    response. This is necessary because Starlette's CORSMiddleware can
+    fail to add headers when interacting with mounted sub-applications
+    (like Socket.IO) or other middleware.
+    """
+    
+    ALLOWED_ORIGINS = {
+        "https://chesstgbot-frontend-production.up.railway.app",
+        "https://chesstgbot-production.up.railway.app",
+        "https://web.telegram.org",
+        "https://telegram.org",
+    }
+    
+    def __init__(self, app):
+        self.app = app
+
+    def _get_origin(self, scope):
+        """Extract the Origin header from ASGI scope headers."""
+        for key, value in scope.get("headers", []):
+            if key == b"origin":
+                return value.decode("latin-1")
+        return None
+
+    def _is_allowed(self, origin):
+        """Allow any origin (for Telegram WebApp / iOS WKWebView compatibility)."""
+        return True  # Allow all origins; restrict if needed via ALLOWED_ORIGINS
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        origin = self._get_origin(scope)
+
+        # No Origin header → not a CORS request, pass through
+        if not origin:
+            await self.app(scope, receive, send)
+            return
+
+        if not self._is_allowed(origin):
+            await self.app(scope, receive, send)
+            return
+
+        # Handle OPTIONS preflight immediately
+        if scope["method"] == "OPTIONS":
+            await send({
+                "type": "http.response.start",
+                "status": 200,
+                "headers": [
+                    (b"access-control-allow-origin", origin.encode()),
+                    (b"access-control-allow-credentials", b"true"),
+                    (b"access-control-allow-methods", b"GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"),
+                    (b"access-control-allow-headers", b"*"),
+                    (b"access-control-max-age", b"86400"),
+                    (b"content-length", b"0"),
+                ],
+            })
+            await send({"type": "http.response.body", "body": b""})
+            return
+
+        # For all other requests, inject CORS headers into the response
+        async def send_with_cors(message):
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                # Remove any existing CORS headers to avoid duplicates
+                headers = [
+                    (k, v) for k, v in headers
+                    if k.lower() not in (
+                        b"access-control-allow-origin",
+                        b"access-control-allow-credentials",
+                    )
+                ]
+                headers.append((b"access-control-allow-origin", origin.encode()))
+                headers.append((b"access-control-allow-credentials", b"true"))
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_cors)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -58,23 +142,11 @@ def create_application() -> FastAPI:
     application.add_middleware(LoggingMiddleware)
     application.add_middleware(HeadMiddleware)
 
-    # Set all CORS enabled origins - use regex for Telegram WebApp compatibility
-    # This dynamically echoes back any origin (including "null" or WebView schemes)
-    # which is required by iOS Safari/WKWebView to complete CORS preflights.
-    # We add this middleware LAST so it wraps all other middlewares and executes FIRST on requests.
-    application.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "https://chesstgbot-frontend-production.up.railway.app",
-            "https://chesstgbot-production.up.railway.app",
-            "https://web.telegram.org",
-            "https://telegram.org",
-        ],
-        allow_origin_regex=".*",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    # Raw CORS middleware — added LAST so it wraps everything and executes FIRST.
+    # This handles OPTIONS preflights at the ASGI protocol level and injects
+    # CORS headers into every response, which cannot be bypassed by any inner
+    # middleware, route handler, or mounted sub-application (like Socket.IO).
+    application.add_middleware(RawCORSMiddleware)
 
     @application.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
