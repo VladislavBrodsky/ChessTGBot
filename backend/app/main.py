@@ -55,19 +55,26 @@ def create_application() -> FastAPI:
         lifespan=lifespan
     )
 
+    application.add_middleware(LoggingMiddleware)
+    application.add_middleware(HeadMiddleware)
+
     # Set all CORS enabled origins - use regex for Telegram WebApp compatibility
     # This dynamically echoes back any origin (including "null" or WebView schemes)
     # which is required by iOS Safari/WKWebView to complete CORS preflights.
+    # We add this middleware LAST so it wraps all other middlewares and executes FIRST on requests.
     application.add_middleware(
         CORSMiddleware,
+        allow_origins=[
+            "https://chesstgbot-frontend-production.up.railway.app",
+            "https://chesstgbot-production.up.railway.app",
+            "https://web.telegram.org",
+            "https://telegram.org",
+        ],
         allow_origin_regex=".*",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    application.add_middleware(LoggingMiddleware)
-    application.add_middleware(HeadMiddleware)
 
     @application.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
