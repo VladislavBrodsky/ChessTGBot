@@ -2,7 +2,7 @@ export const getApiBaseUrl = () => {
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
     if (host === "chesstgbot-frontend-production.up.railway.app") {
-      return "https://chesstgbot-production.up.railway.app";
+      return "https://chesstgbot-backend-production.up.railway.app";
     }
   }
   return process.env.NEXT_PUBLIC_API_URL || "";

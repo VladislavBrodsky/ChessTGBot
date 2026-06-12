@@ -30,7 +30,7 @@ class RawCORSMiddleware:
     
     ALLOWED_ORIGINS = {
         "https://chesstgbot-frontend-production.up.railway.app",
-        "https://chesstgbot-production.up.railway.app",
+        "https://chesstgbot-backend-production.up.railway.app",
         "https://web.telegram.org",
         "https://telegram.org",
     }
