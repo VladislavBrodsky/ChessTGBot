@@ -1,4 +1,5 @@
 import io from "socket.io-client";
+import { getApiBaseUrl } from "./api";
 
 // Prevent multiple connections
 let socket: ReturnType<typeof io>;
@@ -7,7 +8,7 @@ export const getSocket = () => {
     if (!socket) {
         // In production (monolith), we connect to the same origin.
         // In dev, we might need localhost:8000 if running separately.
-        const url = process.env.NEXT_PUBLIC_API_URL || "";
+        const url = getApiBaseUrl();
 
         // Retrieve initData from window.Telegram.WebApp (client-side only)
         let initData = "";
