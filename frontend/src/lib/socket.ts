@@ -1,14 +1,26 @@
 import io from "socket.io-client";
-import { getApiBaseUrl } from "./api";
 
 // Prevent multiple connections
 let socket: ReturnType<typeof io>;
 
+/**
+ * Get the Socket.IO backend URL.
+ * Socket.IO needs a direct connection to the backend because Next.js
+ * rewrites only proxy HTTP requests, not WebSocket upgrades.
+ */
+const getSocketUrl = () => {
+    if (typeof window !== "undefined") {
+        const host = window.location.hostname;
+        if (host === "chesstgbot-frontend-production.up.railway.app") {
+            return "https://chesstgbot-production.up.railway.app";
+        }
+    }
+    return process.env.NEXT_PUBLIC_API_URL || "";
+};
+
 export const getSocket = () => {
     if (!socket) {
-        // In production (monolith), we connect to the same origin.
-        // In dev, we might need localhost:8000 if running separately.
-        const url = getApiBaseUrl();
+        const url = getSocketUrl();
 
         // Retrieve initData from window.Telegram.WebApp (client-side only)
         let initData = "";
@@ -40,3 +52,4 @@ export const getSocket = () => {
     }
     return socket;
 };
+

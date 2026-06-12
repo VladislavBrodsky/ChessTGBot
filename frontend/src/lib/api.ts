@@ -1,10 +1,8 @@
 export const getApiBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    if (host === "chesstgbot-frontend-production.up.railway.app") {
-      return "https://chesstgbot-production.up.railway.app";
-    }
-  }
+  // Always use relative URLs so API calls go through the Next.js rewrites proxy.
+  // This avoids cross-origin (CORS) issues entirely.
+  // In production, Next.js proxies /api/* -> backend via the rewrites in next.config.js.
+  // In development, NEXT_PUBLIC_API_URL can be set if needed.
   return process.env.NEXT_PUBLIC_API_URL || "";
 };
 
