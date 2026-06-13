@@ -18,6 +18,33 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const pathname = usePathname();
     const router = useRouter();
     const [balance, setBalance] = useState<number>(0);
+    const [isMenuHidden, setIsMenuHidden] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const checkModal = () => {
+            const hasModal = document.querySelector('.bottom-drawer-backdrop') !== null;
+            setIsMenuHidden(hasModal);
+        };
+
+        // Initial check
+        checkModal();
+
+        // Observe adding/removing of modals
+        const observer = new MutationObserver(() => {
+            checkModal();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -80,7 +107,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 {children}
             </main>
 
-            <Navbar />
+            <Navbar hide={isMenuHidden} />
         </div>
     );
 }

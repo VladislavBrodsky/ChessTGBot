@@ -31,6 +31,16 @@ export default function TelegramInit() {
                 console.warn('Failed to set header color', e);
             }
 
+            // Disable vertical swipes to prevent accidental closing on swipe down (Telegram Bot API 7.7+)
+            try {
+                if (tg.disableVerticalSwipes) {
+                    tg.disableVerticalSwipes();
+                    console.log('Telegram WebApp vertical swipes disabled');
+                }
+            } catch (e) {
+                console.warn('Failed to disable vertical swipes', e);
+            }
+
             // Enable closing confirmation to prevent accidental exits (optional but good for games)
             try {
                 tg.enableClosingConfirmation();
