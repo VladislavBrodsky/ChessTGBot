@@ -311,7 +311,7 @@ class TelegramService:
         except Exception as e:
             logger.warning(f"Could not fetch bot username: {e}")
 
-        return f"https://t.me/share/url?url=https://t.me/{bot_username}/chess?startapp={game_id}"
+        return f"https://t.me/{bot_username}/chess?startapp={game_id}"
 
     @classmethod
     async def send_notification(cls, telegram_id: int, text: str):

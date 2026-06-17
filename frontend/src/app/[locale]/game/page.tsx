@@ -604,6 +604,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
 function PlayLobby() {
  const t = useTranslations('Index');
  const tg = useTranslations('Game');
+ const tw = useTranslations('Wallet');
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
@@ -625,6 +626,15 @@ function PlayLobby() {
  const [inviteLink, setInviteLink] = useState<string>("");
  const [showInviteDrawer, setShowInviteDrawer] = useState<boolean>(false);
  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  // Quick Top-up states
+  const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
+  const [depositAmount, setDepositAmount] = useState<string>("10.00");
+  const [invoiceUrl, setInvoiceUrl] = useState<string>("");
+  const [invoiceId, setInvoiceId] = useState<string>("");
+  const [isDepositing, setIsDepositing] = useState<boolean>(false);
+  const [depositSuccess, setDepositSuccess] = useState<string>("");
+  const [depositError, setDepositError] = useState<string>("");
 
  // Refs for scroll container alignment
  const wagerScrollRef = useRef<HTMLDivElement>(null);
@@ -712,24 +722,152 @@ function PlayLobby() {
  }
  } else {
  // Mock Dev
- setTgUser({ first_name: "Master", photo_url: null });
+setTgUser({ first_name: "Master", photo_url: null });
  setStats({ elo: 1250, win_rate: 68.2, wins: 15, losses: 5, draws: 2 });
  }
  }, []);
 
- const syncBalance = async () => {
- try {
- const res = await apiFetch("/api/v1/wallet/balance");
- if (res.ok) {
- const data = await res.json();
- setWalletBalance(data.balance);
- }
- } catch (err) {
- console.error("Failed to sync wallet balance", err);
- }
- };
+  const syncBalance = async () => {
+  try {
+  const res = await apiFetch("/api/v1/wallet/balance");
+  if (res.ok) {
+  const data = await res.json();
+  setWalletBalance(data.balance);
+  }
+  } catch (err) {
+  console.error("Failed to sync wallet balance", err);
+  }
+  };
 
- // Matchmaking Timer
+  const handleGenerateLobbyInvoice = async () => {
+    const amt = parseFloat(depositAmount);
+    if (isNaN(amt) || amt <= 0) {
+      setDepositError("Please enter a valid deposit amount.");
+      return;
+    }
+
+    setIsDepositing(true);
+    setDepositError("");
+    setDepositSuccess("");
+    setInvoiceUrl("");
+    setInvoiceId("");
+
+    try {
+      const res = await apiFetch("/api/v1/wallet/deposit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          amount: Math.round(amt * 100) // cents
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "invoice") {
+          setInvoiceUrl(data.payment_link || "");
+          setInvoiceId(data.invoice_id || "");
+          setDepositSuccess("Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.");
+        } else if (data.status === "success") {
+          setWalletBalance(data.new_balance);
+          setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
+          setTimeout(() => {
+            setShowDepositDrawer(false);
+            setDepositSuccess("");
+          }, 2000);
+        }
+      } else {
+        const errData = await res.json();
+        setDepositError(errData.detail || "Failed to initiate deposit.");
+      }
+    } catch (err) {
+      setDepositError("Network error during deposit initiation.");
+    } finally {
+      setIsDepositing(false);
+    }
+  };
+
+  const handleSimulateLobbyDeposit = async () => {
+    const amt = parseFloat(depositAmount);
+    if (isNaN(amt) || amt <= 0) {
+      setDepositError("Please enter a valid deposit amount.");
+      return;
+    }
+
+    setIsDepositing(true);
+    setDepositError("");
+    setDepositSuccess("");
+
+    const tgId = tgUser?.id || 1029384;
+    const mockTxHash = `sim_tx_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+
+    try {
+      const res = await apiFetch("/api/v1/wallet/webhook", {
+        method: "POST",
+        headers: {
+          "X-Webhook-Secret": "dev_webhook_secret",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          event: "transfer",
+          tx_hash: mockTxHash,
+          sender: "EQ_SenderAddress_Simulated_xxxx",
+          destination: "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2",
+          amount_cents: Math.round(amt * 100),
+          comment: `ref_${tgId}`
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setWalletBalance(data.new_balance);
+        setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
+        setTimeout(() => {
+          setShowDepositDrawer(false);
+          setDepositSuccess("");
+        }, 2000);
+      } else {
+        const errData = await res.json();
+        setDepositError(errData.detail || "Simulation failed.");
+      }
+    } catch (err) {
+      setDepositError("Network error during simulation processing.");
+    } finally {
+      setIsDepositing(false);
+    }
+  };
+
+  // Active Webhook/Balance Polling to detect deposit and start matchmaking automatically
+  useEffect(() => {
+    if (!showDepositDrawer) return;
+
+    const wagerInCents = isCustomWager
+      ? Math.round(parseFloat(customWagerInput) * 100)
+      : selectedWager;
+
+    if (walletBalance >= wagerInCents) {
+      setShowDepositDrawer(false);
+      setDepositSuccess("");
+      setDepositError("");
+
+      const timer = setTimeout(() => {
+        setMatchmakingError("");
+        const socket = getSocket();
+        setMatchmakingState('searching');
+        socket.emit('join_matchmaking', { bid_amount: wagerInCents });
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+
+    const pollInterval = setInterval(() => {
+      syncBalance();
+    }, 4000);
+
+    return () => clearInterval(pollInterval);
+  }, [walletBalance, showDepositDrawer, selectedWager, isCustomWager, customWagerInput]);
+
+  // Matchmaking Timer
  useEffect(() => {
  let interval: any;
  if (matchmakingState === 'searching') {
@@ -768,25 +906,51 @@ function PlayLobby() {
  }, [locale, router]);
 
  const startMatchmaking = () => {
- setMatchmakingError("");
- const socket = getSocket();
- const wagerInCents = isCustomWager
- ? Math.round(parseFloat(customWagerInput) * 100)
- : selectedWager;
+  setMatchmakingError("");
+  const socket = getSocket();
+  const wagerInCents = isCustomWager
+  ? Math.round(parseFloat(customWagerInput) * 100)
+  : selectedWager;
 
- if (isNaN(wagerInCents) || wagerInCents < 0) {
- setMatchmakingError("Please specify a valid wager amount.");
- return;
- }
+  if (isNaN(wagerInCents) || wagerInCents < 0) {
+  setMatchmakingError("Please specify a valid wager amount.");
+  return;
+  }
 
- if (wagerInCents > walletBalance) {
- setMatchmakingError("Insufficient balance in your Cyber-Wallet.");
- return;
- }
+  if (wagerInCents > walletBalance) {
+  setMatchmakingError("Insufficient balance in your Cyber-Wallet.");
+  return;
+  }
 
- setMatchmakingState('searching');
- socket.emit('join_matchmaking', { bid_amount: wagerInCents });
- };
+  setMatchmakingState('searching');
+  socket.emit('join_matchmaking', { bid_amount: wagerInCents });
+  };
+
+  const handleLauncherClick = () => {
+    if (isCreating || matchmakingState === 'searching') return;
+
+    const wagerInCents = isCustomWager
+      ? Math.round(parseFloat(customWagerInput) * 100)
+      : selectedWager;
+
+    if (isNaN(wagerInCents) || wagerInCents < 0) {
+      setMatchmakingError("Please specify a valid wager amount.");
+      return;
+    }
+
+    if (walletBalance >= wagerInCents) {
+      startMatchmaking();
+    } else {
+      const deficitCents = wagerInCents - walletBalance;
+      const deficitUsd = (deficitCents / 100).toFixed(2);
+      setDepositAmount(deficitUsd);
+      setInvoiceUrl("");
+      setInvoiceId("");
+      setDepositSuccess("");
+      setDepositError("");
+      setShowDepositDrawer(true);
+    }
+  };
 
  const cancelMatchmaking = () => {
  const socket = getSocket();
@@ -832,10 +996,10 @@ function PlayLobby() {
  }
  };
 
-  const shareInviteLink = () => {
-    const shareUrl = inviteLink;
-    const shareText = `Join my chess match! ♟️\nTime control: ${timeControl / 60} minutes.`;
-    const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+   const shareInviteLink = () => {
+     const shareUrl = inviteLink;
+     const shareText = tg('share_msg', { time: timeControl / 60 });
+     const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
     
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       try {
@@ -947,36 +1111,28 @@ function PlayLobby() {
   {/* Unified Modern Battle Arena Panel */}
   <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium space-y-5">
     
-    {/* SECTION 1: WAGER DIAL */}
+    {/* SECTION 1: WAGER SECTOR */}
     <div className="space-y-2">
       <div className="flex justify-between items-center px-1">
         <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('select_wager')}</span>
         <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide">{tg('commission')}</span>
       </div>
 
-      {/* Scroll Roller Container */}
-      <div className="relative flex items-center w-full">
-        {/* Center selector frame overlay */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[72px] h-[72px] rounded-full border border-brand-primary/20 pointer-events-none z-10 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full border-2 border-brand-primary/10 scale-105 animate-pulse" />
-          <div className="absolute -top-1 w-1.5 h-1 bg-brand-primary/40 rounded-full" />
-          <div className="absolute -bottom-1 w-1.5 h-1 bg-brand-primary/40 rounded-full" />
-        </div>
-
+      <div className="w-full flex items-center">
         <div
           ref={wagerScrollRef}
-          className="w-full flex gap-4 overflow-x-auto py-3 scrollbar-none snap-x snap-mandatory px-[calc(50%-28px)]"
+          className="w-full flex gap-2 overflow-x-auto py-1.5 scrollbar-none px-1"
         >
           {[
-            { label: "$1", val: 100, color: "text-emerald-400" },
-            { label: "$5", val: 500, color: "text-rose-400" },
-            { label: "$10", val: 1000, color: "text-blue-400" },
-            { label: "$25", val: 2500, color: "text-cyan-400" },
-            { label: "$50", val: 5000, color: "text-slate-300" },
-            { label: "$100", val: 10000, color: "text-purple-400" },
-            { label: "$250", val: 25000, color: "text-amber-400" },
-            { label: "$500", val: 50000, color: "text-orange-400" },
-            { label: "$1000", val: 100000, color: "text-yellow-400" }
+            { label: "$1", val: 100 },
+            { label: "$5", val: 500 },
+            { label: "$10", val: 1000 },
+            { label: "$25", val: 2500 },
+            { label: "$50", val: 5000 },
+            { label: "$100", val: 10000 },
+            { label: "$250", val: 25000 },
+            { label: "$500", val: 50000 },
+            { label: "$1000", val: 100000 }
           ].map((opt) => {
             const isSelected = !isCustomWager && selectedWager === opt.val;
             return (
@@ -987,17 +1143,14 @@ function PlayLobby() {
                   setSelectedWager(opt.val);
                   setIsCustomWager(false);
                 }}
-                className={`relative w-14 h-14 rounded-full shrink-0 flex flex-col items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+                className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                   isSelected
-                    ? 'border-brand-primary scale-110 shadow-neon bg-brand-elevated text-brand-primary ring-4 ring-brand-primary/15'
-                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105'
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
+                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
-                <div className={`absolute inset-1 rounded-full border border-dashed opacity-10 ${isSelected ? 'border-brand-primary' : 'border-current'}`} />
-                <div className="absolute inset-2.5 rounded-full bg-black/20" />
-                
-                {opt.val === 100000 && <FaCrown className="text-[7px] text-yellow-400 absolute -top-1 animate-bounce" />}
-                <span className={`text-[9px] font-black tracking-tight z-10 ${isSelected ? 'text-brand-primary' : opt.color}`}>{opt.label}</span>
+                {opt.val === 100000 && <FaCrown className="text-[9px] text-yellow-400 mr-1 animate-pulse" />}
+                <span>{opt.label}</span>
               </button>
             );
           })}
@@ -1006,16 +1159,14 @@ function PlayLobby() {
           <button
             data-active={isCustomWager ? "true" : "false"}
             onClick={() => setIsCustomWager(true)}
-            className={`relative w-14 h-14 rounded-full shrink-0 flex flex-col items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+            className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
               isCustomWager
-                ? 'border-brand-primary scale-110 shadow-neon bg-brand-elevated text-brand-primary ring-4 ring-brand-primary/15'
-                : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105'
+                ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
+                : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
             }`}
           >
-            <div className="absolute inset-1 rounded-full border border-dashed border-current opacity-10" />
-            <div className="absolute inset-2.5 rounded-full bg-black/20" />
-            <FaCoins className="text-[8px] z-10 opacity-70 mb-0.5" />
-            <span className="text-[8px] font-black tracking-tight z-10 uppercase">{tg('other')}</span>
+            <FaCoins className="text-[9px] mr-1 opacity-70" />
+            <span>{tg('other')}</span>
           </button>
         </div>
       </div>
@@ -1043,16 +1194,10 @@ function PlayLobby() {
         <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('time_control')}</span>
       </div>
 
-      {/* Time Scroll Roller Container */}
-      <div className="relative flex items-center w-full">
-        {/* Center selector frame overlay */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88px] h-[34px] rounded-full border border-brand-primary/20 pointer-events-none z-10">
-          <div className="absolute inset-0 rounded-full border-2 border-brand-primary/10 scale-105 animate-pulse" />
-        </div>
-
+      <div className="w-full flex items-center">
         <div
           ref={timeScrollRef}
-          className="w-full flex gap-3 overflow-x-auto py-1 scrollbar-none snap-x snap-mandatory px-[calc(50%-40px)]"
+          className="w-full flex gap-2 overflow-x-auto py-1 scrollbar-none px-1"
         >
           {[
             { label: "1 min", val: 60 },
@@ -1069,13 +1214,13 @@ function PlayLobby() {
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
                 onClick={() => setTimeControl(opt.val)}
-                className={`w-20 h-8 rounded-full shrink-0 flex items-center justify-center border transition-all duration-300 snap-center cursor-pointer ${
+                className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                   isSelected
-                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon font-black scale-105'
-                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100'
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
+                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
-                <span className="text-[9px] uppercase tracking-wider">{opt.label}</span>
+                <span>{opt.label}</span>
               </button>
             );
           })}
@@ -1086,25 +1231,37 @@ function PlayLobby() {
     {/* SECTION 3: LAUNCHER BUTTON */}
     <div className="pt-2">
       <motion.button
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
-        onClick={startMatchmaking}
-        disabled={!hasSufficient || isCreating}
-        className={`w-full action-button py-4.5 rounded-2xl flex flex-col items-center justify-center gap-1 group shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden ${
-          chosenWager === 100000 ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
+        whileHover={!isCreating ? { scale: 1.01 } : {}}
+        whileTap={!isCreating ? { scale: 0.99 } : {}}
+        onClick={handleLauncherClick}
+        disabled={isCreating}
+        className={`w-full py-4.5 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-200 ${
+          hasSufficient && !isCreating
+            ? 'bg-brand-primary text-brand-void shadow-neon font-black'
+            : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30'
+        } ${
+          chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
         }`}
       >
         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
         
         <div className="flex items-center gap-2">
           <FaChessKnight size={14} className="text-current animate-bounce" />
-          <span className="text-xs font-black tracking-[0.25em] text-current uppercase">{t('execute_matchmaking')}</span>
+          <span className="text-xs font-black tracking-[0.25em] text-current uppercase">
+            {hasSufficient ? t('execute_matchmaking') : "TOP UP & PLAY"}
+          </span>
         </div>
 
         <div className="text-[8px] font-black tracking-[0.15em] opacity-80 text-current uppercase flex items-center gap-1.5 mt-0.5">
           <span>{timeControl >= 60 ? `${timeControl / 60} MINS` : `${timeControl} SECS`}</span>
           <span className="opacity-40">•</span>
-          <span>STAKE: ${(chosenWager / 100).toFixed(2)} USDT</span>
+          {hasSufficient ? (
+            <span>STAKE: ${(chosenWager / 100).toFixed(2)} USDT</span>
+          ) : (
+            <span className="text-brand-primary animate-pulse font-black">
+              USDT NEEDED: ${((chosenWager - walletBalance) / 100).toFixed(2)}
+            </span>
+          )}
         </div>
       </motion.button>
     </div>
@@ -1114,24 +1271,22 @@ function PlayLobby() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 animate-pulse-slow shadow-[0_0_15px_rgba(16,185,129,0.25)]"
+        className="w-full rounded-2xl p-4 bg-brand-void/40 border border-brand-border-opacity-10 shadow-sm flex flex-col items-center justify-center text-center"
       >
-        <div className="bg-brand-surface rounded-[15px] p-3.5 flex flex-col items-center justify-center text-center relative z-10">
-          <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-0.5">{tg('potential_pot_reward')}</span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-black text-brand-primary tracking-wide">
-              ${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT
-            </span>
-            <span className="text-[9px] font-bold text-brand-primary opacity-40">{tg('net_win')}</span>
-          </div>
-          <button 
-            onClick={() => setShowRakeInfo(true)}
-            className="mt-1.5 text-[8px] font-bold text-brand-primary opacity-35 hover:opacity-100 uppercase tracking-widest transition-opacity flex items-center gap-1 bg-transparent border-0 cursor-pointer"
-          >
-            <span>{tg('total_pot_info', { amount: ((chosenWager * 2) / 100).toFixed(2) })}</span>
-            <span className="underline">{tg('learn_more')}</span>
-          </button>
+        <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-1">{tg('potential_pot_reward')}</span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-lg font-black text-brand-primary tracking-wide">
+            ${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT
+          </span>
+          <span className="text-[9px] font-bold text-brand-primary/45">{tg('net_win')}</span>
         </div>
+        <button 
+          onClick={() => setShowRakeInfo(true)}
+          className="mt-2 text-[8px] font-bold text-brand-primary/40 hover:text-brand-primary uppercase tracking-widest transition-colors flex items-center gap-1 bg-transparent border-0 cursor-pointer"
+        >
+          <span>{tg('total_pot_info', { amount: ((chosenWager * 2) / 100).toFixed(2) })}</span>
+          <span className="underline">{tg('learn_more')}</span>
+        </button>
       </motion.div>
     )}
 
@@ -1140,16 +1295,16 @@ function PlayLobby() {
   {/* Fund Validation Bar & Matchmaking Errors */}
   <div className="flex flex-col space-y-2 w-full">
     {chosenWager > 0 && (
-      <div className={`w-full py-2 px-4 rounded-2xl border text-[9px] font-black uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
+      <div className={`w-full py-2.5 px-4 rounded-xl border text-[9px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
         hasSufficient
-          ? 'border-emerald-500/10 bg-emerald-950/10 text-emerald-400'
-          : 'border-rose-500/10 bg-rose-950/10 text-rose-400'
+          ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
+          : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
       }`}>
         <span className="opacity-60">{tg('active_wager')} ${(chosenWager / 100).toFixed(2)} USDT</span>
         {hasSufficient ? (
-          <span>✓ {tg('balance_verified')}</span>
+          <span>{tg('balance_verified')}</span>
         ) : (
-          <span className="animate-pulse">🚨 {tg('insufficient_funds')}</span>
+          <span className="font-black animate-pulse">{tg('insufficient_funds')}</span>
         )}
       </div>
     )}
@@ -1214,14 +1369,18 @@ function PlayLobby() {
   {tg('invite_link_title')}
   </h2>
   <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-  Send this link to a friend to start the duel
+  {tg('invite_link_desc')}
   </p>
   </div>
   
   <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
-  <div className="w-full py-2 px-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
-  {inviteLink}
-  </div>
+  <input
+    readOnly
+    type="text"
+    value={inviteLink}
+    onClick={(e) => (e.currentTarget as HTMLInputElement).select()}
+    className="w-full py-2.5 px-4 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[11px] font-mono text-brand-primary opacity-80 text-center select-all focus:outline-none focus:border-brand-primary/20 shadow-inner"
+  />
   </div>
   
   <div className="w-full flex flex-col gap-3">
@@ -1244,7 +1403,7 @@ function PlayLobby() {
   }}
   className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
   >
-  <span>{copiedLink ? "Copied! ✓" : tg('copy_code')}</span>
+  <span>{copiedLink ? tg('copied_success') : tg('copy_code')}</span>
   </motion.button>
   
   <motion.button
@@ -1255,6 +1414,176 @@ function PlayLobby() {
   <span>{t('back')}</span>
   </motion.button>
   </div>
+  </div>
+  </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+
+  {/* Lobby Quick Deposit Drawer */}
+  <AnimatePresence>
+  {showDepositDrawer && (
+  <div className="bottom-drawer-backdrop z-[100]">
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    exit={{ opacity: 0 }} 
+    onClick={() => setShowDepositDrawer(false)}
+    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
+  />
+  <motion.div 
+    initial={{ y: "100%" }} 
+    animate={{ y: 0 }} 
+    exit={{ y: "100%" }} 
+    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+    className="bottom-drawer-sheet relative z-10"
+  >
+  <div className="bottom-drawer-handle" />
+  
+  <div className="flex flex-col items-center text-center mt-2 w-full">
+  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+    {tw('deposit_invoice')}
+  </h2>
+  <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-[0.2em] mb-4">
+    Quick Top Up & Play
+  </p>
+  <div className="w-full bg-brand-surface rounded-2xl p-4 border border-brand-border-opacity-10 mb-4 text-xs font-bold text-brand-primary/80 leading-relaxed text-center space-y-1">
+    <div>Wager Stake: <span className="text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</span></div>
+    <div>Your Balance: <span className="text-brand-primary/60 font-bold">${(walletBalance / 100).toFixed(2)} USDT</span></div>
+    <div className="h-px bg-brand-border-opacity-10 my-1.5" />
+    <div className="text-brand-primary font-black uppercase text-[10px] tracking-wider">
+      Deficit Needed: <span className="text-brand-primary font-black text-sm">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</span>
+    </div>
+  </div>
+  </div>
+  
+  {invoiceUrl ? (
+    // Show Real Invoice details
+    <div className="space-y-4 w-full">
+      <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+        Real Web3 TON invoice generated successfully. Scan or tap below to pay using your connected Web3 wallet.
+      </p>
+
+      <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-border-opacity-20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
+        <div className="absolute inset-0 bg-brand-bg-opacity-5 animate-pulse pointer-events-none" />
+        <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10 mx-auto">
+          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(invoiceUrl)}`} alt="Invoice QR Code" className="w-full h-full object-contain" />
+        </div>
+        <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary opacity-40 pt-1">{tw('scan_info')}</div>
+      </div>
+
+      <div className="w-full flex flex-col gap-2">
+        <a
+          href={invoiceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest text-center shadow-lg block hover:bg-brand-primary-hover transition-all"
+        >
+          Open in Wallet ⚡
+        </a>
+        
+        <button
+          onClick={() => { setInvoiceUrl(""); setInvoiceId(""); setDepositSuccess(""); setDepositError(""); }}
+          className="w-full py-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
+        >
+          Change Amount / Back
+        </button>
+      </div>
+    </div>
+  ) : (
+    // Generate Invoice Form
+    <div className="space-y-4 w-full">
+      <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+        {tw('deposit_desc')}
+      </p>
+
+      <div className="flex flex-col space-y-2">
+        <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Top Up Amount (USDT)</label>
+        <div className="relative">
+          <span className="absolute left-3 top-3 text-brand-primary opacity-40 text-xs font-black font-mono">$</span>
+          <input
+            type="number"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+            className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
+            placeholder="5.00"
+            min="0.01"
+            step="0.01"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={handleGenerateLobbyInvoice}
+        disabled={isDepositing}
+        className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
+        <span>{isDepositing ? "Generating..." : "Generate Web3 Invoice"}</span>
+      </button>
+
+      {/* Direct transfer fallback */}
+      <div className="border-t border-brand-border-opacity-10 pt-3 flex flex-col space-y-2">
+        <div className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Direct Transfer Fallback</div>
+        <div className="text-[9px] text-brand-primary opacity-60">
+          Alternatively, transfer manually to the Master Wallet. Ensure you include the unique comment.
+        </div>
+        
+        {(() => {
+          const tgId = tgUser?.id || 1029384;
+          const memoComment = `ref_${tgId}`;
+          const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
+          return (
+            <div className="space-y-2">
+              <div className="flex flex-col space-y-1">
+                <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
+                <div className="cyber-input w-full p-2 rounded-lg border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText(masterWallet)}>
+                  <span className="truncate">{masterWallet}</span>
+                  <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-1">
+                <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
+                <div className="cyber-input w-full p-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText(memoComment)}>
+                  <span>{memoComment}</span>
+                  <FaCopy className="text-emerald-500 opacity-60" />
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  )}
+
+  {/* Commission Alert */}
+  <div className="p-3 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider w-full mt-2">
+  <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+  </div>
+
+  {/* Messages and Simulation Fallback */}
+  <div className="w-full pt-2">
+  {depositSuccess && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{depositSuccess}</div>}
+  {depositError && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{depositError}</div>}
+
+  {!invoiceUrl && (
+    <button
+      onClick={handleSimulateLobbyDeposit}
+      disabled={isDepositing}
+      className="w-full py-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary/50 text-[10px] font-black uppercase tracking-widest hover:text-brand-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
+    >
+      <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
+      <span>{isDepositing ? "Processing..." : "Simulate Deposit (Dev Mode)"}</span>
+    </button>
+  )}
+  
+  <button
+    onClick={() => setShowDepositDrawer(false)}
+    className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
+  >
+    {t('back')}
+  </button>
   </div>
   </motion.div>
   </div>

@@ -202,7 +202,12 @@
         "invite_revenge_desc": "賭け金を上げてコインを取り戻そう！",
         "challenger_offered_rematch": "{name}があなたにリベンジマッチを挑んでいます",
         "proposed_wager": "提案された賭け金",
-        "accept_play": "承諾してプレイ"
+        "accept_play": "承諾してプレイ",
+        "share_invite": "招待をシェア",
+        "copy_code": "リンクをコピー",
+        "invite_link_desc": "友達にこのリンクを送って対局を開始しよう",
+        "copied_success": "コピーしました！✓",
+        "share_msg": "チェスの対局に参加しよう！♟️\n持ち時間：{time} 分"
     },
     "Wallet": {
         "title": "Web3ウォレット",

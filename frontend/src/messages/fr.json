@@ -202,7 +202,12 @@
         "invite_revenge_desc": "Augmentez les mises pour récupérer vos pièces !",
         "challenger_offered_rematch": "{name} vous a défié pour une revanche",
         "proposed_wager": "Mise proposée",
-        "accept_play": "Accepter et jouer"
+        "accept_play": "Accepter et jouer",
+        "share_invite": "Partager l'invitation",
+        "copy_code": "Copier le lien",
+        "invite_link_desc": "Envoyez ce lien à un ami pour commencer le duel",
+        "copied_success": "Copié ! ✓",
+        "share_msg": "Rejoins ma partie d'échecs ! ♟️\nContrôle du temps : {time} minutes."
     },
     "Wallet": {
         "title": "Portefeuille Web3",

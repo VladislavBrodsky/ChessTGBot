@@ -202,7 +202,12 @@
         "invite_revenge_desc": "ارفع الرهان لاستعادة عملاتك المعدنية!",
         "challenger_offered_rematch": "تحداك {name} في مباراة إعادة",
         "proposed_wager": "الرهان المقترح",
-        "accept_play": "قبول ولعب"
+        "accept_play": "قبول ولعب",
+        "share_invite": "مشاركة الدعوة",
+        "copy_code": "نسخ الرابط",
+        "invite_link_desc": "أرسل هذا الرابط إلى صديق لبدء المبارزة",
+        "copied_success": "تم النسخ! ✓",
+        "share_msg": "انضم إلى مباراة الشطرنج الخاصة بي! ♟️\nالتحكم في الوقت: {time} دقائق."
     },
     "Wallet": {
         "title": "محفظة Web3",

@@ -305,18 +305,59 @@ class GameService:
                 return
 
             if not black_user or black_id == -1:
-                # Bot game / Training: update tasks progress, skip ELO & financial wager transfers
+                # Bot game / Training: update tasks progress, stats, and create game history
                 from app.services.gamification_service import GamificationService, TaskType
                 await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
-                # Award XP for playing AI game
+                
+                # Determine game result for bot game
                 ai_xp = 5  # Draw
                 if state.winner == 'w':
                     await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
                     ai_xp = 10  # Win
+                    white_user.wins += 1
                 elif state.winner == 'b':
                     ai_xp = 2  # Loss
+                    white_user.losses += 1
+                else:
+                    white_user.draws += 1
+                
+                white_user.games_played += 1
+                session.add(white_user)
                 await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True)
-                await session.commit()
+                
+                # Save bot game history
+                from app.crud import game_history as game_history_crud
+                total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
+                result_type = getattr(state, "result_type", None) or ('checkmate' if state.winner else 'draw')
+                import json
+                moves_json = json.dumps(getattr(state, 'move_history', []))
+                
+                try:
+                    await game_history_crud.create_game_history(
+                        db=session,
+                        game_id=game_id,
+                        white_player_id=white_id,
+                        black_player_id=-1, # -1 for AI
+                        winner=state.winner,
+                        result_type=result_type,
+                        white_elo_before=white_user.elo,
+                        white_elo_after=white_user.elo, # ELO doesn't change for bot games
+                        black_elo_before=1000,
+                        black_elo_after=1000,
+                        total_moves=total_moves,
+                        duration_seconds=None,
+                        final_fen=state.fen,
+                        game_type='computer',
+                        bid_amount=0,
+                        platform_rake=0,
+                        payout_amount=0,
+                        moves_json=moves_json
+                    )
+                    await session.commit()
+                    print(f"[GameService] Bot game history saved: {game_id} ({result_type}, winner={state.winner})")
+                except Exception as hist_err:
+                    print(f"[GameService] WARNING: Failed to save bot game history for {game_id}: {hist_err}")
+                    await session.rollback()
                 return
 
             # Store current ELO before changes
@@ -648,7 +689,7 @@ class GameService:
                 
                 await session.commit()
 
-            # Save game history
+            # Save game history — MUST commit to persist to DB
             from app.crud import game_history as game_history_crud
             
             # Calculate total moves (approximate from FEN or board state)
@@ -662,23 +703,30 @@ class GameService:
             import json
             moves_json = json.dumps(getattr(state, 'move_history', []))
 
-            await game_history_crud.create_game_history(
-                db=session,
-                game_id=game_id,
-                white_player_id=white_id,
-                black_player_id=black_id,
-                winner=state.winner,
-                result_type=result_type,
-                white_elo_before=white_elo_before,
-                white_elo_after=new_white_elo,
-                black_elo_before=black_elo_before,
-                black_elo_after=new_black_elo,
-                total_moves=total_moves,
-                duration_seconds=None,  # Can be tracked later by storing game start time
-                final_fen=state.fen,
-                game_type='online',
-                bid_amount=bid_amount,
-                platform_rake=platform_rake,
-                payout_amount=payout_amount,
-                moves_json=moves_json
-            )
+            try:
+                await game_history_crud.create_game_history(
+                    db=session,
+                    game_id=game_id,
+                    white_player_id=white_id,
+                    black_player_id=black_id,
+                    winner=state.winner,
+                    result_type=result_type,
+                    white_elo_before=white_elo_before,
+                    white_elo_after=new_white_elo,
+                    black_elo_before=black_elo_before,
+                    black_elo_after=new_black_elo,
+                    total_moves=total_moves,
+                    duration_seconds=None,
+                    final_fen=state.fen,
+                    game_type='online',
+                    bid_amount=bid_amount,
+                    platform_rake=platform_rake,
+                    payout_amount=payout_amount,
+                    moves_json=moves_json
+                )
+                # CRITICAL: commit game history to DB so it survives restarts
+                await session.commit()
+                print(f"[GameService] Game history saved: {game_id} ({result_type}, winner={state.winner})")
+            except Exception as hist_err:
+                print(f"[GameService] WARNING: Failed to save game history for {game_id}: {hist_err}")
+                await session.rollback()

@@ -202,7 +202,12 @@
         "invite_revenge_desc": "¡Sube las apuestas para recuperar tus monedas!",
         "challenger_offered_rematch": "{name} te ha desafiado a una revancha",
         "proposed_wager": "Apuesta propuesta",
-        "accept_play": "Aceptar y jugar"
+        "accept_play": "Aceptar y jugar",
+        "share_invite": "Compartir invitación",
+        "copy_code": "Copiar enlace",
+        "invite_link_desc": "Envía este enlace a un amigo para comenzar el duelo",
+        "copied_success": "¡Copiado! ✓",
+        "share_msg": "¡Únete a mi partida de ajedrez! ♟️\nControl de tiempo: {time} minutos."
     },
     "Wallet": {
         "title": "Billetera Web3",

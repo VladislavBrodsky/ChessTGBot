@@ -202,7 +202,12 @@
         "invite_revenge_desc": "Raise the stakes to win back your coins!",
         "challenger_offered_rematch": "{name} challenged you to a rematch",
         "proposed_wager": "Proposed Wager",
-        "accept_play": "Accept & Play"
+        "accept_play": "Accept & Play",
+        "share_invite": "Share Invite",
+        "copy_code": "Copy Link",
+        "invite_link_desc": "Send this link to a friend to start the duel",
+        "copied_success": "Copied! ✓",
+        "share_msg": "Join my chess match! ♟️\nTime control: {time} minutes."
     },
     "Wallet": {
         "title": "Web3 Wallet",

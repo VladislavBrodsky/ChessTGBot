@@ -75,10 +75,10 @@ export default function WalletConnect() {
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-40 truncate">
-                                {wallet ? 'Link Active' : 'Wallet Link'}
+                                {wallet ? 'Active' : 'Wallet'}
                             </span>
                             <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary truncate">
-                                {wallet ? getShortAddress(wallet.account.address) : 'UNLINKED'}
+                                {wallet ? getShortAddress(wallet.account.address) : 'Unlinked'}
                             </span>
                         </div>
                     </div>
@@ -87,7 +87,7 @@ export default function WalletConnect() {
                         onClick={handleWalletAction}
                         className={wallet 
                           ? "w-7 h-7 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                          : "py-1.5 px-3 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                          : "py-1 px-2.5 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
                         {wallet ? <FaTimes size={10} /> : 'Connect'}

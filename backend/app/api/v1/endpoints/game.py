@@ -48,8 +48,8 @@ async def create_game(type: str = "online", time_control: int = 600):
         except Exception as e:
             # Fallback if bot request fails (e.g. network)
             print(f"Failed to generate link: {e}")
-            # Ensure we use a valid T.me link if possible
-            invite_link = f"https://t.me/placeholder_bot?startapp={game_id}"
+            bot_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
+            invite_link = f"https://t.me/{bot_username}/chess?startapp={game_id}"
 
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
 

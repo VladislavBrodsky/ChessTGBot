@@ -202,7 +202,12 @@
         "invite_revenge_desc": "Erhöhen Sie die Einsätze, um Ihre Münzen zurückzugewinnen!",
         "challenger_offered_rematch": "{name} hat Sie zu einer Revanche herausgefordert",
         "proposed_wager": "Vorgeschlagener Einsatz",
-        "accept_play": "Annehmen & Spielen"
+        "accept_play": "Annehmen & Spielen",
+        "share_invite": "Einladung teilen",
+        "copy_code": "Link kopieren",
+        "invite_link_desc": "Sende diesen Link an einen Freund, um das Duell zu starten",
+        "copied_success": "Kopiert! ✓",
+        "share_msg": "Tritt meiner Schachpartie bei! ♟️\nBedenkzeit: {time} Minuten."
     },
     "Wallet": {
         "title": "Web3 Wallet",

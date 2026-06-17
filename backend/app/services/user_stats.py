@@ -133,8 +133,8 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
     }
     
     # 2. Bulk fetch all opponents in one query
-    result = await db.execute(select(User).filter(User.telegram_id.in_(opponent_ids)))
-    opponents_map = {u.telegram_id: u for u in result.scalars().all()}
+    db_result = await db.execute(select(User).filter(User.telegram_id.in_(opponent_ids)))
+    opponents_map = {u.telegram_id: u for u in db_result.scalars().all()}
     
     formatted_games = []
     

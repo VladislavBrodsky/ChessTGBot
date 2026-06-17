@@ -202,7 +202,12 @@
         "invite_revenge_desc": "提高下注额以赢回您的硬币！",
         "challenger_offered_rematch": "{name} 邀请您进行复仇战",
         "proposed_wager": "提议的下注额",
-        "accept_play": "接受并开玩"
+        "accept_play": "接受并开玩",
+        "share_invite": "分享邀请",
+        "copy_code": "复制链接",
+        "invite_link_desc": "发送此链接给好友以开始对决",
+        "copied_success": "已复制！✓",
+        "share_msg": "加入我的国际象棋对决！♟️\n时间控制：{time} 分钟。"
     },
     "Wallet": {
         "title": "Web3 钱包",
