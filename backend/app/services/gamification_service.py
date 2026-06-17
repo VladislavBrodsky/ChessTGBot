@@ -6,6 +6,12 @@ from datetime import datetime, timedelta
 import random
 import string
 
+
+def _xp_to_level(xp: int) -> int:
+    """Canonical formula: 1 level per 200 XP, minimum level 1."""
+    return max(1, int(xp // 200) + 1)
+
+
 class GamificationService:
     @staticmethod
     async def get_or_create_daily_tasks(db: AsyncSession, user_id: int):
@@ -74,34 +80,19 @@ class GamificationService:
         xp_earned = amount
         if apply_booster and user.is_premium and amount > 0:
             xp_earned = amount * 2
-            
+
         user.xp += xp_earned
-        
-        # Simple Level Formula: Level = sqrt(XP) * Constant or Step
-        # Let's use: Level N requires 100 * (N-1)^2 XP? 
-        # Or simpler: Level up every 100 * Level XP.
-        
-        # Linear/Exponential accumulation:
-        # Level 1: 0-99
-        # Level 2: 100-299 (Need 200)
-        # Mulitplier: 100
-        
-        next_level_threshold = user.level * 100 * (user.level + 1) // 2 # Sum of arithmetic progression approx
-        
-        # Simplified: Level = floor(xp / 100) + 1
-        new_level = int(user.xp // 200) + 1 # 200 XP per level fixed for consistency
-        
+
+        # Use canonical level formula. Level is a high-watermark: only increases.
+        new_level = _xp_to_level(user.xp)
         if new_level > user.level:
             user.level = new_level
-            # Trigger "Level Up" event/notification logic here
-            
-        await db.commit()
 
-        # Multi-Tier XP Kickbacks
+        # Multi-Tier XP Kickbacks — collect all changes before committing
         if trigger_kickback and xp_earned > 0:
             current_user_id = user.id
             percentages = [0.10, 0.05, 0.025]
-            
+
             for tier, pct in enumerate(percentages, 1):
                 # Find referrer of current_user_id
                 stmt = select(Referral).where(Referral.referred_user_id == current_user_id)
@@ -109,26 +100,30 @@ class GamificationService:
                 referral = res.scalars().first()
                 if not referral:
                     break
-                
+
                 # Fetch referrer User
                 stmt_user = select(User).where(User.id == referral.referrer_id)
                 res_user = await db.execute(stmt_user)
                 referrer = res_user.scalars().first()
                 if not referrer:
                     break
-                
-                # Check if referrer is Premium
+
+                # Only premium referrers receive kickbacks
                 if referrer.is_premium:
-                    # Calculate kickback
                     kickback_amount = round(xp_earned * pct)
                     if kickback_amount > 0:
-                        # Award kickback to referrer
-                        await GamificationService.add_xp(db, referrer, kickback_amount, trigger_kickback=False, apply_booster=False)
-                
-                # Update current_user_id
+                        referrer.xp += kickback_amount
+                        # Recalculate referrer level (high-watermark)
+                        referrer_new_level = _xp_to_level(referrer.xp)
+                        if referrer_new_level > referrer.level:
+                            referrer.level = referrer_new_level
+
                 current_user_id = referrer.id
-            
+
+        # Single atomic commit covering user XP + all referral kickbacks
+        await db.commit()
         return user
+
 
     @staticmethod
     async def generate_referral_code(db: AsyncSession):
@@ -317,9 +312,9 @@ class GamificationService:
         if user.xp < 100:
             return None, "Insufficient XP. Need 100 XP to unlock."
             
-        # Deduct XP
+        # Deduct XP (level is a high-watermark — never decreases on XP spend)
         user.xp -= 100
-        
+
         # Create unlock entry
         unlock = UnlockedLesson(user_id=user.id, lesson_id=lesson_id)
         db.add(unlock)
@@ -339,11 +334,11 @@ class GamificationService:
         if user.xp < 500:
             return None, "Insufficient XP. Need 500 XP to upgrade."
             
-        # Deduct XP
+        # Deduct XP (level is a high-watermark — never decreases on XP spend)
         user.xp -= 500
         user.is_premium = True
         user.premium_tier = "premium"
-        
+
         db.add(user)
         await db.commit()
         await db.refresh(user)

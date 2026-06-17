@@ -127,6 +127,40 @@ async def lifespan(app: FastAPI):
          logger.error(f"❌ Database Connection Failed: {e}")
 
     await TelegramService.start_bot()
+
+    # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
+    # Fixes any users whose `level` column drifted from their actual XP due
+    # to the bug where level was not recalculated after XP deductions.
+    # Formula: level = max(1, floor(xp / 200) + 1)  (high-watermark: only up)
+    try:
+        from app.core.database import AsyncSessionLocal
+        from app.models.user import User as UserModel
+        from sqlalchemy import select as sa_select, update as sa_update
+
+        if not engine.url.drivername.startswith("sqlite"):
+            async with AsyncSessionLocal() as session:
+                # Fetch all users with a potentially wrong level
+                result = await session.execute(sa_select(UserModel))
+                all_users = result.scalars().all()
+
+                fixed = 0
+                for u in all_users:
+                    correct_level = max(1, int(u.xp // 200) + 1)
+                    # High-watermark: only correct upward drift
+                    # (downward drift from XP spend is intentionally kept)
+                    if correct_level != u.level:
+                        u.level = max(u.level, correct_level)
+                        fixed += 1
+
+                if fixed:
+                    await session.commit()
+                    logger.info(f"✅ Level backfill complete: corrected {fixed} user(s).")
+                else:
+                    logger.info("✅ Level backfill: all users are already consistent.")
+    except Exception as e:
+        logger.error(f"⚠️  Level backfill failed (non-fatal): {e}")
+    # ────────────────────────────────────────────────────────────────────────
+
     yield
     # Shutdown
     await TelegramService.stop_bot()
