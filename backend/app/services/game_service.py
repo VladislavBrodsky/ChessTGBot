@@ -469,6 +469,8 @@ class GameService:
                 
                 # Save game history
                 try:
+                    assert white_id is not None, "white_id cannot be None for aborted game history"
+                    assert black_id is not None, "black_id cannot be None for aborted game history"
                     await game_history_crud.create_game_history(
                         db=session,
                         game_id=game_id,
@@ -547,6 +549,7 @@ class GameService:
                 moves_json = json.dumps(getattr(state, 'move_history', []))
                 
                 try:
+                    assert white_id is not None, "white_id cannot be None for bot game history"
                     await game_history_crud.create_game_history(
                         db=session,
                         game_id=game_id,
@@ -898,6 +901,8 @@ class GameService:
             
             moves_json = json.dumps(getattr(state, 'move_history', []))
 
+            assert white_id is not None, "white_id cannot be None when saving PvP game history"
+            assert black_id is not None, "black_id cannot be None when saving PvP game history"
             try:
                 await game_history_crud.create_game_history(
                     db=session,

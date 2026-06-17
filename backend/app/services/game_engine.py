@@ -13,6 +13,38 @@ class GameEngine:
         chess.KING: 20000
     }
 
+    # Piece-Square Tables (favoring center control and development)
+    PAWN_PST = [
+        0,  0,  0,  0,  0,  0,  0,  0,
+        50, 50, 50, 50, 50, 50, 50, 50,
+        10, 10, 20, 30, 30, 20, 10, 10,
+         5,  5, 10, 25, 25, 10,  5,  5,
+         0,  0,  0, 20, 20,  0,  0,  0,
+         5, -5,-10,  0,  0,-10, -5,  5,
+         5, 10, 10,-20,-20, 10, 10,  5,
+         0,  0,  0,  0,  0,  0,  0,  0
+    ]
+    KNIGHT_PST = [
+        -50,-40,-30,-30,-30,-30,-40,-50,
+        -40,-20,  0,  0,  0,  0,-20,-40,
+        -30,  0, 10, 15, 15, 10,  0,-30,
+        -30,  5, 15, 20, 20, 15,  5,-30,
+        -30,  0, 15, 20, 20, 15,  0,-30,
+        -30,  5, 10, 15, 15, 10,  5,-30,
+        -40,-20,  0,  5,  5,  0,-20,-40,
+        -50,-40,-30,-30,-30,-30,-40,-50
+    ]
+    BISHOP_PST = [
+        -20,-10,-10,-10,-10,-10,-10,-20,
+        -10,  0,  0,  0,  0,  0,  0,-10,
+        -10,  0,  5, 10, 10,  5,  0,-10,
+        -10,  5,  5, 10, 10,  5,  5,-10,
+        -10,  0, 10, 10, 10, 10,  0,-10,
+        -10, 10, 10, 10, 10, 10, 10,-10,
+        -10,  5,  0,  0,  0,  0,  5,-10,
+        -20,-10,-10,-10,-10,-10,-10,-20
+    ]
+
     def __init__(self):
         self.board = chess.Board()
 
@@ -47,38 +79,73 @@ class GameEngine:
             return 0
 
         score = 0
+        
+        # Material evaluation
         for piece_type, value in self.PIECE_VALUES.items():
             score += len(self.board.pieces(piece_type, chess.WHITE)) * value
             score -= len(self.board.pieces(piece_type, chess.BLACK)) * value
         
+        # Positional bonuses using Piece-Square Tables (PST)
+        for sq in self.board.pieces(chess.PAWN, chess.WHITE):
+            score += self.PAWN_PST[chess.square_mirror(sq)]
+        for sq in self.board.pieces(chess.PAWN, chess.BLACK):
+            score -= self.PAWN_PST[sq]
+
+        for sq in self.board.pieces(chess.KNIGHT, chess.WHITE):
+            score += self.KNIGHT_PST[chess.square_mirror(sq)]
+        for sq in self.board.pieces(chess.KNIGHT, chess.BLACK):
+            score -= self.KNIGHT_PST[sq]
+
+        for sq in self.board.pieces(chess.BISHOP, chess.WHITE):
+            score += self.BISHOP_PST[chess.square_mirror(sq)]
+        for sq in self.board.pieces(chess.BISHOP, chess.BLACK):
+            score -= self.BISHOP_PST[sq]
+
         # Add a bit of randomness to avoid predictable play
-        score += random.randint(-10, 10)
+        score += random.randint(-5, 5)
         return score
 
-    def get_best_move(self) -> str:
-        """Finds the best move using a 1-level deep heuristic search."""
+    def minimax(self, depth: int, alpha: float, beta: float, is_maximizing: bool) -> tuple[int, chess.Move | None]:
+        if depth == 0 or self.board.is_game_over():
+            return self.evaluate_board(), None
+
         legal_moves = list(self.board.legal_moves)
-        if not legal_moves:
-            return None
+        # Sort moves (captures first) to optimize alpha-beta pruning
+        legal_moves.sort(key=lambda m: self.board.is_capture(m), reverse=True)
 
         best_move = None
-        if self.board.turn == chess.WHITE:
+        if is_maximizing:
             max_eval = -float('inf')
             for move in legal_moves:
                 self.board.push(move)
-                eval = self.evaluate_board()
+                eval_val, _ = self.minimax(depth - 1, alpha, beta, False)
                 self.board.pop()
-                if eval > max_eval:
-                    max_eval = eval
+                if eval_val > max_eval:
+                    max_eval = eval_val
                     best_move = move
+                alpha = max(alpha, eval_val)
+                if beta <= alpha:
+                    break
+            return max_eval, best_move
         else:
             min_eval = float('inf')
             for move in legal_moves:
                 self.board.push(move)
-                eval = self.evaluate_board()
+                eval_val, _ = self.minimax(depth - 1, alpha, beta, True)
                 self.board.pop()
-                if eval < min_eval:
-                    min_eval = eval
+                if eval_val < min_eval:
+                    min_eval = eval_val
                     best_move = move
+                beta = min(beta, eval_val)
+                if beta <= alpha:
+                    break
+            return min_eval, best_move
 
-        return best_move.uci() if best_move else legal_moves[0].uci()
+    def get_best_move(self) -> str:
+        """Finds the best move using a 3-level deep minimax search with alpha-beta pruning."""
+        _, best_move = self.minimax(3, -float('inf'), float('inf'), self.board.turn == chess.WHITE)
+        if best_move:
+            return best_move.uci()
+        
+        legal_moves = list(self.board.legal_moves)
+        return legal_moves[0].uci() if legal_moves else None
