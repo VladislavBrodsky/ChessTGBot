@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
+import { telegramHaptic } from "@/lib/telegram";
 
 interface ChessBoardProps {
     fen: string;
@@ -47,6 +48,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                     (m) => m.from === sourceSquare && m.to === targetSquare && m.promotion
                 );
                 if (isPromoMove) {
+                    telegramHaptic('medium');
                     // Store details and open custom selection dialog; block immediate move
                     setPromotionMove({ from: sourceSquare, to: targetSquare });
                     return false;
@@ -60,11 +62,15 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             from: sourceSquare,
             to: targetSquare,
         });
+        if (moveResult) {
+            telegramHaptic('light');
+        }
         return moveResult;
     }
 
     const handleSelectPromotion = (pieceType: "q" | "r" | "b" | "n") => {
         if (promotionMove) {
+            telegramHaptic('light');
             onMove({
                 from: promotionMove.from,
                 to: promotionMove.to,
@@ -73,6 +79,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             setPromotionMove(null);
         }
     };
+
 
     return (
         <div className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700">
@@ -131,7 +138,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                         </div>
                         
                         <button
-                            onClick={() => setPromotionMove(null)}
+                            onClick={() => { setPromotionMove(null); telegramHaptic('light'); }}
                             className="w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-brand-rose-opacity-20"
                         >
                             Cancel

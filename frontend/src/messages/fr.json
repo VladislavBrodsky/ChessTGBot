@@ -254,7 +254,20 @@
         "ton_address": "TON Wallet Address",
         "ton_placeholder": "Enter TON wallet address (EQ...)",
         "linking_address": "Liaison de l'adresse...",
-        "verify_link": "Confirmer & Lier le Portefeuille"
+        "verify_link": "Confirmer & Lier le Portefeuille",
+        "invalid_amount": "Veuillez saisir un montant valide.",
+        "invalid_address": "Veuillez saisir une adresse de portefeuille valide.",
+        "specify_target_address": "Veuillez spécifier un portefeuille TON de destination.",
+        "link_success": "Portefeuille TON Web3 lié avec succès !",
+        "link_failed": "Échec de la liaison du portefeuille.",
+        "link_network_error": "Erreur réseau lors de la liaison du portefeuille.",
+        "withdraw_success_sim": "Retrait simulé de {amount} envoyé avec succès sur le réseau TON.",
+        "withdraw_failed": "Échec du retrait.",
+        "withdraw_network_error": "Erreur réseau lors du traitement du retrait.",
+        "deposit_success_sim": "Dépôt simulé de {amount} réussi ! Plateforme créditée de {credited} après 5% de frais.",
+        "deposit_invoice_success": "Facture générée avec succès ! Scannez le code QR ou cliquez sur 'Ouvrir dans le portefeuille' pour payer.",
+        "deposit_failed": "Échec de l'initialisation du dépôt.",
+        "deposit_network_error": "Erreur réseau lors de l'initialisation du dépôt."
     },
     "Membership": {
         "title": "CHESS PREMIUM",

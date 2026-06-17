@@ -26,7 +26,7 @@ export default function LinkWalletModal({
   // Connect Wallet Submission
   const handleConnectSubmit = async () => {
     if (!connectAddressInput.trim()) {
-      setErrorMessage("Please enter a valid wallet address.");
+      setErrorMessage(tw('invalid_address'));
       return;
     }
 
@@ -41,17 +41,17 @@ export default function LinkWalletModal({
       });
 
       if (res.ok) {
-        setSuccessMessage("TON Web3 Wallet linked successfully!");
+        setSuccessMessage(tw('link_success'));
         onSuccess();
         setTimeout(() => {
           onClose();
           setSuccessMessage("");
         }, 2000);
       } else {
-        setErrorMessage("Failed to link wallet.");
+        setErrorMessage(tw('link_failed'));
       }
     } catch {
-      setErrorMessage("Network error linking wallet.");
+      setErrorMessage(tw('link_network_error'));
     } finally {
       setProcessing(false);
     }

@@ -201,9 +201,20 @@ export default function ChallengesPage() {
  <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] pl-1 mb-4">Daily Operations</h3>
  <div className="space-y-3 w-full">
  {loading ? (
- <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
- Loading missions...
- </div>
+    <div className="w-full flex flex-col space-y-3">
+      {[1, 2, 3].map((n) => (
+        <div key={n} className="glass-panel p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface animate-pulse flex items-center justify-between">
+          <div className="flex items-center gap-4 w-2/3">
+            <div className="w-9 h-9 rounded-xl bg-brand-primary opacity-10 shrink-0" />
+            <div className="flex flex-col space-y-1.5 w-full">
+              <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/2" />
+              <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/3" />
+            </div>
+          </div>
+          <div className="w-16 h-1.5 bg-brand-primary opacity-5 rounded-full" />
+        </div>
+      ))}
+    </div>
  ) : tasks.length === 0 ? (
  <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
  No active missions

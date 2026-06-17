@@ -254,7 +254,20 @@
         "ton_address": "TON Wallet Address",
         "ton_placeholder": "Enter TON wallet address (EQ...)",
         "linking_address": "Vinculando dirección...",
-        "verify_link": "Confirmar y Vincular Billetera"
+        "verify_link": "Confirmar y Vincular Billetera",
+        "invalid_amount": "Por favor ingrese un monto válido.",
+        "invalid_address": "Por favor ingrese una dirección de billetera válida.",
+        "specify_target_address": "Por favor especifique una dirección de billetera TON de destino.",
+        "link_success": "¡Billetera TON Web3 vinculada con éxito!",
+        "link_failed": "Error al vincular la billetera.",
+        "link_network_error": "Error de red al vincular la billetera.",
+        "withdraw_success_sim": "Retiro simulado de {amount} enviado con éxito a la red TON.",
+        "withdraw_failed": "Retiro fallido.",
+        "withdraw_network_error": "Error de red durante el procesamiento del retiro.",
+        "deposit_success_sim": "¡Depósito simulado de {amount} exitoso! Plataforma acreditada {credited} después del 5% de tarifa de plataforma.",
+        "deposit_invoice_success": "¡Factura generada con éxito! Escanee el código QR o haga clic en 'Abrir en billetera' para pagar.",
+        "deposit_failed": "Error al iniciar el depósito.",
+        "deposit_network_error": "Error de red durante la iniciación del depósito."
     },
     "Membership": {
         "title": "CHESS PREMIUM",

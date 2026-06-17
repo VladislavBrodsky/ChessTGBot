@@ -30,17 +30,17 @@ export default function WithdrawModal({
   const handleWithdrawSubmit = async () => {
     const amt = parseFloat(withdrawAmount);
     if (isNaN(amt) || amt <= 0) {
-      setErrorMessage("Please enter a valid withdrawal amount.");
+      setErrorMessage(tw('invalid_amount'));
       return;
     }
 
     if (Math.round(amt * 100) > balance) {
-      setErrorMessage("Insufficient funds in your platform balance.");
+      setErrorMessage(tw('insufficient_balance'));
       return;
     }
 
     if (!withdrawAddress.trim()) {
-      setErrorMessage("Please specify a target TON Wallet address.");
+      setErrorMessage(tw('specify_target_address'));
       return;
     }
 
@@ -58,7 +58,7 @@ export default function WithdrawModal({
       });
 
       if (res.ok) {
-        setSuccessMessage(`Simulated withdrawal of $${amt.toFixed(2)} successfully sent to TON Network.`);
+        setSuccessMessage(tw('withdraw_success_sim', { amount: `$${amt.toFixed(2)}` }));
         onSuccess();
         setTimeout(() => {
           onClose();
@@ -66,10 +66,10 @@ export default function WithdrawModal({
         }, 3000);
       } else {
         const errData = await res.json();
-        setErrorMessage(errData.detail || "Withdrawal failed.");
+        setErrorMessage(errData.detail || tw('withdraw_failed'));
       }
     } catch {
-      setErrorMessage("Network error during withdrawal processing.");
+      setErrorMessage(tw('withdraw_network_error'));
     } finally {
       setProcessing(false);
     }

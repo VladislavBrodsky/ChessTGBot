@@ -6,6 +6,23 @@ import { FaCheck, FaGift, FaTrophy } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
+const TaskSkeleton = () => (
+    <div className="w-full flex flex-col space-y-3">
+        {[1, 2, 3].map((n) => (
+            <div key={n} className="relative overflow-hidden rounded-xl border border-brand-border-opacity-10 p-3 flex items-center justify-between bg-brand-surface animate-pulse">
+                <div className="flex items-center gap-3 w-2/3">
+                    <div className="w-10 h-10 rounded-lg bg-brand-primary opacity-10 shrink-0" />
+                    <div className="flex flex-col space-y-1.5 w-full">
+                        <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/2" />
+                        <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/3" />
+                    </div>
+                </div>
+                <div className="w-16 h-1.5 bg-brand-primary opacity-5 rounded-full" />
+            </div>
+        ))}
+    </div>
+);
+
 export default function DailyTasks() {
     const t = useTranslations('Gamification');
     const [tasks, setTasks] = useState<any[]>([]);
@@ -60,9 +77,7 @@ export default function DailyTasks() {
 
             <div className="space-y-3 w-full">
                 {loading ? (
-                    <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
-                        {t('loading_missions')}
-                    </div>
+                    <TaskSkeleton />
                 ) : tasks.length === 0 ? (
                     <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
                         {t('no_missions')}

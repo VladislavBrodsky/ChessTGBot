@@ -144,93 +144,114 @@ export default function Home() {
  </div>
 
  {/* Unified Premium Profile Card */}
- <motion.div
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group"
- >
- {/* Decorative background chess piece */}
- <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
- <FaChessKnight size={140} />
- </div>
+  {!stats ? (
+    <div className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse flex flex-col space-y-4 bg-brand-surface">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3.5 w-2/3">
+          <div className="w-12 h-12 rounded-xl bg-brand-primary opacity-10 shrink-0" />
+          <div className="flex flex-col space-y-1.5 w-full">
+            <div className="h-3.5 bg-brand-primary opacity-10 rounded w-2/3" />
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3" />
+          </div>
+        </div>
+        <div className="w-16 h-5 rounded-full bg-brand-primary opacity-5" />
+      </div>
+      <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
+      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center pt-2">
+        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
+        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
+        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
+      </div>
+    </div>
+  ) : (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group"
+    >
+      {/* Decorative background chess piece */}
+      <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
+      <FaChessKnight size={140} />
+      </div>
 
- <div className="flex items-center justify-between mb-4 relative z-10">
- <div className="flex items-center space-x-3.5">
- <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
- {(stats?.photo_url || tgUser?.photo_url) ? (
- <img 
-   src={stats?.photo_url || tgUser.photo_url} 
-   alt="Profile" 
-   className="w-full h-full rounded-lg object-cover"
-   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
- />
- ) : null}
- <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${(stats?.photo_url || tgUser?.photo_url) ? 'hidden' : ''}`}>
- {stats?.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
- </div>
- {stats?.is_premium && (
- <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
- <FaStar />
- </div>
- )}
- </div>
- <div className="flex flex-col justify-center">
- <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
- {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
- </h2>
- <span className="text-[11px] font-black text-brand-primary opacity-50 tracking-widest uppercase leading-none">
- {stats?.elo || 1000} {t('elo')}
- </span>
- </div>
- </div>
+      <div className="flex items-center justify-between mb-4 relative z-10">
+      <div className="flex items-center space-x-3.5">
+      <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
+      {(stats.photo_url || tgUser?.photo_url) ? (
+      <img 
+        src={stats.photo_url || tgUser.photo_url} 
+        alt="Profile" 
+        className="w-full h-full rounded-lg object-cover"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
+      />
+      ) : null}
+      <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${(stats.photo_url || tgUser?.photo_url) ? 'hidden' : ''}`}>
+      {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
+      </div>
+      {stats.is_premium && (
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
+      <FaStar />
+      </div>
+      )}
+      </div>
+      <div className="flex flex-col justify-center">
+      <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
+      {`${stats.first_name} ${stats.last_name || ""}`.trim()}
+      </h2>
+      <span className="text-[11px] font-black text-brand-primary opacity-50 tracking-widest uppercase leading-none">
+      {stats.elo || 1000} {t('elo')}
+      </span>
+      </div>
+      </div>
 
- {/* Balance pill inside the User Card */}
- <Link href={`/${locale}/wallet`} className="relative z-20">
- <motion.div 
- whileHover={{ scale: 1.04 }}
- whileTap={{ scale: 0.96 }}
- className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
- >
- <FaWallet className="text-[9px] text-brand-primary opacity-60" />
- <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">
- ${(walletBalance / 100).toFixed(2)}
- </span>
- </motion.div>
- </Link>
- </div>
+      {/* Balance pill inside the User Card */}
+      <Link href={`/${locale}/wallet`} className="relative z-20">
+      <motion.div 
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.96 }}
+      className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
+      >
+      <FaWallet className="text-[9px] text-brand-primary opacity-60" />
+      <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">
+      ${(walletBalance / 100).toFixed(2)}
+      </span>
+      </motion.div>
+      </Link>
+      </div>
 
- {/* XP Progress Bar */}
- <div className="mb-5 relative z-10">
- <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} levelLabel={t('level')} />
- </div>
+      {/* XP Progress Bar */}
+      <div className="mb-5 relative z-10">
+      <XPProgressBar xp={stats.xp || 0} level={stats.level || 1} levelLabel={t('level')} />
+      </div>
 
- <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
+      <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
 
- {/* Compact Stats Row */}
- <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
- <div className="flex flex-col items-center">
- <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
- <span className="text-xs font-black text-brand-primary">{stats?.win_rate?.toFixed(1) || 0}%</span>
- </div>
- <div className="flex flex-col items-center">
- <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
- <div className="flex items-center gap-1 justify-center">
- <span className="text-xs font-black text-brand-primary">{stats?.current_streak?.count || 0}</span>
- <span className={`text-[8px] font-black uppercase tracking-wider ${stats?.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
- {stats?.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
- </span>
- </div>
- </div>
- <div className="flex flex-col items-center">
- <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">
- {t('wins')?.[0] || 'W'}/{t('losses')?.[0] || 'L'}/{locale === 'ru' ? 'Н' : 'D'}
- </span>
- <span className="text-xs font-black text-brand-primary">
- {stats?.wins || 0}/{stats?.losses || 0}/{stats?.draws || 0}
- </span>
- </div>
- </div>
- </motion.div>
+      {/* Compact Stats Row */}
+      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
+      <div className="flex flex-col items-center">
+      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
+      <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || 0}%</span>
+      </div>
+      <div className="flex flex-col items-center">
+      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
+      <div className="flex items-center gap-1 justify-center">
+      <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
+      <span className={`text-[8px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
+      {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
+      </span>
+      </div>
+      </div>
+      <div className="flex flex-col items-center">
+      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">
+      {t('wins')?.[0] || 'W'}/{t('losses')?.[0] || 'L'}/{locale === 'ru' ? 'Н' : 'D'}
+      </span>
+      <span className="text-xs font-black text-brand-primary">
+      {stats.wins || 0}/{stats.losses || 0}/{stats.draws || 0}
+      </span>
+      </div>
+      </div>
+    </motion.div>
+  )}
 
  {/* Quick Shortcuts Hub Grid (3 Columns) */}
  <div className="grid grid-cols-3 gap-3 w-full relative z-10">

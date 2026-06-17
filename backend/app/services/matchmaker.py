@@ -1,45 +1,94 @@
 import asyncio
+import json
+import logging
+import time
+import redis.asyncio as redis
 from typing import Dict, List, Optional
+from app.core.config import get_settings
+
+settings = get_settings()
+logger = logging.getLogger(__name__)
 
 class MatchmakerService:
     _instance = None
     _lock = asyncio.Lock()
+    _redis_client = None
+    _use_memory = False
+    _memory_queues = {}  # Dict[int, List[dict]]
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(MatchmakerService, cls).__new__(cls)
-            cls._instance.queues = {}  # Dict[int, List[dict]] (bid_amount -> list of waiting players)
+            cls._instance._init_redis()
         return cls._instance
+
+    def _init_redis(self):
+        if not MatchmakerService._use_memory and MatchmakerService._redis_client is None:
+            try:
+                MatchmakerService._redis_client = redis.from_url(
+                    settings.REDIS_URL, encoding="utf-8", decode_responses=True
+                )
+            except Exception as e:
+                logger.warning(f"Failed to initialize Redis client for Matchmaker: {e}. Falling back to in-memory store.")
+                MatchmakerService._redis_client = None
+                MatchmakerService._use_memory = True
+        self.redis = MatchmakerService._redis_client
 
     async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000) -> None:
         """
         Add a user's connection to the matchmaking queue for a specific bid tier.
         """
         async with self._lock:
-            if bid_amount not in self.queues:
-                self.queues[bid_amount] = []
-            
             # Remove player from all other queues first to avoid double matching
             await self._remove_from_queue_unsafe(user_id)
             
-            # Append to target queue
-            self.queues[bid_amount].append({
+            player_data = {
                 'user_id': user_id,
                 'sid': sid,
                 'elo': elo,
-                'joined_at': asyncio.get_event_loop().time()
-            })
-            print(f"Matchmaker: Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} queue (sid: {sid})")
+                'joined_at': time.time()
+            }
+
+            if MatchmakerService._use_memory or not self.redis:
+                if bid_amount not in MatchmakerService._memory_queues:
+                    MatchmakerService._memory_queues[bid_amount] = []
+                MatchmakerService._memory_queues[bid_amount].append(player_data)
+                logger.info(f"Matchmaker (Memory): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} queue")
+                return
+
+            try:
+                queue_key = f"matchmaker:queue:{bid_amount}"
+                data = await self.redis.get(queue_key)
+                queue = json.loads(data) if data else []
+                queue.append(player_data)
+                await self.redis.set(queue_key, json.dumps(queue))
+                logger.info(f"Matchmaker (Redis): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} queue")
+            except Exception as e:
+                logger.warning(f"Redis add_to_queue failed ({e}). Falling back to memory.")
+                MatchmakerService._use_memory = True
+                if bid_amount not in MatchmakerService._memory_queues:
+                    MatchmakerService._memory_queues[bid_amount] = []
+                MatchmakerService._memory_queues[bid_amount].append(player_data)
 
     async def find_opponent(self, bid_amount: int, exclude_user_id: int, user_elo: int = 1000) -> Optional[dict]:
         """
         Find and return an opponent waiting in the same bid tier queue who has a comparable ELO.
-        Does NOT remove them from the queue yet (matching logic will pull them out).
         """
         async with self._lock:
-            queue = self.queues.get(bid_amount, [])
-            current_time = asyncio.get_event_loop().time()
+            current_time = time.time()
             
+            if MatchmakerService._use_memory or not self.redis:
+                queue = MatchmakerService._memory_queues.get(bid_amount, [])
+            else:
+                try:
+                    queue_key = f"matchmaker:queue:{bid_amount}"
+                    data = await self.redis.get(queue_key)
+                    queue = json.loads(data) if data else []
+                except Exception as e:
+                    logger.warning(f"Redis find_opponent failed ({e}). Falling back to memory.")
+                    MatchmakerService._use_memory = True
+                    queue = MatchmakerService._memory_queues.get(bid_amount, [])
+
             best_opponent = None
             best_diff = float('inf')
             
@@ -55,8 +104,6 @@ class MatchmakerService:
                 elo_diff = abs(user_elo - opponent_elo)
                 
                 if elo_diff <= elo_threshold:
-                    # Prefer the closest ELO match. In case of a tie, wait time is implicitly
-                    # prioritized since we loop in queue order (FIFO: oldest waiting player is first)
                     if elo_diff < best_diff:
                         best_diff = elo_diff
                         best_opponent = item
@@ -75,19 +122,60 @@ class MatchmakerService:
         Safely remove matched players from the queue.
         """
         async with self._lock:
-            if bid_amount in self.queues:
-                self.queues[bid_amount] = [
-                    item for item in self.queues[bid_amount]
-                    if item['user_id'] not in (player1_id, player2_id)
-                ]
-                print(f"Matchmaker: Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} queue")
+            if MatchmakerService._use_memory or not self.redis:
+                if bid_amount in MatchmakerService._memory_queues:
+                    MatchmakerService._memory_queues[bid_amount] = [
+                        item for item in MatchmakerService._memory_queues[bid_amount]
+                        if item['user_id'] not in (player1_id, player2_id)
+                    ]
+                logger.info(f"Matchmaker (Memory): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} queue")
+                return
+
+            try:
+                queue_key = f"matchmaker:queue:{bid_amount}"
+                data = await self.redis.get(queue_key)
+                if data:
+                    queue = json.loads(data)
+                    new_queue = [item for item in queue if item['user_id'] not in (player1_id, player2_id)]
+                    await self.redis.set(queue_key, json.dumps(new_queue))
+                logger.info(f"Matchmaker (Redis): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} queue")
+            except Exception as e:
+                logger.warning(f"Redis remove_match_pair failed ({e}). Falling back to memory.")
+                MatchmakerService._use_memory = True
+                if bid_amount in MatchmakerService._memory_queues:
+                    MatchmakerService._memory_queues[bid_amount] = [
+                        item for item in MatchmakerService._memory_queues[bid_amount]
+                        if item['user_id'] not in (player1_id, player2_id)
+                    ]
 
     async def _remove_from_queue_unsafe(self, user_id: int) -> None:
         """
         Unsafe internal helper; assumes self._lock is already acquired.
         """
-        for bid in list(self.queues.keys()):
-            original_len = len(self.queues[bid])
-            self.queues[bid] = [item for item in self.queues[bid] if item['user_id'] != user_id]
-            if len(self.queues[bid]) < original_len:
-                print(f"Matchmaker: Removed User {user_id} from ${bid / 100:.2f} queue")
+        if MatchmakerService._use_memory or not self.redis:
+            for bid in list(MatchmakerService._memory_queues.keys()):
+                original_len = len(MatchmakerService._memory_queues[bid])
+                MatchmakerService._memory_queues[bid] = [item for item in MatchmakerService._memory_queues[bid] if item['user_id'] != user_id]
+                if len(MatchmakerService._memory_queues[bid]) < original_len:
+                    logger.info(f"Matchmaker (Memory): Removed User {user_id} from ${bid / 100:.2f} queue")
+            return
+
+        try:
+            keys = await self.redis.keys("matchmaker:queue:*")
+            for queue_key in keys:
+                data = await self.redis.get(queue_key)
+                if data:
+                    queue = json.loads(data)
+                    original_len = len(queue)
+                    new_queue = [item for item in queue if item['user_id'] != user_id]
+                    if len(new_queue) < original_len:
+                        await self.redis.set(queue_key, json.dumps(new_queue))
+                        try:
+                            bid = int(queue_key.split(":")[-1])
+                            logger.info(f"Matchmaker (Redis): Removed User {user_id} from ${bid / 100:.2f} queue")
+                        except Exception:
+                            pass
+        except Exception as e:
+            logger.warning(f"Redis _remove_from_queue_unsafe failed ({e}). Falling back to memory.")
+            MatchmakerService._use_memory = True
+

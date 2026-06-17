@@ -254,7 +254,20 @@
         "ton_address": "TON Wallet Address",
         "ton_placeholder": "Enter TON wallet address (EQ...)",
         "linking_address": "Wallet-Adresse wird verknüpft...",
-        "verify_link": "Bestätigen & Wallet verknüpfen"
+        "verify_link": "Bestätigen & Wallet verknüpfen",
+        "invalid_amount": "Please enter a valid amount.",
+        "invalid_address": "Please enter a valid wallet address.",
+        "specify_target_address": "Please specify a target TON Wallet address.",
+        "link_success": "TON Web3 Wallet linked successfully!",
+        "link_failed": "Failed to link wallet.",
+        "link_network_error": "Network error linking wallet.",
+        "withdraw_success_sim": "Simulated withdrawal of {amount} successfully sent to TON Network.",
+        "withdraw_failed": "Withdrawal failed.",
+        "withdraw_network_error": "Network error during withdrawal processing.",
+        "deposit_success_sim": "Simulated deposit of {amount} successful! Platform credited {credited} after 5% platform fee.",
+        "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
+        "deposit_failed": "Failed to initiate deposit.",
+        "deposit_network_error": "Network error during deposit initiation."
     },
     "Membership": {
         "title": "CHESS PREMIUM",

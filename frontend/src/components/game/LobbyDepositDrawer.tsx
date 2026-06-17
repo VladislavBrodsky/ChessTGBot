@@ -56,7 +56,7 @@ export default function LobbyDepositDrawer({
   const handleGenerateLobbyInvoice = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
-      setDepositError("Please enter a valid deposit amount.");
+      setDepositError(tw('invalid_amount'));
       return;
     }
 
@@ -80,10 +80,10 @@ export default function LobbyDepositDrawer({
         const data = await res.json();
         if (data.status === "invoice") {
           setInvoiceUrl(data.payment_link || "");
-          setDepositSuccess("Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.");
+          setDepositSuccess(tw('deposit_invoice_success'));
         } else if (data.status === "success") {
           onDepositSuccess(data.new_balance);
-          setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
+          setDepositSuccess(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
           setTimeout(() => {
             onClose();
             setDepositSuccess("");
@@ -91,10 +91,10 @@ export default function LobbyDepositDrawer({
         }
       } else {
         const errData = await res.json();
-        setDepositError(errData.detail || "Failed to initiate deposit.");
+        setDepositError(errData.detail || tw('deposit_failed'));
       }
     } catch {
-      setDepositError("Network error during deposit initiation.");
+      setDepositError(tw('deposit_network_error'));
     } finally {
       setIsDepositing(false);
     }
@@ -103,7 +103,7 @@ export default function LobbyDepositDrawer({
   const handleSimulateLobbyDeposit = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
-      setDepositError("Please enter a valid deposit amount.");
+      setDepositError(tw('invalid_amount'));
       return;
     }
 
@@ -134,17 +134,17 @@ export default function LobbyDepositDrawer({
       if (res.ok) {
         const data = await res.json();
         onDepositSuccess(data.new_balance);
-        setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
+        setDepositSuccess(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
         setTimeout(() => {
           onClose();
           setDepositSuccess("");
         }, 2000);
       } else {
         const errData = await res.json();
-        setDepositError(errData.detail || "Simulation failed.");
+        setDepositError(errData.detail || tw('deposit_failed'));
       }
     } catch {
-      setDepositError("Network error during simulation processing.");
+      setDepositError(tw('deposit_network_error'));
     } finally {
       setIsDepositing(false);
     }

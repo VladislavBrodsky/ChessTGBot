@@ -92,8 +92,27 @@ function PuzzleContent() {
 
         <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
           {loading ? (
-            <div className="text-center py-12 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
-              Loading tactics board...
+            <div className="w-full flex flex-col items-center justify-center space-y-5 animate-pulse">
+              <div className="w-full max-w-[280px] aspect-square rounded-xl border border-brand-border-opacity-10 p-1.5 bg-brand-void/40 flex flex-col gap-0.5 shadow-inner">
+                {Array.from({ length: 8 }).map((_, row) => (
+                  <div key={row} className="flex-1 flex gap-0.5">
+                    {Array.from({ length: 8 }).map((_, col) => {
+                      const isDark = (row + col) % 2 === 1;
+                      return (
+                        <div
+                          key={col}
+                          className={`flex-1 rounded-[2px] ${
+                            isDark 
+                              ? 'bg-brand-primary/10 border border-brand-border-opacity-5' 
+                              : 'bg-brand-primary/5'
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+              <div className="h-2 bg-brand-primary opacity-10 rounded w-1/2" />
             </div>
           ) : error ? (
             <div className="text-center py-12 text-xs font-bold text-rose-400 uppercase tracking-wider">

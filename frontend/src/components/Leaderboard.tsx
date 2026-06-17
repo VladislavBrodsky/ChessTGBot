@@ -40,13 +40,33 @@ export default function Leaderboard() {
  return <span className="text-[10px] font-black opacity-30">#{rank}</span>;
  };
 
- if (loading) {
- return (
- <div className="w-full flex justify-center py-12">
- <div className="w-8 h-8 border-2 border-brand-border-opacity-20 border-t-brand-primary rounded-full animate-spin" />
- </div>
- );
- }
+  if (loading) {
+    return (
+      <div className="w-full space-y-6">
+        <div className="flex flex-col items-center space-y-2 mb-4 animate-pulse">
+          <div className="h-4 bg-brand-primary opacity-10 rounded w-32" />
+          <div className="h-px w-8 bg-brand-border-opacity-20" />
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-24" />
+        </div>
+        
+        <div className="glass-panel rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5 p-1 space-y-2">
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <div key={idx} className="flex items-center justify-between p-4 bg-brand-surface/30 rounded-2xl animate-pulse border border-brand-border-opacity-5">
+              <div className="flex items-center gap-4 w-2/3">
+                <div className="w-6 h-4 bg-brand-primary opacity-10 rounded shrink-0" />
+                <div className="w-8 h-8 rounded-full bg-brand-primary opacity-10 shrink-0" />
+                <div className="flex flex-col space-y-1.5 w-full">
+                  <div className="h-2.5 bg-brand-primary opacity-10 rounded w-2/3" />
+                  <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/3" />
+                </div>
+              </div>
+              <div className="h-3 bg-brand-primary opacity-10 rounded w-12" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
  return (
  <div className="w-full space-y-6">

@@ -38,7 +38,7 @@ export default function DepositModal({
   const handleDepositSubmit = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
-      setErrorMessage("Please enter a valid deposit amount.");
+      setErrorMessage(tw('invalid_amount'));
       return;
     }
 
@@ -67,7 +67,7 @@ export default function DepositModal({
 
       if (res.ok) {
         const data = await res.json();
-        setSuccessMessage(`Simulated deposit of $${amt.toFixed(2)} successful! Platform credited $${(data.credited_amount / 100).toFixed(2)} after 5% platform fee.`);
+        setSuccessMessage(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
         onSuccess();
         setTimeout(() => {
           onClose();
@@ -75,10 +75,10 @@ export default function DepositModal({
         }, 3000);
       } else {
         const errData = await res.json();
-        setErrorMessage(errData.detail || "Deposit failed.");
+        setErrorMessage(errData.detail || tw('deposit_failed'));
       }
     } catch {
-      setErrorMessage("Network error during deposit processing.");
+      setErrorMessage(tw('deposit_network_error'));
     } finally {
       setProcessing(false);
     }
@@ -87,7 +87,7 @@ export default function DepositModal({
   const handleGenerateInvoice = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
-      setErrorMessage("Please enter a valid deposit amount.");
+      setErrorMessage(tw('invalid_amount'));
       return;
     }
 
@@ -111,9 +111,9 @@ export default function DepositModal({
         const data = await res.json();
         if (data.status === "invoice") {
           setInvoiceUrl(data.payment_link || "");
-          setSuccessMessage("Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.");
+          setSuccessMessage(tw('deposit_invoice_success'));
         } else if (data.status === "success") {
-          setSuccessMessage(`Simulated deposit of $${amt.toFixed(2)} successful! Platform credited $${(data.credited_amount / 100).toFixed(2)} after 5% platform fee.`);
+          setSuccessMessage(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
           onSuccess();
           setTimeout(() => {
             onClose();
@@ -122,10 +122,10 @@ export default function DepositModal({
         }
       } else {
         const errData = await res.json();
-        setErrorMessage(errData.detail || "Failed to initiate deposit.");
+        setErrorMessage(errData.detail || tw('deposit_failed'));
       }
     } catch {
-      setErrorMessage("Network error during deposit initiation.");
+      setErrorMessage(tw('deposit_network_error'));
     } finally {
       setProcessing(false);
     }
