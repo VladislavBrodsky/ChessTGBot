@@ -9,6 +9,7 @@ declare global {
                 requestFullscreen?: () => void;
                 exitFullscreen?: () => void;
                 isVersionAtLeast?: (version: string) => boolean;
+                disableVerticalSwipes?: () => void;
                 close: () => void;
                 enableClosingConfirmation: () => void;
                 disableClosingConfirmation: () => void;
