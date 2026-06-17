@@ -1115,100 +1115,92 @@ setTgUser({ first_name: "Master", photo_url: null });
   </div>
   ) : (
   /* Config / Lobby View */
-  <div className="w-full space-y-4">
-  
-  {/* Wallet & Balance Dashboard Row */}
-  <div className="grid grid-cols-2 gap-3 w-full items-stretch">
-    <WalletConnect />
-    <Link href={`/${locale}/wallet`} className="block w-full">
-      <motion.div
-        whileHover={{ scale: 1.01 }}
-        className="glass-panel p-2 h-full rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex flex-col justify-center px-4 shadow-sm"
-      >
-        <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-45">
-          <FaWallet size={10} className="shrink-0" />
-          <span>{tg('cyber_balance')}</span>
-        </div>
-        <span className="text-xs font-black text-brand-primary tracking-wider mt-0.5">
+  <div className="w-full space-y-3">
+
+  {/* ─── UNIFIED STATUS BAR ─── */}
+  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm px-3 py-2.5 flex items-center justify-between gap-3">
+    {/* Wallet side */}
+    <WalletConnect minimal />
+    {/* Divider */}
+    <div className="w-px h-7 bg-brand-border-opacity-10 shrink-0" />
+    {/* Balance side */}
+    <Link href={`/${locale}/wallet`} className="flex items-center gap-2 min-w-0 group">
+      <div className="w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 flex items-center justify-center shrink-0 group-hover:border-brand-border-opacity-20 transition-all">
+        <FaWallet size={11} className="text-brand-primary opacity-50 group-hover:opacity-80 transition-all" />
+      </div>
+      <div className="flex flex-col min-w-0">
+        <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
+        <span className={`text-[11px] font-black tracking-wide leading-none truncate ${hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
           ${(walletBalance / 100).toFixed(2)}
         </span>
-      </motion.div>
+      </div>
     </Link>
   </div>
 
-  {/* Unified Modern Battle Arena Panel */}
-  <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium space-y-5">
-    
-    {/* SECTION 1: WAGER SECTOR */}
-    <div className="space-y-2">
-      <div className="flex justify-between items-center px-1">
-        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('select_wager')}</span>
-        <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide">{tg('commission')}</span>
+  {/* ─── BATTLE ARENA CONFIG CARD ─── */}
+  <div className="glass-panel rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium overflow-hidden">
+
+    {/* ── WAGER SECTOR ── */}
+    <div className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-5">
+      <div className="flex justify-between items-center mb-2.5">
+        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
+          <FaCoins className="opacity-60" size={8} />
+          {tg('select_wager')}
+        </span>
+        <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide bg-emerald-500/5 border border-emerald-500/10 px-1.5 py-0.5 rounded-full">{tg('commission')}</span>
       </div>
 
-      <div className="w-full flex items-center">
-        <div
-          ref={wagerScrollRef}
-          className="w-full flex gap-2 overflow-x-auto py-1.5 scrollbar-none px-1"
+      <div
+        ref={wagerScrollRef}
+        className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5"
+      >
+        {[
+          { label: "$1", val: 100 },
+          { label: "$5", val: 500 },
+          { label: "$10", val: 1000 },
+          { label: "$25", val: 2500 },
+          { label: "$50", val: 5000 },
+          { label: "$100", val: 10000 },
+          { label: "$250", val: 25000 },
+          { label: "$500", val: 50000 },
+          { label: "$1000", val: 100000 }
+        ].map((opt) => {
+          const isSelected = !isCustomWager && selectedWager === opt.val;
+          return (
+            <button
+              key={opt.val}
+              data-active={isSelected ? "true" : "false"}
+              onClick={() => {
+                setSelectedWager(opt.val);
+                setIsCustomWager(false);
+                telegramHaptic('light');
+              }}
+              className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer ${
+                isSelected
+                  ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
+                  : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+              }`}
+            >
+              {opt.val === 100000 && <FaCrown className="text-[8px] text-yellow-400 mr-0.5 animate-pulse" />}
+              {opt.label}
+            </button>
+          );
+        })}
+        <button
+          data-active={isCustomWager ? "true" : "false"}
+          onClick={() => { setIsCustomWager(true); telegramHaptic('light'); }}
+          className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer ${
+            isCustomWager
+              ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
+              : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+          }`}
         >
-          {[
-            { label: "$1", val: 100 },
-            { label: "$5", val: 500 },
-            { label: "$10", val: 1000 },
-            { label: "$25", val: 2500 },
-            { label: "$50", val: 5000 },
-            { label: "$100", val: 10000 },
-            { label: "$250", val: 25000 },
-            { label: "$500", val: 50000 },
-            { label: "$1000", val: 100000 }
-          ].map((opt) => {
-            const isSelected = !isCustomWager && selectedWager === opt.val;
-            return (
-              <button
-                key={opt.val}
-                data-active={isSelected ? "true" : "false"}
-                onClick={() => {
-                  setSelectedWager(opt.val);
-                  setIsCustomWager(false);
-                  telegramHaptic('light');
-                }}
-                className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
-                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
-                }`}
-              >
-                {opt.val === 100000 && <FaCrown className="text-[9px] text-yellow-400 mr-1 animate-pulse" />}
-                <span>{opt.label}</span>
-              </button>
-            );
-          })}
-
-          {/* Custom OTHER Chip */}
-          <button
-            data-active={isCustomWager ? "true" : "false"}
-            onClick={() => {
-              setIsCustomWager(true);
-              telegramHaptic('light');
-            }}
-            className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-              isCustomWager
-                ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
-                : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
-            }`}
-          >
-            <FaCoins className="text-[9px] mr-1 opacity-70" />
-            <span>{tg('other')}</span>
-          </button>
-        </div>
+          ···
+        </button>
       </div>
 
       {isCustomWager && (
-        <motion.div
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col space-y-1 pt-1 max-w-[200px] mx-auto"
-        >
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-2">
           <input
             type="number"
             value={customWagerInput}
@@ -1220,158 +1212,150 @@ setTgUser({ first_name: "Master", photo_url: null });
       )}
     </div>
 
-    {/* SECTION 2: DURATION PICKER */}
-    <div className="space-y-2">
-      <div className="flex justify-between items-center px-1">
-        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest">{tg('time_control')}</span>
+    {/* ── TIME CONTROL ── */}
+    <div className="px-4 pt-3 pb-4">
+      <div className="flex justify-between items-center mb-2.5">
+        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
+          <FaChessPawn className="opacity-60" size={8} />
+          {tg('time_control')}
+        </span>
+        <span className="text-[9px] font-black text-brand-primary opacity-60">
+          {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
+        </span>
       </div>
 
-      <div className="w-full flex items-center">
-        <div
-          ref={timeScrollRef}
-          className="w-full flex gap-2 overflow-x-auto py-1 scrollbar-none px-1"
-        >
-          {[
-            { label: "1 min", val: 60 },
-            { label: "3 min", val: 180 },
-            { label: "5 min", val: 300 },
-            { label: "10 min", val: 600 },
-            { label: "15 min", val: 900 },
-            { label: "30 min", val: 1800 },
-            { label: "60 min", val: 3600 }
-          ].map((opt) => {
-            const isSelected = timeControl === opt.val;
-            return (
-              <button
-                key={opt.val}
-                data-active={isSelected ? "true" : "false"}
-                onClick={() => {
-                  setTimeControl(opt.val);
-                  telegramHaptic('light');
-                }}
-                className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
-                    : 'bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary hover:border-brand-border-opacity-20'
-                }`}
-              >
-                <span>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      <div
+        ref={timeScrollRef}
+        className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5"
+      >
+        {[
+          { label: "1m", val: 60, icon: "⚡" },
+          { label: "3m", val: 180, icon: "⚡" },
+          { label: "5m", val: 300, icon: "🔥" },
+          { label: "10m", val: 600, icon: "⚔️" },
+          { label: "15m", val: 900, icon: "⚔️" },
+          { label: "30m", val: 1800, icon: "🏆" },
+          { label: "60m", val: 3600, icon: "👑" }
+        ].map((opt) => {
+          const isSelected = timeControl === opt.val;
+          return (
+            <button
+              key={opt.val}
+              data-active={isSelected ? "true" : "false"}
+              onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
+              className={`px-3 py-1.5 rounded-xl shrink-0 flex flex-col items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer gap-0.5 min-w-[44px] ${
+                isSelected
+                  ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
+                  : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+              }`}
+            >
+              <span className="text-[9px] leading-none">{opt.icon}</span>
+              <span className="leading-none">{opt.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
 
-    {/* SECTION 3: LAUNCHER BUTTON */}
-    <div className="pt-2">
+    {/* ── SUMMARY ROW ── */}
+    <AnimatePresence>
+    {chosenWager > 0 && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        className="mx-3 mb-3 rounded-2xl overflow-hidden"
+      >
+        <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand-void/40 border border-brand-border-opacity-10 rounded-2xl">
+          <div className="flex flex-col">
+            <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Stake</span>
+            <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
+          </div>
+          <div className="w-px h-6 bg-brand-border-opacity-10" />
+          <div className="flex flex-col items-center">
+            <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">Win Up To</span>
+            <span className="text-[11px] font-black text-emerald-400">${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT</span>
+          </div>
+          <div className="w-px h-6 bg-brand-border-opacity-10" />
+          <button
+            onClick={() => setShowRakeInfo(true)}
+            className="flex flex-col items-end cursor-pointer bg-transparent border-0"
+          >
+            <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Rake</span>
+            <span className="text-[11px] font-black text-amber-400">3%</span>
+          </button>
+        </div>
+
+        {/* Balance check strip */}
+        <div className={`mt-1.5 py-1.5 px-3.5 rounded-xl border text-[8.5px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
+          hasSufficient
+            ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
+            : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
+        }`}>
+          <span className="opacity-70">Balance: ${(walletBalance / 100).toFixed(2)}</span>
+          {hasSufficient
+            ? <span className="flex items-center gap-1">✓ {tg('balance_verified')}</span>
+            : <span className="font-black animate-pulse">↑ ${((chosenWager - walletBalance) / 100).toFixed(2)} needed</span>
+          }
+        </div>
+      </motion.div>
+    )}
+    </AnimatePresence>
+
+    {/* ── LAUNCHER BUTTON ── */}
+    <div className="px-3 pb-3">
       <motion.button
-        whileHover={!isCreating ? { scale: 1.01 } : {}}
-        whileTap={!isCreating ? { scale: 0.99 } : {}}
+        whileHover={!isCreating ? { scale: 1.015 } : {}}
+        whileTap={!isCreating ? { scale: 0.985 } : {}}
         onClick={handleLauncherClick}
         disabled={isCreating}
-        className={`w-full py-4.5 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-200 ${
+        className={`w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-0.5 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-200 ${
           hasSufficient && !isCreating
-            ? 'bg-brand-primary text-brand-void shadow-neon font-black'
+            ? 'bg-brand-primary text-brand-void shadow-neon'
             : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30'
         } ${
           chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
         }`}
       >
         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-        
         <div className="flex items-center gap-2">
-          <FaChessKnight size={14} className="text-current animate-bounce" />
-          <span className="text-xs font-black tracking-[0.25em] text-current uppercase">
+          <FaChessKnight size={13} className="text-current" />
+          <span className="text-[11px] font-black tracking-[0.2em] text-current uppercase">
             {hasSufficient ? t('execute_matchmaking') : "TOP UP & PLAY"}
           </span>
         </div>
-
-        <div className="text-[8px] font-black tracking-[0.15em] opacity-80 text-current uppercase flex items-center gap-1.5 mt-0.5">
-          <span>{timeControl >= 60 ? `${timeControl / 60} MINS` : `${timeControl} SECS`}</span>
-          <span className="opacity-40">•</span>
-          {hasSufficient ? (
-            <span>STAKE: ${(chosenWager / 100).toFixed(2)} USDT</span>
-          ) : (
-            <span className="text-brand-primary animate-pulse font-black">
-              USDT NEEDED: ${((chosenWager - walletBalance) / 100).toFixed(2)}
-            </span>
-          )}
-        </div>
       </motion.button>
     </div>
-
-    {/* NEON POT FORECAST BANNER */}
-    {chosenWager > 0 && (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full rounded-2xl p-4 bg-brand-void/40 border border-brand-border-opacity-10 shadow-sm flex flex-col items-center justify-center text-center"
-      >
-        <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-1">{tg('potential_pot_reward')}</span>
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-lg font-black text-brand-primary tracking-wide">
-            ${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT
-          </span>
-          <span className="text-[9px] font-bold text-brand-primary/45">{tg('net_win')}</span>
-        </div>
-        <button 
-          onClick={() => setShowRakeInfo(true)}
-          className="mt-2 text-[8px] font-bold text-brand-primary/40 hover:text-brand-primary uppercase tracking-widest transition-colors flex items-center gap-1 bg-transparent border-0 cursor-pointer"
-        >
-          <span>{tg('total_pot_info', { amount: ((chosenWager * 2) / 100).toFixed(2) })}</span>
-          <span className="underline">{tg('learn_more')}</span>
-        </button>
-      </motion.div>
-    )}
-
   </div>
 
-  {/* Fund Validation Bar & Matchmaking Errors */}
-  <div className="flex flex-col space-y-2 w-full">
-    {chosenWager > 0 && (
-      <div className={`w-full py-2.5 px-4 rounded-xl border text-[9px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
-        hasSufficient
-          ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
-          : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
-      }`}>
-        <span className="opacity-60">{tg('active_wager')} ${(chosenWager / 100).toFixed(2)} USDT</span>
-        {hasSufficient ? (
-          <span>{tg('balance_verified')}</span>
-        ) : (
-          <span className="font-black animate-pulse">{tg('insufficient_funds')}</span>
-        )}
-      </div>
-    )}
+  {/* Matchmaking Error */}
+  {matchmakingError && (
+    <div className="p-3 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-2xl text-rose-400 text-[10px] font-black uppercase tracking-wider text-center shadow-sm">
+      {matchmakingError}
+    </div>
+  )}
 
-    {matchmakingError && (
-      <div className="p-3 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-2xl text-rose-400 text-[10px] font-black uppercase tracking-wider text-center shadow-sm">
-        {matchmakingError}
-      </div>
-    )}
-  </div>
-
-  {/* Train AI & Invite Friend split row */}
-  <div className="grid grid-cols-2 gap-3 w-full">
+  {/* ─── SECONDARY ACTIONS ─── */}
+  <div className="grid grid-cols-2 gap-2.5 w-full">
     <motion.button
       whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileTap={{ scale: 0.98 }}
       onClick={playVsComputer}
       disabled={isCreating}
-      className="w-full py-3 glass-button text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+      className="w-full py-3 glass-panel rounded-2xl border border-brand-border-opacity-10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:border-brand-border-opacity-20 transition-all"
     >
-      <FaRobot className="text-sm text-brand-primary opacity-40" />
+      <FaRobot className="text-brand-primary opacity-50" size={12} />
       <span>{tg('train_ai')}</span>
     </motion.button>
 
     <motion.button
       whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileTap={{ scale: 0.98 }}
       onClick={playVsFriend}
       disabled={isCreating}
-      className="w-full py-3 glass-button text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+      className="w-full py-3 glass-panel rounded-2xl border border-brand-border-opacity-10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:border-brand-border-opacity-20 transition-all"
     >
-      <FaShareAlt className="text-sm text-brand-primary opacity-40" />
+      <FaShareAlt className="text-brand-primary opacity-50" size={12} />
       <span>{tg('play_friend')}</span>
     </motion.button>
   </div>
