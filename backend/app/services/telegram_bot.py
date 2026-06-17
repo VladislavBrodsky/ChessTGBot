@@ -68,7 +68,7 @@ class TelegramService:
 
             # Fix: Use WebAppInfo object instead of dict
             keyboard = [
-                [InlineKeyboardButton("Play Chess ♟️", web_app=WebAppInfo(url=web_app_url))]
+                [InlineKeyboardButton("⚡ Enter Chess Arena ♟️", web_app=WebAppInfo(url=web_app_url))]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             
@@ -77,7 +77,7 @@ class TelegramService:
             try:
                 await context.bot.set_chat_menu_button(
                     chat_id=user.id,
-                    menu_button=MenuButtonWebApp(text="Play Chess ♟️", web_app=WebAppInfo(url=web_app_url)) 
+                    menu_button=MenuButtonWebApp(text="♟️ Play & Earn", web_app=WebAppInfo(url=web_app_url)) 
                 )
             except Exception as menu_error:
                 logger.warning(f"Could not set menu button: {menu_error}")
@@ -87,9 +87,22 @@ class TelegramService:
             if user.last_name:
                 name += f" {user.last_name}"
 
+            welcome_msg = (
+                f"⚡ <b>FINCHESS ARENA v1.5</b> ⚡\n\n"
+                f"Welcome, <b>{name}</b>! ♟️🔥\n"
+                f"You have successfully synchronized with the decentralized chess matrix.\n\n"
+                f"🤖 <b>Core Features:</b>\n"
+                f"• <b>Play-to-Earn:</b> Wager USDT in gasless real-time matches.\n"
+                f"• <b>Dual-Reward Referrals:</b> Invite recruits to earn <b>$0.20 USDT + 100 XP</b> (plus passive revenue commissions from their games!).\n"
+                f"• <b>Tactics Academy:</b> Solve a 100-level puzzle grid to level up.\n"
+                f"• <b>Web3 Integration:</b> Instant deposits and withdrawals to your TON Wallet.\n\n"
+                f"👇 Click the button below to initialize the dashboard and start playing!"
+            )
+
             await update.message.reply_text(
-                f"Welcome {name}! ♟️🚀\n\nClick below to start playing in our Mini App.",
-                reply_markup=reply_markup
+                welcome_msg,
+                reply_markup=reply_markup,
+                parse_mode="HTML"
             )
         except Exception as e:
             logger.error(f"Error in start command: {e}")
