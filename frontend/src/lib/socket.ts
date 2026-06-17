@@ -11,8 +11,17 @@ let socket: ReturnType<typeof io>;
 const getSocketUrl = () => {
     if (typeof window !== "undefined") {
         const host = window.location.hostname;
+        
+        // 1. Hardcoded production fallback
         if (host === "chesstgbot-frontend-production.up.railway.app") {
             return "https://chesstgbot-backend-production.up.railway.app";
+        }
+
+        // 2. Dynamic Railway URL resolution (e.g. chesstgbot-frontend-xxx.up.railway.app -> chesstgbot-backend-xxx.up.railway.app)
+        if (host.includes("-frontend")) {
+            const protocol = window.location.protocol;
+            const backendHost = host.replace("-frontend", "-backend");
+            return `${protocol}//${backendHost}`;
         }
     }
     return process.env.NEXT_PUBLIC_API_URL || "";

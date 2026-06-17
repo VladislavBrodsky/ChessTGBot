@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from app.core.config import get_settings
-from app.core.socket import sio_app
+from app.core.socket import sio
 import app.socket_events # Register events
 import os
 import logging
@@ -45,11 +45,19 @@ class RawCORSMiddleware:
         return None
 
     def _is_allowed(self, origin):
-        """Allow only designated production origins or localhost in development."""
+        """Allow designated origins, dynamic Railway subdomains, and localhost."""
         if origin in self.ALLOWED_ORIGINS:
             return True
         # Allow localhost origins for local development
         if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+            return True
+        # Dynamically allow any Railway chesstgbot subdomain (preview deploys etc.)
+        if origin.endswith(".up.railway.app") and "chesstgbot" in origin:
+            return True
+        # Allow origins matching configured settings URLs
+        if settings.WEBAPP_URL and origin == settings.WEBAPP_URL.rstrip("/"):
+            return True
+        if settings.BACKEND_URL and origin == settings.BACKEND_URL.rstrip("/"):
             return True
         return False
 
@@ -229,8 +237,11 @@ def create_application() -> FastAPI:
             content={"detail": "Not Found"}
         )
 
-    # Mount Socket.IO (Must be before static catch-all)
-    application.mount("/", sio_app)
+    # Note: Socket.IO is NOT mounted here as a sub-application.
+    # Instead, the FastAPI app is wrapped with socketio.ASGIApp at the
+    # module level below, so Socket.IO handles /socket.io/* paths and
+    # FastAPI handles all other paths. This avoids 405 errors caused by
+    # Socket.IO's ASGI app rejecting non-Socket.IO requests at "/".
 
     # Static Frontend Serving (Unified Monolith)
     # We check if the 'static_frontend' directory exists (created by Docker)
@@ -281,4 +292,14 @@ def create_application() -> FastAPI:
 
     return application
 
-app = create_application()
+_fastapi_app = create_application()
+
+# Wrap FastAPI with Socket.IO ASGI app.
+# socketio.ASGIApp routes /socket.io/* to the Socket.IO server and
+# delegates all other requests to the FastAPI application.
+import socketio as _socketio_module
+app = _socketio_module.ASGIApp(socketio_server=sio, other_asgi_app=_fastapi_app)
+
+# Expose dependency_overrides on the wrapper so that tests can override
+# dependencies the same way they do on a plain FastAPI app.
+app.dependency_overrides = _fastapi_app.dependency_overrides  # type: ignore[attr-defined]

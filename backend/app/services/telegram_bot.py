@@ -11,6 +11,8 @@ class TelegramService:
     is_currently_leader = False
     receiver_active = False
     receiver_type = None
+    election_task = None  # Background leader election asyncio.Task
+    instance_id = None   # Unique ID for this process instance
 
     @staticmethod
     async def get_user_profile_photo(user_id: int, bot):
@@ -233,6 +235,7 @@ class TelegramService:
             import os
             
             instance_id = f"bot_{settings.PROJECT_NAME}_{os.getpid()}_{asyncio.get_event_loop().time()}"
+            cls.instance_id = instance_id
             lock_key = "telegram_bot_leader"
             
             while True:
@@ -282,11 +285,35 @@ class TelegramService:
                 
                 await asyncio.sleep(10)
 
-        asyncio.create_task(election_loop())
+        cls.election_task = asyncio.create_task(election_loop())
 
     @classmethod
     async def stop_bot(cls):
-        """Stop the bot application gracefully."""
+        """Stop the bot application gracefully, releasing the Redis leader lock immediately."""
+        # Cancel and await the election loop first so it doesn't race with lock deletion
+        if cls.election_task and not cls.election_task.done():
+            cls.election_task.cancel()
+            try:
+                await cls.election_task
+            except Exception:
+                pass
+            cls.election_task = None
+
+        # Release the Redis leader lock immediately so the new instance can take over
+        # without waiting for the 20-second TTL to expire.
+        if cls.is_currently_leader and cls.instance_id:
+            try:
+                import redis.asyncio as redis
+                redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+                lock_key = "telegram_bot_leader"
+                current_owner = await redis_client.get(lock_key)
+                if current_owner == cls.instance_id:
+                    await redis_client.delete(lock_key)
+                    logger.info("🔓 [LEADER ELECTION] Released Redis lock on shutdown.")
+                await redis_client.close()
+            except Exception as e:
+                logger.warning(f"Could not release Redis lock on shutdown: {e}")
+
         if cls.application:
             try:
                 await cls.stop_receiver()
@@ -297,6 +324,8 @@ class TelegramService:
                 logger.error(f"Error stopping bot: {e}")
             finally:
                 cls.application = None
+                cls.is_currently_leader = False
+                cls.instance_id = None
 
     @classmethod
     async def create_invite_link(cls, game_id: str) -> str:

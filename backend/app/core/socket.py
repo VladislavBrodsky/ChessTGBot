@@ -6,8 +6,6 @@ sio = socketio.AsyncServer(
     cors_allowed_origins='*'
 )
 
-# Create an ASGI app structure for Socket.IO
-sio_app = socketio.ASGIApp(sio)
 
 @sio.event
 async def connect(sid, environ):
