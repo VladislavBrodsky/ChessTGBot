@@ -143,8 +143,8 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
         opponent_id = game.black_player_id if is_white else game.white_player_id
         
         opponent = opponents_map.get(opponent_id)
-        opponent_name = opponent.first_name if opponent else f"User_{opponent_id}"
-        opponent_elo = opponent.elo if opponent else 1000
+        opponent_name = opponent.first_name if (opponent and opponent.first_name) else f"User_{opponent_id}"
+        opponent_elo = opponent.elo if (opponent and opponent.elo is not None) else 1000
         
         # Determine result
         result = 'draw'
@@ -154,11 +154,16 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
             else:
                 result = 'loss'
         
-        # Calculate ELO change for user
+        # Calculate ELO change for user (with null-guards for legacy/aborted matches)
+        white_after = game.white_elo_after if game.white_elo_after is not None else 1000
+        white_before = game.white_elo_before if game.white_elo_before is not None else 1000
+        black_after = game.black_elo_after if game.black_elo_after is not None else 1000
+        black_before = game.black_elo_before if game.black_elo_before is not None else 1000
+        
         if is_white:
-            elo_change = game.white_elo_after - game.white_elo_before
+            elo_change = white_after - white_before
         else:
-            elo_change = game.black_elo_after - game.black_elo_before
+            elo_change = black_after - black_before
         
         formatted_games.append({
             "game_id": game.game_id,
