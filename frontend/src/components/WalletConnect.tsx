@@ -68,36 +68,37 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
     if (minimal) {
         return (
             <div className="w-full flex items-center justify-between min-w-0 relative">
-                <div className="flex items-center gap-2.5 min-w-0">
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${
-                        wallet 
-                            ? 'bg-brand-primary border-brand-primary text-brand-void shadow-neon' 
-                            : 'bg-brand-bg-opacity-10 border-brand-border-opacity-10 text-brand-primary opacity-60'
-                    }`}>
-                        <FaWallet size={11} />
-                    </div>
-                    <div className="flex flex-col min-w-0 text-left">
-                        <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">
-                            {wallet ? 'Active' : 'Wallet'}
-                        </span>
-                        <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary/80 truncate leading-none">
-                            {wallet ? getShortAddress(wallet.account.address) : 'Unlinked'}
-                        </span>
-                    </div>
-                </div>
+                {wallet ? (
+                    <>
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-brand-primary text-brand-void shadow-neon">
+                                <FaWallet size={11} />
+                            </div>
+                            <div className="flex flex-col min-w-0 text-left">
+                                <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">
+                                    Active
+                                </span>
+                                <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate leading-none">
+                                    {getShortAddress(wallet.account.address)}
+                                </span>
+                            </div>
+                        </div>
 
-                <button
-                    onClick={handleWalletAction}
-                    className={wallet 
-                      ? "ml-3 w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                      : "ml-3 py-1.5 px-3 rounded-lg bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
-                    }
-                >
-                    {wallet ? <FaTimes size={9} /> : 'Connect'}
-                </button>
-
-                {wallet && (
-                    <div className="absolute top-0 left-0 w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping pointer-events-none opacity-20" />
+                        <button
+                            onClick={handleWalletAction}
+                            className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
+                        >
+                            <FaTimes size={9} />
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        onClick={handleWalletAction}
+                        className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                        <FaWallet size={10} />
+                        <span>Connect</span>
+                    </button>
                 )}
             </div>
         );
