@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { NavbarProvider } from "@/context/NavbarContext";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -55,10 +56,12 @@ export default async function LocaleLayout({
             >
                 <NextIntlClientProvider messages={messages}>
                     <ThemeProvider>
-                        <Providers>
-                            <TelegramInit />
-                            {children}
-                        </Providers>
+                        <NavbarProvider>
+                            <Providers>
+                                <TelegramInit />
+                                {children}
+                            </Providers>
+                        </NavbarProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

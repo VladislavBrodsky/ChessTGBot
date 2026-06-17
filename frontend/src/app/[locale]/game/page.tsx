@@ -17,6 +17,7 @@ import { apiFetch } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import WalletConnect from "@/components/WalletConnect";
 import { telegramConfirm, telegramHaptic } from "@/lib/telegram";
+import { useNavbarHide } from "@/context/NavbarContext";
 
 interface ActiveGameProps {
  gameId: string;
@@ -230,6 +231,18 @@ function ActiveGame({ gameId }: ActiveGameProps) {
 
  const isBotGame = gameState?.black_player_id === -1;
  const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
+
+ // Hide the bottom navbar whenever the game-over modal is showing
+ const { hideNavbar, showNavbar } = useNavbarHide();
+ useEffect(() => {
+   if (isGameOver) {
+     hideNavbar();
+   } else {
+     showNavbar();
+   }
+   // Restore navbar when this component unmounts
+   return () => { showNavbar(); };
+ }, [isGameOver]); // eslint-disable-line react-hooks/exhaustive-deps
  
  // Match Over Logic
  let matchResultLabel = tg('protocol_draw');

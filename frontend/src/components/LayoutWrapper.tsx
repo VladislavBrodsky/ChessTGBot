@@ -9,6 +9,7 @@ import { FaWallet, FaMoon, FaSun, FaStar } from 'react-icons/fa';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
+import { useNavbar } from '@/context/NavbarContext';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface LayoutWrapperProps {
@@ -21,8 +22,10 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const pathname = usePathname();
     const router = useRouter();
     const [balance, setBalance] = useState<number>(0);
-    const [isMenuHidden, setIsMenuHidden] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+
+    // Use context-driven navbar hide state (reliable, no DOM polling)
+    const { isHidden: isNavbarHiddenByContext } = useNavbar();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -33,31 +36,6 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         }
     }, []);
 
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const checkModal = () => {
-            const hasModal = document.querySelector('.bottom-drawer-backdrop') !== null;
-            setIsMenuHidden(hasModal);
-        };
-
-        // Initial check
-        checkModal();
-
-        // Observe adding/removing of modals
-        const observer = new MutationObserver(() => {
-            checkModal();
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -120,7 +98,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 {children}
             </main>
 
-            <Navbar hide={isMenuHidden || showOnboarding} />
+            <Navbar hide={isNavbarHiddenByContext || showOnboarding} />
 
             <AnimatePresence>
                 {showOnboarding && (

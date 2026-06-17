@@ -271,6 +271,20 @@ body {
   justify-content: center;
 }
 
+/*
+ * Auto-hide the bottom navbar whenever any bottom-drawer-backdrop is present.
+ * :has() is supported in all modern browsers (Chromium 105+, Safari 15.4+, Firefox 121+).
+ * This covers game-over, wallet modals, academy modals, language switcher, etc.
+ * — no per-page JS hookup needed. Works as a universal safety net on top of
+ * the NavbarContext approach.
+ */
+body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
+  transform: translateX(-50%) translateY(150px) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
+}
+
 .bottom-drawer-sheet {
   width: 100%;
   max-width: 440px;
