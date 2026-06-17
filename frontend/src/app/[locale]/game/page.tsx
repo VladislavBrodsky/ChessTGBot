@@ -635,6 +635,7 @@ function PlayLobby() {
   const [isDepositing, setIsDepositing] = useState<boolean>(false);
   const [depositSuccess, setDepositSuccess] = useState<string>("");
   const [depositError, setDepositError] = useState<string>("");
+  const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
 
  // Refs for scroll container alignment
  const wagerScrollRef = useRef<HTMLDivElement>(null);
@@ -1447,12 +1448,21 @@ setTgUser({ first_name: "Master", photo_url: null });
   <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-[0.2em] mb-4">
     Quick Top Up & Play
   </p>
-  <div className="w-full bg-brand-surface rounded-2xl p-4 border border-brand-border-opacity-10 mb-4 text-xs font-bold text-brand-primary/80 leading-relaxed text-center space-y-1">
-    <div>Wager Stake: <span className="text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</span></div>
-    <div>Your Balance: <span className="text-brand-primary/60 font-bold">${(walletBalance / 100).toFixed(2)} USDT</span></div>
-    <div className="h-px bg-brand-border-opacity-10 my-1.5" />
-    <div className="text-brand-primary font-black uppercase text-[10px] tracking-wider">
-      Deficit Needed: <span className="text-brand-primary font-black text-sm">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</span>
+  
+  {/* Cyber Grid Summary Card */}
+  <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 mb-4 text-xs font-bold text-brand-primary/80 leading-relaxed space-y-2.5 shadow-inner">
+    <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+      <div className="text-left opacity-50">Wager Stake</div>
+      <div className="text-right text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</div>
+    </div>
+    <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+      <div className="text-left opacity-50">Your Balance</div>
+      <div className="text-right text-brand-primary/70 font-black">${(walletBalance / 100).toFixed(2)} USDT</div>
+    </div>
+    <div className="h-px bg-brand-border-opacity-5 my-0.5" />
+    <div className="grid grid-cols-2 gap-2 text-[11px] uppercase tracking-widest font-black">
+      <div className="text-left text-brand-primary opacity-60">Deficit Needed</div>
+      <div className="text-right text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
     </div>
   </div>
   </div>
@@ -1522,68 +1532,85 @@ setTgUser({ first_name: "Master", photo_url: null });
         <span>{isDepositing ? "Generating..." : "Generate Web3 Invoice"}</span>
       </button>
 
-      {/* Direct transfer fallback */}
-      <div className="border-t border-brand-border-opacity-10 pt-3 flex flex-col space-y-2">
-        <div className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Direct Transfer Fallback</div>
-        <div className="text-[9px] text-brand-primary opacity-60">
-          Alternatively, transfer manually to the Master Wallet. Ensure you include the unique comment.
-        </div>
-        
-        {(() => {
-          const tgId = tgUser?.id || 1029384;
-          const memoComment = `ref_${tgId}`;
-          const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
-          return (
-            <div className="space-y-2">
-              <div className="flex flex-col space-y-1">
-                <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
-                <div className="cyber-input w-full p-2 rounded-lg border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText(masterWallet)}>
-                  <span className="truncate">{masterWallet}</span>
-                  <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
-                </div>
-              </div>
+      {/* Toggleable Direct manual transfer fallback */}
+      <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
+        <button
+          type="button"
+          onClick={() => setShowManualFallback(!showManualFallback)}
+          className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
+        >
+          <span>Or Pay Manually (Direct Transfer)</span>
+          <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
 
-              <div className="flex flex-col space-y-1">
-                <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
-                <div className="cyber-input w-full p-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText(memoComment)}>
-                  <span>{memoComment}</span>
-                  <FaCopy className="text-emerald-500 opacity-60" />
-                </div>
-              </div>
+        {showManualFallback && (
+          <div className="space-y-3 pt-3">
+            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
+              ⚠️ WARNING: Include the unique comment memo in your transfer or your deposit will be lost.
             </div>
-          );
-        })()}
+
+            {(() => {
+              const tgId = tgUser?.id || 1029384;
+              const memoComment = `ref_${tgId}`;
+              const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
+              return (
+                <div className="space-y-3">
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => { navigator.clipboard.writeText(masterWallet); alert("Master Wallet address copied!"); }}>
+                      <span className="truncate">{masterWallet}</span>
+                      <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => { navigator.clipboard.writeText(memoComment); alert("Comment Memo copied!"); }}>
+                      <span>{memoComment}</span>
+                      <FaCopy className="text-emerald-500 opacity-60" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
       </div>
     </div>
   )}
 
   {/* Commission Alert */}
   <div className="p-3 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider w-full mt-2">
-  <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+    <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
   </div>
 
   {/* Messages and Simulation Fallback */}
-  <div className="w-full pt-2">
-  {depositSuccess && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{depositSuccess}</div>}
-  {depositError && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{depositError}</div>}
+  <div className="w-full pt-2 space-y-2">
+    {depositSuccess && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{depositSuccess}</div>}
+    {depositError && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{depositError}</div>}
 
-  {!invoiceUrl && (
+    {!invoiceUrl && (
+      <div className="p-3.5 rounded-2xl border border-dashed border-brand-primary/10 bg-brand-void/25 flex flex-col space-y-2 mt-2">
+        <span className="text-[8px] font-black text-brand-primary/30 uppercase tracking-[0.2em] text-center">Dev Sandbox Tools</span>
+        <button
+          onClick={handleSimulateLobbyDeposit}
+          disabled={isDepositing}
+          className="w-full py-2 rounded-xl bg-brand-primary/5 border border-brand-primary/10 hover:bg-brand-primary/10 text-brand-primary/60 text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
+          <span>{isDepositing ? "Simulating..." : "Simulate Instant Deposit"}</span>
+        </button>
+      </div>
+    )}
+    
     <button
-      onClick={handleSimulateLobbyDeposit}
-      disabled={isDepositing}
-      className="w-full py-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary/50 text-[10px] font-black uppercase tracking-widest hover:text-brand-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
+      onClick={() => setShowDepositDrawer(false)}
+      className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
     >
-      <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
-      <span>{isDepositing ? "Processing..." : "Simulate Deposit (Dev Mode)"}</span>
+      {t('back')}
     </button>
-  )}
-  
-  <button
-    onClick={() => setShowDepositDrawer(false)}
-    className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
-  >
-    {t('back')}
-  </button>
   </div>
   </motion.div>
   </div>
