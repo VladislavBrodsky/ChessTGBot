@@ -21,6 +21,23 @@ interface Transaction {
   created_at: string;
 }
 
+const TransactionSkeleton = () => (
+  <div className="w-full flex flex-col space-y-2">
+    {[1, 2, 3].map((n) => (
+      <div key={n} className="w-full p-3 rounded-xl glass-panel border border-brand-border-opacity-5 flex items-center justify-between bg-brand-surface animate-pulse">
+        <div className="flex items-center space-x-3 w-2/3">
+          <div className="w-8 h-8 rounded-lg bg-brand-bg-opacity-5 border border-brand-border-opacity-5 shrink-0" />
+          <div className="flex flex-col space-y-1.5 w-full">
+            <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/3" />
+            <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/2" />
+          </div>
+        </div>
+        <div className="h-3 bg-brand-primary opacity-10 rounded w-12" />
+      </div>
+    ))}
+  </div>
+);
+
 export default function WalletPage() {
   const t = useTranslations('Index');
   const tw = useTranslations('Wallet');
@@ -164,11 +181,9 @@ export default function WalletPage() {
  <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
  </div>
 
- {loading ? (
- <div className="w-full text-center py-8 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
- {tw('loading')}
- </div>
- ) : transactions.length === 0 ? (
+  {loading ? (
+    <TransactionSkeleton />
+  ) : transactions.length === 0 ? (
  <div className="w-full glass-panel rounded-xl p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
  {tw('no_entries')}
  </div>

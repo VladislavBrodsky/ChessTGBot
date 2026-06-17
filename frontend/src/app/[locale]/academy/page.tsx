@@ -149,6 +149,68 @@ export default function AcademyPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <LayoutWrapper className="pb-32 pt-6">
+        <div className="w-full max-w-sm mx-auto px-4 space-y-8 animate-pulse">
+          {/* Header Skeleton */}
+          <div className="flex flex-col items-center w-full mb-4">
+            <div className="h-8 bg-brand-primary opacity-10 rounded-lg w-1/2 mb-3" />
+            <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3 mb-4" />
+            <div className="h-8 bg-brand-primary opacity-10 rounded-full w-24" />
+          </div>
+
+          {/* Daily Challenge Card Skeleton */}
+          <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="h-5 bg-brand-primary opacity-10 rounded-full w-24" />
+              <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
+            </div>
+            <div className="h-6 bg-brand-primary opacity-15 rounded-lg w-3/4" />
+            <div className="h-4 bg-brand-primary opacity-10 rounded w-5/6" />
+            <div className="h-10 bg-brand-primary opacity-20 rounded-xl w-full" />
+          </div>
+
+          {/* Tactics Grid Skeleton */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 px-1">
+              <div className="w-4 h-4 bg-brand-primary opacity-10 rounded" />
+              <div className="h-3 bg-brand-primary opacity-10 rounded w-24" />
+            </div>
+            <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface">
+              <div className="grid grid-cols-10 gap-2 w-full">
+                {Array.from({ length: 100 }, (_, i) => (
+                  <div key={i} className="aspect-square rounded-xl bg-brand-primary opacity-5 border border-brand-border-opacity-5" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Mastery Tracks Skeleton */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-2 px-1">
+              <div className="w-4 h-4 bg-brand-primary opacity-10 rounded" />
+              <div className="h-3 bg-brand-primary opacity-10 rounded w-28" />
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="w-full p-4 rounded-2xl glass-panel border border-brand-border-opacity-10 bg-brand-surface space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="h-4 bg-brand-primary opacity-15 rounded w-1/3" />
+                    <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
+                  </div>
+                  <div className="h-3 bg-brand-primary opacity-10 rounded w-2/3" />
+                  <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </LayoutWrapper>
+    );
+  }
+
   return (
     <LayoutWrapper className="pb-32 pt-6">
       <div className="w-full max-w-sm mx-auto px-4 space-y-8">

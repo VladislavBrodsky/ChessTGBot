@@ -9,6 +9,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { apiFetch } from "@/lib/api";
+import { telegramHaptic } from "@/lib/telegram";
 
 export default function SettingsPage() {
  const t = useTranslations('Settings');
@@ -16,6 +17,16 @@ export default function SettingsPage() {
  const { theme, toggleTheme } = useTheme();
  const [soundEnabled, setSoundEnabled] = useState(true);
  const [walletAddress, setWalletAddress] = useState<string>("");
+
+ const handleThemeToggle = () => {
+   toggleTheme();
+   telegramHaptic('light');
+ };
+
+ const handleSoundToggle = () => {
+   setSoundEnabled(!soundEnabled);
+   telegramHaptic('light');
+ };
 
  useEffect(() => {
  apiFetch("/api/v1/wallet/balance")
@@ -79,7 +90,7 @@ export default function SettingsPage() {
  </div>
  </div>
  <button
- onClick={toggleTheme}
+ onClick={handleThemeToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  theme === 'dark' ? 'bg-brand-primary justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
@@ -108,7 +119,7 @@ export default function SettingsPage() {
  </div>
  </div>
  <button
- onClick={() => setSoundEnabled(!soundEnabled)}
+ onClick={handleSoundToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  soundEnabled ? 'bg-brand-primary justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}

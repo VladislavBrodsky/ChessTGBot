@@ -379,9 +379,9 @@ body {
 
 /* Hide scrollbars for premium horizontal rollers */
 .scrollbar-none::-webkit-scrollbar {
-  display: none;
+  display: none !important;
 }
 .scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

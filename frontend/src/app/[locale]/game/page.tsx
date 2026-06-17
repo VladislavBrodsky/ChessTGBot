@@ -26,6 +26,11 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  const router = useRouter();
  // @ts-ignore
  const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
+ const handleBoardMove = (move: { from: string; to: string; promotion?: string }): boolean => {
+   const success = makeMove(move);
+   telegramHaptic('light');
+   return success;
+ };
  const [copied, setCopied] = useState(false);
  const [userId, setUserId] = useState<number | null>(null);
   const locale = useLocale();
@@ -343,7 +348,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
   <ChessBoardComponent
   fen={fen}
-  onMove={makeMove}
+  onMove={handleBoardMove}
   orientation={isWhite ? "white" : "black"}
   showConfetti={isGameOver && gameState?.winner_id === userId}
   />
@@ -1152,6 +1157,7 @@ setTgUser({ first_name: "Master", photo_url: null });
                 onClick={() => {
                   setSelectedWager(opt.val);
                   setIsCustomWager(false);
+                  telegramHaptic('light');
                 }}
                 className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                   isSelected
@@ -1168,7 +1174,10 @@ setTgUser({ first_name: "Master", photo_url: null });
           {/* Custom OTHER Chip */}
           <button
             data-active={isCustomWager ? "true" : "false"}
-            onClick={() => setIsCustomWager(true)}
+            onClick={() => {
+              setIsCustomWager(true);
+              telegramHaptic('light');
+            }}
             className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
               isCustomWager
                 ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
@@ -1223,7 +1232,10 @@ setTgUser({ first_name: "Master", photo_url: null });
               <button
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
-                onClick={() => setTimeControl(opt.val)}
+                onClick={() => {
+                  setTimeControl(opt.val);
+                  telegramHaptic('light');
+                }}
                 className={`px-4.5 py-2.5 rounded-full shrink-0 flex items-center justify-center border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                   isSelected
                     ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon'
