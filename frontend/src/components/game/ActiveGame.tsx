@@ -297,19 +297,26 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const shareGame = () => {
     let success = false;
+    const link = typeof window !== 'undefined' ? window.location.href : "";
+    const shareText = `I played a chess match on FinChess! ♟️⚡️`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`;
+
     if (window.Telegram?.WebApp) {
       try {
-        window.Telegram.WebApp.switchInlineQuery(gameId, ["users", "groups", "channels"]);
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
         success = true;
       } catch (err) {
-        console.warn("Telegram switchInlineQuery failed", err);
+        console.warn("Telegram openTelegramLink failed", err);
       }
     }
-    if (!success) {
-      const link = typeof window !== 'undefined' ? window.location.href : "";
+    
+    // Copy to clipboard as backup / confirmation
+    try {
       navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn("Clipboard copy failed", err);
     }
   };
 
@@ -531,6 +538,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             onShowRematchChoice={() => setShowRematchChoice(true)}
             onShareGame={shareGame}
             newElo={myNewElo}
+            copied={copied}
           />
         )}
       </AnimatePresence>

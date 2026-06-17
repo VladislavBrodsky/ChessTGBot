@@ -15,6 +15,7 @@ interface MatchOverModalProps {
   onShowRematchChoice: () => void;
   onShareGame: () => void;
   newElo?: number;
+  copied?: boolean;
 }
 
 export default function MatchOverModal({
@@ -27,6 +28,7 @@ export default function MatchOverModal({
   onShowRematchChoice,
   onShareGame,
   newElo,
+  copied = false,
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
@@ -120,7 +122,7 @@ export default function MatchOverModal({
               className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
             >
               <FaShareAlt className="text-brand-primary opacity-60" />
-              <span>{tg('share_ledger')}</span>
+              <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>
             </motion.button>
           </div>
         </div>
