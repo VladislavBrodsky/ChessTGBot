@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { useTranslations, useLocale } from 'next-intl';
 import XPProgressBar from "@/components/XPProgressBar";
+import { telegramAlert } from "@/lib/telegram";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
 
@@ -123,7 +124,7 @@ export default function Home() {
     if (!success) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(message);
-        alert("Share link copied to clipboard!");
+        telegramAlert("Share link copied to clipboard!");
       }
     }
   };

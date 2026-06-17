@@ -8,6 +8,7 @@ import Link from "next/link";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
 import { useLocale, useTranslations } from 'next-intl';
+import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 
 export default function MembershipPage() {
  const locale = useLocale();
@@ -68,51 +69,64 @@ export default function MembershipPage() {
   const handleXpUpgrade = async () => {
     const currentXp = stats?.xp || 0;
     if (currentXp < 500) {
-      alert(`Upgrading to Premium requires 500 XP. You currently have ${currentXp} XP.`);
+      telegramHaptic('error');
+      telegramAlert(`Upgrading to Premium requires 500 XP. You currently have ${currentXp} XP.`);
       return;
     }
 
-    const confirmUpgrade = confirm(`Upgrade to Premium by spending 500 XP? (You have ${currentXp} XP)`);
-    if (!confirmUpgrade) return;
+    telegramConfirm(`Upgrade to Premium by spending 500 XP? (You have ${currentXp} XP)`, async (confirmUpgrade) => {
+      if (!confirmUpgrade) return;
 
-    try {
-      const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", {
-        method: "POST"
-      });
-      const data = await res.json();
-      if (res.ok && data.status === "success") {
-        alert("Premium activated successfully!");
-        fetchStats();
-      } else {
-        alert(data.detail || "Failed to upgrade with XP");
+      try {
+        const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", {
+          method: "POST"
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          telegramHaptic('success');
+          telegramAlert("Premium activated successfully!", () => {
+            fetchStats();
+          });
+        } else {
+          telegramHaptic('error');
+          telegramAlert(data.detail || "Failed to upgrade with XP");
+        }
+      } catch (e) {
+        console.error(e);
+        telegramHaptic('error');
+        telegramAlert("Upgrade failed");
       }
-    } catch (e) {
-      console.error(e);
-      alert("Upgrade failed");
-    }
+    });
   };
 
   const handleSubscribe = async () => {
-  if (!tgUser?.id) {
-  alert("Telegram User not found. Are you in the Mini App?");
-  return;
-  }
+    if (!tgUser?.id) {
+      telegramHaptic('warning');
+      telegramAlert("Telegram User not found. Are you in the Mini App?");
+      return;
+    }
 
-  try {
-  const res = await apiFetch("/api/v1/users/subscribe", {
-  method: "POST",
-  body: JSON.stringify({
-  tier: selectedTier.id,
-  billing_period: billingPeriod
-  })
-  });
-  const data = await res.json();
-  if (data.status === "success") {
-  alert(`Successfully subscribed to ${selectedTier.name}!`);
-  }
-  } catch (e) {
-  console.error("Subscription failed", e);
-  }
+    try {
+      const res = await apiFetch("/api/v1/users/subscribe", {
+        method: "POST",
+        body: JSON.stringify({
+          tier: selectedTier.id,
+          billing_period: billingPeriod
+        })
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        telegramHaptic('success');
+        telegramAlert(`Successfully subscribed to ${selectedTier.name}!`);
+      } else {
+        telegramHaptic('error');
+        telegramAlert(data.detail || "Subscription failed");
+      }
+    } catch (e) {
+      console.error("Subscription failed", e);
+      telegramHaptic('error');
+      telegramAlert("Subscription failed");
+    }
   };
 
  return (

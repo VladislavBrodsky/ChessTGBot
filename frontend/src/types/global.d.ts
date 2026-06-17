@@ -32,8 +32,11 @@ declare global {
                 };
                 switchInlineQuery: (query: string, choose_chat_types?: string[]) => void;
                 openTelegramLink: (url: string) => void;
+                showAlert?: (message: string, callback?: () => void) => void;
+                showConfirm?: (message: string, callback: (ok: boolean) => void) => void;
                 HapticFeedback?: {
                     impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void;
+                    notificationOccurred?: (type: 'success' | 'warning' | 'error') => void;
                 };
                 BackButton: {
                     show: () => void;
