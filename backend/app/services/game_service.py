@@ -424,28 +424,6 @@ class GameService:
                     )
                     session.add(tx_w)
                     session.add(tx_b)
-                    
-                    # Send telegram notifications
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        abort_msg_w = (
-                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
-                        )
-                        abort_msg_b = (
-                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
-                        )
-                        await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
-                        await TelegramService.send_notification(black_user.telegram_id, abort_msg_b)
-                    except Exception:
-                        pass
-                
-                await session.commit()
                 
                 # Cache ratings and save aborted game history
                 state.white_elo_before = white_elo_before
@@ -478,12 +456,35 @@ class GameService:
                         bid_amount=bid_amount,
                         platform_rake=0,
                         payout_amount=0,
-                        moves_json=json.dumps([])
+                        moves_json=json.dumps([]),
+                        commit=False
                     )
                     await session.commit()
                 except Exception as hist_err:
                     print(f"[GameService] WARNING: Failed to save aborted game history: {hist_err}")
                     await session.rollback()
+                    raise hist_err
+                
+                # Send telegram notifications AFTER successful DB commit
+                if bid_amount > 0 and white_user and black_user:
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        abort_msg_w = (
+                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
+                        )
+                        abort_msg_b = (
+                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
+                        )
+                        await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
+                        await TelegramService.send_notification(black_user.telegram_id, abort_msg_b)
+                    except Exception:
+                        pass
                 
                 # Broadcast aborted state
                 from app.core.socket import sio
@@ -494,12 +495,12 @@ class GameService:
             if not black_user or black_id == -1:
                 # Bot game / Training: update tasks progress, stats, and create game history
                 from app.services.gamification_service import GamificationService, TaskType
-                await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
+                await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
                 
                 # Determine game result for bot game
                 ai_xp = 5  # Draw
                 if state.winner == 'w':
-                    await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+                    await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN, commit=False)
                     ai_xp = 10  # Win
                     white_user.wins += 1
                 elif state.winner == 'b':
@@ -510,7 +511,7 @@ class GameService:
                 
                 white_user.games_played += 1
                 session.add(white_user)
-                await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True)
+                await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False)
                 
                 # Save bot game history
                 from app.crud import game_history as game_history_crud
@@ -538,13 +539,15 @@ class GameService:
                         bid_amount=0,
                         platform_rake=0,
                         payout_amount=0,
-                        moves_json=moves_json
+                        moves_json=moves_json,
+                        commit=False
                     )
                     await session.commit()
                     print(f"[GameService] Bot game history saved: {game_id} ({result_type}, winner={state.winner})")
                 except Exception as hist_err:
                     print(f"[GameService] WARNING: Failed to save bot game history for {game_id}: {hist_err}")
                     await session.rollback()
+                    raise hist_err
                 return
 
             # Store current ELO before changes
@@ -568,19 +571,19 @@ class GameService:
 
             # Update DB
             if state.winner == 'w':
-                await user_crud.update_elo(session, white_user, new_white_elo, 'win')
-                await user_crud.update_elo(session, black_user, new_black_elo, 'loss')
+                await user_crud.update_elo(session, white_user, new_white_elo, 'win', commit=False)
+                await user_crud.update_elo(session, black_user, new_black_elo, 'loss', commit=False)
             elif state.winner == 'b':
-                await user_crud.update_elo(session, white_user, new_white_elo, 'loss')
-                await user_crud.update_elo(session, black_user, new_black_elo, 'win')
+                await user_crud.update_elo(session, white_user, new_white_elo, 'loss', commit=False)
+                await user_crud.update_elo(session, black_user, new_black_elo, 'win', commit=False)
             else:
-                 await user_crud.update_elo(session, white_user, new_white_elo, 'draw')
-                 await user_crud.update_elo(session, black_user, new_black_elo, 'draw')
+                 await user_crud.update_elo(session, white_user, new_white_elo, 'draw', commit=False)
+                 await user_crud.update_elo(session, black_user, new_black_elo, 'draw', commit=False)
             
             # Update Daily Tasks Progress for online games
             from app.services.gamification_service import GamificationService, TaskType
-            await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY)
-            await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY)
+            await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
+            await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY, commit=False)
             
             # Calculate win streaks (retrieve streak before this game ends)
             white_streak = await self.get_user_win_streak(session, white_user.telegram_id)
@@ -643,11 +646,11 @@ class GameService:
             white_match_xp = 10  # Draw
             black_match_xp = 10  # Draw
             if state.winner == 'w':
-                await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN)
+                await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN, commit=False)
                 white_match_xp = 20  # Win
                 black_match_xp = 5  # Loss
             elif state.winner == 'b':
-                await GamificationService.update_task_progress(session, black_user.id, TaskType.WIN)
+                await GamificationService.update_task_progress(session, black_user.id, TaskType.WIN, commit=False)
                 white_match_xp = 5  # Loss
                 black_match_xp = 20  # Win
                 
@@ -667,8 +670,8 @@ class GameService:
             white_final_xp = white_match_xp * 2 if white_user.is_premium else white_match_xp
             black_final_xp = black_match_xp * 2 if black_user.is_premium else black_match_xp
                 
-            await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True)
-            await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True)
+            await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
+            await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
 
             # Construct XP breakdown strings for white and black
             white_xp_breakdown = (
@@ -707,6 +710,7 @@ class GameService:
             bid_amount = getattr(state, "bid_amount", 0)
             platform_rake = 0
             payout_amount = 0
+            notifications_to_send = []
 
             if bid_amount > 0 and white_user and black_user:
                 from app.models.transaction import Transaction
@@ -745,30 +749,25 @@ class GameService:
                     )
                     session.add(rake_tx)
 
-                    # Automated notifications
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        win_msg = (
-                            f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
-                            f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
-                            f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
-                            f"{white_xp_breakdown}"
-                            f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
-                        )
-                        await TelegramService.send_notification(white_user.telegram_id, win_msg)
-                        
-                        lose_msg = (
-                            f"<b>💀 Chess Match Defeat</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
-                            f"{black_xp_breakdown}"
-                            f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
-                        )
-                        await TelegramService.send_notification(black_user.telegram_id, lose_msg)
-                    except Exception as e:
-                        pass
+                    # Prepare notifications
+                    win_msg = (
+                        f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
+                        f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
+                        f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
+                    )
+                    lose_msg = (
+                        f"<b>💀 Chess Match Defeat</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
+                    )
+                    notifications_to_send.append((white_user.telegram_id, win_msg))
+                    notifications_to_send.append((black_user.telegram_id, lose_msg))
 
                 elif state.winner == 'b':
                     # Black wins!
@@ -805,30 +804,25 @@ class GameService:
                     )
                     session.add(rake_tx)
 
-                    # Automated notifications
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        win_msg = (
-                            f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
-                            f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
-                            f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
-                            f"{black_xp_breakdown}"
-                            f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
-                        )
-                        await TelegramService.send_notification(black_user.telegram_id, win_msg)
-                        
-                        lose_msg = (
-                            f"<b>💀 Chess Match Defeat</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
-                            f"{white_xp_breakdown}"
-                            f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
-                        )
-                        await TelegramService.send_notification(white_user.telegram_id, lose_msg)
-                    except Exception as e:
-                        pass
+                    # Prepare notifications
+                    win_msg = (
+                        f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
+                        f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
+                        f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
+                    )
+                    lose_msg = (
+                        f"<b>💀 Chess Match Defeat</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
+                    )
+                    notifications_to_send.append((black_user.telegram_id, win_msg))
+                    notifications_to_send.append((white_user.telegram_id, lose_msg))
                 else:
                     # Draw / Stalemate: Refund wagers in full to both players
                     white_user.balance += bid_amount
@@ -852,29 +846,23 @@ class GameService:
                     session.add(tx_w)
                     session.add(tx_b)
 
-                    # Automated notifications
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        draw_msg_w = (
-                            f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"{white_xp_breakdown}"
-                            f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
-                        )
-                        draw_msg_b = (
-                            f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"{black_xp_breakdown}"
-                            f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
-                        )
-                        await TelegramService.send_notification(white_user.telegram_id, draw_msg_w)
-                        await TelegramService.send_notification(black_user.telegram_id, draw_msg_b)
-                    except Exception as e:
-                        pass
-                
-                await session.commit()
+                    # Prepare notifications
+                    draw_msg_w = (
+                        f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
+                    )
+                    draw_msg_b = (
+                        f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
+                    )
+                    notifications_to_send.append((white_user.telegram_id, draw_msg_w))
+                    notifications_to_send.append((black_user.telegram_id, draw_msg_b))
 
             # Save game history — MUST commit to persist to DB
             from app.crud import game_history as game_history_crud
@@ -909,14 +897,25 @@ class GameService:
                     bid_amount=bid_amount,
                     platform_rake=platform_rake,
                     payout_amount=payout_amount,
-                    moves_json=moves_json
+                    moves_json=moves_json,
+                    commit=False
                 )
-                # CRITICAL: commit game history to DB so it survives restarts
+                # Single atomic commit for ELO, balances, XP, transactions, and game history
                 await session.commit()
                 print(f"[GameService] Game history saved: {game_id} ({result_type}, winner={state.winner})")
             except Exception as hist_err:
-                print(f"[GameService] WARNING: Failed to save game history for {game_id}: {hist_err}")
+                print(f"[GameService] WARNING: Failed to settle game in DB for {game_id}: {hist_err}")
                 await session.rollback()
+                raise hist_err
+
+            # Send telegram notifications AFTER successful DB commit
+            if notifications_to_send:
+                try:
+                    from app.services.telegram_bot import TelegramService
+                    for target_tg_id, text in notifications_to_send:
+                        await TelegramService.send_notification(target_tg_id, text)
+                except Exception as tg_err:
+                    print(f"[GameService] WARNING: Failed to send telegram notifications: {tg_err}")
 
             # Cache the dynamic settlement ELOs and wagers on the state object
             state.white_elo_before = white_elo_before

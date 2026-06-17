@@ -38,7 +38,7 @@ async def update_subscription(db: AsyncSession, user: User, tier: str, expires_a
     await db.refresh(user)
     return user
 
-async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
+async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str, commit: bool = True):
     """
     result: 'win', 'loss', 'draw'
     """
@@ -52,8 +52,12 @@ async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str):
         user.draws += 1
     
     db.add(user)
-    await db.commit()
-    await db.refresh(user)
+    if commit:
+        await db.commit()
+        await db.refresh(user)
+    else:
+        await db.flush()
+        await db.refresh(user)
     return user
 
 async def update_wallet_address(db: AsyncSession, user: User, wallet_address: str):

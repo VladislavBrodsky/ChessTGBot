@@ -76,7 +76,7 @@ class GamificationService:
             await db.commit()
 
     @staticmethod
-    async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True):
+    async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True, commit: bool = True):
         xp_earned = amount
         if apply_booster and user.is_premium and amount > 0:
             xp_earned = amount * 2
@@ -120,8 +120,11 @@ class GamificationService:
 
                 current_user_id = referrer.id
 
-        # Single atomic commit covering user XP + all referral kickbacks
-        await db.commit()
+        # Single atomic commit/flush covering user XP + all referral kickbacks
+        if commit:
+            await db.commit()
+        else:
+            await db.flush()
         return user
 
 
@@ -258,7 +261,7 @@ class GamificationService:
         return updated_user, "Success"
 
     @staticmethod
-    async def update_task_progress(db: AsyncSession, user_id: int, task_type: TaskType, increment: int = 1):
+    async def update_task_progress(db: AsyncSession, user_id: int, task_type: TaskType, increment: int = 1, commit: bool = True):
         """
         Increment progress for a specific task type (WIN, PLAY, etc.) for the user.
         If the task becomes completed, mark it.
@@ -292,7 +295,10 @@ class GamificationService:
             user_task.updated_at = datetime.utcnow()
             db.add(user_task)
             
-        await db.commit()
+        if commit:
+            await db.commit()
+        else:
+            await db.flush()
 
     @staticmethod
     async def unlock_lesson(db: AsyncSession, user: User, lesson_id: str):
@@ -349,5 +355,34 @@ class GamificationService:
         """
         Award 50 XP to the user for completing a lesson/puzzle.
         """
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        redis_key = f"user:completed_academy:{user.telegram_id}"
+        task_val = f"{task_type}:{item_id}"
+        
+        already_completed = False
+        if session_mgr.redis and not session_mgr._use_memory:
+            try:
+                already_completed = await session_mgr.redis.sismember(redis_key, task_val)
+            except Exception:
+                pass
+
+        if (not session_mgr.redis or session_mgr._use_memory) or already_completed is None:
+            if not hasattr(GamificationService, "_completed_academy"):
+                GamificationService._completed_academy = set()
+            mem_key = f"{user.telegram_id}:{task_val}"
+            already_completed = mem_key in GamificationService._completed_academy
+            if not already_completed:
+                GamificationService._completed_academy.add(mem_key)
+
+        if already_completed:
+            return user, "Already Completed"
+
+        if session_mgr.redis and not session_mgr._use_memory:
+            try:
+                await session_mgr.redis.sadd(redis_key, task_val)
+            except Exception:
+                pass
+
         updated_user = await GamificationService.add_xp(db, user, 50, trigger_kickback=True, apply_booster=True)
         return updated_user, "Success"

@@ -406,6 +406,12 @@ async def test_chess_puzzles_endpoints(client, db_session):
         await db_session.refresh(user)
         assert user.elo == 1005 # Gained 5 ELO
 
+        # 7. Query puzzles again to verify solved status from database
+        res_after = await client.get("/api/v1/gamification/academy/puzzles", headers=headers)
+        assert res_after.status_code == 200
+        data_after = res_after.json()
+        assert data_after[0]["is_solved"] is True
+
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token
 

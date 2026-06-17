@@ -294,7 +294,7 @@ export default function DepositModal({
             {successMessage && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
             {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
-            {!invoiceUrl && (
+            {!invoiceUrl && process.env.NODE_ENV === 'development' && (
               <div className="p-3.5 rounded-2xl border border-dashed border-brand-primary/10 bg-brand-void/25 flex flex-col space-y-2 mt-2">
                 <span className="text-[8px] font-black text-brand-primary/30 uppercase tracking-[0.2em] text-center">Dev Sandbox Tools</span>
                 <button

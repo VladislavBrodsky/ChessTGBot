@@ -54,13 +54,6 @@ function PuzzleContent() {
       });
       if (res.ok) {
         setSolved(true);
-        // Save completed puzzle ID in local storage
-        const solvedStr = localStorage.getItem("completed_puzzles");
-        const solvedArray = solvedStr ? JSON.parse(solvedStr) : [];
-        if (!solvedArray.includes(puzzleId)) {
-          solvedArray.push(puzzleId);
-          localStorage.setItem("completed_puzzles", JSON.stringify(solvedArray));
-        }
       } else {
         const data = await res.json();
         telegramAlert(data.detail || "Verification failed");

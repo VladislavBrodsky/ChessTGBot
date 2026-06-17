@@ -25,7 +25,8 @@ async def create_game_history(
     bid_amount: int = 0,
     platform_rake: int = 0,
     payout_amount: int = 0,
-    moves_json: Optional[str] = None
+    moves_json: Optional[str] = None,
+    commit: bool = True
 ) -> GameHistory:
     """Create a new game history record."""
     db_game = GameHistory(
@@ -50,8 +51,12 @@ async def create_game_history(
         moves_json=moves_json
     )
     db.add(db_game)
-    await db.commit()
-    await db.refresh(db_game)
+    if commit:
+        await db.commit()
+        await db.refresh(db_game)
+    else:
+        await db.flush()
+        await db.refresh(db_game)
     return db_game
 
 async def get_user_recent_games(db: AsyncSession, telegram_id: int, limit: int = 10) -> List[GameHistory]:

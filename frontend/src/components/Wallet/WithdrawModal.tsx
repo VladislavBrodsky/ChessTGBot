@@ -25,6 +25,8 @@ export default function WithdrawModal({
   const [processing, setProcessing] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>( "");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [checked1, setChecked1] = useState<boolean>(false);
+  const [checked2, setChecked2] = useState<boolean>(false);
 
   // Withdrawal Submission
   const handleWithdrawSubmit = async () => {
@@ -41,6 +43,11 @@ export default function WithdrawModal({
 
     if (!withdrawAddress.trim()) {
       setErrorMessage(tw('specify_target_address'));
+      return;
+    }
+
+    if (!checked1 || !checked2) {
+      setErrorMessage(tw('confirm_all_warnings'));
       return;
     }
 
@@ -138,11 +145,21 @@ export default function WithdrawModal({
           {/* Safety Checklist */}
           <div className="flex flex-col space-y-2 pt-2">
             <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
-              <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+              <input 
+                type="checkbox" 
+                className="accent-brand-primary w-3 h-3" 
+                checked={checked1}
+                onChange={(e) => setChecked1(e.target.checked)}
+              />
               <span>{tw('check1')}</span>
             </label>
             <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
-              <input type="checkbox" className="accent-brand-primary w-3 h-3" defaultChecked />
+              <input 
+                type="checkbox" 
+                className="accent-brand-primary w-3 h-3" 
+                checked={checked2}
+                onChange={(e) => setChecked2(e.target.checked)}
+              />
               <span>{tw('check2')}</span>
             </label>
           </div>
@@ -159,7 +176,7 @@ export default function WithdrawModal({
 
           <button
             onClick={handleWithdrawSubmit}
-            disabled={processing || parseFloat(withdrawAmount) * 100 > balance}
+            disabled={processing || parseFloat(withdrawAmount) * 100 > balance || !checked1 || !checked2}
             className="w-full mt-2 py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all disabled:opacity-50"
           >
             {processing ? tw('signing_tx') : tw('request_withdraw')}

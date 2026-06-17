@@ -50,6 +50,18 @@ export const getSocket = () => {
             console.log("Disconnected from Game Server");
         });
     }
+    
+    // Dynamically update initData right before returning the socket instance to ensure fresh auth handshake
+    if (socket && typeof window !== "undefined" && window.Telegram?.WebApp) {
+        const freshInitData = (window.Telegram.WebApp as any).initData || "";
+        if (freshInitData) {
+            (socket as any).auth = {
+                ...(socket as any).auth,
+                initData: freshInitData
+            };
+        }
+    }
+
     return socket;
 };
 

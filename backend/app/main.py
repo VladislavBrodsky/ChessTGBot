@@ -46,8 +46,13 @@ class RawCORSMiddleware:
         return None
 
     def _is_allowed(self, origin):
-        """Allow any origin (for Telegram WebApp / iOS WKWebView compatibility)."""
-        return True  # Allow all origins; restrict if needed via ALLOWED_ORIGINS
+        """Allow only designated production origins or localhost in development."""
+        if origin in self.ALLOWED_ORIGINS:
+            return True
+        # Allow localhost origins for local development
+        if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+            return True
+        return False
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":

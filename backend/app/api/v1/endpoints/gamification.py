@@ -232,10 +232,18 @@ class PuzzleVerifyRequest(BaseModel):
 
 @router.get("/academy/puzzles")
 async def get_puzzles(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
-    """List all 100 puzzles without solutions to prevent cheating."""
+    """List all 100 puzzles with solved status, without solutions to prevent cheating."""
     from app.core.puzzles import CHESS_PUZZLES
+    from app.models.gamification import SolvedPuzzle
+    from sqlalchemy import select
+    
+    result = await db.execute(
+        select(SolvedPuzzle.puzzle_id).where(SolvedPuzzle.user_id == current_user.id)
+    )
+    solved_ids = set(result.scalars().all())
     
     return [
         {
@@ -243,7 +251,8 @@ async def get_puzzles(
             "title": p["title"],
             "description": p["description"],
             "xp_reward": p["xp_reward"],
-            "is_premium_locked": p["id"] > 1 and not current_user.is_premium
+            "is_premium_locked": p["id"] > 1 and not current_user.is_premium,
+            "is_solved": p["id"] in solved_ids
         }
         for p in CHESS_PUZZLES
     ]
@@ -307,12 +316,86 @@ async def verify_puzzle_solution(
     if user_sol != correct_sol:
         raise HTTPException(status_code=400, detail="Incorrect move sequence. Try again!")
         
+    # Deduplicate to prevent puzzle ELO/XP farming
+    from app.services.session_manager import SessionManager
+    from app.models.gamification import SolvedPuzzle
+    from sqlalchemy import select, and_
+    session_mgr = SessionManager()
+    redis_key = f"user:solved_puzzles:{current_user.telegram_id}"
+    
+    # DB check as primary source of truth
+    db_check = await db.execute(
+        select(SolvedPuzzle).where(
+            and_(
+                SolvedPuzzle.user_id == current_user.id,
+                SolvedPuzzle.puzzle_id == puzzle_id
+            )
+        )
+    )
+    already_solved_db = db_check.scalars().first() is not None
+
+    already_solved_redis = False
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            already_solved_redis = await session_mgr.redis.sismember(redis_key, str(puzzle_id))
+        except Exception:
+            pass
+
+    if (not session_mgr.redis or session_mgr._use_memory) or already_solved_redis is None:
+        if not hasattr(GamificationService, "_solved_puzzles"):
+            GamificationService._solved_puzzles = set()
+        mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+        already_solved_redis = mem_key in GamificationService._solved_puzzles
+
+    already_solved = already_solved_db or already_solved_redis
+
+    if already_solved:
+        # If solved in DB but not in memory/Redis (e.g. cold start), backfill them
+        if not already_solved_redis:
+            if session_mgr.redis and not session_mgr._use_memory:
+                try:
+                    await session_mgr.redis.sadd(redis_key, str(puzzle_id))
+                except Exception:
+                    pass
+            else:
+                if not hasattr(GamificationService, "_solved_puzzles"):
+                    GamificationService._solved_puzzles = set()
+                mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+                GamificationService._solved_puzzles.add(mem_key)
+
+        return {
+            "status": "success",
+            "solved": True,
+            "new_xp": current_user.xp,
+            "new_level": current_user.level,
+            "new_elo": current_user.elo,
+            "message": "Already solved. No additional XP/ELO rewarded."
+        }
+
+    # Save solved puzzle to database
+    solved_record = SolvedPuzzle(user_id=current_user.id, puzzle_id=puzzle_id)
+    db.add(solved_record)
+
+    # Add to Redis set
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            await session_mgr.redis.sadd(redis_key, str(puzzle_id))
+        except Exception:
+            pass
+    else:
+        if not hasattr(GamificationService, "_solved_puzzles"):
+            GamificationService._solved_puzzles = set()
+        mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+        GamificationService._solved_puzzles.add(mem_key)
+
     # Award ELO (+5) and XP (puzzle reward)
     current_user.elo += 5
-    updated_user = await GamificationService.add_xp(db, current_user, target_puzzle["xp_reward"], trigger_kickback=True, apply_booster=True)
+    updated_user = await GamificationService.add_xp(db, current_user, target_puzzle["xp_reward"], trigger_kickback=True, apply_booster=True, commit=False)
     
     # Track completion in user tasks: complete task type puzzle
-    await GamificationService.update_task_progress(db, current_user.id, "login", increment=0) # dummy keep db hot
+    await GamificationService.update_task_progress(db, current_user.id, "login", increment=0, commit=False) # dummy keep db hot
+    
+    await db.commit()
     
     return {
         "status": "success",

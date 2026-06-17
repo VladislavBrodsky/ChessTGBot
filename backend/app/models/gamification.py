@@ -51,3 +51,11 @@ class UnlockedLesson(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     lesson_id = Column(String, index=True)
     unlocked_at = Column(DateTime, default=datetime.utcnow)
+
+class SolvedPuzzle(Base):
+    __tablename__ = "solved_puzzles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    puzzle_id = Column(Integer, index=True, nullable=False)
+    solved_at = Column(DateTime, default=datetime.utcnow, nullable=False)

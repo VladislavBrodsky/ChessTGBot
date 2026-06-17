@@ -25,7 +25,7 @@ async def init_db():
     # Import models here to avoid circular import with Base
     from app.models.user import User
     from app.models.game_history import GameHistory
-    from app.models.gamification import Task, UserTask, Referral, TaskType
+    from app.models.gamification import Task, UserTask, Referral, TaskType, SolvedPuzzle
     from app.models.transaction import Transaction
     
     async with engine.begin() as conn:

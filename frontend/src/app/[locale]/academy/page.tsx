@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
-import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire } from "react-icons/fa";
+import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire, FaCheck, FaLock } from "react-icons/fa";
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -22,6 +22,8 @@ export default function AcademyPage() {
   const [puzzles, setPuzzles] = useState<any[]>([]);
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
+
+  const nextToSolveId = puzzles.find(p => !p.is_solved && !p.is_premium_locked)?.id;
 
   const fetchData = async () => {
     try {
@@ -44,6 +46,8 @@ export default function AcademyPage() {
         const puzzlesData = await puzzlesRes.json();
         if (Array.isArray(puzzlesData)) {
           setPuzzles(puzzlesData);
+          const solvedIds = puzzlesData.filter((p: any) => p.is_solved).map((p: any) => p.id);
+          setCompletedPuzzles(solvedIds);
         }
       }
     } catch (e) {
@@ -55,10 +59,6 @@ export default function AcademyPage() {
 
   useEffect(() => {
     fetchData();
-    const solved = localStorage.getItem("completed_puzzles");
-    if (solved) {
-      setCompletedPuzzles(JSON.parse(solved));
-    }
   }, []);
 
   const handleLessonClick = async (lessonId: string, isLocked: boolean) => {
@@ -280,15 +280,21 @@ export default function AcademyPage() {
                 const id = i + 1;
                 const isCompleted = completedPuzzles.includes(id);
                 const isPremiumLocked = id > 1 && !(stats?.is_premium);
+                const isActive = id === nextToSolveId;
 
-                let bgClass = "bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105";
+                let bgClass = "";
                 let statusMark = null;
 
                 if (isCompleted) {
-                  bgClass = "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-black hover:bg-emerald-500/30";
+                  bgClass = "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/30 shadow-[inset_0_1px_3px_rgba(16,185,129,0.1)]";
+                  statusMark = <FaCheck className="absolute top-0.5 right-0.5 text-[6px] text-emerald-400/80" />;
+                } else if (isActive) {
+                  bgClass = "bg-brand-primary/20 border-brand-primary text-brand-primary font-black animate-pulse shadow-[0_0_15px_rgba(255,215,0,0.2),inset_0_1px_4px_rgba(255,215,0,0.15)] scale-105 z-10";
                 } else if (isPremiumLocked) {
-                  bgClass = "bg-amber-500/10 border-amber-500/20 text-amber-500/60";
-                  statusMark = <span className="absolute bottom-0.5 right-0.5 text-[6px] opacity-75">🔒</span>;
+                  bgClass = "bg-brand-void/40 border-amber-500/10 text-amber-500/40 cursor-not-allowed";
+                  statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[6px] text-amber-500/40" />;
+                } else {
+                  bgClass = "bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105 hover:bg-brand-void/80 hover:border-brand-primary/30";
                 }
 
                 return (
@@ -303,10 +309,10 @@ export default function AcademyPage() {
                 );
               })}
             </div>
-            <div className="flex justify-between items-center text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-4 px-1">
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> {t('unlocked')}</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t('solved')}</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {t('premium')}</span>
+            <div className="flex justify-between items-center text-[8px] font-bold text-brand-primary opacity-60 uppercase tracking-wider mt-5 px-1">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> {t('unlocked')}</span>
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t('solved')}</span>
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {t('premium')}</span>
             </div>
           </div>
         </div>

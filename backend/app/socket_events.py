@@ -9,6 +9,34 @@ from app.core.database import AsyncSessionLocal
 from app.crud import user as user_crud
 from app.models.transaction import Transaction
 
+from sqlalchemy import select, and_
+
+async def refund_pending_matchmaking_wager(db, user_id: int):
+    user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
+    if user:
+        result = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == user_id,
+                    Transaction.type == "game_wager",
+                    Transaction.status == "pending",
+                    Transaction.reference_id == "matchmaking"
+                )
+            ).order_by(Transaction.created_at.desc()).limit(1)
+        )
+        tx = result.scalars().first()
+        if tx:
+            refund_amount = abs(tx.amount)
+            user.balance += refund_amount
+            tx.status = "failed"
+            tx.reference_id = "matchmaking_refunded"
+            db.add(user)
+            db.add(tx)
+            await db.commit()
+            print(f"Refunded matchmaking wager of {refund_amount} to User {user_id}")
+            return True
+    return False
+
 @sio.event
 async def connect(sid, environ, auth):
     """
@@ -62,6 +90,8 @@ async def disconnect(sid):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         if user_id:
+            async with AsyncSessionLocal() as db:
+                await refund_pending_matchmaking_wager(db, user_id)
             await MatchmakerService().remove_from_queue(user_id)
             print(f"Socket {sid} (User {user_id}) disconnected and removed from matchmaking queue.")
     except Exception as e:
@@ -78,10 +108,16 @@ async def join_room(sid, data):
     user_id = session.get('user_id')
     
     if room:
+        service = GameService()
+        if user_id:
+            state = await service.session_manager.get_game(room)
+            if state and state.white_player_id and state.black_player_id:
+                if user_id not in (state.white_player_id, state.black_player_id):
+                    await sio.emit('error', {'message': 'Forbidden: You are not a player in this game.'}, room=sid)
+                    return
+        
         await sio.enter_room(sid, room)
         print(f"Socket {sid} (User {user_id}) joined room {room}")
-        
-        service = GameService()
         
         # Try to join/assign player if user_id present
         if user_id:
@@ -134,17 +170,48 @@ async def join_matchmaking(sid, data):
             return
 
         user_elo = 1000
-        # 1. Verify player balance
+        # 1. Verify player balance, check for existing pending queue wager, and deduct wager immediately
         async with AsyncSessionLocal() as db:
             user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
-            if not user or user.balance < bid_amount:
+            if not user:
+                await sio.emit('matchmaking_error', {'message': 'User profile not found'}, room=sid)
+                return
+
+            # Prevent duplicate matchmaking joins
+            res = await db.execute(
+                select(Transaction).where(
+                    and_(
+                        Transaction.user_id == user_id,
+                        Transaction.type == "game_wager",
+                        Transaction.status == "pending",
+                        Transaction.reference_id == "matchmaking"
+                    )
+                )
+            )
+            if res.scalars().first():
+                await sio.emit('matchmaking_error', {'message': 'Already in matchmaking queue.'}, room=sid)
+                return
+
+            if user.balance < bid_amount:
                 await sio.emit('matchmaking_error', {
                     'message': 'Insufficient funds. Please top up your Web3 Wallet.'
                 }, room=sid)
-                await db.commit()
                 return
-            user_elo = getattr(user, 'elo', 1000)
+
+            user.balance -= bid_amount
+            db.add(user)
+
+            # Log pending transaction
+            tx = Transaction(
+                user_id=user_id,
+                type="game_wager",
+                amount=-bid_amount,
+                status="pending",
+                reference_id="matchmaking"
+            )
+            db.add(tx)
             await db.commit()
+            user_elo = getattr(user, 'elo', 1000)
 
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
@@ -177,50 +244,61 @@ async def join_matchmaking(sid, data):
             
             state.bid_amount = bid_amount
             
-            # 4. Deduct wagers and log transactions in db
+            # 4. Resolve pending wagers (update reference_id to game_id and status to completed)
             async with AsyncSessionLocal() as db:
-                # Deduct White Player
                 white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
                 black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
                 
-                if not white or white.balance < bid_amount or not black or black.balance < bid_amount:
+                # Fetch pending transactions
+                res_w = await db.execute(
+                    select(Transaction).where(
+                        and_(
+                            Transaction.user_id == state.white_player_id,
+                            Transaction.type == "game_wager",
+                            Transaction.status == "pending",
+                            Transaction.reference_id == "matchmaking"
+                        )
+                    ).order_by(Transaction.created_at.desc()).limit(1)
+                )
+                tx_w = res_w.scalars().first()
+                
+                res_b = await db.execute(
+                    select(Transaction).where(
+                        and_(
+                            Transaction.user_id == state.black_player_id,
+                            Transaction.type == "game_wager",
+                            Transaction.status == "pending",
+                            Transaction.reference_id == "matchmaking"
+                        )
+                    ).order_by(Transaction.created_at.desc()).limit(1)
+                )
+                tx_b = res_b.scalars().first()
+                
+                if not tx_w or not tx_b:
                     # Rollback and clean up queues
                     await db.rollback()
-                    
-                    if not white or white.balance < bid_amount:
-                        await sio.emit('matchmaking_error', {'message': 'Insufficient funds to start match.'}, room=sid if state.white_player_id == user_id else opponent_sid)
-                    if not black or black.balance < bid_amount:
-                        await sio.emit('matchmaking_error', {'message': 'Insufficient funds to start match.'}, room=sid if state.black_player_id == user_id else opponent_sid)
-                    
+                    # Refund anyone who got deducted if one of the transaction gets lost/mismatched
+                    async with AsyncSessionLocal() as refund_db:
+                        await refund_pending_matchmaking_wager(refund_db, user_id)
+                        await refund_pending_matchmaking_wager(refund_db, opponent_id)
                     await matchmaker.remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
+                    await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=sid)
                     return
                 
-                # Cache player usernames and ELOs
-                state.white_username = white.first_name
-                state.white_elo = white.elo
-                state.black_username = black.first_name
-                state.black_elo = black.elo
-
-                white.balance -= bid_amount
-                db.add(white)
-                tx_w = Transaction(
-                    user_id=state.white_player_id,
-                    type="game_wager",
-                    amount=-bid_amount,
-                    reference_id=game_id
-                )
-                db.add(tx_w)
+                # Update status to completed
+                tx_w.status = "completed"
+                tx_w.reference_id = game_id
+                tx_b.status = "completed"
+                tx_b.reference_id = game_id
                 
-                # Deduct Black Player
-                black.balance -= bid_amount
-                db.add(black)
-                tx_b = Transaction(
-                    user_id=state.black_player_id,
-                    type="game_wager",
-                    amount=-bid_amount,
-                    reference_id=game_id
-                )
+                db.add(tx_w)
                 db.add(tx_b)
+                
+                # Cache player usernames and ELOs
+                state.white_username = white.first_name if white else f"User_{state.white_player_id}"
+                state.white_elo = white.elo if white else 1000
+                state.black_username = black.first_name if black else f"User_{state.black_player_id}"
+                state.black_elo = black.elo if black else 1000
                 
                 await db.commit()
 
@@ -233,7 +311,7 @@ async def join_matchmaking(sid, data):
                 # White Player Notification
                 msg_w = (
                     f"<b>🎮 Wager Chess Battle Connected! (White)</b>\n\n"
-                    f"• <b>Opponent:</b> @{black.username or 'Opponent'} (ELO {black.elo})\n"
+                    f"• <b>Opponent:</b> @{state.black_username or 'Opponent'} (ELO {state.black_elo})\n"
                     f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
                     f"<i>Your wager has been locked. The board is ready in the Chess Mini App. Make your first move! ♟️⚡️</i>"
                 )
@@ -242,7 +320,7 @@ async def join_matchmaking(sid, data):
                 # Black Player Notification
                 msg_b = (
                     f"<b>🎮 Wager Chess Battle Connected! (Black)</b>\n\n"
-                    f"• <b>Opponent:</b> @{white.username or 'Opponent'} (ELO {white.elo})\n"
+                    f"• <b>Opponent:</b> @{state.white_username or 'Opponent'} (ELO {state.white_elo})\n"
                     f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
                     f"<i>Your wager has been locked. White is setting up the first move. Keep your eyes on the board! ♟️🛡️</i>"
                 )
@@ -282,7 +360,7 @@ async def join_matchmaking(sid, data):
 
     except Exception as e:
         print(f"Error joining matchmaking: {e}")
-        await sio.emit('matchmaking_error', {'message': f'Server matchmaking error: {str(e)}'}, room=sid)
+        await sio.emit('matchmaking_error', {'message': 'Server matchmaking error.'}, room=sid)
 
 @sio.event
 async def leave_matchmaking(sid, data):
@@ -293,6 +371,8 @@ async def leave_matchmaking(sid, data):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         if user_id:
+            async with AsyncSessionLocal() as db:
+                await refund_pending_matchmaking_wager(db, user_id)
             await MatchmakerService().remove_from_queue(user_id)
             await sio.emit('matchmaking_status', {'status': 'idle'}, room=sid)
             print(f"Socket {sid} (User {user_id}) manually left matchmaking queue.")
