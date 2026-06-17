@@ -145,7 +145,7 @@ export default function SettingsPage() {
  {/* Section: Account & Web3 */}
  <div className="w-full space-y-2.5 mb-6">
  <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] pl-1 text-left w-full">
- Account & Integrations
+ {t('account_section')}
  </h3>
  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface divide-y divide-brand-border-opacity-10 shadow-sm overflow-hidden">
  
@@ -158,10 +158,10 @@ export default function SettingsPage() {
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
- TON Wallet
+ {t('ton_wallet')}
  </span>
  <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
- {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "Not Connected"}
+ {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
  </span>
  </div>
  </div>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
- Premium Membership
+ {t('premium_membership')}
  </span>
  <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
  {t('enhanced_access')}

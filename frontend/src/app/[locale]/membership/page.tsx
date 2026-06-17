@@ -245,21 +245,21 @@ export default function MembershipPage() {
       animate={{ opacity: 1, y: 0 }}
       className="w-full glass-panel p-5 rounded-3xl border border-brand-border-opacity-15 bg-brand-surface relative overflow-hidden text-center shadow-md space-y-4"
     >
-      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-primary opacity-50">PRO REGISTRATION MATRIX</div>
-      <h3 className="text-xl font-black text-brand-primary uppercase">ACTIVATION PROTOCOL</h3>
+      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-primary opacity-50">{tm('xp_upgrade_badge')}</div>
+      <h3 className="text-xl font-black text-brand-primary uppercase">{tm('xp_upgrade_title')}</h3>
       <p className="text-xs text-brand-primary opacity-60 px-2 leading-relaxed">
-        You can use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.
+        {tm('xp_upgrade_desc')}
       </p>
       
       <div className="bg-brand-void rounded-2xl py-3 border border-brand-border-opacity-5 w-fit px-8 mx-auto text-xs font-black uppercase text-brand-primary tracking-widest shadow-inner">
-        COST: 500 XP (Balance: {stats.xp} XP)
+        {tm('xp_upgrade_cost', { xp: stats.xp })}
       </div>
 
       <button
         onClick={handleXpUpgrade}
-        className="w-full py-4.5 rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
+        className="w-full py-[18px] rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
       >
-        Unlock Premium with 500 XP
+        {tm('xp_upgrade_btn')}
       </button>
     </motion.div>
   )}

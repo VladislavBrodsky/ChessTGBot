@@ -259,7 +259,7 @@ export default function Home() {
  <motion.div
  whileHover={{ y: -2 }}
  whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-4.5 flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
+ className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
  >
  <FaGamepad className="text-lg text-brand-primary opacity-70" />
  <span className="text-[9px] font-black uppercase tracking-wider">{t('play')}</span>
@@ -270,7 +270,7 @@ export default function Home() {
  <motion.div
  whileHover={{ y: -2 }}
  whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-4.5 flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
+ className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
  >
  <FaGraduationCap className="text-lg text-brand-primary opacity-70" />
  <span className="text-[9px] font-black uppercase tracking-wider">{t('academy')}</span>
@@ -281,7 +281,7 @@ export default function Home() {
  <motion.div
  whileHover={{ y: -2 }}
  whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-4.5 flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
+ className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
  >
  <FaTrophy className="text-lg text-brand-primary opacity-70" />
  <span className="text-[9px] font-black uppercase tracking-wider">{t('daily_tasks')}</span>

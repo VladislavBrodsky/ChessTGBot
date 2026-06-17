@@ -14,6 +14,9 @@
         "recent_activity": "Recent Activity",
         "vs": "vs",
         "elo": "ELO",
+        "no_games_logged": "No games logged",
+        "initiate_combat": "Initiate combat to update history",
+        "opponent_elo": "Opponent ELO",
         "execute_matchmaking": "Start Game",
         "protocol_beta": "Beta Version",
         "ai_training": "AI Training",
@@ -65,7 +68,11 @@
         "language_matrix": "Select Language",
         "enhanced_access": "Premium Status: Active",
         "footer": "Chess Mini App v1.5.0",
-        "membership_tier": "Membership Tier"
+        "membership_tier": "Membership Tier",
+        "account_section": "Account & Integrations",
+        "ton_wallet": "TON Wallet",
+        "ton_not_connected": "Not Connected",
+        "premium_membership": "Premium Membership"
     },
     "Language": {
         "select": "Choose Language"
@@ -94,7 +101,15 @@
         "copied_success": "Copied! ✓",
         "verify_btn": "Verify",
         "claimed_status": "Completed",
-        "reward": "Reward"
+        "reward": "Reward",
+        "challenges_header": "Command Center",
+        "challenges_version": "V2",
+        "grandmaster_rising": "Grandmaster Rising",
+        "next_level": "Next Level: {xp} XP",
+        "daily_operations": "Daily Operations",
+        "no_active_missions": "No active missions",
+        "battles": "Battles",
+        "elo_rating": "ELO Rating"
     },
     "Academy": {
         "title": "Academy",
@@ -296,7 +311,12 @@
         "elite_skins": "Elite Board Themes",
         "elite_skins_desc": "Exclusive 3D boards and animations.",
         "engine_analysis": "A.I. Engine Analysis",
-        "engine_analysis_desc": "In-depth tactical review of matches."
+        "engine_analysis_desc": "In-depth tactical review of matches.",
+        "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
+        "xp_upgrade_title": "ACTIVATION PROTOCOL",
+        "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
+        "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
+        "xp_upgrade_btn": "Unlock Premium with 500 XP"
     },
     "TierComparison": {
         "title": "Features Comparison",

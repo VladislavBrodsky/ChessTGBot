@@ -417,7 +417,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  whileHover={{ scale: 1.01 }}
  whileTap={{ scale: 0.99 }}
  onClick={shareGame}
- className="w-full action-button py-4.5 rounded-2xl uppercase flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+ className="w-full action-button py-[18px] rounded-2xl uppercase flex items-center justify-center gap-3 cursor-pointer shadow-sm"
  >
  {copied ? <FaCheck /> : <FaCopy />}
  <span>{copied ? "Sync Success" : "Establish Link"}</span>

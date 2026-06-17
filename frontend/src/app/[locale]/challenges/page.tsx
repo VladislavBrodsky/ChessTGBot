@@ -123,18 +123,18 @@ export default function ChallengesPage() {
  <div className="w-full max-w-sm flex flex-col items-start px-4 mx-auto">
  {/* Header */}
  <div className="w-full flex justify-between items-center mb-8">
- <Link href={`/${locale}/home`}>
- <motion.button
- whileHover={{ x: -2 }}
- className="text-brand-primary opacity-40 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
- >
- <FaArrowLeft className="text-[10px]" />
- <span>Return</span>
- </motion.button>
- </Link>
- <div className="px-3 py-1 rounded-full bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
- Command Center • V2
- </div>
+  <Link href={`/${locale}/home`}>
+  <motion.button
+  whileHover={{ x: -2 }}
+  className="text-brand-primary opacity-40 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+  >
+  <FaArrowLeft className="text-[10px]" />
+  <span>{t('return') || 'Return'}</span>
+  </motion.button>
+  </Link>
+  <div className="px-3 py-1 rounded-full bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
+  {t('challenges_header')} • {t('challenges_version')}
+  </div>
  </div>
 
  {/* Level Progress Card */}
@@ -153,9 +153,9 @@ export default function ChallengesPage() {
  </div>
  </div>
 
- <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">Grandmaster Rising</h1>
+ <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">{t('grandmaster_rising')}</h1>
  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
- Next Level: {nextLevelXp} XP
+ {t('next_level', { xp: nextLevelXp })}
  </p>
 
  {/* XP Bar */}
@@ -182,7 +182,7 @@ export default function ChallengesPage() {
  </div>
  <div className="flex flex-col">
  <span className="text-lg font-black text-brand-primary leading-none">{user.games_played || 0}</span>
- <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">Battles</span>
+ <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">{t('battles')}</span>
  </div>
  </div>
  <div className="glass-panel p-4 rounded-2xl flex items-center gap-3 border-brand-border-opacity-10 bg-brand-surface shadow-sm">
@@ -191,14 +191,14 @@ export default function ChallengesPage() {
  </div>
  <div className="flex flex-col">
  <span className="text-lg font-black text-brand-primary leading-none">{user.elo || 1000}</span>
- <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">ELO Rating</span>
+ <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">{t('elo_rating')}</span>
  </div>
  </div>
  </div>
 
  {/* Tasks Section */}
  <div className="w-full mb-8">
- <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] pl-1 mb-4">Daily Operations</h3>
+ <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] pl-1 mb-4">{t('daily_operations')}</h3>
  <div className="space-y-3 w-full">
  {loading ? (
     <div className="w-full flex flex-col space-y-3">
@@ -217,7 +217,7 @@ export default function ChallengesPage() {
     </div>
  ) : tasks.length === 0 ? (
  <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
- No active missions
+ {t('no_active_missions')}
  </div>
  ) : (
  tasks.map((task) => (

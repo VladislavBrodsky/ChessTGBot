@@ -248,7 +248,7 @@ export default function ProfilePage() {
                    vs {game.opponent?.name || "AI Engine"}
                  </span>
                  <span className="text-[9px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
-                   Opponent ELO: {game.opponent?.elo || 1000}
+                   {t('opponent_elo')}: {game.opponent?.elo || 1000}
                  </span>
                </div>
              </div>
@@ -271,10 +271,10 @@ export default function ProfilePage() {
    ) : (
      <div className="glass-panel p-6 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center">
        <span className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-1">
-         No games logged
+         {t('no_games_logged')}
        </span>
        <span className="text-[10px] font-medium text-brand-primary opacity-20 uppercase tracking-widest">
-         Initiate combat to update history
+         {t('initiate_combat')}
        </span>
      </div>
    )}
