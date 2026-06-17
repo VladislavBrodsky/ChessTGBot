@@ -212,6 +212,20 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const handleOfferDraw = () => {
+    if (isBotGame) {
+      telegramConfirm(
+        locale === 'ru'
+          ? "ИИ отклоняет предложения ничьей. Хотите сдаться вместо этого?"
+          : "The A.I. declines draw offers. Do you want to resign instead?",
+        (confirmed) => {
+          if (confirmed) {
+            handleResign();
+          }
+        }
+      );
+      return;
+    }
+
     telegramConfirm("Offer a draw to your opponent?", (confirmed) => {
       if (confirmed) {
         const socket = getSocket();
@@ -562,18 +576,16 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             <span>{tg('resign')}</span>
           </motion.button>
 
-          {/* Offer Draw Button — hidden for bot games */}
-          {!isBotGame && (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleOfferDraw}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
-            >
-              <FaHandshake size={14} />
-              <span>{tg('offer_draw')}</span>
-            </motion.button>
-          )}
+          {/* Offer Draw Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleOfferDraw}
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
+          >
+            <FaHandshake size={14} />
+            <span>{tg('offer_draw')}</span>
+          </motion.button>
         </motion.div>
       )}
     </LayoutWrapper>
