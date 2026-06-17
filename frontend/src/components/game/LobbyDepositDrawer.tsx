@@ -200,7 +200,7 @@ export default function LobbyDepositDrawer({
           // Show Real Invoice details
           <div className="space-y-4 w-full">
             <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-              Real Web3 TON invoice generated successfully. Scan or tap below to pay using your connected Web3 wallet.
+              {tw('deposit_invoice_success')}
             </p>
 
             <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-border-opacity-20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
@@ -262,7 +262,7 @@ export default function LobbyDepositDrawer({
               className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
-              <span>{isDepositing ? "Generating..." : "Generate Web3 Invoice"}</span>
+              <span>{isDepositing ? "Generating..." : tw('deposit_cta')}</span>
             </button>
 
             {/* Toggleable Direct manual transfer fallback */}
