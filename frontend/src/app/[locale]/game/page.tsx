@@ -495,10 +495,10 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   
   <div className="flex flex-col items-center text-center mt-2">
   <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-    Revenge Match
+    {tg('revenge_match')}
   </h2>
   <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    Raise the stakes to win back your coins!
+    {tg('invite_revenge_desc')}
   </p>
   </div>
   
@@ -508,7 +508,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       onClick={() => sendRematchOffer(false)}
       className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm"
     >
-      <span className="text-xs uppercase font-black tracking-[0.2em]">Same Stakes</span>
+      <span className="text-xs uppercase font-black tracking-[0.2em]">{tg('same_stakes')}</span>
       <span className="text-[9px] font-bold opacity-80">${((gameState?.wager_amount || 0) / 100).toFixed(2)} USDT</span>
     </motion.button>
     
@@ -519,7 +519,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
     >
       <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
       <span className="text-xs uppercase font-black tracking-[0.2em] flex items-center gap-1">
-        🔥 Double Stakes (2x)
+        {tg('double_stakes_choice')}
       </span>
       <span className="text-[9px] font-bold opacity-90">${(((gameState?.wager_amount || 0) * 2) / 100).toFixed(2)} USDT</span>
     </motion.button>
@@ -529,7 +529,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       onClick={() => setShowRematchChoice(false)}
       className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
     >
-      <span>Cancel</span>
+      <span>{tg('cancel')}</span>
     </motion.button>
   </div>
   </motion.div>
@@ -559,20 +559,20 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   
   <div className="flex flex-col items-center text-center mt-2">
   <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-orange-400 animate-pulse">
-    Rematch Offered!
+    {tg('rematch_dialog_title')}
   </h2>
   <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    {incomingRematch.challenger_name} challenged you to a rematch
+    {tg('challenger_offered_rematch', { name: incomingRematch.challenger_name })}
   </p>
   </div>
   
   <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 text-center shadow-sm">
-    <span className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest block mb-1">Proposed Wager</span>
+    <span className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest block mb-1">{tg('proposed_wager')}</span>
     <span className="text-2xl font-black text-brand-primary">
       ${((incomingRematch.wager) / 100).toFixed(2)} USDT
     </span>
     {incomingRematch.double_stakes && (
-      <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block mt-1">🔥 Double Stakes Active</span>
+      <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block mt-1">{tg('double_stakes_active')}</span>
     )}
   </div>
   
@@ -582,7 +582,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       onClick={acceptRematch}
       className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
     >
-      <span>Accept & Play</span>
+      <span>{tg('accept_play')}</span>
     </motion.button>
     
     <motion.button
@@ -590,7 +590,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       onClick={declineRematch}
       className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
     >
-      <span>Decline</span>
+      <span>{tg('decline')}</span>
     </motion.button>
   </div>
   </motion.div>
@@ -1117,19 +1117,19 @@ function PlayLobby() {
         className="w-full relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 animate-pulse-slow shadow-[0_0_15px_rgba(16,185,129,0.25)]"
       >
         <div className="bg-brand-surface rounded-[15px] p-3.5 flex flex-col items-center justify-center text-center relative z-10">
-          <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-0.5">🏆 Potential Pot Reward</span>
+          <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-0.5">{tg('potential_pot_reward')}</span>
           <div className="flex items-baseline gap-1.5">
             <span className="text-lg font-black text-brand-primary tracking-wide">
               ${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT
             </span>
-            <span className="text-[9px] font-bold text-brand-primary opacity-40">net win</span>
+            <span className="text-[9px] font-bold text-brand-primary opacity-40">{tg('net_win')}</span>
           </div>
           <button 
             onClick={() => setShowRakeInfo(true)}
             className="mt-1.5 text-[8px] font-bold text-brand-primary opacity-35 hover:opacity-100 uppercase tracking-widest transition-opacity flex items-center gap-1 bg-transparent border-0 cursor-pointer"
           >
-            <span>Total Pot: ${((chosenWager * 2) / 100).toFixed(2)} USDT (3% Rake)</span>
-            <span className="underline">[Learn More]</span>
+            <span>{tg('total_pot_info', { amount: ((chosenWager * 2) / 100).toFixed(2) })}</span>
+            <span className="underline">{tg('learn_more')}</span>
           </button>
         </div>
       </motion.div>
@@ -1283,28 +1283,28 @@ function PlayLobby() {
   
   <div className="flex flex-col items-center text-center mt-2">
   <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-    Platform Commission (Rake)
+    {tg('platform_commission')}
   </h2>
   <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    How matchmaking fees sustain the ecosystem
+    {tg('sustain_ecosystem')}
   </p>
   </div>
   
   <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
     <p>
-      FinChess charges a flat <span className="text-brand-primary font-black">3% commission (rake)</span> on game rewards. This commission is only deducted from the winner's share.
+      {tg('rake_desc1')}
     </p>
     <p>
-      For example, if you wager <span className="text-brand-primary font-black">$10.00</span>, the total pot is <span className="text-brand-primary font-black">$20.00</span>. The winner receives <span className="text-brand-primary font-black">$19.40</span> net, while <span className="text-brand-primary font-black">$0.60 (3%)</span> is reserved as the platform rake.
+      {tg('rake_desc2')}
     </p>
     <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
     <p className="text-[10px] text-brand-primary/50 uppercase tracking-wider">
-      Where does the rake go?
+      {tg('where_rake_goes')}
     </p>
     <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
-      <li>Bot infrastructure & high-speed game matching servers.</li>
-      <li>Liquidity pools to ensure instant payouts.</li>
-      <li>Ecosystem rewards (XP rewards, referral cashback commissions).</li>
+      <li>{tg('rake_li1')}</li>
+      <li>{tg('rake_li2')}</li>
+      <li>{tg('rake_li3')}</li>
     </ul>
   </div>
   
@@ -1314,7 +1314,7 @@ function PlayLobby() {
       onClick={() => setShowRakeInfo(false)}
       className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
     >
-      <span>Got it</span>
+      <span>{tg('got_it')}</span>
     </motion.button>
   </div>
   </motion.div>
@@ -1328,14 +1328,14 @@ function PlayLobby() {
 }
 
 function GameContent() {
- const searchParams = useSearchParams();
- const gameId = searchParams?.get("id") || "";
+  const searchParams = useSearchParams();
+  const gameId = searchParams?.get("id") || "";
 
- return gameId ? (
- <ActiveGame gameId={gameId} />
- ) : (
- <PlayLobby />
- );
+  return gameId ? (
+    <ActiveGame key={gameId} gameId={gameId} />
+  ) : (
+    <PlayLobby />
+  );
 }
 
 export default function GamePage() {

@@ -208,7 +208,7 @@ export default function AcademyPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2 px-1">
             <FaChessRook className="text-brand-primary opacity-40" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">Tactics Level Grid</h3>
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('tactics_grid')}</h3>
           </div>
           <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
             <div className="grid grid-cols-10 gap-2 w-full">
@@ -240,9 +240,9 @@ export default function AcademyPage() {
               })}
             </div>
             <div className="flex justify-between items-center text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-4 px-1">
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> Unlocked</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Solved</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Premium</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> {t('unlocked')}</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t('solved')}</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {t('premium')}</span>
             </div>
           </div>
         </div>
@@ -315,27 +315,25 @@ export default function AcademyPage() {
         className="bottom-drawer-sheet relative z-20"
       >
       <div className="bottom-drawer-handle" />
-      
-      <div className="flex flex-col items-center text-center mt-2">
+          <div className="flex flex-col items-center text-center mt-2">
       <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-        Unlock Level Grid
+        {t('unlock_grid')}
       </h2>
       <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-        Levels 2 to 100 require a premium license
+        {t('level_premium_req')}
       </p>
       </div>
       
       <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
-        <p className="text-center font-black text-brand-primary text-sm mb-1">👑 FinChess Premium Perks</p>
+        <p className="text-center font-black text-brand-primary text-sm mb-1">{t('premium_perks')}</p>
         <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
-          <li>100 advanced Chess puzzles grid.</li>
-          <li>Double XP multiplier on daily tasks and ELO matches.</li>
-          <li>No advertisements or limits on engine chess analysis.</li>
+          <li>{t('perk_li1')}</li>
+          <li>{t('perk_li2')}</li>
+          <li>{t('perk_li3')}</li>
         </ul>
         <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
         <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-wider">
-          <span>Your current stats:</span>
-          <span>{stats?.xp || 0} XP • ${(stats?.balance || 0)/100} USDT</span>
+          <span>{t('your_stats', { xp: stats?.xp || 0, balance: ((stats?.balance || 0)/100).toFixed(2) })}</span>
         </div>
       </div>
       
@@ -345,8 +343,8 @@ export default function AcademyPage() {
           onClick={handleUpgradeWithXp}
           className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm"
         >
-          <span className="text-xs uppercase font-black tracking-[0.2em]">Unlock with 500 XP</span>
-          <span className="text-[8px] font-bold opacity-80">Free level-up unlock path</span>
+          <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
+          <span className="text-[8px] font-bold opacity-80">{t('free_unlock_path')}</span>
         </motion.button>
         
         <motion.button
@@ -355,16 +353,16 @@ export default function AcademyPage() {
           className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-          <span className="text-xs uppercase font-black tracking-[0.2em]">Buy Premium ($12.00 USDT / yr)</span>
-          <span className="text-[8px] font-bold opacity-90">Instant activation using game balance</span>
+          <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
+          <span className="text-[8px] font-bold opacity-90">{t('instant_activation')}</span>
         </motion.button>
-
+ 
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowPremiumPromo(false)}
           className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
         >
-          <span>Cancel</span>
+          <span>{t('cancel')}</span>
         </motion.button>
       </div>
       </motion.div>

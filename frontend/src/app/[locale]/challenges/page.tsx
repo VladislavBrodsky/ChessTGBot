@@ -238,22 +238,22 @@ export default function ChallengesPage() {
  onClick={() => handleClaim(task.task_id)}
  className="px-3.5 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm cursor-pointer"
  >
- Claim
+ {t('claim')}
  </motion.button>
  ) : task.claimed ? (
- <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">Completed</span>
+ <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>
  ) : (task.title_key === "join_channel" || task.title_key === "join_chat") ? (
  <motion.button
  whileTap={{ scale: 0.95 }}
  onClick={() => handleVerify(task.task_id, task.title_key)}
  className="px-3.5 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm cursor-pointer"
  >
- Verify
+ {t('verify_btn')}
  </motion.button>
  ) : (
  <div className="flex flex-col items-end">
  <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
- <span className="text-[9px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">Reward</span>
+ <span className="text-[9px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">{t('reward')}</span>
  </div>
  )}
  </div>
@@ -268,8 +268,12 @@ export default function ChallengesPage() {
  <div className="absolute right-0 top-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
  <FaUserFriends className="text-6xl text-brand-primary" />
  </div>
- <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight mb-1">Invite Friend to Play</h3>
- <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4 max-w-[75%]">Share your unique link and earn 50 XP per recruit.</p>
+ <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight mb-1">{t('invite_program_title')}</h3>
+ <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4 max-w-[85%]">
+ {t.rich('invite_program_desc', {
+ emerald: (chunks) => <span className="text-emerald-400 font-extrabold">{chunks}</span>
+ })}
+ </p>
  {userCode && (
  <div className="w-full py-2 px-3 mb-3 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-[10px] font-mono text-brand-primary opacity-60 truncate">
    {inviteLink}
@@ -279,7 +283,7 @@ export default function ChallengesPage() {
  onClick={handleCopyReferral}
  className="w-full py-3 rounded-xl bg-brand-primary text-brand-void hover:bg-brand-primary-hover transition-all text-[10px] font-black uppercase tracking-[0.2em] cursor-pointer shadow-sm"
  >
- {copied ? "Copied! ✓" : "Copy & Share Invite Link"}
+ {copied ? t('copied_success') : t('copy_share_link')}
  </button>
  </div>
  </div>

@@ -6,13 +6,14 @@ import { apiFetch } from "@/lib/api";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
 import { FaArrowLeft } from "react-icons/fa";
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
 
 function PuzzleContent() {
   const [solved, setSolved] = useState(false);
   const locale = useLocale();
+  const t = useTranslations('Academy');
   const searchParams = useSearchParams();
   
   const puzzleIdStr = searchParams?.get("id") || "1";
@@ -113,11 +114,11 @@ function PuzzleContent() {
             animate={{ opacity: 1, scale: 1 }}
             className="p-6 bg-brand-surface border border-brand-border-opacity-20 rounded-2xl text-center shadow-sm"
           >
-            <h2 className="text-xl font-black text-brand-primary mb-1.5 uppercase">EXCELLENT!</h2>
-            <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-wide mb-5">You have spotted the tactical pattern.</p>
+            <h2 className="text-xl font-black text-brand-primary mb-1.5 uppercase">{t('excellent')}</h2>
+            <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-wide mb-5">{t('spotted_pattern')}</p>
             <Link href={`/${locale}/academy`}>
               <button className="w-full py-3 bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-sm">
-                Continue
+                {t('continue')}
               </button>
             </Link>
           </motion.div>
