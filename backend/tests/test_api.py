@@ -90,7 +90,7 @@ async def test_subscribe_billing_periods(client, db_session):
     from app.crud import user as user_crud
     
     # 1. Create a user with enough balance for annual premium ($12.00 / 1200 cents)
-    telegram_id = 555555
+    telegram_id = 555559
     user = await user_crud.create_user(db_session, telegram_id, "Subscriber")
     user.balance = 2000 # 20.00 USD
     db_session.add(user)
