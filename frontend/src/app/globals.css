@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-@theme {
+@theme inline {
   --font-sans: "Outfit", "Plus Jakarta Sans", "Inter", sans-serif;
   --font-display: "Outfit", sans-serif;
 
