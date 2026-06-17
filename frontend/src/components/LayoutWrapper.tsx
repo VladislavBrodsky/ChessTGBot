@@ -1,5 +1,8 @@
+'use client';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
+import Onboarding from './Onboarding';
 import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { FaWallet, FaMoon, FaSun, FaStar } from 'react-icons/fa';
@@ -19,6 +22,16 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const router = useRouter();
     const [balance, setBalance] = useState<number>(0);
     const [isMenuHidden, setIsMenuHidden] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const completed = localStorage.getItem("onboarding_completed");
+            if (completed !== "true") {
+                setShowOnboarding(true);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -107,7 +120,13 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 {children}
             </main>
 
-            <Navbar hide={isMenuHidden} />
+            <Navbar hide={isMenuHidden || showOnboarding} />
+
+            <AnimatePresence>
+                {showOnboarding && (
+                    <Onboarding onClose={() => setShowOnboarding(false)} />
+                )}
+            </AnimatePresence>
         </div>
     );
 }
