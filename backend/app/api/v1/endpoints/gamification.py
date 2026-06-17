@@ -4,7 +4,7 @@ from app.api.v1.deps import get_current_user
 from app.core.database import get_db
 from app.services.gamification_service import GamificationService
 from app.models.user import User
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 router = APIRouter()
@@ -21,8 +21,7 @@ class UserTaskResponse(BaseModel):
     target_count: int
     icon: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 @router.get("/tasks", response_model=List[UserTaskResponse])
 async def get_my_tasks(

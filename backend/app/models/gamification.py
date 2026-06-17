@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 class TaskType(str, enum.Enum):
@@ -32,7 +32,7 @@ class UserTask(Base):
     progress = Column(Integer, default=0)
     completed = Column(Boolean, default=False)
     claimed = Column(Boolean, default=False)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
     # Reset daily tasks logic will use updated_at
 
@@ -42,7 +42,7 @@ class Referral(Base):
     id = Column(Integer, primary_key=True, index=True)
     referrer_id = Column(Integer, ForeignKey("users.id"))
     referred_user_id = Column(Integer, ForeignKey("users.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
 class UnlockedLesson(Base):
     __tablename__ = "unlocked_lessons"
@@ -50,7 +50,7 @@ class UnlockedLesson(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     lesson_id = Column(String, index=True)
-    unlocked_at = Column(DateTime, default=datetime.utcnow)
+    unlocked_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
 class SolvedPuzzle(Base):
     __tablename__ = "solved_puzzles"
@@ -58,4 +58,4 @@ class SolvedPuzzle(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     puzzle_id = Column(Integer, index=True, nullable=False)
-    solved_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    solved_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)

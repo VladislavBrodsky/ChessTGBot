@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey
 from app.core.database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 
 class GameHistory(Base):
     __tablename__ = "game_history"
@@ -29,8 +29,8 @@ class GameHistory(Base):
     
     # Metadata
     game_type = Column(String, default='online')  # 'online', 'computer'
-    created_at = Column(DateTime, default=datetime.utcnow)
-    ended_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+    ended_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     
     # Web3 Betting
     bid_amount = Column(Integer, default=0)  # In cents (smallest unit)

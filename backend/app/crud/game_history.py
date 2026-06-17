@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import desc
 from app.models.game_history import GameHistory
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 async def create_game_history(
@@ -43,8 +43,8 @@ async def create_game_history(
         duration_seconds=duration_seconds,
         final_fen=final_fen,
         game_type=game_type,
-        created_at=created_at or datetime.utcnow(),
-        ended_at=ended_at or datetime.utcnow(),
+        created_at=created_at or datetime.now(timezone.utc).replace(tzinfo=None),
+        ended_at=ended_at or datetime.now(timezone.utc).replace(tzinfo=None),
         bid_amount=bid_amount,
         platform_rake=platform_rake,
         payout_amount=payout_amount,

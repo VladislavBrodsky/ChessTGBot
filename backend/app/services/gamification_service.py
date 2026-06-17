@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from app.models.user import User
 from app.models.gamification import Task, UserTask, Referral, TaskType, UnlockedLesson
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 import string
 
@@ -40,7 +40,7 @@ class GamificationService:
             else:
                 # Reset logic for daily tasks: if last updated on a previous UTC day, reset progress & completion
                 last_update = user_task.updated_at
-                now_utc = datetime.utcnow()
+                now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
                 if not last_update or last_update.date() < now_utc.date():
                     user_task.progress = 0
                     user_task.completed = False
@@ -292,7 +292,7 @@ class GamificationService:
             if user_task.progress >= task_def.target_count:
                 user_task.progress = task_def.target_count
                 user_task.completed = True
-            user_task.updated_at = datetime.utcnow()
+            user_task.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
             db.add(user_task)
             
         if commit:

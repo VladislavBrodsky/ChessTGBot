@@ -12,7 +12,7 @@ settings = get_settings()
 router = APIRouter()
 
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 class LeaderboardItem(BaseModel):
     telegram_id: int
@@ -242,30 +242,36 @@ async def subscribe_user(
         
     tier = request.tier.lower()
     price = pricing_matrix[period].get(tier, 50)
-    
-    if current_user.balance < price:
+
+    # Re-fetch with a row-level write lock to guard against concurrent subscription requests
+    locked_user = await user_crud.get_user_by_telegram_id(db, current_user.telegram_id, for_update=True)
+    if not locked_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if locked_user.balance < price:
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail="Insufficient balance for premium subscription"
         )
-        
-    current_user.balance -= price
-    db.add(current_user)
+
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    locked_user.balance -= price
+    db.add(locked_user)
 
     # Log Transaction
     tx = Transaction(
-        user_id=current_user.telegram_id,
+        user_id=locked_user.telegram_id,
         type="subscription",
         amount=-price,
         fee=0,
         status="completed",
-        reference_id=f"sub_{tier}_{period}_{int(datetime.utcnow().timestamp())}"
+        reference_id=f"sub_{tier}_{period}_{int(now.timestamp())}"
     )
     db.add(tx)
 
     # Calculate expiration duration based on billing period
     days = 365 if period == "annual" else 30
-    expires_at = datetime.utcnow() + timedelta(days=days)
-    
-    updated_user = await user_crud.update_subscription(db, current_user, request.tier, expires_at)
+    expires_at = now + timedelta(days=days)
+
+    updated_user = await user_crud.update_subscription(db, locked_user, request.tier, expires_at)
     return {"status": "success", "tier": updated_user.premium_tier}

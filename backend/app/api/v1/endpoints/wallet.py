@@ -7,9 +7,9 @@ from app.api.v1.deps import get_current_user
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -46,8 +46,7 @@ class TransactionItem(BaseModel):
     reference_id: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ConnectWalletRequest(BaseModel):
     wallet_address: str
@@ -578,7 +577,7 @@ async def receive_ton_deposit_webhook(
                 raise HTTPException(status_code=400, detail="Malformed Telegram ID in comment")
 
             amount_cents = payload.amount_cents
-            tx_hash = payload.tx_hash or f"sim_tx_{int(datetime.utcnow().timestamp())}"
+            tx_hash = payload.tx_hash or f"sim_tx_{int(datetime.now(timezone.utc).replace(tzinfo=None).timestamp())}"
             sender_addr = payload.sender or "dev_simulation"
 
     if amount_cents <= 0:

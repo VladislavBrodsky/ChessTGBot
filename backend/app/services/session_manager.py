@@ -29,10 +29,10 @@ class SessionManager:
             SessionManager._memory_store[f"game:{game_id}"] = state.model_dump_json()
             return
         try:
-            await self.redis.setex(
+            await self.redis.set(
                 f"game:{game_id}",
-                self.ttl,
-                state.model_dump_json()
+                state.model_dump_json(),
+                ex=self.ttl
             )
         except Exception as e:
             logger.warning(f"Redis save failed ({e}). Falling back to memory.")

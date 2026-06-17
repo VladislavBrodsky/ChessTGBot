@@ -1,14 +1,86 @@
 import chess
 import math
+import time
+import asyncio
+import json
+import uuid
+from typing import Optional, Dict
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_db, AsyncSessionLocal
 from app.services.game_engine import GameEngine
 from app.services.session_manager import SessionManager
 from app.schemas.game_state import GameState
-from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db, AsyncSessionLocal
 from app.crud import user as user_crud
+from app.crud import game_history as game_history_crud
+from app.models.game_history import GameHistory
+from app.models.transaction import Transaction
+from app.services.telegram_bot import TelegramService
+from app.services.gamification_service import GamificationService, TaskType
+from app.services.referral_commission_service import ReferralCommissionService
+from app.core.socket import sio
 
 class GameService:
+    _active_timeout_tasks: Dict[str, asyncio.Task] = {}
+    _active_abort_tasks: Dict[str, asyncio.Task] = {}
+
+    @classmethod
+    def cancel_timeout_task(cls, game_id: str):
+        task = cls._active_timeout_tasks.pop(game_id, None)
+        if task and not task.done():
+            task.cancel()
+
+    @classmethod
+    def cancel_abort_task(cls, game_id: str):
+        task = cls._active_abort_tasks.pop(game_id, None)
+        if task and not task.done():
+            task.cancel()
+
+    def start_timeout_monitor(self, game_id: str, expected_move_count: int, time_left: float, turn: str):
+        GameService.cancel_timeout_task(game_id)
+        task = asyncio.create_task(self.monitor_timeout(game_id, expected_move_count, time_left, turn))
+        GameService._active_timeout_tasks[game_id] = task
+        return task
+
+    def start_abort_monitor(self, game_id: str, expected_move_count: int, time_limit: float, player_color: str):
+        GameService.cancel_abort_task(game_id)
+        task = asyncio.create_task(self.monitor_first_move_abort(game_id, expected_move_count, time_limit, player_color))
+        GameService._active_abort_tasks[game_id] = task
+        return task
+
+    def _apply_clock_update(self, current_state: GameState, new_state: GameState, now: float) -> None:
+        """Updates players' clocks and evaluates timeouts or checkmate/draw game over flags."""
+        if current_state.last_move_at is not None:
+            elapsed = now - current_state.last_move_at
+            if current_state.turn == 'w':  # White just moved
+                new_state.white_time_left = max(0.0, current_state.white_time_left - elapsed)
+                new_state.black_time_left = current_state.black_time_left
+            else:  # Black just moved
+                new_state.black_time_left = max(0.0, current_state.black_time_left - elapsed)
+                new_state.white_time_left = current_state.white_time_left
+        else:
+            new_state.white_time_left = current_state.white_time_left
+            new_state.black_time_left = current_state.black_time_left
+        
+        new_state.last_move_at = now
+
+        # Check for Timeouts
+        if new_state.white_time_left <= 0:
+            new_state.is_game_over = True
+            new_state.winner = 'b'
+            new_state.result_type = 'timeout'
+        elif new_state.black_time_left <= 0:
+            new_state.is_game_over = True
+            new_state.winner = 'w'
+            new_state.result_type = 'timeout'
+
+        # If ended by normal checkmate or stalemate
+        if new_state.is_game_over and not new_state.result_type:
+            if new_state.winner:
+                new_state.result_type = 'checkmate'
+            else:
+                new_state.result_type = 'draw'
+
     def __init__(self):
         self.session_manager = SessionManager()
 
@@ -35,7 +107,6 @@ class GameService:
 
         # Lazy clock timeout check
         if state.last_move_at is not None:
-            import time
             now = time.time()
             elapsed = now - state.last_move_at
             
@@ -71,7 +142,7 @@ class GameService:
             user = await user_crud.get_user_by_telegram_id(session, user_id)
             username = user.first_name if user else f"Player {user_id}"
             elo = user.elo if user else 1000
-
+ 
             if not state.white_player_id:
                 state.white_player_id = user_id
                 state.white_username = username
@@ -99,65 +170,70 @@ class GameService:
         Background task that sleeps for the remaining time of the player whose turn it is.
         If the time expires and no move has been made, it flags the player and ends the game.
         """
-        import asyncio
-        # Sleep for the duration of the player's time, plus a small buffer (0.5s) to allow network lag
-        await asyncio.sleep(time_left + 0.5)
-        
-        # Fetch fresh state from Redis
-        state = await self.session_manager.get_game(game_id)
-        if not state or state.is_game_over:
-            return
+        try:
+            # Sleep for the duration of the player's time, plus a small buffer (0.5s) to allow network lag
+            await asyncio.sleep(time_left + 0.5)
             
-        current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
-        if current_move_count == expected_move_count and state.turn == turn:
-            print(f"[GameService] Timeout detected for {game_id} (Turn: {turn}, Move Count: {current_move_count})")
-            
-            # Update state to reflect timeout
-            if turn == 'w':
-                state.white_time_left = 0.0
-                state.winner = 'b'
-            else:
-                state.black_time_left = 0.0
-                state.winner = 'w'
+            # Fetch fresh state from Redis
+            state = await self.session_manager.get_game(game_id)
+            if not state or state.is_game_over:
+                return
                 
-            state.is_game_over = True
-            state.result_type = 'timeout'
-            
-            # Save to Redis
-            await self.session_manager.save_game(game_id, state)
-            
-            # Settle ELO and wagers
-            await self.end_game(game_id, state)
-            
-            # Broadcast the updated game state to all players in the room
-            from app.core.socket import sio
-            await sio.emit('game_state', state.model_dump(), room=game_id)
+            current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
+            if current_move_count == expected_move_count and state.turn == turn:
+                print(f"[GameService] Timeout detected for {game_id} (Turn: {turn}, Move Count: {current_move_count})")
+                
+                # Update state to reflect timeout
+                if turn == 'w':
+                    state.white_time_left = 0.0
+                    state.winner = 'b'
+                else:
+                    state.black_time_left = 0.0
+                    state.winner = 'w'
+                    
+                state.is_game_over = True
+                state.result_type = 'timeout'
+                
+                # Save to Redis
+                await self.session_manager.save_game(game_id, state)
+                
+                # Settle ELO and wagers
+                await self.end_game(game_id, state)
+                
+                # Broadcast the updated game state to all players in the room
+                await sio.emit('game_state', state.model_dump(), room=game_id)
+        finally:
+            # Clean up task reference when it exits/gets cancelled
+            if GameService._active_timeout_tasks.get(game_id) == asyncio.current_task():
+                GameService._active_timeout_tasks.pop(game_id, None)
 
     async def monitor_first_move_abort(self, game_id: str, expected_move_count: int, time_limit: float, player_color: str):
         """
         Monitors the first move of White (move 0) or Black (move 1). If the player
         does not make their first move within 30 seconds, the game is aborted and wagers refunded.
         """
-        import asyncio
-        await asyncio.sleep(time_limit)
-        
-        state = await self.session_manager.get_game(game_id)
-        if not state or state.is_game_over:
-            return
+        try:
+            await asyncio.sleep(time_limit)
             
-        current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
-        if current_move_count == expected_move_count and state.turn == player_color:
-            print(f"[GameService] First-move abort triggered for {game_id} (Expected count: {expected_move_count}, color: {player_color})")
-            
-            state.is_game_over = True
-            state.winner = None
-            state.result_type = 'aborted'
-            
-            await self.session_manager.save_game(game_id, state)
-            await self.end_game(game_id, state)
-            
-            from app.core.socket import sio
-            await sio.emit('game_state', state.model_dump(), room=game_id)
+            state = await self.session_manager.get_game(game_id)
+            if not state or state.is_game_over:
+                return
+                
+            current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
+            if current_move_count == expected_move_count and state.turn == player_color:
+                print(f"[GameService] First-move abort triggered for {game_id} (Expected count: {expected_move_count}, color: {player_color})")
+                
+                state.is_game_over = True
+                state.winner = None
+                state.result_type = 'aborted'
+                
+                await self.session_manager.save_game(game_id, state)
+                await self.end_game(game_id, state)
+                
+                await sio.emit('game_state', state.model_dump(), room=game_id)
+        finally:
+            if GameService._active_abort_tasks.get(game_id) == asyncio.current_task():
+                GameService._active_abort_tasks.pop(game_id, None)
 
     async def make_move(self, game_id: str, uci: str) -> Optional[GameState]:
         """Load state, apply move, save state. Returns new state if valid."""
@@ -183,45 +259,17 @@ class GameService:
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
 
             # Update Clocks
-            import time
             now = time.time()
-            if current_state.last_move_at is not None:
-                elapsed = now - current_state.last_move_at
-                if current_state.turn == 'w':  # White just moved
-                    new_state.white_time_left = max(0.0, current_state.white_time_left - elapsed)
-                    new_state.black_time_left = current_state.black_time_left
-                else:  # Black just moved
-                    new_state.black_time_left = max(0.0, current_state.black_time_left - elapsed)
-                    new_state.white_time_left = current_state.white_time_left
-            else:
-                new_state.white_time_left = current_state.white_time_left
-                new_state.black_time_left = current_state.black_time_left
+            self._apply_clock_update(current_state, new_state, now)
             
-            new_state.last_move_at = now
-
-            # Check for Timeouts
-            if new_state.white_time_left <= 0:
-                new_state.is_game_over = True
-                new_state.winner = 'b'
-                new_state.result_type = 'timeout'
-            elif new_state.black_time_left <= 0:
-                new_state.is_game_over = True
-                new_state.winner = 'w'
-                new_state.result_type = 'timeout'
-
-            # If ended by normal checkmate or stalemate
-            if new_state.is_game_over and not new_state.result_type:
-                if new_state.winner:
-                    new_state.result_type = 'checkmate'
-                else:
-                    new_state.result_type = 'draw'
+            # Since a successful move is applied, cancel the abort timer
+            self.cancel_abort_task(game_id)
 
             # 4. Save to Redis
             await self.session_manager.save_game(game_id, new_state)
             
             # 5. Handle Game Over in Background
             if new_state.is_game_over:
-                import asyncio
                 asyncio.create_task(self.end_game(game_id, new_state))
             
             return new_state
@@ -248,38 +296,11 @@ class GameService:
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
 
             # Update Clocks
-            import time
             now = time.time()
-            if current_state.last_move_at is not None:
-                elapsed = now - current_state.last_move_at
-                if current_state.turn == 'w':  # White just moved
-                    new_state.white_time_left = max(0.0, current_state.white_time_left - elapsed)
-                    new_state.black_time_left = current_state.black_time_left
-                else:  # Black just moved
-                    new_state.black_time_left = max(0.0, current_state.black_time_left - elapsed)
-                    new_state.white_time_left = current_state.white_time_left
-            else:
-                new_state.white_time_left = current_state.white_time_left
-                new_state.black_time_left = current_state.black_time_left
+            self._apply_clock_update(current_state, new_state, now)
             
-            new_state.last_move_at = now
-
-            # Check for Timeouts
-            if new_state.white_time_left <= 0:
-                new_state.is_game_over = True
-                new_state.winner = 'b'
-                new_state.result_type = 'timeout'
-            elif new_state.black_time_left <= 0:
-                new_state.is_game_over = True
-                new_state.winner = 'w'
-                new_state.result_type = 'timeout'
-
-            # If ended by checkmate or stalemate
-            if new_state.is_game_over and not new_state.result_type:
-                if new_state.winner:
-                    new_state.result_type = 'checkmate'
-                else:
-                    new_state.result_type = 'draw'
+            # Cancel the abort timer as well
+            self.cancel_abort_task(game_id)
 
             await self.session_manager.save_game(game_id, new_state)
             
@@ -370,14 +391,26 @@ class GameService:
 
     async def end_game(self, game_id: str, state: GameState):
         """Process game result and update ELO."""
+        from app.models.game_history import GameHistory
+        from sqlalchemy.future import select
+        from app.models.transaction import Transaction
+        from app.crud import game_history as game_history_crud
+        from app.services.telegram_bot import TelegramService
+        from app.services.gamification_service import GamificationService, TaskType
+        from app.services.referral_commission_service import ReferralCommissionService
+        from app.core.socket import sio
+        import json
+
         async with AsyncSessionLocal() as session:
             # Check for duplicate processing (idempotency guard)
-            from app.models.game_history import GameHistory
-            from sqlalchemy.future import select
             dup_check = await session.execute(select(GameHistory).where(GameHistory.game_id == game_id))
             if dup_check.scalars().first():
                 print(f"[GameService] Game {game_id} already ended/processed. Skipping duplicate end_game call.")
                 return
+
+            # Cancel background tasks for this game
+            GameService.cancel_timeout_task(game_id)
+            GameService.cancel_abort_task(game_id)
 
             white_id = state.white_player_id
             black_id = state.black_player_id
@@ -387,6 +420,7 @@ class GameService:
             black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True) if black_id and black_id != -1 else None
 
             if not white_user:
+                print(f"[GameService] WARNING: Cannot process end_game for {game_id}: white_user is None")
                 return
 
             white_elo_before = white_user.elo
@@ -405,7 +439,6 @@ class GameService:
                     session.add(black_user)
                     
                     # Log refund transactions
-                    from app.models.transaction import Transaction
                     tx_w = Transaction(
                         user_id=white_id,
                         type="refund",
@@ -435,8 +468,6 @@ class GameService:
                 await self.session_manager.save_game(game_id, state)
                 
                 # Save game history
-                from app.crud import game_history as game_history_crud
-                import json
                 try:
                     await game_history_crud.create_game_history(
                         db=session,
@@ -468,7 +499,6 @@ class GameService:
                 # Send telegram notifications AFTER successful DB commit
                 if bid_amount > 0 and white_user and black_user:
                     try:
-                        from app.services.telegram_bot import TelegramService
                         abort_msg_w = (
                             f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
                             f"• <b>Game ID:</b> <code>{game_id}</code>\n"
@@ -487,14 +517,12 @@ class GameService:
                         pass
                 
                 # Broadcast aborted state
-                from app.core.socket import sio
                 await sio.emit('game_state', state.model_dump(), room=game_id)
                 return
             # ──────────────────────────────────────────────────────────
 
             if not black_user or black_id == -1:
                 # Bot game / Training: update tasks progress, stats, and create game history
-                from app.services.gamification_service import GamificationService, TaskType
                 await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
                 
                 # Determine game result for bot game
@@ -514,10 +542,8 @@ class GameService:
                 await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False)
                 
                 # Save bot game history
-                from app.crud import game_history as game_history_crud
                 total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
                 result_type = getattr(state, "result_type", None) or ('checkmate' if state.winner else 'draw')
-                import json
                 moves_json = json.dumps(getattr(state, 'move_history', []))
                 
                 try:
@@ -550,10 +576,6 @@ class GameService:
                     raise hist_err
                 return
 
-            # Store current ELO before changes
-            white_elo_before = white_user.elo
-            black_elo_before = black_user.elo
-
             # Determine Result
             score_white = 0.5
             if state.winner == 'w':
@@ -581,7 +603,6 @@ class GameService:
                  await user_crud.update_elo(session, black_user, new_black_elo, 'draw', commit=False)
             
             # Update Daily Tasks Progress for online games
-            from app.services.gamification_service import GamificationService, TaskType
             await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
             await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY, commit=False)
             
@@ -713,11 +734,9 @@ class GameService:
             notifications_to_send = []
 
             if bid_amount > 0 and white_user and black_user:
-                from app.models.transaction import Transaction
                 if state.winner == 'w':
                     # White wins!
                     # First distribute wager played & won tree commissions
-                    from app.services.referral_commission_service import ReferralCommissionService
                     win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
 
@@ -772,7 +791,6 @@ class GameService:
                 elif state.winner == 'b':
                     # Black wins!
                     # First distribute wager played & won tree commissions
-                    from app.services.referral_commission_service import ReferralCommissionService
                     win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
 
@@ -833,14 +851,18 @@ class GameService:
                     # Refund Transactions
                     tx_w = Transaction(
                         user_id=white_id,
-                        type="deposit",
+                        type="game_refund",
                         amount=bid_amount,
+                        fee=0,
+                        status="completed",
                         reference_id=game_id
                     )
                     tx_b = Transaction(
                         user_id=black_id,
-                        type="deposit",
+                        type="game_refund",
                         amount=bid_amount,
+                        fee=0,
+                        status="completed",
                         reference_id=game_id
                     )
                     session.add(tx_w)
@@ -865,7 +887,6 @@ class GameService:
                     notifications_to_send.append((black_user.telegram_id, draw_msg_b))
 
             # Save game history — MUST commit to persist to DB
-            from app.crud import game_history as game_history_crud
             
             # Calculate total moves (approximate from FEN or board state)
             total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
@@ -875,7 +896,6 @@ class GameService:
             if not result_type:
                 result_type = 'checkmate' if state.winner else 'draw'
             
-            import json
             moves_json = json.dumps(getattr(state, 'move_history', []))
 
             try:
@@ -911,7 +931,6 @@ class GameService:
             # Send telegram notifications AFTER successful DB commit
             if notifications_to_send:
                 try:
-                    from app.services.telegram_bot import TelegramService
                     for target_tg_id, text in notifications_to_send:
                         await TelegramService.send_notification(target_tg_id, text)
                 except Exception as tg_err:
@@ -929,5 +948,4 @@ class GameService:
             await self.session_manager.save_game(game_id, state)
             
             # Broadcast the final state to the socket room
-            from app.core.socket import sio
             await sio.emit('game_state', state.model_dump(), room=game_id)

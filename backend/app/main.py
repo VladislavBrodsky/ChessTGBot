@@ -1,8 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
-from fastapi import FastAPI, Request
 from app.core.config import get_settings
 from app.core.socket import sio_app
 import app.socket_events # Register events

@@ -143,7 +143,7 @@ async def test_game_service_draw():
 async def test_daily_task_reset(db_session):
     from app.services.gamification_service import GamificationService
     from app.models.gamification import Task, UserTask, TaskType
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     
     # Skip if using mock session to prevent table insert issues
     if hasattr(db_session, "users"):
@@ -163,7 +163,7 @@ async def test_daily_task_reset(db_session):
     await db_session.commit()
     
     # 2. Assign the task to user 123 (marked as completed and claimed yesterday)
-    yesterday = datetime.utcnow() - timedelta(days=1, hours=2)
+    yesterday = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=1, hours=2)
     user_task = UserTask(
         user_id=123,
         task_id=99,
@@ -185,5 +185,4 @@ async def test_daily_task_reset(db_session):
     assert test_task.progress == 0
     assert not test_task.completed
     assert not test_task.claimed
-    assert test_task.updated_at.date() == datetime.utcnow().date()
-
+    assert test_task.updated_at.date() == datetime.now(timezone.utc).date()

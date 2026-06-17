@@ -133,7 +133,7 @@ async def join_room(sid, data):
                 
                 # Start White's first-move abort timer if it's not a bot game
                 if state.black_player_id != -1:
-                    asyncio.create_task(service.monitor_first_move_abort(room, expected_move_count=0, time_limit=30.0, player_color='w'))
+                    service.start_abort_monitor(room, expected_move_count=0, time_limit=30.0, player_color='w')
             elif state:
                 # Just send state to this user
                 await sio.emit('game_state', state.model_dump(), room=sid)
@@ -148,7 +148,7 @@ async def join_room(sid, data):
         if state and not state.is_game_over and state.last_move_at is not None:
             active_turn = state.turn
             time_left = state.white_time_left if active_turn == 'w' else state.black_time_left
-            asyncio.create_task(service.monitor_timeout(room, len(state.move_history), time_left, active_turn))
+            service.start_timeout_monitor(room, len(state.move_history), time_left, active_turn)
 
 @sio.event
 async def join_matchmaking(sid, data):
@@ -356,7 +356,7 @@ async def join_matchmaking(sid, data):
             print(f"Matchmaker: Created wager game {game_id} for User {user_id} and {opponent_id} with bid {bid_amount}")
 
             # Start White's first-move abort timer
-            asyncio.create_task(service.monitor_first_move_abort(game_id, expected_move_count=0, time_limit=30.0, player_color='w'))
+            service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
 
     except Exception as e:
         print(f"Error joining matchmaking: {e}")
@@ -418,11 +418,11 @@ async def make_move(sid, data):
             if not new_state.is_game_over:
                 active_turn = new_state.turn
                 time_left = new_state.white_time_left if active_turn == 'w' else new_state.black_time_left
-                asyncio.create_task(service.monitor_timeout(game_id, len(new_state.move_history), time_left, active_turn))
+                service.start_timeout_monitor(game_id, len(new_state.move_history), time_left, active_turn)
                 
                 # If White just moved (move history length is 1), Black has 30 seconds to make their first move
                 if len(new_state.move_history) == 1 and new_state.black_player_id != -1:
-                    asyncio.create_task(service.monitor_first_move_abort(game_id, expected_move_count=1, time_limit=30.0, player_color='b'))
+                    service.start_abort_monitor(game_id, expected_move_count=1, time_limit=30.0, player_color='b')
             
             # Check bot turn
             if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
@@ -439,7 +439,7 @@ async def handle_bot_turn(game_id: str):
         
         # Start timer monitoring for White (human) if game is not over
         if not bot_state.is_game_over:
-            asyncio.create_task(service.monitor_timeout(game_id, len(bot_state.move_history), bot_state.white_time_left, 'w'))
+            service.start_timeout_monitor(game_id, len(bot_state.move_history), bot_state.white_time_left, 'w')
 
 @sio.event
 async def resign(sid, data):
@@ -506,6 +506,9 @@ async def offer_rematch(sid, data):
         service = GameService()
         state = await service.get_game_state(game_id)
         if state:
+            if not state.is_game_over:
+                await sio.emit('error', {'message': 'Cannot offer rematch. The game is still in progress.'}, room=sid)
+                return
             opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
             if opponent_id and opponent_id != -1:
                 current_wager = getattr(state, "bid_amount", 0)
