@@ -207,7 +207,10 @@
         "copy_code": "Copiar enlace",
         "invite_link_desc": "Envía este enlace a un amigo para comenzar el duelo",
         "copied_success": "¡Copiado! ✓",
-        "share_msg": "¡Únete a mi partida de ajedrez! ♟️\nControl de tiempo: {time} minutos."
+        "share_msg": "¡Únete a mi partida de ajedrez! ♟️\nControl de tiempo: {time} minutos.",
+        "match_aborted": "Partida abortada",
+        "won_on_time": "Victoria por tiempo ♟️🚩",
+        "lost_on_time": "Derrota por tiempo ♟️🚩"
     },
     "Wallet": {
         "title": "Billetera Web3",

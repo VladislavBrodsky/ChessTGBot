@@ -26,6 +26,41 @@ import FriendInviteDrawer from "@/components/game/FriendInviteDrawer";
 import LobbyDepositDrawer from "@/components/game/LobbyDepositDrawer";
 import RakeInfoDrawer from "@/components/game/RakeInfoDrawer";
 
+const playTickSound = (type: 'tick' | 'warning' | 'timeout') => {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    if (type === 'tick') {
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      gain.gain.setValueAtTime(0.03, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.05);
+    } else if (type === 'warning') {
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+    } else if (type === 'timeout') {
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.5);
+    }
+  } catch (err) {
+    console.error("Audio error:", err);
+  }
+};
+
 interface ActiveGameProps {
  gameId: string;
 }
@@ -69,11 +104,31 @@ function ActiveGame({ gameId }: ActiveGameProps) {
 
   const [whiteTime, setWhiteTime] = useState<number>(600);
   const [blackTime, setBlackTime] = useState<number>(600);
+  const isWhite = gameState ? gameState.white_player_id === userId : true;
+
+  const [userStats, setUserStats] = useState<any>(null);
+
+  // Fetch own user profile on load to get rating and username
+  useEffect(() => {
+    if (userId) {
+      apiFetch(`/api/v1/users/${userId}`)
+        .then(res => {
+          if (res.ok) return res.json();
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            setUserStats(data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (gameState) {
-      setWhiteTime(Math.ceil(gameState.white_time_left ?? 600));
-      setBlackTime(Math.ceil(gameState.black_time_left ?? 600));
+      setWhiteTime(gameState.white_time_left ?? 600);
+      setBlackTime(gameState.black_time_left ?? 600);
     }
   }, [gameState]);
 
@@ -85,20 +140,69 @@ function ActiveGame({ gameId }: ActiveGameProps) {
     isGameOverRef.current = gameState?.is_game_over;
   }, [gameState]);
 
+  const triggeredHapticsRef = useRef<{ [key: number]: boolean }>({ 10: false, 5: false, 3: false });
+
+  useEffect(() => {
+    if (gameState?.id) {
+      triggeredHapticsRef.current = { 10: false, 5: false, 3: false };
+    }
+  }, [gameState?.id]);
+
+  const lastHapticRef = useRef<number>(0);
+  const lastSoundRef = useRef<number>(0);
+
+  const triggerClocksWarnings = (timeLeft: number) => {
+    const now = Date.now();
+    
+    // Play tick sound when time is below 10 seconds (every 1 second)
+    if (timeLeft <= 10 && timeLeft > 0) {
+      if (now - lastSoundRef.current >= 1000) {
+        lastSoundRef.current = now;
+        playTickSound('tick');
+      }
+    }
+    
+    // Trigger warning haptics at 10s, 5s, 3s
+    if (timeLeft <= 10 && timeLeft > 9.0 && !triggeredHapticsRef.current[10]) {
+      triggeredHapticsRef.current[10] = true;
+      telegramHaptic('warning');
+    } else if (timeLeft <= 5 && timeLeft > 4.0 && !triggeredHapticsRef.current[5]) {
+      triggeredHapticsRef.current[5] = true;
+      telegramHaptic('warning');
+    } else if (timeLeft <= 3 && timeLeft > 2.0 && !triggeredHapticsRef.current[3]) {
+      triggeredHapticsRef.current[3] = true;
+      telegramHaptic('warning');
+    }
+  };
+
   useEffect(() => {
     if (!gameState || gameState.is_game_over) return;
 
     const interval = setInterval(() => {
       if (isGameOverRef.current) return;
-      if (turnRef.current === 'w') {
-        setWhiteTime((prev) => Math.max(0, prev - 1));
+      
+      const activeColor = turnRef.current;
+      if (activeColor === 'w') {
+        setWhiteTime((prev) => {
+          const next = Math.max(0, prev - 0.1);
+          if (isWhite) {
+            triggerClocksWarnings(next);
+          }
+          return next;
+        });
       } else {
-        setBlackTime((prev) => Math.max(0, prev - 1));
+        setBlackTime((prev) => {
+          const next = Math.max(0, prev - 0.1);
+          if (!isWhite) {
+            triggerClocksWarnings(next);
+          }
+          return next;
+        });
       }
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(interval);
-  }, [gameState?.is_game_over, !gameState]);
+  }, [gameState?.is_game_over, !gameState, isWhite]);
 
   useEffect(() => {
     if (gameState?.is_game_over) {
@@ -109,8 +213,22 @@ function ActiveGame({ gameId }: ActiveGameProps) {
           }
         })
         .catch(() => {});
+
+      // Play audio buzzer and trigger haptics based on the result
+      if (gameState.result_type === 'timeout') {
+        playTickSound('timeout');
+        telegramHaptic('error');
+      } else if (gameState.result_type === 'aborted') {
+        telegramHaptic('warning');
+      } else if (gameState.winner_id === userId) {
+        telegramHaptic('success');
+      } else if (gameState.winner_id && gameState.winner_id !== userId) {
+        telegramHaptic('error');
+      } else {
+        telegramHaptic('warning'); // Draw
+      }
     }
-  }, [gameState?.is_game_over]);
+  }, [gameState?.is_game_over, gameState?.result_type, gameState?.winner_id, userId]);
 
   useEffect(() => {
     if (!gameState) return;
@@ -167,12 +285,15 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const formatTime = (seconds: number) => {
+    if (seconds <= 0) return "0.0";
+    if (seconds < 20) {
+      return seconds.toFixed(1);
+    }
     const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const isWhite = gameState ? gameState.white_player_id === userId : true;
   const myTime = isWhite ? whiteTime : blackTime;
   const opponentTime = isWhite ? blackTime : whiteTime;
 
@@ -271,30 +392,75 @@ function ActiveGame({ gameId }: ActiveGameProps) {
    return () => { showNavbar(); };
  }, [isGameOver]); // eslint-disable-line react-hooks/exhaustive-deps
  
- // Match Over Logic
- let matchResultLabel = tg('protocol_draw');
- let resultColor = "text-brand-primary opacity-60"; 
- let eloChange = "+0";
- let netPayout = gameState?.wager_amount || 0;
- 
- if (isGameOver && gameState) {
- if (gameState.winner_id === userId) {
- matchResultLabel = tg('victory_secured');
- resultColor = "text-brand-primary font-black"; 
- eloChange = "+15";
- netPayout = (gameState.wager_amount * 2) * 0.97; // 3% platform commission
- } else if (gameState.winner_id && gameState.winner_id !== userId) {
- matchResultLabel = tg('tactical_defeat');
- resultColor = "text-brand-primary opacity-80"; 
- eloChange = "-12";
- netPayout = 0;
- } else if (!gameState.winner_id) {
- matchResultLabel = tg('protocol_draw');
- resultColor = "text-brand-primary opacity-60";
- eloChange = "+0";
- netPayout = gameState.wager_amount; // Refund
- }
- }
+  // Match Over Logic
+  let matchResultLabel = tg('protocol_draw');
+  let resultColor = "text-brand-primary opacity-60"; 
+  let eloChange = "+0";
+  let netPayout = gameState?.wager_amount || 0;
+  
+  if (isGameOver && gameState) {
+    const isWinner = gameState.winner_id === userId;
+    const isDraw = !gameState.winner_id;
+    const isAborted = gameState.result_type === 'aborted';
+    const isTimeout = gameState.result_type === 'timeout';
+    
+    if (isAborted) {
+      matchResultLabel = tg('match_aborted');
+      resultColor = "text-brand-primary opacity-50";
+      eloChange = "+0";
+      netPayout = gameState.wager_amount;
+    } else if (isDraw) {
+      matchResultLabel = tg('protocol_draw');
+      resultColor = "text-brand-primary opacity-60";
+      
+      if (gameState.white_player_id === userId) {
+        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      } else {
+        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      }
+      netPayout = gameState.wager_amount;
+    } else if (isWinner) {
+      if (isTimeout) {
+        matchResultLabel = tg('won_on_time');
+      } else {
+        matchResultLabel = tg('victory_secured');
+      }
+      resultColor = "text-brand-primary font-black";
+      
+      if (gameState.white_player_id === userId) {
+        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      } else {
+        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      }
+      netPayout = (gameState.payout_amount !== undefined && gameState.payout_amount !== null)
+        ? gameState.payout_amount / 100 
+        : (gameState.wager_amount * 2) * 0.97;
+    } else {
+      if (isTimeout) {
+        matchResultLabel = tg('lost_on_time');
+      } else {
+        matchResultLabel = tg('tactical_defeat');
+      }
+      resultColor = "text-brand-primary opacity-80";
+      
+      if (gameState.white_player_id === userId) {
+        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      } else {
+        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
+        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
+      }
+      netPayout = 0;
+    }
+  }
+
+  const myNewElo = gameState 
+    ? (gameState.white_player_id === userId ? gameState.white_elo_after : gameState.black_elo_after)
+    : (userStats?.elo || 1000);
 
  return (
  <LayoutWrapper className="pb-12">
@@ -359,57 +525,65 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  {/* Main Game Area */}
  <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
 
-  {/* Opponent Widget */}
-  <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
-  <div className="flex items-center gap-4">
-  <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
-  {isBotGame ? (
-  <FaRobot className="text-xl text-brand-primary opacity-40" />
-  ) : (
-  <span className="text-xl font-bold text-brand-primary opacity-20">?</span>
-  )}
-  </div>
-  <div className="flex flex-col">
-  <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
-  {isBotGame ? tg('ai_combatant') : tg('opponent')}
-  </span>
-  <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
-  {isBotGame ? tg('ai_engine') : tg('opponent_rank')}
-  </span>
-  </div>
-  </div>
-  <div className={`text-xl font-black tracking-tighter ${opponentTime < 30 ? 'text-red-500 animate-pulse' : 'text-brand-primary opacity-60'}`}>
-    {formatTime(opponentTime)}
-  </div>
-  </div>
-
-  {/* Board Container */}
-  <div className="w-full relative z-20 flex justify-center px-1">
-  <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
-  <ChessBoardComponent
-  fen={fen}
-  onMove={handleBoardMove}
-  orientation={isWhite ? "white" : "black"}
-  showConfetti={isGameOver && gameState?.winner_id === userId}
-  />
-  </div>
-  </div>
-
-  {/* Player Widget */}
-  <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
-  <div className="flex items-center gap-4">
-  <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
-  <span className="text-xs font-black text-brand-void uppercase tracking-tighter ">{tg('you')}</span>
-  </div>
-  <div className="flex flex-col">
-  <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">Protagonist</span>
-  <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">MASTER • 1200</span>
-  </div>
-  </div>
-  <div className={`text-xl font-black tracking-tighter ${myTime < 30 ? 'text-red-500 animate-pulse' : 'text-brand-primary'}`}>
-    {formatTime(myTime)}
-  </div>
-  </div>
+   {/* Opponent Widget */}
+   <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
+   <div className="flex items-center gap-4">
+   <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
+   {isBotGame ? (
+   <FaRobot className="text-xl text-brand-primary opacity-40" />
+   ) : (
+   <span className="text-xl font-bold text-brand-primary opacity-20">?</span>
+   )}
+   </div>
+   <div className="flex flex-col">
+   <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+   {isBotGame 
+     ? tg('ai_combatant') 
+     : (isWhite ? gameState?.black_username : gameState?.white_username) || tg('opponent')}
+   </span>
+   <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+   {isBotGame 
+     ? tg('ai_engine') 
+     : `ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
+   </span>
+   </div>
+   </div>
+    <div className={`text-xl font-black tracking-tighter ${opponentTime < 20 ? (opponentTime < 10 ? 'text-red-500 animate-pulse' : 'text-red-500') : 'text-brand-primary opacity-60'}`}>
+      {formatTime(opponentTime)}
+    </div>
+   </div>
+ 
+   {/* Board Container */}
+   <div className="w-full relative z-20 flex justify-center px-1">
+   <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
+   <ChessBoardComponent
+   fen={fen}
+   onMove={handleBoardMove}
+   orientation={isWhite ? "white" : "black"}
+   showConfetti={isGameOver && gameState?.winner_id === userId}
+   />
+   </div>
+   </div>
+ 
+   {/* Player Widget */}
+   <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
+   <div className="flex items-center gap-4">
+   <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
+   <span className="text-xs font-black text-brand-void uppercase tracking-tighter ">{tg('you')}</span>
+   </div>
+   <div className="flex flex-col">
+   <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+     {(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
+   </span>
+   <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">
+     MASTER • ELO {(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}
+   </span>
+   </div>
+   </div>
+    <div className={`text-xl font-black tracking-tighter ${myTime < 20 ? (myTime < 10 ? 'text-red-500 animate-pulse' : 'text-red-500') : 'text-brand-primary'}`}>
+      {formatTime(myTime)}
+    </div>
+   </div>
 
  {/* Action Bar */}
  {!isBotGame && !isGameOver && (
@@ -437,6 +611,7 @@ function ActiveGame({ gameId }: ActiveGameProps) {
         rematchStatus={rematchStatus}
         onShowRematchChoice={() => setShowRematchChoice(true)}
         onShareGame={shareGame}
+        newElo={myNewElo}
       />
     )}
   </AnimatePresence>
@@ -599,8 +774,11 @@ function PlayLobby() {
 
     submittingRef.current = true;
     setMatchmakingState('searching');
-    socket.emit('join_matchmaking', { bid_amount: wagerInCents });
-  }, [isCustomWager, customWagerInput, selectedWager, walletBalance]);
+    socket.emit('join_matchmaking', { 
+      bid_amount: wagerInCents,
+      time_control: timeControl 
+    });
+  }, [isCustomWager, customWagerInput, selectedWager, walletBalance, timeControl]);
 
   // Active Webhook/Balance Polling to detect deposit and start matchmaking automatically
   useEffect(() => {

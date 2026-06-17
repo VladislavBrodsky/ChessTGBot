@@ -207,7 +207,10 @@
         "copy_code": "Copier le lien",
         "invite_link_desc": "Envoyez ce lien à un ami pour commencer le duel",
         "copied_success": "Copié ! ✓",
-        "share_msg": "Rejoins ma partie d'échecs ! ♟️\nContrôle du temps : {time} minutes."
+        "share_msg": "Rejoins ma partie d'échecs ! ♟️\nContrôle du temps : {time} minutes.",
+        "match_aborted": "Partie annulée",
+        "won_on_time": "Victoire au temps ♟️🚩",
+        "lost_on_time": "Défaite au temps ♟️🚩"
     },
     "Wallet": {
         "title": "Portefeuille Web3",

@@ -207,7 +207,10 @@
         "copy_code": "Copiar link",
         "invite_link_desc": "Envie este link para um amigo para iniciar o duelo",
         "copied_success": "Copiado! ✓",
-        "share_msg": "Junte-se à minha partida de xadrez! ♟️\nControle de tempo: {time} minutos."
+        "share_msg": "Junte-se à minha partida de xadrez! ♟️\nControle de tempo: {time} minutos.",
+        "match_aborted": "Partida abortada",
+        "won_on_time": "Vitória por tempo ♟️🚩",
+        "lost_on_time": "Derrota por tempo ♟️🚩"
     },
     "Wallet": {
         "title": "Carteira Web3",

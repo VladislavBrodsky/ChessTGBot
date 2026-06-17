@@ -207,7 +207,10 @@
         "copy_code": "复制链接",
         "invite_link_desc": "发送此链接给好友以开始对决",
         "copied_success": "已复制！✓",
-        "share_msg": "加入我的国际象棋对决！♟️\n时间控制：{time} 分钟。"
+        "share_msg": "加入我的国际象棋对决！♟️\n时间控制：{time} 分钟。",
+        "match_aborted": "比赛已中止",
+        "won_on_time": "超时获胜 ♟️🚩",
+        "lost_on_time": "超时落败 ♟️🚩"
     },
     "Wallet": {
         "title": "Web3 钱包",

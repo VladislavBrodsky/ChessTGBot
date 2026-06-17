@@ -67,20 +67,97 @@ class GameService:
             return None
         
         changed = False
-        if not state.white_player_id:
-            state.white_player_id = user_id
-            changed = True
-        elif not state.black_player_id and state.white_player_id != user_id:
-            state.black_player_id = user_id
-            changed = True
+        async with AsyncSessionLocal() as session:
+            user = await user_crud.get_user_by_telegram_id(session, user_id)
+            username = user.first_name if user else f"Player {user_id}"
+            elo = user.elo if user else 1000
+
+            if not state.white_player_id:
+                state.white_player_id = user_id
+                state.white_username = username
+                state.white_elo = elo
+                changed = True
+            elif not state.black_player_id and state.white_player_id != user_id:
+                state.black_player_id = user_id
+                state.black_username = username
+                state.black_elo = elo
+                changed = True
         
-        # If it's a bot game, ensure player 1 is white or black correctly
-        # Usually player 1 is white in bot games for mobile simplicity
+        # If it's a bot game, assign bot details
+        if state.black_player_id == -1 and not state.black_username:
+            state.black_username = "AI Engine"
+            state.black_elo = 1200
+            changed = True
         
         if changed:
             await self.session_manager.save_game(game_id, state)
         
         return state
+
+    async def monitor_timeout(self, game_id: str, expected_move_count: int, time_left: float, turn: str):
+        """
+        Background task that sleeps for the remaining time of the player whose turn it is.
+        If the time expires and no move has been made, it flags the player and ends the game.
+        """
+        import asyncio
+        # Sleep for the duration of the player's time, plus a small buffer (0.5s) to allow network lag
+        await asyncio.sleep(time_left + 0.5)
+        
+        # Fetch fresh state from Redis
+        state = await self.session_manager.get_game(game_id)
+        if not state or state.is_game_over:
+            return
+            
+        current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
+        if current_move_count == expected_move_count and state.turn == turn:
+            print(f"[GameService] Timeout detected for {game_id} (Turn: {turn}, Move Count: {current_move_count})")
+            
+            # Update state to reflect timeout
+            if turn == 'w':
+                state.white_time_left = 0.0
+                state.winner = 'b'
+            else:
+                state.black_time_left = 0.0
+                state.winner = 'w'
+                
+            state.is_game_over = True
+            state.result_type = 'timeout'
+            
+            # Save to Redis
+            await self.session_manager.save_game(game_id, state)
+            
+            # Settle ELO and wagers
+            await self.end_game(game_id, state)
+            
+            # Broadcast the updated game state to all players in the room
+            from app.core.socket import sio
+            await sio.emit('game_state', state.model_dump(), room=game_id)
+
+    async def monitor_first_move_abort(self, game_id: str, expected_move_count: int, time_limit: float, player_color: str):
+        """
+        Monitors the first move of White (move 0) or Black (move 1). If the player
+        does not make their first move within 30 seconds, the game is aborted and wagers refunded.
+        """
+        import asyncio
+        await asyncio.sleep(time_limit)
+        
+        state = await self.session_manager.get_game(game_id)
+        if not state or state.is_game_over:
+            return
+            
+        current_move_count = len(state.move_history) if hasattr(state, 'move_history') else 0
+        if current_move_count == expected_move_count and state.turn == player_color:
+            print(f"[GameService] First-move abort triggered for {game_id} (Expected count: {expected_move_count}, color: {player_color})")
+            
+            state.is_game_over = True
+            state.winner = None
+            state.result_type = 'aborted'
+            
+            await self.session_manager.save_game(game_id, state)
+            await self.end_game(game_id, state)
+            
+            from app.core.socket import sio
+            await sio.emit('game_state', state.model_dump(), room=game_id)
 
     async def make_move(self, game_id: str, uci: str) -> Optional[GameState]:
         """Load state, apply move, save state. Returns new state if valid."""
@@ -311,6 +388,108 @@ class GameService:
 
             if not white_user:
                 return
+
+            white_elo_before = white_user.elo
+            black_elo_before = black_user.elo if black_user else 1000
+
+            # ── Aborted Game Handler ──────────────────────────────────
+            if state.result_type == 'aborted':
+                print(f"[GameService] Processing aborted game refund for {game_id}")
+                
+                # Refund wager amount
+                bid_amount = getattr(state, "bid_amount", 0)
+                if bid_amount > 0 and white_user and black_user:
+                    white_user.balance += bid_amount
+                    black_user.balance += bid_amount
+                    session.add(white_user)
+                    session.add(black_user)
+                    
+                    # Log refund transactions
+                    from app.models.transaction import Transaction
+                    tx_w = Transaction(
+                        user_id=white_id,
+                        type="refund",
+                        amount=bid_amount,
+                        fee=0,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    tx_b = Transaction(
+                        user_id=black_id,
+                        type="refund",
+                        amount=bid_amount,
+                        fee=0,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    session.add(tx_w)
+                    session.add(tx_b)
+                    
+                    # Send telegram notifications
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        abort_msg_w = (
+                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
+                        )
+                        abort_msg_b = (
+                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
+                        )
+                        await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
+                        await TelegramService.send_notification(black_user.telegram_id, abort_msg_b)
+                    except Exception:
+                        pass
+                
+                await session.commit()
+                
+                # Cache ratings and save aborted game history
+                state.white_elo_before = white_elo_before
+                state.white_elo_after = white_elo_before
+                state.black_elo_before = black_elo_before
+                state.black_elo_after = black_elo_before
+                state.payout_amount = 0
+                state.platform_rake = 0
+                await self.session_manager.save_game(game_id, state)
+                
+                # Save game history
+                from app.crud import game_history as game_history_crud
+                import json
+                try:
+                    await game_history_crud.create_game_history(
+                        db=session,
+                        game_id=game_id,
+                        white_player_id=white_id,
+                        black_player_id=black_id,
+                        winner=None,
+                        result_type='aborted',
+                        white_elo_before=white_elo_before,
+                        white_elo_after=white_elo_before,
+                        black_elo_before=black_elo_before,
+                        black_elo_after=black_elo_before,
+                        total_moves=0,
+                        duration_seconds=None,
+                        final_fen=state.fen,
+                        game_type='online',
+                        bid_amount=bid_amount,
+                        platform_rake=0,
+                        payout_amount=0,
+                        moves_json=json.dumps([])
+                    )
+                    await session.commit()
+                except Exception as hist_err:
+                    print(f"[GameService] WARNING: Failed to save aborted game history: {hist_err}")
+                    await session.rollback()
+                
+                # Broadcast aborted state
+                from app.core.socket import sio
+                await sio.emit('game_state', state.model_dump(), room=game_id)
+                return
+            # ──────────────────────────────────────────────────────────
 
             if not black_user or black_id == -1:
                 # Bot game / Training: update tasks progress, stats, and create game history
@@ -738,3 +917,18 @@ class GameService:
             except Exception as hist_err:
                 print(f"[GameService] WARNING: Failed to save game history for {game_id}: {hist_err}")
                 await session.rollback()
+
+            # Cache the dynamic settlement ELOs and wagers on the state object
+            state.white_elo_before = white_elo_before
+            state.white_elo_after = new_white_elo
+            state.black_elo_before = black_elo_before
+            state.black_elo_after = new_black_elo
+            state.payout_amount = payout_amount
+            state.platform_rake = platform_rake
+            
+            # Save the updated state to Redis
+            await self.session_manager.save_game(game_id, state)
+            
+            # Broadcast the final state to the socket room
+            from app.core.socket import sio
+            await sio.emit('game_state', state.model_dump(), room=game_id)

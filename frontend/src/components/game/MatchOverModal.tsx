@@ -14,6 +14,7 @@ interface MatchOverModalProps {
   rematchStatus: 'idle' | 'offered_by_me' | 'waiting';
   onShowRematchChoice: () => void;
   onShareGame: () => void;
+  newElo?: number;
 }
 
 export default function MatchOverModal({
@@ -25,6 +26,7 @@ export default function MatchOverModal({
   rematchStatus,
   onShowRematchChoice,
   onShareGame,
+  newElo,
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
@@ -62,7 +64,7 @@ export default function MatchOverModal({
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{tg('global_elo')}</span>
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-black text-brand-primary tracking-widest">1000</span>
+              <span className="text-sm font-black text-brand-primary tracking-widest">{newElo ?? 1000}</span>
               <span className={`text-[10px] font-black tracking-widest text-brand-primary`}>
                 {eloChange}
               </span>

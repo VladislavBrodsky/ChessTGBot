@@ -207,7 +207,10 @@
         "copy_code": "リンクをコピー",
         "invite_link_desc": "友達にこのリンクを送って対局を開始しよう",
         "copied_success": "コピーしました！✓",
-        "share_msg": "チェスの対局に参加しよう！♟️\n持ち時間：{time} 分"
+        "share_msg": "チェスの対局に参加しよう！♟️\n持ち時間：{time} 分",
+        "match_aborted": "対局中止",
+        "won_on_time": "時間切れ勝ち ♟️🚩",
+        "lost_on_time": "時間切れ負け ♟️🚩"
     },
     "Wallet": {
         "title": "Web3ウォレット",

@@ -222,7 +222,10 @@
         "copy_code": "Copy Link",
         "invite_link_desc": "Send this link to a friend to start the duel",
         "copied_success": "Copied! ✓",
-        "share_msg": "Join my chess match! ♟️\nTime control: {time} minutes."
+        "share_msg": "Join my chess match! ♟️\nTime control: {time} minutes.",
+        "match_aborted": "Match Aborted",
+        "won_on_time": "Won on Time ♟️🚩",
+        "lost_on_time": "Lost on Time ♟️🚩"
     },
     "Wallet": {
         "title": "Web3 Wallet",

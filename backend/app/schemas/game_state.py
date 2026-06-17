@@ -25,6 +25,20 @@ class GameState(BaseModel):
     move_history: List[str] = []
     result_type: Optional[str] = None
 
+    # Cached Player info (to avoid db calls on moves/fetches)
+    white_username: Optional[str] = None
+    black_username: Optional[str] = None
+    white_elo: Optional[int] = None
+    black_elo: Optional[int] = None
+
+    # Settlement detail caches
+    white_elo_before: Optional[int] = None
+    white_elo_after: Optional[int] = None
+    black_elo_before: Optional[int] = None
+    black_elo_after: Optional[int] = None
+    payout_amount: Optional[int] = None
+    platform_rake: Optional[int] = None
+
     @computed_field
     @property
     def status(self) -> str:

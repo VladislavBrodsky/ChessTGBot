@@ -207,7 +207,10 @@
         "copy_code": "Link kopieren",
         "invite_link_desc": "Sende diesen Link an einen Freund, um das Duell zu starten",
         "copied_success": "Kopiert! ✓",
-        "share_msg": "Tritt meiner Schachpartie bei! ♟️\nBedenkzeit: {time} Minuten."
+        "share_msg": "Tritt meiner Schachpartie bei! ♟️\nBedenkzeit: {time} Minuten.",
+        "match_aborted": "Spiel abgebrochen",
+        "won_on_time": "Zeitüberschreitungssieg ♟️🚩",
+        "lost_on_time": "Zeitüberschreitungsniederlage ♟️🚩"
     },
     "Wallet": {
         "title": "Web3 Wallet",
