@@ -484,8 +484,13 @@ class GameService:
                 from app.models.transaction import Transaction
                 if state.winner == 'w':
                     # White wins!
+                    # First distribute wager played & won tree commissions
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
+
                     platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = (2 * bid_amount) - platform_rake
+                    payout_amount = (2 * bid_amount) - platform_rake - win_deduction
                     
                     # Award payout to white
                     white_user.balance += payout_amount
@@ -496,7 +501,7 @@ class GameService:
                         user_id=white_id,
                         type="game_win",
                         amount=payout_amount,
-                        fee=platform_rake,
+                        fee=platform_rake + win_deduction,
                         reference_id=game_id
                     )
                     session.add(win_tx)
@@ -511,11 +516,6 @@ class GameService:
                         status="completed"
                     )
                     session.add(rake_tx)
-
-                    # Distribute referral commissions for both players
-                    from app.services.referral_commission_service import ReferralCommissionService
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount)
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount)
 
                     # Automated notifications
                     try:
@@ -544,8 +544,13 @@ class GameService:
 
                 elif state.winner == 'b':
                     # Black wins!
+                    # First distribute wager played & won tree commissions
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
+
                     platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = (2 * bid_amount) - platform_rake
+                    payout_amount = (2 * bid_amount) - platform_rake - win_deduction
                     
                     # Award payout to black
                     black_user.balance += payout_amount
@@ -556,7 +561,7 @@ class GameService:
                         user_id=black_id,
                         type="game_win",
                         amount=payout_amount,
-                        fee=platform_rake,
+                        fee=platform_rake + win_deduction,
                         reference_id=game_id
                     )
                     session.add(win_tx)
@@ -571,11 +576,6 @@ class GameService:
                         status="completed"
                     )
                     session.add(rake_tx)
-
-                    # Distribute referral commissions for both players
-                    from app.services.referral_commission_service import ReferralCommissionService
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount)
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount)
 
                     # Automated notifications
                     try:

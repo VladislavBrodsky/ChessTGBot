@@ -236,41 +236,38 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     await db_session.commit()
 
     # Distribute wager commissions (Wager = 10000 cents / $100.00)
-    # Individual rake = 10000 * 0.03 = 300 cents.
-    # Tier 1 (R1) gets 10% of 300 = 30 cents.
-    # Tier 2 (R2) gets 5% of 300 = 15 cents.
-    # Tier 3 (R3) gets 2.5% of 300 = 7 cents.
+    # Direct played commission = 10000 * 0.005 = 50 cents (to r1)
+    # Winner tree commission:
+    # L1 (r1) gets 1% of 10000 = 100 cents
+    # L2 (r2) gets 0.5% of 10000 = 50 cents
+    # L3 (r3) gets 0.3% of 10000 = 30 cents
     wager = 10000
-    await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm", player.id, wager)
+    deduction = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm", player.id, wager, is_winner=True)
     await db_session.commit()
 
     await db_session.refresh(r1)
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    assert r1.balance == 30
-    assert r2.balance == 15
-    assert r3.balance == 7
+    assert r1.balance == 150 # 50 played + 100 win
+    assert r2.balance == 50  # 50 win
+    assert r3.balance == 30  # 30 win
+    assert deduction == 180  # 100 + 50 + 30 = 1.8% of wager
 
     # Verify transaction entries
-    txs_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "test_game_comm")
+    txs_played_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "played_test_game_comm")
     )
-    txs = txs_result.scalars().all()
-    assert len(txs) == 3
-    
-    # Check types and amounts
-    r1_tx = next(t for t in txs if t.user_id == r1.telegram_id)
-    assert r1_tx.type == "referral_commission"
-    assert r1_tx.amount == 30
+    txs_played = txs_played_result.scalars().all()
+    assert len(txs_played) == 1
+    assert txs_played[0].amount == 50
+    assert txs_played[0].user_id == r1.telegram_id
 
-    r2_tx = next(t for t in txs if t.user_id == r2.telegram_id)
-    assert r2_tx.type == "referral_commission"
-    assert r2_tx.amount == 15
-
-    r3_tx = next(t for t in txs if t.user_id == r3.telegram_id)
-    assert r3_tx.type == "referral_commission"
-    assert r3_tx.amount == 7
+    txs_win_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "win_test_game_comm")
+    )
+    txs_win = txs_win_result.scalars().all()
+    assert len(txs_win) == 3
 
 
 @pytest.mark.asyncio
@@ -309,27 +306,33 @@ async def test_three_tier_referral_commission_non_premium_skipped(db_session: As
 
     # Distribute commissions
     wager = 10000
-    await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm_np", player.id, wager)
+    deduction = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm_np", player.id, wager, is_winner=True)
     await db_session.commit()
 
     await db_session.refresh(r1)
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    # R1 (Tier 1 - Premium) gets 30
-    assert r1.balance == 30
+    # R1 (Tier 1 - Premium) gets 50 played + 100 win = 150
+    assert r1.balance == 150
     # R2 (Tier 2 - Non-Premium) gets 0
     assert r2.balance == 0
-    # R3 (Tier 3 - Premium) gets 7
-    assert r3.balance == 7
+    # R3 (Tier 3 - Premium) gets 30 win
+    assert r3.balance == 30
+    assert deduction == 180 # deduction is charged from winner regardless of premium status of referrers
 
     # Verify transaction entries
-    txs_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "test_game_comm_np")
+    txs_played_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "played_test_game_comm_np")
     )
-    txs = txs_result.scalars().all()
-    # R2 is skipped, so only 2 transaction ledger records should exist
-    assert len(txs) == 2
+    txs_played = txs_played_result.scalars().all()
+    assert len(txs_played) == 1
+
+    txs_win_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "win_test_game_comm_np")
+    )
+    txs_win = txs_win_result.scalars().all()
+    assert len(txs_win) == 2 # R2 skipped, so only r1 and r3 win transactions recorded
 
 
 @pytest.mark.asyncio

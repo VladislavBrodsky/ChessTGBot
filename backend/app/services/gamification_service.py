@@ -203,6 +203,26 @@ class GamificationService:
             )
             db.add(tx_new_user)
             
+            # Send Telegram push notification to the referrer
+            try:
+                from app.services.telegram_bot import TelegramService
+                import logging
+                logger = logging.getLogger(__name__)
+                
+                ref_user_display = f"@{new_user.username}" if new_user.username else f"User {new_user.first_name}"
+                msg = (
+                    f"🎉 <b>New Recruit Joined!</b>\n\n"
+                    f"• <b>User:</b> {ref_user_display}\n"
+                    f"• <b>Name:</b> {new_user.first_name} {new_user.last_name or ''}\n"
+                    f"• <b>Your Sign-Up Reward:</b> +${referrer_bonus / 100:.2f} USDT & +{referrer_xp} XP!\n\n"
+                    f"<i>Your referral tree is growing! Keep sharing your link. ♟️🚀</i>"
+                )
+                await TelegramService.send_notification(referrer.telegram_id, msg)
+            except Exception as e:
+                # Log warning but do not fail the database commit
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to send referral sign-up notification: {e}")
+
             await db.commit()
             return True
         return False

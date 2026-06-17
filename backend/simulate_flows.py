@@ -218,19 +218,19 @@ async def run_simulation():
         # Ancestor gets Tier 3 from P1's wager (3 cents) = 3 cents
         print(f"\n✓ Profit & Commission Ledger Verification:")
         print(f"  - Total Match Stake Pool: ${(wager_amount * 2) / 100:.2f} USDT")
-        print(f"  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from this rake)")
+        print(f"  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from winner payout)")
         print(f"  - Net Winner Payout (97%): $97.00 USDT")
-        print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $147.35 USDT)")
+        print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $146.55 USDT)")
         print(f"  - Player 2 (Loser) Final Wallet Balance: ${u2.balance / 100:.2f} USDT (Expected $50.10 USDT)")
-        print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $0.22 USDT)")
-        print(f"  - Grandparent (Tier 2 Referrer) Balance: ${grandparent.balance / 100:.2f} USDT (Expected $0.10 USDT)")
-        print(f"  - Ancestor (Tier 3 Referrer) Balance: ${ancestor.balance / 100:.2f} USDT (Expected $0.03 USDT)")
+        print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $0.75 USDT)")
+        print(f"  - Grandparent (Tier 2 Referrer) Balance: ${grandparent.balance / 100:.2f} USDT (Expected $0.25 USDT)")
+        print(f"  - Ancestor (Tier 3 Referrer) Balance: ${ancestor.balance / 100:.2f} USDT (Expected $0.15 USDT)")
         
-        assert u1.balance == 14735, f"P1 Balance incorrect, got {u1.balance}"
+        assert u1.balance == 14655, f"P1 Balance incorrect, got {u1.balance}"
         assert u2.balance == 5010, f"P2 Balance incorrect, got {u2.balance}"
-        assert parent.balance == 22, f"Parent Balance incorrect, got {parent.balance}"
-        assert grandparent.balance == 10, f"Grandparent Balance incorrect, got {grandparent.balance}"
-        assert ancestor.balance == 3, f"Ancestor Balance incorrect, got {ancestor.balance}"
+        assert parent.balance == 75, f"Parent Balance incorrect, got {parent.balance}"
+        assert grandparent.balance == 25, f"Grandparent Balance incorrect, got {grandparent.balance}"
+        assert ancestor.balance == 15, f"Ancestor Balance incorrect, got {ancestor.balance}"
         print("✓ balance verification assert passed. ledger matches expected calculations.")
 
         # 5. Print Transaction Ledger history
