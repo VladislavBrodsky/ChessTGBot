@@ -156,7 +156,7 @@ async def join_matchmaking(sid, data):
             # 4. Deduct wagers and log transactions in db
             async with AsyncSessionLocal() as db:
                 # Deduct White Player
-                white = await user_crud.get_user_by_telegram_id(db, state.white_player_id)
+                white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
                 white.balance -= bid_amount
                 db.add(white)
                 tx_w = Transaction(
@@ -168,7 +168,7 @@ async def join_matchmaking(sid, data):
                 db.add(tx_w)
                 
                 # Deduct Black Player
-                black = await user_crud.get_user_by_telegram_id(db, state.black_player_id)
+                black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
                 black.balance -= bid_amount
                 db.add(black)
                 tx_b = Transaction(

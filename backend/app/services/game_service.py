@@ -298,8 +298,8 @@ class GameService:
             black_id = state.black_player_id
             
             # Fetch users
-            white_user = await user_crud.get_user_by_telegram_id(session, white_id) if white_id and white_id != -1 else None
-            black_user = await user_crud.get_user_by_telegram_id(session, black_id) if black_id and black_id != -1 else None
+            white_user = await user_crud.get_user_by_telegram_id(session, white_id, for_update=True) if white_id and white_id != -1 else None
+            black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True) if black_id and black_id != -1 else None
 
             if not white_user:
                 return

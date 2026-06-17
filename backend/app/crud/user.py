@@ -3,8 +3,11 @@ from sqlalchemy.future import select
 from app.models.user import User
 from datetime import datetime
 
-async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int):
-    result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+async def get_user_by_telegram_id(db: AsyncSession, telegram_id: int, for_update: bool = False):
+    query = select(User).filter(User.telegram_id == telegram_id)
+    if for_update:
+        query = query.with_for_update()
+    result = await db.execute(query)
     return result.scalars().first()
 
 async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_name: str = None, username: str = None, photo_url: str = None):

@@ -210,16 +210,21 @@ async def withdraw_funds(
     if request.amount <= 0:
         raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
     
-    if current_user.balance < request.amount:
+    # Fetch user with write lock to prevent race conditions or double-spending
+    user_result = await db.execute(
+        select(User).filter(User.telegram_id == current_user.telegram_id).with_for_update()
+    )
+    db_user = user_result.scalars().first()
+    if not db_user or db_user.balance < request.amount:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
     # Deduct balance
-    current_user.balance -= request.amount
-    db.add(current_user)
+    db_user.balance -= request.amount
+    db.add(db_user)
 
     # Log Withdrawal Transaction
     tx_withdraw = Transaction(
-        user_id=current_user.telegram_id,
+        user_id=db_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
         fee=0,
@@ -229,7 +234,7 @@ async def withdraw_funds(
     db.add(tx_withdraw)
 
     await db.commit()
-    await db.refresh(current_user)
+    await db.refresh(db_user)
 
     # Send automated Telegram Bot notification
     try:
@@ -239,16 +244,16 @@ async def withdraw_funds(
             f"<b>📤 Cyber Wallet Withdrawal Initiated!</b>\n\n"
             f"• <b>Withdrawn Amount:</b> -${request.amount / 100:.2f} USDT\n"
             f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n\n"
-            f"<i>Funds are on their way to the TON network. Remaining platform balance is {current_user.balance / 100:.2f} USDT.</i>"
+            f"<i>Funds are on their way to the TON network. Remaining platform balance is {db_user.balance / 100:.2f} USDT.</i>"
         )
-        await TelegramService.send_notification(current_user.telegram_id, notification_text)
+        await TelegramService.send_notification(db_user.telegram_id, notification_text)
     except Exception as e:
         pass
 
     return WithdrawResponse(
         status="success",
         amount=request.amount,
-        new_balance=current_user.balance
+        new_balance=db_user.balance
     )
 
 @router.get("/transactions", response_model=List[TransactionItem])
@@ -444,8 +449,8 @@ async def receive_ton_deposit_webhook(
     if amount_cents <= 0:
         raise HTTPException(status_code=400, detail="Deposit amount must be positive")
 
-    # Retrieve user from db
-    user_result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+    # Retrieve user from db with write lock to prevent race conditions
+    user_result = await db.execute(select(User).filter(User.telegram_id == telegram_id).with_for_update())
     user = user_result.scalars().first()
     if not user:
         raise HTTPException(status_code=404, detail="User associated with comment not found")
