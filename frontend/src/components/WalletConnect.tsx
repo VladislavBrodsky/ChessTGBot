@@ -62,22 +62,22 @@ export default function WalletConnect() {
     if (!mounted) return null;
 
     return (
-        <div className="w-full">
+        <div className="w-full h-full">
             <motion.div
                 whileHover={{ scale: 1.01 }}
-                className="glass-panel p-1.5 rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex items-center justify-between overflow-hidden relative shadow-sm"
+                className="glass-panel p-1 h-full rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex items-center justify-between overflow-hidden relative shadow-sm"
             >
                 {/* Custom styling wrapper for TonConnectButton */}
-                <div className="w-full flex items-center justify-between pl-3 pr-1 py-1 min-w-0">
-                    <div className="flex items-center gap-2 min-w-0">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-10 text-brand-primary opacity-60'}`}>
-                            <FaWallet size={12} />
+                <div className="w-full flex items-center justify-between pl-2 pr-1 py-0.5 min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-10 text-brand-primary opacity-60'}`}>
+                            <FaWallet size={10} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-brand-primary opacity-40 truncate">
+                            <span className="text-[7.5px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
                                 {wallet ? 'Active' : 'Wallet'}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary truncate">
+                            <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate">
                                 {wallet ? getShortAddress(wallet.account.address) : 'Unlinked'}
                             </span>
                         </div>
@@ -86,11 +86,11 @@ export default function WalletConnect() {
                     <button
                         onClick={handleWalletAction}
                         className={wallet 
-                          ? "w-7 h-7 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                          : "py-1 px-2.5 rounded-xl bg-brand-primary text-brand-void text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                          ? "w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
+                          : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[8.5px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
-                        {wallet ? <FaTimes size={10} /> : 'Connect'}
+                        {wallet ? <FaTimes size={9} /> : 'Connect'}
                     </button>
                 </div>
 
