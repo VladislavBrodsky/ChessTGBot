@@ -1,0 +1,64 @@
+import React from 'react';
+import { FaChessPawn } from 'react-icons/fa';
+import { telegramHaptic } from "@/lib/telegram";
+
+interface TimeControlSelectorProps {
+  timeControl: number;
+  setTimeControl: (val: number) => void;
+  timeScrollRef: React.RefObject<HTMLDivElement | null>;
+  tg: (key: any) => string;
+}
+
+export default function TimeControlSelector({
+  timeControl,
+  setTimeControl,
+  timeScrollRef,
+  tg
+}: TimeControlSelectorProps) {
+  return (
+    <div className="px-4 pt-3 pb-4">
+      <div className="flex justify-between items-center mb-2.5">
+        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
+          <FaChessPawn className="opacity-60" size={8} />
+          {tg('time_control')}
+        </span>
+        <span className="text-[9px] font-black text-brand-primary opacity-60">
+          {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
+        </span>
+      </div>
+
+      <div className="relative fade-edges w-full">
+        <div
+          ref={timeScrollRef}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
+        >
+          {[
+            { label: "1m", val: 60 },
+            { label: "3m", val: 180 },
+            { label: "5m", val: 300 },
+            { label: "10m", val: 600 },
+            { label: "15m", val: 900 },
+            { label: "30m", val: 1800 },
+            { label: "60m", val: 3600 }
+          ].map((opt) => {
+            const isSelected = timeControl === opt.val;
+            return (
+              <button
+                key={opt.val}
+                data-active={isSelected ? "true" : "false"}
+                onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
+                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                  isSelected
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                    : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+                }`}
+              >
+                <span>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
