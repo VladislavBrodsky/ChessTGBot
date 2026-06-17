@@ -44,6 +44,7 @@ export default function WalletPage() {
  const [successMessage, setSuccessMessage] = useState<string>("");
  const [errorMessage, setErrorMessage] = useState<string>("");
  const [tgUser, setTgUser] = useState<any>(null);
+ const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
 
  useEffect(() => {
  fetchWalletData();
@@ -530,52 +531,69 @@ export default function WalletPage() {
         <span>{processing ? "Generating..." : "Generate Web3 Invoice"}</span>
       </button>
 
-      {/* Direct transfer fallback */}
-      <div className="border-t border-brand-border-opacity-10 pt-3 flex flex-col space-y-2">
-        <div className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Direct Transfer Fallback</div>
-        <div className="text-[9px] text-brand-primary opacity-60">
-          Alternatively, transfer manually to the Master Wallet below. Ensure you include the unique comment memo.
-        </div>
-        
-        <div className="flex flex-col space-y-1">
-          <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
-          <div className="cyber-input w-full p-2 rounded-lg border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => navigator.clipboard.writeText(masterWallet)}>
-            <span className="truncate">{masterWallet}</span>
-            <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
-          </div>
-        </div>
+      {/* Toggleable Direct manual transfer fallback */}
+      <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
+        <button
+          type="button"
+          onClick={() => setShowManualFallback(!showManualFallback)}
+          className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
+        >
+          <span>Or Pay Manually (Direct Transfer)</span>
+          <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
-          <div className="cyber-input w-full p-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => navigator.clipboard.writeText(memoComment)}>
-            <span>{memoComment}</span>
-            <FaCopy className="text-emerald-500 opacity-60" />
+        {showManualFallback && (
+          <div className="space-y-3 pt-3">
+            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
+              ⚠️ WARNING: Include the unique comment memo in your transfer or your deposit will be lost.
+            </div>
+
+            <div className="flex flex-col space-y-1">
+              <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
+              <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => { navigator.clipboard.writeText(masterWallet); alert("Master Wallet address copied!"); }}>
+                <span className="truncate">{masterWallet}</span>
+                <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-1">
+              <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
+              <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => { navigator.clipboard.writeText(memoComment); alert("Comment Memo copied!"); }}>
+                <span>{memoComment}</span>
+                <FaCopy className="text-emerald-500 opacity-60" />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )}
 
   {/* Commission Alert */}
   <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider">
-  <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+    <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
   </div>
 
   {/* Messages and Simulation Fallback */}
-  <div className="w-full pt-1">
-  {successMessage && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
-  {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
+  <div className="w-full pt-1 space-y-2">
+    {successMessage && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+    {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
-  {!invoiceUrl && (
-    <button
-      onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
-      disabled={processing}
-      className="w-full py-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary/50 text-[10px] font-black uppercase tracking-widest hover:text-brand-primary transition-all flex items-center justify-center gap-2"
-    >
-      <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
-      <span>{processing ? tw('listening_tx') : tw('simulate_deposit')}</span>
-    </button>
-  )}
+    {!invoiceUrl && (
+      <div className="p-3.5 rounded-2xl border border-dashed border-brand-primary/10 bg-brand-void/25 flex flex-col space-y-2 mt-2">
+        <span className="text-[8px] font-black text-brand-primary/30 uppercase tracking-[0.2em] text-center">Dev Sandbox Tools</span>
+        <button
+          onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
+          disabled={processing}
+          className="w-full py-2 rounded-xl bg-brand-primary/5 border border-brand-primary/10 hover:bg-brand-primary/10 text-brand-primary/60 text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
+          <span>{processing ? tw('listening_tx') : "Simulate Instant Deposit"}</span>
+        </button>
+      </div>
+    )}
   </div>
   </div>
   );
