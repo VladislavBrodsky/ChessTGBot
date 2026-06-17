@@ -224,7 +224,15 @@
     "share_msg": "¡Únete a mi partida de ajedrez! ♟️\nControl de tiempo: {time} minutos.",
     "match_aborted": "Partida abortada",
     "won_on_time": "Victoria por tiempo ♟️🚩",
-    "lost_on_time": "Derrota por tiempo ♟️🚩"
+    "lost_on_time": "Derrota por tiempo ♟️🚩",
+    "online": "EN LÍNEA",
+    "active_users": "USUARIOS ACTIVOS",
+    "stake": "Apuesta",
+    "win_up_to": "Gana Hasta",
+    "rake": "Comisión",
+    "balance": "Saldo",
+    "top_up_play": "Recargar y Jugar",
+    "amount_needed": "+{amount} requerido"
   },
   "Wallet": {
     "title": "Billetera Web3",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "¡Factura generada con éxito! Escanee el código QR o haga clic en 'Abrir en billetera' para pagar.",
     "deposit_failed": "Error al iniciar el depósito.",
     "deposit_network_error": "Error de red durante la iniciación del depósito.",
-    "deposit_cta": "Recargar a través de @CryptoBot"
+    "deposit_cta": "Recargar a través de @CryptoBot",
+    "active": "Activo",
+    "wallet": "Billetera",
+    "unlinked": "Desvinculado",
+    "connect": "Conectar"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

@@ -224,7 +224,15 @@
     "share_msg": "Rejoins ma partie d'échecs ! ♟️\nContrôle du temps : {time} minutes.",
     "match_aborted": "Partie annulée",
     "won_on_time": "Victoire au temps ♟️🚩",
-    "lost_on_time": "Défaite au temps ♟️🚩"
+    "lost_on_time": "Défaite au temps ♟️🚩",
+    "online": "EN LIGNE",
+    "active_users": "UTILISATEURS ACTIFS",
+    "stake": "Mise",
+    "win_up_to": "Gagner jusqu'à",
+    "rake": "Frais",
+    "balance": "Solde",
+    "top_up_play": "Recharger et jouer",
+    "amount_needed": "+{amount} requis"
   },
   "Wallet": {
     "title": "Portefeuille Web3",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Facture générée avec succès ! Scannez le code QR ou cliquez sur 'Ouvrir dans le portefeuille' pour payer.",
     "deposit_failed": "Échec de l'initialisation du dépôt.",
     "deposit_network_error": "Erreur réseau lors de l'initialisation du dépôt.",
-    "deposit_cta": "Recharger via @CryptoBot"
+    "deposit_cta": "Recharger via @CryptoBot",
+    "active": "Actif",
+    "wallet": "Portefeuille",
+    "unlinked": "Non lié",
+    "connect": "Connecter"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

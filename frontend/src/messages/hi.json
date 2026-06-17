@@ -224,7 +224,15 @@
     "share_msg": "मेरे शतरंज मैच में शामिल हों! ♟️\nसमय नियंत्रण: {time} मिनट।",
     "match_aborted": "मैच रद्द कर दिया गया",
     "won_on_time": "समय पर जीत ♟️🚩",
-    "lost_on_time": "समय समाप्त होने पर हार ♟️🚩"
+    "lost_on_time": "समय समाप्त होने पर हार ♟️🚩",
+    "online": "ऑनलाइन",
+    "active_users": "सक्रिय उपयोगकर्ता",
+    "stake": "दांव",
+    "win_up_to": "जीतें तक",
+    "rake": "कमीशन",
+    "balance": "बैलेंस",
+    "top_up_play": "टॉप अप और खेलें",
+    "amount_needed": "+{amount} आवश्यक"
   },
   "Wallet": {
     "title": "Web3 वॉलेट",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
     "deposit_failed": "Failed to initiate deposit.",
     "deposit_network_error": "Network error during deposit initiation.",
-    "deposit_cta": "@CryptoBot के माध्यम से टॉप अप करें"
+    "deposit_cta": "@CryptoBot के माध्यम से टॉप अप करें",
+    "active": "सक्रिय",
+    "wallet": "वॉलेट",
+    "unlinked": "अलिंक्д",
+    "connect": "कनेक्ट"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

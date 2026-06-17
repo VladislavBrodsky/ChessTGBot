@@ -224,7 +224,15 @@
     "share_msg": "チェスの対局に参加しよう！♟️\n持ち時間：{time} 分",
     "match_aborted": "対局中止",
     "won_on_time": "時間切れ勝ち ♟️🚩",
-    "lost_on_time": "時間切れ負け ♟️🚩"
+    "lost_on_time": "時間切れ負け ♟️🚩",
+    "online": "オンライン",
+    "active_users": "アクティブユーザー",
+    "stake": "ステーク",
+    "win_up_to": "最大獲得",
+    "rake": "ハウスエッジ",
+    "balance": "残高",
+    "top_up_play": "チャージしてプレイ",
+    "amount_needed": "+{amount} 不足"
   },
   "Wallet": {
     "title": "Web3ウォレット",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
     "deposit_failed": "Failed to initiate deposit.",
     "deposit_network_error": "Network error during deposit initiation.",
-    "deposit_cta": "@CryptoBotでチャージ"
+    "deposit_cta": "@CryptoBotでチャージ",
+    "active": "アクティブ",
+    "wallet": "ウォレット",
+    "unlinked": "未連携",
+    "connect": "接続"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

@@ -4,6 +4,7 @@ import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import { FaWallet, FaTimes } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
 interface WalletConnectProps {
@@ -11,6 +12,7 @@ interface WalletConnectProps {
 }
 
 export default function WalletConnect({ minimal = false }: WalletConnectProps) {
+    const tw = useTranslations('Wallet');
     const wallet = useTonWallet();
     const [tonConnectUI] = useTonConnectUI();
     const [mounted, setMounted] = useState(false);
@@ -76,7 +78,7 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
                             </div>
                             <div className="flex flex-col min-w-0 text-left">
                                 <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">
-                                    Active
+                                    {tw('active')}
                                 </span>
                                 <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate leading-none">
                                     {getShortAddress(wallet.account.address)}
@@ -97,7 +99,7 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
                         className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                     >
                         <FaWallet size={10} />
-                        <span>Connect</span>
+                        <span>{tw('connect')}</span>
                     </button>
                 )}
             </div>
@@ -118,10 +120,10 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-[7.5px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
-                                {wallet ? 'Active' : 'Wallet'}
+                                {wallet ? tw('active') : tw('wallet')}
                             </span>
                             <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate">
-                                {wallet ? getShortAddress(wallet.account.address) : 'Unlinked'}
+                                {wallet ? getShortAddress(wallet.account.address) : tw('unlinked')}
                             </span>
                         </div>
                     </div>
@@ -133,7 +135,7 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
                           : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[8.5px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
-                        {wallet ? <FaTimes size={9} /> : 'Connect'}
+                        {wallet ? <FaTimes size={9} /> : tw('connect')}
                     </button>
                 </div>
 

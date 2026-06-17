@@ -224,7 +224,15 @@
     "share_msg": "انضم إلى مباراة الشطرنج الخاصة بي! ♟️\nالتحكم في الوقت: {time} دقائق.",
     "match_aborted": "تم إلغاء المباراة",
     "won_on_time": "فاز بالوقت ♟️🚩",
-    "lost_on_time": "خسر بالوقت ♟️🚩"
+    "lost_on_time": "خسر بالوقت ♟️🚩",
+    "online": "نشط",
+    "active_users": "مستخدم نشط",
+    "stake": "الرهان",
+    "win_up_to": "ربح حتى",
+    "rake": "العمولة",
+    "balance": "الرصيد",
+    "top_up_play": "شحن ولعب",
+    "amount_needed": "+{amount} مطلوب"
   },
   "Wallet": {
     "title": "محفظة Web3",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
     "deposit_failed": "Failed to initiate deposit.",
     "deposit_network_error": "Network error during deposit initiation.",
-    "deposit_cta": "شحن الرصيد عبر @CryptoBot"
+    "deposit_cta": "شحن الرصيد عبر @CryptoBot",
+    "active": "نشط",
+    "wallet": "محفظة",
+    "unlinked": "غير مرتبط",
+    "connect": "ربط"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

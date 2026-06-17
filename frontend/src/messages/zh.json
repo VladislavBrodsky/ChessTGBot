@@ -224,7 +224,15 @@
     "share_msg": "加入我的国际象棋对决！♟️\n时间控制：{time} 分钟。",
     "match_aborted": "比赛已中止",
     "won_on_time": "超时获胜 ♟️🚩",
-    "lost_on_time": "超时落败 ♟️🚩"
+    "lost_on_time": "超时落败 ♟️🚩",
+    "online": "在线",
+    "active_users": "活跃用户",
+    "stake": "赌注",
+    "win_up_to": "最高可赢",
+    "rake": "抽水",
+    "balance": "余额",
+    "top_up_play": "充值并开始",
+    "amount_needed": "还需+{amount}"
   },
   "Wallet": {
     "title": "Web3 钱包",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
     "deposit_failed": "Failed to initiate deposit.",
     "deposit_network_error": "Network error during deposit initiation.",
-    "deposit_cta": "通过 @CryptoBot 充值"
+    "deposit_cta": "通过 @CryptoBot 充值",
+    "active": "活动",
+    "wallet": "钱包",
+    "unlinked": "未绑定",
+    "connect": "连接"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

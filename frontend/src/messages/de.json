@@ -224,7 +224,15 @@
     "share_msg": "Tritt meiner Schachpartie bei! ♟️\nBedenkzeit: {time} Minuten.",
     "match_aborted": "Spiel abgebrochen",
     "won_on_time": "Zeitüberschreitungssieg ♟️🚩",
-    "lost_on_time": "Zeitüberschreitungsniederlage ♟️🚩"
+    "lost_on_time": "Zeitüberschreitungsniederlage ♟️🚩",
+    "online": "ONLINE",
+    "active_users": "AKTIVE BENUTZER",
+    "stake": "Einsatz",
+    "win_up_to": "Gewinnen bis zu",
+    "rake": "Gebühr",
+    "balance": "Guthaben",
+    "top_up_play": "Aufladen & Spielen",
+    "amount_needed": "+{amount} benötigt"
   },
   "Wallet": {
     "title": "Web3 Wallet",
@@ -285,7 +293,11 @@
     "deposit_invoice_success": "Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.",
     "deposit_failed": "Failed to initiate deposit.",
     "deposit_network_error": "Network error during deposit initiation.",
-    "deposit_cta": "Über @CryptoBot aufladen"
+    "deposit_cta": "Über @CryptoBot aufladen",
+    "active": "Aktiv",
+    "wallet": "Wallet",
+    "unlinked": "Nicht verknüpft",
+    "connect": "Verbinden"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

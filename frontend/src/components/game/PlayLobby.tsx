@@ -322,10 +322,10 @@ export default function PlayLobby() {
           <div className="flex items-center gap-3 text-[8px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
             <div className="flex items-center gap-1">
               <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
-              <span className="text-emerald-400">{playersOnline} ONLINE</span>
+              <span className="text-emerald-400">{playersOnline} {tg('online')}</span>
             </div>
             <span className="opacity-30">|</span>
-            <span>{activeUsers.toLocaleString()} ACTIVE USERS</span>
+            <span>{activeUsers.toLocaleString()} {tg('active_users')}</span>
           </div>
         </div>
 
@@ -428,12 +428,12 @@ export default function PlayLobby() {
                   >
                     <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand-void/40 border border-brand-border-opacity-10 rounded-2xl">
                       <div className="flex flex-col">
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Stake</span>
+                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('stake')}</span>
                         <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                       </div>
                       <div className="w-px h-6 bg-brand-border-opacity-10" />
                       <div className="flex flex-col items-center">
-                        <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">Win Up To</span>
+                        <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">{tg('win_up_to')}</span>
                         <span className="text-[11px] font-black text-emerald-400">${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT</span>
                       </div>
                       <div className="w-px h-6 bg-brand-border-opacity-10" />
@@ -441,7 +441,7 @@ export default function PlayLobby() {
                         onClick={() => setShowRakeInfo(true)}
                         className="flex flex-col items-end cursor-pointer bg-transparent border-0"
                       >
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">Rake</span>
+                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('rake')}</span>
                         <span className="text-[11px] font-black text-amber-400">3%</span>
                       </button>
                     </div>
@@ -452,10 +452,10 @@ export default function PlayLobby() {
                         ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
                         : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
                     }`}>
-                      <span className="opacity-70">Balance: ${(walletBalance / 100).toFixed(2)}</span>
+                      <span className="opacity-70">{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
                       {hasSufficient
                         ? <span className="flex items-center gap-1">✓ {tg('balance_verified')}</span>
-                        : <span className="font-black animate-pulse">↑ ${((chosenWager - walletBalance) / 100).toFixed(2)} needed</span>
+                        : <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
                       }
                     </div>
                   </motion.div>
@@ -481,7 +481,7 @@ export default function PlayLobby() {
                   <div className="flex items-center gap-2">
                     <FaChessKnight size={13} className="text-current" />
                     <span className="text-[11px] font-black tracking-[0.2em] text-current uppercase">
-                      {hasSufficient ? t('execute_matchmaking') : "TOP UP & PLAY"}
+                      {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                     </span>
                   </div>
                 </motion.button>
