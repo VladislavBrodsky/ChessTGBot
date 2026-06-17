@@ -153,6 +153,7 @@
     "train_ai": "Тренировка с ИИ",
     "initializing_board": "Инициализация доски...",
     "resign": "Сдаться",
+    "offer_draw": "Ничья",
     "isolated": "Изолировано",
     "ai_combatant": "ИИ Оппонент",
     "opponent": "Соперник",

@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaCopy, FaCheck, FaRobot } from 'react-icons/fa';
+import { FaArrowLeft, FaCopy, FaCheck, FaRobot, FaFlag, FaHandshake } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import ChessBoardComponent from '@/components/game/ChessBoard';
@@ -302,16 +302,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const isBotGame = gameState?.black_player_id === -1;
   const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
 
-  // Toggle Navbar
+  // Toggle Navbar — hide completely for the entire active game match lifecycle
   const { hideNavbar, showNavbar } = useNavbarHide();
   useEffect(() => {
-    if (isGameOver) {
-      hideNavbar();
-    } else {
-      showNavbar();
-    }
+    hideNavbar();
     return () => { showNavbar(); };
-  }, [isGameOver, hideNavbar, showNavbar]);
+  }, [hideNavbar, showNavbar]);
 
   // Match Over Logic Labels
   let matchResultLabel = tg('protocol_draw');
@@ -392,31 +388,19 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleResign}
-              className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer bg-transparent border-0"
+              className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer bg-transparent border-0 p-2 -ml-2"
             >
-              <FaArrowLeft />
-              <span>{tg('resign')}</span>
+              <FaArrowLeft size={16} />
             </motion.button>
           ) : (
             <Link href={`/${locale}/home`}>
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
               >
-                <FaArrowLeft />
-                <span>{tIndex('back')}</span>
+                <FaArrowLeft size={16} />
               </motion.button>
             </Link>
-          )}
-          
-          {!isBotGame && !isGameOver && (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleOfferDraw}
-              className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity text-[10px] font-bold uppercase tracking-widest cursor-pointer ml-4 bg-transparent border-0"
-            >
-              <span>Draw</span>
-            </motion.button>
           )}
         </div>
 
@@ -558,6 +542,40 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           />
         )}
       </AnimatePresence>
+
+      {/* Bottom Action Bar — replacing Navbar during match */}
+      {!isGameOver && (
+        <motion.div
+          initial={{ x: "-50%", y: 80, opacity: 0 }}
+          animate={{ x: "-50%", y: 0, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 p-3 rounded-2xl shadow-premium"
+        >
+          {/* Resign Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleResign}
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
+          >
+            <FaFlag size={12} />
+            <span>{tg('resign')}</span>
+          </motion.button>
+
+          {/* Offer Draw Button — hidden for bot games */}
+          {!isBotGame && (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleOfferDraw}
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
+            >
+              <FaHandshake size={14} />
+              <span>{tg('offer_draw')}</span>
+            </motion.button>
+          )}
+        </motion.div>
+      )}
     </LayoutWrapper>
   );
 }

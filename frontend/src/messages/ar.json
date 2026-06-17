@@ -153,6 +153,7 @@
     "train_ai": "Train against A.I.",
     "initializing_board": "Initializing Board...",
     "resign": "Resign",
+    "offer_draw": "التعادل",
     "isolated": "Isolated",
     "ai_combatant": "A.I. Combatant",
     "opponent": "Opponent",
