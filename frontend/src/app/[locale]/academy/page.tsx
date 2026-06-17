@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 
 export default function AcademyPage() {
   const locale = useLocale();
@@ -68,30 +69,31 @@ export default function AcademyPage() {
 
     const currentXp = stats?.xp || 0;
     if (currentXp < 100) {
-      alert(`This advanced lesson requires 100 XP to unlock. You only have ${currentXp} XP.`);
+      telegramAlert(`This advanced lesson requires 100 XP to unlock. You only have ${currentXp} XP.`);
       return;
     }
 
-    const confirmUnlock = confirm(`Unlock "Endgame Magic" lesson by spending 100 XP? (You have ${currentXp} XP)`);
-    if (!confirmUnlock) return;
+    telegramConfirm(`Unlock "Endgame Magic" lesson by spending 100 XP? (You have ${currentXp} XP)`, async (confirmed) => {
+      if (!confirmed) return;
 
-    try {
-      const res = await apiFetch("/api/v1/gamification/academy/unlock-lesson", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lesson_id: lessonId })
-      });
-      const data = await res.json();
-      if (res.ok && data.status === "success") {
-        alert("Lesson unlocked successfully!");
-        fetchData();
-      } else {
-        alert(data.detail || "Failed to unlock lesson");
+      try {
+        const res = await apiFetch("/api/v1/gamification/academy/unlock-lesson", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lesson_id: lessonId })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          telegramAlert("Lesson unlocked successfully!");
+          fetchData();
+        } else {
+          telegramAlert(data.detail || "Failed to unlock lesson");
+        }
+      } catch (e) {
+        console.error(e);
+        telegramAlert("Unlock failed");
       }
-    } catch (e) {
-      console.error(e);
-      alert("Unlock failed");
-    }
+    });
   };
 
   const handlePuzzleClick = (id: number, isLocked: boolean) => {
@@ -105,7 +107,7 @@ export default function AcademyPage() {
   const handleUpgradeWithXp = async () => {
     const currentXp = stats?.xp || 0;
     if (currentXp < 500) {
-      alert(`Upgrading requires 500 XP. You only have ${currentXp} XP.`);
+      telegramAlert(`Upgrading requires 500 XP. You only have ${currentXp} XP.`);
       return;
     }
     try {
@@ -113,16 +115,16 @@ export default function AcademyPage() {
         method: "POST"
       });
       if (res.ok) {
-        alert("Upgrade successful! You are now a Premium member.");
+        telegramAlert("Upgrade successful! You are now a Premium member.");
         setShowPremiumPromo(false);
         fetchData();
       } else {
         const err = await res.json();
-        alert(err.detail || "Failed to upgrade");
+        telegramAlert(err.detail || "Failed to upgrade");
       }
     } catch (e) {
       console.error(e);
-      alert("Error upgrading with XP");
+      telegramAlert("Error upgrading with XP");
     }
   };
 
@@ -134,16 +136,16 @@ export default function AcademyPage() {
         body: JSON.stringify({ tier: "premium", billing_period: "annual" })
       });
       if (res.ok) {
-        alert("Subscription successful! You are now a Premium member.");
+        telegramAlert("Subscription successful! You are now a Premium member.");
         setShowPremiumPromo(false);
         fetchData();
       } else {
         const err = await res.json();
-        alert(err.detail || "Failed to subscribe");
+        telegramAlert(err.detail || "Failed to subscribe");
       }
     } catch (e) {
       console.error(e);
-      alert("Error upgrading with Balance");
+      telegramAlert("Error upgrading with Balance");
     }
   };
 

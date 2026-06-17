@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { apiFetch } from "@/lib/api";
+import { telegramAlert } from "@/lib/telegram";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
 import { FaArrowLeft } from "react-icons/fa";
@@ -62,11 +63,11 @@ function PuzzleContent() {
         }
       } else {
         const data = await res.json();
-        alert(data.detail || "Verification failed");
+        telegramAlert(data.detail || "Verification failed");
       }
     } catch (e) {
       console.error(e);
-      alert("Error verifying puzzle");
+      telegramAlert("Error verifying puzzle");
     }
   };
 

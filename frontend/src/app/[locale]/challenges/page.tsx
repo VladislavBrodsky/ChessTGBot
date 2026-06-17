@@ -7,6 +7,7 @@ import { FaArrowLeft, FaTrophy, FaFire, FaUserFriends, FaCheckCircle, FaStar } f
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
+import { telegramAlert } from "@/lib/telegram";
 
 export default function ChallengesPage() {
  const locale = useLocale();
@@ -78,13 +79,13 @@ export default function ChallengesPage() {
      const data = await res.json();
      if (res.ok && data.completed) {
        setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
-       alert("Subscription verified successfully! You can now claim your ELO/XP reward.");
+       telegramAlert("Subscription verified successfully! You can now claim your ELO/XP reward.");
      } else {
-       alert(data.detail || "Verification failed. Please make sure you have joined the channel/group first.");
+       telegramAlert(data.detail || "Verification failed. Please make sure you have joined the channel/group first.");
      }
    } catch (err) {
      console.error("Verification failed", err);
-     alert("Network error during subscription verification.");
+     telegramAlert("Network error during subscription verification.");
    }
  };
 

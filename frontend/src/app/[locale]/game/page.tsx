@@ -16,6 +16,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import WalletConnect from "@/components/WalletConnect";
+import { telegramConfirm, telegramHaptic } from "@/lib/telegram";
 
 interface ActiveGameProps {
  gameId: string;
@@ -84,9 +85,11 @@ function ActiveGame({ gameId }: ActiveGameProps) {
     
     const onDrawOffered = (data: { game_id: string; offered_by: number }) => {
       if (data.offered_by !== userId) {
-        if (confirm("Your opponent has offered a draw. Do you accept?")) {
-          socket.emit("accept_draw", { game_id: gameId });
-        }
+        telegramConfirm("Your opponent has offered a draw. Do you accept?", (accepted) => {
+          if (accepted) {
+            socket.emit("accept_draw", { game_id: gameId });
+          }
+        });
       }
     };
 
@@ -113,17 +116,21 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   }, [gameId, userId, gameState, locale, router]);
 
   const handleResign = () => {
-    if (confirm("Are you sure you want to resign this match?")) {
-      const socket = getSocket();
-      socket.emit("resign", { game_id: gameId });
-    }
+    telegramConfirm("Are you sure you want to resign this match?", (confirmed) => {
+      if (confirmed) {
+        const socket = getSocket();
+        socket.emit("resign", { game_id: gameId });
+      }
+    });
   };
 
   const handleOfferDraw = () => {
-    if (confirm("Offer a draw to your opponent?")) {
-      const socket = getSocket();
-      socket.emit("offer_draw", { game_id: gameId });
-    }
+    telegramConfirm("Offer a draw to your opponent?", (confirmed) => {
+      if (confirmed) {
+        const socket = getSocket();
+        socket.emit("offer_draw", { game_id: gameId });
+      }
+    });
   };
 
   const formatTime = (seconds: number) => {
@@ -636,6 +643,8 @@ function PlayLobby() {
   const [depositSuccess, setDepositSuccess] = useState<string>("");
   const [depositError, setDepositError] = useState<string>("");
   const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
+  const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
+  const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
 
  // Refs for scroll container alignment
  const wagerScrollRef = useRef<HTMLDivElement>(null);
@@ -1559,17 +1568,35 @@ setTgUser({ first_name: "Master", photo_url: null });
                 <div className="space-y-3">
                   <div className="flex flex-col space-y-1">
                     <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
-                    <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => { navigator.clipboard.writeText(masterWallet); alert("Master Wallet address copied!"); }}>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => {
+                      navigator.clipboard.writeText(masterWallet);
+                      setCopiedWallet(true);
+                      telegramHaptic('light');
+                      setTimeout(() => setCopiedWallet(false), 2000);
+                    }}>
                       <span className="truncate">{masterWallet}</span>
-                      <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+                      {copiedWallet ? (
+                        <FaCheck className="text-emerald-400 shrink-0 ml-2 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+                      )}
                     </div>
                   </div>
 
                   <div className="flex flex-col space-y-1">
                     <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
-                    <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => { navigator.clipboard.writeText(memoComment); alert("Comment Memo copied!"); }}>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => {
+                      navigator.clipboard.writeText(memoComment);
+                      setCopiedMemo(true);
+                      telegramHaptic('light');
+                      setTimeout(() => setCopiedMemo(false), 2000);
+                    }}>
                       <span>{memoComment}</span>
-                      <FaCopy className="text-emerald-500 opacity-60" />
+                      {copiedMemo ? (
+                        <FaCheck className="text-emerald-400 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-emerald-500 opacity-60" />
+                      )}
                     </div>
                   </div>
                 </div>
