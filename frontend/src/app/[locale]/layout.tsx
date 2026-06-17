@@ -49,6 +49,24 @@ export default async function LocaleLayout({
         <html lang={locale} suppressHydrationWarning>
             <head>
                 <script src="https://telegram.org/js/telegram-web-app.js" async />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                try {
+                                    var savedTheme = localStorage.getItem('theme');
+                                    if (savedTheme === 'light' || savedTheme === 'dark') {
+                                        document.documentElement.setAttribute('data-theme', savedTheme);
+                                    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                                        document.documentElement.setAttribute('data-theme', 'light');
+                                    } else {
+                                        document.documentElement.setAttribute('data-theme', 'dark');
+                                    }
+                                } catch (e) {}
+                            })();
+                        `
+                    }}
+                />
             </head>
             <body
                 className={`${inter.variable} ${robotoMono.variable} antialiased`}
