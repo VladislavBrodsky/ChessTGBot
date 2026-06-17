@@ -171,6 +171,37 @@ class GamificationService:
             # Award XP to new user
             new_user_xp = 50 if new_user.is_premium else 20
             await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False)
+
+            # Award Balance (in cents) & log transactions
+            from app.models.transaction import Transaction
+            
+            referrer_bonus = 20 if referrer.is_premium else 10
+            referrer.balance += referrer_bonus
+            db.add(referrer)
+            
+            tx_referrer = Transaction(
+                user_id=referrer.telegram_id,
+                type="referral_commission",
+                amount=referrer_bonus,
+                fee=0,
+                status="completed",
+                reference_id="sign_up_bonus"
+            )
+            db.add(tx_referrer)
+            
+            new_user_bonus = 10 if new_user.is_premium else 5
+            new_user.balance += new_user_bonus
+            db.add(new_user)
+            
+            tx_new_user = Transaction(
+                user_id=new_user.telegram_id,
+                type="referral_commission",
+                amount=new_user_bonus,
+                fee=0,
+                status="completed",
+                reference_id="sign_up_bonus"
+            )
+            db.add(tx_new_user)
             
             await db.commit()
             return True

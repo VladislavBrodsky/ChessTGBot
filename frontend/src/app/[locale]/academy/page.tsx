@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
 import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire } from "react-icons/fa";
@@ -18,6 +18,9 @@ export default function AcademyPage() {
   const [stats, setStats] = useState<any>(null);
   const [unlockedLessons, setUnlockedLessons] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [puzzles, setPuzzles] = useState<any[]>([]);
+  const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
+  const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -34,6 +37,14 @@ export default function AcademyPage() {
           setUnlockedLessons(lessonsData);
         }
       }
+
+      const puzzlesRes = await apiFetch("/api/v1/gamification/academy/puzzles");
+      if (puzzlesRes.ok) {
+        const puzzlesData = await puzzlesRes.json();
+        if (Array.isArray(puzzlesData)) {
+          setPuzzles(puzzlesData);
+        }
+      }
     } catch (e) {
       console.error("Failed to fetch academy details", e);
     } finally {
@@ -43,6 +54,10 @@ export default function AcademyPage() {
 
   useEffect(() => {
     fetchData();
+    const solved = localStorage.getItem("completed_puzzles");
+    if (solved) {
+      setCompletedPuzzles(JSON.parse(solved));
+    }
   }, []);
 
   const handleLessonClick = async (lessonId: string, isLocked: boolean) => {
@@ -76,6 +91,59 @@ export default function AcademyPage() {
     } catch (e) {
       console.error(e);
       alert("Unlock failed");
+    }
+  };
+
+  const handlePuzzleClick = (id: number, isLocked: boolean) => {
+    if (isLocked) {
+      setShowPremiumPromo(true);
+    } else {
+      router.push(`/${locale}/academy/puzzle?id=${id}`);
+    }
+  };
+
+  const handleUpgradeWithXp = async () => {
+    const currentXp = stats?.xp || 0;
+    if (currentXp < 500) {
+      alert(`Upgrading requires 500 XP. You only have ${currentXp} XP.`);
+      return;
+    }
+    try {
+      const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", {
+        method: "POST"
+      });
+      if (res.ok) {
+        alert("Upgrade successful! You are now a Premium member.");
+        setShowPremiumPromo(false);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to upgrade");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error upgrading with XP");
+    }
+  };
+
+  const handleUpgradeWithBalance = async () => {
+    try {
+      const res = await apiFetch("/api/v1/users/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier: "premium", billing_period: "annual" })
+      });
+      if (res.ok) {
+        alert("Subscription successful! You are now a Premium member.");
+        setShowPremiumPromo(false);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to subscribe");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error upgrading with Balance");
     }
   };
 
@@ -136,6 +204,49 @@ export default function AcademyPage() {
           </div>
         </motion.div>
 
+        {/* 100 Levels Tactics Grid */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2 px-1">
+            <FaChessRook className="text-brand-primary opacity-40" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">Tactics Level Grid</h3>
+          </div>
+          <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
+            <div className="grid grid-cols-10 gap-2 w-full">
+              {Array.from({ length: 100 }, (_, i) => {
+                const id = i + 1;
+                const isCompleted = completedPuzzles.includes(id);
+                const isPremiumLocked = id > 1 && !(stats?.is_premium);
+
+                let bgClass = "bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105";
+                let statusMark = null;
+
+                if (isCompleted) {
+                  bgClass = "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-black hover:bg-emerald-500/30";
+                } else if (isPremiumLocked) {
+                  bgClass = "bg-amber-500/10 border-amber-500/20 text-amber-500/60";
+                  statusMark = <span className="absolute bottom-0.5 right-0.5 text-[6px] opacity-75">🔒</span>;
+                }
+
+                return (
+                  <button
+                    key={id}
+                    onClick={() => handlePuzzleClick(id, isPremiumLocked)}
+                    className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
+                  >
+                    <span>{id}</span>
+                    {statusMark}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex justify-between items-center text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-4 px-1">
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> Unlocked</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Solved</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Premium</span>
+            </div>
+          </div>
+        </div>
+
         {/* Mastery Tracks Grid */}
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-2 px-1">
@@ -184,6 +295,82 @@ export default function AcademyPage() {
         </div>
 
       </div>
+
+      {/* Premium Upgrade Promotion Drawer */}
+      <AnimatePresence>
+      {showPremiumPromo && (
+      <div className="bottom-drawer-backdrop z-[110]">
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }} 
+        onClick={() => setShowPremiumPromo(false)}
+        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+      />
+      <motion.div 
+        initial={{ y: "100%" }} 
+        animate={{ y: 0 }} 
+        exit={{ y: "100%" }} 
+        transition={{ type: "spring", damping: 30, stiffness: 350 }}
+        className="bottom-drawer-sheet relative z-20"
+      >
+      <div className="bottom-drawer-handle" />
+      
+      <div className="flex flex-col items-center text-center mt-2">
+      <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+        Unlock Level Grid
+      </h2>
+      <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+        Levels 2 to 100 require a premium license
+      </p>
+      </div>
+      
+      <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
+        <p className="text-center font-black text-brand-primary text-sm mb-1">👑 FinChess Premium Perks</p>
+        <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
+          <li>100 advanced Chess puzzles grid.</li>
+          <li>Double XP multiplier on daily tasks and ELO matches.</li>
+          <li>No advertisements or limits on engine chess analysis.</li>
+        </ul>
+        <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
+        <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-wider">
+          <span>Your current stats:</span>
+          <span>{stats?.xp || 0} XP • ${(stats?.balance || 0)/100} USDT</span>
+        </div>
+      </div>
+      
+      <div className="w-full flex flex-col gap-3">
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={handleUpgradeWithXp}
+          className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm"
+        >
+          <span className="text-xs uppercase font-black tracking-[0.2em]">Unlock with 500 XP</span>
+          <span className="text-[8px] font-bold opacity-80">Free level-up unlock path</span>
+        </motion.button>
+        
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={handleUpgradeWithBalance}
+          className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+          <span className="text-xs uppercase font-black tracking-[0.2em]">Buy Premium ($12.00 USDT / yr)</span>
+          <span className="text-[8px] font-bold opacity-90">Instant activation using game balance</span>
+        </motion.button>
+
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setShowPremiumPromo(false)}
+          className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+        >
+          <span>Cancel</span>
+        </motion.button>
+      </div>
+      </motion.div>
+      </div>
+      )}
+      </AnimatePresence>
     </LayoutWrapper>
   );
 }

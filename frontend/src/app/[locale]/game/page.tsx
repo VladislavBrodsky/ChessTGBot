@@ -22,6 +22,7 @@ interface ActiveGameProps {
 }
 
 function ActiveGame({ gameId }: ActiveGameProps) {
+ const router = useRouter();
  // @ts-ignore
  const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
  const [copied, setCopied] = useState(false);
@@ -29,6 +30,28 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
   const tIndex = useTranslations('Index');
+
+  const [showRematchChoice, setShowRematchChoice] = useState<boolean>(false);
+  const [rematchStatus, setRematchStatus] = useState<'idle' | 'offered_by_me' | 'waiting'>('idle');
+  const [incomingRematch, setIncomingRematch] = useState<any>(null);
+
+  const sendRematchOffer = (doubleStakes: boolean) => {
+    const socket = getSocket();
+    socket.emit("offer_rematch", { game_id: gameId, double_stakes: doubleStakes });
+    setShowRematchChoice(false);
+    setRematchStatus('waiting');
+  };
+
+  const acceptRematch = () => {
+    if (!incomingRematch) return;
+    const socket = getSocket();
+    socket.emit("accept_rematch", { game_id: gameId, wager: incomingRematch.wager });
+    setIncomingRematch(null);
+  };
+
+  const declineRematch = () => {
+    setIncomingRematch(null);
+  };
 
   const [whiteTime, setWhiteTime] = useState<number>(600);
   const [blackTime, setBlackTime] = useState<number>(600);
@@ -67,11 +90,27 @@ function ActiveGame({ gameId }: ActiveGameProps) {
       }
     };
 
+    const onRematchOffered = (data: any) => {
+      if (data.challenger_id !== userId) {
+        setIncomingRematch(data);
+      } else {
+        setRematchStatus('waiting');
+      }
+    };
+
+    const onMatchFound = (data: { game_id: string }) => {
+      router.push(`/${locale}/game?id=${data.game_id}`);
+    };
+
     socket.on("draw_offered", onDrawOffered);
+    socket.on("rematch_offered", onRematchOffered);
+    socket.on("match_found", onMatchFound);
     return () => {
       socket.off("draw_offered", onDrawOffered);
+      socket.off("rematch_offered", onRematchOffered);
+      socket.off("match_found", onMatchFound);
     };
-  }, [gameId, userId, gameState]);
+  }, [gameId, userId, gameState, locale, router]);
 
   const handleResign = () => {
     if (confirm("Are you sure you want to resign this match?")) {
@@ -383,21 +422,28 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  {netPayout > 0 ? '+' : ''}{netPayout.toFixed(2)} USDT
  </span>
  {gameState?.wager_amount > 0 && matchResultLabel === tg('victory_secured') && (
- <span className="text-[8px] text-brand-primary opacity-40 uppercase tracking-widest mt-1">
- {tg('platform_rake')}
- </span>
+  <span className="text-[8px] text-brand-primary opacity-40 uppercase tracking-widest mt-1">
+  {tg('platform_rake')}
+  </span>
  )}
  </div>
  </div>
  </div>
 
- <div className="w-full flex flex-col gap-3">
- <motion.button
- whileTap={{ scale: 0.98 }}
- className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
- >
- <span>{tg('revenge_match')}</span>
- </motion.button>
+  <div className="w-full flex flex-col gap-3">
+  {rematchStatus === 'waiting' ? (
+    <div className="w-full bg-brand-surface py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
+      <span>Pending Opponent...</span>
+    </div>
+  ) : (
+    <motion.button
+    whileTap={{ scale: 0.98 }}
+    onClick={() => setShowRematchChoice(true)}
+    className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+    >
+    <span>{tg('revenge_match')}</span>
+    </motion.button>
+  )}
 
  <div className="grid grid-cols-2 gap-3">
  <Link href={`/${locale}/home`} className="w-full">
@@ -426,7 +472,132 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  </div>
  )}
  </AnimatePresence>
- </LayoutWrapper>
+
+  {/* Rematch Choice Drawer */}
+  <AnimatePresence>
+  {showRematchChoice && (
+  <div className="bottom-drawer-backdrop z-[110]">
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    exit={{ opacity: 0 }} 
+    onClick={() => setShowRematchChoice(false)}
+    className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+  />
+  <motion.div 
+    initial={{ y: "100%" }} 
+    animate={{ y: 0 }} 
+    exit={{ y: "100%" }} 
+    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+    className="bottom-drawer-sheet relative z-20"
+  >
+  <div className="bottom-drawer-handle" />
+  
+  <div className="flex flex-col items-center text-center mt-2">
+  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+    Revenge Match
+  </h2>
+  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+    Raise the stakes to win back your coins!
+  </p>
+  </div>
+  
+  <div className="w-full flex flex-col gap-3">
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => sendRematchOffer(false)}
+      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm"
+    >
+      <span className="text-xs uppercase font-black tracking-[0.2em]">Same Stakes</span>
+      <span className="text-[9px] font-bold opacity-80">${((gameState?.wager_amount || 0) / 100).toFixed(2)} USDT</span>
+    </motion.button>
+    
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => sendRematchOffer(true)}
+      className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+      <span className="text-xs uppercase font-black tracking-[0.2em] flex items-center gap-1">
+        🔥 Double Stakes (2x)
+      </span>
+      <span className="text-[9px] font-bold opacity-90">${(((gameState?.wager_amount || 0) * 2) / 100).toFixed(2)} USDT</span>
+    </motion.button>
+
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => setShowRematchChoice(false)}
+      className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+    >
+      <span>Cancel</span>
+    </motion.button>
+  </div>
+  </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+
+  {/* Incoming Rematch Challenge Drawer */}
+  <AnimatePresence>
+  {incomingRematch && (
+  <div className="bottom-drawer-backdrop z-[110]">
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    exit={{ opacity: 0 }} 
+    onClick={declineRematch}
+    className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+  />
+  <motion.div 
+    initial={{ y: "100%" }} 
+    animate={{ y: 0 }} 
+    exit={{ y: "100%" }} 
+    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+    className="bottom-drawer-sheet relative z-20"
+  >
+  <div className="bottom-drawer-handle" />
+  
+  <div className="flex flex-col items-center text-center mt-2">
+  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-orange-400 animate-pulse">
+    Rematch Offered!
+  </h2>
+  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+    {incomingRematch.challenger_name} challenged you to a rematch
+  </p>
+  </div>
+  
+  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 text-center shadow-sm">
+    <span className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest block mb-1">Proposed Wager</span>
+    <span className="text-2xl font-black text-brand-primary">
+      ${((incomingRematch.wager) / 100).toFixed(2)} USDT
+    </span>
+    {incomingRematch.double_stakes && (
+      <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block mt-1">🔥 Double Stakes Active</span>
+    )}
+  </div>
+  
+  <div className="w-full flex flex-col gap-3">
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={acceptRematch}
+      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+    >
+      <span>Accept & Play</span>
+    </motion.button>
+    
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={declineRematch}
+      className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+    >
+      <span>Decline</span>
+    </motion.button>
+  </div>
+  </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+  </LayoutWrapper>
  );
 }
 
@@ -447,6 +618,7 @@ function PlayLobby() {
  const [searchTimer, setSearchTimer] = useState<number>(0);
  const [matchmakingError, setMatchmakingError] = useState<string>("");
  const [isCreating, setIsCreating] = useState(false);
+ const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
 
  // Time control and Friend invite configs
  const [timeControl, setTimeControl] = useState<number>(600); // 10 minutes default
@@ -937,6 +1109,32 @@ function PlayLobby() {
       </motion.button>
     </div>
 
+    {/* NEON POT FORECAST BANNER */}
+    {chosenWager > 0 && (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 animate-pulse-slow shadow-[0_0_15px_rgba(16,185,129,0.25)]"
+      >
+        <div className="bg-brand-surface rounded-[15px] p-3.5 flex flex-col items-center justify-center text-center relative z-10">
+          <span className="text-[8px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-0.5">🏆 Potential Pot Reward</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-lg font-black text-brand-primary tracking-wide">
+              ${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT
+            </span>
+            <span className="text-[9px] font-bold text-brand-primary opacity-40">net win</span>
+          </div>
+          <button 
+            onClick={() => setShowRakeInfo(true)}
+            className="mt-1.5 text-[8px] font-bold text-brand-primary opacity-35 hover:opacity-100 uppercase tracking-widest transition-opacity flex items-center gap-1 bg-transparent border-0 cursor-pointer"
+          >
+            <span>Total Pot: ${((chosenWager * 2) / 100).toFixed(2)} USDT (3% Rake)</span>
+            <span className="underline">[Learn More]</span>
+          </button>
+        </div>
+      </motion.div>
+    )}
+
   </div>
 
   {/* Fund Validation Bar & Matchmaking Errors */}
@@ -1062,6 +1260,68 @@ function PlayLobby() {
   </div>
   )}
   </AnimatePresence>
+
+  {/* Rake Info Bottom Drawer */}
+  <AnimatePresence>
+  {showRakeInfo && (
+  <div className="bottom-drawer-backdrop z-[100]">
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    exit={{ opacity: 0 }} 
+    onClick={() => setShowRakeInfo(false)}
+    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
+  />
+  <motion.div 
+    initial={{ y: "100%" }} 
+    animate={{ y: 0 }} 
+    exit={{ y: "100%" }} 
+    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+    className="bottom-drawer-sheet relative z-10"
+  >
+  <div className="bottom-drawer-handle" />
+  
+  <div className="flex flex-col items-center text-center mt-2">
+  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+    Platform Commission (Rake)
+  </h2>
+  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+    How matchmaking fees sustain the ecosystem
+  </p>
+  </div>
+  
+  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
+    <p>
+      FinChess charges a flat <span className="text-brand-primary font-black">3% commission (rake)</span> on game rewards. This commission is only deducted from the winner's share.
+    </p>
+    <p>
+      For example, if you wager <span className="text-brand-primary font-black">$10.00</span>, the total pot is <span className="text-brand-primary font-black">$20.00</span>. The winner receives <span className="text-brand-primary font-black">$19.40</span> net, while <span className="text-brand-primary font-black">$0.60 (3%)</span> is reserved as the platform rake.
+    </p>
+    <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
+    <p className="text-[10px] text-brand-primary/50 uppercase tracking-wider">
+      Where does the rake go?
+    </p>
+    <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
+      <li>Bot infrastructure & high-speed game matching servers.</li>
+      <li>Liquidity pools to ensure instant payouts.</li>
+      <li>Ecosystem rewards (XP rewards, referral cashback commissions).</li>
+    </ul>
+  </div>
+  
+  <div className="w-full flex flex-col gap-3">
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => setShowRakeInfo(false)}
+      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+    >
+      <span>Got it</span>
+    </motion.button>
+  </div>
+  </motion.div>
+  </div>
+  )}
+  </AnimatePresence>
+
   </div>
   </LayoutWrapper>
  );

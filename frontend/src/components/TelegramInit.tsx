@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export default function TelegramInit() {
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-            const tg = window.Telegram.WebApp;
+            const tg = window.Telegram.WebApp as any;
 
             // Notify Telegram that the Mini App is ready to be displayed
             tg.ready();

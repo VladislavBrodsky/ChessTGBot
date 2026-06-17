@@ -268,6 +268,135 @@ async def test_profile_metrics_calculations(client, db_session):
     assert data["percentile"] == expected_percentile
 
 
+@pytest.mark.asyncio
+async def test_subscription_tasks_verification(client, db_session):
+    if hasattr(db_session, "users"):
+        return
+
+    from app.models.user import User as UserModel
+    from app.models.gamification import Task, UserTask
+    from sqlalchemy.future import select
+    from app.services.gamification_service import GamificationService
+
+    # Seed Task definitions first
+    for tid, tkey in [(201, "join_channel"), (202, "join_chat")]:
+        res_t = await db_session.execute(select(Task).where(Task.id == tid))
+        if not res_t.scalars().first():
+            db_session.add(Task(id=tid, title_key=tkey, description_key=f"Sub to {tkey}", xp_reward=150, task_type="LOGIN", target_count=1, is_daily=False))
+    await db_session.commit()
+
+    # 1. Create a user with unique ID 777111222
+    telegram_id = 777111222
+    user = await user_crud.create_user(db_session, telegram_id, "Verifier")
+    
+    # Generate achievements/tasks for this user
+    await GamificationService.get_or_create_achievements(db_session, user.id)
+
+    # 2. Mock authentication header
+    import hmac, hashlib, json, time
+    from urllib.parse import quote
+    from app.core.config import get_settings
+    settings = get_settings()
+    original_token = settings.TELEGRAM_BOT_TOKEN
+    settings.TELEGRAM_BOT_TOKEN = "123456789:test_token"
+    
+    try:
+        user_str = json.dumps({"id": telegram_id, "first_name": "Verifier"})
+        auth_date = str(int(time.time()))
+        check_list = [f"auth_date={auth_date}", f"user={user_str}"]
+        data_check_string = "\n".join(check_list)
+        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
+        headers = {"X-Telegram-Init-Data": init_data}
+
+        # Verify task 201 (join channel)
+        res = await client.post("/api/v1/gamification/tasks/201/verify", headers=headers)
+        assert res.status_code == 200
+        data = res.json()
+        assert data["completed"] is True
+
+        # Verify DB updates
+        result = await db_session.execute(select(UserTask).where(UserTask.user_id == user.id, UserTask.task_id == 201))
+        ut = result.scalars().first()
+        assert ut.completed is True
+
+    finally:
+        settings.TELEGRAM_BOT_TOKEN = original_token
+        from sqlalchemy import delete
+        await db_session.execute(delete(UserTask).where(UserTask.user_id == user.id))
+        await db_session.execute(delete(Task).where(Task.id.in_([201, 202])))
+        await db_session.commit()
+
+
+@pytest.mark.asyncio
+async def test_chess_puzzles_endpoints(client, db_session):
+    if hasattr(db_session, "users"):
+        return
+
+    from app.models.user import User as UserModel
+
+    telegram_id = 666111222
+    user = await user_crud.create_user(db_session, telegram_id, "Puzzler")
+    
+    # 2. Mock authentication header
+    import hmac, hashlib, json, time
+    from urllib.parse import quote
+    from app.core.config import get_settings
+    settings = get_settings()
+    original_token = settings.TELEGRAM_BOT_TOKEN
+    settings.TELEGRAM_BOT_TOKEN = "123456789:test_token"
+    
+    try:
+        user_str = json.dumps({"id": telegram_id, "first_name": "Puzzler"})
+        auth_date = str(int(time.time()))
+        check_list = [f"auth_date={auth_date}", f"user={user_str}"]
+        data_check_string = "\n".join(check_list)
+        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
+        headers = {"X-Telegram-Init-Data": init_data}
+
+        # 3. Test list puzzles
+        res = await client.get("/api/v1/gamification/academy/puzzles", headers=headers)
+        assert res.status_code == 200
+        data = res.json()
+        assert len(data) == 100
+        # Puzzle 1 is unlocked for everyone, puzzle 2 is premium locked
+        assert data[0]["is_premium_locked"] is False
+        assert data[1]["is_premium_locked"] is True
+
+        # 4. Test fetch puzzle 2 (premium locked)
+        res_p2 = await client.get("/api/v1/gamification/academy/puzzles/2", headers=headers)
+        assert res_p2.status_code == 403 # Locked!
+
+        # 5. Make user Premium to test access
+        user.is_premium = True
+        db_session.add(user)
+        await db_session.commit()
+
+        # Retry fetching puzzle 2
+        res_p2_premium = await client.get("/api/v1/gamification/academy/puzzles/2", headers=headers)
+        assert res_p2_premium.status_code == 200
+        p2_data = res_p2_premium.json()
+        assert p2_data["id"] == 2
+        assert "fen" in p2_data
+
+        # 6. Verify solution for puzzle 1
+        res_verify = await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"solution": ["g5f7"]}, headers=headers)
+        assert res_verify.status_code == 200
+        verify_data = res_verify.json()
+        assert verify_data["solved"] is True
+        
+        await db_session.refresh(user)
+        assert user.elo == 1005 # Gained 5 ELO
+
+    finally:
+        settings.TELEGRAM_BOT_TOKEN = original_token
+
+
+
+
 
 
 

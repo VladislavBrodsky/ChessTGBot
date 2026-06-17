@@ -342,3 +342,100 @@ async def accept_draw(sid, data):
         if draw_state:
             await sio.emit('game_state', draw_state.model_dump(), room=game_id)
 
+@sio.event
+async def offer_rematch(sid, data):
+    """
+    Data expects: {'game_id': '...', 'double_stakes': bool}
+    """
+    game_id = data.get('game_id')
+    double_stakes = data.get('double_stakes', False)
+    
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    user_data = session.get('user_data') or {}
+    
+    if game_id and user_id:
+        service = GameService()
+        state = await service.get_game_state(game_id)
+        if state:
+            opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
+            if opponent_id and opponent_id != -1:
+                current_wager = getattr(state, "bid_amount", 0)
+                new_wager = current_wager * 2 if double_stakes else current_wager
+                
+                await sio.emit('rematch_offered', {
+                    'game_id': game_id,
+                    'challenger_id': user_id,
+                    'challenger_name': user_data.get('first_name', 'Opponent'),
+                    'wager': new_wager,
+                    'double_stakes': double_stakes
+                }, room=game_id)
+
+@sio.event
+async def accept_rematch(sid, data):
+    """
+    Data expects: {'game_id': '...', 'wager': int}
+    """
+    game_id = data.get('game_id')
+    wager = data.get('wager', 0)
+    
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    
+    if game_id and user_id:
+        service = GameService()
+        state = await service.get_game_state(game_id)
+        if state:
+            opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
+            if opponent_id and opponent_id != -1:
+                from app.core.database import AsyncSessionLocal
+                from app.crud import user as user_crud
+                from app.models.transaction import Transaction
+                import uuid
+                
+                async with AsyncSessionLocal() as db:
+                    player1 = await user_crud.get_user_by_telegram_id(db, user_id)
+                    player2 = await user_crud.get_user_by_telegram_id(db, opponent_id)
+                    
+                    if player1 and player2:
+                        if player1.balance < wager or player2.balance < wager:
+                            await sio.emit('error', {'message': 'Insufficient funds to start rematch'}, room=sid)
+                            return
+                            
+                        if wager > 0:
+                            player1.balance -= wager
+                            player2.balance -= wager
+                            db.add(player1)
+                            db.add(player2)
+                            
+                            tx1 = Transaction(
+                                user_id=player1.telegram_id,
+                                type="game_wager",
+                                amount=-wager,
+                                fee=0,
+                                status="completed",
+                                reference_id=f"rematch_wager_{game_id}"
+                            )
+                            tx2 = Transaction(
+                                user_id=player2.telegram_id,
+                                type="game_wager",
+                                amount=-wager,
+                                fee=0,
+                                status="completed",
+                                reference_id=f"rematch_wager_{game_id}"
+                            )
+                            db.add(tx1)
+                            db.add(tx2)
+                            await db.commit()
+                            
+                        new_game_id = str(uuid.uuid4())[:8]
+                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=600)
+                        new_state.bid_amount = wager
+                        
+                        # Alternate colors
+                        new_state.white_player_id = opponent_id
+                        new_state.black_player_id = user_id
+                        
+                        await service.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
+                        await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
+

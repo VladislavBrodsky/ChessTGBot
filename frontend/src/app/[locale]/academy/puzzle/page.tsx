@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { apiFetch } from "@/lib/api";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
@@ -8,73 +8,129 @@ import { motion } from "framer-motion";
 import { FaArrowLeft } from "react-icons/fa";
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from "next/navigation";
 
-// Placeholder Puzzle Data (Mate in 2)
-// White: Qh6, Ng5. Black: Kh8, Rg8.
-// FEN: 6rk/7p/7Q/6N1/8/8/8/7K w - - 0 1
-// Solution: 1. Nf7#
-const PUZZLE = {
- fen: "6rk/7p/7Q/6N1/8/8/8/7K w - - 0 1",
- solution: ["g5f7"], // Just one move mate
- title: "Smothered Strike",
- description: "White to play and mate in 1."
-};
+function PuzzleContent() {
+  const [solved, setSolved] = useState(false);
+  const locale = useLocale();
+  const searchParams = useSearchParams();
+  
+  const puzzleIdStr = searchParams?.get("id") || "1";
+  const puzzleId = parseInt(puzzleIdStr);
 
-export default function PuzzlePage() {
- const [solved, setSolved] = useState(false);
- const locale = useLocale();
+  const [puzzle, setPuzzle] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
- return (
- <LayoutWrapper className="pb-32 pt-6">
- <div className="w-full max-w-sm mx-auto px-4 space-y-6">
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+    apiFetch(`/api/v1/gamification/academy/puzzles/${puzzleId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Premium locked or level not found.");
+        }
+        return res.json();
+      })
+      .then(data => {
+        setPuzzle(data);
+      })
+      .catch(err => {
+        setError(err.message || "Failed to load puzzle");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [puzzleId]);
 
- {/* Header */}
- <div className="flex items-center gap-4">
- <Link href={`/${locale}/academy`} className="p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
- <FaArrowLeft />
- </Link>
- <div>
- <h1 className="text-2xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{PUZZLE.title}</h1>
- <p className="text-xs text-brand-primary opacity-40 font-bold uppercase tracking-widest">{PUZZLE.description}</p>
- </div>
- </div>
+  const handleSolve = async () => {
+    try {
+      const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${puzzleId}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ solution: puzzle.solution })
+      });
+      if (res.ok) {
+        setSolved(true);
+        // Save completed puzzle ID in local storage
+        const solvedStr = localStorage.getItem("completed_puzzles");
+        const solvedArray = solvedStr ? JSON.parse(solvedStr) : [];
+        if (!solvedArray.includes(puzzleId)) {
+          solvedArray.push(puzzleId);
+          localStorage.setItem("completed_puzzles", JSON.stringify(solvedArray));
+        }
+      } else {
+        const data = await res.json();
+        alert(data.detail || "Verification failed");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error verifying puzzle");
+    }
+  };
 
- <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
+  return (
+    <LayoutWrapper className="pb-32 pt-6">
+      <div className="w-full max-w-sm mx-auto px-4 space-y-6">
+
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <Link href={`/${locale}/academy`} className="p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+            <FaArrowLeft />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">
+              {puzzle ? puzzle.title : "Tactical Level"}
+            </h1>
+            <p className="text-xs text-brand-primary opacity-40 font-bold uppercase tracking-widest">
+              {puzzle ? puzzle.description : "Solve the puzzle"}
+            </p>
+          </div>
+        </div>
+
+        <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
+          {loading ? (
+            <div className="text-center py-12 text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest animate-pulse">
+              Loading tactics board...
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 text-xs font-bold text-rose-400 uppercase tracking-wider">
+              {error}
+            </div>
+          ) : puzzle ? (
             <PuzzleBoard
-              initialFen={PUZZLE.fen}
-              solution={PUZZLE.solution}
-              onSolve={async () => {
-                try {
-                  await apiFetch("/api/v1/gamification/academy/complete-task", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ task_type: "puzzle", item_id: "daily-puzzle" })
-                  });
-                } catch (e) {
-                  console.error("Failed to submit puzzle completion", e);
-                }
-                setSolved(true);
-              }}
+              initialFen={puzzle.fen}
+              solution={puzzle.solution}
+              onSolve={handleSolve}
               onFail={() => console.log('Wrong move')}
             />
- </div>
+          ) : null}
+        </div>
 
- {solved && (
- <motion.div
- initial={{ opacity: 0, scale: 0.9 }}
- animate={{ opacity: 1, scale: 1 }}
- className="p-6 bg-brand-surface border border-brand-border-opacity-20 rounded-2xl text-center shadow-sm"
- >
- <h2 className="text-xl font-black text-brand-primary mb-1.5 uppercase">EXCELLENT!</h2>
- <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-wide mb-5">You have spotted the tactical pattern.</p>
- <Link href={`/${locale}/academy`}>
- <button className="w-full py-3 bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-sm">
- Continue
- </button>
- </Link>
- </motion.div>
- )}
- </div>
- </LayoutWrapper>
- );
+        {solved && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-6 bg-brand-surface border border-brand-border-opacity-20 rounded-2xl text-center shadow-sm"
+          >
+            <h2 className="text-xl font-black text-brand-primary mb-1.5 uppercase">EXCELLENT!</h2>
+            <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-wide mb-5">You have spotted the tactical pattern.</p>
+            <Link href={`/${locale}/academy`}>
+              <button className="w-full py-3 bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-sm">
+                Continue
+              </button>
+            </Link>
+          </motion.div>
+        )}
+      </div>
+    </LayoutWrapper>
+  );
+}
+
+export default function PuzzlePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-primary opacity-20 font-black uppercase tracking-[0.5em] animate-pulse">Loading tactics level...</div>}>
+      <PuzzleContent />
+    </Suspense>
+  );
 }

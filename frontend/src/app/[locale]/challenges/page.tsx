@@ -63,6 +63,31 @@ export default function ChallengesPage() {
  }
  };
 
+ const handleVerify = async (taskDefId: number, titleKey: string) => {
+   const link = titleKey === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
+   if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
+     (window as any).Telegram.WebApp.openTelegramLink(link);
+   } else {
+     window.open(link, "_blank");
+   }
+
+   try {
+     const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/verify`, {
+       method: "POST"
+     });
+     const data = await res.json();
+     if (res.ok && data.completed) {
+       setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
+       alert("Subscription verified successfully! You can now claim your ELO/XP reward.");
+     } else {
+       alert(data.detail || "Verification failed. Please make sure you have joined the channel/group first.");
+     }
+   } catch (err) {
+     console.error("Verification failed", err);
+     alert("Network error during subscription verification.");
+   }
+ };
+
  // Every level requires 200 XP
  const currentLevelMinXp = (user.level - 1) * 200;
  const nextLevelXp = user.level * 200;
@@ -217,6 +242,14 @@ export default function ChallengesPage() {
  </motion.button>
  ) : task.claimed ? (
  <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">Completed</span>
+ ) : (task.title_key === "join_channel" || task.title_key === "join_chat") ? (
+ <motion.button
+ whileTap={{ scale: 0.95 }}
+ onClick={() => handleVerify(task.task_id, task.title_key)}
+ className="px-3.5 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm cursor-pointer"
+ >
+ Verify
+ </motion.button>
  ) : (
  <div className="flex flex-col items-end">
  <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>

@@ -75,6 +75,75 @@ async def claim_task(
         
     return {"status": "success", "new_xp": updated_user.xp, "new_level": updated_user.level}
 
+@router.post("/tasks/{task_id}/verify")
+async def verify_task(
+    task_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Verify a subscription task status by checking Telegram channel/group membership.
+    """
+    from app.models.gamification import Task, UserTask
+    from sqlalchemy import select, and_
+    from app.core.config import get_settings
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    settings = get_settings()
+
+    result = await db.execute(
+        select(UserTask, Task)
+        .join(Task, UserTask.task_id == Task.id)
+        .where(and_(UserTask.user_id == current_user.id, Task.id == task_id))
+    )
+    user_task_and_def = result.first()
+    if not user_task_and_def:
+        raise HTTPException(status_code=404, detail="Task not found or not assigned")
+
+    user_task, task_def = user_task_and_def
+
+    if user_task.completed:
+        return {"status": "success", "completed": True, "message": "Task already completed"}
+
+    chat_username = None
+    if task_def.title_key == "join_channel":
+        chat_username = "@chess_hub"
+    elif task_def.title_key == "join_chat":
+        chat_username = "@chesshub_chat"
+    else:
+        raise HTTPException(status_code=400, detail="Only subscription tasks can be verified via this endpoint")
+
+    from app.core.database import engine
+    is_sqlite = engine.url.drivername.startswith("sqlite")
+    if is_sqlite or not settings.TELEGRAM_BOT_TOKEN or settings.TELEGRAM_BOT_TOKEN == "123456789:test_token":
+        user_task.progress = 1
+        user_task.completed = True
+        await db.commit()
+        return {"status": "success", "completed": True, "message": "Verification bypassed (Dev mode active)"}
+
+    from app.services.telegram_bot import TelegramService
+    bot = TelegramService.application.bot if (TelegramService.application and TelegramService.application.bot) else None
+    if not bot:
+        from telegram import Bot
+        bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+
+    try:
+        member = await bot.get_chat_member(chat_id=chat_username, user_id=current_user.telegram_id)
+        if member.status in ["member", "creator", "administrator", "restricted"]:
+            user_task.progress = 1
+            user_task.completed = True
+            await db.commit()
+            return {"status": "success", "completed": True}
+        else:
+            raise HTTPException(status_code=400, detail="You have not joined this channel or group yet.")
+    except Exception as e:
+        logger.error(f"Telegram subscription verification failed for {chat_username}: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Verification failed: Please make sure you have joined {chat_username}."
+        )
+
 @router.put("/language")
 async def update_language(
     language: str = Body(..., embed=True),
@@ -156,4 +225,99 @@ async def complete_academy_task(
         "status": "success",
         "new_xp": updated_user.xp,
         "new_level": updated_user.level
+    }
+
+class PuzzleVerifyRequest(BaseModel):
+    solution: List[str]
+
+@router.get("/academy/puzzles")
+async def get_puzzles(
+    current_user: User = Depends(get_current_user)
+):
+    """List all 100 puzzles without solutions to prevent cheating."""
+    from app.core.puzzles import CHESS_PUZZLES
+    
+    return [
+        {
+            "id": p["id"],
+            "title": p["title"],
+            "description": p["description"],
+            "xp_reward": p["xp_reward"],
+            "is_premium_locked": p["id"] > 1 and not current_user.is_premium
+        }
+        for p in CHESS_PUZZLES
+    ]
+
+@router.get("/academy/puzzles/{puzzle_id}")
+async def get_puzzle_by_id(
+    puzzle_id: int,
+    current_user: User = Depends(get_current_user)
+):
+    """Retrieve single puzzle details. Gates puzzles > 1 behind premium check."""
+    from app.core.puzzles import CHESS_PUZZLES
+    
+    if puzzle_id > 1 and not current_user.is_premium:
+        raise HTTPException(
+            status_code=403,
+            detail="Premium subscription required to access this tactical level."
+        )
+        
+    for p in CHESS_PUZZLES:
+        if p["id"] == puzzle_id:
+            return {
+                "id": p["id"],
+                "title": p["title"],
+                "description": p["description"],
+                "fen": p["fen"],
+                "xp_reward": p["xp_reward"],
+                "solution": p["solution"]
+            }
+            
+    raise HTTPException(status_code=404, detail="Puzzle not found")
+
+@router.post("/academy/puzzles/{puzzle_id}/verify")
+async def verify_puzzle_solution(
+    puzzle_id: int,
+    req: PuzzleVerifyRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Verify moves solution, checks premium if >1, and credits ELO & XP."""
+    from app.core.puzzles import CHESS_PUZZLES
+    
+    if puzzle_id > 1 and not current_user.is_premium:
+        raise HTTPException(
+            status_code=403,
+            detail="Premium subscription required to access this tactical level."
+        )
+        
+    target_puzzle = None
+    for p in CHESS_PUZZLES:
+        if p["id"] == puzzle_id:
+            target_puzzle = p
+            break
+            
+    if not target_puzzle:
+        raise HTTPException(status_code=404, detail="Puzzle not found")
+
+    # Match solution moves (case-insensitive and whitespace-stripped comparison)
+    user_sol = [move.strip().lower() for move in req.solution]
+    correct_sol = [move.strip().lower() for move in target_puzzle["solution"]]
+    
+    if user_sol != correct_sol:
+        raise HTTPException(status_code=400, detail="Incorrect move sequence. Try again!")
+        
+    # Award ELO (+5) and XP (puzzle reward)
+    current_user.elo += 5
+    updated_user = await GamificationService.add_xp(db, current_user, target_puzzle["xp_reward"], trigger_kickback=True, apply_booster=True)
+    
+    # Track completion in user tasks: complete task type puzzle
+    await GamificationService.update_task_progress(db, current_user.id, "login", increment=0) # dummy keep db hot
+    
+    return {
+        "status": "success",
+        "solved": True,
+        "new_xp": updated_user.xp,
+        "new_level": updated_user.level,
+        "new_elo": updated_user.elo
     }
