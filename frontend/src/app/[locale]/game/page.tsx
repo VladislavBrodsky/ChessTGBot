@@ -651,8 +651,8 @@ function PlayLobby() {
  const [walletBalance, setWalletBalance] = useState<number>(0);
 
  // Matchmaking configs
- const [selectedWager, setSelectedWager] = useState<number>(100); // in cents
- const [customWagerInput, setCustomWagerInput] = useState<string>("1.00");
+ const [selectedWager, setSelectedWager] = useState<number>(500); // in cents
+ const [customWagerInput, setCustomWagerInput] = useState<string>("5.00");
  const [isCustomWager, setIsCustomWager] = useState<boolean>(false);
  const [matchmakingState, setMatchmakingState] = useState<'idle' | 'searching'>('idle');
  const [searchTimer, setSearchTimer] = useState<number>(0);
@@ -1021,7 +1021,7 @@ function PlayLobby() {
       <div className="relative fade-edges w-full">
         <div
           ref={wagerScrollRef}
-          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-42px)] snap-x snap-mandatory"
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
         >
           {[
             { label: "$1", val: 100 },
@@ -1044,7 +1044,7 @@ function PlayLobby() {
                   setIsCustomWager(false);
                   telegramHaptic('light');
                 }}
-                className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
                   isSelected
                     ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
@@ -1058,7 +1058,7 @@ function PlayLobby() {
           <button
             data-active={isCustomWager ? "true" : "false"}
             onClick={() => { setIsCustomWager(true); telegramHaptic('light'); }}
-            className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+            className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
               isCustomWager
                 ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
                 : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
@@ -1097,7 +1097,7 @@ function PlayLobby() {
       <div className="relative fade-edges w-full">
         <div
           ref={timeScrollRef}
-          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-42px)] snap-x snap-mandatory"
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
         >
           {[
             { label: "1m", val: 60 },
@@ -1114,7 +1114,7 @@ function PlayLobby() {
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
                 onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
-                className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
                   isSelected
                     ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
