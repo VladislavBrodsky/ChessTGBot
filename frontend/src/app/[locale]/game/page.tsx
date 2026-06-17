@@ -840,53 +840,55 @@ function PlayLobby() {
         <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide bg-emerald-500/5 border border-emerald-500/10 px-1.5 py-0.5 rounded-full">{tg('commission')}</span>
       </div>
 
-      <div
-        ref={wagerScrollRef}
-        className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5"
-      >
-        {[
-          { label: "$1", val: 100 },
-          { label: "$5", val: 500 },
-          { label: "$10", val: 1000 },
-          { label: "$25", val: 2500 },
-          { label: "$50", val: 5000 },
-          { label: "$100", val: 10000 },
-          { label: "$250", val: 25000 },
-          { label: "$500", val: 50000 },
-          { label: "$1000", val: 100000 }
-        ].map((opt) => {
-          const isSelected = !isCustomWager && selectedWager === opt.val;
-          return (
-            <button
-              key={opt.val}
-              data-active={isSelected ? "true" : "false"}
-              onClick={() => {
-                setSelectedWager(opt.val);
-                setIsCustomWager(false);
-                telegramHaptic('light');
-              }}
-              className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer ${
-                isSelected
-                  ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
-                  : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
-              }`}
-            >
-              {opt.val === 100000 && <FaCrown className="text-[8px] text-yellow-400 mr-0.5 animate-pulse" />}
-              {opt.label}
-            </button>
-          );
-        })}
-        <button
-          data-active={isCustomWager ? "true" : "false"}
-          onClick={() => { setIsCustomWager(true); telegramHaptic('light'); }}
-          className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer ${
-            isCustomWager
-              ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
-              : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
-          }`}
+      <div className="relative fade-edges w-full">
+        <div
+          ref={wagerScrollRef}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-42px)] snap-x snap-mandatory"
         >
-          ···
-        </button>
+          {[
+            { label: "$1", val: 100 },
+            { label: "$5", val: 500 },
+            { label: "$10", val: 1000 },
+            { label: "$25", val: 2500 },
+            { label: "$50", val: 5000 },
+            { label: "$100", val: 10000 },
+            { label: "$250", val: 25000 },
+            { label: "$500", val: 50000 },
+            { label: "$1000", val: 100000 }
+          ].map((opt) => {
+            const isSelected = !isCustomWager && selectedWager === opt.val;
+            return (
+              <button
+                key={opt.val}
+                data-active={isSelected ? "true" : "false"}
+                onClick={() => {
+                  setSelectedWager(opt.val);
+                  setIsCustomWager(false);
+                  telegramHaptic('light');
+                }}
+                className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                  isSelected
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                    : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+                }`}
+              >
+                {opt.val === 100000 && <FaCrown className="text-[9px] text-yellow-400 mr-0.5 animate-pulse" />}
+                {opt.label}
+              </button>
+            );
+          })}
+          <button
+            data-active={isCustomWager ? "true" : "false"}
+            onClick={() => { setIsCustomWager(true); telegramHaptic('light'); }}
+            className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+              isCustomWager
+                ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+            }`}
+          >
+            ···
+          </button>
+        </div>
       </div>
 
       {isCustomWager && (
@@ -914,35 +916,37 @@ function PlayLobby() {
         </span>
       </div>
 
-      <div
-        ref={timeScrollRef}
-        className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5"
-      >
-        {[
-          { label: "1m", val: 60 },
-          { label: "3m", val: 180 },
-          { label: "5m", val: 300 },
-          { label: "10m", val: 600 },
-          { label: "15m", val: 900 },
-          { label: "30m", val: 1800 },
-          { label: "60m", val: 3600 }
-        ].map((opt) => {
-          const isSelected = timeControl === opt.val;
-          return (
-            <button
-              key={opt.val}
-              data-active={isSelected ? "true" : "false"}
-              onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
-              className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer min-w-[44px] ${
-                isSelected
-                  ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
-                  : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
-              }`}
-            >
-              <span>{opt.label}</span>
-            </button>
-          );
-        })}
+      <div className="relative fade-edges w-full">
+        <div
+          ref={timeScrollRef}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-42px)] snap-x snap-mandatory"
+        >
+          {[
+            { label: "1m", val: 60 },
+            { label: "3m", val: 180 },
+            { label: "5m", val: 300 },
+            { label: "10m", val: 600 },
+            { label: "15m", val: 900 },
+            { label: "30m", val: 1800 },
+            { label: "60m", val: 3600 }
+          ].map((opt) => {
+            const isSelected = timeControl === opt.val;
+            return (
+              <button
+                key={opt.val}
+                data-active={isSelected ? "true" : "false"}
+                onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
+                className={`w-[84px] py-3 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                  isSelected
+                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                    : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+                }`}
+              >
+                <span>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
 

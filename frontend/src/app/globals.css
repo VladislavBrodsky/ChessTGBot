@@ -399,3 +399,34 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* Premium fade-edges effect for horizontal scroll selection lists */
+.fade-edges {
+  position: relative;
+}
+.fade-edges::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to right, var(--color-brand-surface) 0%, transparent 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+.fade-edges::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 48px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to left, var(--color-brand-surface) 0%, transparent 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
