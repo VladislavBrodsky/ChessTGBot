@@ -8,6 +8,8 @@ from app.core.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud import user as user_crud
 from app.core.config import get_settings
+from app.api.v1.deps import get_current_user
+from app.models.user import User
 
 settings = get_settings()
 
@@ -29,7 +31,11 @@ class EndGameResponse(BaseModel):
     loser_new_elo: int
 
 @router.post("/create", response_model=CreateGameResponse)
-async def create_game(type: str = "online", time_control: int = 600):
+async def create_game(
+    type: str = "online",
+    time_control: int = 600,
+    current_user: User = Depends(get_current_user)
+):
     game_id = str(uuid.uuid4())[:8] # Short ID
     service = GameService()
     
@@ -54,7 +60,17 @@ async def create_game(type: str = "online", time_control: int = 600):
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
 
 @router.post("/end", response_model=EndGameResponse)
-async def end_game(req: EndGameRequest, db: AsyncSession = Depends(get_db)):
+async def end_game(
+    req: EndGameRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.telegram_id not in (req.winner_id, req.loser_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: You are not a player in this game"
+        )
+
     service = GameService()
     
     # Fetch Users

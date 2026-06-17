@@ -51,12 +51,23 @@ class Settings(BaseSettings):
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET") or "dev_webhook_secret"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
-        case_sensitive = True
-        extra = "allow"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+        "extra": "ignore"
+    }
 
 @lru_cache
 def get_settings():
-    return Settings()
+    settings = Settings()
+    import sys
+    # If not running in SQLite (development) and not in pytest (testing), enforce production checks
+    is_testing = "pytest" in sys.modules
+    is_sqlite = settings.DATABASE_URL.startswith("sqlite")
+    if not is_testing and not is_sqlite:
+        if not settings.SECRET_KEY or settings.SECRET_KEY == "":
+            raise ValueError("SECRET_KEY environment variable must be set in production!")
+        if not settings.WEBHOOK_SECRET or settings.WEBHOOK_SECRET == "dev_webhook_secret":
+            raise ValueError("WEBHOOK_SECRET must be set to a secure custom value in production!")
+    return settings

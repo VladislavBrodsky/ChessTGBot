@@ -6,7 +6,6 @@ import { FaTimes } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 
 interface LinkWalletModalProps {
-  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   initialAddress: string;
@@ -14,7 +13,6 @@ interface LinkWalletModalProps {
 }
 
 export default function LinkWalletModal({
-  isOpen,
   onClose,
   onSuccess,
   initialAddress,
@@ -52,7 +50,7 @@ export default function LinkWalletModal({
       } else {
         setErrorMessage("Failed to link wallet.");
       }
-    } catch (err) {
+    } catch {
       setErrorMessage("Network error linking wallet.");
     } finally {
       setProcessing(false);

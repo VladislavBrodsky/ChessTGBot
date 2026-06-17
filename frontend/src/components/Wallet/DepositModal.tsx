@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 
 interface DepositModalProps {
-  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   walletAddress: string;
@@ -16,7 +15,6 @@ interface DepositModalProps {
 }
 
 export default function DepositModal({
-  isOpen,
   onClose,
   onSuccess,
   walletAddress,
@@ -25,7 +23,6 @@ export default function DepositModal({
 }: DepositModalProps) {
   const [depositAmount, setDepositAmount] = useState<string>("10");
   const [invoiceUrl, setInvoiceUrl] = useState<string>("");
-  const [invoiceId, setInvoiceId] = useState<string>("");
   const [processing, setProcessing] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -80,7 +77,7 @@ export default function DepositModal({
         const errData = await res.json();
         setErrorMessage(errData.detail || "Deposit failed.");
       }
-    } catch (err) {
+    } catch {
       setErrorMessage("Network error during deposit processing.");
     } finally {
       setProcessing(false);
@@ -98,7 +95,6 @@ export default function DepositModal({
     setErrorMessage("");
     setSuccessMessage("");
     setInvoiceUrl("");
-    setInvoiceId("");
 
     try {
       const res = await apiFetch("/api/v1/wallet/deposit", {
@@ -115,7 +111,6 @@ export default function DepositModal({
         const data = await res.json();
         if (data.status === "invoice") {
           setInvoiceUrl(data.payment_link || "");
-          setInvoiceId(data.invoice_id || "");
           setSuccessMessage("Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.");
         } else if (data.status === "success") {
           setSuccessMessage(`Simulated deposit of $${amt.toFixed(2)} successful! Platform credited $${(data.credited_amount / 100).toFixed(2)} after 5% platform fee.`);
@@ -129,7 +124,7 @@ export default function DepositModal({
         const errData = await res.json();
         setErrorMessage(errData.detail || "Failed to initiate deposit.");
       }
-    } catch (err) {
+    } catch {
       setErrorMessage("Network error during deposit initiation.");
     } finally {
       setProcessing(false);
@@ -193,7 +188,7 @@ export default function DepositModal({
                 </a>
 
                 <button
-                  onClick={() => { setInvoiceUrl(""); setInvoiceId(""); setSuccessMessage(""); setErrorMessage(""); }}
+                  onClick={() => { setInvoiceUrl(""); setSuccessMessage(""); setErrorMessage(""); }}
                   className="w-full py-2 rounded-lg border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all"
                 >
                   Change Amount / Back

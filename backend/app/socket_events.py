@@ -113,13 +113,15 @@ async def join_matchmaking(sid, data):
         user_elo = 1000
         # 1. Verify player balance
         async with AsyncSessionLocal() as db:
-            user = await user_crud.get_user_by_telegram_id(db, user_id)
+            user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
             if not user or user.balance < bid_amount:
                 await sio.emit('matchmaking_error', {
                     'message': 'Insufficient funds. Please top up your Web3 Wallet.'
                 }, room=sid)
+                await db.commit()
                 return
             user_elo = getattr(user, 'elo', 1000)
+            await db.commit()
 
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
@@ -157,6 +159,20 @@ async def join_matchmaking(sid, data):
             async with AsyncSessionLocal() as db:
                 # Deduct White Player
                 white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
+                black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
+                
+                if not white or white.balance < bid_amount or not black or black.balance < bid_amount:
+                    # Rollback and clean up queues
+                    await db.rollback()
+                    
+                    if not white or white.balance < bid_amount:
+                        await sio.emit('matchmaking_error', {'message': 'Insufficient funds to start match.'}, room=sid if state.white_player_id == user_id else opponent_sid)
+                    if not black or black.balance < bid_amount:
+                        await sio.emit('matchmaking_error', {'message': 'Insufficient funds to start match.'}, room=sid if state.black_player_id == user_id else opponent_sid)
+                    
+                    await matchmaker.remove_match_pair(bid_amount, user_id, opponent_id)
+                    return
+                
                 white.balance -= bid_amount
                 db.add(white)
                 tx_w = Transaction(
@@ -168,7 +184,6 @@ async def join_matchmaking(sid, data):
                 db.add(tx_w)
                 
                 # Deduct Black Player
-                black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
                 black.balance -= bid_amount
                 db.add(black)
                 tx_b = Transaction(
@@ -338,9 +353,14 @@ async def accept_draw(sid, data):
     
     if game_id and user_id:
         service = GameService()
-        draw_state = await service.settle_draw(game_id)
-        if draw_state:
-            await sio.emit('game_state', draw_state.model_dump(), room=game_id)
+        state = await service.get_game_state(game_id)
+        if state:
+            if user_id not in (state.white_player_id, state.black_player_id):
+                await sio.emit('error', {'message': 'Forbidden: You are not a player in this game.'}, room=sid)
+                return
+            draw_state = await service.settle_draw(game_id)
+            if draw_state:
+                await sio.emit('game_state', draw_state.model_dump(), room=game_id)
 
 @sio.event
 async def offer_rematch(sid, data):
@@ -363,6 +383,14 @@ async def offer_rematch(sid, data):
                 current_wager = getattr(state, "bid_amount", 0)
                 new_wager = current_wager * 2 if double_stakes else current_wager
                 
+                # Store pending rematch details in Redis
+                import json
+                await service.redis.set(f"pending_rematch:{game_id}", json.dumps({
+                    'challenger_id': user_id,
+                    'wager': new_wager,
+                    'double_stakes': double_stakes
+                }), ex=300) # 5 minutes expiry
+                
                 await sio.emit('rematch_offered', {
                     'game_id': game_id,
                     'challenger_id': user_id,
@@ -374,10 +402,9 @@ async def offer_rematch(sid, data):
 @sio.event
 async def accept_rematch(sid, data):
     """
-    Data expects: {'game_id': '...', 'wager': int}
+    Data expects: {'game_id': '...'}
     """
     game_id = data.get('game_id')
-    wager = data.get('wager', 0)
     
     session = await sio.get_session(sid)
     user_id = session.get('user_id')
@@ -388,14 +415,29 @@ async def accept_rematch(sid, data):
         if state:
             opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
             if opponent_id and opponent_id != -1:
+                # 1. Fetch pending rematch details from Redis
+                import json
+                pending_raw = await service.redis.get(f"pending_rematch:{game_id}")
+                if not pending_raw:
+                    await sio.emit('error', {'message': 'No active rematch offer found or offer expired.'}, room=sid)
+                    return
+                
+                pending = json.loads(pending_raw)
+                # Ensure the one accepting is the opponent, not the challenger themselves
+                if pending['challenger_id'] == user_id:
+                    await sio.emit('error', {'message': 'You cannot accept your own rematch offer.'}, room=sid)
+                    return
+                
+                wager = int(pending.get('wager', 0))
+                
                 from app.core.database import AsyncSessionLocal
                 from app.crud import user as user_crud
                 from app.models.transaction import Transaction
                 import uuid
                 
                 async with AsyncSessionLocal() as db:
-                    player1 = await user_crud.get_user_by_telegram_id(db, user_id)
-                    player2 = await user_crud.get_user_by_telegram_id(db, opponent_id)
+                    player1 = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
+                    player2 = await user_crud.get_user_by_telegram_id(db, opponent_id, for_update=True)
                     
                     if player1 and player2:
                         if player1.balance < wager or player2.balance < wager:
@@ -427,12 +469,18 @@ async def accept_rematch(sid, data):
                             db.add(tx1)
                             db.add(tx2)
                             await db.commit()
+                        else:
+                            await db.commit()
                             
+                        # Delete the pending rematch key to prevent replay attacks
+                        await service.redis.delete(f"pending_rematch:{game_id}")
+                        
                         new_game_id = str(uuid.uuid4())[:8]
-                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=600)
+                        # Alternate colors and preserve original time control
+                        time_control = getattr(state, "time_control_seconds", 600)
+                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control)
                         new_state.bid_amount = wager
                         
-                        # Alternate colors
                         new_state.white_player_id = opponent_id
                         new_state.black_player_id = user_id
                         

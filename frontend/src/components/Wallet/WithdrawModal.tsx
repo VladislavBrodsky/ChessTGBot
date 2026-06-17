@@ -6,7 +6,6 @@ import { FaTimes } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 
 interface WithdrawModalProps {
-  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   balance: number;
@@ -15,7 +14,6 @@ interface WithdrawModalProps {
 }
 
 export default function WithdrawModal({
-  isOpen,
   onClose,
   onSuccess,
   balance,
@@ -70,7 +68,7 @@ export default function WithdrawModal({
         const errData = await res.json();
         setErrorMessage(errData.detail || "Withdrawal failed.");
       }
-    } catch (err) {
+    } catch {
       setErrorMessage("Network error during withdrawal processing.");
     } finally {
       setProcessing(false);

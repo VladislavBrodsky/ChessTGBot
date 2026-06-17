@@ -91,66 +91,32 @@ async def get_leaderboard(db: AsyncSession = Depends(get_db)):
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
     telegram_id: int,
-    first_name: Optional[str] = None,
-    last_name: Optional[str] = None,
-    username: Optional[str] = None,
-    photo_url: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Get user stats. Auto-registers user if they do not exist and first_name is provided.
-    Also synchronizes any updated profile fields (name, username, photo) on-the-fly.
+    Get user stats. Only accessible by the authenticated user themselves.
     """
-    user = await user_crud.get_user_by_telegram_id(db, telegram_id)
-    if not user:
-        if first_name:
-            user = await user_crud.create_user(
-                db,
-                telegram_id=telegram_id,
-                first_name=first_name,
-                last_name=last_name,
-                username=username,
-                photo_url=photo_url
-            )
-        else:
-            raise HTTPException(status_code=404, detail="User not found")
-    else:
-        # Sync profile information if provided and different
-        updated = False
-        if first_name and user.first_name != first_name:
-            user.first_name = first_name
-            updated = True
-        if last_name and user.last_name != last_name:
-            user.last_name = last_name
-            updated = True
-        if username and user.username != username:
-            user.username = username
-            updated = True
-        if photo_url and user.photo_url != photo_url:
-            user.photo_url = photo_url
-            updated = True
-        if updated:
-            db.add(user)
-            await db.commit()
-            await db.refresh(user)
+    if current_user.telegram_id != telegram_id:
+        raise HTTPException(status_code=403, detail="Forbidden: Access denied")
     
     # Calculate enhanced stats
     from app.services.user_stats import calculate_user_stats
-    enhanced_stats = await calculate_user_stats(db, user, telegram_id)
+    enhanced_stats = await calculate_user_stats(db, current_user, telegram_id)
     
     return UserStats(
-        telegram_id=user.telegram_id,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        photo_url=user.photo_url,
-        elo=user.elo,
-        games_played=user.games_played,
-        wins=user.wins,
-        losses=user.losses,
-        draws=user.draws,
-        is_premium=user.is_premium,
-        premium_tier=user.premium_tier,
-        premium_expires_at=user.premium_expires_at,
+        telegram_id=current_user.telegram_id,
+        first_name=current_user.first_name,
+        last_name=current_user.last_name,
+        photo_url=current_user.photo_url,
+        elo=current_user.elo,
+        games_played=current_user.games_played,
+        wins=current_user.wins,
+        losses=current_user.losses,
+        draws=current_user.draws,
+        is_premium=current_user.is_premium,
+        premium_tier=current_user.premium_tier,
+        premium_expires_at=current_user.premium_expires_at,
         win_rate=enhanced_stats["win_rate"],
         loss_rate=enhanced_stats["loss_rate"],
         draw_rate=enhanced_stats["draw_rate"],
@@ -160,9 +126,9 @@ async def get_user_stats(
         current_streak=CurrentStreak(**enhanced_stats["current_streak"]),
         best_streak=BestStreak(**enhanced_stats["best_streak"]),
         recent_games=[RecentGame(**game) for game in enhanced_stats["recent_games"]],
-        referral_code=user.referral_code,
-        xp=user.xp,
-        level=user.level,
+        referral_code=current_user.referral_code,
+        xp=current_user.xp,
+        level=current_user.level,
         bot_username=settings.TELEGRAM_BOT_USERNAME
     )
 
@@ -228,12 +194,15 @@ class WalletLinkRequest(BaseModel):
     wallet_address: str
 
 @router.post("/wallet")
-async def link_wallet(request: WalletLinkRequest, db: AsyncSession = Depends(get_db)):
-    user = await user_crud.get_user_by_telegram_id(db, request.telegram_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+async def link_wallet(
+    request: WalletLinkRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.telegram_id != request.telegram_id:
+        raise HTTPException(status_code=403, detail="Forbidden: Cannot link wallet for another user")
         
-    updated_user = await user_crud.update_wallet_address(db, user, request.wallet_address)
+    updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
     return {"status": "success", "wallet_address": updated_user.wallet_address}
 
 class SubscriptionRequest(BaseModel):

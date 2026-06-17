@@ -294,6 +294,14 @@ class GameService:
     async def end_game(self, game_id: str, state: GameState):
         """Process game result and update ELO."""
         async with AsyncSessionLocal() as session:
+            # Check for duplicate processing (idempotency guard)
+            from app.models.game_history import GameHistory
+            from sqlalchemy.future import select
+            dup_check = await session.execute(select(GameHistory).where(GameHistory.game_id == game_id))
+            if dup_check.scalars().first():
+                print(f"[GameService] Game {game_id} already ended/processed. Skipping duplicate end_game call.")
+                return
+
             white_id = state.white_player_id
             black_id = state.black_player_id
             
@@ -531,7 +539,7 @@ class GameService:
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
 
                     platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = (2 * bid_amount) - platform_rake - win_deduction
+                    payout_amount = max(0, (2 * bid_amount) - platform_rake - win_deduction)
                     
                     # Award payout to white
                     white_user.balance += payout_amount
@@ -591,7 +599,7 @@ class GameService:
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
 
                     platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = (2 * bid_amount) - platform_rake - win_deduction
+                    payout_amount = max(0, (2 * bid_amount) - platform_rake - win_deduction)
                     
                     # Award payout to black
                     black_user.balance += payout_amount

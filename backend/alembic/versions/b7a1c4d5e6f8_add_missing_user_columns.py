@@ -34,15 +34,17 @@ def upgrade() -> None:
     if 'wallet_address' not in columns:
         op.add_column('users', sa.Column('wallet_address', sa.String(), nullable=True))
     
-    # Update server defaults if needed
-    if 'is_premium' in columns:
-        op.alter_column('users', 'is_premium', server_default=None)
-    if 'balance' in columns:
-        op.alter_column('users', 'balance', server_default=None)
+    # Update server defaults if needed using batch_alter_table for SQLite compatibility
+    with op.batch_alter_table('users') as batch_op:
+        if 'is_premium' in columns:
+            batch_op.alter_column('is_premium', server_default=None)
+        if 'balance' in columns:
+            batch_op.alter_column('balance', server_default=None)
 
 def downgrade() -> None:
-    op.drop_column('users', 'wallet_address')
-    op.drop_column('users', 'balance')
-    op.drop_column('users', 'premium_expires_at')
-    op.drop_column('users', 'premium_tier')
-    op.drop_column('users', 'is_premium')
+    with op.batch_alter_table('users') as batch_op:
+        batch_op.drop_column('wallet_address')
+        batch_op.drop_column('balance')
+        batch_op.drop_column('premium_expires_at')
+        batch_op.drop_column('premium_tier')
+        batch_op.drop_column('is_premium')

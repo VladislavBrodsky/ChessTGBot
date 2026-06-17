@@ -336,12 +336,18 @@ async def receive_ton_deposit_webhook(
     if authorization and authorization.startswith("Bearer "):
         auth_token = authorization.split("Bearer ")[1].strip()
 
-    webhook_secret = getattr(settings, "WEBHOOK_SECRET", "dev_webhook_secret")
+    import hmac
+    webhook_secret = getattr(settings, "WEBHOOK_SECRET", "")
+    if not webhook_secret:
+        raise HTTPException(
+            status_code=500,
+            detail="Webhook secret not configured on server"
+        )
     
     is_valid = False
-    if x_webhook_secret and x_webhook_secret == webhook_secret:
+    if x_webhook_secret and hmac.compare_digest(x_webhook_secret, webhook_secret):
         is_valid = True
-    elif auth_token and auth_token == webhook_secret:
+    elif auth_token and hmac.compare_digest(auth_token, webhook_secret):
         is_valid = True
 
     if not is_valid:
@@ -434,6 +440,10 @@ async def receive_ton_deposit_webhook(
 
     else:
         # 3. Developer simulated deposit webhook
+        from app.core.database import engine
+        if not engine.url.drivername.startswith("sqlite"):
+            raise HTTPException(status_code=403, detail="Developer simulated deposit is disabled in production.")
+
         if not payload.comment or payload.amount_cents is None:
             raise HTTPException(status_code=400, detail="Malformed developer simulation payload")
 

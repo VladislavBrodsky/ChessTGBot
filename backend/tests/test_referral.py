@@ -183,7 +183,11 @@ async def test_sync_endpoint_returns_bot_username(client: AsyncClient, db_sessio
 @pytest.mark.asyncio
 async def test_get_user_stats_returns_bot_username(client: AsyncClient, db_session: AsyncSession):
     # Get stats for a user
-    response = await client.get("/api/v1/users/123456789?first_name=TestUser")
+    import json
+    from urllib.parse import quote
+    telegram_id = 123456789
+    init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'TestUser'}))}"
+    response = await client.get(f"/api/v1/users/{telegram_id}", headers={"X-Telegram-Init-Data": init_data})
     assert response.status_code == 200
     data = response.json()
     

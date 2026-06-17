@@ -45,16 +45,18 @@ def upgrade() -> None:
     if 'payout_amount' not in columns:
         op.add_column('game_history', sa.Column('payout_amount', sa.Integer(), nullable=True, server_default='0'))
 
-    # Clean up server defaults on postgres
-    op.alter_column('game_history', 'bid_amount', server_default=None)
-    op.alter_column('game_history', 'platform_rake', server_default=None)
-    op.alter_column('game_history', 'payout_amount', server_default=None)
+    # Clean up server defaults on postgres using batch_alter_table for SQLite compatibility
+    with op.batch_alter_table('game_history') as batch_op:
+        batch_op.alter_column('bid_amount', server_default=None)
+        batch_op.alter_column('platform_rake', server_default=None)
+        batch_op.alter_column('payout_amount', server_default=None)
 
 def downgrade() -> None:
     # 1. Drop columns from game_history
-    op.drop_column('game_history', 'payout_amount')
-    op.drop_column('game_history', 'platform_rake')
-    op.drop_column('game_history', 'bid_amount')
+    with op.batch_alter_table('game_history') as batch_op:
+        batch_op.drop_column('payout_amount')
+        batch_op.drop_column('platform_rake')
+        batch_op.drop_column('bid_amount')
 
     # 2. Drop transactions table
     op.drop_index(op.f('ix_transactions_user_id'), table_name='transactions')

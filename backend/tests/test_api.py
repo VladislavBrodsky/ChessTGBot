@@ -3,8 +3,14 @@ from app.crud import user as user_crud
 
 @pytest.mark.asyncio
 async def test_get_user_stats_creates_user(client, db_session):
+    import json
+    from urllib.parse import quote
     telegram_id = 123456789
-    response = await client.get(f"/api/v1/users/{telegram_id}?first_name=TestUser")
+    init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'TestUser'}))}"
+    response = await client.post(
+        "/api/v1/users/sync",
+        headers={"X-Telegram-Init-Data": init_data}
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["telegram_id"] == telegram_id
@@ -13,16 +19,22 @@ async def test_get_user_stats_creates_user(client, db_session):
 
 @pytest.mark.asyncio
 async def test_get_user_stats_syncs_profile(client, db_session):
+    import json
+    from urllib.parse import quote
     telegram_id = 987654321
     # First create
     await user_crud.create_user(db_session, telegram_id, "OldName")
     
     # Then sync with new info
-    response = await client.get(f"/api/v1/users/{telegram_id}?first_name=NewName&photo_url=new_url")
+    init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'NewName'}))}"
+    response = await client.post(
+        "/api/v1/users/sync",
+        headers={"X-Telegram-Init-Data": init_data}
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["first_name"] == "NewName"
-    assert data["photo_url"] == "new_url"
+
 
 @pytest.mark.asyncio
 async def test_create_game_computer(client):
@@ -243,7 +255,10 @@ async def test_profile_metrics_calculations(client, db_session):
     await db_session.commit()
 
     # Query u4 (User1200) stats
-    response = await client.get("/api/v1/users/104?first_name=User1200")
+    import json
+    from urllib.parse import quote
+    init_data = f"user={quote(json.dumps({'id': 104}))}"
+    response = await client.get("/api/v1/users/104", headers={"X-Telegram-Init-Data": init_data})
     assert response.status_code == 200
     data = response.json()
 

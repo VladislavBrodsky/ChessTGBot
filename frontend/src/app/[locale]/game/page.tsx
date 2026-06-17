@@ -19,6 +19,13 @@ import WalletConnect from "@/components/WalletConnect";
 import { telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useNavbarHide } from "@/context/NavbarContext";
 
+import MatchOverModal from "@/components/game/MatchOverModal";
+import RematchChoiceDrawer from "@/components/game/RematchChoiceDrawer";
+import IncomingRematchDrawer from "@/components/game/IncomingRematchDrawer";
+import FriendInviteDrawer from "@/components/game/FriendInviteDrawer";
+import LobbyDepositDrawer from "@/components/game/LobbyDepositDrawer";
+import RakeInfoDrawer from "@/components/game/RakeInfoDrawer";
+
 interface ActiveGameProps {
  gameId: string;
 }
@@ -70,12 +77,20 @@ function ActiveGame({ gameId }: ActiveGameProps) {
     }
   }, [gameState]);
 
+  const turnRef = useRef(gameState?.turn);
+  const isGameOverRef = useRef(gameState?.is_game_over);
+
+  useEffect(() => {
+    turnRef.current = gameState?.turn;
+    isGameOverRef.current = gameState?.is_game_over;
+  }, [gameState]);
+
   useEffect(() => {
     if (!gameState || gameState.is_game_over) return;
 
     const interval = setInterval(() => {
-      const turn = gameState.turn; // 'w' or 'b'
-      if (turn === 'w') {
+      if (isGameOverRef.current) return;
+      if (turnRef.current === 'w') {
         setWhiteTime((prev) => Math.max(0, prev - 1));
       } else {
         setBlackTime((prev) => Math.max(0, prev - 1));
@@ -83,7 +98,19 @@ function ActiveGame({ gameId }: ActiveGameProps) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [gameState]);
+  }, [gameState?.is_game_over, !gameState]);
+
+  useEffect(() => {
+    if (gameState?.is_game_over) {
+      apiFetch("/api/v1/wallet/balance")
+        .then(res => {
+          if (res.ok) {
+            console.log("Platform balance synced after game completion.");
+          }
+        })
+        .catch(() => {});
+    }
+  }, [gameState?.is_game_over]);
 
   useEffect(() => {
     if (!gameState) return;
@@ -306,8 +333,8 @@ function ActiveGame({ gameId }: ActiveGameProps) {
   )}
   </div>
 
- <div className="flex items-center gap-2 bg-brand-surface px-4 py-1.5 rounded-full border border-brand-border-opacity-10 shadow-sm">
- <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
+ <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
+ <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
  <span className="text-[9px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
  {isConnected ? tg('active_sync') : tg('isolated')}
  </span>
@@ -398,229 +425,42 @@ function ActiveGame({ gameId }: ActiveGameProps) {
  )}
  </div>
 
- {/* Premium Match Over Overlay Modal */}
- <AnimatePresence>
- {isGameOver && (
- <div className="bottom-drawer-backdrop z-[100]">
- {/* Backdrop */}
- <motion.div
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- exit={{ opacity: 0 }}
- className="absolute inset-0 bg-[rgba(0,0,0,0.4)]"
- />
-
- {/* Modal Content as slide-up drawer */}
- <motion.div
- initial={{ y: "100%" }}
- animate={{ y: 0 }}
- exit={{ y: "100%" }}
- transition={{ type: "spring", damping: 30, stiffness: 350 }}
- className="bottom-drawer-sheet relative z-10"
- >
- <div className="bottom-drawer-handle" />
- 
- <div className="flex flex-col items-center text-center mt-2">
- <h2 className={`text-2xl font-black uppercase tracking-widest mb-1 ${resultColor}`}>
- {matchResultLabel}
- </h2>
- <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.3em] mb-6">
- {tg('verification_complete')}
- </p>
- </div>
-
- <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-2 space-y-4 shadow-sm">
- <div className="flex justify-between items-center">
- <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{tg('global_elo')}</span>
- <div className="flex items-baseline gap-2">
- <span className="text-sm font-black text-brand-primary tracking-widest">1000</span>
- <span className={`text-[10px] font-black tracking-widest text-brand-primary`}>
- {eloChange}
- </span>
- </div>
- </div>
- <div className="h-px w-full bg-brand-border-opacity-10" />
- <div className="flex justify-between items-center">
- <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{tg('net_payout')}</span>
- <div className="flex flex-col items-end">
- <span className="text-sm font-black tracking-widest text-brand-primary">
- {netPayout > 0 ? '+' : ''}{netPayout.toFixed(2)} USDT
- </span>
- {gameState?.wager_amount > 0 && matchResultLabel === tg('victory_secured') && (
-  <span className="text-[8px] text-brand-primary opacity-40 uppercase tracking-widest mt-1">
-  {tg('platform_rake')}
-  </span>
- )}
- </div>
- </div>
- </div>
-
-  <div className="w-full flex flex-col gap-3">
-  {rematchStatus === 'waiting' ? (
-    <div className="w-full bg-brand-surface py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
-      <span>Pending Opponent...</span>
-    </div>
-  ) : (
-    <motion.button
-    whileTap={{ scale: 0.98 }}
-    onClick={() => setShowRematchChoice(true)}
-    className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-    >
-    <span>{tg('revenge_match')}</span>
-    </motion.button>
-  )}
-
- <div className="grid grid-cols-2 gap-3">
- <Link href={`/${locale}/home`} className="w-full">
- <motion.button
- whileHover={{ scale: 1.02 }}
- whileTap={{ scale: 0.98 }}
- className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
- >
- <FaRedo />
- <span>{tg('return_hub')}</span>
- </motion.button>
- </Link>
- 
- <motion.button
- whileHover={{ scale: 1.02 }}
- whileTap={{ scale: 0.98 }}
- onClick={shareGame}
- className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
- >
- <FaShareAlt className="text-brand-primary opacity-60" />
- <span>{tg('share_ledger')}</span>
- </motion.button>
- </div>
- </div>
- </motion.div>
- </div>
- )}
- </AnimatePresence>
+  {/* Premium Match Over Overlay Modal */}
+  <AnimatePresence>
+    {isGameOver && (
+      <MatchOverModal
+        matchResultLabel={matchResultLabel}
+        resultColor={resultColor}
+        eloChange={eloChange}
+        netPayout={netPayout}
+        wagerAmount={gameState?.wager_amount || 0}
+        rematchStatus={rematchStatus}
+        onShowRematchChoice={() => setShowRematchChoice(true)}
+        onShareGame={shareGame}
+      />
+    )}
+  </AnimatePresence>
 
   {/* Rematch Choice Drawer */}
   <AnimatePresence>
-  {showRematchChoice && (
-  <div className="bottom-drawer-backdrop z-[110]">
-  <motion.div 
-    initial={{ opacity: 0 }} 
-    animate={{ opacity: 1 }} 
-    exit={{ opacity: 0 }} 
-    onClick={() => setShowRematchChoice(false)}
-    className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
-  />
-  <motion.div 
-    initial={{ y: "100%" }} 
-    animate={{ y: 0 }} 
-    exit={{ y: "100%" }} 
-    transition={{ type: "spring", damping: 30, stiffness: 350 }}
-    className="bottom-drawer-sheet relative z-20"
-  >
-  <div className="bottom-drawer-handle" />
-  
-  <div className="flex flex-col items-center text-center mt-2">
-  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-    {tg('revenge_match')}
-  </h2>
-  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    {tg('invite_revenge_desc')}
-  </p>
-  </div>
-  
-  <div className="w-full flex flex-col gap-3">
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={() => sendRematchOffer(false)}
-      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm"
-    >
-      <span className="text-xs uppercase font-black tracking-[0.2em]">{tg('same_stakes')}</span>
-      <span className="text-[9px] font-bold opacity-80">${((gameState?.wager_amount || 0) / 100).toFixed(2)} USDT</span>
-    </motion.button>
-    
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={() => sendRematchOffer(true)}
-      className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm relative overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-      <span className="text-xs uppercase font-black tracking-[0.2em] flex items-center gap-1">
-        {tg('double_stakes_choice')}
-      </span>
-      <span className="text-[9px] font-bold opacity-90">${(((gameState?.wager_amount || 0) * 2) / 100).toFixed(2)} USDT</span>
-    </motion.button>
-
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={() => setShowRematchChoice(false)}
-      className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
-    >
-      <span>{tg('cancel')}</span>
-    </motion.button>
-  </div>
-  </motion.div>
-  </div>
-  )}
+    {showRematchChoice && (
+      <RematchChoiceDrawer
+        wagerAmount={gameState?.wager_amount || 0}
+        onClose={() => setShowRematchChoice(false)}
+        onSendRematchOffer={sendRematchOffer}
+      />
+    )}
   </AnimatePresence>
 
   {/* Incoming Rematch Challenge Drawer */}
   <AnimatePresence>
-  {incomingRematch && (
-  <div className="bottom-drawer-backdrop z-[110]">
-  <motion.div 
-    initial={{ opacity: 0 }} 
-    animate={{ opacity: 1 }} 
-    exit={{ opacity: 0 }} 
-    onClick={declineRematch}
-    className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
-  />
-  <motion.div 
-    initial={{ y: "100%" }} 
-    animate={{ y: 0 }} 
-    exit={{ y: "100%" }} 
-    transition={{ type: "spring", damping: 30, stiffness: 350 }}
-    className="bottom-drawer-sheet relative z-20"
-  >
-  <div className="bottom-drawer-handle" />
-  
-  <div className="flex flex-col items-center text-center mt-2">
-  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-orange-400 animate-pulse">
-    {tg('rematch_dialog_title')}
-  </h2>
-  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    {tg('challenger_offered_rematch', { name: incomingRematch.challenger_name })}
-  </p>
-  </div>
-  
-  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 text-center shadow-sm">
-    <span className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest block mb-1">{tg('proposed_wager')}</span>
-    <span className="text-2xl font-black text-brand-primary">
-      ${((incomingRematch.wager) / 100).toFixed(2)} USDT
-    </span>
-    {incomingRematch.double_stakes && (
-      <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block mt-1">{tg('double_stakes_active')}</span>
+    {incomingRematch && (
+      <IncomingRematchDrawer
+        incomingRematch={incomingRematch}
+        onAccept={acceptRematch}
+        onDecline={declineRematch}
+      />
     )}
-  </div>
-  
-  <div className="w-full flex flex-col gap-3">
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={acceptRematch}
-      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-    >
-      <span>{tg('accept_play')}</span>
-    </motion.button>
-    
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={declineRematch}
-      className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
-    >
-      <span>{tg('decline')}</span>
-    </motion.button>
-  </div>
-  </motion.div>
-  </div>
-  )}
   </AnimatePresence>
   </LayoutWrapper>
  );
@@ -633,7 +473,6 @@ function PlayLobby() {
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
- const [stats, setStats] = useState<any>(null);
  const [walletBalance, setWalletBalance] = useState<number>(0);
 
  // Matchmaking configs
@@ -654,19 +493,11 @@ function PlayLobby() {
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
-  const [depositAmount, setDepositAmount] = useState<string>("10.00");
-  const [invoiceUrl, setInvoiceUrl] = useState<string>("");
-  const [invoiceId, setInvoiceId] = useState<string>("");
-  const [isDepositing, setIsDepositing] = useState<boolean>(false);
-  const [depositSuccess, setDepositSuccess] = useState<string>("");
-  const [depositError, setDepositError] = useState<string>("");
-  const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
-  const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
-  const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
 
  // Refs for scroll container alignment
  const wagerScrollRef = useRef<HTMLDivElement>(null);
  const timeScrollRef = useRef<HTMLDivElement>(null);
+ const submittingRef = useRef<boolean>(false);
 
  // Smoothly center selected wager item in scroll view
  useEffect(() => {
@@ -736,135 +567,40 @@ function PlayLobby() {
    return () => clearInterval(interval);
  }, []);
 
- useEffect(() => {
- syncBalance();
- // Init Telegram WebApp Data
- if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
- const tg = window.Telegram.WebApp;
- setTgUser(tg.initDataUnsafe?.user);
- if (tg.initDataUnsafe?.user?.id) {
- apiFetch(`/api/v1/users/sync`, { method: "POST" })
- .then(res => res.json())
- .then(data => setStats(data))
- .catch(err => console.error("Failed to fetch Stats", err));
- }
- } else {
- // Mock Dev
-setTgUser({ first_name: "Master", photo_url: null });
- setStats({ elo: 1250, win_rate: 68.2, wins: 15, losses: 5, draws: 2 });
- }
- }, []);
+  const syncBalance = useCallback(async () => {
+    try {
+      const res = await apiFetch("/api/v1/wallet/balance");
+      if (res.ok) {
+        const data = await res.json();
+        setWalletBalance(data.balance);
+      }
+    } catch (err) {
+      console.error("Failed to sync wallet balance", err);
+    }
+  }, []);
 
-  const syncBalance = async () => {
-  try {
-  const res = await apiFetch("/api/v1/wallet/balance");
-  if (res.ok) {
-  const data = await res.json();
-  setWalletBalance(data.balance);
-  }
-  } catch (err) {
-  console.error("Failed to sync wallet balance", err);
-  }
-  };
+  const startMatchmaking = useCallback(() => {
+    if (submittingRef.current) return;
+    setMatchmakingError("");
+    const socket = getSocket();
+    const wagerInCents = isCustomWager
+      ? Math.round(parseFloat(customWagerInput) * 100)
+      : selectedWager;
 
-  const handleGenerateLobbyInvoice = async () => {
-    const amt = parseFloat(depositAmount);
-    if (isNaN(amt) || amt <= 0) {
-      setDepositError("Please enter a valid deposit amount.");
+    if (isNaN(wagerInCents) || wagerInCents < 0) {
+      setMatchmakingError("Please specify a valid wager amount.");
       return;
     }
 
-    setIsDepositing(true);
-    setDepositError("");
-    setDepositSuccess("");
-    setInvoiceUrl("");
-    setInvoiceId("");
-
-    try {
-      const res = await apiFetch("/api/v1/wallet/deposit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          amount: Math.round(amt * 100) // cents
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.status === "invoice") {
-          setInvoiceUrl(data.payment_link || "");
-          setInvoiceId(data.invoice_id || "");
-          setDepositSuccess("Invoice generated successfully! Scan the QR code or click 'Open in Wallet' to pay.");
-        } else if (data.status === "success") {
-          setWalletBalance(data.new_balance);
-          setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
-          setTimeout(() => {
-            setShowDepositDrawer(false);
-            setDepositSuccess("");
-          }, 2000);
-        }
-      } else {
-        const errData = await res.json();
-        setDepositError(errData.detail || "Failed to initiate deposit.");
-      }
-    } catch (err) {
-      setDepositError("Network error during deposit initiation.");
-    } finally {
-      setIsDepositing(false);
-    }
-  };
-
-  const handleSimulateLobbyDeposit = async () => {
-    const amt = parseFloat(depositAmount);
-    if (isNaN(amt) || amt <= 0) {
-      setDepositError("Please enter a valid deposit amount.");
+    if (wagerInCents > walletBalance) {
+      setMatchmakingError("Insufficient balance in your Cyber-Wallet.");
       return;
     }
 
-    setIsDepositing(true);
-    setDepositError("");
-    setDepositSuccess("");
-
-    const tgId = tgUser?.id || 1029384;
-    const mockTxHash = `sim_tx_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
-
-    try {
-      const res = await apiFetch("/api/v1/wallet/webhook", {
-        method: "POST",
-        headers: {
-          "X-Webhook-Secret": "dev_webhook_secret",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          event: "transfer",
-          tx_hash: mockTxHash,
-          sender: "EQ_SenderAddress_Simulated_xxxx",
-          destination: "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2",
-          amount_cents: Math.round(amt * 100),
-          comment: `ref_${tgId}`
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setWalletBalance(data.new_balance);
-        setDepositSuccess(`Simulated deposit of $${amt.toFixed(2)} successful!`);
-        setTimeout(() => {
-          setShowDepositDrawer(false);
-          setDepositSuccess("");
-        }, 2000);
-      } else {
-        const errData = await res.json();
-        setDepositError(errData.detail || "Simulation failed.");
-      }
-    } catch (err) {
-      setDepositError("Network error during simulation processing.");
-    } finally {
-      setIsDepositing(false);
-    }
-  };
+    submittingRef.current = true;
+    setMatchmakingState('searching');
+    socket.emit('join_matchmaking', { bid_amount: wagerInCents });
+  }, [isCustomWager, customWagerInput, selectedWager, walletBalance]);
 
   // Active Webhook/Balance Polling to detect deposit and start matchmaking automatically
   useEffect(() => {
@@ -876,14 +612,9 @@ setTgUser({ first_name: "Master", photo_url: null });
 
     if (walletBalance >= wagerInCents) {
       setShowDepositDrawer(false);
-      setDepositSuccess("");
-      setDepositError("");
 
       const timer = setTimeout(() => {
-        setMatchmakingError("");
-        const socket = getSocket();
-        setMatchmakingState('searching');
-        socket.emit('join_matchmaking', { bid_amount: wagerInCents });
+        startMatchmaking();
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -893,7 +624,7 @@ setTgUser({ first_name: "Master", photo_url: null });
     }, 4000);
 
     return () => clearInterval(pollInterval);
-  }, [walletBalance, showDepositDrawer, selectedWager, isCustomWager, customWagerInput]);
+  }, [walletBalance, showDepositDrawer, selectedWager, isCustomWager, customWagerInput, startMatchmaking, syncBalance]);
 
   // Matchmaking Timer
  useEffect(() => {
@@ -922,6 +653,7 @@ setTgUser({ first_name: "Master", photo_url: null });
  console.error("Matchmaking error:", data.message);
  setMatchmakingError(data.message);
  setMatchmakingState('idle');
+ submittingRef.current = false;
  };
 
  socket.on('match_found', onMatchFound);
@@ -933,29 +665,9 @@ setTgUser({ first_name: "Master", photo_url: null });
  };
  }, [locale, router]);
 
- const startMatchmaking = () => {
-  setMatchmakingError("");
-  const socket = getSocket();
-  const wagerInCents = isCustomWager
-  ? Math.round(parseFloat(customWagerInput) * 100)
-  : selectedWager;
-
-  if (isNaN(wagerInCents) || wagerInCents < 0) {
-  setMatchmakingError("Please specify a valid wager amount.");
-  return;
-  }
-
-  if (wagerInCents > walletBalance) {
-  setMatchmakingError("Insufficient balance in your Cyber-Wallet.");
-  return;
-  }
-
-  setMatchmakingState('searching');
-  socket.emit('join_matchmaking', { bid_amount: wagerInCents });
-  };
 
   const handleLauncherClick = () => {
-    if (isCreating || matchmakingState === 'searching') return;
+    if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
 
     const wagerInCents = isCustomWager
       ? Math.round(parseFloat(customWagerInput) * 100)
@@ -969,13 +681,6 @@ setTgUser({ first_name: "Master", photo_url: null });
     if (walletBalance >= wagerInCents) {
       startMatchmaking();
     } else {
-      const deficitCents = wagerInCents - walletBalance;
-      const deficitUsd = (deficitCents / 100).toFixed(2);
-      setDepositAmount(deficitUsd);
-      setInvoiceUrl("");
-      setInvoiceId("");
-      setDepositSuccess("");
-      setDepositError("");
       setShowDepositDrawer(true);
     }
   };
@@ -984,10 +689,12 @@ setTgUser({ first_name: "Master", photo_url: null });
  const socket = getSocket();
  socket.emit('leave_matchmaking', {});
  setMatchmakingState('idle');
+ submittingRef.current = false;
  };
 
  const playVsComputer = async () => {
- if (isCreating) return;
+ if (isCreating || submittingRef.current) return;
+ submittingRef.current = true;
  setIsCreating(true);
  try {
  const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}`, {
@@ -1001,11 +708,13 @@ setTgUser({ first_name: "Master", photo_url: null });
  setMatchmakingError("Failed to initiate training session.");
  } finally {
  setIsCreating(false);
+ submittingRef.current = false;
  }
  };
 
  const playVsFriend = async () => {
- if (isCreating) return;
+ if (isCreating || submittingRef.current) return;
+ submittingRef.current = true;
  setIsCreating(true);
  setMatchmakingError("");
  try {
@@ -1021,30 +730,9 @@ setTgUser({ first_name: "Master", photo_url: null });
  setMatchmakingError("Failed to generate invite link.");
  } finally {
  setIsCreating(false);
+ submittingRef.current = false;
  }
  };
-
-   const shareInviteLink = () => {
-     const shareUrl = inviteLink;
-     const shareText = tg('share_msg', { time: timeControl / 60 });
-     const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-    
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      try {
-        window.Telegram.WebApp.openTelegramLink(fullUrl);
-        if (window.Telegram.WebApp.HapticFeedback) {
-          try {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-          } catch (e) {}
-        }
-      } catch (err) {
-        console.warn("Telegram openTelegramLink failed", err);
-        window.open(fullUrl, '_blank');
-      }
-    } else {
-      window.open(fullUrl, '_blank');
-    }
-  };
 
  const chosenWager = isCustomWager 
  ? Math.round(parseFloat(customWagerInput) * 100) 
@@ -1118,23 +806,25 @@ setTgUser({ first_name: "Master", photo_url: null });
   <div className="w-full space-y-3">
 
   {/* ─── UNIFIED STATUS BAR ─── */}
-  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm px-3 py-2.5 flex items-center justify-between gap-3">
+  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm px-3 py-2.5 grid grid-cols-2 items-center divide-x divide-brand-border-opacity-10 gap-3">
     {/* Wallet side */}
-    <WalletConnect minimal />
-    {/* Divider */}
-    <div className="w-px h-7 bg-brand-border-opacity-10 shrink-0" />
+    <div className="pr-3 flex items-center justify-between min-w-0">
+      <WalletConnect minimal />
+    </div>
     {/* Balance side */}
-    <Link href={`/${locale}/wallet`} className="flex items-center gap-2 min-w-0 group">
-      <div className="w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 flex items-center justify-center shrink-0 group-hover:border-brand-border-opacity-20 transition-all">
-        <FaWallet size={11} className="text-brand-primary opacity-50 group-hover:opacity-80 transition-all" />
-      </div>
-      <div className="flex flex-col min-w-0">
-        <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
-        <span className={`text-[11px] font-black tracking-wide leading-none truncate ${hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
-          ${(walletBalance / 100).toFixed(2)}
-        </span>
-      </div>
-    </Link>
+    <div className="pl-3 min-w-0">
+      <Link href={`/${locale}/wallet`} className="flex items-center gap-2 group">
+        <div className="w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 flex items-center justify-center shrink-0 group-hover:border-brand-border-opacity-20 transition-all">
+          <FaWallet size={11} className="text-brand-primary opacity-50 group-hover:opacity-80 transition-all" />
+        </div>
+        <div className="flex flex-col min-w-0">
+          <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
+          <span className={`text-[11px] font-black tracking-wide leading-none truncate ${hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+            ${(walletBalance / 100).toFixed(2)}
+          </span>
+        </div>
+      </Link>
+    </div>
   </div>
 
   {/* ─── BATTLE ARENA CONFIG CARD ─── */}
@@ -1229,13 +919,13 @@ setTgUser({ first_name: "Master", photo_url: null });
         className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5"
       >
         {[
-          { label: "1m", val: 60, icon: "⚡" },
-          { label: "3m", val: 180, icon: "⚡" },
-          { label: "5m", val: 300, icon: "🔥" },
-          { label: "10m", val: 600, icon: "⚔️" },
-          { label: "15m", val: 900, icon: "⚔️" },
-          { label: "30m", val: 1800, icon: "🏆" },
-          { label: "60m", val: 3600, icon: "👑" }
+          { label: "1m", val: 60 },
+          { label: "3m", val: 180 },
+          { label: "5m", val: 300 },
+          { label: "10m", val: 600 },
+          { label: "15m", val: 900 },
+          { label: "30m", val: 1800 },
+          { label: "60m", val: 3600 }
         ].map((opt) => {
           const isSelected = timeControl === opt.val;
           return (
@@ -1243,14 +933,13 @@ setTgUser({ first_name: "Master", photo_url: null });
               key={opt.val}
               data-active={isSelected ? "true" : "false"}
               onClick={() => { setTimeControl(opt.val); telegramHaptic('light'); }}
-              className={`px-3 py-1.5 rounded-xl shrink-0 flex flex-col items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer gap-0.5 min-w-[44px] ${
+              className={`px-3 py-1.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer min-w-[44px] ${
                 isSelected
                   ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105'
                   : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
               }`}
             >
-              <span className="text-[9px] leading-none">{opt.icon}</span>
-              <span className="leading-none">{opt.label}</span>
+              <span>{opt.label}</span>
             </button>
           );
         })}
@@ -1365,353 +1054,34 @@ setTgUser({ first_name: "Master", photo_url: null });
 
   {/* Friend Duel Invite Bottom Drawer */}
   <AnimatePresence>
-  {showInviteDrawer && (
-  <div className="bottom-drawer-backdrop z-[100]">
-  <motion.div 
-    initial={{ opacity: 0 }} 
-    animate={{ opacity: 1 }} 
-    exit={{ opacity: 0 }} 
-    onClick={() => setShowInviteDrawer(false)}
-    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
-  />
-  <motion.div 
-    initial={{ y: "100%" }} 
-    animate={{ y: 0 }} 
-    exit={{ y: "100%" }} 
-    transition={{ type: "spring", damping: 30, stiffness: 350 }}
-    className="bottom-drawer-sheet relative z-10"
-  >
-  <div className="bottom-drawer-handle" />
-  
-  <div className="flex flex-col items-center text-center mt-2">
-  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-  {tg('invite_link_title')}
-  </h2>
-  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-  {tg('invite_link_desc')}
-  </p>
-  </div>
-  
-  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
-  <input
-    readOnly
-    type="text"
-    value={inviteLink}
-    onClick={(e) => (e.currentTarget as HTMLInputElement).select()}
-    className="w-full py-2.5 px-4 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[11px] font-mono text-brand-primary opacity-80 text-center select-all focus:outline-none focus:border-brand-primary/20 shadow-inner"
-  />
-  </div>
-  
-  <div className="w-full flex flex-col gap-3">
-  <motion.button
-  whileTap={{ scale: 0.98 }}
-  onClick={shareInviteLink}
-  className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-  >
-  <FaShareAlt size={12} />
-  <span>{tg('share_invite')}</span>
-  </motion.button>
-  
-  <div className="grid grid-cols-2 gap-3 w-full">
-  <motion.button
-  whileTap={{ scale: 0.98 }}
-  onClick={() => {
-  navigator.clipboard.writeText(inviteLink);
-  setCopiedLink(true);
-  setTimeout(() => setCopiedLink(false), 2000);
-  }}
-  className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
-  >
-  <span>{copiedLink ? tg('copied_success') : tg('copy_code')}</span>
-  </motion.button>
-  
-  <motion.button
-  whileTap={{ scale: 0.98 }}
-  onClick={() => setShowInviteDrawer(false)}
-  className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
-  >
-  <span>{t('back')}</span>
-  </motion.button>
-  </div>
-  </div>
-  </motion.div>
-  </div>
-  )}
+    {showInviteDrawer && (
+      <FriendInviteDrawer
+        inviteLink={inviteLink}
+        timeControl={timeControl}
+        onClose={() => setShowInviteDrawer(false)}
+      />
+    )}
   </AnimatePresence>
 
   {/* Lobby Quick Deposit Drawer */}
   <AnimatePresence>
-  {showDepositDrawer && (
-  <div className="bottom-drawer-backdrop z-[100]">
-  <motion.div 
-    initial={{ opacity: 0 }} 
-    animate={{ opacity: 1 }} 
-    exit={{ opacity: 0 }} 
-    onClick={() => setShowDepositDrawer(false)}
-    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
-  />
-  <motion.div 
-    initial={{ y: "100%" }} 
-    animate={{ y: 0 }} 
-    exit={{ y: "100%" }} 
-    transition={{ type: "spring", damping: 30, stiffness: 350 }}
-    className="bottom-drawer-sheet relative z-10"
-  >
-  <div className="bottom-drawer-handle" />
-  
-  <div className="flex flex-col items-center text-center mt-2 w-full">
-  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-    {tw('deposit_invoice')}
-  </h2>
-  <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-[0.2em] mb-4">
-    Quick Top Up & Play
-  </p>
-  
-  {/* Cyber Grid Summary Card */}
-  <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 mb-4 text-xs font-bold text-brand-primary/80 leading-relaxed space-y-2.5 shadow-inner">
-    <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
-      <div className="text-left opacity-50">Wager Stake</div>
-      <div className="text-right text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</div>
-    </div>
-    <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
-      <div className="text-left opacity-50">Your Balance</div>
-      <div className="text-right text-brand-primary/70 font-black">${(walletBalance / 100).toFixed(2)} USDT</div>
-    </div>
-    <div className="h-px bg-brand-border-opacity-5 my-0.5" />
-    <div className="grid grid-cols-2 gap-2 text-[11px] uppercase tracking-widest font-black">
-      <div className="text-left text-brand-primary opacity-60">Deficit Needed</div>
-      <div className="text-right text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
-    </div>
-  </div>
-  </div>
-  
-  {invoiceUrl ? (
-    // Show Real Invoice details
-    <div className="space-y-4 w-full">
-      <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-        Real Web3 TON invoice generated successfully. Scan or tap below to pay using your connected Web3 wallet.
-      </p>
-
-      <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-border-opacity-20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
-        <div className="absolute inset-0 bg-brand-bg-opacity-5 animate-pulse pointer-events-none" />
-        <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10 mx-auto">
-          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(invoiceUrl)}`} alt="Invoice QR Code" className="w-full h-full object-contain" />
-        </div>
-        <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary opacity-40 pt-1">{tw('scan_info')}</div>
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <a
-          href={invoiceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest text-center shadow-lg block hover:bg-brand-primary-hover transition-all"
-        >
-          Open in Wallet ⚡
-        </a>
-        
-        <button
-          onClick={() => { setInvoiceUrl(""); setInvoiceId(""); setDepositSuccess(""); setDepositError(""); }}
-          className="w-full py-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
-        >
-          Change Amount / Back
-        </button>
-      </div>
-    </div>
-  ) : (
-    // Generate Invoice Form
-    <div className="space-y-4 w-full">
-      <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-        {tw('deposit_desc')}
-      </p>
-
-      <div className="flex flex-col space-y-2">
-        <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Top Up Amount (USDT)</label>
-        <div className="relative">
-          <span className="absolute left-3 top-3 text-brand-primary opacity-40 text-xs font-black font-mono">$</span>
-          <input
-            type="number"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(e.target.value)}
-            className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
-            placeholder="5.00"
-            min="0.01"
-            step="0.01"
-          />
-        </div>
-      </div>
-
-      <button
-        onClick={handleGenerateLobbyInvoice}
-        disabled={isDepositing}
-        className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
-      >
-        <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
-        <span>{isDepositing ? "Generating..." : "Generate Web3 Invoice"}</span>
-      </button>
-
-      {/* Toggleable Direct manual transfer fallback */}
-      <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
-        <button
-          type="button"
-          onClick={() => setShowManualFallback(!showManualFallback)}
-          className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
-        >
-          <span>Or Pay Manually (Direct Transfer)</span>
-          <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-            ▼
-          </span>
-        </button>
-
-        {showManualFallback && (
-          <div className="space-y-3 pt-3">
-            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
-              ⚠️ WARNING: Include the unique comment memo in your transfer or your deposit will be lost.
-            </div>
-
-            {(() => {
-              const tgId = tgUser?.id || 1029384;
-              const memoComment = `ref_${tgId}`;
-              const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
-              return (
-                <div className="space-y-3">
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
-                    <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => {
-                      navigator.clipboard.writeText(masterWallet);
-                      setCopiedWallet(true);
-                      telegramHaptic('light');
-                      setTimeout(() => setCopiedWallet(false), 2000);
-                    }}>
-                      <span className="truncate">{masterWallet}</span>
-                      {copiedWallet ? (
-                        <FaCheck className="text-emerald-400 shrink-0 ml-2 animate-pulse" />
-                      ) : (
-                        <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
-                    <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => {
-                      navigator.clipboard.writeText(memoComment);
-                      setCopiedMemo(true);
-                      telegramHaptic('light');
-                      setTimeout(() => setCopiedMemo(false), 2000);
-                    }}>
-                      <span>{memoComment}</span>
-                      {copiedMemo ? (
-                        <FaCheck className="text-emerald-400 animate-pulse" />
-                      ) : (
-                        <FaCopy className="text-emerald-500 opacity-60" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        )}
-      </div>
-    </div>
-  )}
-
-  {/* Commission Alert */}
-  <div className="p-3 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider w-full mt-2">
-    <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
-  </div>
-
-  {/* Messages and Simulation Fallback */}
-  <div className="w-full pt-2 space-y-2">
-    {depositSuccess && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{depositSuccess}</div>}
-    {depositError && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{depositError}</div>}
-
-    {!invoiceUrl && (
-      <div className="p-3.5 rounded-2xl border border-dashed border-brand-primary/10 bg-brand-void/25 flex flex-col space-y-2 mt-2">
-        <span className="text-[8px] font-black text-brand-primary/30 uppercase tracking-[0.2em] text-center">Dev Sandbox Tools</span>
-        <button
-          onClick={handleSimulateLobbyDeposit}
-          disabled={isDepositing}
-          className="w-full py-2 rounded-xl bg-brand-primary/5 border border-brand-primary/10 hover:bg-brand-primary/10 text-brand-primary/60 text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: isDepositing ? 'block' : 'none' }} />
-          <span>{isDepositing ? "Simulating..." : "Simulate Instant Deposit"}</span>
-        </button>
-      </div>
+    {showDepositDrawer && (
+      <LobbyDepositDrawer
+        chosenWager={chosenWager}
+        walletBalance={walletBalance}
+        tgUser={tgUser}
+        onClose={() => setShowDepositDrawer(false)}
+        syncBalance={syncBalance}
+        onDepositSuccess={(newBalance) => setWalletBalance(newBalance)}
+      />
     )}
-    
-    <button
-      onClick={() => setShowDepositDrawer(false)}
-      className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
-    >
-      {t('back')}
-    </button>
-  </div>
-  </motion.div>
-  </div>
-  )}
   </AnimatePresence>
 
   {/* Rake Info Bottom Drawer */}
   <AnimatePresence>
-  {showRakeInfo && (
-  <div className="bottom-drawer-backdrop z-[100]">
-  <motion.div 
-    initial={{ opacity: 0 }} 
-    animate={{ opacity: 1 }} 
-    exit={{ opacity: 0 }} 
-    onClick={() => setShowRakeInfo(false)}
-    className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
-  />
-  <motion.div 
-    initial={{ y: "100%" }} 
-    animate={{ y: 0 }} 
-    exit={{ y: "100%" }} 
-    transition={{ type: "spring", damping: 30, stiffness: 350 }}
-    className="bottom-drawer-sheet relative z-10"
-  >
-  <div className="bottom-drawer-handle" />
-  
-  <div className="flex flex-col items-center text-center mt-2">
-  <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-    {tg('platform_commission')}
-  </h2>
-  <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-    {tg('sustain_ecosystem')}
-  </p>
-  </div>
-  
-  <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
-    <p>
-      {tg('rake_desc1')}
-    </p>
-    <p>
-      {tg('rake_desc2')}
-    </p>
-    <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-    <p className="text-[10px] text-brand-primary/50 uppercase tracking-wider">
-      {tg('where_rake_goes')}
-    </p>
-    <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
-      <li>{tg('rake_li1')}</li>
-      <li>{tg('rake_li2')}</li>
-      <li>{tg('rake_li3')}</li>
-    </ul>
-  </div>
-  
-  <div className="w-full flex flex-col gap-3">
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={() => setShowRakeInfo(false)}
-      className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-    >
-      <span>{tg('got_it')}</span>
-    </motion.button>
-  </div>
-  </motion.div>
-  </div>
-  )}
+    {showRakeInfo && (
+      <RakeInfoDrawer onClose={() => setShowRakeInfo(false)} />
+    )}
   </AnimatePresence>
 
   </div>
