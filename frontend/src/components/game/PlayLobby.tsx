@@ -16,6 +16,7 @@ import TimeControlSelector from './TimeControlSelector';
 import FriendInviteDrawer from './FriendInviteDrawer';
 import LobbyDepositDrawer from './LobbyDepositDrawer';
 import RakeInfoDrawer from './RakeInfoDrawer';
+import { useUser } from '@/context/UserContext';
 
 export default function PlayLobby() {
   const t = useTranslations('Index');
@@ -24,7 +25,7 @@ export default function PlayLobby() {
   const router = useRouter();
 
   const [tgUser, setTgUser] = useState<any>(null);
-  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const { walletBalance, syncBalance } = useUser();
 
   // Matchmaking configs
   const [selectedWager, setSelectedWager] = useState<number>(500); // in cents (default $5)
@@ -127,19 +128,7 @@ export default function PlayLobby() {
     return () => clearInterval(interval);
   }, []);
 
-  const syncBalance = useCallback(async () => {
-    try {
-      const res = await apiFetch("/api/v1/wallet/balance");
-      if (res.ok) {
-        const data = await res.json();
-        setWalletBalance(data.balance);
-      }
-    } catch (err) {
-      console.error("Failed to sync wallet balance", err);
-    }
-  }, []);
-
-  // Sync balance on mount
+  // Refresh balance in background on mount
   useEffect(() => {
     syncBalance();
   }, [syncBalance]);
@@ -418,49 +407,44 @@ export default function PlayLobby() {
               />
 
               {/* Summary Row */}
-              <AnimatePresence>
-                {chosenWager > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mx-3 mb-3 rounded-2xl overflow-hidden"
-                  >
-                    <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand-void/40 border border-brand-border-opacity-10 rounded-2xl">
-                      <div className="flex flex-col">
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('stake')}</span>
-                        <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
-                      </div>
-                      <div className="w-px h-6 bg-brand-border-opacity-10" />
-                      <div className="flex flex-col items-center">
-                        <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">{tg('win_up_to')}</span>
-                        <span className="text-[11px] font-black text-emerald-400">${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT</span>
-                      </div>
-                      <div className="w-px h-6 bg-brand-border-opacity-10" />
-                      <button
-                        onClick={() => setShowRakeInfo(true)}
-                        className="flex flex-col items-end cursor-pointer bg-transparent border-0"
-                      >
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('rake')}</span>
-                        <span className="text-[11px] font-black text-amber-400">3%</span>
-                      </button>
+              {chosenWager > 0 && (
+                <div
+                  className="mx-3 mb-3 rounded-2xl overflow-hidden"
+                >
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand-void/40 border border-brand-border-opacity-10 rounded-2xl">
+                    <div className="flex flex-col">
+                      <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('stake')}</span>
+                      <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                     </div>
+                    <div className="w-px h-6 bg-brand-border-opacity-10" />
+                    <div className="flex flex-col items-center">
+                      <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">{tg('win_up_to')}</span>
+                      <span className="text-[11px] font-black text-emerald-400">${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT</span>
+                    </div>
+                    <div className="w-px h-6 bg-brand-border-opacity-10" />
+                    <button
+                      onClick={() => setShowRakeInfo(true)}
+                      className="flex flex-col items-end cursor-pointer bg-transparent border-0"
+                    >
+                      <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5">{tg('rake')}</span>
+                      <span className="text-[11px] font-black text-amber-400">3%</span>
+                    </button>
+                  </div>
 
-                    {/* Balance check strip */}
-                    <div className={`mt-1.5 py-1.5 px-3.5 rounded-xl border text-[8.5px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
-                      hasSufficient
-                        ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
-                        : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
-                    }`}>
-                      <span className="opacity-70">{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
-                      {hasSufficient
-                        ? <span className="flex items-center gap-1">✓ {tg('balance_verified')}</span>
-                        : <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
-                      }
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  {/* Balance check strip */}
+                  <div className={`mt-1.5 py-1.5 px-3.5 rounded-xl border text-[8.5px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
+                    hasSufficient
+                      ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
+                      : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
+                  }`}>
+                    <span className="opacity-70">{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
+                    {hasSufficient
+                      ? <span className="flex items-center gap-1">✓ {tg('balance_verified')}</span>
+                      : <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
+                    }
+                  </div>
+                </div>
+              )}
 
               {/* Launcher Button */}
               <div className="px-3 pb-3">
@@ -542,8 +526,8 @@ export default function PlayLobby() {
               walletBalance={walletBalance}
               tgUser={tgUser}
               onClose={() => setShowDepositDrawer(false)}
-              syncBalance={syncBalance}
-              onDepositSuccess={(newBalance) => setWalletBalance(newBalance)}
+              syncBalance={async () => { await syncBalance(); }}
+              onDepositSuccess={(newBalance) => { syncBalance(); }}
             />
           )}
         </AnimatePresence>

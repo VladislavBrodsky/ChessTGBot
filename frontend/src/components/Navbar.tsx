@@ -47,27 +47,19 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                             <Link href={item.href}>
                                 <div className="relative h-12 flex items-center justify-center transition-all duration-300">
                                     {isActive && (
-                                        <motion.div
-                                            layoutId="nav-active-indicator"
+                                        <div
                                             className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-5 shadow-inner-glow"
-                                            initial={false}
-                                            transition={{
-                                                type: "spring",
-                                                stiffness: 500,
-                                                damping: 38
-                                            }}
                                         />
                                     )}
-                                    <motion.div
-                                        animate={{
-                                            scale: isActive ? 1.25 : 1,
-                                            color: isActive ? "var(--text-primary)" : "var(--text-muted)"
-                                        }}
-                                        transition={{ duration: 0.3 }}
-                                        className="text-xl relative z-20"
+                                    <div
+                                        className={`text-xl relative z-20 transition-all duration-200 ${
+                                            isActive 
+                                                ? "text-[var(--text-primary)] scale-110" 
+                                                : "text-[var(--text-muted)]"
+                                        }`}
                                     >
                                         {item.icon}
-                                    </motion.div>
+                                    </div>
                                 </div>
                             </Link>
                         </li>

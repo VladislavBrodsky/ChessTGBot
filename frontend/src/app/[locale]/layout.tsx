@@ -7,6 +7,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
+import { UserProvider } from "@/context/UserContext";
 
 const inter = { variable: "--font-geist-sans" };
 const robotoMono = { variable: "--font-geist-mono" };
@@ -75,10 +76,12 @@ export default async function LocaleLayout({
                 <NextIntlClientProvider messages={messages}>
                     <ThemeProvider>
                         <NavbarProvider>
-                            <Providers>
-                                <TelegramInit />
-                                {children}
-                            </Providers>
+                            <UserProvider>
+                                <Providers>
+                                    <TelegramInit />
+                                    {children}
+                                </Providers>
+                            </UserProvider>
                         </NavbarProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>

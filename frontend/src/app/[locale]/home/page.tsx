@@ -16,14 +16,14 @@ import XPProgressBar from "@/components/XPProgressBar";
 import { telegramAlert } from "@/lib/telegram";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
+import { useUser } from "@/context/UserContext";
 
 export default function Home() {
  const t = useTranslations('Index');
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
- const [stats, setStats] = useState<any>(null);
- const [walletBalance, setWalletBalance] = useState<number>(0);
+ const { stats, walletBalance, syncBalance, syncStats } = useUser();
  const [showReferralPopup, setShowReferralPopup] = useState<boolean>(false);
 
  useEffect(() => {
@@ -55,50 +55,19 @@ export default function Home() {
  }, []);
 
  useEffect(() => {
+   // Refresh balance and stats in background on mount
    syncBalance();
+   syncStats();
+   
    // Init Telegram WebApp Data
    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
      const tg = window.Telegram.WebApp;
      setTgUser(tg.initDataUnsafe?.user);
-
-     // Always call sync when Telegram WebApp is detected — auth comes from X-Telegram-Init-Data header,
-     // not from initDataUnsafe.user.id. The old guard `if (tg.initDataUnsafe?.user?.id)` caused the
-     // profile card to stay in skeleton state when user ID wasn't immediately available.
-     apiFetch(`/api/v1/users/sync`, { method: "POST" })
-       .then(res => res.json())
-       .then(data => setStats(data))
-       .catch(err => console.error("Failed to fetch Stats", err));
    } else {
      // Dev Mode Mock
      setTgUser({ first_name: "Master", photo_url: null });
-     setStats({
-       elo: 1250,
-       wins: 15,
-       losses: 5,
-       draws: 2,
-       is_premium: true,
-       win_rate: 68.2,
-       current_streak: { type: 'win', count: 3 },
-       recent_games: [
-         { game_id: '1', opponent: { name: 'Player 1', elo: 1230 }, result: 'win', elo_change: 12 },
-         { game_id: '2', opponent: { name: 'Player 2', elo: 1190 }, result: 'win', elo_change: 10 },
-         { game_id: '3', opponent: { name: 'Player 3', elo: 1270 }, result: 'loss', elo_change: -15 }
-       ]
-     });
    }
- }, []);
-
- const syncBalance = async () => {
- try {
- const res = await apiFetch("/api/v1/wallet/balance");
- if (res.ok) {
- const data = await res.json();
- setWalletBalance(data.balance);
- }
- } catch (err) {
- console.error("Failed to sync wallet balance", err);
- }
- };
+ }, [syncBalance, syncStats]);
 
   const handleShareResult = (game: any) => {
     const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
@@ -164,9 +133,7 @@ export default function Home() {
       </div>
     </div>
   ) : (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group"
     >
       {/* Decorative background chess piece */}
@@ -250,7 +217,7 @@ export default function Home() {
       </span>
       </div>
       </div>
-    </motion.div>
+    </div>
   )}
 
  {/* Quick Shortcuts Hub Grid (3 Columns) */}

@@ -12,6 +12,7 @@ import WithdrawModal from "@/components/Wallet/WithdrawModal";
 import LinkWalletModal from "@/components/Wallet/LinkWalletModal";
 import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
+import { useUser } from "@/context/UserContext";
 
 interface Transaction {
   id: number;
@@ -28,8 +29,7 @@ export default function WalletPage() {
   const tw = useTranslations('Wallet');
 
   // Balance & wallet state
-  const [balance, setBalance] = useState<number>(0);
-  const [walletAddress, setWalletAddress] = useState<string>("");
+  const { walletBalance: balance, walletAddress, syncBalance } = useUser();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -47,12 +47,7 @@ export default function WalletPage() {
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      const balRes = await apiFetch("/api/v1/wallet/balance");
-      if (balRes.ok) {
-        const balData = await balRes.json();
-        setBalance(balData.balance);
-        setWalletAddress(balData.wallet_address || "");
-      }
+      await syncBalance();
 
       const txRes = await apiFetch("/api/v1/wallet/transactions");
       if (txRes.ok) {
