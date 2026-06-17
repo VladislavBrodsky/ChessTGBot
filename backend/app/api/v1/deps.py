@@ -80,9 +80,12 @@ async def get_current_user(
         
         start_param = telegram_user.get("start_param")
         if start_param:
+            code = start_param
+            if code.startswith("ref_"):
+                code = code[4:]
             try:
                 from app.services.gamification_service import GamificationService
-                await GamificationService.process_referral(db, user, start_param)
+                await GamificationService.process_referral(db, user, code)
             except Exception as e:
                 print(f"Error processing referral for user {user_id}: {e}")
     else:

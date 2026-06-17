@@ -92,27 +92,28 @@ export default function MembershipPage() {
     }
   };
 
- const handleSubscribe = async () => {
- if (!tgUser?.id) {
- alert("Telegram User not found. Are you in the Mini App?");
- return;
- }
+  const handleSubscribe = async () => {
+  if (!tgUser?.id) {
+  alert("Telegram User not found. Are you in the Mini App?");
+  return;
+  }
 
- try {
- const res = await apiFetch("/api/v1/users/subscribe", {
- method: "POST",
- body: JSON.stringify({
- tier: selectedTier.id
- })
- });
- const data = await res.json();
- if (data.status === "success") {
- alert(`Successfully subscribed to ${selectedTier.name}!`);
- }
- } catch (e) {
- console.error("Subscription failed", e);
- }
- };
+  try {
+  const res = await apiFetch("/api/v1/users/subscribe", {
+  method: "POST",
+  body: JSON.stringify({
+  tier: selectedTier.id,
+  billing_period: billingPeriod
+  })
+  });
+  const data = await res.json();
+  if (data.status === "success") {
+  alert(`Successfully subscribed to ${selectedTier.name}!`);
+  }
+  } catch (e) {
+  console.error("Subscription failed", e);
+  }
+  };
 
  return (
  <LayoutWrapper className="pb-32 pt-6">

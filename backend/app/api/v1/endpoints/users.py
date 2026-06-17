@@ -238,6 +238,7 @@ async def link_wallet(request: WalletLinkRequest, db: AsyncSession = Depends(get
 
 class SubscriptionRequest(BaseModel):
     tier: str
+    billing_period: str = "monthly"  # "monthly" or "annual"
 
 @router.post("/subscribe")
 async def subscribe_user(
@@ -252,13 +253,26 @@ async def subscribe_user(
     from datetime import timedelta
     from app.models.transaction import Transaction
 
-    # Map tier pricing (in cents)
-    tier_pricing = {
-        "basic": 50,
-        "premium": 120,
-        "premium_plus": 250
+    # Map tier pricing (in cents) for monthly and annual
+    pricing_matrix = {
+        "monthly": {
+            "basic": 50,
+            "premium": 120,
+            "premium_plus": 250
+        },
+        "annual": {
+            "basic": 500,
+            "premium": 1200,
+            "premium_plus": 2500
+        }
     }
-    price = tier_pricing.get(request.tier.lower(), 50)
+    
+    period = request.billing_period.lower()
+    if period not in pricing_matrix:
+        period = "monthly"
+        
+    tier = request.tier.lower()
+    price = pricing_matrix[period].get(tier, 50)
     
     if current_user.balance < price:
         raise HTTPException(
@@ -276,10 +290,13 @@ async def subscribe_user(
         amount=-price,
         fee=0,
         status="completed",
-        reference_id=f"sub_{request.tier.lower()}_{int(datetime.utcnow().timestamp())}"
+        reference_id=f"sub_{tier}_{period}_{int(datetime.utcnow().timestamp())}"
     )
     db.add(tx)
 
-    expires_at = datetime.utcnow() + timedelta(days=30)
+    # Calculate expiration duration based on billing period
+    days = 365 if period == "annual" else 30
+    expires_at = datetime.utcnow() + timedelta(days=days)
+    
     updated_user = await user_crud.update_subscription(db, current_user, request.tier, expires_at)
     return {"status": "success", "tier": updated_user.premium_tier}

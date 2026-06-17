@@ -80,6 +80,122 @@ def test_validate_init_data_extracts_start_param():
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token
 
+@pytest.mark.asyncio
+async def test_subscribe_billing_periods(client, db_session):
+    # Skip if using mock session to prevent database exceptions
+    if hasattr(db_session, "users"):
+        return
+
+    from app.models.user import User
+    from app.crud import user as user_crud
+    
+    # 1. Create a user with enough balance for annual premium ($12.00 / 1200 cents)
+    telegram_id = 555555
+    user = await user_crud.create_user(db_session, telegram_id, "Subscriber")
+    user.balance = 2000 # 20.00 USD
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # 2. Mock authentication header
+    import hmac, hashlib, json, time
+    from urllib.parse import quote
+    from app.core.config import get_settings
+    settings = get_settings()
+    original_token = settings.TELEGRAM_BOT_TOKEN
+    settings.TELEGRAM_BOT_TOKEN = "123456789:test_token"
+    
+    try:
+        user_str = json.dumps({"id": telegram_id, "first_name": "Subscriber"})
+        auth_date = str(int(time.time()))
+        check_list = [f"auth_date={auth_date}", f"user={user_str}"]
+        data_check_string = "\n".join(check_list)
+        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
+        
+        headers = {"X-Telegram-Init-Data": init_data}
+
+        # 3. Test Subscribe Monthly
+        res = await client.post("/api/v1/users/subscribe", json={"tier": "basic", "billing_period": "monthly"}, headers=headers)
+        assert res.status_code == 200
+        data = res.json()
+        assert data["tier"] == "basic"
+        
+        # Verify DB states
+        await db_session.refresh(user)
+        assert user.balance == 1950 # Deducted 50 cents
+        assert user.premium_tier == "basic"
+        assert user.is_premium is True
+        
+        # 4. Test Subscribe Annual
+        res2 = await client.post("/api/v1/users/subscribe", json={"tier": "premium", "billing_period": "annual"}, headers=headers)
+        assert res2.status_code == 200
+        data2 = res2.json()
+        assert data2["tier"] == "premium"
+        
+        # Verify DB states
+        await db_session.refresh(user)
+        assert user.balance == 750 # Deducted 1200 cents
+        assert user.premium_tier == "premium"
+        
+    finally:
+        settings.TELEGRAM_BOT_TOKEN = original_token
+
+@pytest.mark.asyncio
+async def test_referral_parsing_strips_prefix(client, db_session):
+    # Skip if using mock session to prevent database exceptions
+    if hasattr(db_session, "users"):
+        return
+
+    from app.models.user import User
+    from app.crud import user as user_crud
+    from app.models.gamification import Referral
+    from sqlalchemy.future import select
+    
+    # 1. Create a referrer user
+    referrer = await user_crud.create_user(db_session, 88888, "Referrer")
+    referrer.referral_code = "ABC12345"
+    db_session.add(referrer)
+    await db_session.commit()
+    await db_session.refresh(referrer)
+
+    # 2. Mock authentication header for new user with start_param="ref_ABC12345"
+    import hmac, hashlib, json, time
+    from urllib.parse import quote
+    from app.core.config import get_settings
+    settings = get_settings()
+    original_token = settings.TELEGRAM_BOT_TOKEN
+    settings.TELEGRAM_BOT_TOKEN = "123456789:test_token"
+    
+    try:
+        new_telegram_id = 99999
+        user_str = json.dumps({"id": new_telegram_id, "first_name": "NewUser"})
+        auth_date = str(int(time.time()))
+        check_list = [f"auth_date={auth_date}", "start_param=ref_ABC12345", f"user={user_str}"]
+        data_check_string = "\n".join(check_list)
+        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        init_data = f"auth_date={quote(auth_date)}&start_param=ref_ABC12345&user={quote(user_str)}&hash={calculated_hash}"
+        
+        headers = {"X-Telegram-Init-Data": init_data}
+
+        # Query the sync endpoint to trigger auto-registration with start_param
+        res = await client.post("/api/v1/users/sync", headers=headers)
+        assert res.status_code == 200
+        
+        # Verify referral created in database
+        ref_query = await db_session.execute(select(Referral).filter(Referral.referrer_id == referrer.id))
+        referral_record = ref_query.scalars().first()
+        assert referral_record is not None
+        
+        # Verify XP rewards awarded
+        await db_session.refresh(referrer)
+        assert referrer.xp == 50
+        
+    finally:
+        settings.TELEGRAM_BOT_TOKEN = original_token
+
 
 def test_parse_init_data_unverified():
     from urllib.parse import quote
