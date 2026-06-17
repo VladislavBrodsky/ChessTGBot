@@ -65,7 +65,11 @@
     "enhanced_access": "प्रीमियम एक्सेस सक्रिय",
     "footer": "FinChess मैट्रिक्स इंटरफ़ेस बिल्ड v1.5.02 के लिए अधिकृत",
     "nebula_protocol": "Nebula Protocol",
-    "membership_tier": "सदस्यता टियर"
+    "membership_tier": "सदस्यता टियर",
+    "account_section": "खाता और एकीकरण",
+    "ton_wallet": "टॉन वॉलेट",
+    "ton_not_connected": "कनेक्ट नहीं है",
+    "premium_membership": "प्रीमियम सदस्यता"
   },
   "Language": {
     "select": "भाषा चुनें"
@@ -94,7 +98,16 @@
     "copied_success": "कॉपी किया गया! ✓",
     "verify_btn": "सत्यापित करें",
     "claimed_status": "दावा किया गया",
-    "reward": "पुरस्कार"
+    "reward": "पुरस्कार",
+    "challenges_header": "कमांड सेंटर",
+    "challenges_version": "V2",
+    "grandmaster_rising": "ग्रैंडमास्टर उदय",
+    "next_level": "अगला स्तर: {xp} XP",
+    "daily_operations": "दैनिक कार्य",
+    "no_active_missions": "कोई सक्रिय मिशन नहीं",
+    "battles": "लड़ाई",
+    "elo_rating": "ELO रेटिंग",
+    "return": "पीछे"
   },
   "Academy": {
     "title": "अकादमी",

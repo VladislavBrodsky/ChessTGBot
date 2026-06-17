@@ -109,7 +109,8 @@
     "daily_operations": "Daily Operations",
     "no_active_missions": "No active missions",
     "battles": "Battles",
-    "elo_rating": "ELO Rating"
+    "elo_rating": "ELO Rating",
+    "return": "Back"
   },
   "Academy": {
     "title": "Academy",

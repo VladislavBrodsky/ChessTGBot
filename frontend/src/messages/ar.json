@@ -65,7 +65,11 @@
     "enhanced_access": "حالة الاشتراك المميز: نشط",
     "footer": "تطبيق شطرنج مصغر v1.5.0",
     "nebula_protocol": "Nebula Protocol",
-    "membership_tier": "مستوى العضوية"
+    "membership_tier": "مستوى العضوية",
+    "account_section": "الحساب وعمليات الدمج",
+    "ton_wallet": "محفظة TON",
+    "ton_not_connected": "غير متصل",
+    "premium_membership": "العضوية المميزة"
   },
   "Language": {
     "select": "اختر اللغة"
@@ -94,7 +98,16 @@
     "copied_success": "تم النسخ! ✓",
     "verify_btn": "تحقق",
     "claimed_status": "تم المطالبة به",
-    "reward": "مكافأة"
+    "reward": "مكافأة",
+    "challenges_header": "مركز القيادة",
+    "challenges_version": "V2",
+    "grandmaster_rising": "صعود الجراند ماستر",
+    "next_level": "المستوى التالي: {xp} XP",
+    "daily_operations": "العمليات اليومية",
+    "no_active_missions": "لا توجد مهام نشطة",
+    "battles": "المعارك",
+    "elo_rating": "تصنيف ELO",
+    "return": "رجوع"
   },
   "Academy": {
     "title": "الأكاديمية",

@@ -65,7 +65,11 @@
     "enhanced_access": "プレミアムステータス：アクティブ",
     "footer": "チェスミニアプリ v1.5.0",
     "nebula_protocol": "Nebula Protocol",
-    "membership_tier": "メンバーシップ・ティア"
+    "membership_tier": "メンバーシップ・ティア",
+    "account_section": "アカウントと連携",
+    "ton_wallet": "TONウォレット",
+    "ton_not_connected": "未接続",
+    "premium_membership": "プレミアムメンバーシップ"
   },
   "Language": {
     "select": "言語を選択"
@@ -94,7 +98,16 @@
     "copied_success": "コピーしました！ ✓",
     "verify_btn": "検証",
     "claimed_status": "受取済",
-    "reward": "報酬"
+    "reward": "報酬",
+    "challenges_header": "コマンドセンター",
+    "challenges_version": "V2",
+    "grandmaster_rising": "グランドマスターの台頭",
+    "next_level": "次のレベル: {xp} XP",
+    "daily_operations": "デイリーミッション",
+    "no_active_missions": "アクティブなミッションはありません",
+    "battles": "バトル",
+    "elo_rating": "ELOレーティング",
+    "return": "戻る"
   },
   "Academy": {
     "title": "アカデミー",

@@ -65,7 +65,11 @@
     "language_matrix": "Выбор языка",
     "enhanced_access": "Премиум-статус: Активен",
     "footer": "Мини-приложение Шахматы v1.5.0",
-    "membership_tier": "Статус подписки"
+    "membership_tier": "Статус подписки",
+    "account_section": "Аккаунт и интеграции",
+    "ton_wallet": "Кошелек TON",
+    "ton_not_connected": "Не подключен",
+    "premium_membership": "Премиум-подписка"
   },
   "Language": {
     "select": "Выберите Язык"
@@ -94,7 +98,16 @@
     "copied_success": "Скопировано! ✓",
     "verify_btn": "Проверить",
     "claimed_status": "Получено",
-    "reward": "Награда"
+    "reward": "Награда",
+    "challenges_header": "Командный центр",
+    "challenges_version": "V2",
+    "grandmaster_rising": "Путь Гроссмейстера",
+    "next_level": "Следующий уровень: {xp} XP",
+    "daily_operations": "Ежедневные задания",
+    "no_active_missions": "Нет активных заданий",
+    "battles": "Матчи",
+    "elo_rating": "Рейтинг ELO",
+    "return": "Назад"
   },
   "Academy": {
     "title": "Академия",

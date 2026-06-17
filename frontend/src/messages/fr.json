@@ -65,7 +65,11 @@
     "enhanced_access": "Statut Premium : Actif",
     "footer": "Chess Mini App v1.5.0",
     "nebula_protocol": "Nebula Protocol",
-    "membership_tier": "Niveau de Membresía"
+    "membership_tier": "Niveau de Membresía",
+    "account_section": "Compte et intégrations",
+    "ton_wallet": "Portefeuille TON",
+    "ton_not_connected": "Non connecté",
+    "premium_membership": "Abonnement Premium"
   },
   "Language": {
     "select": "Choisir la Langue"
@@ -94,7 +98,16 @@
     "copied_success": "Copié ! ✓",
     "verify_btn": "Vérifier",
     "claimed_status": "Réclamé",
-    "reward": "Récompense"
+    "reward": "Récompense",
+    "challenges_header": "Centre de commandement",
+    "challenges_version": "V2",
+    "grandmaster_rising": "L'ascension du grand maître",
+    "next_level": "Niveau suivant: {xp} XP",
+    "daily_operations": "Opérations quotidiennes",
+    "no_active_missions": "Aucune mission active",
+    "battles": "Batailles",
+    "elo_rating": "Classement ELO",
+    "return": "Retour"
   },
   "Academy": {
     "title": "Académie",

@@ -65,7 +65,11 @@
     "enhanced_access": "高级会员状态：已激活",
     "footer": "象棋小程序 v1.5.0",
     "nebula_protocol": "Nebula Protocol",
-    "membership_tier": "会员等级"
+    "membership_tier": "会员等级",
+    "account_section": "账户与集成",
+    "ton_wallet": "TON钱包",
+    "ton_not_connected": "未连接",
+    "premium_membership": "高级会员"
   },
   "Language": {
     "select": "选择语言"
@@ -94,7 +98,16 @@
     "copied_success": "已复制！ ✓",
     "verify_btn": "验证",
     "claimed_status": "已领取",
-    "reward": "奖励"
+    "reward": "奖励",
+    "challenges_header": "指挥中心",
+    "challenges_version": "V2",
+    "grandmaster_rising": "特级大师崛起",
+    "next_level": "下一等级: {xp} XP",
+    "daily_operations": "每日任务",
+    "no_active_missions": "暂无活动任务",
+    "battles": "对局",
+    "elo_rating": "ELO积分",
+    "return": "返回"
   },
   "Academy": {
     "title": "学院",
