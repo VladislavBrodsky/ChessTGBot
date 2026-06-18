@@ -6,6 +6,8 @@ import { FaCheck, FaGift, FaTrophy } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
+import { triggerTaskSuccess } from '@/lib/telegram';
+
 const TaskSkeleton = () => (
     <div className="w-full flex flex-col space-y-3">
         {[1, 2, 3].map((n) => (
@@ -49,6 +51,7 @@ export default function DailyTasks() {
     }, []);
 
     const handleClaim = async (taskDefId: number) => {
+        const task = tasks.find(t => t.task_id === taskDefId);
         try {
             // Optimistic update
             setTasks(prev => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
@@ -56,7 +59,12 @@ export default function DailyTasks() {
             const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
                 method: "POST"
             });
-            if (!res.ok) {
+            if (res.ok) {
+                if (task) {
+                    const title = t.has(task.title_key) ? t(task.title_key) : task.title_key;
+                    triggerTaskSuccess(title, task.xp_reward);
+                }
+            } else {
                 // Rollback if failed
                 fetchTasks();
             }

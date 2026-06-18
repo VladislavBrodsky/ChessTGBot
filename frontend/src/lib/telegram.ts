@@ -38,3 +38,12 @@ export const telegramHaptic = (type: 'success' | 'warning' | 'error' | 'light' |
     }
   }
 };
+
+export const triggerTaskSuccess = (title: string, xpReward: number) => {
+  if (typeof window !== "undefined") {
+    const event = new CustomEvent("task-success", {
+      detail: { title, xpReward }
+    });
+    window.dispatchEvent(event);
+  }
+};

@@ -4,6 +4,7 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { ReactNode, useEffect, useState } from 'react';
 import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
+import TaskSuccessModal from './TaskSuccessModal';
 
 export default function Providers({ children }: { children: ReactNode }) {
     const [manifestUrl, setManifestUrl] = useState<string>('');
@@ -20,6 +21,7 @@ export default function Providers({ children }: { children: ReactNode }) {
             <>
                 <ReferralNotification />
                 <CustomAlertModal />
+                <TaskSuccessModal />
                 {children}
             </>
         );
@@ -29,6 +31,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         <TonConnectUIProvider manifestUrl={manifestUrl}>
             <ReferralNotification />
             <CustomAlertModal />
+            <TaskSuccessModal />
             {children}
         </TonConnectUIProvider>
     );

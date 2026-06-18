@@ -7,7 +7,7 @@ import { FaArrowLeft, FaTrophy, FaFire, FaCheckCircle, FaStar } from "react-icon
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
-import { telegramAlert } from "@/lib/telegram";
+import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
 import ReferralDashboard from "@/components/ReferralDashboard";
 
 export default function ChallengesPage() {
@@ -45,6 +45,7 @@ export default function ChallengesPage() {
   }, []);
 
   const handleClaim = async (taskDefId: number) => {
+    const task = tasks.find(t => t.task_id === taskDefId);
     try {
       const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
         method: "POST"
@@ -58,6 +59,11 @@ export default function ChallengesPage() {
         }));
         // Update local task state
         setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
+
+        if (task) {
+          const title = t.has(task.title_key) ? t(task.title_key) : task.title_key;
+          triggerTaskSuccess(title, task.xp_reward);
+        }
       }
     } catch (err) {
       console.error("Failed to claim task reward:", err);
