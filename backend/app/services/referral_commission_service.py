@@ -58,21 +58,29 @@ class ReferralCommissionService:
         """
         from sqlalchemy import alias
         
-        # We only support up to 3 levels in this optimization. For generic level depth,
-        # we can fall back or use a recursive CTE, but for our 3 levels limit this is optimal.
+        # Support up to 6 levels in this optimization.
         ref1 = alias(Referral, name="ref1")
         ref2 = alias(Referral, name="ref2")
         ref3 = alias(Referral, name="ref3")
+        ref4 = alias(Referral, name="ref4")
+        ref5 = alias(Referral, name="ref5")
+        ref6 = alias(Referral, name="ref6")
         
         stmt = (
             select(
                 ref1.c.referrer_id.label("l1"),
                 ref2.c.referrer_id.label("l2"),
-                ref3.c.referrer_id.label("l3")
+                ref3.c.referrer_id.label("l3"),
+                ref4.c.referrer_id.label("l4"),
+                ref5.c.referrer_id.label("l5"),
+                ref6.c.referrer_id.label("l6")
             )
             .select_from(ref1)
             .outerjoin(ref2, ref2.c.referred_user_id == ref1.c.referrer_id)
             .outerjoin(ref3, ref3.c.referred_user_id == ref2.c.referrer_id)
+            .outerjoin(ref4, ref4.c.referred_user_id == ref3.c.referrer_id)
+            .outerjoin(ref5, ref5.c.referred_user_id == ref4.c.referrer_id)
+            .outerjoin(ref6, ref6.c.referred_user_id == ref5.c.referrer_id)
             .where(ref1.c.referred_user_id == user_id)
         )
         
@@ -88,6 +96,12 @@ class ReferralCommissionService:
             referrer_ids.append(row.l2)
         if row.l3 and levels >= 3:
             referrer_ids.append(row.l3)
+        if row.l4 and levels >= 4:
+            referrer_ids.append(row.l4)
+        if row.l5 and levels >= 5:
+            referrer_ids.append(row.l5)
+        if row.l6 and levels >= 6:
+            referrer_ids.append(row.l6)
             
         if not referrer_ids:
             return []
@@ -98,7 +112,7 @@ class ReferralCommissionService:
         users_res = await db.execute(users_stmt)
         users_map = {u.id: u for u in users_res.scalars().all()}
         
-        # Build chain preserving direct-referrer first (l1 -> l2 -> l3) order
+        # Build chain preserving direct-referrer first (l1 -> l2 -> l3 -> l4 -> l5 -> l6) order
         chain = []
         for rid in referrer_ids:
             if rid in users_map:

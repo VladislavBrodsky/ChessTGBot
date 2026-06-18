@@ -330,26 +330,17 @@ async def subscribe_user(
     from datetime import timedelta
     from app.models.transaction import Transaction
 
-    # Map tier pricing (in cents) for monthly and annual
-    pricing_matrix = {
-        "monthly": {
-            "basic": 50,
-            "premium": 120,
-            "premium_plus": 250
-        },
-        "annual": {
-            "basic": 500,
-            "premium": 1200,
-            "premium_plus": 2500
-        }
-    }
-    
-    period = request.billing_period.lower()
-    if period not in pricing_matrix:
-        period = "monthly"
-        
+    # Enforce premium tier and calculate price
     tier = request.tier.lower()
-    price = pricing_matrix[period].get(tier, 50)
+    if tier != "premium":
+        raise HTTPException(status_code=400, detail="Only 'premium' subscription tier is supported")
+        
+    period = request.billing_period.lower()
+    if period == "annual":
+        price = 29580  # $295.80 USDT (15% discount on 12 months)
+    else:
+        period = "monthly"
+        price = 2900   # $29.00 USDT
 
     # Re-fetch with a row-level write lock to guard against concurrent subscription requests
     locked_user = await user_crud.get_user_by_telegram_id(db, current_user.telegram_id, for_update=True)
@@ -381,5 +372,5 @@ async def subscribe_user(
     days = 365 if period == "annual" else 30
     expires_at = now + timedelta(days=days)
 
-    updated_user = await user_crud.update_subscription(db, locked_user, request.tier, expires_at)
+    updated_user = await user_crud.update_subscription(db, locked_user, "premium", expires_at)
     return {"status": "success", "tier": updated_user.premium_tier}

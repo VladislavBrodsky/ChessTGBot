@@ -101,10 +101,10 @@ async def test_subscribe_billing_periods(client, db_session):
     from app.models.user import User
     from app.crud import user as user_crud
     
-    # 1. Create a user with enough balance for annual premium ($12.00 / 1200 cents)
+    # 1. Create a user with enough balance for annual premium ($295.80 / 29580 cents)
     telegram_id = 555559
     user = await user_crud.create_user(db_session, telegram_id, "Subscriber")
-    user.balance = 2000 # 20.00 USD
+    user.balance = 40000 # 400.00 USD
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
@@ -128,19 +128,19 @@ async def test_subscribe_billing_periods(client, db_session):
         
         headers = {"X-Telegram-Init-Data": init_data}
 
-        # 3. Test Subscribe Monthly
-        res = await client.post("/api/v1/users/subscribe", json={"tier": "basic", "billing_period": "monthly"}, headers=headers)
+        # 3. Test Subscribe Monthly (Premium tier, 2900 cents)
+        res = await client.post("/api/v1/users/subscribe", json={"tier": "premium", "billing_period": "monthly"}, headers=headers)
         assert res.status_code == 200
         data = res.json()
-        assert data["tier"] == "basic"
+        assert data["tier"] == "premium"
         
         # Verify DB states
         await db_session.refresh(user)
-        assert user.balance == 1950 # Deducted 50 cents
-        assert user.premium_tier == "basic"
+        assert user.balance == 37100 # Deducted 2900 cents
+        assert user.premium_tier == "premium"
         assert user.is_premium is True
         
-        # 4. Test Subscribe Annual
+        # 4. Test Subscribe Annual (Premium tier, 29580 cents)
         res2 = await client.post("/api/v1/users/subscribe", json={"tier": "premium", "billing_period": "annual"}, headers=headers)
         assert res2.status_code == 200
         data2 = res2.json()
@@ -148,7 +148,7 @@ async def test_subscribe_billing_periods(client, db_session):
         
         # Verify DB states
         await db_session.refresh(user)
-        assert user.balance == 750 # Deducted 1200 cents
+        assert user.balance == 7520 # Deducted 29580 cents
         assert user.premium_tier == "premium"
         
     finally:

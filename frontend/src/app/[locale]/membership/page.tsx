@@ -15,34 +15,19 @@ export default function MembershipPage() {
  const tm = useTranslations('Membership');
  const t = useTranslations('Index');
 
-  const TIERS = [
-   {
-   id: 'basic',
-   name: tm('basic'),
-   features: [
-   { icon: <FaCoins />, title: tm('p2e_access'), desc: tm('p2e_access_desc') },
-   { icon: <FaTrophy />, title: tm('global_ranking'), desc: tm('global_ranking_desc') },
-   { icon: <FaPalette />, title: tm('board_skins'), desc: tm('board_skins_desc') },
-   { icon: <FaAd />, title: tm('ad_free'), desc: tm('ad_free_desc') },
-   ],
-   monthly: 50,
-   annual: 500,
-   },
-   {
-   id: 'premium',
-   name: tm('premium'),
-   features: [
-   { icon: <FaRocket />, title: tm('premium_boost'), desc: tm('premium_boost_desc') },
-   { icon: <FaUserFriends />, title: tm('priority_match'), desc: tm('priority_match_desc') },
-   { icon: <FaCrown />, title: tm('elite_skins'), desc: tm('elite_skins_desc') },
-   { icon: <FaBrain />, title: tm('engine_analysis'), desc: tm('engine_analysis_desc') },
-   ],
-   monthly: 120,
-   annual: 1200,
-   }
-  ];
+  const PREMIUM_INFO = {
+    id: 'premium',
+    name: tm('premium'),
+    features: [
+      { icon: <FaRocket />, title: tm('premium_boost'), desc: tm('premium_boost_desc') },
+      { icon: <FaUserFriends />, title: tm('priority_match'), desc: tm('priority_match_desc') },
+      { icon: <FaCrown />, title: tm('elite_skins'), desc: tm('elite_skins_desc') },
+      { icon: <FaBrain />, title: tm('engine_analysis'), desc: tm('engine_analysis_desc') },
+    ],
+    monthly: 2900,
+    annual: 29580,
+  };
 
-  const [selectedTier, setSelectedTier] = useState(TIERS[0]);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const [tgUser, setTgUser] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
@@ -110,14 +95,14 @@ export default function MembershipPage() {
       const res = await apiFetch("/api/v1/users/subscribe", {
         method: "POST",
         body: JSON.stringify({
-          tier: selectedTier.id,
+          tier: 'premium',
           billing_period: billingPeriod
         })
       });
       const data = await res.json();
       if (data.status === "success") {
         telegramHaptic('success');
-        telegramAlert(`Successfully subscribed to ${selectedTier.name}!`);
+        telegramAlert(`Successfully subscribed to ${PREMIUM_INFO.name}!`);
       } else {
         telegramHaptic('error');
         telegramAlert(data.detail || "Subscription failed");
@@ -157,34 +142,10 @@ export default function MembershipPage() {
  <div className="h-px w-10 bg-brand-border-opacity-10 -mt-4" />
  <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30 -mt-2">{tm('subtitle')}</span>
 
- {/* Tier Selector */}
- <div className="w-full glass-panel p-1 rounded-2xl flex border-brand-border-opacity-10 bg-brand-surface shadow-sm">
- {TIERS.map((tier) => (
- <button
- key={tier.id}
- onClick={() => setSelectedTier(tier)}
- className={`flex-1 py-3 text-[9px] font-black rounded-xl transition-all duration-300 uppercase tracking-widest cursor-pointer ${selectedTier.id === tier.id
- ? "bg-brand-primary text-brand-void shadow-sm"
- : "text-brand-primary opacity-40 hover:opacity-60"
- }`}
- >
- {tier.name}
- </button>
- ))}
- </div>
-
  {/* Feature Container */}
  <div className="w-full glass-panel rounded-3xl p-6 border-brand-border-opacity-10 bg-brand-surface shadow-sm">
- <AnimatePresence mode="wait">
- <motion.div
- key={selectedTier.id}
- initial={{ opacity: 0, y: 5 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -5 }}
- transition={{ duration: 0.2 }}
- className="space-y-6"
- >
- {selectedTier.features.map((feature, idx) => (
+ <div className="space-y-6">
+ {PREMIUM_INFO.features.map((feature, idx) => (
  <div key={idx} className="flex items-start space-x-4">
  <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 flex items-center justify-center text-brand-primary opacity-60 shrink-0">
  <span className="text-base">{feature.icon}</span>
@@ -195,8 +156,7 @@ export default function MembershipPage() {
  </div>
  </div>
  ))}
- </motion.div>
- </AnimatePresence>
+ </div>
  </div>
 
  {/* Pricing Options */}
@@ -210,7 +170,7 @@ export default function MembershipPage() {
  >
  <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'monthly' ? "text-brand-void opacity-60" : "text-brand-primary opacity-30"}`}>{tm('monthly')}</span>
  <div>
-  <span className="text-3xl font-black tracking-tighter leading-none">${(selectedTier.monthly / 100).toFixed(2)}</span>
+  <span className="text-3xl font-black tracking-tighter leading-none">${(PREMIUM_INFO.monthly / 100).toFixed(2)}</span>
  <span className={`text-[9px] font-bold block mt-1 ${billingPeriod === 'monthly' ? "text-brand-void opacity-50" : "text-brand-primary opacity-30"}`}>{tm('per_month')}</span>
  </div>
  </button>
@@ -228,7 +188,7 @@ export default function MembershipPage() {
  <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-brand-void opacity-60" : "text-brand-primary opacity-30"}`}>{tm('annual')}</span>
  <div className="flex flex-col">
  <div>
-  <span className="text-3xl font-black tracking-tighter leading-none">${(selectedTier.annual / 100).toFixed(2)}</span>
+  <span className="text-3xl font-black tracking-tighter leading-none">${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
  <span className={`text-[9px] font-bold block mt-1 ${billingPeriod === 'annual' ? "text-brand-void opacity-50" : "text-brand-primary opacity-30"}`}>{tm('per_annum')}</span>
  </div>
  </div>
