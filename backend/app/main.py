@@ -121,9 +121,8 @@ async def lifespan(app: FastAPI):
     from app.services.game_service import GameService
     GameService.initialize_process_pool()
     
-    # Verify Database Connection
+    # Verify Database Connection & Seed Tasks
     from app.core.database import init_db, engine
-    from sqlalchemy import text
     try:
         is_sqlite = engine.url.drivername.startswith("sqlite")
         if is_sqlite:
@@ -131,17 +130,20 @@ async def lifespan(app: FastAPI):
             await init_db()
             logger.info("✅ SQLite Schema Initialized successfully.")
         else:
-            async with engine.connect() as conn:
-                result = await conn.execute(text("SELECT inet_server_addr()"))
-                db_host = result.scalar()
-                logger.info(f"✅ Database Connected. Host: {db_host}")
-                if str(db_host) in ["127.0.0.1", "::1"] and "railway" in settings.WEBAPP_URL:
-                     logger.warning("⚠️  WARNING: Production App connected to Localhost DB! Ensure DATABASE_URL is set.")
+            # Check host from the engine URL itself, avoiding SQL queries that can fail on some PG configurations
+            try:
+                db_host = engine.url.host
+                logger.info(f"✅ Database Host detected: {db_host}")
+                if db_host in ["127.0.0.1", "localhost", "::1"] and "railway" in settings.WEBAPP_URL:
+                     logger.warning("⚠️  WARNING: Production App config points to Localhost DB! Ensure DATABASE_URL is set.")
+            except Exception as host_err:
+                logger.warning(f"⚠️ Could not parse database host: {host_err}")
+
             logger.info("✅ Non-SQLite Database detected. Seeding tasks...")
             await init_db()
             logger.info("✅ Database tasks seeded successfully.")
     except Exception as e:
-         logger.error(f"❌ Database Connection Failed: {e}")
+         logger.error(f"❌ Database Initialization Failed: {e}")
 
     await TelegramService.start_bot()
 

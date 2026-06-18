@@ -29,12 +29,16 @@ async def init_db():
     from app.models.transaction import Transaction
     from app.models.xp_transaction import XpTransaction
     
-    async with engine.begin() as conn:
-        # In a fully migrated environment, we should only use Alembic.
-        # However, for the first run or dev, we can keep create_all if needed,
-        # but the goal is to move to Alembic exclusively.
-        await conn.run_sync(Base.metadata.create_all)
-        print("Database Schema: Tables verified via Base metadata.")
+    is_sqlite = engine.url.drivername.startswith("sqlite")
+    if is_sqlite:
+        async with engine.begin() as conn:
+            # In a fully migrated environment, we should only use Alembic.
+            # However, for the first run or dev, we can keep create_all if needed,
+            # but the goal is to move to Alembic exclusively.
+            await conn.run_sync(Base.metadata.create_all)
+            print("Database Schema: Tables verified via SQLite Base metadata.")
+    else:
+        print("Database Schema: Skipping create_all on PostgreSQL (managed by Alembic).")
 
     # Seed default tasks & achievements idempotently by ID
     async with AsyncSessionLocal() as session:

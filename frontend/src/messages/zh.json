@@ -415,6 +415,7 @@
     "copied": "已复制！",
     "referral_won": "推荐用户 {username} 赢得比赛！",
     "commission_earned": "收到 +{amount} USDT 佣金！",
-    "referral_toast_single_line": "{username} 获胜: +{amount} USDT"
+    "referral_toast_single_line": "{username} 获胜: +{amount} USDT",
+    "referral_toast_rich": "推荐用户 <gold>{username}</gold> 获胜！获得 <green>+{amount} USDT</green> 佣金"
   }
 }

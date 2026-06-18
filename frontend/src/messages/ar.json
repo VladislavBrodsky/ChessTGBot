@@ -415,6 +415,7 @@
     "copied": "تم النسخ!",
     "referral_won": "فاز المدعو {username} بالمباراة!",
     "commission_earned": "تم استلام عمولة +{amount} USDT!",
-    "referral_toast_single_line": "فاز {username}: +{amount} USDT"
+    "referral_toast_single_line": "فاز {username}: +{amount} USDT",
+    "referral_toast_rich": "فاز <gold>{username}</gold>! تم استلام عمولة <green>+{amount} USDT</green>"
   }
 }

@@ -415,6 +415,7 @@
     "copied": "コピーしました！",
     "referral_won": "紹介ユーザー {username} が対局に勝利！",
     "commission_earned": "+{amount} USDT の手数料を受け取りました！",
-    "referral_toast_single_line": "{username} が勝利: +{amount} USDT"
+    "referral_toast_single_line": "{username} が勝利: +{amount} USDT",
+    "referral_toast_rich": "紹介の <gold>{username}</gold> が勝利！<green>+{amount} USDT</green> の報酬を獲得"
   }
 }
