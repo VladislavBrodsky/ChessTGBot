@@ -27,84 +27,222 @@ class TelegramService:
             return None
         return None
 
+    # Multilingual welcome messages for the /start command
+    WELCOME_MESSAGES = {
+        "en": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Welcome, <b>{name}!</b>",
+            "sync": "You have successfully synchronized with the decentralized chess matrix.",
+            "features_header": "🤖 <b>Core Features:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Wager USDT in gasless real-time matches.",
+            "f2": "• <b>Dual-Reward Referrals:</b> Invite recruits to earn USDT passive revenue commissions from their games + XP points",
+            "f3": "• <b>Tactics Academy:</b> Solve a 100-level puzzle grid to level up.",
+            "f4": "• <b>Web3 Integration:</b> Instant deposits and withdrawals to your TON Wallet.",
+            "cta": "👇 Click the button below to initialize the dashboard and start playing!",
+            "btn": "♟️ Enter Chess Arena ♟️",
+        },
+        "ru": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Добро пожаловать, <b>{name}!</b>",
+            "sync": "Вы успешно синхронизировались с децентрализованной шахматной матрицей.",
+            "features_header": "🤖 <b>Основные возможности:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Делайте ставки USDT в матчах в реальном времени без комиссий.",
+            "f2": "• <b>Реферальная программа:</b> Приглашайте игроков и получайте пассивные комиссии USDT + очки XP.",
+            "f3": "• <b>Академия тактики:</b> Решайте 100-уровневую сетку задач для повышения уровня.",
+            "f4": "• <b>Web3-интеграция:</b> Мгновенные депозиты и выводы на ваш TON-кошелёк.",
+            "cta": "👇 Нажмите кнопку ниже, чтобы открыть панель управления и начать игру!",
+            "btn": "♟️ Войти в Арену ♟️",
+        },
+        "de": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Willkommen, <b>{name}!</b>",
+            "sync": "Du hast dich erfolgreich mit der dezentralen Schachmatrix synchronisiert.",
+            "features_header": "🤖 <b>Kernfunktionen:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Setze USDT in Echtzeit-Matches ohne Gasgebühren.",
+            "f2": "• <b>Dual-Reward-Empfehlungen:</b> Lade Freunde ein und verdiene USDT-Provisionen + XP-Punkte.",
+            "f3": "• <b>Taktik-Akademie:</b> Löse ein 100-Level-Rätselgitter zum Aufsteigen.",
+            "f4": "• <b>Web3-Integration:</b> Sofortige Ein- und Auszahlungen auf dein TON-Wallet.",
+            "cta": "👇 Klicke unten, um das Dashboard zu starten und zu spielen!",
+            "btn": "♟️ Chess Arena betreten ♟️",
+        },
+        "es": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Bienvenido, <b>{name}!</b>",
+            "sync": "Te has sincronizado exitosamente con la matriz de ajedrez descentralizada.",
+            "features_header": "🤖 <b>Características principales:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Apuesta USDT en partidas en tiempo real sin comisiones de gas.",
+            "f2": "• <b>Referencias de doble recompensa:</b> Invita jugadores y gana comisiones USDT pasivas + puntos XP.",
+            "f3": "• <b>Academia de tácticas:</b> Resuelve una cuadrícula de 100 niveles para subir de nivel.",
+            "f4": "• <b>Integración Web3:</b> Depósitos y retiros instantáneos a tu billetera TON.",
+            "cta": "👇 ¡Haz clic en el botón de abajo para iniciar el panel y comenzar a jugar!",
+            "btn": "♟️ Entrar al Chess Arena ♟️",
+        },
+        "fr": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Bienvenue, <b>{name}!</b>",
+            "sync": "Vous vous êtes synchronisé avec succès avec la matrice d'échecs décentralisée.",
+            "features_header": "🤖 <b>Fonctionnalités principales:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Misez des USDT dans des matchs en temps réel sans frais de gaz.",
+            "f2": "• <b>Parrainages double récompense:</b> Invitez des joueurs et gagnez des commissions USDT passives + points XP.",
+            "f3": "• <b>Académie de tactiques:</b> Résolvez une grille de 100 niveaux pour monter en grade.",
+            "f4": "• <b>Intégration Web3:</b> Dépôts et retraits instantanés vers votre portefeuille TON.",
+            "cta": "👇 Cliquez sur le bouton ci-dessous pour initialiser le tableau de bord et commencer!",
+            "btn": "♟️ Entrer dans l'Arène ♟️",
+        },
+        "ar": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "مرحباً، <b>{name}!</b>",
+            "sync": "لقد تزامنت بنجاح مع مصفوفة الشطرنج اللامركزية.",
+            "features_header": "🤖 <b>المميزات الأساسية:</b>",
+            "f1": "• <b>العب واربح:</b> راهن بـ USDT في مباريات فورية بدون رسوم غاز.",
+            "f2": "• <b>إحالات مزدوجة المكافأة:</b> ادعُ لاعبين واكسب عمولات USDT السلبية + نقاط XP.",
+            "f3": "• <b>أكاديمية التكتيكات:</b> حل شبكة من 100 مستوى للارتقاء.",
+            "f4": "• <b>تكامل Web3:</b> إيداعات وسحوبات فورية إلى محفظة TON الخاصة بك.",
+            "cta": "👇 انقر على الزر أدناه لفتح لوحة التحكم والبدء باللعب!",
+            "btn": "♟️ ادخل الساحة ♟️",
+        },
+        "hi": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "स्वागत है, <b>{name}!</b>",
+            "sync": "आप विकेंद्रीकृत शतरंज मैट्रिक्स के साथ सफलतापूर्वक सिंक हो गए हैं।",
+            "features_header": "🤖 <b>मुख्य विशेषताएं:</b>",
+            "f1": "• <b>Play-to-Earn:</b> गैस-मुक्त रियल-टाइम मैचों में USDT लगाएं।",
+            "f2": "• <b>डबल-रिवॉर्ड रेफरल:</b> खिलाड़ियों को आमंत्रित करें और USDT कमीशन + XP अंक कमाएं।",
+            "f3": "• <b>टैक्टिक्स अकादमी:</b> लेवल अप के लिए 100-स्तरीय पहेली ग्रिड हल करें।",
+            "f4": "• <b>Web3 एकीकरण:</b> आपके TON वॉलेट में तुरंत जमा और निकासी।",
+            "cta": "👇 डैशबोर्ड शुरू करने और खेलने के लिए नीचे बटन दबाएं!",
+            "btn": "♟️ Chess Arena में प्रवेश करें ♟️",
+        },
+        "pt": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "Bem-vindo, <b>{name}!</b>",
+            "sync": "Você sincronizou com sucesso com a matriz de xadrez descentralizada.",
+            "features_header": "🤖 <b>Recursos principais:</b>",
+            "f1": "• <b>Play-to-Earn:</b> Aposte USDT em partidas em tempo real sem taxas de gás.",
+            "f2": "• <b>Referências de recompensa dupla:</b> Convide jogadores e ganhe comissões USDT passivas + pontos XP.",
+            "f3": "• <b>Academia de Táticas:</b> Resolva uma grade de 100 níveis para subir de nível.",
+            "f4": "• <b>Integração Web3:</b> Depósitos e saques instantâneos para sua carteira TON.",
+            "cta": "👇 Clique no botão abaixo para inicializar o painel e começar a jogar!",
+            "btn": "♟️ Entrar no Chess Arena ♟️",
+        },
+        "ja": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "ようこそ、<b>{name}!</b>",
+            "sync": "分散型チェスマトリックスとの同期が完了しました。",
+            "features_header": "🤖 <b>主な機能:</b>",
+            "f1": "• <b>Play-to-Earn:</b> ガス代なしのリアルタイムマッチでUSDTを賭けましょう。",
+            "f2": "• <b>ダブルリワード紹介:</b> プレイヤーを招待してUSDTのパッシブ報酬＋XPポイントを獲得。",
+            "f3": "• <b>タクティクスアカデミー:</b> 100レベルのパズルグリッドを解いてレベルアップ。",
+            "f4": "• <b>Web3統合:</b> TONウォレットへの即時入出金。",
+            "cta": "👇 下のボタンをクリックしてダッシュボードを起動し、プレイを開始してください！",
+            "btn": "♟️ Chess Arenaへ入場 ♟️",
+        },
+        "zh": {
+            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
+            "greeting": "欢迎, <b>{name}!</b>",
+            "sync": "您已成功与去中心化国际象棋矩阵同步。",
+            "features_header": "🤖 <b>核心功能:</b>",
+            "f1": "• <b>边玩边赚:</b> 在无 Gas 费的实时对局中押注 USDT。",
+            "f2": "• <b>双重奖励推荐:</b> 邀请玩家加入，赚取 USDT 被动佣金 + XP 积分。",
+            "f3": "• <b>战术学院:</b> 解锁 100 级谜题格，提升等级。",
+            "f4": "• <b>Web3 集成:</b> 即时存取款到您的 TON 钱包。",
+            "cta": "👇 点击下方按钮初始化控制台并开始游戏！",
+            "btn": "♟️ 进入象棋竞技场 ♟️",
+        },
+    }
+
+    @staticmethod
+    def _get_lang(telegram_lang_code: str | None) -> str:
+        """Map Telegram language_code to a supported locale, fallback to 'en'."""
+        supported = {"en", "ru", "de", "es", "fr", "ar", "hi", "pt", "ja", "zh"}
+        if not telegram_lang_code:
+            return "en"
+        # Telegram codes can be 'ru', 'zh-hans', 'pt-br', etc.
+        code = telegram_lang_code.lower().split("-")[0]
+        return code if code in supported else "en"
+
     @staticmethod
     async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle the /start command."""
+        """Handle the /start command with automatic language detection."""
         user = update.effective_user
         if not user:
             return
-            
-        # Check if deep-linked arguments exist (e.g. /start game_123)
+
+        # Deep-link params (e.g. /start game_123)
         args = context.args
         start_param = args[0] if args else None
-        
-        # Determine language preferences if user exists in DB
+
         from app.models.user import User
         from sqlalchemy import select
         from app.core.database import AsyncSessionLocal
 
         try:
+            # Detect language from Telegram profile, then DB preference, fallback to 'en'
+            tg_lang = TelegramService._get_lang(user.language_code)
+
             async with AsyncSessionLocal() as db:
                 result = await db.execute(select(User).where(User.telegram_id == user.id))
                 db_user = result.scalars().first()
-                
+
                 if not db_user:
-                    # Basic creation logic
                     db_user = User(
                         telegram_id=user.id,
                         first_name=user.first_name,
-                        last_name=user.last_name, 
+                        last_name=user.last_name,
                         username=user.username,
+                        preferred_language=tg_lang,
                         photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot)
                     )
                     db.add(db_user)
                     await db.commit()
+                else:
+                    # If the user has no DB language set yet, save the Telegram one
+                    if not db_user.preferred_language or db_user.preferred_language == "en":
+                        db_user.preferred_language = tg_lang
+                        await db.commit()
 
-                lang = db_user.preferred_language if db_user else 'en'
-            
-            # Railway URL
+                lang = db_user.preferred_language or tg_lang
+
+            # Build webapp URL with the resolved language
             web_app_url = f"{settings.WEBAPP_URL}?lang={lang}"
-
             if start_param:
-                 web_app_url += f"&startapp={start_param}" # Append as standard param
+                web_app_url += f"&startapp={start_param}"
 
-            # Fix: Use WebAppInfo object instead of dict
-            keyboard = [
-                [InlineKeyboardButton("⚡ Enter Chess Arena ♟️", web_app=WebAppInfo(url=web_app_url))]
-            ]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            
-            # Update the persistent Menu Button for this user (or globally if needed, but per-chat is safer for language)
-            # We set it to default Web App for now
-            try:
-                await context.bot.set_chat_menu_button(
-                    chat_id=user.id,
-                    menu_button=MenuButtonWebApp(text="♟️ Play-to-Earn", web_app=WebAppInfo(url=web_app_url)) 
-                )
-            except Exception as menu_error:
-                logger.warning(f"Could not set menu button: {menu_error}")
+            # Resolve localised strings (fallback to English)
+            msgs = TelegramService.WELCOME_MESSAGES.get(lang, TelegramService.WELCOME_MESSAGES["en"])
 
-            # Personalize greeting
+            # Personalise name
             name = user.first_name
             if user.last_name:
                 name += f" {user.last_name}"
 
             welcome_msg = (
-                f"⚡ <b>FINCHESS ARENA v1.5</b>\n\n"
-                f"Welcome, <b>{name}!</b>\n"
-                f"You have successfully synchronized with the decentralized chess matrix.\n\n"
-                f"🤖 <b>Core Features:</b>\n"
-                f"• <b>Play-to-Earn:</b> Wager USDT in gasless real-time matches.\n"
-                f"• <b>Dual-Reward Referrals:</b> Invite recruits to earn USDT passive revenue commissions from their games + XP points\n"
-                f"• <b>Tactics Academy:</b> Solve a 100-level puzzle grid to level up.\n"
-                f"• <b>Web3 Integration:</b> Instant deposits and withdrawals to your TON Wallet.\n\n"
-                f"👇 Click the button below to initialize the dashboard and start playing!"
+                f"{msgs['title']}\n\n"
+                f"{msgs['greeting'].format(name=name)}\n"
+                f"{msgs['sync']}\n\n"
+                f"{msgs['features_header']}\n"
+                f"{msgs['f1']}\n"
+                f"{msgs['f2']}\n"
+                f"{msgs['f3']}\n"
+                f"{msgs['f4']}\n\n"
+                f"{msgs['cta']}"
             )
-            await update.message.reply_text(
-                welcome_msg,
-                reply_markup=reply_markup,
-                parse_mode="HTML"
-            )
+
+            # Inline button inside the message
+            keyboard = [[InlineKeyboardButton(msgs["btn"], web_app=WebAppInfo(url=web_app_url))]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            # Persistent blue menu button
+            try:
+                await context.bot.set_chat_menu_button(
+                    chat_id=user.id,
+                    menu_button=MenuButtonWebApp(text="♟️ Play-to-Earn", web_app=WebAppInfo(url=web_app_url))
+                )
+            except Exception as menu_error:
+                logger.warning(f"Could not set menu button: {menu_error}")
+
+            await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
+
         except Exception as e:
             logger.error(f"Error in start command: {e}")
             await update.message.reply_text("An error occurred while starting the bot. Please try again later.")
