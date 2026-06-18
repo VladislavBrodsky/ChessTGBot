@@ -414,6 +414,7 @@
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "referral_won": "Empfehlung {username} hat ein Match gewonnen!",
-    "commission_earned": "+{amount} USDT Provision erhalten!"
+    "commission_earned": "+{amount} USDT Provision erhalten!",
+    "referral_toast_single_line": "{username} hat gewonnen: +{amount} USDT"
   }
 }

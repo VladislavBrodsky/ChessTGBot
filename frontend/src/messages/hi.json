@@ -414,6 +414,7 @@
     "copy": "कॉपी करें",
     "copied": "कॉपी हो गया!",
     "referral_won": "रेफ़रल {username} ने मैच जीता!",
-    "commission_earned": "+{amount} USDT कमीशन प्राप्त हुआ!"
+    "commission_earned": "+{amount} USDT कमीशन प्राप्त हुआ!",
+    "referral_toast_single_line": "{username} ने जीता: +{amount} USDT"
   }
 }

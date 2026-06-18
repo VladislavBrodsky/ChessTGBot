@@ -414,6 +414,7 @@
     "copy": "Copiar",
     "copied": "Copiado!",
     "referral_won": "O indicado {username} ganhou uma partida!",
-    "commission_earned": "Comissão de +{amount} USDT recebida!"
+    "commission_earned": "Comissão de +{amount} USDT recebida!",
+    "referral_toast_single_line": "{username} ganhou: +{amount} USDT"
   }
 }

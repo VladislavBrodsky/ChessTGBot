@@ -414,6 +414,7 @@
     "copy": "Копировать",
     "copied": "Скопировано!",
     "referral_won": "Реферал {username} выиграл матч!",
-    "commission_earned": "Получена комиссия +{amount} USDT!"
+    "commission_earned": "Получена комиссия +{amount} USDT!",
+    "referral_toast_single_line": "{username} выиграл: +{amount} USDT"
   }
 }

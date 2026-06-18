@@ -80,27 +80,27 @@ export default function ReferralNotification() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="w-full max-w-[290px] bg-brand-surface/90 border border-amber-500/35 rounded-xl py-1.5 px-3 flex items-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.5),0_0_8px_rgba(245,158,11,0.1)] backdrop-blur-md pointer-events-auto"
+            className="w-full max-w-[290px] bg-brand-surface/90 border border-amber-500/15 rounded-xl py-1.5 px-2.5 flex items-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.5),0_0_8px_rgba(245,158,11,0.05)] backdrop-blur-md pointer-events-auto"
           >
-            {/* Left Icon with subtle spin/float */}
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.25)] shrink-0">
-              <FaCoins className="text-amber-950 text-[11px]" />
+            {/* Left Icon */}
+            <div className="w-6 h-6 rounded-lg bg-amber-500/10 border border-amber-500/15 flex items-center justify-center shrink-0">
+              <FaCoins className="text-amber-500 text-[10px]" />
             </div>
 
             {/* Notification content */}
-            <div className="flex-1 min-w-0">
-              <p className="text-[9.5px] font-black uppercase tracking-wider text-brand-gold flex items-center gap-1 leading-none mb-0.5">
-                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-ping" />
-                {t('referral_won', { username: notification.username })}
-              </p>
-              <p className="text-[8.5px] font-medium text-brand-primary/60 truncate leading-none">
-                {t('commission_earned', { amount: notification.amount })}
-              </p>
+            <div className="flex-1 min-w-0 flex items-center gap-1.5 text-[8.5px] font-medium text-brand-primary/80">
+              <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+              <span className="truncate">
+                {t('referral_toast_single_line', {
+                  username: notification.username,
+                  amount: notification.amount
+                })}
+              </span>
             </div>
 
             {/* Check badge */}
-            <div className="w-4.5 h-4.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-              <FaCheck className="text-emerald-400 text-[7px]" />
+            <div className="w-4 h-4 rounded-full bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center shrink-0">
+              <FaCheck className="text-emerald-400 text-[6px]" />
             </div>
           </motion.div>
         )}
