@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import time
+import uuid
 import redis.asyncio as redis
 from typing import Dict, List, Optional
 from app.core.config import get_settings
@@ -34,48 +35,158 @@ class MatchmakerService:
                 MatchmakerService._use_memory = True
         self.redis = MatchmakerService._redis_client
 
+    async def _acquire_distributed_lock(self, key: str, ttl_seconds: int = 5) -> Optional[str]:
+        """Acquire a simple distributed lock in Redis with retries."""
+        if MatchmakerService._use_memory or not self.redis:
+            return None
+        
+        lock_key = f"lock:matchmaker:{key}"
+        token = str(uuid.uuid4())
+        
+        # Retry for up to 3 seconds to acquire the lock
+        retries = 30
+        for _ in range(retries):
+            try:
+                # set nx=True, ex=ttl_seconds
+                acquired = await self.redis.set(lock_key, token, nx=True, ex=ttl_seconds)
+                if acquired:
+                    return token
+            except Exception as e:
+                logger.warning(f"Error setting Redis distributed lock: {e}")
+            await asyncio.sleep(0.1)
+            
+        logger.error(f"Failed to acquire distributed lock for key {key} after {retries} retries.")
+        return None
+
+    async def _release_distributed_lock(self, key: str, token: str) -> None:
+        """Atomically release distributed lock using a Lua script."""
+        if MatchmakerService._use_memory or not self.redis or not token:
+            return
+            
+        lock_key = f"lock:matchmaker:{key}"
+        lua_release_script = """
+        if redis.call('get', KEYS[1]) == ARGV[1] then
+            return redis.call('del', KEYS[1])
+        else
+            return 0
+        end
+        """
+        try:
+            await self.redis.eval(lua_release_script, 1, lock_key, token)
+        except Exception as e:
+            logger.warning(f"Failed to release lock {key}: {e}")
+
     async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600) -> None:
         """
         Add a user's connection to the matchmaking queue for a specific bid tier and time control.
+        Uses distributed lock for multi-instance safety.
         """
+        lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
-            # Remove player from all other queues first to avoid double matching
-            await self._remove_from_queue_unsafe(user_id)
-            
-            player_data = {
-                'user_id': user_id,
-                'sid': sid,
-                'elo': elo,
-                'joined_at': time.time(),
-                'time_control': time_control
-            }
-
-            queue_key_mem = (bid_amount, time_control)
-
-            if MatchmakerService._use_memory or not self.redis:
-                if queue_key_mem not in MatchmakerService._memory_queues:
-                    MatchmakerService._memory_queues[queue_key_mem] = []
-                MatchmakerService._memory_queues[queue_key_mem].append(player_data)
-                logger.info(f"Matchmaker (Memory): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
-                return
-
             try:
+                # Remove player from all other queues first to avoid double matching
+                await self._remove_from_queue_unsafe(user_id)
+                
+                player_data = {
+                    'user_id': user_id,
+                    'sid': sid,
+                    'elo': elo,
+                    'joined_at': time.time(),
+                    'time_control': time_control
+                }
+
+                queue_key_mem = (bid_amount, time_control)
+
+                if MatchmakerService._use_memory or not self.redis:
+                    if queue_key_mem not in MatchmakerService._memory_queues:
+                        MatchmakerService._memory_queues[queue_key_mem] = []
+                    MatchmakerService._memory_queues[queue_key_mem].append(player_data)
+                    logger.info(f"Matchmaker (Memory): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
+                    return
+
+                try:
+                    queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
+                    data = await self.redis.get(queue_key)
+                    queue = json.loads(data) if data else []
+                    queue.append(player_data)
+                    await self.redis.set(queue_key, json.dumps(queue))
+                    logger.info(f"Matchmaker (Redis): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
+                except Exception as e:
+                    logger.warning(f"Redis add_to_queue failed ({e}). Falling back to memory.")
+                    MatchmakerService._use_memory = True
+                    if queue_key_mem not in MatchmakerService._memory_queues:
+                        MatchmakerService._memory_queues[queue_key_mem] = []
+                    MatchmakerService._memory_queues[queue_key_mem].append(player_data)
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
+
+    async def try_match_and_pop(self, bid_amount: int, user_id: int, user_elo: int = 1000, time_control: int = 600) -> Optional[dict]:
+        """
+        Atomically find and pop a matching opponent and the user from the queue.
+        This ensures that no other worker thread or container can match the same opponent.
+        """
+        lock_token = await self._acquire_distributed_lock("global")
+        async with self._lock:
+            try:
+                current_time = time.time()
+                queue_key_mem = (bid_amount, time_control)
                 queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
-                data = await self.redis.get(queue_key)
-                queue = json.loads(data) if data else []
-                queue.append(player_data)
-                await self.redis.set(queue_key, json.dumps(queue))
-                logger.info(f"Matchmaker (Redis): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
-            except Exception as e:
-                logger.warning(f"Redis add_to_queue failed ({e}). Falling back to memory.")
-                MatchmakerService._use_memory = True
-                if queue_key_mem not in MatchmakerService._memory_queues:
-                    MatchmakerService._memory_queues[queue_key_mem] = []
-                MatchmakerService._memory_queues[queue_key_mem].append(player_data)
+                
+                if MatchmakerService._use_memory or not self.redis:
+                    queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
+                else:
+                    try:
+                        data = await self.redis.get(queue_key)
+                        queue = json.loads(data) if data else []
+                    except Exception as e:
+                        logger.warning(f"Redis try_match_and_pop failed ({e}). Falling back to memory.")
+                        MatchmakerService._use_memory = True
+                        queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
+
+                best_opponent = None
+                best_diff = float('inf')
+                
+                for item in queue:
+                    if item['user_id'] == user_id:
+                        continue
+                    
+                    # ELO threshold expands by 10 points per second of wait time, starting at 100
+                    wait_time = current_time - item.get('joined_at', current_time)
+                    elo_threshold = 100 + 10 * wait_time
+                    
+                    opponent_elo = item.get('elo', 1000)
+                    elo_diff = abs(user_elo - opponent_elo)
+                    
+                    if elo_diff <= elo_threshold:
+                        if elo_diff < best_diff:
+                            best_diff = elo_diff
+                            best_opponent = item
+                            
+                if best_opponent:
+                    # Pop both players from the queue atomically
+                    new_queue = [item for item in queue if item['user_id'] not in (user_id, best_opponent['user_id'])]
+                    
+                    if MatchmakerService._use_memory or not self.redis:
+                        MatchmakerService._memory_queues[queue_key_mem] = new_queue
+                    else:
+                        try:
+                            await self.redis.set(queue_key, json.dumps(new_queue))
+                        except Exception as e:
+                            logger.warning(f"Redis update failed in try_match_and_pop ({e}). Falling back to memory.")
+                            MatchmakerService._use_memory = True
+                            MatchmakerService._memory_queues[queue_key_mem] = new_queue
+                            
+                    logger.info(f"Matchmaker: Matched User {user_id} with User {best_opponent['user_id']} and popped both.")
+                
+                return best_opponent
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
 
     async def find_opponent(self, bid_amount: int, exclude_user_id: int, user_elo: int = 1000, time_control: int = 600) -> Optional[dict]:
         """
-        Find and return an opponent waiting in the same bid tier and time control queue who has a comparable ELO.
+        Deprecated: Use try_match_and_pop instead for atomic matching.
         """
         async with self._lock:
             current_time = time.time()
@@ -118,40 +229,50 @@ class MatchmakerService:
         """
         Public method to safely remove a user from all matchmaking queues.
         """
+        lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
-            await self._remove_from_queue_unsafe(user_id)
+            try:
+                await self._remove_from_queue_unsafe(user_id)
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
 
     async def remove_match_pair(self, bid_amount: int, player1_id: int, player2_id: int, time_control: int = 600) -> None:
         """
         Safely remove matched players from the queue.
         """
+        lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
-            queue_key_mem = (bid_amount, time_control)
-            if MatchmakerService._use_memory or not self.redis:
-                if queue_key_mem in MatchmakerService._memory_queues:
-                    MatchmakerService._memory_queues[queue_key_mem] = [
-                        item for item in MatchmakerService._memory_queues[queue_key_mem]
-                        if item['user_id'] not in (player1_id, player2_id)
-                    ]
-                logger.info(f"Matchmaker (Memory): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
-                return
-
             try:
-                queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
-                data = await self.redis.get(queue_key)
-                if data:
-                    queue = json.loads(data)
-                    new_queue = [item for item in queue if item['user_id'] not in (player1_id, player2_id)]
-                    await self.redis.set(queue_key, json.dumps(new_queue))
-                logger.info(f"Matchmaker (Redis): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
-            except Exception as e:
-                logger.warning(f"Redis remove_match_pair failed ({e}). Falling back to memory.")
-                MatchmakerService._use_memory = True
-                if queue_key_mem in MatchmakerService._memory_queues:
-                    MatchmakerService._memory_queues[queue_key_mem] = [
-                        item for item in MatchmakerService._memory_queues[queue_key_mem]
-                        if item['user_id'] not in (player1_id, player2_id)
-                    ]
+                queue_key_mem = (bid_amount, time_control)
+                if MatchmakerService._use_memory or not self.redis:
+                    if queue_key_mem in MatchmakerService._memory_queues:
+                        MatchmakerService._memory_queues[queue_key_mem] = [
+                            item for item in MatchmakerService._memory_queues[queue_key_mem]
+                            if item['user_id'] not in (player1_id, player2_id)
+                        ]
+                    logger.info(f"Matchmaker (Memory): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
+                    return
+
+                try:
+                    queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
+                    data = await self.redis.get(queue_key)
+                    if data:
+                        queue = json.loads(data)
+                        new_queue = [item for item in queue if item['user_id'] not in (player1_id, player2_id)]
+                        await self.redis.set(queue_key, json.dumps(new_queue))
+                    logger.info(f"Matchmaker (Redis): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
+                except Exception as e:
+                    logger.warning(f"Redis remove_match_pair failed ({e}). Falling back to memory.")
+                    MatchmakerService._use_memory = True
+                    if queue_key_mem in MatchmakerService._memory_queues:
+                        MatchmakerService._memory_queues[queue_key_mem] = [
+                            item for item in MatchmakerService._memory_queues[queue_key_mem]
+                            if item['user_id'] not in (player1_id, player2_id)
+                        ]
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
 
     async def _remove_from_queue_unsafe(self, user_id: int) -> None:
         """
@@ -166,6 +287,8 @@ class MatchmakerService:
             return
 
         try:
+            # Note: redis.keys can be slow but we limit scope with matchmaker:queue:* prefix.
+            # In massive systems, we should track active queues using a set, but this prefix search is okay for our scale.
             keys = await self.redis.keys("matchmaker:queue:*")
             for queue_key in keys:
                 data = await self.redis.get(queue_key)
@@ -179,4 +302,3 @@ class MatchmakerService:
         except Exception as e:
             logger.warning(f"Redis _remove_from_queue_unsafe failed ({e}). Falling back to memory.")
             MatchmakerService._use_memory = True
-

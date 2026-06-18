@@ -13,7 +13,7 @@ class User(Base):
     last_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     username: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     photo_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    elo: Mapped[int] = mapped_column(Integer, default=1000)
+    elo: Mapped[int] = mapped_column(Integer, default=1000, index=True)
     games_played: Mapped[int] = mapped_column(Integer, default=0)
     wins: Mapped[int] = mapped_column(Integer, default=0)
     losses: Mapped[int] = mapped_column(Integer, default=0)
@@ -24,7 +24,7 @@ class User(Base):
     premium_tier: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # basic, premium, premium_plus
     premium_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     balance: Mapped[int] = mapped_column(Integer, default=0)  # Stored in cents/smallest unit to avoid float issues
-    wallet_address: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # TON Wallet Address
+    wallet_address: Mapped[Optional[str]] = mapped_column(String, unique=True, index=True, nullable=True)  # TON Wallet Address
 
     # Gamification & i18n
     level: Mapped[int] = mapped_column(Integer, default=1)

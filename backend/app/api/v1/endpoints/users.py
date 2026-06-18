@@ -106,42 +106,37 @@ async def get_referral_stats(
 
     # 2. Active referrals: referred users who played >= 1 game in the last 7 days
     week_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=7)
-    # Get all referred user IDs
-    referred_result = await db.execute(
-        select(Referral.referred_user_id).where(Referral.referrer_id == current_user.id)
+    
+    # Query transactions of referred users directly using JOIN
+    active_tx_result = await db.execute(
+        select(func.count(func.distinct(Referral.referred_user_id)))
+        .select_from(Referral)
+        .join(User, User.id == Referral.referred_user_id)
+        .join(Transaction, Transaction.user_id == User.telegram_id)
+        .where(
+            and_(
+                Referral.referrer_id == current_user.id,
+                Transaction.type.in_(["game_wager", "game_win"]),
+                Transaction.created_at >= week_ago
+            )
+        )
     )
-    referred_ids = [row[0] for row in referred_result.fetchall()]
-
-    active_referrals = 0
-    if referred_ids:
-        active_result = await db.execute(
-            select(func.count(User.id)).where(
+    active_referrals = active_tx_result.scalar() or 0
+    
+    # Fallback: count referred users who have games_played > 0 if active tx approach returns 0
+    if active_referrals == 0:
+        fallback_result = await db.execute(
+            select(func.count(Referral.referred_user_id))
+            .select_from(Referral)
+            .join(User, User.id == Referral.referred_user_id)
+            .where(
                 and_(
-                    User.id.in_(referred_ids),
+                    Referral.referrer_id == current_user.id,
                     User.games_played > 0
                 )
             )
         )
-        # More precise: check transactions in last 7 days for referred users
-        # Use game_wager transactions as a proxy for games played recently
-        active_tx_result = await db.execute(
-            select(func.count(func.distinct(Transaction.user_id))).where(
-                and_(
-                    Transaction.type.in_(["game_wager", "game_win"]),
-                    Transaction.created_at >= week_ago
-                )
-            ).select_from(
-                Transaction
-            ).where(
-                Transaction.user_id.in_(
-                    select(User.telegram_id).where(User.id.in_(referred_ids))
-                )
-            )
-        )
-        active_referrals = active_tx_result.scalar() or 0
-        # Fallback: count referred users who have games_played > 0 if tx approach returns 0
-        if active_referrals == 0:
-            active_referrals = active_result.scalar() or 0
+        active_referrals = fallback_result.scalar() or 0
 
     # 3. Total earnings from referral commissions
     total_earnings_result = await db.execute(

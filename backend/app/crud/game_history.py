@@ -74,11 +74,12 @@ async def get_user_recent_games(db: AsyncSession, telegram_id: int, limit: int =
 
 async def get_user_game_count(db: AsyncSession, telegram_id: int) -> int:
     """Get total number of games played by user."""
+    from sqlalchemy import func
     result = await db.execute(
-        select(GameHistory)
+        select(func.count(GameHistory.id))
         .filter(
             (GameHistory.white_player_id == telegram_id) | 
             (GameHistory.black_player_id == telegram_id)
         )
     )
-    return len(result.scalars().all())
+    return result.scalar() or 0

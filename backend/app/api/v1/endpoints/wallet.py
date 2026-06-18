@@ -465,25 +465,47 @@ async def withdraw_funds(
 
 @router.get("/transactions", response_model=List[TransactionItem])
 async def get_transaction_ledger(
+    page: int = 1,
+    limit: int = 20,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Fetch the complete financial transaction ledger for the current user.
+    Fetch the financial transaction ledger for the current user (paginated).
     """
+    if page < 1:
+        page = 1
+    if limit < 1 or limit > 100:
+        limit = 20
+        
+    offset = (page - 1) * limit
     result = await db.execute(
         select(Transaction)
         .filter(Transaction.user_id == current_user.telegram_id)
         .order_by(desc(Transaction.created_at))
+        .offset(offset)
+        .limit(limit)
     )
     return result.scalars().all()
 
 
+_ton_price_cache = {
+    "price": 5.40,
+    "last_fetched": 0.0
+}
+
 async def fetch_ton_price_usd(api_key: Optional[str] = None) -> float:
     """
     Fetches the current TON price in USD from tonapi.io rates endpoint.
-    Defaults to a fallback stable price if rate fetch fails.
+    Caches the result in memory for 60 seconds to prevent rate limiting.
     """
+    import time
+    global _ton_price_cache
+    now = time.time()
+    
+    if now - _ton_price_cache["last_fetched"] < 60.0:
+        return _ton_price_cache["price"]
+        
     import httpx
     url = "https://tonapi.io/v2/rates?tokens=ton&currencies=usd"
     headers = {}
@@ -496,11 +518,13 @@ async def fetch_ton_price_usd(api_key: Optional[str] = None) -> float:
                 data = res.json()
                 price = data.get("rates", {}).get("ton", {}).get("prices", {}).get("USD")
                 if price:
+                    _ton_price_cache["price"] = float(price)
+                    _ton_price_cache["last_fetched"] = now
                     return float(price)
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning(f"Failed to fetch TON price from TonAPI: {e}")
-    return 5.40
+    return _ton_price_cache["price"]
 
 
 class TonWebhookPayload(BaseModel):

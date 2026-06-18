@@ -14,30 +14,56 @@ class ReferralCommissionService:
         """
         Traverses the referral graph up to `levels` levels to find the parent referrers.
         Returns a list of User objects starting from Tier 1 (direct referrer) to Tier N.
+        Optimized to avoid N+1 queries and lock rows in deterministic order to prevent deadlocks.
         """
-        chain = []
-        current_user_id = user_id
+        from sqlalchemy import alias
         
-        for _ in range(levels):
-            # Find the referral relationship where current_user_id was invited
-            result = await db.execute(
-                select(Referral).where(Referral.referred_user_id == current_user_id)
+        # We only support up to 3 levels in this optimization. For generic level depth,
+        # we can fall back or use a recursive CTE, but for our 3 levels limit this is optimal.
+        ref1 = alias(Referral, name="ref1")
+        ref2 = alias(Referral, name="ref2")
+        ref3 = alias(Referral, name="ref3")
+        
+        stmt = (
+            select(
+                ref1.c.referrer_id.label("l1"),
+                ref2.c.referrer_id.label("l2"),
+                ref3.c.referrer_id.label("l3")
             )
-            ref = result.scalars().first()
-            if not ref:
-                break
-                
-            # Fetch the referrer user details
-            referrer_result = await db.execute(
-                select(User).where(User.id == ref.referrer_id)
-            )
-            referrer = referrer_result.scalars().first()
-            if not referrer:
-                break
-                
-            chain.append(referrer)
-            current_user_id = referrer.id
+            .select_from(ref1)
+            .outerjoin(ref2, ref2.c.referred_user_id == ref1.c.referrer_id)
+            .outerjoin(ref3, ref3.c.referred_user_id == ref2.c.referrer_id)
+            .where(ref1.c.referred_user_id == user_id)
+        )
+        
+        result = await db.execute(stmt)
+        row = result.first()
+        if not row:
+            return []
             
+        referrer_ids = []
+        if row.l1:
+            referrer_ids.append(row.l1)
+        if row.l2 and levels >= 2:
+            referrer_ids.append(row.l2)
+        if row.l3 and levels >= 3:
+            referrer_ids.append(row.l3)
+            
+        if not referrer_ids:
+            return []
+            
+        # Lock rows in deterministic ascending order to prevent deadlocks
+        referrer_ids_sorted = sorted(list(set(referrer_ids)))
+        users_stmt = select(User).where(User.id.in_(referrer_ids_sorted)).with_for_update()
+        users_res = await db.execute(users_stmt)
+        users_map = {u.id: u for u in users_res.scalars().all()}
+        
+        # Build chain preserving direct-referrer first (l1 -> l2 -> l3) order
+        chain = []
+        for rid in referrer_ids:
+            if rid in users_map:
+                chain.append(users_map[rid])
+                
         return chain
 
     @staticmethod

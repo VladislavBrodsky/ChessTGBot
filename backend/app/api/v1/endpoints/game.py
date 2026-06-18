@@ -19,17 +19,6 @@ class CreateGameResponse(BaseModel):
     game_id: str
     invite_link: str
 
-class EndGameRequest(BaseModel):
-    game_id: str
-    winner_id: int
-    loser_id: int
-    draw: bool = False
-
-class EndGameResponse(BaseModel):
-    status: str
-    winner_new_elo: int
-    loser_new_elo: int
-
 @router.post("/create", response_model=CreateGameResponse)
 async def create_game(
     type: str = "online",
@@ -58,50 +47,6 @@ async def create_game(
             invite_link = f"https://t.me/{bot_username}/chess?startapp={game_id}"
 
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
-
-@router.post("/end", response_model=EndGameResponse)
-async def end_game(
-    req: EndGameRequest,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    if current_user.telegram_id not in (req.winner_id, req.loser_id):
-        raise HTTPException(
-            status_code=403,
-            detail="Forbidden: You are not a player in this game"
-        )
-
-    service = GameService()
-    
-    # Fetch Users
-    winner = await user_crud.get_user_by_telegram_id(db, req.winner_id)
-    loser = await user_crud.get_user_by_telegram_id(db, req.loser_id)
-
-    # Auto-create if not exist (for MVP)
-    if not winner:
-        winner = await user_crud.create_user(db, req.winner_id, f"User_{req.winner_id}")
-    if not loser:
-        loser = await user_crud.create_user(db, req.loser_id, f"User_{req.loser_id}")
-
-    # Calculate ELO
-    win_score = 0.5 if req.draw else 1.0
-    lose_score = 0.5 if req.draw else 0.0
-
-    k_winner = service.calculate_k_factor(winner.elo, winner.games_played)
-    k_loser = service.calculate_k_factor(loser.elo, loser.games_played)
-
-    new_winner_elo = service.calculate_new_elo(winner.elo, loser.elo, win_score, k=k_winner)
-    new_loser_elo = service.calculate_new_elo(loser.elo, winner.elo, lose_score, k=k_loser)
-
-    # Update DB
-    await user_crud.update_elo(db, winner, new_winner_elo, 'draw' if req.draw else 'win')
-    await user_crud.update_elo(db, loser, new_loser_elo, 'draw' if req.draw else 'loss')
-
-    return EndGameResponse(
-        status="success",
-        winner_new_elo=new_winner_elo,
-        loser_new_elo=new_loser_elo
-    )
 
 class GameHistoryDetails(BaseModel):
     game_id: str

@@ -221,8 +221,8 @@ async def join_matchmaking(sid, data):
             'bid_amount': bid_amount
         }, room=sid)
 
-        # 3. Find matching opponent
-        opponent = await matchmaker.find_opponent(bid_amount, exclude_user_id=user_id, user_elo=user_elo, time_control=time_control)
+        # 3. Find and pop matching opponent atomically
+        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control)
         if opponent:
             # Opponent matched!
             opponent_id = opponent['user_id']
@@ -275,7 +275,7 @@ async def join_matchmaking(sid, data):
                 tx_b = res_b.scalars().first()
                 
                 if not tx_w or not tx_b:
-                    # Rollback and clean up queues
+                    # Rollback and clean up queues (just in case they need refunding)
                     await db.rollback()
                     # Refund anyone who got deducted if one of the transaction gets lost/mismatched
                     async with AsyncSessionLocal() as refund_db:
@@ -301,10 +301,10 @@ async def join_matchmaking(sid, data):
                 state.black_elo = black.elo if black else 1000
                 
                 await db.commit()
-
+ 
             # Save state after caching players
             await service.session_manager.save_game(game_id, state)
-
+ 
             # Send automated matchmaking Telegram notifications
             try:
                 from app.services.telegram_bot import TelegramService
@@ -327,9 +327,6 @@ async def join_matchmaking(sid, data):
                 await TelegramService.send_notification(state.black_player_id, msg_b)
             except Exception as e:
                 pass
-
-            # Remove match pair from queues
-            await matchmaker.remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
 
             # Move both sockets into game room
             await sio.enter_room(sid, game_id)

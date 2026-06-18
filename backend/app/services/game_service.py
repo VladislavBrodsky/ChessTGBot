@@ -286,7 +286,7 @@ class GameService:
         engine = GameEngine()
         engine.board = board
 
-        bot_move_uci = engine.get_best_move()
+        bot_move_uci = await asyncio.to_thread(engine.get_best_move)
         if bot_move_uci and engine.make_move(bot_move_uci):
             new_state = engine.get_state()
             new_state.white_player_id = current_state.white_player_id
@@ -415,9 +415,23 @@ class GameService:
             white_id = state.white_player_id
             black_id = state.black_player_id
             
-            # Fetch users
-            white_user = await user_crud.get_user_by_telegram_id(session, white_id, for_update=True) if white_id and white_id != -1 else None
-            black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True) if black_id and black_id != -1 else None
+            # Deterministic lock ordering to prevent deadlocks
+            white_user = None
+            black_user = None
+            
+            if white_id and black_id and white_id != -1 and black_id != -1:
+                # Lock in order of smaller ID first
+                if white_id < black_id:
+                    white_user = await user_crud.get_user_by_telegram_id(session, white_id, for_update=True)
+                    black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True)
+                else:
+                    black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True)
+                    white_user = await user_crud.get_user_by_telegram_id(session, white_id, for_update=True)
+            else:
+                if white_id and white_id != -1:
+                    white_user = await user_crud.get_user_by_telegram_id(session, white_id, for_update=True)
+                if black_id and black_id != -1:
+                    black_user = await user_crud.get_user_by_telegram_id(session, black_id, for_update=True)
 
             if not white_user:
                 print(f"[GameService] WARNING: Cannot process end_game for {game_id}: white_user is None")

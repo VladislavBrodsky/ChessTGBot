@@ -1,3 +1,4 @@
+import asyncio
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application
 from app.core.config import get_settings
@@ -483,24 +484,27 @@ class TelegramService:
     async def send_notification(cls, telegram_id: int, text: str):
         """
         Send direct push notifications to a user via the Telegram Bot API.
-        Does not crash if bot is not configured or token is empty.
+        Non-blocking: dispatches the request to a background task so it returns instantly.
         """
         if not settings.TELEGRAM_BOT_TOKEN:
             logger.warning("Bot notification skipped: TELEGRAM_BOT_TOKEN not configured.")
             return
 
-        try:
-            # If the application is already running, reuse its bot client.
-            # Otherwise, instantiate a one-off bot client.
-            bot = cls.application.bot if (cls.application and cls.application.bot) else None
-            if not bot:
-                from telegram import Bot
-                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+        async def _do_send():
+            try:
+                # If the application is already running, reuse its bot client.
+                # Otherwise, instantiate a one-off bot client.
+                bot = cls.application.bot if (cls.application and cls.application.bot) else None
+                if not bot:
+                    from telegram import Bot
+                    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
 
-            # Fire-and-forget notification
-            await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
-            logger.info(f"✉️ Telegram Notification successfully pushed to user {telegram_id}")
-        except Exception as e:
-            logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
+                # Send message
+                await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
+                logger.info(f"✉️ Telegram Notification successfully pushed to user {telegram_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
+
+        asyncio.create_task(_do_send())
 
 

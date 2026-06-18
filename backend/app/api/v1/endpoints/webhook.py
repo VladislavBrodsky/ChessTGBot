@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Request, HTTPException
 from app.services.telegram_bot import TelegramService
 from telegram import Update
@@ -25,7 +26,7 @@ async def telegram_webhook(request: Request):
         # 3. Process the update
         # create_task is used to process the update without blocking the response to Telegram
         # (Telegram expects a quick 200 OK response)
-        await TelegramService.application.process_update(update)
+        asyncio.create_task(TelegramService.application.process_update(update))
         
         return {"status": "ok"}
     except Exception as e:

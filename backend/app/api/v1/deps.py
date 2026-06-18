@@ -6,6 +6,8 @@ from app.models.user import User
 from app.core.security import validate_init_data
 from typing import Optional
 
+_photo_checked_cache = set()
+
 async def get_current_user(
     x_telegram_init_data: Optional[str] = Header(None, alias="X-Telegram-Init-Data"),
     # Keep legacy header for backward compat during migration? Or strict fail? 
@@ -59,7 +61,9 @@ async def get_current_user(
     user = await user_crud.get_user_by_telegram_id(db, user_id)
     
     photo_url = None
-    if not user or not user.photo_url:
+    global _photo_checked_cache
+    if (not user or not user.photo_url) and user_id not in _photo_checked_cache:
+        _photo_checked_cache.add(user_id)
         try:
             from app.services.telegram_bot import TelegramService
             if TelegramService.application and TelegramService.application.bot:
