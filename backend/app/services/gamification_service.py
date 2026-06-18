@@ -109,7 +109,7 @@ class GamificationService:
             db_user = user # Fallback
 
         xp_earned = amount
-        if apply_booster and db_user.is_premium and amount > 0:
+        if apply_booster and db_user.is_premium_active and amount > 0:
             xp_earned = amount * 2
 
         db_user.xp += xp_earned
@@ -138,7 +138,7 @@ class GamificationService:
                     break
 
                 # Only premium referrers receive kickbacks
-                if referrer.is_premium:
+                if referrer.is_premium_active:
                     kickback_amount = round(xp_earned * pct)
                     if kickback_amount > 0:
                         referrer.xp += kickback_amount
@@ -204,11 +204,11 @@ class GamificationService:
             db.add(referral)
             
             # Award XP to referrer (pass commit=False to keep it in a single transaction)
-            referrer_xp = 100 if referrer.is_premium else 50
+            referrer_xp = 100 if referrer.is_premium_active else 50
             await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False, commit=False)
             
             # Award XP to new user
-            new_user_xp = 50 if new_user.is_premium else 20
+            new_user_xp = 50 if new_user.is_premium_active else 20
             await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False)
 
             # Award Balance (in cents) & log transactions
@@ -216,7 +216,7 @@ class GamificationService:
             from app.services.referral_commission_service import ReferralCommissionService
             from sqlalchemy import func
             
-            referrer_bonus = 20 if referrer.is_premium else 10
+            referrer_bonus = 20 if referrer.is_premium_active else 10
             referrer.balance += referrer_bonus
             db.add(referrer)
             
@@ -230,7 +230,7 @@ class GamificationService:
             )
             db.add(tx_referrer)
             
-            new_user_bonus = 10 if new_user.is_premium else 5
+            new_user_bonus = 10 if new_user.is_premium_active else 5
             new_user.balance += new_user_bonus
             db.add(new_user)
             
