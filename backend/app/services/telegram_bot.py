@@ -79,7 +79,7 @@ class TelegramService:
             try:
                 await context.bot.set_chat_menu_button(
                     chat_id=user.id,
-                    menu_button=MenuButtonWebApp(text="♟️Enter Chess Arena♟️", web_app=WebAppInfo(url=web_app_url)) 
+                    menu_button=MenuButtonWebApp(text="♟️ Play-to-Earn", web_app=WebAppInfo(url=web_app_url)) 
                 )
             except Exception as menu_error:
                 logger.warning(f"Could not set menu button: {menu_error}")
