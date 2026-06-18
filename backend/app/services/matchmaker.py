@@ -52,7 +52,11 @@ class MatchmakerService:
                 if acquired:
                     return token
             except Exception as e:
-                logger.warning(f"Error setting Redis distributed lock: {e}")
+                logger.warning(f"Redis system/connection error during lock acquisition: {e}. Switching to in-memory store immediately.")
+                MatchmakerService._redis_client = None
+                MatchmakerService._use_memory = True
+                self.redis = None
+                return None
             await asyncio.sleep(0.1)
             
         logger.error(f"Failed to acquire distributed lock for key {key} after {retries} retries.")

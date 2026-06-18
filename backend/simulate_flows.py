@@ -210,27 +210,27 @@ async def run_simulation():
         print(f"  - Player 2 ELO: 1000 -> {u2.elo} (Loss: {u2.elo - 1000})")
         
         # Verify stake payout and rakes
-        # Stake pool: 10000 cents ($100.00). Rake (3%): 300 cents ($3.00). Payout: 9700 cents ($97.00).
-        # Referral payouts:
-        # P1 gets Tier 1 commission from P2's wager = int(150 * 0.10) = 15 cents
-        # Parent gets Tier 1 from P1's wager (15 cents) + Tier 2 from P2's wager (7 cents) = 22 cents
-        # Grandparent gets Tier 2 from P1's wager (7 cents) + Tier 3 from P2's wager (3 cents) = 10 cents
-        # Ancestor gets Tier 3 from P1's wager (3 cents) = 3 cents
+        # Stake pool: 10000 cents ($100.00). Rake (3%): 300 cents ($3.00). Payout: 9500 cents ($95.00).
+        # Referral payouts (Recruit Tier):
+        # P1 gets Level 1 commission from P2's wager = 5000 * 2.0% = 100 cents ($1.00)
+        # Parent gets Level 1 commission from P1's wager = 5000 * 2.0% = 100 cents ($1.00)
+        # Grandparent gets Level 2 commission = 0 cents
+        # Ancestor gets Level 3 commission = 0 cents
         print(f"\n✓ Profit & Commission Ledger Verification:")
         print(f"  - Total Match Stake Pool: ${(wager_amount * 2) / 100:.2f} USDT")
         print(f"  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from winner payout)")
-        print(f"  - Net Winner Payout (97%): $97.00 USDT")
-        print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $146.55 USDT)")
+        print(f"  - Net Winner Payout (95%): $95.00 USDT")
+        print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $146.20 USDT)")
         print(f"  - Player 2 (Loser) Final Wallet Balance: ${u2.balance / 100:.2f} USDT (Expected $50.10 USDT)")
-        print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $0.75 USDT)")
-        print(f"  - Grandparent (Tier 2 Referrer) Balance: ${grandparent.balance / 100:.2f} USDT (Expected $0.25 USDT)")
-        print(f"  - Ancestor (Tier 3 Referrer) Balance: ${ancestor.balance / 100:.2f} USDT (Expected $0.15 USDT)")
+        print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $1.00 USDT)")
+        print(f"  - Grandparent (Tier 2 Referrer) Balance: ${grandparent.balance / 100:.2f} USDT (Expected $0.00 USDT)")
+        print(f"  - Ancestor (Tier 3 Referrer) Balance: ${ancestor.balance / 100:.2f} USDT (Expected $0.00 USDT)")
         
-        assert u1.balance == 14655, f"P1 Balance incorrect, got {u1.balance}"
+        assert u1.balance == 14620, f"P1 Balance incorrect, got {u1.balance}"
         assert u2.balance == 5010, f"P2 Balance incorrect, got {u2.balance}"
-        assert parent.balance == 75, f"Parent Balance incorrect, got {parent.balance}"
-        assert grandparent.balance == 25, f"Grandparent Balance incorrect, got {grandparent.balance}"
-        assert ancestor.balance == 15, f"Ancestor Balance incorrect, got {ancestor.balance}"
+        assert parent.balance == 100, f"Parent Balance incorrect, got {parent.balance}"
+        assert grandparent.balance == 0, f"Grandparent Balance incorrect, got {grandparent.balance}"
+        assert ancestor.balance == 0, f"Ancestor Balance incorrect, got {ancestor.balance}"
         print("✓ balance verification assert passed. ledger matches expected calculations.")
 
         # 5. Print Transaction Ledger history
