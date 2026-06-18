@@ -27,8 +27,8 @@ class UserTask(Base):
     __tablename__ = "user_tasks"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    task_id = Column(Integer, ForeignKey("tasks.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    task_id = Column(Integer, ForeignKey("tasks.id"), index=True)
     progress = Column(Integer, default=0)
     completed = Column(Boolean, default=False)
     claimed = Column(Boolean, default=False)
@@ -40,15 +40,15 @@ class Referral(Base):
     __tablename__ = "referrals"
 
     id = Column(Integer, primary_key=True, index=True)
-    referrer_id = Column(Integer, ForeignKey("users.id"))
-    referred_user_id = Column(Integer, ForeignKey("users.id"))
+    referrer_id = Column(Integer, ForeignKey("users.id"), index=True)
+    referred_user_id = Column(Integer, ForeignKey("users.id"), index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
 class UnlockedLesson(Base):
     __tablename__ = "unlocked_lessons"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     lesson_id = Column(String, index=True)
     unlocked_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
@@ -56,6 +56,6 @@ class SolvedPuzzle(Base):
     __tablename__ = "solved_puzzles"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
     puzzle_id = Column(Integer, index=True, nullable=False)
     solved_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
