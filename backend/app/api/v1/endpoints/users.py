@@ -373,4 +373,9 @@ async def subscribe_user(
     expires_at = now + timedelta(days=days)
 
     updated_user = await user_crud.update_subscription(db, locked_user, "premium", expires_at)
+    
+    # Distribute subscription purchase commission across referrers
+    from app.services.referral_commission_service import ReferralCommissionService
+    await ReferralCommissionService.distribute_subscription_commissions(db, locked_user.id, price)
+    
     return {"status": "success", "tier": updated_user.premium_tier}

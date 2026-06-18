@@ -234,6 +234,7 @@
     "stake": "赌注",
     "win_up_to": "最高可赢",
     "rake": "抽水",
+    "time": "时间",
     "balance": "余额",
     "top_up_play": "充值并开始",
     "amount_needed": "还需+{amount}",

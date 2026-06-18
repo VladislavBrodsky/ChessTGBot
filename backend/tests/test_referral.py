@@ -807,3 +807,108 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
     assert total_dist_p == 3850
 
 
+@pytest.mark.asyncio
+async def test_subscription_commission_distribution(db_session):
+    from app.models.user import User
+    from app.models.gamification import Referral
+    from app.services.referral_commission_service import ReferralCommissionService
+
+    # 1. Create a chain of 6 referrers
+    # Free referrers:
+    r1 = User(telegram_id=700001, first_name="R1", is_premium=False, xp=800, level=5, balance=0) # Recruit
+    r2 = User(telegram_id=700002, first_name="R2", is_premium=False, xp=2800, level=15, balance=0) # Pawn
+    r3 = User(telegram_id=700003, first_name="R3", is_premium=False, xp=4800, level=25, balance=0) # Knight
+    r4 = User(telegram_id=700004, first_name="R4", is_premium=False, xp=8800, level=45, balance=0) # Master
+    r5 = User(telegram_id=700005, first_name="R5", is_premium=False, xp=10800, level=55, balance=0) # Elite
+    r6 = User(telegram_id=700006, first_name="R6", is_premium=False, xp=12800, level=65, balance=0) # Elite
+
+    db_session.add_all([r1, r2, r3, r4, r5, r6])
+    await db_session.commit()
+
+    player = User(telegram_id=700007, first_name="Player", is_premium=False, balance=0)
+    db_session.add(player)
+    await db_session.commit()
+
+    db_session.add(Referral(referrer_id=r1.id, referred_user_id=player.id))
+    db_session.add(Referral(referrer_id=r2.id, referred_user_id=r1.id))
+    db_session.add(Referral(referrer_id=r3.id, referred_user_id=r2.id))
+    db_session.add(Referral(referrer_id=r4.id, referred_user_id=r3.id))
+    db_session.add(Referral(referrer_id=r5.id, referred_user_id=r4.id))
+    db_session.add(Referral(referrer_id=r6.id, referred_user_id=r5.id))
+    await db_session.commit()
+
+    # Purchase price = $295.80 (29580 cents)
+    price = 29580
+    total_dist = await ReferralCommissionService.distribute_subscription_commissions(db_session, player.id, price)
+    await db_session.commit()
+
+    await db_session.refresh(r1)
+    await db_session.refresh(r2)
+    await db_session.refresh(r3)
+    await db_session.refresh(r4)
+    await db_session.refresh(r5)
+    await db_session.refresh(r6)
+
+    # L1 (r1) gets Recruit L1 = 15.0% of 29580 = 4437 cents
+    assert r1.balance == 4437
+    # L2 (r2) gets Pawn L2 = 8.0% of 29580 = 2366 cents
+    assert r2.balance == 2366
+    # L3 (r3) gets Knight L3 = 5.0% of 29580 = 1479 cents
+    assert r3.balance == 1479
+    # L4 (r4) is Master! Master gets 7.0% for L4, but is Free user at depth > 3, so skipped!
+    assert r4.balance == 0
+    # L5 (r5) is Elite! Elite gets 3.0% for L5, but is Free user, so skipped!
+    assert r5.balance == 0
+    # L6 (r6) is Elite! Elite gets 2.0% for L6, but is Free user, so skipped!
+    assert r6.balance == 0
+    assert total_dist == 4437 + 2366 + 1479
+
+    # 2. Now test with Premium referrers
+    r1_p = User(telegram_id=800001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)
+    r2_p = User(telegram_id=800002, first_name="R2_P", is_premium=True, xp=2800, level=15, balance=0)
+    r3_p = User(telegram_id=800003, first_name="R3_P", is_premium=True, xp=4800, level=25, balance=0)
+    r4_p = User(telegram_id=800004, first_name="R4_P", is_premium=True, xp=8800, level=45, balance=0)
+    r5_p = User(telegram_id=800005, first_name="R5_P", is_premium=True, xp=10800, level=55, balance=0)
+    r6_p = User(telegram_id=800006, first_name="R6_P", is_premium=True, xp=12800, level=65, balance=0)
+
+    db_session.add_all([r1_p, r2_p, r3_p, r4_p, r5_p, r6_p])
+    await db_session.commit()
+
+    player2 = User(telegram_id=800007, first_name="Player2", is_premium=False, balance=0)
+    db_session.add(player2)
+    await db_session.commit()
+
+    db_session.add(Referral(referrer_id=r1_p.id, referred_user_id=player2.id))
+    db_session.add(Referral(referrer_id=r2_p.id, referred_user_id=r1_p.id))
+    db_session.add(Referral(referrer_id=r3_p.id, referred_user_id=r2_p.id))
+    db_session.add(Referral(referrer_id=r4_p.id, referred_user_id=r3_p.id))
+    db_session.add(Referral(referrer_id=r5_p.id, referred_user_id=r4_p.id))
+    db_session.add(Referral(referrer_id=r6_p.id, referred_user_id=r5_p.id))
+    await db_session.commit()
+
+    total_dist_p = await ReferralCommissionService.distribute_subscription_commissions(db_session, player2.id, price)
+    await db_session.commit()
+
+    await db_session.refresh(r1_p)
+    await db_session.refresh(r2_p)
+    await db_session.refresh(r3_p)
+    await db_session.refresh(r4_p)
+    await db_session.refresh(r5_p)
+    await db_session.refresh(r6_p)
+
+    # L1 (r1_p): Recruit -> 15% of 29580 = 4437 cents
+    assert r1_p.balance == 4437
+    # L2 (r2_p): Pawn -> 8% of 29580 = 2366 cents
+    assert r2_p.balance == 2366
+    # L3 (r3_p): Knight -> 5% of 29580 = 1479 cents
+    assert r3_p.balance == 1479
+    # L4 (r4_p): Master -> 7% of 29580 = 2070 cents
+    assert r4_p.balance == 2070
+    # L5 (r5_p): Elite -> 3% of 29580 = 887 cents
+    assert r5_p.balance == 887
+    # L6 (r6_p): Elite -> 2% of 29580 = 591 cents
+    assert r6_p.balance == 591
+    assert total_dist_p == 4437 + 2366 + 1479 + 2070 + 887 + 591
+
+
+
