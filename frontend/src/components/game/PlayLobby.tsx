@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight, FaWallet, FaRobot, FaShareAlt } from 'react-icons/fa';
+import { FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
@@ -416,12 +416,12 @@ export default function PlayLobby() {
                       <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                     </div>
                     <div className="w-px h-6 bg-brand-border-opacity-10" />
-                    <div className="flex flex-col items-center px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse">
+                    <div className="flex flex-col items-center px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
                       <span className="text-[7.5px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                        🔥 {tg('win_up_to')}
+                        <FaFire className="text-emerald-400 text-[8px] animate-pulse" /> {tg('win_up_to')}
                       </span>
-                      <span className="text-[12px] font-extrabold text-emerald-400 tracking-tight leading-none flex items-center gap-0.5">
-                        🏆 ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                      <span className="text-[12px] font-black text-emerald-400 tracking-tight leading-none">
+                        ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
                       </span>
                     </div>
                     <div className="w-px h-6 bg-brand-border-opacity-10" />
@@ -440,11 +440,10 @@ export default function PlayLobby() {
                       ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
                       : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
                   }`}>
-                    <span className="opacity-70">{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
-                    {hasSufficient
-                      ? <span className="flex items-center gap-1">{tg('balance_verified')}</span>
-                      : <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
-                    }
+                    <span className={`opacity-70 ${hasSufficient ? 'mx-auto' : ''}`}>{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
+                    {!hasSufficient && (
+                      <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
+                    )}
                   </div>
                 </div>
               )}
