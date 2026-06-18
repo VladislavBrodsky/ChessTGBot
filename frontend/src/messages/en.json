@@ -408,6 +408,8 @@
     "total_earned": "Total Earned",
     "your_link": "Your Invite Link",
     "copy": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "referral_won": "Referral {username} won a match!",
+    "commission_earned": "+{amount} USDT Commission received!"
   }
 }

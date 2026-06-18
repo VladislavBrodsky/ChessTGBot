@@ -408,6 +408,8 @@
     "total_earned": "獲得済み",
     "your_link": "招待リンク",
     "copy": "コピー",
-    "copied": "コピーしました！"
+    "copied": "コピーしました！",
+    "referral_won": "紹介ユーザー {username} が対局に勝利！",
+    "commission_earned": "+{amount} USDT の手数料を受け取りました！"
   }
 }

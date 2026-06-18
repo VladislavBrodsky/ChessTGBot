@@ -408,6 +408,8 @@
     "total_earned": "已赚取",
     "your_link": "您的邀请链接",
     "copy": "复制",
-    "copied": "已复制！"
+    "copied": "已复制！",
+    "referral_won": "推荐用户 {username} 赢得比赛！",
+    "commission_earned": "收到 +{amount} USDT 佣金！"
   }
 }

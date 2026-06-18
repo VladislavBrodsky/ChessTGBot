@@ -2,6 +2,7 @@
 
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { ReactNode, useEffect, useState } from 'react';
+import ReferralNotification from './ReferralNotification';
 
 export default function Providers({ children }: { children: ReactNode }) {
     const [manifestUrl, setManifestUrl] = useState<string>('');
@@ -14,11 +15,17 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     // Do not mount TonConnectUIProvider until the URL is resolved client-side
     if (!manifestUrl) {
-        return <>{children}</>;
+        return (
+            <>
+                <ReferralNotification />
+                {children}
+            </>
+        );
     }
 
     return (
         <TonConnectUIProvider manifestUrl={manifestUrl}>
+            <ReferralNotification />
             {children}
         </TonConnectUIProvider>
     );

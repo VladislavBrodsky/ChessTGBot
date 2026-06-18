@@ -408,6 +408,8 @@
     "total_earned": "Ganado",
     "your_link": "Tu Enlace de Invitación",
     "copy": "Copiar",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "referral_won": "¡El referido {username} ganó una partida!",
+    "commission_earned": "¡Comisión de +{amount} USDT recibida!"
   }
 }

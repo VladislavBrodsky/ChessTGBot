@@ -408,6 +408,8 @@
     "total_earned": "المكتسب",
     "your_link": "رابط دعوتك",
     "copy": "نسخ",
-    "copied": "تم النسخ!"
+    "copied": "تم النسخ!",
+    "referral_won": "فاز المدعو {username} بالمباراة!",
+    "commission_earned": "تم استلام عمولة +{amount} USDT!"
   }
 }

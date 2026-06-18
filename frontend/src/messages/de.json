@@ -408,6 +408,8 @@
     "total_earned": "Verdient",
     "your_link": "Dein Einladungslink",
     "copy": "Kopieren",
-    "copied": "Kopiert!"
+    "copied": "Kopiert!",
+    "referral_won": "Empfehlung {username} hat ein Match gewonnen!",
+    "commission_earned": "+{amount} USDT Provision erhalten!"
   }
 }
