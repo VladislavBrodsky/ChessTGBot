@@ -415,3 +415,40 @@ async def verify_puzzle_solution(
         "new_level": updated_user.level,
         "new_elo": updated_user.elo
     }
+
+
+from datetime import datetime
+
+class XpTransactionItem(BaseModel):
+    id: int
+    amount: int
+    reason: str
+    reference_id: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+@router.get("/xp-transactions", response_model=List[XpTransactionItem])
+async def get_xp_transactions(
+    page: int = 1,
+    limit: int = 20,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Get the authenticated user's XP ledger logs.
+    """
+    from app.models.xp_transaction import XpTransaction
+    from sqlalchemy import select, desc
+    
+    offset = (page - 1) * limit
+    result = await db.execute(
+        select(XpTransaction)
+        .where(XpTransaction.user_id == current_user.telegram_id)
+        .order_by(desc(XpTransaction.created_at))
+        .offset(offset)
+        .limit(limit)
+    )
+    txs = result.scalars().all()
+    return txs
+

@@ -27,6 +27,7 @@ async def init_db():
     from app.models.game_history import GameHistory
     from app.models.gamification import Task, UserTask, Referral, TaskType, SolvedPuzzle
     from app.models.transaction import Transaction
+    from app.models.xp_transaction import XpTransaction
     
     async with engine.begin() as conn:
         # In a fully migrated environment, we should only use Alembic.

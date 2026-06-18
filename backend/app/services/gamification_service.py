@@ -84,7 +84,7 @@ class GamificationService:
             await db.commit()
 
     @staticmethod
-    async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True, commit: bool = True):
+    async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True, commit: bool = True, reason: str = "activity", reference_id: str = None):
         # 1. Gather all user IDs that need to be locked (user + up to 3 tiers of referrers)
         user_ids_to_lock = [user.id]
         if trigger_kickback and amount > 0:
@@ -119,6 +119,16 @@ class GamificationService:
         if new_level > db_user.level:
             db_user.level = new_level
 
+        # Log main user XP transaction
+        from app.models.xp_transaction import XpTransaction
+        xp_tx = XpTransaction(
+            user_id=db_user.telegram_id,
+            amount=xp_earned,
+            reason=reason,
+            reference_id=str(reference_id) if reference_id is not None else None
+        )
+        db.add(xp_tx)
+
         # Multi-Tier XP Kickbacks — apply to locked users in memory
         if trigger_kickback and xp_earned > 0:
             current_user_id = db_user.id
@@ -146,6 +156,16 @@ class GamificationService:
                         referrer_new_level = _xp_to_level(referrer.xp)
                         if referrer_new_level > referrer.level:
                             referrer.level = referrer_new_level
+                        db.add(referrer)
+
+                        # Log kickback XP transaction
+                        referral_tx = XpTransaction(
+                            user_id=referrer.telegram_id,
+                            amount=kickback_amount,
+                            reason="referral_kickback",
+                            reference_id=str(db_user.telegram_id)
+                        )
+                        db.add(referral_tx)
 
                 current_user_id = referrer.id
 
@@ -205,11 +225,11 @@ class GamificationService:
             
             # Award XP to referrer (pass commit=False to keep it in a single transaction)
             referrer_xp = 100 if referrer.is_premium_active else 50
-            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False, commit=False)
+            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_invite", reference_id=new_user.telegram_id)
             
             # Award XP to new user
             new_user_xp = 50 if new_user.is_premium_active else 20
-            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False)
+            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_signup", reference_id=referrer.telegram_id)
 
             # Award Balance (in cents) & log transactions
             from app.models.transaction import Transaction
@@ -315,7 +335,7 @@ class GamificationService:
                     if tx_check.scalars().first():
                         return
                     
-                    await GamificationService.add_xp(db, referrer, xp_reward, trigger_kickback=False, apply_booster=False, commit=False)
+                    await GamificationService.add_xp(db, referrer, xp_reward, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_milestone", reference_id=ref_id)
                     if usdt_reward_cents > 0:
                         referrer.balance += usdt_reward_cents
                         db.add(referrer)
@@ -399,7 +419,7 @@ class GamificationService:
         db.add(user_task)
         
         # Award XP
-        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward, trigger_kickback=False, apply_booster=True, commit=False)
+        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward, trigger_kickback=False, apply_booster=True, commit=False, reason=f"task_{task_def.title_key}", reference_id=user_task.id)
         
         await db.commit()
         return updated_user, "Success"
@@ -513,6 +533,16 @@ class GamificationService:
         now = datetime.now(timezone.utc).replace(tzinfo=None)
         db_user.premium_expires_at = now + timedelta(days=365)
 
+        # Log XP deduction
+        from app.models.xp_transaction import XpTransaction
+        xp_tx = XpTransaction(
+            user_id=db_user.telegram_id,
+            amount=-5000,
+            reason="premium_upgrade",
+            reference_id="xp_upgrade_1year"
+        )
+        db.add(xp_tx)
+
 
         db.add(db_user)
         await db.commit()
@@ -574,5 +604,5 @@ class GamificationService:
             except Exception:
                 pass
 
-        updated_user = await GamificationService.add_xp(db, db_user, 50, trigger_kickback=True, apply_booster=True)
+        updated_user = await GamificationService.add_xp(db, db_user, 50, trigger_kickback=True, apply_booster=True, reason=f"academy_{task_type}", reference_id=item_id)
         return updated_user, "Success"

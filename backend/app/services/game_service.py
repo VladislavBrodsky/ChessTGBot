@@ -619,7 +619,7 @@ class GameService:
                 
                 white_user.games_played += 1
                 session.add(white_user)
-                await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False)
+                await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="ai_match", reference_id=game_id)
                 
                 # Save XP earned to state and update Redis
                 state.white_xp_gained = ai_xp * 2 if white_user.is_premium_active else ai_xp
@@ -777,8 +777,8 @@ class GameService:
             white_final_xp = white_match_xp * 2 if white_user.is_premium_active else white_match_xp
             black_final_xp = black_match_xp * 2 if black_user.is_premium_active else black_match_xp
                 
-            await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
-            await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
+            await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="game_match", reference_id=game_id)
+            await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="game_match", reference_id=game_id)
 
             # Cache the dynamic rewarded XP on the state object
             state.white_xp_gained = white_final_xp

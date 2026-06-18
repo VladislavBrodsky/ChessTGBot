@@ -365,10 +365,16 @@ async def withdraw_funds(
 ):
     """
     Withdraw funds from platform balance to linked Web3 TON Address.
-    Verifies sufficient balance prior to initiating.
+    Verifies sufficient balance prior to initiating. Places request in review queue.
     """
     if request.amount <= 0:
         raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
+
+    # Validate destination address format
+    try:
+        convert_ton_address_to_hex(request.address)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid TON Wallet address format")
     
     # Fetch user with write lock to prevent race conditions or double-spending
     user_result = await db.execute(
@@ -378,90 +384,44 @@ async def withdraw_funds(
     if not db_user or db_user.balance < request.amount:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
-    from app.core.config import get_settings
-    settings = get_settings()
+    # Deduct balance first (locked/reserved during pending review)
+    db_user.balance -= request.amount
+    db.add(db_user)
 
-    if settings.CRYPTO_PAY_API_TOKEN:
-        from app.services.crypto_pay import CryptoPayService
-        import uuid
-
-        # Generate idempotency key (spend_id)
-        spend_id = f"withdraw_{uuid.uuid4()}"
-
-        # Deduct balance first
-        db_user.balance -= request.amount
-        db.add(db_user)
-
-        # Log pending transaction
-        tx_withdraw = Transaction(
-            user_id=db_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=0,
-            status="pending",
-            reference_id=spend_id
-        )
-        db.add(tx_withdraw)
-        await db.commit()
-
-        try:
-            # Execute Crypto Pay transfer directly to user's Telegram ID
-            transfer_result = await CryptoPayService.transfer_funds(
-                telegram_id=db_user.telegram_id,
-                amount_cents=request.amount,
-                spend_id=spend_id
-            )
-            
-            # Update status to completed
-            tx_withdraw.status = "completed"
-            tx_withdraw.reference_id = f"cp_tx_{transfer_result.get('transfer_id')}"
-            db.add(tx_withdraw)
-            await db.commit()
-
-        except Exception as e:
-            # Reverse balance and fail transaction
-            db_user.balance += request.amount
-            db.add(db_user)
-            tx_withdraw.status = "failed"
-            db.add(tx_withdraw)
-            await db.commit()
-            raise HTTPException(status_code=400, detail=f"Crypto Pay payout failed: {e}")
-    else:
-        # Mock fallback (simulated success)
-        db_user.balance -= request.amount
-        db.add(db_user)
-
-        tx_withdraw = Transaction(
-            user_id=db_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=0,
-            status="completed",
-            reference_id=f"web3_withdraw_{request.address[:8]}"
-        )
-        db.add(tx_withdraw)
-        await db.commit()
-        await db.refresh(db_user)
+    # Log pending review transaction
+    tx_withdraw = Transaction(
+        user_id=db_user.telegram_id,
+        type="withdrawal",
+        amount=-request.amount,
+        fee=0,
+        status="pending_review",
+        reference_id=f"addr_{request.address}"
+    )
+    db.add(tx_withdraw)
+    await db.commit()
+    await db.refresh(db_user)
 
     # Send automated Telegram Bot notification
     try:
         from app.services.telegram_bot import TelegramService
-        dest_display = f"{request.address[:6]}...{request.address[-4:]}" if len(request.address) > 10 else request.address
+        dest_display = f"{request.address[:6]}...{request.address[-4:]}"
         notification_text = (
-            f"<b>📤 Cyber Wallet Withdrawal Completed!</b>\n\n"
-            f"• <b>Withdrawn Amount:</b> -${request.amount / 100:.2f} USDT\n"
-            f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n\n"
-            f"<i>Funds have been successfully sent to your Telegram Crypto Bot wallet. Remaining platform balance is {db_user.balance / 100:.2f} USDT.</i>"
+            f"<b>📤 Cyber Wallet Withdrawal Requested!</b>\n\n"
+            f"• <b>Requested Amount:</b> -${request.amount / 100:.2f} USDT\n"
+            f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n"
+            f"• <b>Status:</b> Pending Admin Review ⏳\n\n"
+            f"<i>Your updated platform balance is {db_user.balance / 100:.2f} USDT. We will notify you once processed!</i>"
         )
         await TelegramService.send_notification(db_user.telegram_id, notification_text)
     except Exception:
         pass
 
     return WithdrawResponse(
-        status="success",
+        status="pending_review",
         amount=request.amount,
         new_balance=db_user.balance
     )
+
 
 @router.get("/transactions", response_model=List[TransactionItem])
 async def get_transaction_ledger(
@@ -553,12 +513,11 @@ async def receive_ton_deposit_webhook(
     request: Request,
     x_webhook_secret: Optional[str] = Header(None, alias="X-Webhook-Secret"),
     authorization: Optional[str] = Header(None),
-    crypto_pay_api_signature: Optional[str] = Header(None, alias="crypto-pay-api-signature"),
     db: AsyncSession = Depends(get_db)
 ):
     """
     Asynchronously verify and settle Web3 TON deposits using blockchain event webhooks.
-    Supports developer simulations, TON Console Invoices, TONAPI watched account transactions, and Crypto Pay.
+    Supports developer simulations, TON Console Invoices, and TONAPI watched account transactions.
     """
     from app.core.config import get_settings
     settings = get_settings()
@@ -583,185 +542,155 @@ async def receive_ton_deposit_webhook(
 
     payload = DictObj(body_json)
 
-    # 1. Check if this is a Crypto Pay webhook signature
-    if crypto_pay_api_signature:
-        from app.services.crypto_pay import CryptoPayService
-        if not CryptoPayService.verify_webhook_signature(body_bytes, crypto_pay_api_signature):
-            raise HTTPException(status_code=401, detail="Unauthorized Crypto Pay signature")
+    # Verify legacy webhook signature
+    auth_token = None
+    if authorization and authorization.startswith("Bearer "):
+        auth_token = authorization.split("Bearer ")[1].strip()
 
-        update_type = body_json.get("update_type")
-        if update_type != "invoice_paid":
-            return {"status": "ignored", "reason": f"Update type is {update_type}"}
+    import hmac
+    webhook_secret = getattr(settings, "WEBHOOK_SECRET", "")
+    if not webhook_secret:
+        raise HTTPException(
+            status_code=500,
+            detail="Webhook secret not configured on server"
+        )
+    
+    is_valid = False
+    if x_webhook_secret and hmac.compare_digest(x_webhook_secret, webhook_secret):
+        is_valid = True
+    elif auth_token and hmac.compare_digest(auth_token, webhook_secret):
+        is_valid = True
 
-        invoice = body_json.get("payload", {})
-        invoice_payload = invoice.get("payload")
-        if not invoice_payload or not invoice_payload.startswith("ref_"):
-            raise HTTPException(status_code=400, detail="Missing or malformed payload ref_ field")
+    if not is_valid:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized webhook signature"
+        )
 
+    # Detect the payload format
+    if payload.description and payload.id:
+        # 1. TON Console Invoice Webhook
+        if payload.status != "paid":
+            return {"status": "ignored", "reason": f"Invoice status is {payload.status}"}
+
+        invoice_id = payload.id
+        description = payload.description
+        
+        if not description.startswith("ref_"):
+            raise HTTPException(status_code=400, detail="Invalid description format")
+            
         try:
-            telegram_id = int(invoice_payload.split("_")[1])
+            telegram_id = int(description.split("_")[1])
         except (ValueError, IndexError):
             raise HTTPException(status_code=400, detail="Malformed Telegram ID")
 
-        try:
-            amount_cents = int(float(invoice.get("amount") or 0) * 100)
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid amount format")
+        # Convert to cents
+        currency = (payload.currency or "TON").upper()
+        if currency == "USDT":
+            amount_micro = int(payload.amount or 0)
+            amount_cents = int(amount_micro / 10000)
+        else:
+            amount_nano = int(payload.amount or 0)
+            ton_amount = amount_nano / 1_000_000_000.0
+            ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
+            amount_cents = int(ton_amount * ton_price_usd * 100)
 
-        invoice_id = str(invoice.get("invoice_id"))
         tx_hash = f"invoice_{invoice_id}"
-        sender_addr = "CryptoBot"
+        sender_addr = payload.pay_to_address or "TON_Console_Invoices"
 
-    else:
-        # Verify legacy webhook signature
-        auth_token = None
-        if authorization and authorization.startswith("Bearer "):
-            auth_token = authorization.split("Bearer ")[1].strip()
-
-        import hmac
-        webhook_secret = getattr(settings, "WEBHOOK_SECRET", "")
-        if not webhook_secret:
-            raise HTTPException(
-                status_code=500,
-                detail="Webhook secret not configured on server"
-            )
+    elif payload.account_id and payload.tx_hash:
+        # 2. TONAPI Watched Account Transaction Webhook
+        import httpx
+        tx_hash = payload.tx_hash
+        headers = {}
+        if settings.TON_API_KEY:
+            headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
-        is_valid = False
-        if x_webhook_secret and hmac.compare_digest(x_webhook_secret, webhook_secret):
-            is_valid = True
-        elif auth_token and hmac.compare_digest(auth_token, webhook_secret):
-            is_valid = True
+        # Query transaction details from TonAPI
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(
+                    f"https://tonapi.io/v2/blockchain/transactions/{tx_hash}",
+                    headers=headers
+                )
+                if res.status_code != 200:
+                    raise HTTPException(status_code=400, detail="Failed to fetch transaction details from TONAPI")
+                tx_data = res.json()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error querying TONAPI: {e}")
 
-        if not is_valid:
-            raise HTTPException(
-                status_code=401,
-                detail="Unauthorized webhook signature"
-            )
+        in_msg = tx_data.get("in_msg", {})
+        sender_addr = in_msg.get("source", {}).get("address", "unknown")
+        
+        # Extract comment and amount based on whether it is a Jetton transfer notification
+        decoded_body = in_msg.get("decoded_body") or {}
+        op_name = in_msg.get("decoded_op_name") or ""
+        op_code = in_msg.get("op_code") or ""
+        
+        is_jetton = op_name == "transfer_notification" or op_code == "0x7362d09c" or "jetton" in str(decoded_body.get("type", "")).lower()
 
-        # Detect the payload format
-        if payload.description and payload.id:
-            # 1. TON Console Invoice Webhook
-            if payload.status != "paid":
-                return {"status": "ignored", "reason": f"Invoice status is {payload.status}"}
-
-            invoice_id = payload.id
-            description = payload.description
+        comment = ""
+        if is_jetton and isinstance(decoded_body, dict):
+            # For Jetton transfers, the comment is nested in forward_payload
+            fwd = decoded_body.get("forward_payload") or {}
+            if isinstance(fwd, dict):
+                comment = fwd.get("text") or fwd.get("comment") or ""
+            elif isinstance(fwd, str):
+                comment = fwd
             
-            if not description.startswith("ref_"):
-                raise HTTPException(status_code=400, detail="Invalid description format")
-            
-            try:
-                telegram_id = int(description.split("_")[1])
-            except (ValueError, IndexError):
-                raise HTTPException(status_code=400, detail="Malformed Telegram ID")
-
-            # Convert to cents
-            currency = (payload.currency or "TON").upper()
-            if currency == "USDT":
-                amount_micro = int(payload.amount or 0)
-                amount_cents = int(amount_micro / 10000)
-            else:
-                amount_nano = int(payload.amount or 0)
-                ton_amount = amount_nano / 1_000_000_000.0
-                ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-                amount_cents = int(ton_amount * ton_price_usd * 100)
-
-            tx_hash = f"invoice_{invoice_id}"
-            sender_addr = payload.pay_to_address or "TON_Console_Invoices"
-
-        elif payload.account_id and payload.tx_hash:
-            # 2. TONAPI Watched Account Transaction Webhook
-            import httpx
-            tx_hash = payload.tx_hash
-            headers = {}
-            if settings.TON_API_KEY:
-                headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
-            
-            # Query transaction details from TonAPI
-            try:
-                async with httpx.AsyncClient(timeout=10.0) as client:
-                    res = await client.get(
-                        f"https://tonapi.io/v2/blockchain/transactions/{tx_hash}",
-                        headers=headers
-                    )
-                    if res.status_code != 200:
-                        raise HTTPException(status_code=400, detail="Failed to fetch transaction details from TONAPI")
-                    tx_data = res.json()
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Error querying TONAPI: {e}")
-
-            in_msg = tx_data.get("in_msg", {})
-            sender_addr = in_msg.get("source", {}).get("address", "unknown")
-            
-            # Extract comment and amount based on whether it is a Jetton transfer notification
-            decoded_body = in_msg.get("decoded_body") or {}
-            op_name = in_msg.get("decoded_op_name") or ""
-            op_code = in_msg.get("op_code") or ""
-            
-            is_jetton = op_name == "transfer_notification" or op_code == "0x7362d09c" or "jetton" in str(decoded_body.get("type", "")).lower()
-
-            comment = ""
-            if is_jetton and isinstance(decoded_body, dict):
-                # For Jetton transfers, the comment is nested in forward_payload
-                fwd = decoded_body.get("forward_payload") or {}
-                if isinstance(fwd, dict):
-                    comment = fwd.get("text") or fwd.get("comment") or ""
-                elif isinstance(fwd, str):
-                    comment = fwd
-                
-                # If amount is present in decoded_body, use it (decimals for USDT is 6, so amount is in micro-USDT)
-                jetton_amount_raw = decoded_body.get("amount")
-                if jetton_amount_raw is not None:
-                    try:
-                        amount_cents = int(int(jetton_amount_raw) / 10000)
-                    except ValueError:
-                        amount_cents = 0
-                else:
+            # If amount is present in decoded_body, use it (decimals for USDT is 6, so amount is in micro-USDT)
+            jetton_amount_raw = decoded_body.get("amount")
+            if jetton_amount_raw is not None:
+                try:
+                    amount_cents = int(int(jetton_amount_raw) / 10000)
+                except ValueError:
                     amount_cents = 0
             else:
-                # Standard TON transfer
-                value_nano = int(in_msg.get("value", 0))
-                if isinstance(decoded_body, dict):
-                    comment = decoded_body.get("text") or decoded_body.get("Text") or decoded_body.get("comment") or ""
-                elif isinstance(decoded_body, str):
-                    comment = decoded_body
-
-                if not comment:
-                    comment = in_msg.get("message") or ""
-                
-                # Convert nanoTON to cents
-                ton_amount = value_nano / 1_000_000_000.0
-                ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-                amount_cents = int(ton_amount * ton_price_usd * 100)
+                amount_cents = 0
+        else:
+            # Standard TON transfer
+            value_nano = int(in_msg.get("value", 0))
+            if isinstance(decoded_body, dict):
+                comment = decoded_body.get("text") or decoded_body.get("Text") or decoded_body.get("comment") or ""
+            elif isinstance(decoded_body, str):
+                comment = decoded_body
 
             if not comment:
                 comment = in_msg.get("message") or ""
+            
+            # Convert nanoTON to cents
+            ton_amount = value_nano / 1_000_000_000.0
+            ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
+            amount_cents = int(ton_amount * ton_price_usd * 100)
 
-            if not comment.startswith("ref_"):
-                raise HTTPException(status_code=400, detail="Transaction does not contain a valid referral ref_ comment")
+        if not comment:
+            comment = in_msg.get("message") or ""
 
-            try:
-                telegram_id = int(comment.split("_")[1])
-            except (ValueError, IndexError):
-                raise HTTPException(status_code=400, detail="Malformed Telegram ID in transaction comment")
+        if not comment.startswith("ref_"):
+            raise HTTPException(status_code=400, detail="Transaction does not contain a valid referral ref_ comment")
 
-        else:
-            # 3. Developer simulated deposit webhook
-            from app.core.database import engine
-            if not engine.url.drivername.startswith("sqlite"):
-                raise HTTPException(status_code=403, detail="Developer simulated deposit is disabled in production.")
+        try:
+            telegram_id = int(comment.split("_")[1])
+        except (ValueError, IndexError):
+            raise HTTPException(status_code=400, detail="Malformed Telegram ID in transaction comment")
 
-            if not payload.comment or payload.amount_cents is None:
-                raise HTTPException(status_code=400, detail="Malformed developer simulation payload")
+    else:
+        # 3. Developer simulated deposit webhook
+        from app.core.database import engine
+        if not engine.url.drivername.startswith("sqlite"):
+            raise HTTPException(status_code=403, detail="Developer simulated deposit is disabled in production.")
 
-            try:
-                telegram_id = int(payload.comment.split("_")[1])
-            except (ValueError, IndexError):
-                raise HTTPException(status_code=400, detail="Malformed Telegram ID in comment")
+        if not payload.comment or payload.amount_cents is None:
+            raise HTTPException(status_code=400, detail="Malformed developer simulation payload")
 
-            amount_cents = payload.amount_cents
-            tx_hash = payload.tx_hash or f"sim_tx_{int(datetime.now(timezone.utc).replace(tzinfo=None).timestamp())}"
-            sender_addr = payload.sender or "dev_simulation"
+        try:
+            telegram_id = int(payload.comment.split("_")[1])
+        except (ValueError, IndexError):
+            raise HTTPException(status_code=400, detail="Malformed Telegram ID in comment")
+
+        amount_cents = payload.amount_cents
+        tx_hash = payload.tx_hash or f"sim_tx_{int(datetime.now(timezone.utc).replace(tzinfo=None).timestamp())}"
+        sender_addr = payload.sender or "dev_simulation"
 
     if amount_cents <= 0:
         raise HTTPException(status_code=400, detail="Deposit amount must be positive")
@@ -1109,3 +1038,135 @@ async def verify_deposit(
         "fee": fee,
         "new_balance": user.balance
     }
+
+
+# --- Admin Withdrawal Queue Endpoints ---
+
+async def verify_admin_secret(x_admin_secret: Optional[str] = Header(None, alias="X-Admin-Secret")):
+    from app.core.config import get_settings
+    settings = get_settings()
+    if not x_admin_secret or x_admin_secret != settings.WEBHOOK_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized: Invalid admin secret")
+    return x_admin_secret
+
+class PendingWithdrawalItem(BaseModel):
+    id: int
+    user_id: int
+    amount: int
+    address: str
+    created_at: datetime
+
+@router.get("/admin/withdrawals/pending", response_model=List[PendingWithdrawalItem])
+async def get_pending_withdrawals(
+    db: AsyncSession = Depends(get_db),
+    admin_secret: str = Depends(verify_admin_secret)
+):
+    """
+    Get all pending withdrawals. Admin access only.
+    """
+    result = await db.execute(
+        select(Transaction).where(Transaction.type == "withdrawal", Transaction.status == "pending_review")
+    )
+    txs = result.scalars().all()
+    
+    items = []
+    for tx in txs:
+        # Extract address from reference_id (stored as "addr_{address}")
+        address = ""
+        if tx.reference_id and tx.reference_id.startswith("addr_"):
+            address = tx.reference_id[5:]
+        items.append(
+            PendingWithdrawalItem(
+                id=tx.id,
+                user_id=tx.user_id,
+                amount=abs(tx.amount),
+                address=address,
+                created_at=tx.created_at
+            )
+        )
+    return items
+
+@router.post("/admin/withdrawals/{tx_id}/approve")
+async def approve_withdrawal(
+    tx_id: int,
+    db: AsyncSession = Depends(get_db),
+    admin_secret: str = Depends(verify_admin_secret)
+):
+    """
+    Approve a pending withdrawal. Admin access only.
+    """
+    tx_result = await db.execute(
+        select(Transaction).where(Transaction.id == tx_id, Transaction.status == "pending_review").with_for_update()
+    )
+    tx = tx_result.scalars().first()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Pending withdrawal transaction not found")
+        
+    tx.status = "completed"
+    db.add(tx)
+    await db.commit()
+    
+    # Notify user
+    try:
+        from app.services.telegram_bot import TelegramService
+        address = tx.reference_id[5:] if tx.reference_id and tx.reference_id.startswith("addr_") else "linked wallet"
+        dest_display = f"{address[:6]}...{address[-4:]}" if len(address) > 10 else address
+        notification_text = (
+            f"<b>✅ Withdrawal Approved!</b>\n\n"
+            f"• <b>Amount:</b> +${abs(tx.amount) / 100:.2f} USDT\n"
+            f"• <b>Sent to:</b> <code>{dest_display}</code>\n\n"
+            f"<i>Your funds have been transferred successfully on-chain!</i>"
+        )
+        await TelegramService.send_notification(tx.user_id, notification_text)
+    except Exception:
+        pass
+        
+    return {"status": "success", "message": f"Withdrawal transaction {tx_id} completed successfully"}
+
+@router.post("/admin/withdrawals/{tx_id}/reject")
+async def reject_withdrawal(
+    tx_id: int,
+    db: AsyncSession = Depends(get_db),
+    admin_secret: str = Depends(verify_admin_secret)
+):
+    """
+    Reject a pending withdrawal. Admin access only. Refunds user balance.
+    """
+    tx_result = await db.execute(
+        select(Transaction).where(Transaction.id == tx_id, Transaction.status == "pending_review").with_for_update()
+    )
+    tx = tx_result.scalars().first()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Pending withdrawal transaction not found")
+        
+    # Lock user to refund
+    user_result = await db.execute(
+        select(User).where(User.telegram_id == tx.user_id).with_for_update()
+    )
+    db_user = user_result.scalars().first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Refund balance (tx.amount is negative for withdrawals)
+    db_user.balance += abs(tx.amount)
+    db.add(db_user)
+    
+    tx.status = "failed"
+    db.add(tx)
+    await db.commit()
+    
+    # Notify user
+    try:
+        from app.services.telegram_bot import TelegramService
+        notification_text = (
+            f"<b>❌ Withdrawal Rejected!</b>\n\n"
+            f"• <b>Amount:</b> ${abs(tx.amount) / 100:.2f} USDT\n"
+            f"• <b>Status:</b> Rejected & Refunded\n\n"
+            f"<i>The requested amount has been fully refunded back to your game balance. Please verify your destination address or contact support.</i>"
+        )
+        await TelegramService.send_notification(tx.user_id, notification_text)
+    except Exception:
+        pass
+        
+    return {"status": "success", "message": f"Withdrawal transaction {tx_id} rejected and refunded"}
+

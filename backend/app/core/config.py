@@ -45,8 +45,6 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str | None = None
     TON_API_KEY: str | None = os.getenv("TON_API_KEY")
     TON_CONSOLE_TOKEN: str | None = os.getenv("TON_CONSOLE_TOKEN")
-    CRYPTO_PAY_API_TOKEN: str | None = os.getenv("CRYPTO_PAY_API_TOKEN") or os.getenv("CRYPTO_PAY_TOKEN")
-    CRYPTO_PAY_ENVIRONMENT: str = os.getenv("CRYPTO_PAY_ENVIRONMENT", "testnet")
 
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
