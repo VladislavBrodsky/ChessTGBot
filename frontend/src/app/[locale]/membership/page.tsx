@@ -53,13 +53,13 @@ export default function MembershipPage() {
 
   const handleXpUpgrade = async () => {
     const currentXp = stats?.xp || 0;
-    if (currentXp < 500) {
+    if (currentXp < 5000) {
       telegramHaptic('error');
-      telegramAlert(`Upgrading to Premium requires 500 XP. You currently have ${currentXp} XP.`);
+      telegramAlert(`Upgrading to Premium requires 5,000 XP. You currently have ${currentXp} XP.`);
       return;
     }
 
-    telegramConfirm(`Upgrade to Premium by spending 500 XP? (You have ${currentXp} XP)`, async (confirmUpgrade) => {
+    telegramConfirm(`Upgrade to Premium by spending 5,000 XP? (You have ${currentXp} XP)`, async (confirmUpgrade) => {
       if (!confirmUpgrade) return;
 
       try {

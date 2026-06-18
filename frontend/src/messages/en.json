@@ -344,9 +344,9 @@
     "engine_analysis_desc": "Get access to all 100 Tactics Academy levels and unlimited engine analysis.",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "Use your accumulated XP to unlock Chess Premium membership for 1 year for free.",
+    "xp_upgrade_cost": "COST: 5,000 XP (Balance: {xp} XP)",
+    "xp_upgrade_btn": "Unlock Premium with 5,000 XP"
   },
   "TierComparison": {
     "title": "Features Comparison",

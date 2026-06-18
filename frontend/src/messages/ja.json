@@ -344,9 +344,9 @@
     "engine_analysis_desc": "タクティクス・アカデミー全100ステージ of プレイと、AIによる無制限の局後分析が可能になります。",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "貯まった経験値（XP）を使って、Chess Premium会員1年分を無料でアンロックできます。",
+    "xp_upgrade_cost": "必要XP：5,000 XP (保有XP: {xp} XP)",
+    "xp_upgrade_btn": "5,000 XPでプレミアムをアンロック"
   },
   "TierComparison": {
     "title": "機能比較",

@@ -344,9 +344,9 @@
     "engine_analysis_desc": "Erhalte Zugriff auf alle 100 Taktik-Levels und unbegrenzte Analyse deiner Partien durch die KI.",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "Nutze deine gesammelten XP, um eine einjährige Chess Premium-Mitgliedschaft kostenlos freizuschalten.",
+    "xp_upgrade_cost": "KOSTEN: 5.000 XP (Kontostand: {xp} XP)",
+    "xp_upgrade_btn": "Premium freischalten mit 5.000 XP"
   },
   "TierComparison": {
     "title": "Feature-Vergleich",

@@ -344,9 +344,9 @@
     "engine_analysis_desc": "Доступ ко всем 100 уровням Академии тактики и полный анализ партий движком.",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "Используйте накопленный XP, чтобы бесплатно получить 1 год подписки Chess Premium.",
+    "xp_upgrade_cost": "СТОИМОСТЬ: 5 000 XP (Баланс: {xp} XP)",
+    "xp_upgrade_btn": "Разблокировать Премиум за 5 000 XP"
   },
   "TierComparison": {
     "title": "Сравнение возможностей",

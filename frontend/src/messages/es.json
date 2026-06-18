@@ -344,9 +344,9 @@
     "engine_analysis_desc": "Acceso total a los 100 niveles de la Academia y análisis ilimitado con motor de IA.",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "Usa tu XP acumulado para desbloquear la membresía Chess Premium gratis por 1 año.",
+    "xp_upgrade_cost": "COSTO: 5,000 XP (Saldo: {xp} XP)",
+    "xp_upgrade_btn": "Desbloquear Premium con 5,000 XP"
   },
   "TierComparison": {
     "title": "Comparativa de funciones",

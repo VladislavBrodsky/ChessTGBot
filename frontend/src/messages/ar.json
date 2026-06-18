@@ -344,9 +344,9 @@
     "engine_analysis_desc": "وصول غير محدود لجميع ألغاز الأكاديمية الـ 100 وتحليل فوري لمبارياتك بالذكاء الاصطناعي.",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "استخدم نقاط الخبرة (XP) المتراكمة لديك لفتح اشتراك Chess Premium مجانًا لمدة عام كامل.",
+    "xp_upgrade_cost": "التكلفة: 5,000 XP (رصيدك: {xp} XP)",
+    "xp_upgrade_btn": "تفعيل الاشتراك المميز مقابل 5,000 XP"
   },
   "TierComparison": {
     "title": "مقارنة الميزات",

@@ -430,18 +430,22 @@ class GamificationService:
     @staticmethod
     async def upgrade_premium_with_xp(db: AsyncSession, user: User):
         """
-        Deduct 500 XP to upgrade user to Premium status.
+        Deduct 5000 XP to upgrade user to Premium status for 1 year.
         """
         if user.is_premium:
             return user, "Already Premium"
             
-        if user.xp < 500:
-            return None, "Insufficient XP. Need 500 XP to upgrade."
+        if user.xp < 5000:
+            return None, "Insufficient XP. Need 5000 XP to upgrade."
             
         # Deduct XP (level is a high-watermark — never decreases on XP spend)
-        user.xp -= 500
+        user.xp -= 5000
         user.is_premium = True
         user.premium_tier = "premium"
+        
+        from datetime import datetime, timezone, timedelta
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        user.premium_expires_at = now + timedelta(days=365)
 
         db.add(user)
         await db.commit()

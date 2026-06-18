@@ -344,9 +344,9 @@
     "engine_analysis_desc": "畅玩战术学院全部100个关卡，并享有无限制的AI棋局复盘分析。",
     "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
-    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
-    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 500 XP"
+    "xp_upgrade_desc": "使用您积累的经验值（XP）即可免费兑换1年的黄金会员资格。",
+    "xp_upgrade_cost": "消耗：5,000 XP (当前余额: {xp} XP)",
+    "xp_upgrade_btn": "使用 5,000 XP 兑换黄金会员"
   },
   "TierComparison": {
     "title": "功能权益对比",
