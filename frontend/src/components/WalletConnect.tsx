@@ -9,21 +9,29 @@ import { apiFetch } from '@/lib/api';
 
 interface WalletConnectProps {
     minimal?: boolean;
+    onTopUp?: () => void;
 }
 
-export default function WalletConnect({ minimal = false }: WalletConnectProps) {
+export default function WalletConnect({ minimal = false, onTopUp }: WalletConnectProps) {
     const tw = useTranslations('Wallet');
     const wallet = useTonWallet();
     const [tonConnectUI] = useTonConnectUI();
     const [mounted, setMounted] = useState(false);
 
-    const handleWalletAction = async () => {
-        if (wallet) {
-            await tonConnectUI.disconnect();
-        } else {
+    const handleTopUpClick = async () => {
+        if (!wallet) {
             await tonConnectUI.openModal();
+        } else {
+            if (onTopUp) {
+                onTopUp();
+            }
         }
     };
+
+    const handleDisconnect = async () => {
+        await tonConnectUI.disconnect();
+    };
+
 
     useEffect(() => {
         setMounted(true);
@@ -69,37 +77,33 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
 
     if (minimal) {
         return (
-            <div className="w-full flex items-center justify-between min-w-0 relative">
+            <div className="w-full flex items-center justify-between min-w-0 gap-1.5 relative">
                 {wallet ? (
                     <>
-                        <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-brand-primary text-brand-void shadow-neon">
-                                <FaWallet size={11} />
-                            </div>
-                            <div className="flex flex-col min-w-0 text-left">
-                                <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">
-                                    {tw('active')}
-                                </span>
-                                <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate leading-none">
-                                    {getShortAddress(wallet.account.address)}
-                                </span>
-                            </div>
-                        </div>
-
                         <button
-                            onClick={handleWalletAction}
+                            onClick={handleTopUpClick}
+                            className="flex-1 py-2 px-2.5 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md min-w-0"
+                            title={`Connected: ${getShortAddress(wallet.account.address)}`}
+                        >
+                            <FaWallet size={10} className="shrink-0" />
+                            <span className="truncate">{tw('top_up')}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                        </button>
+                        <button
+                            onClick={handleDisconnect}
                             className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
+                            title="Disconnect Wallet"
                         >
                             <FaTimes size={9} />
                         </button>
                     </>
                 ) : (
                     <button
-                        onClick={handleWalletAction}
+                        onClick={handleTopUpClick}
                         className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                     >
                         <FaWallet size={10} />
-                        <span>{tw('connect')}</span>
+                        <span>{tw('top_up')}</span>
                     </button>
                 )}
             </div>
@@ -129,13 +133,13 @@ export default function WalletConnect({ minimal = false }: WalletConnectProps) {
                     </div>
 
                     <button
-                        onClick={handleWalletAction}
+                        onClick={wallet ? handleDisconnect : handleTopUpClick}
                         className={wallet 
                           ? "w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
                           : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[8.5px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
-                        {wallet ? <FaTimes size={9} /> : tw('connect')}
+                        {wallet ? <FaTimes size={9} /> : tw('top_up')}
                     </button>
                 </div>
 

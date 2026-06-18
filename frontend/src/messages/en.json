@@ -309,7 +309,8 @@
     "active": "Active",
     "wallet": "Wallet",
     "unlinked": "Unlinked",
-    "connect": "Connect"
+    "connect": "Connect",
+    "top_up": "Top Up"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

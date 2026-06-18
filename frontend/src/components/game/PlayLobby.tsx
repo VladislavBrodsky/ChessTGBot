@@ -364,7 +364,7 @@ export default function PlayLobby() {
             <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm px-3 py-2.5 grid grid-cols-2 items-center divide-x divide-brand-border-opacity-10 gap-3">
               {/* Wallet side */}
               <div className="pr-3 flex items-center justify-between min-w-0">
-                <WalletConnect minimal />
+                <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
               </div>
               {/* Balance side */}
               <div className="pl-3 min-w-0">

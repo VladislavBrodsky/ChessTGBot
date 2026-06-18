@@ -309,7 +309,8 @@
     "scan_info_ton": "Scan to send using Tonkeeper or Telegram Wallet",
     "scan_info_cp": "Scan QR code or click 'Open in Wallet' to pay via @CryptoBot",
     "deposit_cta_ton": "Generate Web3 Invoice",
-    "deposit_cta_cp": "Top Up via @CryptoBot"
+    "deposit_cta_cp": "Top Up via @CryptoBot",
+    "top_up": "充值"
   },
   "Membership": {
     "title": "CHESS PREMIUM",
