@@ -172,6 +172,8 @@ class GamificationService:
 
             # Award Balance (in cents) & log transactions
             from app.models.transaction import Transaction
+            from app.services.referral_commission_service import ReferralCommissionService
+            from sqlalchemy import func
             
             referrer_bonus = 20 if referrer.is_premium else 10
             referrer.balance += referrer_bonus
@@ -217,9 +219,105 @@ class GamificationService:
                 )
                 await TelegramService.send_notification(referrer.telegram_id, msg)
             except Exception as e:
-                # Log warning but do not fail the database commit
                 import logging
                 logging.getLogger(__name__).warning(f"Failed to send referral sign-up notification: {e}")
+
+            # Send Telegram push notification to the new user (recruit)
+            try:
+                from app.services.telegram_bot import TelegramService
+                referrer_display = f"@{referrer.username}" if referrer.username else f"{referrer.first_name}"
+                new_user_msg = (
+                    f"♟️ <b>Welcome to the Chess Arena!</b>\n\n"
+                    f"You have successfully joined via {referrer_display}'s invitation.\n"
+                    f"🎁 <b>Instant Signup Bonus:</b> +${new_user_bonus / 100:.2f} USDT & +{new_user_xp} XP has been credited to your balance!\n\n"
+                    f"<i>Unlock the dashboard to start playing and earning! ⚡</i>"
+                )
+                await TelegramService.send_notification(new_user.telegram_id, new_user_msg)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to send welcome notification to new user: {e}")
+
+            # Send grandparent (L2/L3) notifications
+            try:
+                from app.services.telegram_bot import TelegramService
+                grand_chain = await ReferralCommissionService.get_referrer_chain(db, referrer.id, levels=2)
+                for idx, grand_referrer in enumerate(grand_chain):
+                    g_depth = idx + 2
+                    ref_user_display = f"@{new_user.username}" if new_user.username else f"{new_user.first_name}"
+                    referrer_display = f"@{referrer.username}" if referrer.username else f"{referrer.first_name}"
+                    
+                    grand_msg = (
+                        f"🔗 <b>Network Expansion: Level {g_depth} Recruit!</b>\n\n"
+                        f"🟢 {ref_user_display} just joined the chess matrix under {referrer_display} (L1)!\n"
+                        f"Your decentralized player network is expanding deeper.\n\n"
+                        f"<i>Level up your XP and Premium status to secure higher passive commissions from this network tree branch! ♟️📈</i>"
+                    )
+                    await TelegramService.send_notification(grand_referrer.telegram_id, grand_msg)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to send grandparent notifications: {e}")
+
+            # Check and award milestone achievements
+            try:
+                l1_count_result = await db.execute(
+                    select(func.count(Referral.id)).where(Referral.referrer_id == referrer.id)
+                )
+                l1_count = l1_count_result.scalar() or 0
+
+                async def claim_milestone(ref_count, xp_reward, usdt_reward_cents, milestone_name):
+                    ref_id = f"milestone_ref_{ref_count}"
+                    tx_check = await db.execute(
+                        select(Transaction).where(
+                            and_(Transaction.user_id == referrer.telegram_id, Transaction.reference_id == ref_id)
+                        )
+                    )
+                    if tx_check.scalars().first():
+                        return
+                    
+                    await GamificationService.add_xp(db, referrer, xp_reward, trigger_kickback=False, apply_booster=False, commit=False)
+                    if usdt_reward_cents > 0:
+                        referrer.balance += usdt_reward_cents
+                        db.add(referrer)
+                    
+                    tx_milestone = Transaction(
+                        user_id=referrer.telegram_id,
+                        type="referral_commission",
+                        amount=usdt_reward_cents if usdt_reward_cents > 0 else 0,
+                        fee=0,
+                        status="completed",
+                        reference_id=ref_id
+                    )
+                    db.add(tx_milestone)
+                    
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        msg = (
+                            f"🎯 <b>REFERRAL MILESTONE REACHED!</b>\n\n"
+                            f"Congratulations! You have recruited <b>{ref_count}</b> chess combatants to the arena!\n"
+                            f"🎁 <b>Milestone Rewards:</b>\n"
+                            f"• XP Earned: +{xp_reward} XP\n"
+                        )
+                        if usdt_reward_cents > 0:
+                            msg += f"• Bonus Credited: +${usdt_reward_cents / 100:.2f} USDT\n"
+                        msg += (
+                            f"• Badge Gained: 🎖️ <b>{milestone_name}</b>\n\n"
+                            f"<i>Keep growing your network to unlock the next level of referral commissions! ♟️🏆</i>"
+                        )
+                        await TelegramService.send_notification(referrer.telegram_id, msg)
+                    except Exception as e:
+                        pass
+
+                if l1_count == 1:
+                    await claim_milestone(1, 50, 0, "Network Recruit")
+                elif l1_count == 5:
+                    await claim_milestone(5, 200, 0, "Network Architect")
+                elif l1_count == 10:
+                    await claim_milestone(10, 500, 100, "Network Commander")
+                elif l1_count == 25:
+                    await claim_milestone(25, 1500, 0, "Network Elite")
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to check milestones: {e}")
 
             await db.commit()
             return True

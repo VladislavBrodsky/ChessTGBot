@@ -53,10 +53,10 @@ async def test_process_referral_success(db_session: AsyncSession):
     ref_record = result.scalars().first()
     assert ref_record is not None
 
-    # 5. Verify XP was awarded (referrer gets 50 XP, referred gets 20 XP)
+    # 5. Verify XP was awarded (referrer gets 50 XP + 50 XP milestone, referred gets 20 XP)
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 150
+    assert referrer.xp == 200
     assert referred.xp == 20
 
 
@@ -93,10 +93,10 @@ async def test_process_referral_with_prefix(db_session: AsyncSession):
     success = await GamificationService.process_referral(db_session, referred, "ref_XYZ54321")
     assert success is True
 
-    # Verify XP and linkage
+    # Verify XP and linkage (+50 XP milestone for first referral)
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 50
+    assert referrer.xp == 100
     assert referred.xp == 20
 
 
@@ -139,7 +139,7 @@ async def test_process_referral_duplicate_prevented(db_session: AsyncSession):
     # XP should only be awarded once
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 50
+    assert referrer.xp == 100
     assert referred.xp == 20
 
 
@@ -240,11 +240,8 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     await db_session.commit()
 
     # Distribute wager commissions (Wager = 10000 cents / $100.00)
-    # Direct played commission = 10000 * 0.005 = 50 cents (to r1)
-    # Winner tree commission:
-    # L1 (r1) gets 1% of 10000 = 100 cents
-    # L2 (r2) gets 0.5% of 10000 = 50 cents
-    # L3 (r3) gets 0.3% of 10000 = 30 cents
+    # Since referrers are Level 1 (Recruit), only r1 (L1) gets commission:
+    # L1 (r1) gets 2.0% of 10000 = 200 cents
     wager = 10000
     deduction = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm", player.id, wager, is_winner=True)
     await db_session.commit()
@@ -253,25 +250,19 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    assert r1.balance == 150 # 50 played + 100 win
-    assert r2.balance == 50  # 50 win
-    assert r3.balance == 30  # 30 win
-    assert deduction == 180  # 100 + 50 + 30 = 1.8% of wager
+    assert r1.balance == 200
+    assert r2.balance == 0
+    assert r3.balance == 0
+    assert deduction == 200
 
     # Verify transaction entries
-    txs_played_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "played_test_game_comm")
+    txs_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "ref_test_game_comm")
     )
-    txs_played = txs_played_result.scalars().all()
-    assert len(txs_played) == 1
-    assert txs_played[0].amount == 50
-    assert txs_played[0].user_id == r1.telegram_id
-
-    txs_win_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "win_test_game_comm")
-    )
-    txs_win = txs_win_result.scalars().all()
-    assert len(txs_win) == 3
+    txs = txs_result.scalars().all()
+    assert len(txs) == 1
+    assert txs[0].amount == 200
+    assert txs[0].user_id == r1.telegram_id
 
 
 @pytest.mark.asyncio
@@ -317,26 +308,17 @@ async def test_three_tier_referral_commission_non_premium_skipped(db_session: As
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    # R1 (Tier 1 - Premium) gets 50 played + 100 win = 150
-    assert r1.balance == 150
-    # R2 (Tier 2 - Non-Premium) gets 0
+    assert r1.balance == 200
     assert r2.balance == 0
-    # R3 (Tier 3 - Premium) gets 30 win
-    assert r3.balance == 30
-    assert deduction == 180 # deduction is charged from winner regardless of premium status of referrers
+    assert r3.balance == 0
+    assert deduction == 200
 
     # Verify transaction entries
-    txs_played_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "played_test_game_comm_np")
+    txs_result = await db_session.execute(
+        select(Transaction).where(Transaction.reference_id == "ref_test_game_comm_np")
     )
-    txs_played = txs_played_result.scalars().all()
-    assert len(txs_played) == 1
-
-    txs_win_result = await db_session.execute(
-        select(Transaction).where(Transaction.reference_id == "win_test_game_comm_np")
-    )
-    txs_win = txs_win_result.scalars().all()
-    assert len(txs_win) == 2 # R2 skipped, so only r1 and r3 win transactions recorded
+    txs = txs_result.scalars().all()
+    assert len(txs) == 1
 
 
 @pytest.mark.asyncio
@@ -384,7 +366,7 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     await db_session.refresh(r_prem)
     await db_session.refresh(u_prem)
 
-    assert r_prem.xp == 100
+    assert r_prem.xp == 150  # 100 + 50 milestone
     assert u_prem.xp == 50
 
     # Case 2: Non-Premium Referrer, Non-Premium Recruit
@@ -400,7 +382,7 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     await db_session.refresh(r_norm)
     await db_session.refresh(u_norm)
 
-    assert r_norm.xp == 50
+    assert r_norm.xp == 100  # 50 + 50 milestone
     assert u_norm.xp == 20
 
 
@@ -712,4 +694,116 @@ async def test_permanent_achievements_initialization(db_session: AsyncSession):
     await db_session.refresh(first_win_ut)
     assert first_win_ut.progress == 1
     assert first_win_ut.completed
+
+
+@pytest.mark.asyncio
+async def test_xp_tier_escalating_commission(db_session: AsyncSession):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
+
+    from app.services.referral_commission_service import ReferralCommissionService
+
+    # 1. Test L1-L3 eligibility and XP tier rates (some Free, some Premium)
+    # L1: Elite, Premium, level 51 (10000 XP)
+    r1 = User(telegram_id=500001, first_name="R1_Elite", is_premium=True, xp=10000, level=51, balance=0)
+    # L2: Master, Free, level 41 (8000 XP)
+    r2 = User(telegram_id=500002, first_name="R2_Master", is_premium=False, xp=8000, level=41, balance=0)
+    # L3: Knight, Premium, level 25 (4800 XP)
+    r3 = User(telegram_id=500003, first_name="R3_Knight", is_premium=True, xp=4800, level=25, balance=0)
+    # L4: Pawn, Premium, level 15 (2800 XP)
+    r4 = User(telegram_id=500004, first_name="R4_Pawn", is_premium=True, xp=2800, level=15, balance=0)
+    # L5: Recruit, Premium, level 5 (800 XP)
+    r5 = User(telegram_id=500005, first_name="R5_Recruit", is_premium=True, xp=800, level=5, balance=0)
+    # L6: Elite, Free, level 60 (12000 XP) -> L6 is deep referral, but not Premium
+    r6 = User(telegram_id=500006, first_name="R6_Elite_Free", is_premium=False, xp=12000, level=60, balance=0)
+
+    db_session.add_all([r1, r2, r3, r4, r5, r6])
+    await db_session.commit()
+
+    # Link player to r1 -> r2 -> r3 -> r4 -> r5 -> r6
+    player = User(telegram_id=500007, first_name="Player", is_premium=False, balance=0)
+    db_session.add(player)
+    await db_session.commit()
+
+    db_session.add(Referral(referrer_id=r1.id, referred_user_id=player.id))
+    db_session.add(Referral(referrer_id=r2.id, referred_user_id=r1.id))
+    db_session.add(Referral(referrer_id=r3.id, referred_user_id=r2.id))
+    db_session.add(Referral(referrer_id=r4.id, referred_user_id=r3.id))
+    db_session.add(Referral(referrer_id=r5.id, referred_user_id=r4.id))
+    db_session.add(Referral(referrer_id=r6.id, referred_user_id=r5.id))
+    await db_session.commit()
+
+    wager = 100000
+    total_dist = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_escalating", player.id, wager, is_winner=True)
+    await db_session.commit()
+
+    await db_session.refresh(r1)
+    await db_session.refresh(r2)
+    await db_session.refresh(r3)
+    await db_session.refresh(r4)
+    await db_session.refresh(r5)
+    await db_session.refresh(r6)
+
+    # L1 (r1) gets Elite L1 = 0.7% of 100000 = 700 cents
+    assert r1.balance == 700
+    # L2 (r2) gets Master L2 = 0.5% of 100000 = 500 cents
+    assert r2.balance == 500
+    # L3 (r3) gets Knight L3 = 0.4% of 100000 = 400 cents
+    assert r3.balance == 400
+    # L4 (r4) gets Pawn L4 = 0% = 0 cents
+    assert r4.balance == 0
+    # L5 (r5) gets Recruit L5 = 0% = 0 cents
+    assert r5.balance == 0
+    # L6 (r6) gets Elite L6 = 0.15% but is Free, so skipped
+    assert r6.balance == 0
+    assert total_dist == 1600
+
+    # 2. Test L4-L6 deep commissions with Premium referrers
+    r1_p = User(telegram_id=600001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)
+    r2_p = User(telegram_id=600002, first_name="R2_P", is_premium=True, xp=2800, level=15, balance=0)
+    r3_p = User(telegram_id=600003, first_name="R3_P", is_premium=True, xp=4800, level=25, balance=0)
+    r4_p = User(telegram_id=600004, first_name="R4_P", is_premium=True, xp=8800, level=45, balance=0)
+    r5_p = User(telegram_id=600005, first_name="R5_P", is_premium=True, xp=10800, level=55, balance=0)
+    r6_p = User(telegram_id=600006, first_name="R6_P", is_premium=True, xp=12800, level=65, balance=0)
+
+    db_session.add_all([r1_p, r2_p, r3_p, r4_p, r5_p, r6_p])
+    await db_session.commit()
+
+    player2 = User(telegram_id=600007, first_name="Player2", is_premium=False, balance=0)
+    db_session.add(player2)
+    await db_session.commit()
+
+    db_session.add(Referral(referrer_id=r1_p.id, referred_user_id=player2.id))
+    db_session.add(Referral(referrer_id=r2_p.id, referred_user_id=r1_p.id))
+    db_session.add(Referral(referrer_id=r3_p.id, referred_user_id=r2_p.id))
+    db_session.add(Referral(referrer_id=r4_p.id, referred_user_id=r3_p.id))
+    db_session.add(Referral(referrer_id=r5_p.id, referred_user_id=r4_p.id))
+    db_session.add(Referral(referrer_id=r6_p.id, referred_user_id=r5_p.id))
+    await db_session.commit()
+
+    total_dist_p = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_escalating_p", player2.id, wager, is_winner=False)
+    await db_session.commit()
+
+    await db_session.refresh(r1_p)
+    await db_session.refresh(r2_p)
+    await db_session.refresh(r3_p)
+    await db_session.refresh(r4_p)
+    await db_session.refresh(r5_p)
+    await db_session.refresh(r6_p)
+
+    # L1 (r1_p): Recruit, L1 = 2% of 100000 = 2000 cents
+    assert r1_p.balance == 2000
+    # L2 (r2_p): Pawn, L2 = 0.8% of 100000 = 800 cents
+    assert r2_p.balance == 800
+    # L3 (r3_p): Knight, L3 = 0.4% of 100000 = 400 cents
+    assert r3_p.balance == 400
+    # L4 (r4_p): Master, L4 = 0.3% of 100000 = 300 cents
+    assert r4_p.balance == 300
+    # L5 (r5_p): Elite, L5 = 0.2% of 100000 = 200 cents
+    assert r5_p.balance == 200
+    # L6 (r6_p): Elite, L6 = 0.15% of 100000 = 150 cents
+    assert r6_p.balance == 150
+    assert total_dist_p == 3850
+
 

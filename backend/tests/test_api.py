@@ -203,7 +203,7 @@ async def test_referral_parsing_strips_prefix(client, db_session):
         
         # Verify XP rewards awarded
         await db_session.refresh(referrer)
-        assert referrer.xp == 50
+        assert referrer.xp == 100
         
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

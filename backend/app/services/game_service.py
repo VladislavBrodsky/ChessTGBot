@@ -747,19 +747,21 @@ class GameService:
             # Settle Web3 Bids / Wagers & Rakes
             bid_amount = getattr(state, "bid_amount", 0)
             platform_rake = 0
+            referral_fee = 0
             payout_amount = 0
             notifications_to_send = []
 
             if bid_amount > 0 and white_user and black_user:
+                referral_fee = int(2 * bid_amount * 0.02)
+                platform_rake = int(2 * bid_amount * 0.03)
+                payout_amount = max(0, (2 * bid_amount) - platform_rake - referral_fee)
+
                 if state.winner == 'w':
                     # White wins!
-                    # First distribute wager played & won tree commissions
-                    win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
+                    # Settle referral commissions (funded from the 2% referral pool)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
 
-                    platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = max(0, (2 * bid_amount) - platform_rake - win_deduction)
-                    
                     # Award payout to white
                     white_user.balance += payout_amount
                     session.add(white_user)
@@ -769,7 +771,7 @@ class GameService:
                         user_id=white_id,
                         type="game_win",
                         amount=payout_amount,
-                        fee=platform_rake + win_deduction,
+                        fee=platform_rake + referral_fee,
                         reference_id=game_id
                     )
                     session.add(win_tx)
@@ -790,8 +792,9 @@ class GameService:
                         f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
                         f"• <b>Game ID:</b> <code>{game_id}</code>\n"
                         f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
-                        f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
-                        f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                        f"• <b>Winner Payout (95%):</b> +${payout_amount / 100:.2f} USDT\n"
+                        f"• <b>Company Commission (3% Platform Rake):</b> -${platform_rake / 100:.2f} USDT\n"
+                        f"• <b>Referral Commission (2% Pool):</b> -${referral_fee / 100:.2f} USDT\n\n"
                         f"{white_xp_breakdown}"
                         f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
                     )
@@ -807,13 +810,10 @@ class GameService:
 
                 elif state.winner == 'b':
                     # Black wins!
-                    # First distribute wager played & won tree commissions
-                    win_deduction = await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
+                    # Settle referral commissions (funded from the 2% referral pool)
+                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
 
-                    platform_rake = int(2 * bid_amount * 0.03)
-                    payout_amount = max(0, (2 * bid_amount) - platform_rake - win_deduction)
-                    
                     # Award payout to black
                     black_user.balance += payout_amount
                     session.add(black_user)
@@ -823,7 +823,7 @@ class GameService:
                         user_id=black_id,
                         type="game_win",
                         amount=payout_amount,
-                        fee=platform_rake + win_deduction,
+                        fee=platform_rake + referral_fee,
                         reference_id=game_id
                     )
                     session.add(win_tx)
@@ -844,8 +844,9 @@ class GameService:
                         f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
                         f"• <b>Game ID:</b> <code>{game_id}</code>\n"
                         f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
-                        f"• <b>Winner Payout (97%):</b> +${payout_amount / 100:.2f} USDT\n"
-                        f"• <b>Company Commission (3% Rake):</b> -${platform_rake / 100:.2f} USDT\n\n"
+                        f"• <b>Winner Payout (95%):</b> +${payout_amount / 100:.2f} USDT\n"
+                        f"• <b>Company Commission (3% Platform Rake):</b> -${platform_rake / 100:.2f} USDT\n"
+                        f"• <b>Referral Commission (2% Pool):</b> -${referral_fee / 100:.2f} USDT\n\n"
                         f"{black_xp_breakdown}"
                         f"<i>Congratulations! The prize has been automatically credited to your platform balance. ELO ranking updated! ♟️🔥</i>"
                     )
