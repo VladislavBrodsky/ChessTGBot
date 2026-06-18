@@ -31,3 +31,8 @@ Log Audit and Debugging/
 frontend/out/
 *.db
 chess.db*
+
+# Local Tooling Configs
+pyrefly.toml
+pyrightconfig.json
+

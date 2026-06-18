@@ -13,9 +13,138 @@ from datetime import datetime, timezone
 
 router = APIRouter()
 
+import base64
+
+def crc16(data: bytes) -> int:
+    crc = 0x0000
+    for byte in data:
+        crc ^= (byte << 8)
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = (crc << 1) ^ 0x1021
+            else:
+                crc = crc << 1
+            crc &= 0xffff
+    return crc
+
+def convert_ton_address_to_hex(addr: str) -> str:
+    # Normalize base64url padding
+    addr = addr.replace('-', '+').replace('_', '/')
+    missing_padding = len(addr) % 4
+    if missing_padding:
+        addr += '=' * (4 - missing_padding)
+    
+    try:
+        decoded = base64.b64decode(addr)
+    except Exception:
+        raise ValueError("Invalid base64 TON address")
+        
+    if len(decoded) != 36:
+        raise ValueError("Invalid TON address length")
+        
+    workchain = decoded[1]
+    wc = -1 if workchain == 255 else workchain
+    hash_bytes = decoded[2:34]
+    return f"{wc}:{hash_bytes.hex()}"
+
+def convert_raw_to_friendly(raw_addr: str, bounceable: bool = True) -> str:
+    if ":" not in raw_addr:
+        return raw_addr
+    try:
+        parts = raw_addr.split(":")
+        workchain = int(parts[0])
+        hex_hash = parts[1]
+        
+        flag = 0x11 if bounceable else 0x51
+        wc_byte = 0xff if workchain == -1 else workchain
+        buf = bytes([flag, wc_byte]) + bytes.fromhex(hex_hash)
+        chk = crc16(buf)
+        final_buf = buf + chk.to_bytes(2, "big")
+        return base64.urlsafe_b64encode(final_buf).decode("utf-8")
+    except Exception:
+        return raw_addr
+
+async def fetch_all_prices() -> dict:
+    """
+    Fetches the current prices in USD for TON, USDT, USDC, BTC, and ETH.
+    Uses TonAPI rates and falls back to CoinGecko and hardcoded defaults.
+    """
+    import httpx
+    from app.core.config import get_settings
+    settings = get_settings()
+    
+    tokens = {
+        "TON": "ton",
+        "USDT": settings.USDT_MASTER,
+        "USDC": settings.USDC_MASTER,
+        "BTC": settings.BTC_MASTER,
+        "ETH": settings.ETH_MASTER
+    }
+    
+    url = f"https://tonapi.io/v2/rates?tokens={','.join(tokens.values())}&currencies=usd"
+    headers = {}
+    if settings.TON_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
+        
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                rates = data.get("rates", {})
+                
+                prices = {}
+                for symbol, addr in tokens.items():
+                    val = rates.get(addr) or rates.get(symbol.upper()) or rates.get(symbol.lower())
+                    if val and "prices" in val and "USD" in val["prices"]:
+                        prices[symbol] = float(val["prices"]["USD"])
+                
+                if len(prices) == 5:
+                    return prices
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to fetch prices from TonAPI: {e}")
+
+    # Fallback to CoinGecko
+    try:
+        cg_ids = {
+            "TON": "the-open-network",
+            "USDT": "tether",
+            "USDC": "usd-coin",
+            "BTC": "bitcoin",
+            "ETH": "ethereum"
+        }
+        url_cg = f"https://api.coingecko.com/api/v3/simple/price?ids={','.join(cg_ids.values())}&vs_currencies=usd"
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url_cg)
+            if res.status_code == 200:
+                data = res.json()
+                prices = {}
+                for symbol, cg_id in cg_ids.items():
+                    val = data.get(cg_id, {}).get("usd")
+                    if val is not None:
+                        prices[symbol] = float(val)
+                if len(prices) == 5:
+                    return prices
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to fetch prices from CoinGecko: {e}")
+
+    return {
+        "TON": 5.40,
+        "USDT": 1.00,
+        "USDC": 1.00,
+        "BTC": 65000.00,
+        "ETH": 35000.00
+    }
+
 class BalanceResponse(BaseModel):
     balance: int
     wallet_address: Optional[str] = None
+    master_wallet_address: str
+
+class DepositVerifyRequest(BaseModel):
+    message_hash: str
 
 class DepositRequest(BaseModel):
     amount: int  # In cents (smallest unit, e.g. 1000 = $10.00)
@@ -58,9 +187,12 @@ async def get_wallet_balance(
     """
     Get current user platform balance and connected wallet address.
     """
+    from app.core.config import get_settings
+    settings = get_settings()
     return BalanceResponse(
         balance=current_user.balance,
-        wallet_address=current_user.wallet_address
+        wallet_address=current_user.wallet_address,
+        master_wallet_address=settings.MASTER_WALLET_ADDRESS
     )
 
 @router.post("/connect", response_model=BalanceResponse)
@@ -643,6 +775,281 @@ async def receive_ton_deposit_webhook(
         )
         await TelegramService.send_notification(telegram_id, notification_text)
     except Exception as e:
+        pass
+
+    return {
+        "status": "success",
+        "credited_amount": credited_amount,
+        "fee": fee,
+        "new_balance": user.balance
+    }
+
+
+@router.get("/prices")
+async def get_prices():
+    prices = await fetch_all_prices()
+    return prices
+
+
+@router.get("/jetton-wallet")
+async def get_jetton_wallet(
+    user_address: str,
+    jetton_master: str
+):
+    from app.core.config import get_settings
+    settings = get_settings()
+    
+    import httpx
+    url = f"https://tonapi.io/v2/accounts/{user_address}/jettons/{jetton_master}"
+    headers = {}
+    if settings.TON_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
+        
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                jetton_wallet = data.get("wallet_address", {}).get("address", "")
+                if jetton_wallet:
+                    # Convert to friendly address format
+                    friendly = convert_raw_to_friendly(jetton_wallet)
+                    return {"jetton_wallet_address": friendly}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to fetch jetton wallet from TonAPI: {e}")
+        
+    raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
+
+
+@router.post("/deposit/verify")
+async def verify_deposit(
+    request: DepositVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    message_hash = request.message_hash
+    telegram_id = current_user.telegram_id
+
+    # Enforce replay protection
+    existing_tx_result = await db.execute(
+        select(Transaction).filter(Transaction.reference_id == message_hash)
+    )
+    if existing_tx_result.scalars().first():
+        raise HTTPException(
+            status_code=400,
+            detail="Transaction already processed."
+        )
+
+    # Polling parameters
+    import asyncio
+    import httpx
+    import logging
+
+    logger = logging.getLogger(__name__)
+    url = f"https://tonapi.io/v2/events/{message_hash}"
+    headers = {}
+    if settings.TON_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
+
+    event_data = None
+    # Poll for up to 30 seconds
+    for attempt in range(15):
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                res = await client.get(url, headers=headers)
+                if res.status_code == 200:
+                    event_data = res.json()
+                    break
+                elif res.status_code == 404:
+                    # Not mined yet
+                    pass
+                else:
+                    logger.warning(f"TonAPI verify status: {res.status_code}")
+        except Exception as e:
+            logger.warning(f"Error querying TonAPI: {e}")
+        await asyncio.sleep(2.0)
+
+    if not event_data:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction trace not found. Please wait a few seconds and try again."
+        )
+
+    # Walk through the actions to verify the transaction
+    actions = event_data.get("actions", [])
+    verified_tx = False
+    amount_cents = 0
+    sender_addr = "unknown"
+    currency_symbol = "USDT"
+
+    # Define currency decimals
+    decimals_map = {
+        "TON": 9,
+        "USDT": 6,
+        "USDC": 6,
+        "BTC": 8,
+        "ETH": 9
+    }
+
+    # Fetch fresh prices
+    prices = await fetch_all_prices()
+
+    for action in actions:
+        if action.get("status") != "ok":
+            continue
+
+        action_type = action.get("type")
+
+        if action_type == "TonTransfer":
+            ton_transfer = action.get("TonTransfer", {})
+            recipient = ton_transfer.get("recipient", {}).get("address", "")
+            sender = ton_transfer.get("sender", {}).get("address", "")
+            amount_nano = int(ton_transfer.get("amount", 0))
+            comment = ton_transfer.get("comment", "")
+
+            # Convert addresses to raw format for comparison
+            try:
+                recipient_raw = convert_ton_address_to_hex(recipient)
+                master_raw = convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)
+            except Exception:
+                continue
+
+            if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
+                # Successfully verified direct TON transfer!
+                # Calculate value in USD cents
+                ton_amount = amount_nano / 1_000_000_000.0
+                ton_price = prices.get("TON", 5.40)
+                amount_cents = int(ton_amount * ton_price * 100)
+                sender_addr = sender
+                currency_symbol = "TON"
+                verified_tx = True
+                break
+
+        elif action_type == "JettonTransfer":
+            jetton_transfer = action.get("JettonTransfer", {})
+            recipient = jetton_transfer.get("recipient", {}).get("address", "")
+            sender = jetton_transfer.get("sender", {}).get("address", "")
+            amount_raw = int(jetton_transfer.get("amount", 0))
+            comment = jetton_transfer.get("comment", "")
+            jetton_master = jetton_transfer.get("jetton", {}).get("address", "")
+            jetton_symbol = jetton_transfer.get("jetton", {}).get("symbol", "").upper()
+
+            # Compare recipient with our master address
+            try:
+                recipient_raw = convert_ton_address_to_hex(recipient)
+                master_raw = convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)
+                jetton_master_raw = convert_ton_address_to_hex(jetton_master)
+            except Exception:
+                continue
+
+            if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
+                # Find matching Jetton
+                matched_symbol = None
+                masters = {
+                    "USDT": settings.USDT_MASTER,
+                    "USDC": settings.USDC_MASTER,
+                    "BTC": settings.BTC_MASTER,
+                    "ETH": settings.ETH_MASTER
+                }
+                for sym, addr in masters.items():
+                    if convert_ton_address_to_hex(addr) == jetton_master_raw:
+                        matched_symbol = sym
+                        break
+
+                if matched_symbol:
+                    # Verified Jetton transfer!
+                    decimals = decimals_map.get(matched_symbol, 6)
+                    token_amount = amount_raw / (10 ** decimals)
+                    token_price = prices.get(matched_symbol, 1.00)
+                    amount_cents = int(token_amount * token_price * 100)
+                    sender_addr = sender
+                    currency_symbol = matched_symbol
+                    verified_tx = True
+                    break
+
+    if not verified_tx:
+        raise HTTPException(
+            status_code=400,
+            detail="Transaction verification failed. Destination, comment, or status mismatch."
+        )
+
+    if amount_cents <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Transaction amount is invalid."
+        )
+
+    # Let's acquire user lock and credit the balance
+    user_result = await db.execute(
+        select(User).filter(User.telegram_id == telegram_id).with_for_update()
+    )
+    user = user_result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Double check replay protection (inside db transaction lock)
+    existing_tx_result = await db.execute(
+        select(Transaction).filter(Transaction.reference_id == message_hash)
+    )
+    if existing_tx_result.scalars().first():
+        return {
+            "status": "success",
+            "credited_amount": 0,
+            "new_balance": user.balance,
+            "message": "Already processed"
+        }
+
+    # Deduct 5% platform fee
+    fee = int(amount_cents * 0.05)
+    credited_amount = amount_cents - fee
+
+    user.balance += credited_amount
+    db.add(user)
+
+    # Log deposit transaction
+    tx_deposit = Transaction(
+        user_id=telegram_id,
+        type="deposit",
+        amount=credited_amount,
+        fee=fee,
+        status="completed",
+        reference_id=message_hash
+    )
+    db.add(tx_deposit)
+
+    # Log fee transaction
+    tx_fee = Transaction(
+        user_id=telegram_id,
+        type="deposit_fee",
+        amount=-fee,
+        fee=0,
+        status="completed",
+        reference_id=f"fee_{message_hash[:16]}"
+    )
+    db.add(tx_fee)
+
+    await db.commit()
+    await db.refresh(user)
+
+    # Send telegram notification
+    try:
+        from app.services.telegram_bot import TelegramService
+        sender_display = f"{sender_addr[:6]}...{sender_addr[-4:]}" if len(sender_addr) > 10 else sender_addr
+        notification_text = (
+            f"<b>⚡️ Cyber Web3 Top-Up Confirmed!</b>\n\n"
+            f"• <b>Sender Address:</b> <code>{sender_display}</code>\n"
+            f"• <b>Currency:</b> {currency_symbol}\n"
+            f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
+            f"• <b>Platform Top-Up Fee (5%):</b> -${fee / 100:.2f} USDT\n"
+            f"• <b>Transaction ID:</b> <code>{message_hash[:10]}...{message_hash[-8:] if len(message_hash) > 8 else ''}</code>\n\n"
+            f"<i>Your balance has been updated. Platform Balance: {user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
+        )
+        await TelegramService.send_notification(telegram_id, notification_text)
+    except Exception:
         pass
 
     return {

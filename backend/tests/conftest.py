@@ -62,10 +62,30 @@ class MockAsyncSession:
                     telegram_id = int(word)
                     break
 
+        if "transaction" in stmt_str.lower():
+            ref_id = None
+            try:
+                params = statement.compile().params
+                for k, v in params.items():
+                    if "reference_id" in k or "ref" in k:
+                        ref_id = v
+            except Exception:
+                pass
+            if not ref_id:
+                for tx in self.transactions:
+                    if tx.reference_id and tx.reference_id in stmt_str:
+                        ref_id = tx.reference_id
+                        break
+            if ref_id:
+                matched = [tx for tx in self.transactions if tx.reference_id == ref_id]
+                return MockResult(matched)
+            return MockResult(self.transactions)
+
         if "users" in stmt_str or "user" in stmt_str:
             if telegram_id and telegram_id in self.users:
                 return MockResult([self.users[telegram_id]])
             return MockResult([])
+
         return MockResult([])
 
     def add(self, obj):

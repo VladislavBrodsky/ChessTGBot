@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { FaTimes, FaCopy, FaCheck } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
+import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
+import { beginCell, Address, Cell } from '@ton/core';
 
 interface DepositModalProps {
   onClose: () => void;
@@ -14,6 +16,14 @@ interface DepositModalProps {
   tw: any;
 }
 
+const currenciesList = [
+  { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
+  { symbol: 'USDC', name: 'USD Coin', decimals: 6, master: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728', color: '#2775CA' },
+  { symbol: 'TON', name: 'The Open Network', decimals: 9, master: '', color: '#0098EA' },
+  { symbol: 'BTC', name: 'Bitcoin (jWBTC)', decimals: 8, master: 'EQDcBkGHmC4pTf34x3Gm05XvepO5w60DNxZ-XT4I6-UGG5L5', color: '#F7931A' },
+  { symbol: 'ETH', name: 'Ethereum (jETH)', decimals: 9, master: 'EQAvS52CoZckQWLNFa7_iZL3apL52yuTwa-hlgkdWkdYl7LA', color: '#627EEA' },
+];
+
 export default function DepositModal({
   onClose,
   onSuccess,
@@ -21,24 +31,81 @@ export default function DepositModal({
   tgUser,
   tw,
 }: DepositModalProps) {
+  const [tonConnectUI] = useTonConnectUI();
+  const wallet = useTonWallet();
+
   const [depositAmount, setDepositAmount] = useState<string>("10");
-  const [invoiceUrl, setInvoiceUrl] = useState<string>("");
+  const [currency, setCurrency] = useState<'TON' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
+  const [tokenAmount, setTokenAmount] = useState<string>("10.00");
+  const [prices, setPrices] = useState<{ [key: string]: number }>({
+    TON: 5.40,
+    USDT: 1.00,
+    USDC: 1.00,
+    BTC: 65000.00,
+    ETH: 35000.00,
+  });
+
   const [processing, setProcessing] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>(" ");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState<boolean>(false);
   const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
+  const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
 
   const tgId = tgUser?.id || 1029384;
   const memoComment = `ref_${tgId}`;
-  const masterWallet = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2";
 
-  // Deposit Simulation
-  const handleDepositSubmit = async () => {
+  // Load prices and master wallet address on mount
+  useEffect(() => {
+    const loadRatesAndConfig = async () => {
+      try {
+        const priceRes = await apiFetch("/api/v1/wallet/prices");
+        if (priceRes.ok) {
+          const rates = await priceRes.json();
+          setPrices(rates);
+        }
+        const balanceRes = await apiFetch("/api/v1/wallet/balance");
+        if (balanceRes.ok) {
+          const data = await balanceRes.json();
+          if (data.master_wallet_address) {
+            setMasterWallet(data.master_wallet_address);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load prices/config", err);
+      }
+    };
+    loadRatesAndConfig();
+  }, []);
+
+  // Recalculate equivalent tokens needed based on USD amount entered
+  useEffect(() => {
+    const usd = parseFloat(depositAmount);
+    if (isNaN(usd) || usd <= 0) {
+      setTokenAmount("0.00");
+      return;
+    }
+    const price = prices[currency] || 1.0;
+    const tokens = usd / price;
+
+    if (currency === 'BTC') {
+      setTokenAmount(tokens.toFixed(6));
+    } else {
+      setTokenAmount(tokens.toFixed(4));
+    }
+  }, [depositAmount, currency, prices]);
+
+  const handleWeb3Deposit = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
       setErrorMessage(tw('invalid_amount'));
+      return;
+    }
+
+    if (!wallet) {
+      setErrorMessage("Please connect your Web3 wallet first.");
       return;
     }
 
@@ -46,94 +113,118 @@ export default function DepositModal({
     setErrorMessage("");
     setSuccessMessage("");
 
-    const mockTxHash = `sim_tx_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
-
     try {
-      const res = await apiFetch("/api/v1/wallet/webhook", {
+      const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
+      if (!selectedCurrencyObj) throw new Error("Invalid currency selection");
+
+      const price = prices[currency] || 1.0;
+      const tokensNeeded = amt / price;
+      const decimals = selectedCurrencyObj.decimals;
+      const amountUnits = BigInt(Math.round(tokensNeeded * Math.pow(10, decimals)));
+
+      if (amountUnits <= BigInt(0)) {
+        throw new Error("Amount is too small to process.");
+      }
+
+      let targetAddress = masterWallet;
+      let payloadBase64 = "";
+      let attachedTon = "100000000"; // 0.1 TON gas fee attached for Jettons
+
+      // Construct a comment cell using @ton/core
+      const commentCell = beginCell()
+        .storeUint(0, 32)
+        .storeStringTail(`ref_${tgId}`)
+        .endCell();
+
+      if (currency === 'TON') {
+        targetAddress = masterWallet;
+        payloadBase64 = commentCell.toBoc().toString('base64');
+        attachedTon = amountUnits.toString();
+      } else {
+        // Resolve Jetton wallet address from backend
+        const jettonWalletRes = await apiFetch(`/api/v1/wallet/jetton-wallet?user_address=${wallet.account.address}&jetton_master=${selectedCurrencyObj.master}`);
+        if (!jettonWalletRes.ok) {
+          throw new Error("Failed to resolve Jetton Wallet address. Do you have enough gas or tokens?");
+        }
+        const jettonWalletData = await jettonWalletRes.json();
+        targetAddress = jettonWalletData.jetton_wallet_address;
+
+        // Construct standard Jetton transfer payload
+        const transferPayload = beginCell()
+          .storeUint(0x0f8a7ea5, 32) // opcode
+          .storeUint(0, 64) // query_id
+          .storeCoins(amountUnits) // amount
+          .storeAddress(Address.parse(masterWallet)) // destination
+          .storeAddress(Address.parse(wallet.account.address)) // response_destination
+          .storeBit(0) // custom_payload
+          .storeCoins(BigInt(50000000)) // forward_ton_amount (0.05 TON)
+          .storeBit(1) // forward_payload in reference
+          .storeRef(commentCell)
+          .endCell();
+
+        payloadBase64 = transferPayload.toBoc().toString('base64');
+      }
+
+      // Prompt wallet signature
+      const result = await tonConnectUI.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 300,
+        messages: [
+          {
+            address: targetAddress,
+            amount: attachedTon,
+            payload: payloadBase64
+          }
+        ]
+      });
+
+      // Parse signed BOC and calculate hash
+      const cell = Cell.fromBase64(result.boc);
+      const messageHash = cell.hash().toString('hex');
+
+      setSuccessMessage("Transaction signed. Verifying on the blockchain...");
+      telegramHaptic('medium');
+
+      // Verify on backend
+      const verifyRes = await apiFetch("/api/v1/wallet/deposit/verify", {
         method: "POST",
         headers: {
-          "X-Webhook-Secret": "dev_webhook_secret",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          event: "transfer",
-          tx_hash: mockTxHash,
-          sender: walletAddress || "EQ_SenderAddress_Simulated_xxxx",
-          destination: masterWallet,
-          amount_cents: Math.round(amt * 100),
-          comment: `ref_${tgId}`
+          message_hash: messageHash
         })
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setSuccessMessage(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
+      if (verifyRes.ok) {
+        const data = await verifyRes.json();
+        setSuccessMessage(tw('deposit_success_sim', {
+          amount: `$${amt.toFixed(2)}`,
+          credited: `$${(data.credited_amount / 100).toFixed(2)}`
+        }));
         onSuccess();
+        telegramHaptic('success');
         setTimeout(() => {
           onClose();
           setSuccessMessage("");
         }, 3000);
       } else {
-        const errData = await res.json();
-        setErrorMessage(errData.detail || tw('deposit_failed'));
+        const errData = await verifyRes.json();
+        setErrorMessage(errData.detail || "Transaction verification failed. Please check your transaction.");
       }
-    } catch {
-      setErrorMessage(tw('deposit_network_error'));
+
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || "Transaction cancelled or failed.");
+      telegramHaptic('error');
     } finally {
       setProcessing(false);
     }
   };
 
-  const handleGenerateInvoice = async () => {
-    const amt = parseFloat(depositAmount);
-    if (isNaN(amt) || amt <= 0) {
-      setErrorMessage(tw('invalid_amount'));
-      return;
-    }
-
-    setProcessing(true);
-    setErrorMessage("");
-    setSuccessMessage("");
-    setInvoiceUrl("");
-
-    try {
-      const res = await apiFetch("/api/v1/wallet/deposit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          amount: Math.round(amt * 100) // cents
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.status === "invoice") {
-          setInvoiceUrl(data.payment_link || "");
-          setSuccessMessage(tw('deposit_invoice_success'));
-        } else if (data.status === "success") {
-          setSuccessMessage(tw('deposit_success_sim', { amount: `$${amt.toFixed(2)}`, credited: `$${(data.credited_amount / 100).toFixed(2)}` }));
-          onSuccess();
-          setTimeout(() => {
-            onClose();
-            setSuccessMessage("");
-          }, 3000);
-        }
-      } else {
-        const errData = await res.json();
-        setErrorMessage(errData.detail || tw('deposit_failed'));
-      }
-    } catch {
-      setErrorMessage(tw('deposit_network_error'));
-    } finally {
-      setProcessing(false);
-    }
-  };
+  const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
 
   return (
     <div className="bottom-drawer-backdrop z-[100]">
-      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -142,7 +233,6 @@ export default function DepositModal({
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]"
       />
 
-      {/* Content */}
       <motion.div
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
@@ -154,61 +244,78 @@ export default function DepositModal({
         <button
           onClick={onClose}
           disabled={processing}
-          className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary"
+          className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary cursor-pointer"
         >
           <FaTimes />
         </button>
 
         <div className="space-y-4">
-          <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('deposit_invoice')}</h3>
+          <h3 className="text-base font-black uppercase tracking-widest text-brand-primary">{tw('deposit_invoice')}</h3>
 
-          {invoiceUrl ? (
-            // Show Real Invoice details
-            <div className="space-y-4">
-              <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-                {tw('deposit_invoice_success')}
-              </p>
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+              Deposit instantly using your connected Web3 wallet.
+            </p>
 
-              <div className="w-full bg-brand-void p-4 rounded-xl border border-brand-border-opacity-20 flex flex-col items-center justify-center space-y-3 relative overflow-hidden">
-                <div className="absolute inset-0 bg-brand-bg-opacity-5 animate-pulse pointer-events-none" />
-                <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center p-2 relative z-10">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(invoiceUrl)}`} alt="Invoice QR Code" className="w-full h-full object-contain" />
+            {/* Currency Selector Dropdown */}
+            <div className="flex flex-col space-y-1.5 relative">
+              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Select Asset</label>
+              <button
+                type="button"
+                onClick={() => { if (!processing) setShowCurrencyDropdown(!showCurrencyDropdown); }}
+                className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between cursor-pointer hover:border-brand-primary transition-all"
+              >
+                <div className="flex items-center space-x-2">
+                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
+                    <FaCoins />
+                  </div>
+                  <span>{selectedCurrencyObj?.name} ({currency})</span>
                 </div>
-                <div className="text-[9px] font-black tracking-widest uppercase text-brand-primary opacity-40 pt-1">{tw('scan_info')}</div>
-              </div>
+                <FaAngleDown className={`text-brand-primary opacity-40 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+              </button>
 
-              <div className="w-full flex flex-col gap-2">
-                <a
-                  href={invoiceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest text-center shadow-lg block hover:bg-brand-primary-hover transition-all"
-                >
-                  Open in Wallet ⚡
-                </a>
-
-                <button
-                  onClick={() => { setInvoiceUrl(""); setSuccessMessage(""); setErrorMessage(""); }}
-                  className="w-full py-2 rounded-lg border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all"
-                >
-                  Change Amount / Back
-                </button>
-              </div>
+              <AnimatePresence>
+                {showCurrencyDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute z-50 left-0 right-0 top-[60px] bg-brand-surface border border-brand-border-opacity-20 rounded-lg overflow-hidden shadow-xl"
+                  >
+                    {currenciesList.map((c) => (
+                      <button
+                        key={c.symbol}
+                        type="button"
+                        onClick={() => {
+                          setCurrency(c.symbol as any);
+                          setShowCurrencyDropdown(false);
+                        }}
+                        className={`w-full py-2.5 px-3.5 text-left text-xs font-bold hover:bg-brand-bg-opacity-5 flex items-center justify-between cursor-pointer ${currency === c.symbol ? 'text-brand-primary bg-brand-bg-opacity-10' : 'text-brand-primary/60'}`}
+                      >
+                        <div className="flex items-center space-x-2.5">
+                          <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px]" style={{ backgroundColor: c.color + '20', color: c.color }}>
+                            <FaCoins />
+                          </div>
+                          <span>{c.name}</span>
+                        </div>
+                        <span className="text-[10px] opacity-40">{c.symbol}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          ) : (
-            // Generate Invoice Form
-            <div className="space-y-4">
-              <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-                {tw('deposit_desc')}
-              </p>
 
-              <div className="flex flex-col space-y-2">
-                <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Deposit Amount (USDT)</label>
+            {/* Deposit Amount in USD */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-3 text-brand-primary opacity-40 text-xs font-black font-mono">$</span>
+                  <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[10px] font-black font-mono">$</span>
                   <input
                     type="number"
                     value={depositAmount}
+                    disabled={processing}
                     onChange={(e) => setDepositAmount(e.target.value)}
                     className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
                     placeholder="10.00"
@@ -217,99 +324,111 @@ export default function DepositModal({
                 </div>
               </div>
 
-              <button
-                onClick={handleGenerateInvoice}
-                disabled={processing}
-                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2"
-              >
-                <div className="w-3 h-3 rounded-full border-2 border-brand-void border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
-                <span>{processing ? "Generating..." : tw('deposit_cta')}</span>
-              </button>
-
-              {/* Toggleable Direct manual transfer fallback */}
-              <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
-                <button
-                  type="button"
-                  onClick={() => setShowManualFallback(!showManualFallback)}
-                  className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
-                >
-                  <span>Or Pay Manually (Direct Transfer)</span>
-                  <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                    ▼
-                  </span>
-                </button>
-
-                {showManualFallback && (
-                  <div className="space-y-3 pt-3">
-                    <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
-                      ⚠️ WARNING: Include the unique comment memo in your transfer or your deposit will be lost.
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
-                      <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => {
-                        navigator.clipboard.writeText(masterWallet);
-                        setCopiedWallet(true);
-                        telegramHaptic('light');
-                        setTimeout(() => setCopiedWallet(false), 2000);
-                      }}>
-                        <span className="truncate">{masterWallet}</span>
-                        {copiedWallet ? (
-                          <FaCheck className="text-emerald-400 shrink-0 ml-2 animate-pulse" />
-                        ) : (
-                          <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col space-y-1">
-                      <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
-                      <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => {
-                        navigator.clipboard.writeText(memoComment);
-                        setCopiedMemo(true);
-                        telegramHaptic('light');
-                        setTimeout(() => setCopiedMemo(false), 2000);
-                      }}>
-                        <span>{memoComment}</span>
-                        {copiedMemo ? (
-                          <FaCheck className="text-emerald-400 animate-pulse" />
-                        ) : (
-                          <FaCopy className="text-emerald-500 opacity-60" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+              {/* Converted Token Amount */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Equivalent ({currency})</label>
+                <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center space-x-1 shadow-inner h-[40px]">
+                  <span className="truncate">{tokenAmount}</span>
+                  <span className="text-[9px] opacity-40 shrink-0">{currency}</span>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Web3 CTA Action */}
+            {!wallet ? (
+              <button
+                type="button"
+                onClick={() => tonConnectUI.openModal()}
+                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <FaWallet size={11} />
+                <span>Connect Wallet to Top Up</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleWeb3Deposit}
+                disabled={processing}
+                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {processing ? (
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />
+                ) : (
+                  <FaWallet size={11} />
+                )}
+                <span>{processing ? "Waiting..." : `Top Up via Connected Wallet`}</span>
+              </button>
+            )}
+
+            {/* Direct manual transfer fallback */}
+            <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
+              <button
+                type="button"
+                onClick={() => setShowManualFallback(!showManualFallback)}
+                className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                <span>Or Pay Manually (Direct Transfer)</span>
+                <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  ▼
+                </span>
+              </button>
+
+              {showManualFallback && (
+                <div className="space-y-3 pt-3">
+                  <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
+                    ⚠️ WARNING: Include the unique comment memo in your transfer or your deposit will be lost.
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => {
+                      navigator.clipboard.writeText(masterWallet);
+                      setCopiedWallet(true);
+                      telegramHaptic('light');
+                      setTimeout(() => setCopiedWallet(false), 2000);
+                    }}>
+                      <span className="truncate">{masterWallet}</span>
+                      {copiedWallet ? (
+                        <FaCheck className="text-emerald-400 shrink-0 ml-2 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
+                    <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => {
+                      navigator.clipboard.writeText(memoComment);
+                      setCopiedMemo(true);
+                      telegramHaptic('light');
+                      setTimeout(() => setCopiedMemo(false), 2000);
+                    }}>
+                      <span>{memoComment}</span>
+                      {copiedMemo ? (
+                        <FaCheck className="text-emerald-400 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-emerald-500 opacity-60" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Commission Alert */}
           <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider">
             <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
           </div>
 
-          {/* Messages and Simulation Fallback */}
-          <div className="w-full pt-1 space-y-2">
-            {successMessage && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
+          {/* Messages */}
+          <div className="w-full pt-1">
+            {successMessage && successMessage.trim() && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
             {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
-
-            {!invoiceUrl && process.env.NODE_ENV === 'development' && (
-              <div className="p-3.5 rounded-2xl border border-dashed border-brand-primary/10 bg-brand-void/25 flex flex-col space-y-2 mt-2">
-                <span className="text-[8px] font-black text-brand-primary/30 uppercase tracking-[0.2em] text-center">Dev Sandbox Tools</span>
-                <button
-                  onClick={() => { setDepositAmount("10"); handleDepositSubmit(); }}
-                  disabled={processing}
-                  className="w-full py-2 rounded-xl bg-brand-primary/5 border border-brand-primary/10 hover:bg-brand-primary/10 text-brand-primary/60 text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <div className="w-2.5 h-2.5 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" style={{ display: processing ? 'block' : 'none' }} />
-                  <span>{processing ? tw('listening_tx') : "Simulate Instant Deposit"}</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </motion.div>
     </div>
   );
 }
+

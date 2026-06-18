@@ -47,7 +47,10 @@
     "return": "Return",
     "daily_missions": "Tâches Quotidiennes",
     "claim": "Claim",
-    "cyber_knight": "Cyber Knight"
+    "cyber_knight": "Cyber Knight",
+    "no_games_logged": "No games logged",
+    "initiate_combat": "Initiate combat to update history",
+    "opponent_elo": "Opponent ELO"
   },
   "Settings": {
     "return": "Retour",
@@ -297,7 +300,15 @@
     "active": "Actif",
     "wallet": "Portefeuille",
     "unlinked": "Non lié",
-    "connect": "Connecter"
+    "connect": "Connecter",
+    "deposit_invoice_ton": "Deposit TON",
+    "deposit_invoice_cp": "Deposit USDT",
+    "deposit_desc_ton": "Send TON to the Master Wallet below. Ensure you include the exact unique comment, or your deposit will be lost.",
+    "deposit_desc_cp": "Generate a secure payment invoice via Telegram's @CryptoBot to top up your balance instantly using USDT.",
+    "scan_info_ton": "Scan to send using Tonkeeper or Telegram Wallet",
+    "scan_info_cp": "Scan QR code or click 'Open in Wallet' to pay via @CryptoBot",
+    "deposit_cta_ton": "Generate Web3 Invoice",
+    "deposit_cta_cp": "Top Up via @CryptoBot"
   },
   "Membership": {
     "title": "CHESS PREMIUM",
@@ -326,7 +337,12 @@
     "elite_skins": "Échiquiers Élite",
     "elite_skins_desc": "Designs 3D et animations exclusives.",
     "engine_analysis": "Analyse du Moteur IA",
-    "engine_analysis_desc": "Analyse tactique approfondie de vos parties."
+    "engine_analysis_desc": "Analyse tactique approfondie de vos parties.",
+    "xp_upgrade_badge": "PRO REGISTRATION MATRIX",
+    "xp_upgrade_title": "ACTIVATION PROTOCOL",
+    "xp_upgrade_desc": "Use your accumulated XP to bypass Web3 fees and unlock Chess Premium membership permanently.",
+    "xp_upgrade_cost": "COST: 500 XP (Balance: {xp} XP)",
+    "xp_upgrade_btn": "Unlock Premium with 500 XP"
   },
   "TierComparison": {
     "title": "Comparaison des Fonctionnalités",

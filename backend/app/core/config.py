@@ -49,9 +49,15 @@ class Settings(BaseSettings):
     CRYPTO_PAY_ENVIRONMENT: str = os.getenv("CRYPTO_PAY_ENVIRONMENT", "testnet")
 
     # Web3 Wallets Configuration
-    MASTER_WALLET_ADDRESS: str = "EQBvW8ZDR3YQ4vK42898h32fG3-q392u381uD28Ue9wU81E2"  # Game deposits pool
+    MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET") or "dev_webhook_secret"
+
+    # Jetton Master Addresses
+    USDT_MASTER: str = "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
+    USDC_MASTER: str = "EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728"
+    BTC_MASTER: str = "EQDcBkGHmC4pTf34x3Gm05XvepO5w60DNxZ-XT4I6-UGG5L5"
+    ETH_MASTER: str = "EQAvS52CoZckQWLNFa7_iZL3apL52yuTwa-hlgkdWkdYl7LA"
 
     model_config = {
         "env_file": ".env",
