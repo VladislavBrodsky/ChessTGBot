@@ -22,8 +22,7 @@ export default function AcademyPage() {
   const [puzzles, setPuzzles] = useState<any[]>([]);
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
-
-  const nextToSolveId = puzzles.find(p => !p.is_solved && !p.is_premium_locked)?.id;
+  const nextToSolveId = puzzles.find(p => !p.is_solved && !p.is_sequential_locked && !p.is_premium_locked && !p.is_xp_locked)?.id;
 
   const fetchData = async () => {
     try {
@@ -96,12 +95,49 @@ export default function AcademyPage() {
     });
   };
 
-  const handlePuzzleClick = (id: number, isLocked: boolean) => {
-    if (isLocked) {
-      setShowPremiumPromo(true);
-    } else {
-      router.push(`/${locale}/academy/puzzle?id=${id}`);
+  const handlePuzzleClick = async (id: number, pInfo: any) => {
+    if (!pInfo) return;
+
+    if (pInfo.is_sequential_locked) {
+      telegramAlert(`You must solve Level ${id - 1} before you can access Level ${id}.`);
+      return;
     }
+
+    if (pInfo.is_premium_locked) {
+      setShowPremiumPromo(true);
+      return;
+    }
+
+    if (pInfo.is_xp_locked) {
+      const currentXp = stats?.xp || 0;
+      const cost = pInfo.xp_cost;
+      if (currentXp < cost) {
+        telegramAlert(`Unlocking Level ${id} requires ${cost} XP. You only have ${currentXp} XP.`);
+        return;
+      }
+
+      telegramConfirm(`Unlock Level ${id} by spending ${cost} XP? (You have ${currentXp} XP)`, async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${id}/unlock`, {
+            method: "POST"
+          });
+          const data = await res.json();
+          if (res.ok && data.status === "success") {
+            telegramAlert(`Level ${id} unlocked successfully!`);
+            fetchData();
+          } else {
+            telegramAlert(data.detail || "Failed to unlock level");
+          }
+        } catch (e) {
+          console.error(e);
+          telegramAlert("Unlock failed");
+        }
+      });
+      return;
+    }
+
+    router.push(`/${locale}/academy/puzzle?id=${id}`);
   };
 
   const handleUpgradeWithXp = async () => {
@@ -322,8 +358,11 @@ export default function AcademyPage() {
               <div className="grid grid-cols-10 gap-1.5 w-full">
                 {Array.from({ length: 100 }, (_, i) => {
                   const id = i + 1;
+                  const puzzleInfo = puzzles.find(p => p.id === id);
                   const isCompleted = completedPuzzles.includes(id);
-                  const isPremiumLocked = id > 1 && !(stats?.is_premium);
+                  const isSequentialLocked = puzzleInfo ? puzzleInfo.is_sequential_locked : (id > 1);
+                  const isPremiumLocked = puzzleInfo ? puzzleInfo.is_premium_locked : (id > 30);
+                  const isXpLocked = puzzleInfo ? puzzleInfo.is_xp_locked : (id >= 11 && id <= 29);
                   const isActive = id === nextToSolveId;
 
                   let bgClass = "";
@@ -332,6 +371,15 @@ export default function AcademyPage() {
                   if (isCompleted) {
                     bgClass = "tc-solved font-bold hover:scale-105";
                     statusMark = <FaCheck className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
+                  } else if (isSequentialLocked) {
+                    bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-primary/20 cursor-not-allowed";
+                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-brand-primary/10" />;
+                  } else if (isPremiumLocked) {
+                    bgClass = "tc-locked hover-shake";
+                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-amber-500/60" />;
+                  } else if (isXpLocked) {
+                    bgClass = "bg-brand-void/50 border-amber-500/30 text-amber-500 hover:scale-105 hover:bg-brand-void/75 hover:border-amber-500/50 shadow-[0_0_8px_rgba(245,158,11,0.05)]";
+                    statusMark = <div className="absolute bottom-0.5 right-0.5 text-[5.5px] font-bold text-amber-500/70">XP</div>;
                   } else if (isActive) {
                     bgClass = [
                       "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
@@ -339,9 +387,6 @@ export default function AcademyPage() {
                       "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_rgba(255,255,255,0.3)]",
                       "animate-active-portal",
                     ].join(" ");
-                  } else if (isPremiumLocked) {
-                    bgClass = "tc-locked hover-shake";
-                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-amber-500/60" />;
                   } else {
                     bgClass = "tc-unlocked font-semibold hover:scale-105";
                   }
@@ -349,7 +394,7 @@ export default function AcademyPage() {
                   return (
                     <button
                       key={id}
-                      onClick={() => handlePuzzleClick(id, isPremiumLocked)}
+                      onClick={() => handlePuzzleClick(id, puzzleInfo)}
                       className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
                     >
                       <span>{id}</span>

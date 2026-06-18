@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from app.models.user import User
-from app.models.gamification import Task, UserTask, Referral, TaskType, UnlockedLesson
+from app.models.gamification import Task, UserTask, Referral, TaskType, UnlockedLesson, UnlockedPuzzle
 from datetime import datetime, timedelta, timezone
 import random
 import string
@@ -58,7 +58,7 @@ class GamificationService:
         return user_tasks
 
     @staticmethod
-    async def get_or_create_achievements(db: AsyncSession, user_id: int):
+    async def get_or_create_achievements(db: AsyncSession, user_id: int, commit: bool = True):
         # Lock user row to prevent concurrent achievements generation
         user_stmt = select(User).where(User.id == user_id).with_for_update()
         await db.execute(user_stmt)
@@ -81,7 +81,10 @@ class GamificationService:
                 user_tasks.append(user_task)
                 
         if user_tasks:
-            await db.commit()
+            if commit:
+                await db.commit()
+            else:
+                await db.flush()
 
     @staticmethod
     async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True, commit: bool = True, reason: str = "activity", reference_id: str = None):
@@ -435,7 +438,7 @@ class GamificationService:
         await db.execute(user_stmt)
 
         # Ensure achievements are generated before updating progress
-        await GamificationService.get_or_create_achievements(db, user_id)
+        await GamificationService.get_or_create_achievements(db, user_id, commit=commit)
 
         # 2. Lock UserTask rows to prevent lost updates
         result = await db.execute(
@@ -500,6 +503,70 @@ class GamificationService:
 
         # Create unlock entry
         unlock = UnlockedLesson(user_id=db_user.id, lesson_id=lesson_id)
+        db.add(unlock)
+        db.add(db_user)
+        await db.commit()
+        await db.refresh(db_user)
+        return db_user, "Success"
+
+    @staticmethod
+    async def unlock_puzzle(db: AsyncSession, user: User, puzzle_id: int):
+        """
+        Deduct progressive XP to unlock a tactics level.
+        Formula: Cost = 200 + (puzzle_id - 11) * 50
+        """
+        if puzzle_id < 11 or puzzle_id > 29:
+            return None, "Only levels 11 to 29 can be unlocked with XP."
+
+        # Lock user row to prevent concurrent race conditions/duplicate spends
+        user_stmt = select(User).where(User.id == user.id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        db_user = res_user.scalars().first()
+        if not db_user:
+            return None, "User not found"
+
+        if db_user.is_premium_active:
+            return db_user, "Premium users already have access to all levels."
+
+        # Check if already unlocked
+        result = await db.execute(
+            select(UnlockedPuzzle).where(
+                and_(UnlockedPuzzle.user_id == db_user.id, UnlockedPuzzle.puzzle_id == puzzle_id)
+            )
+        )
+        existing = result.scalars().first()
+        if existing:
+            return db_user, "Level already unlocked"
+
+        # Sequential check: must have solved previous level (puzzle_id - 1)
+        from app.models.gamification import SolvedPuzzle
+        solved_check = await db.execute(
+            select(SolvedPuzzle).where(
+                and_(SolvedPuzzle.user_id == db_user.id, SolvedPuzzle.puzzle_id == puzzle_id - 1)
+            )
+        )
+        if not solved_check.scalars().first():
+            return None, f"You must solve Level {puzzle_id - 1} before unlocking Level {puzzle_id}."
+
+        cost = 200 + (puzzle_id - 11) * 50
+        if db_user.xp < cost:
+            return None, f"Insufficient XP. Need {cost} XP to unlock Level {puzzle_id}."
+
+        # Deduct XP (level is a high-watermark — never decreases on XP spend)
+        db_user.xp -= cost
+
+        # Log XP transaction
+        from app.models.xp_transaction import XpTransaction
+        xp_tx = XpTransaction(
+            user_id=db_user.telegram_id,
+            amount=-cost,
+            reason=f"puzzle_unlock_{puzzle_id}",
+            reference_id=str(puzzle_id)
+        )
+        db.add(xp_tx)
+
+        # Create unlock entry
+        unlock = UnlockedPuzzle(user_id=db_user.id, puzzle_id=puzzle_id)
         db.add(unlock)
         db.add(db_user)
         await db.commit()

@@ -59,3 +59,13 @@ class SolvedPuzzle(Base):
     user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
     puzzle_id = Column(Integer, index=True, nullable=False)
     solved_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+
+
+class UnlockedPuzzle(Base):
+    __tablename__ = "unlocked_puzzles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    puzzle_id = Column(Integer, index=True, nullable=False)
+    unlocked_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+

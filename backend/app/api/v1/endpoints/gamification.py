@@ -245,41 +245,107 @@ async def get_puzzles(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """List all 100 puzzles with solved status, without solutions to prevent cheating."""
+    """List all 100 puzzles with solved status, locks, and progressive unlock costs."""
     from app.core.puzzles import CHESS_PUZZLES
-    from app.models.gamification import SolvedPuzzle
+    from app.models.gamification import SolvedPuzzle, UnlockedPuzzle
     from sqlalchemy import select
     
     result = await db.execute(
         select(SolvedPuzzle.puzzle_id).where(SolvedPuzzle.user_id == current_user.id)
     )
     solved_ids = set(result.scalars().all())
+
+    unlock_res = await db.execute(
+        select(UnlockedPuzzle.puzzle_id).where(UnlockedPuzzle.user_id == current_user.id)
+    )
+    unlocked_ids = set(unlock_res.scalars().all())
     
-    return [
-        {
-            "id": p["id"],
+    puzzles_list = []
+    for p in CHESS_PUZZLES:
+        id = p["id"]
+        is_solved = id in solved_ids
+        
+        # 1. Sequential Progression Check
+        is_sequential_locked = False
+        if id > 1 and (id - 1) not in solved_ids:
+            is_sequential_locked = True
+            
+        # 2. Gating and Unlock check
+        is_premium_locked = False
+        is_xp_locked = False
+        xp_cost = 0
+        
+        if id <= 10:
+            # Free tier
+            pass
+        elif 11 <= id <= 29:
+            # XP Unlock tier
+            if not current_user.is_premium_active and id not in unlocked_ids:
+                is_xp_locked = True
+                xp_cost = 200 + (id - 11) * 50
+        else:
+            # Premium tier
+            if not current_user.is_premium_active:
+                is_premium_locked = True
+                
+        puzzles_list.append({
+            "id": id,
             "title": p["title"],
             "description": p["description"],
             "xp_reward": p["xp_reward"],
-            "is_premium_locked": p["id"] > 1 and not current_user.is_premium_active,
-            "is_solved": p["id"] in solved_ids
-        }
-        for p in CHESS_PUZZLES
-    ]
+            "is_solved": is_solved,
+            "is_sequential_locked": is_sequential_locked,
+            "is_premium_locked": is_premium_locked,
+            "is_xp_locked": is_xp_locked,
+            "xp_cost": xp_cost
+        })
+        
+    return puzzles_list
 
 @router.get("/academy/puzzles/{puzzle_id}")
 async def get_puzzle_by_id(
     puzzle_id: int,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
-    """Retrieve single puzzle details. Gates puzzles > 1 behind premium check."""
+    """Retrieve single puzzle details after verifying gating rules."""
     from app.core.puzzles import CHESS_PUZZLES
+    from sqlalchemy import select, and_
     
-    if puzzle_id > 1 and not current_user.is_premium_active:
-        raise HTTPException(
-            status_code=403,
-            detail="Premium subscription required to access this tactical level."
+    if puzzle_id > 1:
+        # Sequential progression check
+        from app.models.gamification import SolvedPuzzle
+        solved_check = await db.execute(
+            select(SolvedPuzzle).where(
+                and_(SolvedPuzzle.user_id == current_user.id, SolvedPuzzle.puzzle_id == puzzle_id - 1)
+            )
         )
+        if not solved_check.scalars().first():
+            raise HTTPException(
+                status_code=403,
+                detail="You must solve the previous tactical level first."
+            )
+            
+    if 11 <= puzzle_id <= 29:
+        if not current_user.is_premium_active:
+            from app.models.gamification import UnlockedPuzzle
+            unlocked_check = await db.execute(
+                select(UnlockedPuzzle).where(
+                    and_(UnlockedPuzzle.user_id == current_user.id, UnlockedPuzzle.puzzle_id == puzzle_id)
+                )
+            )
+            if not unlocked_check.scalars().first():
+                raise HTTPException(
+                    status_code=403,
+                    detail="You need to unlock this level using XP or upgrade to Premium."
+                )
+                
+    if puzzle_id >= 30:
+        if not current_user.is_premium_active:
+            raise HTTPException(
+                status_code=403,
+                detail="Premium subscription required to access this tactical level."
+            )
         
     for p in CHESS_PUZZLES:
         if p["id"] == puzzle_id:
@@ -294,6 +360,22 @@ async def get_puzzle_by_id(
             
     raise HTTPException(status_code=404, detail="Puzzle not found")
 
+@router.post("/academy/puzzles/{puzzle_id}/unlock")
+async def unlock_puzzle_endpoint(
+    puzzle_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Unlock a tactics level using progressive XP."""
+    updated_user, message = await GamificationService.unlock_puzzle(db, current_user, puzzle_id)
+    if not updated_user:
+        raise HTTPException(status_code=400, detail=message)
+    return {
+        "status": "success",
+        "new_xp": updated_user.xp,
+        "puzzle_id": puzzle_id
+    }
+
 @router.post("/academy/puzzles/{puzzle_id}/verify")
 async def verify_puzzle_solution(
     puzzle_id: int,
@@ -301,7 +383,7 @@ async def verify_puzzle_solution(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Verify moves solution, checks premium if >1, and credits ELO & XP."""
+    """Verify moves solution after checking locks, and credits ELO & XP."""
     from app.core.puzzles import CHESS_PUZZLES
     
     # 1. Re-fetch user with write lock to prevent race conditions during ELO/XP updates
@@ -312,11 +394,40 @@ async def verify_puzzle_solution(
     if not locked_user:
         raise HTTPException(status_code=404, detail="User not found")
         
-    if puzzle_id > 1 and not locked_user.is_premium_active:
-        raise HTTPException(
-            status_code=403,
-            detail="Premium subscription required to access this tactical level."
+    if puzzle_id > 1:
+        # Sequential progression check
+        from app.models.gamification import SolvedPuzzle
+        solved_check = await db.execute(
+            select(SolvedPuzzle).where(
+                and_(SolvedPuzzle.user_id == locked_user.id, SolvedPuzzle.puzzle_id == puzzle_id - 1)
+            )
         )
+        if not solved_check.scalars().first():
+            raise HTTPException(
+                status_code=403,
+                detail="You must solve the previous tactical level first."
+            )
+            
+    if 11 <= puzzle_id <= 29:
+        if not locked_user.is_premium_active:
+            from app.models.gamification import UnlockedPuzzle
+            unlocked_check = await db.execute(
+                select(UnlockedPuzzle).where(
+                    and_(UnlockedPuzzle.user_id == locked_user.id, UnlockedPuzzle.puzzle_id == puzzle_id)
+                )
+            )
+            if not unlocked_check.scalars().first():
+                raise HTTPException(
+                    status_code=403,
+                    detail="You need to unlock this level using XP or upgrade to Premium."
+                )
+                
+    if puzzle_id >= 30:
+        if not locked_user.is_premium_active:
+            raise HTTPException(
+                status_code=403,
+                detail="Premium subscription required to access this tactical level."
+            )
         
     target_puzzle = None
     for p in CHESS_PUZZLES:

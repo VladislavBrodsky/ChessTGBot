@@ -28,9 +28,10 @@ function PuzzleContent() {
     setLoading(true);
     setError("");
     apiFetch(`/api/v1/gamification/academy/puzzles/${puzzleId}`)
-      .then(res => {
+      .then(async res => {
         if (!res.ok) {
-          throw new Error("Premium locked or level not found.");
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.detail || "Failed to load puzzle.");
         }
         return res.json();
       })
