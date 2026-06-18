@@ -441,7 +441,10 @@ async def get_transaction_ledger(
     offset = (page - 1) * limit
     result = await db.execute(
         select(Transaction)
-        .filter(Transaction.user_id == current_user.telegram_id)
+        .filter(
+            Transaction.user_id == current_user.telegram_id,
+            Transaction.type.notin_(["deposit_fee", "game_rake"])
+        )
         .order_by(desc(Transaction.created_at))
         .offset(offset)
         .limit(limit)
