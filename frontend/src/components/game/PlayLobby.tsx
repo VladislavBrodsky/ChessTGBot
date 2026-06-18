@@ -381,6 +381,18 @@ export default function PlayLobby() {
               </span>
             </div>
 
+            {/* Win Up To Pill (Viral/FOMO) */}
+            {chosenWager > 0 && (
+              <div className="px-6 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/35 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse shrink-0">
+                <span className="text-[8.5px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
+                  <FaFire className="text-emerald-500 text-[9.5px]" /> {tg('win_up_to')}
+                </span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none">
+                  ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                </span>
+              </div>
+            )}
+
             <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
               <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
               <span className="text-sm font-black text-brand-primary">
@@ -516,6 +528,11 @@ export default function PlayLobby() {
                       {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                     </span>
                   </div>
+                  {hasSufficient && chosenWager > 0 && (
+                    <span className="text-[8.5px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75">
+                      <FaFire className="text-emerald-500 text-[9.5px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                    </span>
+                  )}
                 </motion.button>
               </div>
             </div>
