@@ -110,6 +110,12 @@ async def verify_task(
     if user_task.completed:
         return {"status": "success", "completed": True, "message": "Task already completed"}
 
+    if task_def.title_key == "add_to_home_screen":
+        user_task.progress = 1
+        user_task.completed = True
+        await db.commit()
+        return {"status": "success", "completed": True}
+
     chat_username = None
     if task_def.title_key == "join_channel":
         chat_username = "@chess_hub"

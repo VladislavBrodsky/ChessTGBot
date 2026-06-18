@@ -111,7 +111,8 @@
     "battles": "对局",
     "elo_rating": "ELO积分",
     "return": "返回",
-    "referral_desc": "邀请好友，赚取他们投注额的 15% 终身佣金！每位活跃好友注册立得 +50 XP 经验加成。"
+    "referral_desc": "邀请好友，赚取他们投注额的 15% 终身佣金！每位活跃好友注册立得 +50 XP 经验加成。",
+    "add_to_home_screen": "添加应用到主屏幕"
   },
   "Academy": {
     "title": "学院",

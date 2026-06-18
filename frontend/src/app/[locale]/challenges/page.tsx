@@ -65,6 +65,70 @@ export default function ChallengesPage() {
   };
 
   const handleVerify = async (taskDefId: number, titleKey: string) => {
+    if (titleKey === "add_to_home_screen") {
+      const tg = typeof window !== "undefined" ? (window as any).Telegram?.WebApp : null;
+      if (!tg) {
+        telegramAlert("Telegram WebApp interface not found.");
+        return;
+      }
+
+      const sendVerify = async () => {
+        try {
+          const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/verify`, {
+            method: "POST"
+          });
+          const data = await res.json();
+          if (res.ok && data.completed) {
+            setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
+            telegramAlert("Home screen verified successfully! You can now claim your reward.");
+          } else {
+            telegramAlert(data.detail || "Verification failed. Please add the app to your home screen first.");
+          }
+        } catch (err) {
+          console.error("Verification failed", err);
+          telegramAlert("Network error during home screen verification.");
+        }
+      };
+
+      if (tg.checkHomeScreenStatus) {
+        tg.checkHomeScreenStatus(async (status: string) => {
+          if (status === "added") {
+            await sendVerify();
+          } else if (status === "missed") {
+            if (tg.addToHomeScreen) {
+              try {
+                tg.addToHomeScreen();
+                tg.onEvent("homeScreenAdded", async () => {
+                  await sendVerify();
+                });
+              } catch (e) {
+                console.error("Failed to prompt addToHomeScreen", e);
+                telegramAlert("Click the top-right menu (⋮) and select 'Add to Home Screen' manually, then verify.");
+              }
+            } else {
+              telegramAlert("Click the top-right menu (⋮) and select 'Add to Home Screen' manually, then verify.");
+            }
+          } else {
+            if (tg.addToHomeScreen) {
+              try {
+                tg.addToHomeScreen();
+                tg.onEvent("homeScreenAdded", async () => {
+                  await sendVerify();
+                });
+              } catch (e) {
+                await sendVerify();
+              }
+            } else {
+              await sendVerify();
+            }
+          }
+        });
+      } else {
+        await sendVerify();
+      }
+      return;
+    }
+
     const link = titleKey === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
     if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
       (window as any).Telegram.WebApp.openTelegramLink(link);
@@ -231,7 +295,7 @@ export default function ChallengesPage() {
                       </motion.button>
                     ) : task.claimed ? (
                       <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>
-                    ) : (task.title_key === "join_channel" || task.title_key === "join_chat") ? (
+                    ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleVerify(task.task_id, task.title_key)}

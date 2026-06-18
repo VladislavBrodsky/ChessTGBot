@@ -48,7 +48,8 @@ async def init_db():
             Task(id=103, title_key="ach_play_25", description_key="Chess Enthusiast: Play 25 chess matches", xp_reward=250, task_type=TaskType.PLAY, target_count=25, is_daily=False, icon="book"),
             Task(id=104, title_key="ach_refer_5", description_key="Network Builder: Invite 5 friends to FinChess", xp_reward=500, task_type=TaskType.REFER, target_count=5, is_daily=False, icon="users"),
             Task(id=201, title_key="join_channel", description_key="Subscribe to official channel @chess_hub", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
-            Task(id=202, title_key="join_chat", description_key="Subscribe to official chat @chesshub_chat", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram")
+            Task(id=202, title_key="join_chat", description_key="Subscribe to official chat @chesshub_chat", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
+            Task(id=203, title_key="add_to_home_screen", description_key="Add App to your Home Screen", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="home")
         ]
         
         seeded = 0

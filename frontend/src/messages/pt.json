@@ -111,7 +111,8 @@
     "battles": "Batalhas",
     "elo_rating": "Classificação ELO",
     "return": "Voltar",
-    "referral_desc": "Convide amigos para ganhar 15% de comissão vitalícia sobre as apostas deles! Ganhe +50 XP instantaneamente por cada cadastro ativo."
+    "referral_desc": "Convide amigos para ganhar 15% de comissão vitalícia sobre as apostas deles! Ganhe +50 XP instantaneamente por cada cadastro ativo.",
+    "add_to_home_screen": "Adicionar à tela inicial"
   },
   "Academy": {
     "title": "Academia",

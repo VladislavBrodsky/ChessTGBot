@@ -294,7 +294,7 @@ async def test_subscription_tasks_verification(client, db_session):
     from app.services.gamification_service import GamificationService
 
     # Seed Task definitions first
-    for tid, tkey in [(201, "join_channel"), (202, "join_chat")]:
+    for tid, tkey in [(201, "join_channel"), (202, "join_chat"), (203, "add_to_home_screen")]:
         res_t = await db_session.execute(select(Task).where(Task.id == tid))
         if not res_t.scalars().first():
             db_session.add(Task(id=tid, title_key=tkey, description_key=f"Sub to {tkey}", xp_reward=150, task_type="LOGIN", target_count=1, is_daily=False))
@@ -336,11 +336,22 @@ async def test_subscription_tasks_verification(client, db_session):
         ut = result.scalars().first()
         assert ut.completed is True
 
+        # Verify task 203 (add to home screen)
+        res_203 = await client.post("/api/v1/gamification/tasks/203/verify", headers=headers)
+        assert res_203.status_code == 200
+        data_203 = res_203.json()
+        assert data_203["completed"] is True
+
+        # Verify DB updates
+        result_203 = await db_session.execute(select(UserTask).where(UserTask.user_id == user.id, UserTask.task_id == 203))
+        ut_203 = result_203.scalars().first()
+        assert ut_203.completed is True
+
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token
         from sqlalchemy import delete
         await db_session.execute(delete(UserTask).where(UserTask.user_id == user.id))
-        await db_session.execute(delete(Task).where(Task.id.in_([201, 202])))
+        await db_session.execute(delete(Task).where(Task.id.in_([201, 202, 203])))
         await db_session.commit()
 
 

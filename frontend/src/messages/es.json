@@ -111,7 +111,8 @@
     "battles": "Partidas",
     "elo_rating": "Puntuación ELO",
     "return": "Atrás",
-    "referral_desc": "¡Invita amigos para ganar un 15% de comisión de por vida! Obtén +50 XP al instante por cada registro activo."
+    "referral_desc": "¡Invita amigos para ganar un 15% de comisión de por vida! Obtén +50 XP al instante por cada registro activo.",
+    "add_to_home_screen": "Añadir a la pantalla de inicio"
   },
   "Academy": {
     "title": "Academia",
