@@ -4,17 +4,22 @@
  */
 
 export const telegramAlert = (message: string, callback?: () => void) => {
-  if (typeof window !== "undefined" && window.Telegram?.WebApp?.showAlert) {
-    window.Telegram.WebApp.showAlert(message, callback);
+  if (typeof window !== "undefined") {
+    const event = new CustomEvent("custom-alert", {
+      detail: { message, callback }
+    });
+    window.dispatchEvent(event);
   } else {
-    alert(message);
     if (callback) callback();
   }
 };
 
 export const telegramConfirm = (message: string, callback: (ok: boolean) => void) => {
-  if (typeof window !== "undefined" && window.Telegram?.WebApp?.showConfirm) {
-    window.Telegram.WebApp.showConfirm(message, callback);
+  if (typeof window !== "undefined") {
+    const event = new CustomEvent("custom-confirm", {
+      detail: { message, callback }
+    });
+    window.dispatchEvent(event);
   } else {
     const result = confirm(message);
     callback(result);
