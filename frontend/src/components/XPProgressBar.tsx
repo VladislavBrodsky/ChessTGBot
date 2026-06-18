@@ -30,23 +30,35 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 </span>
             </div>
 
-            <div className="w-full h-3 bg-brand-void rounded-full overflow-hidden border border-brand-border-opacity-20 relative">
+            <div className="w-full h-3.5 bg-black/60 rounded-full overflow-hidden border border-white/5 dark:border-zinc-800/80 relative shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">
                 {/* Background Glow */}
-                <div className="absolute inset-0 bg-brand-bg-opacity-5"></div>
+                <div className="absolute inset-0 bg-amber-500/[0.02] pointer-events-none" />
 
                 {/* Fill */}
                 <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${progressPercentage}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className="h-full bg-brand-primary relative"
+                    animate={{ 
+                        width: `${progressPercentage}%`,
+                        backgroundPosition: ["0% 50%", "200% 50%"]
+                    }}
+                    transition={{ 
+                        width: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
+                        backgroundPosition: { repeat: Infinity, duration: 4, ease: "linear" }
+                    }}
+                    className="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 relative rounded-full shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+                    style={{
+                        backgroundSize: '200% 100%',
+                    }}
                 >
-                    {/* Shimmer Effect */}
-                    <motion.div
-                        animate={{ x: ["-100%", "200%"] }}
-                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.3)] to-transparent w-1/2"
-                    />
+                    {/* Glowing Leading-Edge Spark */}
+                    {progressPercentage > 0 && (
+                        <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-4 h-full pointer-events-none overflow-visible">
+                            {/* Outer Soft Glow */}
+                            <div className="absolute w-5 h-5 bg-amber-400/50 rounded-full blur-xs animate-pulse" />
+                            {/* Inner Bright Spark */}
+                            <div className="absolute w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_#fff]" />
+                        </div>
+                    )}
                 </motion.div>
             </div>
         </div>
