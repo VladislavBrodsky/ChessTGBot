@@ -82,7 +82,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const { theme, toggleTheme } = useTheme();
 
     return (
-        <div className="relative min-h-screen w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
+        <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
             {/* Ambient Starfield */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 opacity-[0.05]" style={{
@@ -93,7 +93,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-screen pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] ${className}`}>
+            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] ${className}`}>
 
                 {children}
             </main>
