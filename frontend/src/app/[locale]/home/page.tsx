@@ -157,7 +157,8 @@ export default function Home() {
     </div>
   ) : (
     <div
-      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group"
+      onClick={() => router.push(`/${locale}/profile`)}
+      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group cursor-pointer hover:border-brand-border-opacity-20 transition-all"
     >
       {/* Decorative background chess piece */}
       <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
@@ -195,7 +196,7 @@ export default function Home() {
       </div>
 
       {/* Balance pill inside the User Card */}
-      <Link href={`/${locale}/wallet`} className="relative z-20">
+      <Link href={`/${locale}/wallet`} className="relative z-20" onClick={(e) => e.stopPropagation()}>
       <motion.div 
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.96 }}
