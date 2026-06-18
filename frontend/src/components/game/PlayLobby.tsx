@@ -449,10 +449,10 @@ export default function PlayLobby() {
                 <div
                   className="mx-3 mb-3 rounded-2xl overflow-hidden animate-fade-in"
                 >
-                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand-void/60 border border-brand-border-opacity-10 rounded-2xl shadow-inner-glow">
+                  <div className="flex items-center justify-between px-2 py-2.5 bg-brand-void/60 border border-brand-border-opacity-10 rounded-2xl shadow-inner-glow">
                     <button
                       onClick={scrollToWager}
-                      className="flex flex-col items-start cursor-pointer bg-transparent border-0 p-0 text-left hover:opacity-80 active:scale-95 transition-all duration-150"
+                      className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                     >
                       <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                         <FaWallet className="text-brand-primary/45 text-[7px]" /> {tg('stake')}
@@ -467,12 +467,12 @@ export default function PlayLobby() {
                         telegramHaptic('light');
                         setShowRakeInfo(true);
                       }}
-                      className="flex flex-col items-center px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
+                      className="flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
                     >
                       <span className="text-[7.5px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
                         <FaFire className="text-emerald-400 text-[8px] animate-pulse" /> {tg('win_up_to')}
                       </span>
-                      <span className="text-[12px] font-black text-emerald-400 tracking-tight leading-none">
+                      <span className="text-[11px] font-black text-emerald-400 tracking-tight leading-none">
                         ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
                       </span>
                     </button>
@@ -481,7 +481,7 @@ export default function PlayLobby() {
                     
                     <button
                       onClick={scrollToTimeControl}
-                      className="flex flex-col items-end cursor-pointer bg-transparent border-0 p-0 text-right hover:opacity-80 active:scale-95 transition-all duration-150"
+                      className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                     >
                       <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                         <FaClock className="text-brand-primary/45 text-[7px]" /> {tg('time')}
