@@ -386,5 +386,6 @@ async def subscribe_user(
     # Distribute subscription purchase commission across referrers
     from app.services.referral_commission_service import ReferralCommissionService
     await ReferralCommissionService.distribute_subscription_commissions(db, locked_user.id, price)
+    await db.commit()
     
     return {"status": "success", "tier": updated_user.premium_tier}
