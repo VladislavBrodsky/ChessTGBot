@@ -12,18 +12,24 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>('dark'); // Default to dark
+/**
+ * Read the theme the inline <script> in layout.tsx already applied to the DOM.
+ * This runs synchronously before the first render so useState never has to
+ * change the value, eliminating the flash-of-unstyled-content.
+ */
+function getInitialTheme(): Theme {
+    if (typeof document !== 'undefined') {
+        const attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'light' || attr === 'dark') return attr;
+    }
+    return 'dark';
+}
 
-    useEffect(() => {
-        // Check local storage or system preference
-        const savedTheme = localStorage.getItem('theme') as Theme;
-        if (savedTheme === 'light' || savedTheme === 'dark') {
-            setTheme(savedTheme);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            setTheme('light');
-        }
-    }, []);
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+    const [theme, setTheme] = useState<Theme>(getInitialTheme);
+
+    // No useEffect needed for the initial read — getInitialTheme handles it.
+    // We still watch for system-preference changes after mount.
 
     useEffect(() => {
         // Apply theme to document

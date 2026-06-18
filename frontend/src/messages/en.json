@@ -316,7 +316,8 @@
     "top_up": "Top Up",
     "tx_referral": "Referral Cut",
     "tx_subscription": "Sub Commission",
-    "tx_rake": "Platform Rake"
+    "tx_rake": "Platform Rake",
+    "tx_refund": "Wager Refund"
   },
   "Membership": {
     "title": "👑 CHESS PREMIUM",

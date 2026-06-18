@@ -4,9 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Onboarding from './Onboarding';
 import { useState, useEffect } from 'react';
-import { apiFetch } from '@/lib/api';
-import { FaWallet, FaMoon, FaSun, FaStar } from 'react-icons/fa';
-import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
 import { useNavbar } from '@/context/NavbarContext';
@@ -21,7 +18,6 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const locale = useLocale();
     const pathname = usePathname();
     const router = useRouter();
-    const [balance, setBalance] = useState<number>(0);
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
     // Use context-driven navbar hide state (reliable, no DOM polling)
@@ -67,17 +63,6 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             }
         }
     }, [pathname, locale, router]);
-
-    useEffect(() => {
-        // Sync balance on layout mount
-        apiFetch("/api/v1/wallet/balance")
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error();
-            })
-            .then(data => setBalance(data.balance))
-            .catch(() => {});
-    }, []);
 
     const { theme, toggleTheme } = useTheme();
 

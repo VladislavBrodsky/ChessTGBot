@@ -561,7 +561,7 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
 .premium-liquid-border {
   position: relative;
   border-radius: 20px;
-  background: rgba(10, 10, 10, 0.85);
+  background: var(--bg-primary); /* theme-aware: dark in dark mode, light in light mode */
   padding: 2px; /* border thickness slightly increased for premium look */
   overflow: hidden;
   display: flex;
@@ -625,11 +625,21 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
 .premium-liquid-content {
   position: relative;
   z-index: 1;
-  background: rgba(14, 8, 28, 0.95) !important; /* Deep dark purple-black matching third image */
+  background: var(--premium-card-bg, rgba(14, 8, 28, 0.95)) !important;
   border-radius: 19px;
   width: 100%;
   height: 100%;
   backdrop-filter: blur(10px);
+}
+
+/* Light theme: premium card uses a clean white-ish surface */
+[data-theme='light'] .premium-liquid-content {
+  background: rgba(255, 255, 255, 0.97) !important;
+}
+
+[data-theme='light'] .premium-liquid-border {
+  background: rgba(240, 235, 255, 0.9);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
 }
 
 .premium-liquid-button {
@@ -773,11 +783,28 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   border-radius: 24px;
 }
 
+/* Light theme: neon card uses white surface with purple accents */
+[data-theme='light'] .premium-neon-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.08), 0 0 12px rgba(168, 85, 247, 0.1);
+}
+
 .premium-neon-text-glow {
   text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
 }
 
+/* Light theme: tone down text glow so it's readable on white */
+[data-theme='light'] .premium-neon-text-glow {
+  text-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
 .premium-neon-icon-glow {
   filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
+}
+
+/* Light theme: soften icon glow on white backgrounds */
+[data-theme='light'] .premium-neon-icon-glow {
+  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.5));
 }
 

@@ -9,30 +9,20 @@ import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
 import ReferralDashboard from "@/components/ReferralDashboard";
+import { useUser } from "@/context/UserContext";
 
 export default function ChallengesPage() {
   const locale = useLocale();
   const t = useTranslations('Gamification');
 
-  const [user, setUser] = useState<any>({ level: 1, xp: 0, referral_code: "", dailyStreak: 1 });
+  // Use global context — no stub defaults, no duplicate fetch
+  const { stats, loadingStats, syncStats } = useUser();
+
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Fetch user stats
-    apiFetch("/api/v1/users/sync", { method: "POST" })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.level) {
-          setUser((prev: any) => ({
-            ...prev,
-            ...data
-          }));
-        }
-      })
-      .catch(err => console.error("Failed to sync user stats:", err));
-
-    // Fetch user tasks
+    // Only fetch tasks (page-specific) — user stats come from context
     apiFetch("/api/v1/gamification/tasks")
       .then(res => res.json())
       .then(data => {
@@ -51,14 +41,10 @@ export default function ChallengesPage() {
         method: "POST"
       });
       if (res.ok) {
-        const data = await res.json();
-        setUser((prev: any) => ({
-          ...prev,
-          xp: data.new_xp,
-          level: data.new_level
-        }));
         // Update local task state
         setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
+        // Refresh context so XP/level everywhere reflects the claim
+        syncStats();
 
         if (task) {
           const title = t.has(task.title_key) ? t(task.title_key) : task.title_key;
@@ -160,9 +146,11 @@ export default function ChallengesPage() {
   };
 
   // Every level requires 200 XP
-  const currentLevelMinXp = (user.level - 1) * 200;
-  const nextLevelXp = user.level * 200;
-  const levelProgressXp = user.xp - currentLevelMinXp;
+  const userLevel = stats?.level ?? 1;
+  const userXp = stats?.xp ?? 0;
+  const currentLevelMinXp = (userLevel - 1) * 200;
+  const nextLevelXp = userLevel * 200;
+  const levelProgressXp = userXp - currentLevelMinXp;
   const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 200) * 100));
 
   return (
@@ -196,7 +184,7 @@ export default function ChallengesPage() {
             <div className="w-20 h-20 rounded-2xl bg-brand-bg-opacity-5 rotate-3 mb-4 flex items-center justify-center border border-brand-border-opacity-10 shadow-sm">
               <div className="w-16 h-16 rounded-xl bg-brand-void -rotate-3 flex items-center justify-center flex-col border border-brand-border-opacity-10">
                 <span className="text-[10px] text-brand-primary opacity-40 font-bold uppercase">Lvl</span>
-                <span className="text-2xl font-black text-brand-primary leading-none">{user.level}</span>
+                <span className="text-2xl font-black text-brand-primary leading-none">{userLevel}</span>
               </div>
             </div>
 
@@ -215,7 +203,7 @@ export default function ChallengesPage() {
               />
             </div>
             <div className="flex justify-between w-full max-w-[240px] text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
-              <span>{user.xp} XP</span>
+              <span>{userXp} XP</span>
               <span>{nextLevelXp} XP</span>
             </div>
           </div>
@@ -228,7 +216,7 @@ export default function ChallengesPage() {
               <FaFire className="opacity-80" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-black text-brand-primary leading-none">{user.games_played || 0}</span>
+              <span className="text-lg font-black text-brand-primary leading-none">{stats?.games_played ?? 0}</span>
               <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">{t('battles')}</span>
             </div>
           </div>
@@ -237,7 +225,7 @@ export default function ChallengesPage() {
               <FaTrophy className="opacity-80" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-black text-brand-primary leading-none">{user.elo || 1000}</span>
+              <span className="text-lg font-black text-brand-primary leading-none">{stats?.elo ?? 1000}</span>
               <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">{t('elo_rating')}</span>
             </div>
           </div>
@@ -323,7 +311,7 @@ export default function ChallengesPage() {
         </div>
 
         {/* Referral Dashboard */}
-        <ReferralDashboard referralCode={user.referral_code} botUsername={user.bot_username} />
+        <ReferralDashboard referralCode={stats?.referral_code} botUsername={stats?.bot_username} />
       </div>
     </LayoutWrapper>
   );

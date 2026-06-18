@@ -70,7 +70,7 @@ export default function TransactionLedger({ loading, transactions }: Transaction
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                    tx.type === 'game_win' || tx.type === 'referral_commission' || tx.type === 'subscription_commission'
+                    tx.type === 'game_win' || tx.type === 'referral_commission' || tx.type === 'subscription_commission' || tx.type === 'refund' || tx.type === 'game_refund'
                       ? 'bg-brand-emerald-opacity-10 text-emerald-500' :
                     tx.type === 'deposit' ? 'bg-brand-cyan-opacity-10 text-cyan-500' :
                     tx.type === 'game_wager' || tx.type === 'game_rake' ? 'bg-brand-rose-opacity-10 text-rose-500' :
@@ -86,7 +86,9 @@ export default function TransactionLedger({ loading, transactions }: Transaction
                       tx.type === 'game_win' ? tw('tx_win') :
                       tx.type === 'referral_commission' ? tw('tx_referral') :
                       tx.type === 'subscription_commission' ? tw('tx_subscription') :
-                      tx.type === 'game_rake' ? tw('tx_rake') : tx.type}
+                      tx.type === 'game_rake' ? tw('tx_rake') : 
+                      (tx.type === 'refund' || tx.type === 'game_refund') ? (tw.has('tx_refund') ? tw('tx_refund') : 'Wager Refund') :
+                      tx.type}
                     </span>
                     <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
                       {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}

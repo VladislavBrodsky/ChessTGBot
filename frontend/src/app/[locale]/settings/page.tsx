@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
@@ -10,13 +10,15 @@ import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
+import { useUser } from "@/context/UserContext";
 
 export default function SettingsPage() {
  const t = useTranslations('Settings');
  const locale = useLocale();
  const { theme, toggleTheme } = useTheme();
  const [soundEnabled, setSoundEnabled] = useState(true);
- const [walletAddress, setWalletAddress] = useState<string>("");
+ // Pull wallet address from global context — no extra API call needed
+ const { walletAddress } = useUser();
 
  const handleThemeToggle = () => {
    toggleTheme();
@@ -24,19 +26,9 @@ export default function SettingsPage() {
  };
 
  const handleSoundToggle = () => {
-   setSoundEnabled(!soundEnabled);
+   setSoundEnabled(prev => !prev);
    telegramHaptic('light');
  };
-
- useEffect(() => {
- apiFetch("/api/v1/wallet/balance")
- .then(res => {
- if (res.ok) return res.json();
- throw new Error();
- })
- .then(data => setWalletAddress(data.wallet_address || ""))
- .catch(() => {});
- }, []);
 
  return (
  <LayoutWrapper className="justify-start pt-8 pb-32">

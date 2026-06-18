@@ -23,7 +23,7 @@ export default function Home() {
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
- const { stats, walletBalance, syncBalance, syncStats } = useUser();
+ const { stats, walletBalance, loadingStats } = useUser();
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -44,10 +44,6 @@ export default function Home() {
  }, [locale, router]);
 
  useEffect(() => {
-   // Refresh balance and stats in background on mount
-   syncBalance();
-   syncStats();
-   
    // Init Telegram WebApp Data
    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
      const tg = window.Telegram.WebApp;
@@ -56,7 +52,7 @@ export default function Home() {
      // Dev Mode Mock
      setTgUser({ first_name: "Master", photo_url: null });
    }
- }, [syncBalance, syncStats]);
+ }, []);
 
   const getOpponentName = (name: string) => {
     if (name === "A.I. Coach") {
@@ -113,8 +109,14 @@ export default function Home() {
  </div>
 
  {/* Unified Premium Profile Card */}
-  {!stats ? (
-    <div className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse flex flex-col space-y-4 bg-brand-surface">
+  <AnimatePresence mode="wait" initial={false}>
+  {(!stats || loadingStats) ? (
+    <motion.div
+      key="skeleton"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse flex flex-col space-y-4 bg-brand-surface"
+    >
       {/* Header Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3.5 w-2/3">
@@ -154,9 +156,12 @@ export default function Home() {
           <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
         </div>
       </div>
-    </div>
+    </motion.div>
   ) : (
-    <div
+    <motion.div
+      key="card"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 0.2 } }}
       onClick={() => router.push(`/${locale}/profile`)}
       className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group cursor-pointer hover:border-brand-border-opacity-20 transition-all"
     >
@@ -241,8 +246,10 @@ export default function Home() {
       </span>
       </div>
       </div>
-    </div>
+    </motion.div>
   )}
+  </AnimatePresence>
+
 
  {/* Quick Shortcuts Hub Grid (3 Columns) */}
  <div className="grid grid-cols-3 gap-3 w-full relative z-10">

@@ -31,11 +31,10 @@ export default function MembershipPage() {
     annual: 29580,
   };
  
-  const { walletBalance, walletAddress, syncBalance } = useUser();
+  const { walletBalance, walletAddress, syncBalance, stats, syncStats } = useUser();
   const tw = useTranslations('Wallet');
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const [tgUser, setTgUser] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showInsufficient, setShowInsufficient] = useState(false);
@@ -48,23 +47,10 @@ export default function MembershipPage() {
     }
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const res = await apiFetch("/api/v1/users/sync", { method: "POST" });
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
     }
-    fetchStats();
   }, []);
 
   const handleXpUpgrade = async () => {
@@ -87,7 +73,7 @@ export default function MembershipPage() {
           telegramHaptic('success');
           setShowSuccess(true);
           setShowConfetti(true);
-          fetchStats();
+          syncStats();
         } else {
           telegramHaptic('error');
           telegramAlert(data.detail || "Failed to upgrade with XP");
@@ -127,7 +113,7 @@ export default function MembershipPage() {
         telegramHaptic('success');
         setShowSuccess(true);
         setShowConfetti(true);
-        fetchStats();
+        syncStats();
         await syncBalance();
       } else {
         telegramHaptic('error');
@@ -476,7 +462,7 @@ export default function MembershipPage() {
         onClose={() => setShowDepositModal(false)}
         onSuccess={async () => {
           await syncBalance();
-          fetchStats();
+          syncStats();
           setShowDepositModal(false);
         }}
         walletAddress={walletAddress}

@@ -28,151 +28,169 @@ class TelegramService:
             return None
         return None
 
-    # Multilingual welcome messages for the /start command
+    # XP needed to complete each level (200 XP per level, canonical formula)
+    XP_PER_LEVEL = 200
+
     WELCOME_MESSAGES = {
         "en": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "Welcome, <b>{name}!</b>",
-            "sync": "You are now connected to the FinChess arena!",
-            "features_header": "🤖 <b>What you can do:</b>",
-            "f1": "• <b>Real-Time Matches:</b> Play chess and wager USDT with no hidden fees.",
-            "f2": "• <b>Earn from Referrals:</b> Invite friends and get passive USDT commissions from their wagers + XP.",
-            "f3": "• <b>Tactics Arena:</b> Solve 100 levels of chess puzzles to level up.",
-            "f4": "• <b>Easy Deposits & Withdrawals:</b> Cash out your winnings instantly to any TON wallet.",
-            "cta": "👇 Click the button below to launch the game and make your first move!",
-            "btn": "♟️ Start Playing ♟️",
-            "stats_header": "📊 <b>Your profile:</b>",
-            "stats": "⚡ Level {level} · {xp} XP",
-            "referral_label": "🔗 <b>Your referral link:</b>",
+            "greeting": "👑 <b>Welcome, {name}!</b>",
+            "sync": "You're now connected to the FinChess Arena.",
+            "level_label": "LVL",
+            "xp_label": "XP",
+            "next_label": "next",
+            "features_header": "🎮 <b>WHAT'S WAITING FOR YOU</b>",
+            "f1": "♟️  <b>Play to Earn</b> — Wager USDT in live matches, no hidden fees.",
+            "f2": "💰  <b>Referral Income</b> — Earn passive USDT + XP from every friend you invite.",
+            "f3": "🧠  <b>Tactics Arena</b> — 100 levels of chess puzzles. Train. Dominate.",
+            "f4": "⚡  <b>Instant Withdrawals</b> — Winnings to your TON wallet in seconds.",
+            "ref_header": "🔗 <b>YOUR REFERRAL LINK</b>",
+            "ref_hint": "Share it — earn from every player who joins through you.",
+            "cta": "👇 Tap below and make your first move!",
+            "btn": "♟️  Open FinChess Arena  ♟️",
         },
         "ru": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "Добро пожаловать, <b>{name}!</b>",
-            "sync": "Вы успешно подключили свой аккаунт к FinChess.",
-            "features_header": "🤖 <b>Что здесь можно делать:</b>",
-            "f1": "• <b>Игры на USDT:</b> Играйте в шахматы со ставками в USDT в реальном времени без лишних комиссий.",
-            "f2": "• <b>Партнерская программа:</b> Приглашайте друзей и получайте процент от их ставок в USDT + очки опыта (XP).",
-            "f3": "• <b>Тактическая Арена:</b> Решайте задачи из 100 уровней сложности и прокачивайте свой уровень.",
-            "f4": "• <b>Быстрый вывод:</b> Пополняйте баланс и мгновенно выводите выигрыши на любой TON-кошелек.",
-            "cta": "👇 Нажмите кнопку ниже, чтобы запустить игру и сделать первый ход!",
-            "btn": "♟️ Начать игру ♟️",
-            "stats_header": "📊 <b>Ваш профиль:</b>",
-            "stats": "⚡ Уровень {level} · {xp} XP",
-            "referral_label": "🔗 <b>Ваша реферальная ссылка:</b>",
+            "greeting": "👑 <b>Добро пожаловать, {name}!</b>",
+            "sync": "Вы подключены к FinChess Arena.",
+            "level_label": "УР.",
+            "xp_label": "XP",
+            "next_label": "до след. ур.",
+            "features_header": "🎮 <b>ЧТО ВАС ЖДЁТ</b>",
+            "f1": "♟️  <b>Игра на USDT</b> — Ставки в шахматных матчах без скрытых комиссий.",
+            "f2": "💰  <b>Партнёрский доход</b> — Получайте % от ставок каждого приглашённого + XP.",
+            "f3": "🧠  <b>Тактическая Арена</b> — 100 уровней задач. Тренируйся. Побеждай.",
+            "f4": "⚡  <b>Мгновенный вывод</b> — Выигрыши на TON-кошелёк за секунды.",
+            "ref_header": "🔗 <b>ВАША РЕФЕРАЛЬНАЯ ССЫЛКА</b>",
+            "ref_hint": "Поделитесь — и зарабатывайте с каждого, кто войдёт по ней.",
+            "cta": "👇 Нажмите кнопку и сделайте первый ход!",
+            "btn": "♟️  Открыть FinChess Arena  ♟️",
         },
         "de": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "Willkommen, <b>{name}!</b>",
-            "sync": "Du bist jetzt mit der FinChess-Arena verbunden!",
-            "features_header": "🤖 <b>Deine Möglichkeiten:</b>",
-            "f1": "• <b>USDT-Duelle:</b> Spiele Schach und setze USDT in Echtzeit-Matches ein – ohne versteckte Gebühren.",
-            "f2": "• <b>Freunde einladen & verdienen:</b> Erhalte passive USDT-Provisionen von den Spielen deiner Freunde + XP.",
-            "f3": "• <b>Taktik-Arena:</b> Löse 100 Level voller Schachrätsel, um dein Level zu steigern.",
-            "f4": "• <b>Schnelle Auszahlungen:</b> Lade dein Guthaben auf und hebe Gewinne blitzschnell auf dein TON-Wallet ab.",
-            "cta": "👇 Klicke auf den Button unten, um das Spiel zu starten und deinen ersten Zug zu machen!",
-            "btn": "♟️ Jetzt spielen ♟️",
-            "stats_header": "📊 <b>Dein Profil:</b>",
-            "stats": "⚡ Level {level} · {xp} XP",
-            "referral_label": "🔗 <b>Dein Einladungslink:</b>",
+            "greeting": "👑 <b>Willkommen, {name}!</b>",
+            "sync": "Du bist jetzt mit der FinChess Arena verbunden.",
+            "level_label": "LVL",
+            "xp_label": "XP",
+            "next_label": "nächste Stufe",
+            "features_header": "🎮 <b>WAS DICH ERWARTET</b>",
+            "f1": "♟️  <b>Play to Earn</b> — USDT-Einsätze in Live-Matches, keine Gebühren.",
+            "f2": "💰  <b>Empfehlungsbonus</b> — Passives USDT + XP für jeden eingeladenen Freund.",
+            "f3": "🧠  <b>Taktik-Arena</b> — 100 Level Schachpuzzles. Trainiere. Dominiere.",
+            "f4": "⚡  <b>Sofortauszahlung</b> — Gewinne in Sekunden auf dein TON-Wallet.",
+            "ref_header": "🔗 <b>DEIN EINLADUNGSLINK</b>",
+            "ref_hint": "Teile ihn — verdiene von jedem Spieler, der über ihn beitritt.",
+            "cta": "👇 Tippe unten und mache deinen ersten Zug!",
+            "btn": "♟️  FinChess Arena öffnen  ♟️",
         },
         "es": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "¡Bienvenido, <b>{name}!</b>",
-            "sync": "¡Ya estás conectado a la arena de FinChess!",
-            "features_header": "🤖 <b>¿Qué puedes hacer?</b>",
-            "f1": "• <b>Partidas con USDT:</b> Juega al ajedrez y apuesta USDT en tiempo real sin comisiones ocultas.",
-            "f2": "• <b>Gana por referidos:</b> Invita amigos y obtén comisiones pasivas en USDT de sus partidas + XP.",
-            "f3": "• <b>Arena de Tácticas:</b> Resuelve 100 niveles de problemas de ajedrez para subir de nivel.",
-            "f4": "• <b>Retiros Rápidos:</b> Deposita y retira tus ganancias al instante a cualquier billetera TON.",
-            "cta": "👇 ¡Haz clic abajo para abrir el juego y hacer tu primer movimiento!",
-            "btn": "♟️ Empezar a Jugar ♟️",
-            "stats_header": "📊 <b>Tu perfil:</b>",
-            "stats": "⚡ Nivel {level} · {xp} XP",
-            "referral_label": "🔗 <b>Tu enlace de invitación:</b>",
+            "greeting": "👑 <b>¡Bienvenido, {name}!</b>",
+            "sync": "Ya estás conectado a la FinChess Arena.",
+            "level_label": "NIV.",
+            "xp_label": "XP",
+            "next_label": "prox. nivel",
+            "features_header": "🎮 <b>LO QUE TE ESPERA</b>",
+            "f1": "♟️  <b>Play to Earn</b> — Apuesta USDT en partidas en vivo sin comisiones.",
+            "f2": "💰  <b>Ingresos por referidos</b> — USDT pasivo + XP por cada amigo que invites.",
+            "f3": "🧠  <b>Arena de Tácticas</b> — 100 niveles de puzzles de ajedrez. Entrena. Domina.",
+            "f4": "⚡  <b>Retiros instantáneos</b> — Ganancias a tu billetera TON en segundos.",
+            "ref_header": "🔗 <b>TU ENLACE DE REFERIDO</b>",
+            "ref_hint": "Compártelo — gana de cada jugador que se una a través de ti.",
+            "cta": "👇 ¡Toca abajo y haz tu primer movimiento!",
+            "btn": "♟️  Abrir FinChess Arena  ♟️",
         },
         "fr": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "Bienvenue, <b>{name}!</b>",
-            "sync": "Vous êtes maintenant connecté à l'arène FinChess !",
-            "features_header": "🤖 <b>Ce que vous pouvez faire :</b>",
-            "f1": "• <b>Parties en USDT:</b> Jouez aux échecs et misez des USDT en temps réel sans frais cachés.",
-            "f2": "• <b>Parrainage payant:</b> Invitez des amis et touchez des commissions passives en USDT sur leurs parties + des XP.",
-            "f3": "• <b>Arène Tactique:</b> Résolvez 100 niveaux de puzzles d'échecs pour monter en niveau.",
-            "f4": "• <b>Retraits Rapides:</b> Déposez et retirez vos gains instantanément vers n'importe quel portefeuille TON.",
-            "cta": "👇 Cliquez sur le bouton ci-dessous pour lancer le jeu et faire votre premier coup !",
-            "btn": "♟️ Commencer à Jouer ♟️",
-            "stats_header": "📊 <b>Votre profil :</b>",
-            "stats": "⚡ Niveau {level} · {xp} XP",
-            "referral_label": "🔗 <b>Votre lien d'invitation :</b>",
+            "greeting": "👑 <b>Bienvenue, {name} !</b>",
+            "sync": "Vous êtes connecté à la FinChess Arena.",
+            "level_label": "NIV.",
+            "xp_label": "XP",
+            "next_label": "prochain niv.",
+            "features_header": "🎮 <b>CE QUI VOUS ATTEND</b>",
+            "f1": "♟️  <b>Play to Earn</b> — Misez des USDT en direct, sans frais cachés.",
+            "f2": "💰  <b>Revenus de parrainage</b> — USDT passif + XP pour chaque ami invité.",
+            "f3": "🧠  <b>Arène Tactique</b> — 100 niveaux de puzzles d'échecs. Entraînez-vous. Dominez.",
+            "f4": "⚡  <b>Retraits instantanés</b> — Gains sur votre portefeuille TON en quelques secondes.",
+            "ref_header": "🔗 <b>VOTRE LIEN DE PARRAINAGE</b>",
+            "ref_hint": "Partagez-le — gagnez sur chaque joueur qui rejoint via vous.",
+            "cta": "👇 Appuyez ci-dessous et faites votre premier coup !",
+            "btn": "♟️  Ouvrir FinChess Arena  ♟️",
         },
         "ar": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "مرحباً، <b>{name}!</b>",
-            "sync": "لقد اتصلت الآن بساحة FinChess للشطرنج!",
-            "features_header": "🤖 <b>أبرز المزايا:</b>",
-            "f1": "• <b>مباريات بـ USDT:</b> العب الشطرنج وراهن بالـ USDT في الوقت الفعلي بدون رسوم خفية.",
-            "f2": "• <b>اربح من الإحالات:</b> ادعُ أصدقاءك واحصل على عمولات USDT سلبية من مبارياتهم + نقاط خبرة (XP).",
-            "f3": "• <b>ساحة التكتيك:</b> حل 100 مستوى من ألغاز الشطرنج لرفع مستواك.",
-            "f4": "• <b>سحب وإيداع سريع:</b> اسحب أرباحك فوراً إلى أي محفظة TON.",
-            "cta": "👇 اضغط على الزر أدناه لتشغيل اللعبة وابدأ اللعب!",
-            "btn": "♟️ ابدأ اللعب ♟️",
-            "stats_header": "📊 <b>ملفك الشخصي:</b>",
-            "stats": "⚡ المستوى {level} · {xp} XP",
-            "referral_label": "🔗 <b>رابط الإحالة الخاص بك:</b>",
+            "greeting": "👑 <b>مرحباً، {name}!</b>",
+            "sync": "أنت الآن متصل بـ FinChess Arena.",
+            "level_label": "المستوى",
+            "xp_label": "XP",
+            "next_label": "للمستوى التالي",
+            "features_header": "🎮 <b>ما الذي ينتظرك</b>",
+            "f1": "♟️  <b>العب واربح</b> — راهن بـ USDT في مباريات مباشرة بدون رسوم.",
+            "f2": "💰  <b>دخل الإحالة</b> — اكسب USDT + XP عن كل صديق تدعوه.",
+            "f3": "🧠  <b>ساحة التكتيك</b> — 100 مستوى من ألغاز الشطرنج. تدرّب. سيطر.",
+            "f4": "⚡  <b>سحب فوري</b> — أرباحك إلى محفظة TON في ثوانٍ.",
+            "ref_header": "🔗 <b>رابط إحالتك</b>",
+            "ref_hint": "شاركه — واكسب من كل لاعب ينضم عن طريقك.",
+            "cta": "👇 اضغط أدناه وابدأ أولى خطواتك!",
+            "btn": "♟️  فتح FinChess Arena  ♟️",
         },
         "hi": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "स्वागत है, <b>{name}!</b>",
-            "sync": "अब आप FinChess शतरंज एरिना से जुड़ चुके हैं!",
-            "features_header": "🤖 <b>आपके लिए खास:</b>",
-            "f1": "• <b>USDT मैच:</b> बिना किसी छुपे शुल्क के रियल-टाइम मैचों में खेलें और USDT की बाजी लगाएं।",
-            "f2": "• <b>रेफरल से कमाई:</b> दोस्तों को आमंत्रित करें और उनके मैचों से पैसिव USDT कमीशन + XP अर्जित करें।",
-            "f3": "• <b>टैक्टिक्स एरिना:</b> अपना लेवल बढ़ाने के लिए शतरंज पहेलियों के 100 लेवल हल करें।",
-            "f4": "• <b>त्वरित निकासी:</b> अपने किसी भी TON वॉलेट में तुरंत जमा करें और जीत की राशि निकालें।",
-            "cta": "👇 गेम शुरू करने और अपनी पहली चाल चलने के लिए नीचे दिए गए बटन पर क्लिक करें!",
-            "btn": "♟️ खेलना शुरू करें ♟️",
-            "stats_header": "📊 <b>आपकी प्रोफ़ाइल:</b>",
-            "stats": "⚡ लेवल {level} · {xp} XP",
-            "referral_label": "🔗 <b>आपका रेफरल लिंक:</b>",
+            "greeting": "👑 <b>स्वागत है, {name}!</b>",
+            "sync": "आप FinChess Arena से जुड़ चुके हैं।",
+            "level_label": "लेवल",
+            "xp_label": "XP",
+            "next_label": "अगले लेवल तक",
+            "features_header": "🎮 <b>आपका इंतजार क्या है</b>",
+            "f1": "♟️  <b>Play to Earn</b> — लाइव मैचों में USDT लगाएं, कोई छुपा शुल्क नहीं।",
+            "f2": "💰  <b>रेफरल इनकम</b> — हर दोस्त के लिए Passive USDT + XP कमाएं।",
+            "f3": "🧠  <b>टैक्टिक्स एरिना</b> — 100 लेवल पहेलियां। ट्रेन करें। जीतें।",
+            "f4": "⚡  <b>तत्काल निकासी</b> — जीत सेकंडों में TON वॉलेट में।",
+            "ref_header": "🔗 <b>आपका रेफरल लिंक</b>",
+            "ref_hint": "शेयर करें — हर नए खिलाड़ी पर कमाई करें।",
+            "cta": "👇 नीचे टैप करें और पहली चाल चलें!",
+            "btn": "♟️  FinChess Arena खोलें  ♟️",
         },
         "pt": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "Bem-vindo, <b>{name}!</b>",
-            "sync": "Você agora está conectado à arena do FinChess!",
-            "features_header": "🤖 <b>O que você pode fazer:</b>",
-            "f1": "• <b>Partidas com USDT:</b> Jogue xadrez e aposte USDT em tempo real sem taxas ocultas.",
-            "f2": "• <b>Ganhe com indicações:</b> Convide amigos e receba comissões passivas em USDT sobre as partidas deles + XP.",
-            "f3": "• <b>Arena Tática:</b> Resolva 100 níveis de quebra-cabeças de xadrez para evoluir seu nível.",
-            "f4": "• <b>Saques Rápidos:</b> Deposite e retire seus ganhos instantaneamente para qualquer carteira TON.",
-            "cta": "👇 Clique no botão abaixo para abrir o jogo e fazer sua jogada!",
-            "btn": "♟️ Começar a Jogar ♟️",
-            "stats_header": "📊 <b>Seu perfil:</b>",
-            "stats": "⚡ Nível {level} · {xp} XP",
-            "referral_label": "🔗 <b>Seu link de convite:</b>",
+            "greeting": "👑 <b>Bem-vindo, {name}!</b>",
+            "sync": "Você está conectado à FinChess Arena.",
+            "level_label": "NÍV.",
+            "xp_label": "XP",
+            "next_label": "próx. nível",
+            "features_header": "🎮 <b>O QUE TE ESPERA</b>",
+            "f1": "♟️  <b>Play to Earn</b> — Aposte USDT em partidas ao vivo sem taxas ocultas.",
+            "f2": "💰  <b>Renda por indicação</b> — USDT passivo + XP por cada amigo convidado.",
+            "f3": "🧠  <b>Arena Tática</b> — 100 níveis de puzzles de xadrez. Treine. Domine.",
+            "f4": "⚡  <b>Saques instantâneos</b> — Ganhos na sua carteira TON em segundos.",
+            "ref_header": "🔗 <b>SEU LINK DE INDICAÇÃO</b>",
+            "ref_hint": "Compartilhe — ganhe de cada jogador que entrar por você.",
+            "cta": "👇 Toque abaixo e faça seu primeiro movimento!",
+            "btn": "♟️  Abrir FinChess Arena  ♟️",
         },
         "ja": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "<b>{name}</b> さん、ようこそ！",
-            "sync": "FinChessアリーナへの接続が完了しました！",
-            "features_header": "🤖 <b>主なプレイ内容:</b>",
-            "f1": "• <b>USDT対局:</b> 隠れた手数料なしで、リアルタイムでUSDTを賭けてチェスをプレイ。",
-            "f2": "• <b>紹介プログラム:</b> 友達を招待して、対局時のUSDTパッシブ報酬とXPを獲得。",
-            "f3": "• <b>タクティクス・アカデミー:</b> 100レベルのチェス盤パズルを解いてレベルアップ。",
-            "f4": "• <b>スピード入出金:</b> 獲得したUSDTをTONウォレットへ即時に入出金可能。",
-            "cta": "👇 下のボタンをタップしてゲームを起動し、最初の指し手を決めましょう！",
-            "btn": "♟️ プレイを開始する ♟️",
+            "greeting": "👑 <b>{name} さん、ようこそ！</b>",
+            "sync": "FinChess Arena に接続されました。",
+            "level_label": "LV",
+            "xp_label": "XP",
+            "next_label": "次のレベルまで",
+            "features_header": "🎮 <b>あなたを待つもの</b>",
+            "f1": "♟️  <b>Play to Earn</b> — 手数料なしでUSDTを賭けたライブ対局。",
+            "f2": "💰  <b>紹介収入</b> — 招待した友達ごとにパッシブUSDT＋XPを獲得。",
+            "f3": "🧠  <b>タクティクス・アリーナ</b> — 100レベルのチェスパズル。鍛えよ。制覇せよ。",
+            "f4": "⚡  <b>即時出金</b> — 数秒でTONウォレットに送金。",
+            "ref_header": "🔗 <b>あなたの招待リンク</b>",
+            "ref_hint": "シェアして、参加した全員から報酬を獲得。",
+            "cta": "👇 下をタップして最初の一手を！",
+            "btn": "♟️  FinChess Arena を開く  ♟️",
         },
         "zh": {
-            "title": "⚡ <b>FINCHESS ARENA v1.5</b>",
-            "greeting": "欢迎你，<b>{name}！</b>",
-            "sync": "你已成功进入 FinChess 棋局世界！",
-            "features_header": "🤖 <b>核心玩法：</b>",
-            "f1": "• <b>USDT 对局：</b> 参与实时棋局，押注 USDT 竞技，无隐形成本。",
-            "f2": "• <b>推荐赚佣：</b> 邀请好友加入，从他们的对局中抽取 USDT 被动分红，同时获得 XP 经验。",
-            "f3": "• <b>战术学院：</b> 攻克 100 个棋局谜题，提升您的棋力等级。",
-            "f4": "• <b>极速存取：</b> 支持随时充值及将收益秒提至您的 TON 钱包。",
-            "cta": "👇 点击下方按钮启动游戏，开启您的第一步棋！",
-            "btn": "♟️ 开始对局 ♟️",
+            "greeting": "👑 <b>欢迎你，{name}！</b>",
+            "sync": "你已成功连接到 FinChess Arena。",
+            "level_label": "等级",
+            "xp_label": "XP",
+            "next_label": "升级还需",
+            "features_header": "🎮 <b>等待你的是什么</b>",
+            "f1": "♟️  <b>Play to Earn</b> — 实时押注 USDT 竞技，零隐藏成本。",
+            "f2": "💰  <b>推荐收入</b> — 每位受邀好友为你带来被动 USDT + XP。",
+            "f3": "🧠  <b>战术竞技场</b> — 100 关棋局谜题。训练。征服。",
+            "f4": "⚡  <b>极速提现</b> — 收益秒转你的 TON 钱包。",
+            "ref_header": "🔗 <b>你的邀请链接</b>",
+            "ref_hint": "分享它 — 从每位通过你加入的玩家身上赚取收益。",
+            "cta": "👇 点击下方，迈出你的第一步！",
+            "btn": "♟️  打开 FinChess Arena  ♟️",
         },
     }
 
@@ -254,24 +272,38 @@ class TelegramService:
             if user.last_name:
                 name += f" {user.last_name}"
 
-            # Build stats block (only if the user already has XP or is returning)
-            stats_line = msgs.get("stats", "⚡ Level {level} · {xp} XP").format(level=user_level, xp=user_xp)
-            stats_header = msgs.get("stats_header", "📊 <b>Your profile:</b>")
-            referral_label = msgs.get("referral_label", "🔗 <b>Your referral link:</b>")
+            # ── XP progress bar (10 blocks, 200 XP per level) ──────────────
+            xp_per_level = TelegramService.XP_PER_LEVEL
+            xp_in_level = user_xp % xp_per_level
+            filled = round((xp_in_level / xp_per_level) * 10)
+            bar = "▰" * filled + "▱" * (10 - filled)
+            xp_to_next = xp_per_level - xp_in_level
+            level_lbl = msgs.get("level_label", "LVL")
+            xp_lbl = msgs.get("xp_label", "XP")
+            next_lbl = msgs.get("next_label", "next")
+
+            DIV = "━━━━━━━━━━━━━━━━━━━━━━"
 
             welcome_msg = (
-                f"{msgs['title']}\n\n"
+                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
+                f"{DIV}\n"
                 f"{msgs['greeting'].format(name=name)}\n"
-                f"{msgs['sync']}\n\n"
-                f"{msgs['features_header']}\n"
+                f"{msgs['sync']}\n"
+                f"{DIV}\n\n"
+                f"🏅 {level_lbl} <b>{user_level}</b>   "
+                f"{xp_lbl} <b>{user_xp}</b>   ┊  +{xp_to_next} {next_lbl}\n"
+                f"<code>{bar}</code>\n\n"
+                f"{DIV}\n"
+                f"{msgs['features_header']}\n\n"
                 f"{msgs['f1']}\n"
                 f"{msgs['f2']}\n"
                 f"{msgs['f3']}\n"
-                f"{msgs['f4']}\n\n"
-                f"{stats_header}\n"
-                f"{stats_line}\n"
-                f"{referral_label}\n"
-                f"{referral_link}\n\n"
+                f"{msgs['f4']}\n"
+                f"{DIV}\n\n"
+                f"{msgs['ref_header']}\n"
+                f"<code>{referral_link}</code>\n"
+                f"<i>{msgs['ref_hint']}</i>\n\n"
+                f"{DIV}\n"
                 f"{msgs['cta']}"
             )
 
