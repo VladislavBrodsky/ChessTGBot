@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function TelegramInit() {
+    const { theme } = useTheme();
+
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp as any;
@@ -21,14 +24,6 @@ export default function TelegramInit() {
                 }
             } catch (e) {
                 console.warn('Failed to request fullscreen', e);
-            }
-
-            // Configure the Mini App header color to match the app theme
-            try {
-                tg.setHeaderColor('#000000'); // Matches bg-primary
-                tg.setBackgroundColor('#000000');
-            } catch (e) {
-                console.warn('Failed to set header color', e);
             }
 
             // Disable vertical swipes to prevent accidental closing on swipe down (Telegram Bot API 7.7+)
@@ -51,6 +46,19 @@ export default function TelegramInit() {
             console.log('Telegram WebApp Initialized: Expanded & Ready');
         }
     }, []);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+            const tg = window.Telegram.WebApp as any;
+            try {
+                const color = theme === 'light' ? '#F3F4F6' : '#000000';
+                tg.setHeaderColor(color);
+                tg.setBackgroundColor(color);
+            } catch (e) {
+                console.warn('Failed to set Telegram theme colors', e);
+            }
+        }
+    }, [theme]);
 
     return null;
 }

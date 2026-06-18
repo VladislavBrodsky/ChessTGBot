@@ -29,6 +29,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         // Apply theme to document
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+
+        // Sync background and header color with Telegram WebApp
+        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+            try {
+                const tg = (window as any).Telegram.WebApp;
+                const color = theme === 'light' ? '#F3F4F6' : '#000000';
+                tg.setHeaderColor(color);
+                tg.setBackgroundColor(color);
+            } catch (err) {
+                console.warn('Failed to sync Telegram WebApp theme colors', err);
+            }
+        }
     }, [theme]);
 
     const toggleTheme = () => {

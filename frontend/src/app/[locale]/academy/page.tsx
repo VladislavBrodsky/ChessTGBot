@@ -294,75 +294,84 @@ export default function AcademyPage() {
             <FaChessRook className="text-brand-primary opacity-40" />
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('tactics_grid')}</h3>
           </div>
-          <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
-            {/* Backlight Orbs for viral gaming aesthetic */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl -ml-16 -mt-16 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mb-16 pointer-events-none" />
+          <div className="rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
+            {/* Backlight Orbs */}
+            <div className="absolute top-0 left-0 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mb-20 pointer-events-none" />
 
             {/* Progress Header */}
-            <div className="flex flex-col mb-4 p-3 rounded-2xl bg-brand-void/40 border border-brand-border-opacity-5 relative z-10">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary/50 flex items-center gap-1">
-                  <FaBrain className="text-brand-primary/60 text-[9px]" /> {t('tactics_grid')}
+            <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary/60 flex items-center gap-1.5">
+                  <FaBrain className="text-brand-primary/50 text-[10px]" /> {t('tactics_grid')}
                 </span>
-                <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20">
+                <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
                   {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-brand-void/60 rounded-full overflow-hidden border border-brand-border-opacity-10">
+              <div className="w-full h-2 bg-brand-primary/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-brand-primary to-emerald-400 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
                   style={{ width: `${Math.max(completedPuzzles.length, 1)}%` }}
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-10 gap-1.5 w-full relative z-10">
-              {Array.from({ length: 100 }, (_, i) => {
-                const id = i + 1;
-                const isCompleted = completedPuzzles.includes(id);
-                const isPremiumLocked = id > 1 && !(stats?.is_premium);
-                const isActive = id === nextToSolveId;
+            {/* Grid */}
+            <div className="p-3.5 relative z-10">
+              <div className="grid grid-cols-10 gap-1.5 w-full">
+                {Array.from({ length: 100 }, (_, i) => {
+                  const id = i + 1;
+                  const isCompleted = completedPuzzles.includes(id);
+                  const isPremiumLocked = id > 1 && !(stats?.is_premium);
+                  const isActive = id === nextToSolveId;
 
-                let bgClass = "";
-                let statusMark = null;
+                  let bgClass = "";
+                  let statusMark = null;
 
-                if (isCompleted) {
-                  bgClass = "bg-gradient-to-br from-emerald-500/20 to-emerald-950/20 border-emerald-500/40 text-emerald-300 font-bold hover:from-emerald-500/30 hover:to-emerald-900/30 hover:border-emerald-400 hover:scale-105 shadow-[0_0_10px_rgba(16,185,129,0.15),inset_0_1px_2px_rgba(255,255,255,0.05)]";
-                  statusMark = <FaCheck className="absolute top-1 right-1 text-[5px] text-emerald-400/80" />;
-                } else if (isActive) {
-                  bgClass = "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300 text-brand-void font-black animate-active-portal z-10 scale-110 shadow-[0_0_20px_rgba(255,215,0,0.5),inset_0_1px_3px_rgba(255,255,255,0.3)]";
-                } else if (isPremiumLocked) {
-                  bgClass = "bg-brand-void/80 border-amber-500/10 text-amber-500/30 cursor-not-allowed hover-shake shadow-[inset_0_1px_1px_rgba(0,0,0,0.8)]";
-                  statusMark = <FaLock className="absolute bottom-1 right-1 text-[5.5px] text-amber-500/45" />;
-                } else {
-                  bgClass = "bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary opacity-70 hover:opacity-100 hover:scale-105 hover:bg-brand-void/70 hover:border-brand-primary/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]";
-                }
+                  if (isCompleted) {
+                    bgClass = "tc-solved font-bold hover:scale-105";
+                    statusMark = <FaCheck className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
+                  } else if (isActive) {
+                    bgClass = [
+                      "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
+                      "text-slate-900 font-black z-10 scale-110",
+                      "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_rgba(255,255,255,0.3)]",
+                      "animate-active-portal",
+                    ].join(" ");
+                  } else if (isPremiumLocked) {
+                    bgClass = "tc-locked hover-shake";
+                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-amber-500/60" />;
+                  } else {
+                    bgClass = "tc-unlocked font-semibold hover:scale-105";
+                  }
 
-                return (
-                  <button
-                    key={id}
-                    onClick={() => handlePuzzleClick(id, isPremiumLocked)}
-                    className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
-                  >
-                    <span>{id}</span>
-                    {statusMark}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => handlePuzzleClick(id, isPremiumLocked)}
+                      className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
+                    >
+                      <span>{id}</span>
+                      {statusMark}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            
-            <div className="flex justify-between items-center text-[8.5px] font-black uppercase tracking-widest mt-5 px-1 relative z-10 gap-2">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-void/40 border border-brand-border-opacity-5 text-brand-primary/70">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_6px_rgba(255,255,255,0.8)] animate-pulse" /> 
+
+            {/* Legend */}
+            <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
+              <span className="tc-legend-unlocked flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border">
+                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
                 {t('unlocked')}
               </span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" /> 
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.7)]" />
                 {t('solved')}
               </span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.8)]" /> 
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-600">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.7)]" />
                 {t('premium')}
               </span>
             </div>

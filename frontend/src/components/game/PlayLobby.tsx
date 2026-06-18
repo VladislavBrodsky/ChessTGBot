@@ -13,7 +13,7 @@ import { telegramHaptic } from '@/lib/telegram';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
-import FriendInviteDrawer from './FriendInviteDrawer';
+
 import LobbyDepositDrawer from './LobbyDepositDrawer';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import { useUser } from '@/context/UserContext';
@@ -37,10 +37,8 @@ export default function PlayLobby() {
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
 
-  // Time control and Friend invite configs
+  // Time control
   const [timeControl, setTimeControl] = useState<number>(600); // 10 minutes default
-  const [inviteLink, setInviteLink] = useState<string>("");
-  const [showInviteDrawer, setShowInviteDrawer] = useState<boolean>(false);
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
@@ -557,16 +555,7 @@ export default function PlayLobby() {
           </div>
         )}
 
-        {/* Friend Duel Invite Bottom Drawer */}
-        <AnimatePresence>
-          {showInviteDrawer && (
-            <FriendInviteDrawer
-              inviteLink={inviteLink}
-              timeControl={timeControl}
-              onClose={() => setShowInviteDrawer(false)}
-            />
-          )}
-        </AnimatePresence>
+
 
         {/* Lobby Quick Deposit Drawer */}
         <AnimatePresence>

@@ -54,6 +54,7 @@ async def create_game(
             user_id=current_user.telegram_id,
             type="game_wager",
             amount=-wager,
+            fee=0,
             status="completed",
             reference_id=game_id
         )

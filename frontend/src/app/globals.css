@@ -185,6 +185,7 @@ html {
   max-width: 100vw;
   overflow-x: hidden !important;
   scrollbar-gutter: stable;
+  background-color: var(--bg-primary) !important;
 }
 
 body {
@@ -455,4 +456,76 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
 
 .animate-active-portal {
   animation: portal-pulse 1.5s infinite ease-in-out;
+}
+/* =====================================================
+   Tactics Grid Cells — theme-aware utility classes
+   Uses data-theme attribute (not Tailwind dark: prefix)
+   ===================================================== */
+
+/* --- Default (dark theme) --- */
+.tc-unlocked {
+  background: rgba(51, 65, 85, 0.55);   /* slate-700/55 */
+  border-color: rgba(71, 85, 105, 0.55); /* slate-600/55 */
+  color: rgb(203, 213, 225);             /* slate-300 */
+}
+.tc-unlocked:hover {
+  background: rgba(71, 85, 105, 0.75);
+  border-color: rgba(100, 116, 139, 0.75);
+}
+
+.tc-solved {
+  background: rgba(16, 185, 129, 0.18);  /* emerald-500/18 */
+  border-color: rgba(16, 185, 129, 0.45);
+  color: rgb(110, 231, 183);             /* emerald-300 */
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.14);
+}
+.tc-solved:hover {
+  background: rgba(16, 185, 129, 0.30);
+  border-color: rgba(16, 185, 129, 0.65);
+}
+
+.tc-locked {
+  background: rgba(30, 41, 59, 0.75);   /* slate-800/75 */
+  border-color: rgba(245, 158, 11, 0.12);
+  color: rgba(245, 158, 11, 0.30);
+  cursor: not-allowed;
+}
+
+.tc-legend-unlocked {
+  background: rgba(51, 65, 85, 0.55);
+  border-color: rgba(71, 85, 105, 0.55);
+  color: rgb(203, 213, 225);
+}
+
+/* --- Light theme overrides --- */
+[data-theme='light'] .tc-unlocked {
+  background: rgba(226, 232, 240, 0.9);  /* slate-200/90 */
+  border-color: rgba(148, 163, 184, 0.7);/* slate-400/70 */
+  color: rgb(51, 65, 85);                /* slate-700 */
+}
+[data-theme='light'] .tc-unlocked:hover {
+  background: rgba(203, 213, 225, 1);
+  border-color: rgba(100, 116, 139, 0.9);
+}
+
+[data-theme='light'] .tc-solved {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.50);
+  color: rgb(5, 150, 105);               /* emerald-600 */
+}
+[data-theme='light'] .tc-solved:hover {
+  background: rgba(16, 185, 129, 0.28);
+  border-color: rgba(16, 185, 129, 0.70);
+}
+
+[data-theme='light'] .tc-locked {
+  background: rgba(241, 245, 249, 0.95); /* slate-100/95 */
+  border-color: rgba(252, 211, 77, 0.45);/* amber-300/45 */
+  color: rgba(217, 119, 6, 0.50);        /* amber-600/50 */
+}
+
+[data-theme='light'] .tc-legend-unlocked {
+  background: rgba(226, 232, 240, 0.9);
+  border-color: rgba(148, 163, 184, 0.7);
+  color: rgb(51, 65, 85);
 }
