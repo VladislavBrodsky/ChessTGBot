@@ -433,18 +433,6 @@ export default function PlayLobby() {
                       <span className="text-[11px] font-black text-amber-400">3%</span>
                     </button>
                   </div>
-
-                  {/* Balance check strip */}
-                  <div className={`mt-1.5 py-1.5 px-3.5 rounded-xl border text-[8.5px] font-bold uppercase tracking-wider flex items-center justify-between transition-all duration-300 ${
-                    hasSufficient
-                      ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400'
-                      : 'border-rose-500/10 bg-rose-500/5 text-rose-400'
-                  }`}>
-                    <span className={`opacity-70 ${hasSufficient ? 'mx-auto' : ''}`}>{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
-                    {!hasSufficient && (
-                      <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
-                    )}
-                  </div>
                 </div>
               )}
 

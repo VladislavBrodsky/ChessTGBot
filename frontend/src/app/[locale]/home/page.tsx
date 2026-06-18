@@ -17,7 +17,6 @@ import { telegramAlert } from "@/lib/telegram";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
 import { useUser } from "@/context/UserContext";
-import ReferralCard from "@/components/ReferralCard";
 
 export default function Home() {
  const t = useTranslations('Index');
@@ -25,7 +24,6 @@ export default function Home() {
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
  const { stats, walletBalance, syncBalance, syncStats } = useUser();
- const [showReferralPopup, setShowReferralPopup] = useState<boolean>(false);
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -44,12 +42,6 @@ export default function Home() {
      }
    }
  }, [locale, router]);
-
-  // Auto-hide helper for referral demo alert
-  const triggerReferralPromoDemo = () => {
-    setShowReferralPopup(true);
-    setTimeout(() => setShowReferralPopup(false), 4000);
-  };
 
  useEffect(() => {
    // Refresh balance and stats in background on mount
@@ -287,11 +279,6 @@ export default function Home() {
  </Link>
  </div>
 
-  {/* Dedicated Referral Promo Card */}
-  <div className="w-full relative z-10">
-    <ReferralCard referralCode={stats?.referral_code} onInteraction={triggerReferralPromoDemo} />
-  </div>
-
  {/* Recent Activity Log */}
  {stats?.recent_games && stats.recent_games.length > 0 && (
  <div className="w-full space-y-2 relative z-10">
@@ -376,44 +363,6 @@ export default function Home() {
  </div>
  </footer>
  </div>
-
- {/* Holographic Referral Gold-Dust Popup */}
- <AnimatePresence>
- {showReferralPopup && (
- <motion.div
- initial={{ opacity: 0, y: -50, scale: 0.95 }}
- animate={{ opacity: 1, y: 0, scale: 1 }}
- exit={{ opacity: 0, y: -20, scale: 0.95 }}
- transition={{ type: "spring", damping: 20 }}
- className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
- >
- <div 
- className="w-[90vw] max-w-[300px] p-3 rounded-2xl border border-amber-500/20 bg-brand-surface/95 backdrop-blur-xl shadow-premium flex items-center gap-3 relative overflow-hidden pointer-events-auto"
- >
- <div 
- className="w-8 h-8 rounded-lg flex items-center justify-center border border-amber-500/30 bg-amber-500/10 dark:border-amber-400/30 dark:bg-amber-400/10 relative z-10 shrink-0"
- >
- <FaCoins className="text-amber-500 dark:text-amber-400 text-sm" />
- </div>
- 
- <div className="flex flex-col relative z-10 min-w-0 flex-1 pr-4">
- <span className="text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-0.5">{t('referral_commission')}</span>
- <span className="text-xs font-black text-brand-primary tracking-wide">+$2.45 USDT</span>
- <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest truncate mt-0.5">{t('from_player', { name: 'Grandmaster' })}</span>
- </div>
-
- {/* Close Button */}
- <button
- onClick={() => setShowReferralPopup(false)}
- className="absolute top-3 right-3 text-brand-primary opacity-30 hover:opacity-100 transition-opacity p-0.5 cursor-pointer z-20"
- aria-label="Close notification"
- >
- <FaTimes size={8} />
- </button>
- </div>
- </motion.div>
- )}
- </AnimatePresence>
  
  </LayoutWrapper >
  );

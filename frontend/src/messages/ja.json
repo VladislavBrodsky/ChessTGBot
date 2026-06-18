@@ -110,7 +110,8 @@
     "no_active_missions": "アクティブなミッションはありません",
     "battles": "バトル",
     "elo_rating": "ELOレーティング",
-    "return": "戻る"
+    "return": "戻る",
+    "referral_desc": "友達を招待して、彼らの賭け金から生涯15%のコミッションを獲得しよう！新規登録で即座に+50 XPを獲得できます。"
   },
   "Academy": {
     "title": "アカデミー",

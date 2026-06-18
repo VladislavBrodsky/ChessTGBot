@@ -110,7 +110,8 @@
     "no_active_missions": "Nenhuma missão ativa",
     "battles": "Batalhas",
     "elo_rating": "Classificação ELO",
-    "return": "Voltar"
+    "return": "Voltar",
+    "referral_desc": "Convide amigos para ganhar 15% de comissão vitalícia sobre as apostas deles! Ganhe +50 XP instantaneamente por cada cadastro ativo."
   },
   "Academy": {
     "title": "Academia",

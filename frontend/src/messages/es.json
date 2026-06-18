@@ -110,7 +110,8 @@
     "no_active_missions": "No hay misiones activas",
     "battles": "Partidas",
     "elo_rating": "Puntuación ELO",
-    "return": "Atrás"
+    "return": "Atrás",
+    "referral_desc": "¡Invita amigos para ganar un 15% de comisión de por vida! Obtén +50 XP al instante por cada registro activo."
   },
   "Academy": {
     "title": "Academia",
