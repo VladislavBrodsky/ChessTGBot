@@ -82,7 +82,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
 
   const slideVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 100 : -100,
+      x: dir > 0 ? "100%" : "-100%",
       opacity: 0
     }),
     center: {
@@ -90,7 +90,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       opacity: 1
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -100 : 100,
+      x: dir > 0 ? "-100%" : "100%",
       opacity: 0
     })
   };
@@ -120,8 +120,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         </button>
 
         {/* Content Slider */}
-        <div className="relative flex-grow flex flex-col justify-center items-center text-center">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
+        <div className="relative flex-grow flex flex-col justify-center items-center text-center min-h-[260px]">
+          <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={currentSlide}
               custom={direction}
@@ -129,8 +129,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="flex flex-col items-center justify-center"
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 flex flex-col items-center justify-center text-center"
             >
               {/* Slide Icon */}
               <div className="mb-6 p-5 rounded-2xl bg-brand-void/60 border border-brand-border shadow-inner flex items-center justify-center">

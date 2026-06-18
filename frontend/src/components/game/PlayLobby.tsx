@@ -363,7 +363,7 @@ export default function PlayLobby() {
             
             {/* Conic sonar radar widget */}
             <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-border-opacity-10 overflow-hidden bg-brand-void shadow-inner-glow">
-              <div className="absolute inset-0 bg-conic-radar animate-spin pointer-events-none" />
+              <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none" />
               <div className="absolute w-32 h-32 rounded-full border border-brand-border-opacity-10 animate-ping opacity-60" />
               <div className="absolute w-24 h-24 rounded-full border border-brand-border-opacity-5" />
               <div className="absolute w-12 h-12 rounded-full border border-brand-border-opacity-20 animate-pulse bg-brand-bg-opacity-5" />
