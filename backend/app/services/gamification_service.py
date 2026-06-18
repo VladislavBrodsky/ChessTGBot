@@ -75,10 +75,37 @@ class GamificationService:
             ))
             user_task = result_ut.scalars().first()
             
+            # Determine progress for REFER task if applicable
+            progress = 0
+            completed = False
+            if task_def.task_type == TaskType.REFER:
+                from sqlalchemy import func
+                ref_count_res = await db.execute(
+                    select(func.count(Referral.id)).where(Referral.referrer_id == user_id)
+                )
+                ref_count = ref_count_res.scalar() or 0
+                progress = min(ref_count, task_def.target_count)
+                completed = progress >= task_def.target_count
+
             if not user_task:
-                user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=0, completed=False, claimed=False)
+                user_task = UserTask(
+                    user_id=user_id,
+                    task_id=task_def.id,
+                    progress=progress if task_def.task_type == TaskType.REFER else 0,
+                    completed=completed if task_def.task_type == TaskType.REFER else False,
+                    claimed=False
+                )
                 db.add(user_task)
                 user_tasks.append(user_task)
+            else:
+                # Self-healing: Update progress for REFER tasks if not claimed
+                if task_def.task_type == TaskType.REFER and not user_task.claimed:
+                    if user_task.progress != progress or user_task.completed != completed:
+                        user_task.progress = progress
+                        user_task.completed = completed
+                        user_task.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
+                        db.add(user_task)
+                        user_tasks.append(user_task)
                 
         if user_tasks:
             if commit:
@@ -233,6 +260,9 @@ class GamificationService:
             # Award XP to new user
             new_user_xp = 50 if new_user.is_premium_active else 20
             await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_signup", reference_id=referrer.telegram_id)
+
+            # Increment referral task progress for the referrer
+            await GamificationService.update_task_progress(db, referrer.id, TaskType.REFER, increment=1, commit=False)
 
             # Award Balance (in cents) & log transactions
             from app.models.transaction import Transaction

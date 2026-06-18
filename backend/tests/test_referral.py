@@ -809,6 +809,10 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_subscription_commission_distribution(db_session):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
+
     from app.models.user import User
     from app.models.gamification import Referral
     from app.services.referral_commission_service import ReferralCommissionService
@@ -909,6 +913,64 @@ async def test_subscription_commission_distribution(db_session):
     # L6 (r6_p): Elite -> 2% of 29580 = 591 cents
     assert r6_p.balance == 591
     assert total_dist_p == 4437 + 2366 + 1479 + 2070 + 887 + 591
+@pytest.mark.asyncio
+async def test_referral_ach_self_healing(db_session: AsyncSession):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
 
+    from app.models.gamification import UserTask, Task, TaskType, Referral
+    from app.services.gamification_service import GamificationService
 
+    # 1. Create referrer
+    referrer = User(telegram_id=991001, first_name="Referrer", xp=0, referral_code="REF991")
+    db_session.add(referrer)
+    await db_session.commit()
+    await db_session.refresh(referrer)
 
+    # 2. Add referrers tasks definition (ach_refer_5)
+    ach = Task(id=104, title_key="ach_refer_5", description_key="Invite 5 friends", xp_reward=500, task_type=TaskType.REFER, target_count=5, is_daily=False)
+    db_session.add(ach)
+    await db_session.commit()
+
+    # 3. Create 3 recruits (referrals)
+    recruits = []
+    for i in range(3):
+        rec = User(telegram_id=991100 + i, first_name=f"Recruit_{i}", xp=0)
+        db_session.add(rec)
+        await db_session.commit()
+        await db_session.refresh(rec)
+        recruits.append(rec)
+        
+        # Link referral
+        ref = Referral(referrer_id=referrer.id, referred_user_id=rec.id)
+        db_session.add(ref)
+        await db_session.commit()
+
+    # 4. Trigger self-healing via get_or_create_achievements
+    await GamificationService.get_or_create_achievements(db_session, referrer.id)
+
+    # Verify achievement progress has been synced to 3
+    result = await db_session.execute(
+        select(UserTask).where(and_(UserTask.user_id == referrer.id, UserTask.task_id == ach.id))
+    )
+    user_task = result.scalars().first()
+    assert user_task is not None
+    assert user_task.progress == 3
+    assert not user_task.completed
+
+    # 5. Add two more recruits to reach 5
+    for i in range(3, 5):
+        rec = User(telegram_id=991100 + i, first_name=f"Recruit_{i}", xp=0)
+        db_session.add(rec)
+        await db_session.commit()
+        await db_session.refresh(rec)
+        
+        # Process referral using the real-time flow
+        success = await GamificationService.process_referral(db_session, rec, "REF991")
+        assert success is True
+
+    # Refresh user task and check it is completed (5/5)
+    await db_session.refresh(user_task)
+    assert user_task.progress == 5
+    assert user_task.completed
