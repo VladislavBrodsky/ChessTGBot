@@ -90,17 +90,16 @@ class TelegramService:
                 name += f" {user.last_name}"
 
             welcome_msg = (
-                f"⚡ <b>FINCHESS ARENA v1.5</b> ⚡\n\n"
-                f"Welcome, <b>{name}</b>! ♟️🔥\n"
+                f"⚡ <b>FINCHESS ARENA v1.5</b>\n\n"
+                f"Welcome, <b>{name}!</b>\n"
                 f"You have successfully synchronized with the decentralized chess matrix.\n\n"
                 f"🤖 <b>Core Features:</b>\n"
                 f"• <b>Play-to-Earn:</b> Wager USDT in gasless real-time matches.\n"
-                f"• <b>Dual-Reward Referrals:</b> Invite recruits to earn <b>$0.20 USDT + 100 XP</b> (plus passive revenue commissions from their games!).\n"
+                f"• <b>Dual-Reward Referrals:</b> Invite recruits to earn USDT passive revenue commissions from their games + XP points\n"
                 f"• <b>Tactics Academy:</b> Solve a 100-level puzzle grid to level up.\n"
                 f"• <b>Web3 Integration:</b> Instant deposits and withdrawals to your TON Wallet.\n\n"
                 f"👇 Click the button below to initialize the dashboard and start playing!"
             )
-
             await update.message.reply_text(
                 welcome_msg,
                 reply_markup=reply_markup,
