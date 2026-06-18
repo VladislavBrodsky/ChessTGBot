@@ -10,6 +10,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
+import { useNavbarHide } from "@/context/NavbarContext";
 
 function PuzzleContent() {
   const [solved, setSolved] = useState(false);
@@ -23,6 +24,15 @@ function PuzzleContent() {
   const [puzzle, setPuzzle] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+
+  const { hideNavbar, showNavbar } = useNavbarHide();
+
+  useEffect(() => {
+    hideNavbar();
+    return () => {
+      showNavbar();
+    };
+  }, [hideNavbar, showNavbar]);
 
   useEffect(() => {
     setLoading(true);

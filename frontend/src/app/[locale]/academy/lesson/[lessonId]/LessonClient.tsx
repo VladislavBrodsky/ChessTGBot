@@ -5,10 +5,11 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonViewer, { LessonStep } from "@/components/Academy/LessonViewer";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
 import { apiFetch } from "@/lib/api";
+import { useNavbarHide } from "@/context/NavbarContext";
 
 const OPENING_LESSON_STEPS: LessonStep[] = [
  {
@@ -97,6 +98,15 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
  const router = useRouter();
  const [completed, setCompleted] = useState(false);
  const locale = useLocale();
+
+ const { hideNavbar, showNavbar } = useNavbarHide();
+
+ useEffect(() => {
+   hideNavbar();
+   return () => {
+     showNavbar();
+   };
+ }, [hideNavbar, showNavbar]);
 
  const getLessonDetails = () => {
  switch (lessonId) {
