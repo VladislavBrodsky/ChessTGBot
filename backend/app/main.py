@@ -118,6 +118,8 @@ class RawCORSMiddleware:
 async def lifespan(app: FastAPI):
     # Startup
     logger.info(f"🚀 Starting App Version: {settings.VERSION}")
+    from app.services.game_service import GameService
+    GameService.initialize_process_pool()
     
     # Verify Database Connection
     from app.core.database import init_db, engine
@@ -175,6 +177,8 @@ async def lifespan(app: FastAPI):
 
     yield
     # Shutdown
+    from app.services.game_service import GameService
+    GameService.shutdown_process_pool()
     await TelegramService.stop_bot()
 
 def create_application() -> FastAPI:

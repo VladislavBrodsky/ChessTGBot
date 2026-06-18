@@ -407,7 +407,7 @@ async def make_move(sid, data):
              await sio.emit('error', {'message': 'Not your turn'}, room=sid)
              return
 
-        new_state = await service.make_move(game_id, uci)
+        new_state = await service.make_move(game_id, uci, preloaded_state=current_state)
         if new_state:
             await sio.emit('game_state', new_state.model_dump(), room=game_id)
             

@@ -20,9 +20,36 @@ from app.services.gamification_service import GamificationService, TaskType
 from app.services.referral_commission_service import ReferralCommissionService
 from app.core.socket import sio
 
+_process_pool = None
+
+def compute_best_bot_move(fen: str) -> Optional[str]:
+    import chess
+    from app.services.game_engine import GameEngine
+    board = chess.Board(fen)
+    engine = GameEngine()
+    engine.board = board
+    return engine.get_best_move()
+
 class GameService:
     _active_timeout_tasks: Dict[str, asyncio.Task] = {}
     _active_abort_tasks: Dict[str, asyncio.Task] = {}
+
+    @classmethod
+    def initialize_process_pool(cls):
+        global _process_pool
+        if _process_pool is None:
+            import multiprocessing
+            from concurrent.futures import ProcessPoolExecutor
+            if multiprocessing.current_process().name == 'MainProcess':
+                num_cores = max(1, multiprocessing.cpu_count())
+                _process_pool = ProcessPoolExecutor(max_workers=num_cores)
+
+    @classmethod
+    def shutdown_process_pool(cls):
+        global _process_pool
+        if _process_pool is not None:
+            _process_pool.shutdown(wait=True)
+            _process_pool = None
 
     @classmethod
     def cancel_timeout_task(cls, game_id: str):
@@ -235,10 +262,10 @@ class GameService:
             if GameService._active_abort_tasks.get(game_id) == asyncio.current_task():
                 GameService._active_abort_tasks.pop(game_id, None)
 
-    async def make_move(self, game_id: str, uci: str) -> Optional[GameState]:
+    async def make_move(self, game_id: str, uci: str, preloaded_state: Optional[GameState] = None) -> Optional[GameState]:
         """Load state, apply move, save state. Returns new state if valid."""
-        # 1. Load from Redis
-        current_state = await self.session_manager.get_game(game_id)
+        # 1. Load from Redis if not preloaded
+        current_state = preloaded_state or await self.session_manager.get_game(game_id)
         if not current_state:
             return None
 
@@ -286,7 +313,13 @@ class GameService:
         engine = GameEngine()
         engine.board = board
 
-        bot_move_uci = await asyncio.to_thread(engine.get_best_move)
+        global _process_pool
+        if _process_pool is not None:
+            loop = asyncio.get_running_loop()
+            bot_move_uci = await loop.run_in_executor(_process_pool, compute_best_bot_move, current_state.fen)
+        else:
+            bot_move_uci = await asyncio.to_thread(engine.get_best_move)
+
         if bot_move_uci and engine.make_move(bot_move_uci):
             new_state = engine.get_state()
             new_state.white_player_id = current_state.white_player_id

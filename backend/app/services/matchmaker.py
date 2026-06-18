@@ -287,9 +287,15 @@ class MatchmakerService:
             return
 
         try:
-            # Note: redis.keys can be slow but we limit scope with matchmaker:queue:* prefix.
-            # In massive systems, we should track active queues using a set, but this prefix search is okay for our scale.
-            keys = await self.redis.keys("matchmaker:queue:*")
+            # Non-blocking scan for keys matching matchmaker:queue:* to prevent blocking Redis
+            keys = []
+            cursor = 0
+            while True:
+                cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
+                keys.extend(scan_keys)
+                if cursor == 0:
+                    break
+
             for queue_key in keys:
                 data = await self.redis.get(queue_key)
                 if data:

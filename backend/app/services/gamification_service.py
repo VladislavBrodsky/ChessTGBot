@@ -15,6 +15,10 @@ def _xp_to_level(xp: int) -> int:
 class GamificationService:
     @staticmethod
     async def get_or_create_daily_tasks(db: AsyncSession, user_id: int):
+        # Lock user row to serialize task list generation and updates per user
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        await db.execute(user_stmt)
+
         # Logic: Check if user has daily tasks for today. If not, assign them.
         # This is a simplified version.
         
@@ -55,6 +59,10 @@ class GamificationService:
 
     @staticmethod
     async def get_or_create_achievements(db: AsyncSession, user_id: int):
+        # Lock user row to prevent concurrent achievements generation
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        await db.execute(user_stmt)
+
         # Fetch all permanent tasks definitions
         result = await db.execute(select(Task).where(Task.is_daily == False))
         achievement_defs = result.scalars().all()
@@ -77,23 +85,46 @@ class GamificationService:
 
     @staticmethod
     async def add_xp(db: AsyncSession, user: User, amount: int, trigger_kickback: bool = True, apply_booster: bool = True, commit: bool = True):
+        # 1. Gather all user IDs that need to be locked (user + up to 3 tiers of referrers)
+        user_ids_to_lock = [user.id]
+        if trigger_kickback and amount > 0:
+            current_id = user.id
+            for _ in range(3):
+                stmt = select(Referral).where(Referral.referred_user_id == current_id)
+                res = await db.execute(stmt)
+                referral = res.scalars().first()
+                if not referral:
+                    break
+                user_ids_to_lock.append(referral.referrer_id)
+                current_id = referral.referrer_id
+
+        # 2. Lock users in deterministic ascending ID order to prevent database deadlocks
+        sorted_user_ids = sorted(list(set(user_ids_to_lock)))
+        users_stmt = select(User).where(User.id.in_(sorted_user_ids)).with_for_update()
+        users_res = await db.execute(users_stmt)
+        users_map = {u.id: u for u in users_res.scalars().all()}
+
+        db_user = users_map.get(user.id)
+        if not db_user:
+            db_user = user # Fallback
+
         xp_earned = amount
-        if apply_booster and user.is_premium and amount > 0:
+        if apply_booster and db_user.is_premium and amount > 0:
             xp_earned = amount * 2
 
-        user.xp += xp_earned
+        db_user.xp += xp_earned
 
         # Use canonical level formula. Level is a high-watermark: only increases.
-        new_level = _xp_to_level(user.xp)
-        if new_level > user.level:
-            user.level = new_level
+        new_level = _xp_to_level(db_user.xp)
+        if new_level > db_user.level:
+            db_user.level = new_level
 
-        # Multi-Tier XP Kickbacks — collect all changes before committing
+        # Multi-Tier XP Kickbacks — apply to locked users in memory
         if trigger_kickback and xp_earned > 0:
-            current_user_id = user.id
+            current_user_id = db_user.id
             percentages = [0.10, 0.05, 0.025]
 
-            for tier, pct in enumerate(percentages, 1):
+            for pct in percentages:
                 # Find referrer of current_user_id
                 stmt = select(Referral).where(Referral.referred_user_id == current_user_id)
                 res = await db.execute(stmt)
@@ -101,10 +132,8 @@ class GamificationService:
                 if not referral:
                     break
 
-                # Fetch referrer User
-                stmt_user = select(User).where(User.id == referral.referrer_id)
-                res_user = await db.execute(stmt_user)
-                referrer = res_user.scalars().first()
+                # Get locked referrer User from pre-fetched map
+                referrer = users_map.get(referral.referrer_id)
                 if not referrer:
                     break
 
@@ -125,7 +154,7 @@ class GamificationService:
             await db.commit()
         else:
             await db.flush()
-        return user
+        return db_user
 
 
     @staticmethod
@@ -150,6 +179,18 @@ class GamificationService:
         referrer = result.scalars().first()
         
         if referrer and referrer.id != new_user.id:
+            # Lock referrer and new_user in sorted ID order to prevent deadlocks
+            sorted_ids = sorted([referrer.id, new_user.id])
+            lock_stmt = select(User).where(User.id.in_(sorted_ids)).with_for_update()
+            lock_res = await db.execute(lock_stmt)
+            users_map = {u.id: u for u in lock_res.scalars().all()}
+            
+            referrer = users_map.get(referrer.id)
+            new_user = users_map.get(new_user.id)
+            
+            if not referrer or not new_user:
+                return False
+
             # Check if this referral already exists to prevent duplicate rewards
             referral_exists_result = await db.execute(
                 select(Referral).where(
@@ -162,13 +203,13 @@ class GamificationService:
             referral = Referral(referrer_id=referrer.id, referred_user_id=new_user.id)
             db.add(referral)
             
-            # Award XP to referrer
+            # Award XP to referrer (pass commit=False to keep it in a single transaction)
             referrer_xp = 100 if referrer.is_premium else 50
-            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False)
+            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False, commit=False)
             
             # Award XP to new user
             new_user_xp = 50 if new_user.is_premium else 20
-            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False)
+            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False)
 
             # Award Balance (in cents) & log transactions
             from app.models.transaction import Transaction
@@ -324,10 +365,17 @@ class GamificationService:
         return False
     @staticmethod
     async def claim_task(db: AsyncSession, user_id: int, task_id: int):
-        # Find the specific user task
+        # 1. Lock User row first to prevent deadlock and serialize claims per user
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        user = res_user.scalars().first()
+        if not user:
+            return None, "User not found"
+
+        # 2. Find and lock the specific user task
         result = await db.execute(select(UserTask).where(
             and_(UserTask.user_id == user_id, UserTask.task_id == task_id)
-        ))
+        ).with_for_update())
         user_task = result.scalars().first()
 
         if not user_task:
@@ -348,12 +396,10 @@ class GamificationService:
 
         # Mark as claimed
         user_task.claimed = True
+        db.add(user_task)
         
         # Award XP
-        user_result = await db.execute(select(User).where(User.id == user_id))
-        user = user_result.scalars().first()
-        
-        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward, trigger_kickback=False, apply_booster=True)
+        updated_user = await GamificationService.add_xp(db, user, task_def.xp_reward, trigger_kickback=False, apply_booster=True, commit=False)
         
         await db.commit()
         return updated_user, "Success"
@@ -364,9 +410,14 @@ class GamificationService:
         Increment progress for a specific task type (WIN, PLAY, etc.) for the user.
         If the task becomes completed, mark it.
         """
+        # 1. Lock User row first to prevent deadlocks/races
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        await db.execute(user_stmt)
+
         # Ensure achievements are generated before updating progress
         await GamificationService.get_or_create_achievements(db, user_id)
 
+        # 2. Lock UserTask rows to prevent lost updates
         result = await db.execute(
             select(UserTask)
             .join(Task, UserTask.task_id == Task.id)
@@ -377,6 +428,7 @@ class GamificationService:
                     Task.task_type == task_type
                 )
             )
+            .with_for_update()
         )
         
         user_tasks = result.scalars().all()
@@ -403,77 +455,98 @@ class GamificationService:
         """
         Deduct 100 XP to unlock an advanced lesson.
         """
+        # Lock user row to prevent concurrent race conditions/duplicate spends
+        user_stmt = select(User).where(User.id == user.id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        db_user = res_user.scalars().first()
+        if not db_user:
+            return None, "User not found"
+
         # Check if already unlocked
         result = await db.execute(
             select(UnlockedLesson).where(
-                and_(UnlockedLesson.user_id == user.id, UnlockedLesson.lesson_id == lesson_id)
+                and_(UnlockedLesson.user_id == db_user.id, UnlockedLesson.lesson_id == lesson_id)
             )
         )
         existing = result.scalars().first()
         if existing:
-            return user, "Lesson already unlocked"
+            return db_user, "Lesson already unlocked"
 
-        if user.xp < 100:
+        if db_user.xp < 100:
             return None, "Insufficient XP. Need 100 XP to unlock."
             
         # Deduct XP (level is a high-watermark — never decreases on XP spend)
-        user.xp -= 100
+        db_user.xp -= 100
 
         # Create unlock entry
-        unlock = UnlockedLesson(user_id=user.id, lesson_id=lesson_id)
+        unlock = UnlockedLesson(user_id=db_user.id, lesson_id=lesson_id)
         db.add(unlock)
-        db.add(user)
+        db.add(db_user)
         await db.commit()
-        await db.refresh(user)
-        return user, "Success"
+        await db.refresh(db_user)
+        return db_user, "Success"
 
     @staticmethod
     async def upgrade_premium_with_xp(db: AsyncSession, user: User):
         """
         Deduct 5000 XP to upgrade user to Premium status for 1 year.
         """
-        if user.is_premium:
-            return user, "Already Premium"
+        # Lock user row to serialize premium upgrades
+        user_stmt = select(User).where(User.id == user.id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        db_user = res_user.scalars().first()
+        if not db_user:
+            return None, "User not found"
+
+        if db_user.is_premium:
+            return db_user, "Already Premium"
             
-        if user.xp < 5000:
+        if db_user.xp < 5000:
             return None, "Insufficient XP. Need 5000 XP to upgrade."
             
         # Deduct XP (level is a high-watermark — never decreases on XP spend)
-        user.xp -= 5000
-        user.is_premium = True
-        user.premium_tier = "premium"
+        db_user.xp -= 5000
+        db_user.is_premium = True
+        db_user.premium_tier = "premium"
         
         from datetime import datetime, timezone, timedelta
         now = datetime.now(timezone.utc).replace(tzinfo=None)
-        user.premium_expires_at = now + timedelta(days=365)
+        db_user.premium_expires_at = now + timedelta(days=365)
 
-        db.add(user)
+        db.add(db_user)
         await db.commit()
-        await db.refresh(user)
+        await db.refresh(db_user)
 
         # Send Premium welcome notification to the subscriber
         try:
             from app.services.telegram_bot import TelegramService
             await TelegramService.send_premium_welcome(
-                user_id=user.telegram_id,
-                first_name=user.first_name,
-                expires_at=user.premium_expires_at,
-                lang=user.preferred_language
+                user_id=db_user.telegram_id,
+                first_name=db_user.first_name,
+                expires_at=db_user.premium_expires_at,
+                lang=db_user.preferred_language
             )
         except Exception as e:
             import logging
             logging.getLogger(__name__).warning(f"Failed to send premium welcome notification: {e}")
 
-        return user, "Success"
+        return db_user, "Success"
 
     @staticmethod
     async def complete_academy_task(db: AsyncSession, user: User, task_type: str, item_id: str = ""):
         """
         Award 50 XP to the user for completing a lesson/puzzle.
         """
+        # Re-fetch/lock user row to serialize validation and prevent concurrent reward bypasses
+        user_stmt = select(User).where(User.id == user.id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        db_user = res_user.scalars().first()
+        if not db_user:
+            db_user = user
+
         from app.services.session_manager import SessionManager
         session_mgr = SessionManager()
-        redis_key = f"user:completed_academy:{user.telegram_id}"
+        redis_key = f"user:completed_academy:{db_user.telegram_id}"
         task_val = f"{task_type}:{item_id}"
         
         already_completed = False
@@ -486,13 +559,13 @@ class GamificationService:
         if (not session_mgr.redis or session_mgr._use_memory) or already_completed is None:
             if not hasattr(GamificationService, "_completed_academy"):
                 GamificationService._completed_academy = set()
-            mem_key = f"{user.telegram_id}:{task_val}"
+            mem_key = f"{db_user.telegram_id}:{task_val}"
             already_completed = mem_key in GamificationService._completed_academy
             if not already_completed:
                 GamificationService._completed_academy.add(mem_key)
 
         if already_completed:
-            return user, "Already Completed"
+            return db_user, "Already Completed"
 
         if session_mgr.redis and not session_mgr._use_memory:
             try:
@@ -500,5 +573,5 @@ class GamificationService:
             except Exception:
                 pass
 
-        updated_user = await GamificationService.add_xp(db, user, 50, trigger_kickback=True, apply_booster=True)
+        updated_user = await GamificationService.add_xp(db, db_user, 50, trigger_kickback=True, apply_booster=True)
         return updated_user, "Success"

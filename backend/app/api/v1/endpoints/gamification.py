@@ -91,16 +91,21 @@ async def verify_task(
     logger = logging.getLogger(__name__)
     settings = get_settings()
 
-    result = await db.execute(
-        select(UserTask, Task)
-        .join(Task, UserTask.task_id == Task.id)
-        .where(and_(UserTask.user_id == current_user.id, Task.id == task_id))
+    # 1. Lock the user task first using with_for_update to prevent concurrent verification updates
+    user_task_result = await db.execute(
+        select(UserTask)
+        .where(and_(UserTask.user_id == current_user.id, UserTask.task_id == task_id))
+        .with_for_update()
     )
-    user_task_and_def = result.first()
-    if not user_task_and_def:
+    user_task = user_task_result.scalars().first()
+    if not user_task:
         raise HTTPException(status_code=404, detail="Task not found or not assigned")
 
-    user_task, task_def = user_task_and_def
+    # 2. Get the task definition separately
+    task_def_result = await db.execute(select(Task).where(Task.id == task_id))
+    task_def = task_def_result.scalars().first()
+    if not task_def:
+        raise HTTPException(status_code=404, detail="Task definition not found")
 
     if user_task.completed:
         return {"status": "success", "completed": True, "message": "Task already completed"}
@@ -293,7 +298,15 @@ async def verify_puzzle_solution(
     """Verify moves solution, checks premium if >1, and credits ELO & XP."""
     from app.core.puzzles import CHESS_PUZZLES
     
-    if puzzle_id > 1 and not current_user.is_premium:
+    # 1. Re-fetch user with write lock to prevent race conditions during ELO/XP updates
+    from sqlalchemy import select, and_
+    user_stmt = select(User).where(User.id == current_user.id).with_for_update()
+    res_user = await db.execute(user_stmt)
+    locked_user = res_user.scalars().first()
+    if not locked_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if puzzle_id > 1 and not locked_user.is_premium:
         raise HTTPException(
             status_code=403,
             detail="Premium subscription required to access this tactical level."
@@ -318,15 +331,14 @@ async def verify_puzzle_solution(
     # Deduplicate to prevent puzzle ELO/XP farming
     from app.services.session_manager import SessionManager
     from app.models.gamification import SolvedPuzzle
-    from sqlalchemy import select, and_
     session_mgr = SessionManager()
-    redis_key = f"user:solved_puzzles:{current_user.telegram_id}"
+    redis_key = f"user:solved_puzzles:{locked_user.telegram_id}"
     
-    # DB check as primary source of truth
+    # DB check as primary source of truth (inside user write lock)
     db_check = await db.execute(
         select(SolvedPuzzle).where(
             and_(
-                SolvedPuzzle.user_id == current_user.id,
+                SolvedPuzzle.user_id == locked_user.id,
                 SolvedPuzzle.puzzle_id == puzzle_id
             )
         )
@@ -343,7 +355,7 @@ async def verify_puzzle_solution(
     if (not session_mgr.redis or session_mgr._use_memory) or already_solved_redis is None:
         if not hasattr(GamificationService, "_solved_puzzles"):
             GamificationService._solved_puzzles = set()
-        mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+        mem_key = f"{locked_user.telegram_id}:{puzzle_id}"
         already_solved_redis = mem_key in GamificationService._solved_puzzles
 
     already_solved = already_solved_db or already_solved_redis
@@ -359,20 +371,20 @@ async def verify_puzzle_solution(
             else:
                 if not hasattr(GamificationService, "_solved_puzzles"):
                     GamificationService._solved_puzzles = set()
-                mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+                mem_key = f"{locked_user.telegram_id}:{puzzle_id}"
                 GamificationService._solved_puzzles.add(mem_key)
 
         return {
             "status": "success",
             "solved": True,
-            "new_xp": current_user.xp,
-            "new_level": current_user.level,
-            "new_elo": current_user.elo,
+            "new_xp": locked_user.xp,
+            "new_level": locked_user.level,
+            "new_elo": locked_user.elo,
             "message": "Already solved. No additional XP/ELO rewarded."
         }
 
     # Save solved puzzle to database
-    solved_record = SolvedPuzzle(user_id=current_user.id, puzzle_id=puzzle_id)
+    solved_record = SolvedPuzzle(user_id=locked_user.id, puzzle_id=puzzle_id)
     db.add(solved_record)
 
     # Add to Redis set
@@ -384,15 +396,15 @@ async def verify_puzzle_solution(
     else:
         if not hasattr(GamificationService, "_solved_puzzles"):
             GamificationService._solved_puzzles = set()
-        mem_key = f"{current_user.telegram_id}:{puzzle_id}"
+        mem_key = f"{locked_user.telegram_id}:{puzzle_id}"
         GamificationService._solved_puzzles.add(mem_key)
 
     # Award ELO (+5) and XP (puzzle reward)
-    current_user.elo += 5
-    updated_user = await GamificationService.add_xp(db, current_user, target_puzzle["xp_reward"], trigger_kickback=True, apply_booster=True, commit=False)
+    locked_user.elo += 5
+    updated_user = await GamificationService.add_xp(db, locked_user, target_puzzle["xp_reward"], trigger_kickback=True, apply_booster=True, commit=False)
     
     # Track completion in user tasks: complete task type puzzle
-    await GamificationService.update_task_progress(db, current_user.id, "login", increment=0, commit=False) # dummy keep db hot
+    await GamificationService.update_task_progress(db, locked_user.id, "login", increment=0, commit=False) # dummy keep db hot
     
     await db.commit()
     
