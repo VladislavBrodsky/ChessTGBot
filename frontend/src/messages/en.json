@@ -346,7 +346,11 @@
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
     "xp_upgrade_desc": "Use your accumulated XP to unlock Chess Premium membership for 1 year for free.",
     "xp_upgrade_cost": "COST: 5,000 XP (Balance: {xp} XP)",
-    "xp_upgrade_btn": "Unlock Premium with 5,000 XP"
+    "xp_upgrade_btn": "Unlock Premium with 5,000 XP",
+    "success_title": "👑 CONGRATULATIONS!",
+    "success_subtitle": "You are now a Chess Premium member!",
+    "success_desc": "All exclusive rewards, 100 levels of Tactics Academy, and 6-level referral commissions are now fully active.",
+    "success_btn": "♟️ Enter Chess Arena ♟️"
   },
   "TierComparison": {
     "title": "Features Comparison",

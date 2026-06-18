@@ -346,7 +346,11 @@
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
     "xp_upgrade_desc": "使用您积累的经验值（XP）即可免费兑换1年的黄金会员资格。",
     "xp_upgrade_cost": "消耗：5,000 XP (当前余额: {xp} XP)",
-    "xp_upgrade_btn": "使用 5,000 XP 兑换黄金会员"
+    "xp_upgrade_btn": "使用 5,000 XP 兑换黄金会员",
+    "success_title": "👑 恭喜您！",
+    "success_subtitle": "您已成功开通黄金会员权益！",
+    "success_desc": "专属胜场双倍奖励、100关战术学院挑战以及最高6级推广返佣特权现已全部生效。",
+    "success_btn": "♟️ 进入棋局对战 ♟️"
   },
   "TierComparison": {
     "title": "功能权益对比",

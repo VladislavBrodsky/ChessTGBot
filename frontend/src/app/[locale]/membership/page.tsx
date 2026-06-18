@@ -1,20 +1,21 @@
 'use client';
-
+ 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaCheck, FaRocket, FaChevronLeft, FaCoins, FaTrophy, FaPalette, FaAd, FaUserFriends, FaCrown, FaBrain } from "react-icons/fa";
 import Link from "next/link";
+import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
 import { useLocale, useTranslations } from 'next-intl';
 import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
-
+ 
 export default function MembershipPage() {
  const locale = useLocale();
  const tm = useTranslations('Membership');
  const t = useTranslations('Index');
-
+ 
   const PREMIUM_INFO = {
     id: 'premium',
     name: tm('premium'),
@@ -27,10 +28,19 @@ export default function MembershipPage() {
     monthly: 2900,
     annual: 29580,
   };
-
+ 
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const [tgUser, setTgUser] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowDimensions, setWindowDimensions] = useState({ width: 400, height: 600 });
+ 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
+    }
+  }, []);
 
   const fetchStats = async () => {
     try {
@@ -69,9 +79,9 @@ export default function MembershipPage() {
         const data = await res.json();
         if (res.ok && data.status === "success") {
           telegramHaptic('success');
-          telegramAlert("Premium activated successfully!", () => {
-            fetchStats();
-          });
+          setShowSuccess(true);
+          setShowConfetti(true);
+          fetchStats();
         } else {
           telegramHaptic('error');
           telegramAlert(data.detail || "Failed to upgrade with XP");
@@ -102,7 +112,9 @@ export default function MembershipPage() {
       const data = await res.json();
       if (data.status === "success") {
         telegramHaptic('success');
-        telegramAlert(`Successfully subscribed to ${PREMIUM_INFO.name}!`);
+        setShowSuccess(true);
+        setShowConfetti(true);
+        fetchStats();
       } else {
         telegramHaptic('error');
         telegramAlert(data.detail || "Subscription failed");
@@ -239,6 +251,101 @@ export default function MembershipPage() {
  {tm('legal')}
  </p>
  </div>
- </LayoutWrapper>
- );
+
+  {/* Congratulations Modal */}
+  <AnimatePresence>
+    {showSuccess && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4"
+      >
+        {showConfetti && typeof window !== 'undefined' && (
+          <Confetti
+            width={windowDimensions.width}
+            height={windowDimensions.height}
+            recycle={false}
+            numberOfPieces={300}
+            onConfettiComplete={() => setShowConfetti(false)}
+          />
+        )}
+        
+        <motion.div
+          initial={{ scale: 0.9, y: 20, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.9, y: 20, opacity: 0 }}
+          transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          className="w-full max-w-sm glass-panel p-8 rounded-3xl border border-brand-primary/20 bg-brand-surface text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
+        >
+          {/* Decorative Glow */}
+          <div className="absolute -top-12 -left-12 w-24 h-24 bg-brand-primary opacity-10 blur-2xl rounded-full" />
+          <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-brand-primary opacity-10 blur-2xl rounded-full" />
+
+          {/* Animated Crown Icon */}
+          <div className="w-20 h-20 rounded-2xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center shadow-lg relative group overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <motion.div
+              animate={{ 
+                rotate: [0, -10, 10, -10, 10, 0],
+                scale: [1, 1.1, 1.1, 1.1, 1.1, 1]
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                repeatDelay: 5,
+                duration: 1.5
+              }}
+            >
+              <span className="text-4xl">👑</span>
+            </motion.div>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-brand-primary uppercase tracking-wider leading-none">
+              {tm('success_title')}
+            </h2>
+            <p className="text-sm font-bold text-brand-primary opacity-80">
+              {tm('success_subtitle')}
+            </p>
+          </div>
+
+          <p className="text-xs text-brand-primary opacity-45 px-2 leading-relaxed">
+            {tm('success_desc')}
+          </p>
+
+          {/* Features Quick List */}
+          <div className="w-full bg-brand-void/45 border border-brand-border-opacity-5 rounded-2xl p-4 text-left space-y-3 shadow-inner">
+            <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
+              <FaCheck className="text-emerald-500 text-sm" />
+              <span>{tm('premium_boost')}</span>
+            </div>
+            <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
+              <FaCheck className="text-emerald-500 text-sm" />
+              <span>{tm('priority_match')}</span>
+            </div>
+            <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
+              <FaCheck className="text-emerald-500 text-sm" />
+              <span>{tm('engine_analysis')}</span>
+            </div>
+            <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
+              <FaCheck className="text-emerald-500 text-sm" />
+              <span>{tm('elite_skins')}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              telegramHaptic('light');
+              setShowSuccess(false);
+            }}
+            className="w-full py-[18px] rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
+          >
+            {tm('success_btn')}
+          </button>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+  </LayoutWrapper>
+  );
 }

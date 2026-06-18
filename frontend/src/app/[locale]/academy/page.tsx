@@ -274,8 +274,30 @@ export default function AcademyPage() {
             <FaChessRook className="text-brand-primary opacity-40" />
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('tactics_grid')}</h3>
           </div>
-          <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
-            <div className="grid grid-cols-10 gap-2 w-full">
+          <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
+            {/* Backlight Orbs for viral gaming aesthetic */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl -ml-16 -mt-16 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mb-16 pointer-events-none" />
+
+            {/* Progress Header */}
+            <div className="flex flex-col mb-4 p-3 rounded-2xl bg-brand-void/40 border border-brand-border-opacity-5 relative z-10">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary/50 flex items-center gap-1">
+                  <FaBrain className="text-brand-primary/60 text-[9px]" /> {t('tactics_grid')}
+                </span>
+                <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20">
+                  {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-brand-void/60 rounded-full overflow-hidden border border-brand-border-opacity-10">
+                <div 
+                  className="h-full bg-gradient-to-r from-brand-primary to-emerald-400 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                  style={{ width: `${Math.max(completedPuzzles.length, 1)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-10 gap-1.5 w-full relative z-10">
               {Array.from({ length: 100 }, (_, i) => {
                 const id = i + 1;
                 const isCompleted = completedPuzzles.includes(id);
@@ -286,15 +308,15 @@ export default function AcademyPage() {
                 let statusMark = null;
 
                 if (isCompleted) {
-                  bgClass = "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/30 shadow-[inset_0_1px_3px_rgba(16,185,129,0.1)]";
-                  statusMark = <FaCheck className="absolute top-0.5 right-0.5 text-[6px] text-emerald-400/80" />;
+                  bgClass = "bg-gradient-to-br from-emerald-500/20 to-emerald-950/20 border-emerald-500/40 text-emerald-300 font-bold hover:from-emerald-500/30 hover:to-emerald-900/30 hover:border-emerald-400 hover:scale-105 shadow-[0_0_10px_rgba(16,185,129,0.15),inset_0_1px_2px_rgba(255,255,255,0.05)]";
+                  statusMark = <FaCheck className="absolute top-1 right-1 text-[5px] text-emerald-400/80" />;
                 } else if (isActive) {
-                  bgClass = "bg-brand-primary/20 border-brand-primary text-brand-primary font-black animate-pulse shadow-[0_0_15px_rgba(255,215,0,0.2),inset_0_1px_4px_rgba(255,215,0,0.15)] scale-105 z-10";
+                  bgClass = "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300 text-brand-void font-black animate-active-portal z-10 scale-110 shadow-[0_0_20px_rgba(255,215,0,0.5),inset_0_1px_3px_rgba(255,255,255,0.3)]";
                 } else if (isPremiumLocked) {
-                  bgClass = "bg-brand-void/40 border-amber-500/10 text-amber-500/40 cursor-not-allowed";
-                  statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[6px] text-amber-500/40" />;
+                  bgClass = "bg-brand-void/80 border-amber-500/10 text-amber-500/30 cursor-not-allowed hover-shake shadow-[inset_0_1px_1px_rgba(0,0,0,0.8)]";
+                  statusMark = <FaLock className="absolute bottom-1 right-1 text-[5.5px] text-amber-500/45" />;
                 } else {
-                  bgClass = "bg-brand-void/60 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 hover:scale-105 hover:bg-brand-void/80 hover:border-brand-primary/30";
+                  bgClass = "bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary opacity-70 hover:opacity-100 hover:scale-105 hover:bg-brand-void/70 hover:border-brand-primary/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]";
                 }
 
                 return (
@@ -309,10 +331,20 @@ export default function AcademyPage() {
                 );
               })}
             </div>
-            <div className="flex justify-between items-center text-[8px] font-bold text-brand-primary opacity-60 uppercase tracking-wider mt-5 px-1">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> {t('unlocked')}</span>
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t('solved')}</span>
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-void/40 border border-brand-border-opacity-5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {t('premium')}</span>
+            
+            <div className="flex justify-between items-center text-[8.5px] font-black uppercase tracking-widest mt-5 px-1 relative z-10 gap-2">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-void/40 border border-brand-border-opacity-5 text-brand-primary/70">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_6px_rgba(255,255,255,0.8)] animate-pulse" /> 
+                {t('unlocked')}
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" /> 
+                {t('solved')}
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.8)]" /> 
+                {t('premium')}
+              </span>
             </div>
           </div>
         </div>

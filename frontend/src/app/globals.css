@@ -430,3 +430,29 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   backdrop-filter: blur(1.5px);
   -webkit-backdrop-filter: blur(1.5px);
 }
+
+/* Custom Academy Grid Animations */
+@keyframes lock-shake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.05); }
+  75% { transform: rotate(8deg) scale(1.05); }
+}
+
+.hover-shake:hover {
+  animation: lock-shake 0.3s ease-in-out;
+}
+
+@keyframes portal-pulse {
+  0%, 100% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+  }
+  50% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.85));
+  }
+}
+
+.animate-active-portal {
+  animation: portal-pulse 1.5s infinite ease-in-out;
+}

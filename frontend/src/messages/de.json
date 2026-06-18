@@ -346,7 +346,11 @@
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
     "xp_upgrade_desc": "Nutze deine gesammelten XP, um eine einjährige Chess Premium-Mitgliedschaft kostenlos freizuschalten.",
     "xp_upgrade_cost": "KOSTEN: 5.000 XP (Kontostand: {xp} XP)",
-    "xp_upgrade_btn": "Premium freischalten mit 5.000 XP"
+    "xp_upgrade_btn": "Premium freischalten mit 5.000 XP",
+    "success_title": "👑 HERZLICHEN GLÜCKWUNSCH!",
+    "success_subtitle": "Du bist jetzt Chess Premium-Mitglied!",
+    "success_desc": "Alle exklusiven Belohnungen, alle 100 Taktik-Levels und die Provisionen über 6 Ebenen sind jetzt aktiv.",
+    "success_btn": "♟️ Schach-Arena betreten ♟️"
   },
   "TierComparison": {
     "title": "Feature-Vergleich",

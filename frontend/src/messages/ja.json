@@ -346,7 +346,11 @@
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
     "xp_upgrade_desc": "貯まった経験値（XP）を使って、Chess Premium会員1年分を無料でアンロックできます。",
     "xp_upgrade_cost": "必要XP：5,000 XP (保有XP: {xp} XP)",
-    "xp_upgrade_btn": "5,000 XPでプレミアムをアンロック"
+    "xp_upgrade_btn": "5,000 XPでプレミアムをアンロック",
+    "success_title": "👑 おめでとうございます！",
+    "success_subtitle": "Chess Premium会員になりました！",
+    "success_desc": "限定の報酬、アカデミー全100ステージ、最大6階層の紹介報酬がすべて有効化されました。",
+    "success_btn": "♟️ チェス盤へ進む ♟️"
   },
   "TierComparison": {
     "title": "機能比較",

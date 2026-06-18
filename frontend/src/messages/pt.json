@@ -346,7 +346,11 @@
     "xp_upgrade_title": "ACTIVATION PROTOCOL",
     "xp_upgrade_desc": "Use seu XP acumulado para desbloquear a assinatura Chess Premium grátis por 1 ano.",
     "xp_upgrade_cost": "CUSTO: 5.000 XP (Saldo: {xp} XP)",
-    "xp_upgrade_btn": "Desbloquear Premium com 5.000 XP"
+    "xp_upgrade_btn": "Desbloquear Premium com 5.000 XP",
+    "success_title": "👑 PARABÉNS!",
+    "success_subtitle": "Agora você é um membro Chess Premium!",
+    "success_desc": "Todos os benefícios exclusivos, os 100 níveis da Academia e as indicações em até 6 níveis estão ativados.",
+    "success_btn": "♟️ Entrar na Arena de Xadrez ♟️"
   },
   "TierComparison": {
     "title": "Comparativo de Recursos",
