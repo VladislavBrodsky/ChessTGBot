@@ -220,7 +220,7 @@ export default function AcademyPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 text-brand-primary text-3xl font-black tracking-tighter select-none"
+            className="flex items-center gap-3 text-brand-primary text-3xl font-black tracking-tighter select-none uppercase"
           >
             <FaBrain className="text-2xl opacity-80" />
             {t('title')}

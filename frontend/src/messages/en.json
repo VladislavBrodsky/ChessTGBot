@@ -235,7 +235,8 @@
     "rake": "Rake",
     "balance": "Balance",
     "top_up_play": "Top Up & Play",
-    "amount_needed": "+{amount} Needed"
+    "amount_needed": "+{amount} Needed",
+    "move_history": "Move History"
   },
   "Wallet": {
     "title": "Web3 Wallet",

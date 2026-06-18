@@ -235,7 +235,8 @@
     "rake": "Комиссия",
     "balance": "Баланс",
     "top_up_play": "Пополнить и играть",
-    "amount_needed": "+{amount} требуется"
+    "amount_needed": "+{amount} требуется",
+    "move_history": "История ходов"
   },
   "Wallet": {
     "title": "Web3-кошелек",

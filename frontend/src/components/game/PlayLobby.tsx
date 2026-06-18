@@ -60,31 +60,30 @@ export default function PlayLobby() {
     }
   }, []);
 
-  // Smoothly center selected wager item in scroll view
+  // Center default items instantly on mount
   useEffect(() => {
-    if (!wagerScrollRef.current) return;
-    const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]');
-    if (activeEl) {
-      activeEl.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-      });
-    }
-  }, [selectedWager, isCustomWager]);
-
-  // Smoothly center selected time control item in scroll view
-  useEffect(() => {
-    if (!timeScrollRef.current) return;
-    const activeEl = timeScrollRef.current.querySelector('[data-active="true"]');
-    if (activeEl) {
-      activeEl.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-      });
-    }
-  }, [timeControl]);
+    const timer = setTimeout(() => {
+      if (wagerScrollRef.current) {
+        const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]');
+        if (activeEl) {
+          activeEl.scrollIntoView({
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
+      }
+      if (timeScrollRef.current) {
+        const activeEl = timeScrollRef.current.querySelector('[data-active="true"]');
+        if (activeEl) {
+          activeEl.scrollIntoView({
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Visual Header Stats states (Players Online & Active Users)
   const [playersOnline, setPlayersOnline] = useState<number>(782);
@@ -417,9 +416,13 @@ export default function PlayLobby() {
                       <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                     </div>
                     <div className="w-px h-6 bg-brand-border-opacity-10" />
-                    <div className="flex flex-col items-center">
-                      <span className="text-[7.5px] font-black text-emerald-400/60 uppercase tracking-widest mb-0.5">{tg('win_up_to')}</span>
-                      <span className="text-[11px] font-black text-emerald-400">${((chosenWager * 2 * 0.97) / 100).toFixed(2)} USDT</span>
+                    <div className="flex flex-col items-center px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse">
+                      <span className="text-[7.5px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
+                        🔥 {tg('win_up_to')}
+                      </span>
+                      <span className="text-[12px] font-extrabold text-emerald-400 tracking-tight leading-none flex items-center gap-0.5">
+                        🏆 ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                      </span>
                     </div>
                     <div className="w-px h-6 bg-brand-border-opacity-10" />
                     <button
@@ -439,7 +442,7 @@ export default function PlayLobby() {
                   }`}>
                     <span className="opacity-70">{tg('balance')}: ${(walletBalance / 100).toFixed(2)}</span>
                     {hasSufficient
-                      ? <span className="flex items-center gap-1">✓ {tg('balance_verified')}</span>
+                      ? <span className="flex items-center gap-1">{tg('balance_verified')}</span>
                       : <span className="font-black animate-pulse">↑ {tg('amount_needed', { amount: ((chosenWager - walletBalance) / 100).toFixed(2) })}</span>
                     }
                   </div>

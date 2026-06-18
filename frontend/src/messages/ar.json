@@ -235,7 +235,8 @@
     "rake": "العمولة",
     "balance": "الرصيد",
     "top_up_play": "شحن ولعب",
-    "amount_needed": "+{amount} مطلوب"
+    "amount_needed": "+{amount} مطلوب",
+    "move_history": "سجل الحركات"
   },
   "Wallet": {
     "title": "محفظة Web3",

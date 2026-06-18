@@ -75,72 +75,99 @@ export default function DailyTasks() {
                 </h3>
             </div>
 
-            <div className="space-y-3 w-full">
-                {loading ? (
-                    <TaskSkeleton />
-                ) : tasks.length === 0 ? (
-                    <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
-                        {t('no_missions')}
-                    </div>
-                ) : (
-                    tasks.map((task, index) => {
-                        const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
-                        return (
-                            <motion.div
-                                key={task.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className={`
-                                    relative overflow-hidden rounded-xl border p-3 flex items-center justify-between
-                                    ${status === 'completed'
-                                        ? 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 opacity-60'
-                                        : 'bg-brand-surface border-brand-border-opacity-10'}
-                                `}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={`
-                                        w-10 h-10 rounded-lg flex items-center justify-center text-lg
-                                        ${status === 'completed' ? 'bg-brand-bg-opacity-10 text-brand-primary' : 'bg-brand-bg-opacity-5 text-brand-primary opacity-60'}
-                                    `}>
-                                        {status === 'completed' ? <FaCheck /> : <FaGift />}
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide">
-                                            {t.has(task.title_key) ? t(task.title_key) : task.title_key}
-                                        </h4>
-                                        <div className="flex items-center gap-2 text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-1">
-                                            <span>+{task.xp_reward} XP</span>
-                                            <span>•</span>
-                                            <span>{task.progress} / {task.target_count}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {status === 'claimable' && (
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => handleClaim(task.task_id)}
-                                        className="px-3 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse cursor-pointer"
+            <motion.div layout className="space-y-3 w-full">
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <motion.div
+                            key="skeleton"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <TaskSkeleton />
+                        </motion.div>
+                    ) : tasks.length === 0 ? (
+                        <motion.div
+                            key="empty"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="text-center py-8 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest"
+                        >
+                            {t('no_missions')}
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="tasks"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="space-y-3"
+                        >
+                            {tasks.map((task, index) => {
+                                const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
+                                return (
+                                    <motion.div
+                                        key={task.id}
+                                        layout
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className={`
+                                            relative overflow-hidden rounded-xl border p-3 flex items-center justify-between
+                                            ${status === 'completed'
+                                                ? 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 opacity-60'
+                                                : 'bg-brand-surface border-brand-border-opacity-10'}
+                                        `}
                                     >
-                                        {t('claim')}
-                                    </motion.button>
-                                )}
+                                        <div className="flex items-center gap-3">
+                                            <div className={`
+                                                w-10 h-10 rounded-lg flex items-center justify-center text-lg
+                                                ${status === 'completed' ? 'bg-brand-bg-opacity-10 text-brand-primary' : 'bg-brand-bg-opacity-5 text-brand-primary opacity-60'}
+                                            `}>
+                                                {status === 'completed' ? <FaCheck /> : <FaGift />}
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide">
+                                                    {t.has(task.title_key) ? t(task.title_key) : task.title_key}
+                                                </h4>
+                                                <div className="flex items-center gap-2 text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-1">
+                                                    <span>+{task.xp_reward} XP</span>
+                                                    <span>•</span>
+                                                    <span>{task.progress} / {task.target_count}</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                {status === 'pending' && (
-                                    <div className="w-16 h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden border border-brand-border-opacity-5">
-                                        <div
-                                            className="h-full bg-brand-primary opacity-50 rounded-full"
-                                            style={{ width: `${(task.progress / task.target_count) * 100}%` }}
-                                        />
-                                    </div>
-                                )}
-                            </motion.div>
-                        );
-                    })
-                )}
-            </div>
+                                        {status === 'claimable' && (
+                                            <motion.button
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                onClick={() => handleClaim(task.task_id)}
+                                                className="px-3 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse cursor-pointer"
+                                            >
+                                                {t('claim')}
+                                            </motion.button>
+                                        )}
+
+                                        {status === 'pending' && (
+                                            <div className="w-16 h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden border border-brand-border-opacity-5">
+                                                <div
+                                                    className="h-full bg-brand-primary opacity-50 rounded-full"
+                                                    style={{ width: `${(task.progress / task.target_count) * 100}%` }}
+                                                />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </motion.div>
         </div>
     );
 }

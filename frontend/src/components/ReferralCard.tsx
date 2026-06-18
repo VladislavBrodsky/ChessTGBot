@@ -8,9 +8,10 @@ import { apiFetch } from '@/lib/api';
 
 interface ReferralCardProps {
     referralCode?: string;
+    onInteraction?: () => void;
 }
 
-export default function ReferralCard({ referralCode }: ReferralCardProps) {
+export default function ReferralCard({ referralCode, onInteraction }: ReferralCardProps) {
     const t = useTranslations('Gamification');
     const [userCode, setUserCode] = useState(referralCode || "");
     const [botUsername, setBotUsername] = useState("FinChess_bot");
@@ -43,12 +44,18 @@ export default function ReferralCard({ referralCode }: ReferralCardProps) {
         navigator.clipboard.writeText(inviteLink);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+        if (onInteraction) {
+            onInteraction();
+        }
     };
 
     const handleInvite = () => {
         const text = encodeURIComponent("Join me in FinChess! ♟️🚀");
         const url = encodeURIComponent(inviteLink);
         window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+        if (onInteraction) {
+            onInteraction();
+        }
     };
 
     return (

@@ -235,7 +235,8 @@
     "rake": "Frais",
     "balance": "Solde",
     "top_up_play": "Recharger et jouer",
-    "amount_needed": "+{amount} requis"
+    "amount_needed": "+{amount} requis",
+    "move_history": "Historique des coups"
   },
   "Wallet": {
     "title": "Portefeuille Web3",

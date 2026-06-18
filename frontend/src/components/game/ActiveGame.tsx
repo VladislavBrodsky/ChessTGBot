@@ -19,8 +19,53 @@ import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramConfirm, telegramHaptic } from '@/lib/telegram';
 
+import { Chess } from 'chess.js';
+
 interface ActiveGameProps {
   gameId: string;
+}
+
+function getMovesSanList(moveHistory: string[]): { white: string; black?: string }[] {
+  const tempChess = new Chess();
+  const result: { white: string; black?: string }[] = [];
+  
+  for (let i = 0; i < moveHistory.length; i += 2) {
+    const whiteUci = moveHistory[i];
+    const blackUci = moveHistory[i+1];
+    
+    let whiteSan = "";
+    if (whiteUci) {
+      try {
+        const from = whiteUci.substring(0, 2);
+        const to = whiteUci.substring(2, 4);
+        const promotion = whiteUci.substring(4, 5) || undefined;
+        const move = tempChess.move({ from, to, promotion });
+        whiteSan = move.san;
+      } catch (e) {
+        whiteSan = whiteUci;
+      }
+    }
+    
+    let blackSan = "";
+    if (blackUci) {
+      try {
+        const from = blackUci.substring(0, 2);
+        const to = blackUci.substring(2, 4);
+        const promotion = blackUci.substring(4, 5) || undefined;
+        const move = tempChess.move({ from, to, promotion });
+        blackSan = move.san;
+      } catch (e) {
+        blackSan = blackUci;
+      }
+    }
+    
+    result.push({
+      white: whiteSan,
+      ...(blackSan ? { black: blackSan } : {})
+    });
+  }
+  
+  return result;
 }
 
 export default function ActiveGame({ gameId }: ActiveGameProps) {
@@ -40,6 +85,13 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const [showRematchChoice, setShowRematchChoice] = useState<boolean>(false);
   const [rematchStatus, setRematchStatus] = useState<'idle' | 'offered_by_me' | 'waiting'>('idle');
   const [incomingRematch, setIncomingRematch] = useState<any>(null);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   const isWhite = gameState ? gameState.white_player_id === userId : true;
 
@@ -73,6 +125,13 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const triggeredHapticsRef = useRef<{ [key: number]: boolean }>({ 10: false, 5: false, 3: false });
   const lastSoundRef = useRef<number>(0);
+  const moveHistoryRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (moveHistoryRef.current) {
+      moveHistoryRef.current.scrollLeft = moveHistoryRef.current.scrollWidth;
+    }
+  }, [gameState?.move_history?.length]);
 
   useEffect(() => {
     if (gameState?.id) {
@@ -203,8 +262,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const handleResign = () => {
-    telegramConfirm("Are you sure you want to resign this match?", (confirmed) => {
-      if (confirmed) {
+    setConfirmConfig({
+      title: locale === 'ru' ? "Сдаться" : "Resign Match",
+      message: locale === 'ru' 
+        ? "Вы уверены, что хотите сдаться в этой партии?" 
+        : "Are you sure you want to resign this match?",
+      confirmText: locale === 'ru' ? "Да, сдаться" : "Yes, Resign",
+      cancelText: locale === 'ru' ? "Отмена" : "Cancel",
+      onConfirm: () => {
         const socket = getSocket();
         socket.emit("resign", { game_id: gameId });
       }
@@ -213,21 +278,30 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const handleOfferDraw = () => {
     if (isBotGame) {
-      telegramConfirm(
-        locale === 'ru'
+      setConfirmConfig({
+        title: locale === 'ru' ? "Ничья отклонена" : "Draw Declined",
+        message: locale === 'ru'
           ? "ИИ отклоняет предложения ничьей. Хотите сдаться вместо этого?"
           : "The A.I. declines draw offers. Do you want to resign instead?",
-        (confirmed) => {
-          if (confirmed) {
+        confirmText: locale === 'ru' ? "Сдаться" : "Resign",
+        cancelText: locale === 'ru' ? "Продолжить игру" : "Keep Playing",
+        onConfirm: () => {
+          setTimeout(() => {
             handleResign();
-          }
+          }, 100);
         }
-      );
+      });
       return;
     }
 
-    telegramConfirm("Offer a draw to your opponent?", (confirmed) => {
-      if (confirmed) {
+    setConfirmConfig({
+      title: locale === 'ru' ? "Предложить ничью" : "Offer Draw",
+      message: locale === 'ru'
+        ? "Предложить ничью вашему оппоненту?"
+        : "Offer a draw to your opponent?",
+      confirmText: locale === 'ru' ? "Предложить" : "Offer Draw",
+      cancelText: locale === 'ru' ? "Отмена" : "Cancel",
+      onConfirm: () => {
         const socket = getSocket();
         socket.emit("offer_draw", { game_id: gameId });
       }
@@ -474,8 +548,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               </span>
             </div>
           </div>
-          <div className={`text-xl font-black tracking-tighter ${opponentTime < 20 ? (opponentTime < 10 ? 'text-red-500 animate-pulse' : 'text-red-500') : 'text-brand-primary opacity-60'}`}>
-            {formatTime(opponentTime)}
+          <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
+            opponentTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
+            opponentTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
+            'bg-brand-void/40 border-brand-border-opacity-10 text-brand-primary opacity-85'
+          }`}>
+            <span className="text-sm font-black tracking-tighter font-mono">
+              {formatTime(opponentTime)}
+            </span>
           </div>
         </div>
       
@@ -490,6 +570,35 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             />
           </div>
         </div>
+
+        {/* Move History log */}
+        {gameState?.move_history && gameState.move_history.length > 0 && (
+          <div className="w-full overflow-hidden px-1">
+            <div className="flex items-center space-x-2 text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
+              <span>{tg('move_history')}</span>
+            </div>
+            <div 
+              ref={moveHistoryRef}
+              className="w-full overflow-x-auto flex items-center gap-1.5 pb-2 scrollbar-none scroll-smooth"
+            >
+              {getMovesSanList(gameState.move_history).map((movePair, idx) => (
+                <div 
+                  key={idx} 
+                  className="shrink-0 flex items-center gap-1 bg-brand-surface border border-brand-border-opacity-10 rounded-lg px-2.5 py-1.5 shadow-sm text-[10px] font-bold text-brand-primary"
+                >
+                  <span className="opacity-45">{idx + 1}.</span>
+                  <span>{movePair.white}</span>
+                  {movePair.black && (
+                    <>
+                      <span className="opacity-25">•</span>
+                      <span>{movePair.black}</span>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       
         {/* Player Widget */}
         <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
@@ -506,8 +615,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               </span>
             </div>
           </div>
-          <div className={`text-xl font-black tracking-tighter ${myTime < 20 ? (myTime < 10 ? 'text-red-500 animate-pulse' : 'text-red-500') : 'text-brand-primary'}`}>
-            {formatTime(myTime)}
+          <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
+            myTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
+            myTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
+            'bg-brand-void/40 border-brand-border-opacity-10 text-brand-primary'
+          }`}>
+            <span className="text-sm font-black tracking-tighter font-mono">
+              {formatTime(myTime)}
+            </span>
           </div>
         </div>
 
@@ -562,6 +677,60 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             onAccept={acceptRematch}
             onDecline={declineRematch}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Custom Confirmation Drawer */}
+      <AnimatePresence>
+        {confirmConfig && (
+          <div className="bottom-drawer-backdrop z-[110]">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setConfirmConfig(null)}
+              className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+            />
+            <motion.div 
+              initial={{ y: "100%" }} 
+              animate={{ y: 0 }} 
+              exit={{ y: "100%" }} 
+              transition={{ type: "spring", damping: 30, stiffness: 350 }}
+              className="bottom-drawer-sheet relative z-20"
+            >
+              <div className="bottom-drawer-handle" />
+              
+              <div className="flex flex-col items-center text-center mt-2">
+                <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
+                  {confirmConfig.title}
+                </h2>
+                <p className="text-sm font-bold text-brand-primary opacity-65 uppercase tracking-wide mt-2 mb-6">
+                  {confirmConfig.message}
+                </p>
+              </div>
+              
+              <div className="w-full flex flex-col gap-3">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    confirmConfig.onConfirm();
+                    setConfirmConfig(null);
+                  }}
+                  className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+                >
+                  <span>{confirmConfig.confirmText}</span>
+                </motion.button>
+                
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setConfirmConfig(null)}
+                  className="w-full bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-brand-primary py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+                >
+                  <span>{confirmConfig.cancelText}</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

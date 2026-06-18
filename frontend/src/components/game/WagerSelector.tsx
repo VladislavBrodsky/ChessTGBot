@@ -57,10 +57,15 @@ export default function WagerSelector({
               <button
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
-                onClick={() => {
+                onClick={(e) => {
                   setSelectedWager(opt.val);
                   setIsCustomWager(false);
                   telegramHaptic('light');
+                  e.currentTarget.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center'
+                  });
                 }}
                 className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
                   isSelected
@@ -75,7 +80,15 @@ export default function WagerSelector({
           })}
           <button
             data-active={isCustomWager ? "true" : "false"}
-            onClick={() => { setIsCustomWager(true); telegramHaptic('light'); }}
+            onClick={(e) => {
+              setIsCustomWager(true);
+              telegramHaptic('light');
+              e.currentTarget.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+              });
+            }}
             className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
               isCustomWager
                 ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'

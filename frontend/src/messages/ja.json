@@ -235,7 +235,8 @@
     "rake": "ハウスエッジ",
     "balance": "残高",
     "top_up_play": "チャージしてプレイ",
-    "amount_needed": "+{amount} 不足"
+    "amount_needed": "+{amount} 不足",
+    "move_history": "棋譜履歴"
   },
   "Wallet": {
     "title": "Web3ウォレット",

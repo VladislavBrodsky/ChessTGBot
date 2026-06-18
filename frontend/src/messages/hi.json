@@ -235,7 +235,8 @@
     "rake": "कमीशन",
     "balance": "बैलेंस",
     "top_up_play": "टॉप अप और खेलें",
-    "amount_needed": "+{amount} आवश्यक"
+    "amount_needed": "+{amount} आवश्यक",
+    "move_history": "चालों का इतिहास"
   },
   "Wallet": {
     "title": "Web3 वॉलेट",

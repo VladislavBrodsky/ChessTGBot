@@ -132,9 +132,6 @@ export default function ChallengesPage() {
   <span>{t('return') || 'Return'}</span>
   </motion.button>
   </Link>
-  <div className="px-3 py-1 rounded-full bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
-  {t('challenges_header')} • {t('challenges_version')}
-  </div>
  </div>
 
  {/* Level Progress Card */}

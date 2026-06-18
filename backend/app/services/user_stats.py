@@ -143,7 +143,16 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
         opponent_id = game.black_player_id if is_white else game.white_player_id
         
         opponent = opponents_map.get(opponent_id)
-        opponent_name = opponent.first_name if (opponent and opponent.first_name) else f"User_{opponent_id}"
+        if opponent_id == -1:
+            opponent_name = "A.I. Coach"
+        else:
+            if opponent:
+                first = opponent.first_name or ""
+                last = opponent.last_name or ""
+                full_name = f"{first} {last}".strip()
+                opponent_name = full_name if full_name else f"User_{opponent_id}"
+            else:
+                opponent_name = f"User_{opponent_id}"
         opponent_elo = opponent.elo if (opponent and opponent.elo is not None) else 1000
         
         # Determine result

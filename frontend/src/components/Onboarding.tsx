@@ -96,11 +96,11 @@ export default function Onboarding({ onClose }: OnboardingProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-void/90 backdrop-blur-md px-6">
       {/* Background Matrix/Nebula Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br ${slides[currentSlide].gradient} blur-[120px] transition-all duration-1000 ease-in-out`} />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border-muted)_1px,transparent_1px),linear-gradient(to_bottom,var(--border-muted)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
       </div>
 
       <motion.div
@@ -108,12 +108,12 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3 }}
-        className="relative w-full max-w-md bg-slate-900/40 border border-slate-800/80 rounded-2xl backdrop-blur-xl p-8 shadow-2xl overflow-hidden flex flex-col justify-between min-h-[460px]"
+        className="relative w-full max-w-md bg-brand-surface/40 border border-brand-border-opacity-20 rounded-2xl backdrop-blur-xl p-8 shadow-2xl overflow-hidden flex flex-col justify-between min-h-[460px]"
       >
         {/* Skip button top right */}
         <button
           onClick={handleComplete}
-          className="absolute top-4 right-4 text-slate-500 hover:text-slate-200 transition-colors p-2 z-10"
+          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary transition-colors p-2 z-10"
           title="Skip onboarding"
         >
           <FaTimes className="text-lg" />
@@ -133,7 +133,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               className="flex flex-col items-center justify-center"
             >
               {/* Slide Icon */}
-              <div className="mb-6 p-5 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-inner flex items-center justify-center">
+              <div className="mb-6 p-5 rounded-2xl bg-brand-void/60 border border-brand-border shadow-inner flex items-center justify-center">
                 {slides[currentSlide].icon}
               </div>
 
@@ -141,12 +141,12 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               <span className={`text-xs font-semibold tracking-wider uppercase mb-1 ${slides[currentSlide].accentColor}`}>
                 {slides[currentSlide].subtitle}
               </span>
-              <h2 className="text-2xl font-bold text-slate-100 tracking-tight mb-4 leading-snug">
+              <h2 className="text-2xl font-bold text-brand-primary tracking-tight mb-4 leading-snug">
                 {slides[currentSlide].title}
               </h2>
 
               {/* Description */}
-              <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              <p className="text-brand-muted text-sm leading-relaxed max-w-sm">
                 {slides[currentSlide].description}
               </p>
             </motion.div>
@@ -166,8 +166,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
                 }}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   idx === currentSlide 
-                    ? 'w-6 bg-slate-200 shadow-lg' 
-                    : 'w-2 bg-slate-700 hover:bg-slate-500'
+                    ? 'w-6 bg-brand-primary shadow-lg' 
+                    : 'w-2 bg-brand-border hover:bg-brand-muted/60'
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
@@ -179,9 +179,9 @@ export default function Onboarding({ onClose }: OnboardingProps) {
             {currentSlide > 0 ? (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-slate-300 font-semibold text-sm tracking-wide transition-all active:scale-98"
+                className="glass-button flex items-center gap-2 px-5 py-3 font-semibold text-sm tracking-wide transition-all active:scale-98"
               >
-                <FaArrowLeft className="text-xs" /> Back
+                <FaArrowLeft className="text-[10px]" /> Back
               </button>
             ) : (
               <div /> // spacer
@@ -191,8 +191,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               onClick={handleNext}
               className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg transition-all active:scale-98 ${
                 currentSlide === slides.length - 1
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white w-full'
-                  : 'bg-slate-200 hover:bg-white text-slate-950'
+                  ? 'action-button w-full'
+                  : 'bg-brand-primary hover:opacity-90 text-brand-void'
               }`}
             >
               {currentSlide === slides.length - 1 ? (

@@ -17,6 +17,7 @@ import { telegramAlert } from "@/lib/telegram";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
 import { useUser } from "@/context/UserContext";
+import ReferralCard from "@/components/ReferralCard";
 
 export default function Home() {
  const t = useTranslations('Index');
@@ -44,15 +45,11 @@ export default function Home() {
    }
  }, [locale, router]);
 
- useEffect(() => {
- const timer = setTimeout(() => {
- if (Math.random() > 0.3) {
- setShowReferralPopup(true);
- setTimeout(() => setShowReferralPopup(false), 5000);
- }
- }, 1500);
- return () => clearTimeout(timer);
- }, []);
+  // Auto-hide helper for referral demo alert
+  const triggerReferralPromoDemo = () => {
+    setShowReferralPopup(true);
+    setTimeout(() => setShowReferralPopup(false), 4000);
+  };
 
  useEffect(() => {
    // Refresh balance and stats in background on mount
@@ -69,11 +66,22 @@ export default function Home() {
    }
  }, [syncBalance, syncStats]);
 
+  const getOpponentName = (name: string) => {
+    if (name === "A.I. Coach") {
+      return locale === 'ru' ? "ИИ Тренера" :
+             locale === 'es' ? "Entrenador I.A." :
+             locale === 'fr' ? "Entraîneur I.A." :
+             locale === 'zh' ? "人工智能教练" :
+             "A.I. Coach";
+    }
+    return name;
+  };
+
   const handleShareResult = (game: any) => {
     const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
     const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
     const botUsername = stats?.bot_username || "FinChess_bot";
-    const message = `${resultText} ${t('against')} ${game.opponent.name}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
+    const message = `${resultText} ${t('against')} ${getOpponentName(game.opponent.name)}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
 
     let success = false;
     if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
@@ -115,6 +123,7 @@ export default function Home() {
  {/* Unified Premium Profile Card */}
   {!stats ? (
     <div className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse flex flex-col space-y-4 bg-brand-surface">
+      {/* Header Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3.5 w-2/3">
           <div className="w-12 h-12 rounded-xl bg-brand-primary opacity-10 shrink-0" />
@@ -125,11 +134,33 @@ export default function Home() {
         </div>
         <div className="w-16 h-5 rounded-full bg-brand-primary opacity-5" />
       </div>
-      <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
-      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center pt-2">
-        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
-        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
-        <div className="flex flex-col items-center"><div className="h-1.5 bg-brand-primary opacity-10 rounded w-10 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
+      
+      {/* Simulated XP Progress Section (matching XPProgressBar height) */}
+      <div className="space-y-1.5">
+        <div className="flex justify-between items-center">
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-12" />
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-8" />
+        </div>
+        <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
+      </div>
+
+      {/* Separator Line */}
+      <div className="h-px w-full bg-brand-border-opacity-10" />
+
+      {/* Bottom Stats Grid */}
+      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center pt-1">
+        <div className="flex flex-col items-center">
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+        </div>
       </div>
     </div>
   ) : (
@@ -256,6 +287,11 @@ export default function Home() {
  </Link>
  </div>
 
+  {/* Dedicated Referral Promo Card */}
+  <div className="w-full relative z-10">
+    <ReferralCard referralCode={stats?.referral_code} onInteraction={triggerReferralPromoDemo} />
+  </div>
+
  {/* Recent Activity Log */}
  {stats?.recent_games && stats.recent_games.length > 0 && (
  <div className="w-full space-y-2 relative z-10">
@@ -283,7 +319,7 @@ export default function Home() {
 
  <div className="flex flex-col">
  <span className="text-[11px] font-bold text-brand-primary opacity-90 leading-none mb-1">
- {t('vs')} {game.opponent.name}
+ {t('vs')} {getOpponentName(game.opponent.name)}
  </span>
  <span className="text-[8px] font-medium text-brand-primary opacity-30 uppercase tracking-wider">
  {game.opponent.elo} {t('elo')}

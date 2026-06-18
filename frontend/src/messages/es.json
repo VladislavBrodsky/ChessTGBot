@@ -235,7 +235,8 @@
     "rake": "Comisión",
     "balance": "Saldo",
     "top_up_play": "Recargar y Jugar",
-    "amount_needed": "+{amount} requerido"
+    "amount_needed": "+{amount} requerido",
+    "move_history": "Historial de movimientos"
   },
   "Wallet": {
     "title": "Billetera Web3",

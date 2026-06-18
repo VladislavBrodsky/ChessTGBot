@@ -34,10 +34,10 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             style={{ pointerEvents: hide ? 'none' : 'auto' }}
-            className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-2xl shadow-premium justify-between"
+            className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-3xl shadow-premium justify-between"
         >
             {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-2xl" />
+            <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-3xl" />
 
             <ul className="flex items-center relative z-10 w-full justify-around space-x-1">
                 {localizedItems.map((item) => {
@@ -48,7 +48,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 <div className="relative h-12 flex items-center justify-center transition-all duration-300">
                                     {isActive && (
                                         <div
-                                            className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-5 shadow-inner-glow"
+                                            className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-5 shadow-inner-glow"
                                         />
                                     )}
                                     <div

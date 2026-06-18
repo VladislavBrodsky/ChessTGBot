@@ -235,7 +235,8 @@
     "rake": "抽水",
     "balance": "余额",
     "top_up_play": "充值并开始",
-    "amount_needed": "还需+{amount}"
+    "amount_needed": "还需+{amount}",
+    "move_history": "棋谱记录"
   },
   "Wallet": {
     "title": "Web3 钱包",

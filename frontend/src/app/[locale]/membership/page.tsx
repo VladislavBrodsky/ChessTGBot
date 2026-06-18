@@ -149,7 +149,7 @@ export default function MembershipPage() {
  <motion.div
  initial={{ opacity: 0, y: -10 }}
  animate={{ opacity: 1, y: 0 }}
- className="text-brand-primary text-3xl font-black tracking-tighter select-none"
+ className="text-brand-primary text-3xl font-black tracking-tighter select-none uppercase"
  >
  {tm('title')}
  </motion.div>

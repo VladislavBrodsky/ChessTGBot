@@ -17,6 +17,59 @@ interface ChessBoardProps {
 export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
+    const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+
+    useEffect(() => {
+        setSelectedSquare(null);
+    }, [fen]);
+
+    function handleSquareClick({ square }: { piece: any; square: string }) {
+        const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const game = new Chess(fen === "start" ? START_FEN : fen);
+        
+        // 1. If user clicks one of their own pieces, select/re-select it
+        const piece = game.get(square as any);
+        if (piece && piece.color === game.turn() && piece.color === (orientation === "white" ? "w" : "b")) {
+            setSelectedSquare(square);
+            telegramHaptic('light');
+            return;
+        }
+
+        // 2. If user already has a piece selected, try to move it to the clicked square
+        if (selectedSquare) {
+            // Check if this is a pawn promotion move
+            const selectedPiece = game.get(selectedSquare as any);
+            const isPawn = selectedPiece && selectedPiece.type === "p";
+            const isPromotionRank = square.endsWith("8") || square.endsWith("1");
+            
+            if (isPawn && isPromotionRank) {
+                try {
+                    const legalMoves = game.moves({ verbose: true });
+                    const isPromoMove = legalMoves.some(
+                        (m) => m.from === selectedSquare && m.to === square && m.promotion
+                    );
+                    if (isPromoMove) {
+                        telegramHaptic('medium');
+                        setPromotionMove({ from: selectedSquare, to: square });
+                        setSelectedSquare(null);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Error checking promotion legality:", e);
+                }
+            }
+
+            // Attempt normal move
+            const moveResult = onMove({
+                from: selectedSquare,
+                to: square,
+            });
+            if (moveResult) {
+                telegramHaptic('light');
+            }
+            setSelectedSquare(null);
+        }
+    }
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -51,6 +104,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                     telegramHaptic('medium');
                     // Store details and open custom selection dialog; block immediate move
                     setPromotionMove({ from: sourceSquare, to: targetSquare });
+                    setSelectedSquare(null);
                     return false;
                 }
             } catch (e) {
@@ -65,6 +119,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
         if (moveResult) {
             telegramHaptic('light');
         }
+        setSelectedSquare(null);
         return moveResult;
     }
 
@@ -164,6 +219,13 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 overflow: "hidden",
                             },
                             animationDurationInMs: 250,
+                            onSquareClick: handleSquareClick,
+                            squareStyles: selectedSquare ? {
+                                [selectedSquare]: {
+                                    backgroundColor: "rgba(255, 215, 0, 0.3)",
+                                    boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.6)"
+                                }
+                            } : {}
                         }}
                     />
                 </div>
