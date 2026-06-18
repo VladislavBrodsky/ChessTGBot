@@ -1,9 +1,22 @@
 import socketio
+from app.core.config import get_settings
+
+settings = get_settings()
+
+client_mgr = None
+if settings.REDIS_URL:
+    try:
+        # Use Redis manager to coordinate messages/rooms across clustered instances (Gunicorn workers / Railway containers)
+        client_mgr = socketio.AsyncRedisManager(settings.REDIS_URL)
+        print(f"[Socket] Initialized AsyncRedisManager with Redis at: {settings.REDIS_URL}")
+    except Exception as e:
+        print(f"[Socket] WARNING: Failed to initialize AsyncRedisManager (falling back to in-memory): {e}")
 
 # Create a Socket.IO server
 sio = socketio.AsyncServer(
     async_mode='asgi',
-    cors_allowed_origins='*'
+    cors_allowed_origins='*',
+    client_manager=client_mgr
 )
 
 
