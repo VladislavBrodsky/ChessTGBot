@@ -312,7 +312,10 @@
     "scan_info_cp": "Scan QR code or click 'Open in Wallet' to pay via @CryptoBot",
     "deposit_cta_ton": "Generate Web3 Invoice",
     "deposit_cta_cp": "Top Up via @CryptoBot",
-    "top_up": "充值"
+    "top_up": "充值",
+    "tx_referral": "推荐红利",
+    "tx_subscription": "订阅分红",
+    "tx_rake": "平台抽水"
   },
   "Membership": {
     "title": "👑 黄金会员 CHESS PREMIUM",

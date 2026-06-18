@@ -13,6 +13,7 @@
   
   --color-brand-primary: var(--text-primary);
   --color-brand-muted: var(--text-muted);
+  --color-brand-gold: var(--text-gold);
 
   --color-brand-border-opacity-5: var(--color-border-opacity-5);
   --color-brand-border-opacity-10: var(--color-border-opacity-10);
@@ -48,6 +49,7 @@
   --border-hover: rgba(255, 255, 255, 0.12);
   --text-primary: #FFFFFF;
   --text-muted: #71767B;
+  --text-gold: #FBBF24;
 
   --color-brand-void: #000000;
   --color-brand-surface: #0A0A0A;
@@ -95,6 +97,7 @@
   --border-hover: rgba(0, 0, 0, 0.12);
   --text-primary: #0F172A;
   --text-muted: #64748B;
+  --text-gold: #D97706;
 
   --color-brand-void: #F3F4F6;
   --color-brand-surface: #FFFFFF;
@@ -142,6 +145,7 @@
   --border-hover: rgba(160, 136, 255, 0.3);
   --text-primary: #FFFFFF;
   --text-muted: #A088FF;
+  --text-gold: #FBBF24;
 
   --color-brand-void: #050014;
   --color-brand-surface: #0B001F;

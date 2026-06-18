@@ -312,7 +312,10 @@
     "wallet": "Wallet",
     "unlinked": "Unlinked",
     "connect": "Connect",
-    "top_up": "Top Up"
+    "top_up": "Top Up",
+    "tx_referral": "Referral Cut",
+    "tx_subscription": "Sub Commission",
+    "tx_rake": "Platform Rake"
   },
   "Membership": {
     "title": "👑 CHESS PREMIUM",

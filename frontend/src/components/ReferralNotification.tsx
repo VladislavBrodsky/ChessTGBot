@@ -84,12 +84,12 @@ export default function ReferralNotification() {
           >
             {/* Left Icon with subtle spin/float */}
             <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center shadow-[0_0_6px_rgba(245,158,11,0.25)] shrink-0">
-              <FaCoins className="text-brand-void text-[11px]" />
+              <FaCoins className="text-amber-950 text-[11px]" />
             </div>
 
             {/* Notification content */}
             <div className="flex-1 min-w-0">
-              <p className="text-[9.5px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1 leading-none mb-0.5">
+              <p className="text-[9.5px] font-black uppercase tracking-wider text-brand-gold flex items-center gap-1 leading-none mb-0.5">
                 <span className="w-1 h-1 rounded-full bg-emerald-400 animate-ping" />
                 {t('referral_won', { username: notification.username })}
               </p>

@@ -312,7 +312,10 @@
     "scan_info_cp": "Scan QR code or click 'Open in Wallet' to pay via @CryptoBot",
     "deposit_cta_ton": "Generate Web3 Invoice",
     "deposit_cta_cp": "Top Up via @CryptoBot",
-    "top_up": "Пополнить"
+    "top_up": "Пополнить",
+    "tx_referral": "Реферальный бонус",
+    "tx_subscription": "Бонус от подписки",
+    "tx_rake": "Комиссия платформы"
   },
   "Membership": {
     "title": "👑 ПОДПИСКА CHESS PREMIUM",
