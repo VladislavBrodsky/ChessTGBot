@@ -309,7 +309,7 @@ export default function AcademyPage() {
             </h2>
             <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">{t('puzzle_desc')}</p>
 
-            <Link href={`/${locale}/academy/puzzle`}>
+            <Link href={`/${locale}/academy/puzzle?id=${nextToSolveId || 1}`}>
               <motion.button
                 whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.15)" }}
                 whileTap={{ scale: 0.98 }}
