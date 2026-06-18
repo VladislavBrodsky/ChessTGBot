@@ -667,16 +667,48 @@ async def receive_ton_deposit_webhook(
                 raise HTTPException(status_code=500, detail=f"Error querying TONAPI: {e}")
 
             in_msg = tx_data.get("in_msg", {})
-            value_nano = int(in_msg.get("value", 0))
             sender_addr = in_msg.get("source", {}).get("address", "unknown")
             
-            # Extract comment
-            comment = ""
+            # Extract comment and amount based on whether it is a Jetton transfer notification
             decoded_body = in_msg.get("decoded_body") or {}
-            if isinstance(decoded_body, dict):
-                comment = decoded_body.get("text") or decoded_body.get("Text") or decoded_body.get("comment") or ""
-            elif isinstance(decoded_body, str):
-                comment = decoded_body
+            op_name = in_msg.get("decoded_op_name") or ""
+            op_code = in_msg.get("op_code") or ""
+            
+            is_jetton = op_name == "transfer_notification" or op_code == "0x7362d09c" or "jetton" in str(decoded_body.get("type", "")).lower()
+
+            comment = ""
+            if is_jetton and isinstance(decoded_body, dict):
+                # For Jetton transfers, the comment is nested in forward_payload
+                fwd = decoded_body.get("forward_payload") or {}
+                if isinstance(fwd, dict):
+                    comment = fwd.get("text") or fwd.get("comment") or ""
+                elif isinstance(fwd, str):
+                    comment = fwd
+                
+                # If amount is present in decoded_body, use it (decimals for USDT is 6, so amount is in micro-USDT)
+                jetton_amount_raw = decoded_body.get("amount")
+                if jetton_amount_raw is not None:
+                    try:
+                        amount_cents = int(int(jetton_amount_raw) / 10000)
+                    except ValueError:
+                        amount_cents = 0
+                else:
+                    amount_cents = 0
+            else:
+                # Standard TON transfer
+                value_nano = int(in_msg.get("value", 0))
+                if isinstance(decoded_body, dict):
+                    comment = decoded_body.get("text") or decoded_body.get("Text") or decoded_body.get("comment") or ""
+                elif isinstance(decoded_body, str):
+                    comment = decoded_body
+
+                if not comment:
+                    comment = in_msg.get("message") or ""
+                
+                # Convert nanoTON to cents
+                ton_amount = value_nano / 1_000_000_000.0
+                ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
+                amount_cents = int(ton_amount * ton_price_usd * 100)
 
             if not comment:
                 comment = in_msg.get("message") or ""
@@ -688,11 +720,6 @@ async def receive_ton_deposit_webhook(
                 telegram_id = int(comment.split("_")[1])
             except (ValueError, IndexError):
                 raise HTTPException(status_code=400, detail="Malformed Telegram ID in transaction comment")
-
-            # Convert nanoTON to cents
-            ton_amount = value_nano / 1_000_000_000.0
-            ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-            amount_cents = int(ton_amount * ton_price_usd * 100)
 
         else:
             # 3. Developer simulated deposit webhook
