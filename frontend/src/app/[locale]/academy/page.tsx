@@ -22,7 +22,16 @@ export default function AcademyPage() {
   const [puzzles, setPuzzles] = useState<any[]>([]);
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
-  const nextToSolveId = puzzles.find(p => !p.is_solved && !p.is_sequential_locked && !p.is_premium_locked && !p.is_xp_locked)?.id;
+  const nextPuzzle = puzzles.find(p => !p.is_solved);
+  const nextToSolveId = nextPuzzle?.id;
+  const allSolved = puzzles.length > 0 && !nextPuzzle;
+  const levelPrefix = locale === 'ru' ? 'Уровень' 
+                    : locale === 'es' ? 'Nivel'
+                    : locale === 'fr' ? 'Niveau'
+                    : locale === 'de' ? 'Level'
+                    : locale === 'zh' ? '关卡'
+                    : locale === 'ja' ? 'レベル'
+                    : 'Level';
 
   const fetchData = async () => {
     try {
@@ -288,6 +297,14 @@ export default function AcademyPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ y: -4, scale: 1.01 }}
+          onClick={() => {
+            if (!puzzles.length) return;
+            if (nextPuzzle) {
+              handlePuzzleClick(nextPuzzle.id, nextPuzzle);
+            } else if (allSolved) {
+              handlePuzzleClick(1, puzzles[0]);
+            }
+          }}
           className="w-full glass-panel p-6 rounded-3xl border border-brand-primary/20 bg-brand-surface relative overflow-hidden group transition-all duration-300 cursor-pointer shadow-premium"
         >
           {/* Neon Backlight Blurs */}
@@ -299,30 +316,43 @@ export default function AcademyPage() {
               <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-70 bg-brand-void/60 px-3 py-1.5 rounded-full border border-brand-border-opacity-10">
                 <FaFire className="text-amber-500 animate-pulse text-[10px]" /> {t('daily_challenge')}
               </span>
-              <span className="flex items-center gap-1 text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.15)]">
-                <FaTrophy className="text-[9px]" /> +50 XP
-              </span>
+              {!allSolved && (
+                <span className="flex items-center gap-1 text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.15)]">
+                  <FaTrophy className="text-[9px]" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
+                </span>
+              )}
             </div>
 
             <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent uppercase mb-2">
-              {t('mate_in_2')}
+              {allSolved 
+                ? (locale === 'ru' ? 'ВСЕ УРОВНИ РЕШЕНЫ!' : 'ALL LEVELS SOLVED!') 
+                : nextPuzzle 
+                  ? `${levelPrefix} ${nextPuzzle.id}: ${nextPuzzle.title}` 
+                  : t('mate_in_2')
+              }
             </h2>
-            <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">{t('puzzle_desc')}</p>
+            <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">
+              {allSolved 
+                ? (locale === 'ru' ? 'Поздравляем! Вы прошли все 100 тактических уровней. Продолжайте тренироваться!' : 'Congratulations! You have completed all 100 tactical levels. Keep practicing!') 
+                : nextPuzzle 
+                  ? nextPuzzle.description 
+                  : t('puzzle_desc')
+              }
+            </p>
 
-            <Link href={`/${locale}/academy/puzzle?id=${nextToSolveId || 1}`}>
-              <motion.button
-                whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.15)" }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] cursor-pointer relative overflow-hidden shadow-neon transition-all"
-              >
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <FaPlay className="text-[9px]" /> {t('start_puzzle')}
-                </span>
-              </motion.button>
-            </Link>
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.15)" }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] cursor-pointer relative overflow-hidden shadow-neon transition-all"
+            >
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                <FaPlay className="text-[9px]" /> {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
+              </span>
+            </motion.button>
           </div>
         </motion.div>
+
 
         {/* 100 Levels Tactics Grid */}
         <div className="space-y-4">
@@ -482,13 +512,14 @@ export default function AcademyPage() {
         exit={{ opacity: 0 }} 
         onClick={() => setShowPremiumPromo(false)}
         className="absolute inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-sm" 
+        style={{ touchAction: 'none' }}
       />
       <motion.div 
         initial={{ y: "100%" }} 
         animate={{ y: 0 }} 
         exit={{ y: "100%" }} 
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-20 overflow-hidden"
+        className="bottom-drawer-sheet relative z-20"
       >
         {/* Glowing Backlight */}
         <div className="absolute top-0 left-1/2 w-72 h-72 bg-gradient-to-b from-amber-500/10 to-transparent rounded-full blur-3xl -translate-x-1/2 pointer-events-none" />
