@@ -276,6 +276,19 @@ body {
   justify-content: center;
 }
 
+/* 
+ * Prevent background page scrolling when overlay drawers or modal backdrops are active.
+ * Using :has() is fully supported by iOS Safari 15.4+, Telegram WebApp, and modern browsers.
+ */
+html:has(.bottom-drawer-backdrop),
+body:has(.bottom-drawer-backdrop),
+html:has(.modal-backdrop),
+body:has(.modal-backdrop) {
+  overflow: hidden !important;
+  height: 100dvh !important;
+  touch-action: none;
+}
+
 /*
  * Auto-hide the bottom navbar whenever any bottom-drawer-backdrop is present.
  * :has() is supported in all modern browsers (Chromium 105+, Safari 15.4+, Firefox 121+).
@@ -305,6 +318,7 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
+  touch-action: pan-y !important;
 }
 
 /* Drawer drag handle indicator */

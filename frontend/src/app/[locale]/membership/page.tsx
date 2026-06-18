@@ -277,7 +277,7 @@ export default function MembershipPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4 modal-backdrop"
       >
         {showConfetti && typeof window !== 'undefined' && (
           <Confetti
@@ -372,7 +372,7 @@ export default function MembershipPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4 modal-backdrop"
       >
         <motion.div
           initial={{ scale: 0.9, y: 20, opacity: 0 }}

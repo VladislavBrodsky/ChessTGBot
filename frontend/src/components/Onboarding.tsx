@@ -96,7 +96,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-void/90 backdrop-blur-md px-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-void/90 backdrop-blur-md px-6 modal-backdrop">
       {/* Background Matrix/Nebula Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br ${slides[currentSlide].gradient} blur-[120px] transition-all duration-1000 ease-in-out`} />
