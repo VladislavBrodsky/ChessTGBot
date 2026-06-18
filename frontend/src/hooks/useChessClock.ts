@@ -7,8 +7,8 @@ export function useChessClock(
   isWhite: boolean,
   onClockWarning: (timeLeft: number) => void
 ) {
-  const [whiteTime, setWhiteTime] = useState<number>(600);
-  const [blackTime, setBlackTime] = useState<number>(600);
+  const [whiteTime, setWhiteTime] = useState<number>(() => gameState?.white_time_left ?? 600);
+  const [blackTime, setBlackTime] = useState<number>(() => gameState?.black_time_left ?? 600);
 
   // Sync clocks when server updates state
   useEffect(() => {
