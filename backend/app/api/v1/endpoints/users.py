@@ -374,6 +374,15 @@ async def subscribe_user(
 
     updated_user = await user_crud.update_subscription(db, locked_user, "premium", expires_at)
     
+    # Send Premium welcome notification to the subscriber
+    from app.services.telegram_bot import TelegramService
+    await TelegramService.send_premium_welcome(
+        user_id=locked_user.telegram_id,
+        first_name=locked_user.first_name,
+        expires_at=expires_at,
+        lang=locked_user.preferred_language
+    )
+    
     # Distribute subscription purchase commission across referrers
     from app.services.referral_commission_service import ReferralCommissionService
     await ReferralCommissionService.distribute_subscription_commissions(db, locked_user.id, price)

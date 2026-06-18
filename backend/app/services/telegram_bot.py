@@ -480,6 +480,121 @@ class TelegramService:
 
         return f"https://t.me/{bot_username}/chess?startapp={game_id}"
 
+    PREMIUM_WELCOME_MESSAGES = {
+        "en": {
+            "title": "👑 <b>WELCOME TO CHESS PREMIUM!</b>",
+            "body": "Thank you for upgrading! Your subscription is active until <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Your Premium Privileges are now active:</b>\n"
+                    "• ⚡ <b>2x Rewards & XP Boost:</b> Double earnings and multipliers on every victory!\n"
+                    "• 🏆 <b>6-Level Referral Income:</b> Unlock passive referral commission splits down to 6 levels.\n"
+                    "• 🧠 <b>Full Tactics Academy:</b> Play all 100 levels with unlimited AI analysis.\n"
+                    "• 💎 <b>Exclusive 3D Skins:</b> Unlock premium 3D boards and animation packs.\n\n"
+                    "<i>Go ahead and crush it in the Arena! ♟️🔥</i>"
+        },
+        "ru": {
+            "title": "👑 <b>ДОБРО ПОЖАЛОВАТЬ В CHESS PREMIUM!</b>",
+            "body": "Спасибо за подписку! Ваш статус Premium активен до <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Ваши премиум-привилегии уже активны:</b>\n"
+                    "• ⚡ <b>Удвоенные награды и XP:</b> Получайте в 2 раза больше наград и опыта за победы!\n"
+                    "• 🏆 <b>6 уровней реферального дохода:</b> Зарабатывайте пассивную комиссию на 6 уровней вглубь.\n"
+                    "• 🧠 <b>Полная Академия:</b> Доступ ко всем 100 уровням и разбор партий с ИИ.\n"
+                    "• 💎 <b>Эксклюзивные 3D-темы:</b> Уникальные стили оформления доски и фигур.\n\n"
+                    "<i>Покажите своё мастерство на Арене! ♟️🔥</i>"
+        },
+        "es": {
+            "title": "👑 <b>¡BIENVENIDO A CHESS PREMIUM!</b>",
+            "body": "¡Gracias por suscribirte! Tu membresía Premium está activa hasta el <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Tus privilegios Premium ya están activos:</b>\n"
+                    "• ⚡ <b>Doble recompensa y XP:</b> ¡Gana el doble en cada victoria!\n"
+                    "• 🏆 <b>Comisiones de 6 niveles:</b> Desbloquea ingresos por referidos hasta 6 niveles.\n"
+                    "• 🧠 <b>Academia completa:</b> Acceso a los 100 niveles y análisis ilimitado con IA.\n"
+                    "• 💎 <b>Tableros 3D exclusivos:</b> Diseños premium y animaciones exclusivas.\n\n"
+                    "<i>¡Demuestra tu nivel en la Arena! ♟️🔥</i>"
+        },
+        "fr": {
+            "title": "👑 <b>BIENVENU DANS CHESS PREMIUM !</b>",
+            "body": "Merci pour votre abonnement ! Votre statut Premium est actif jusqu'au <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Vos privilèges Premium sont maintenant actifs :</b>\n"
+                    "• ⚡ <b>Récompenses et XP doublés :</b> Gagnez le double à chaque victoire !\n"
+                    "• 🏆 <b>Parrainage sur 6 niveaux :</b> Touchez des commissions passives jusqu'à 6 niveaux.\n"
+                    "• 🧠 <b>Académie complète :</b> Accédez aux 100 niveaux et profitez de l'analyse IA.\n"
+                    "• 💎 <b>Thèmes 3D exclusifs :</b> Personnalisez votre jeu avec des thèmes premiums.\n\n"
+                    "<i>Brillez dans l'Arène dès maintenant ! ♟️🔥</i>"
+        },
+        "de": {
+            "title": "👑 <b>WILLKOMMEN BEI CHESS PREMIUM!</b>",
+            "body": "Vielen Dank für dein Upgrade! Dein Premium-Status ist aktiv bis <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Deine Premium-Vorteile sind jetzt freigeschaltet:</b>\n"
+                    "• ⚡ <b>2x Belohnungen & XP:</b> Doppelte Einnahmen bei jedem Sieg!\n"
+                    "• 🏆 <b>6 Ebenen Referral-Einnahmen:</b> Schalte Provisionen bis zu 6 Ebenen tief frei.\n"
+                    "• 🧠 <b>Volle Akademie:</b> Spiele alle 100 Levels mit unbegrenzter KI-Analyse.\n"
+                    "• 💎 <b>Exklusive 3D-Designs:</b> Wunderschöne Spielfelder und Animationen.\n\n"
+                    "<i>Zeige dein Können in der Arena! ♟️🔥</i>"
+        },
+        "pt": {
+            "title": "👑 <b>BEM-VINDO AO CHESS PREMIUM!</b>",
+            "body": "Obrigado por assinar! Sua assinatura Premium está ativa até <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>Seus privilégios Premium já estão ativos:</b>\n"
+                    "• ⚡ <b>Dobre recompensas e XP:</b> Ganhe o dobro em todas as vitórias!\n"
+                    "• 🏆 <b>Indicações de 6 níveis:</b> Receba comissões de convidados em até 6 níveis.\n"
+                    "• 🧠 <b>Academia completa:</b> Jogue todos os 100 níveis e use a análise de IA.\n"
+                    "• 💎 <b>Temas 3D exclusivos:</b> Tabuleiros premium e animações exclusivas.\n\n"
+                    "<i>Domine a Arena agora mesmo! ♟️🔥</i>"
+        },
+        "zh": {
+            "title": "👑 <b>欢迎加入 CHESS PREMIUM 黄金会员！</b>",
+            "body": "感谢您的订阅！您的黄金会员有效期至 <b>{expires_at}</b>。\n\n"
+                    "⭐ <b>您的专属特权已成功激活：</b>\n"
+                    "• ⚡ <b>胜场双倍奖励与经验加成：</b> 每次获胜可获得双倍金币与额外经验！\n"
+                    "• 🏆 <b>6级推广返佣收益：</b> 解锁高达6级的推广被动佣金收益。\n"
+                    "• 🧠 <b>战术学院全解锁：</b> 畅玩全部100关并享有无限制AI棋局分析。\n"
+                    "• 💎 <b>专属3D棋盘皮肤：</b> 拥有精美的3D棋盘皮肤与独特移动动画。\n\n"
+                    "<i>快去棋局里大显身手吧！ ♟️🔥</i>"
+        },
+        "ja": {
+            "title": "👑 <b>CHESS PREMIUM へようこそ！</b>",
+            "body": "ご購読ありがとうございます！プレミアム会員資格は <b>{expires_at}</b> まで有効です。\n\n"
+                    "⭐ <b>プレミアム特典がすべて有効化されました:</b>\n"
+                    "• ⚡ <b>報酬＆XP 2倍：</b> すべての勝利で獲得できる報酬とXPが2倍に！\n"
+                    "• 🏆 <b>最大6階層の紹介報酬：</b> 被紹介者の手数料から最大6段階の報酬を獲得。\n"
+                    "• 🧠 <b>アカデミー全開放：</b> 100レベルすべてのプレイとAI棋譜解析が可能に。\n"
+                    "• 💎 <b>限定3Dテーマ：</b> 豪華な3D盤面とチェス駒、特別アニメーション。\n\n"
+                    "<i>アリーナでのご活躍を期待しています！ ♟️🔥</i>"
+        },
+        "ar": {
+            "title": "👑 <b>مرحباً بك في CHESS PREMIUM!</b>",
+            "body": "نشكرك على الترقية! اشتراكك المميز نشط حتى <b>{expires_at}</b>.\n\n"
+                    "⭐ <b>مزاياك المميزة حصرية ونشطة الآن:</b>\n"
+                    "• ⚡ <b>ضعف المكافآت ونقاط الخبرة:</b> أرباح مضاعفة ونقاط خبرة أعلى عند كل فوز!\n"
+                    "• 🏆 <b>أرباح إحالات حتى 6 مستويات:</b> عمولات إحالة لشبكة أصدقائك حتى 6 مستويات.\n"
+                    "• 🧠 <b>الأكاديمية كاملة:</b> العب جميع الألغاز الـ 100 مع تحليل غير محدود بالذكاء الاصطناعي.\n"
+                    "• 💎 <b>تصميمات لوحة 3D حصرية:</b> رقعة شطرنج متميزة بتأثيرات ثلاثية الأبعاد وحركات فريدة.\n\n"
+                    "<i>انطلق وحقق الانتصارات في الساحة! ♟️🔥</i>"
+        },
+        "hi": {
+            "title": "👑 <b>चेस प्रीमियम (CHESS PREMIUM) में आपका स्वागत है!</b>",
+            "body": "अपग्रेड करने के लिए धन्यवाद! आपकी प्रीमियम सदस्यता <b>{expires_at}</b> तक सक्रिय है।\n\n"
+                    "⭐ <b>आपके प्रीमियम विशेषाधिकार अब सक्रिय हैं:</b>\n"
+                    "• ⚡ <b>दोगुने इनाम और XP बूस्ट:</b> हर जीत पर दोगुने पुरस्कार और अनुभव प्राप्त करें!\n"
+                    "• 🏆 <b>6-स्तरीय रेफ़रल कमाई:</b> 6 स्तरों तक रेफ़रल पैसिव इनकम कमिशन अनलॉक करें।\n"
+                    "• 🧠 <b>पूरी टैक्टिक्स अकादमी:</b> असीमित AI विश्लेषण के साथ सभी 100 स्तर खेलें।\n"
+                    "• 💎 <b>खास 3D थीम्स:</b> शानदार 3D बोर्ड और एनिमेशन अनलॉक करें।\n\n"
+                    "<i>अखाड़े में उतरें और जीत दर्ज करें! ♟️🔥</i>"
+        }
+    }
+
+    @classmethod
+    async def send_premium_welcome(cls, user_id: int, first_name: str, expires_at, lang: str):
+        """
+        Send a gorgeous localized welcome notification to the user upon Premium subscription.
+        """
+        lang = cls._get_lang(lang)
+        expires_str = expires_at.strftime("%Y-%m-%d") if expires_at else "Lifetime"
+        
+        tpl = cls.PREMIUM_WELCOME_MESSAGES.get(lang, cls.PREMIUM_WELCOME_MESSAGES["en"])
+        text = f"{tpl['title']}\n\n{tpl['body'].format(expires_at=expires_str)}"
+        await cls.send_notification(user_id, text)
+
     @classmethod
     async def send_notification(cls, telegram_id: int, text: str):
         """

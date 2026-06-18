@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
-import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire, FaCheck, FaLock } from "react-icons/fa";
+import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire, FaCheck, FaLock, FaPlay, FaTrophy, FaWallet } from "react-icons/fa";
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -232,10 +232,16 @@ export default function AcademyPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-3 text-[9px] font-black text-brand-primary opacity-80 uppercase tracking-widest bg-brand-surface border border-brand-border-opacity-10 py-2 px-3.5 rounded-full mt-4 shadow-sm"
+              className={`flex items-center gap-3 text-[9.5px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 ${
+                stats.is_premium
+                  ? 'bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] animate-pulse'
+                  : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-80'
+              }`}
             >
+              <span>{stats.is_premium ? '👑 Premium' : 'Regular'}</span>
+              <div className="w-px h-2.5 bg-brand-border-opacity-10" />
               <span>Level {stats.level}</span>
-              <div className="w-1 h-1 bg-brand-primary/40 rounded-full" />
+              <div className="w-1 h-1 bg-current opacity-40 rounded-full" />
               <span>{stats.xp} XP</span>
             </motion.div>
           )}
@@ -245,25 +251,39 @@ export default function AcademyPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden group hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
+          whileHover={{ y: -4, scale: 1.01 }}
+          className="w-full glass-panel p-6 rounded-3xl border border-brand-primary/20 bg-brand-surface relative overflow-hidden group transition-all duration-300 cursor-pointer shadow-premium"
         >
-          <div className="absolute top-0 right-0 w-48 h-48 bg-brand-bg-opacity-5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          {/* Neon Backlight Blurs */}
+          <div className="absolute top-0 right-0 w-48 h-48 bg-brand-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-4">
-              <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-60 bg-brand-bg-opacity-5 px-2.5 py-1.5 rounded-full border border-brand-border-opacity-10">
-                <FaFire className="text-brand-primary opacity-80" /> {t('daily_challenge')}
+            <div className="flex justify-between items-center mb-4">
+              <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-70 bg-brand-void/60 px-3 py-1.5 rounded-full border border-brand-border-opacity-10">
+                <FaFire className="text-amber-500 animate-pulse text-[10px]" /> {t('daily_challenge')}
               </span>
-              <span className="text-xs font-bold text-brand-primary">+50 XP</span>
+              <span className="flex items-center gap-1 text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.15)]">
+                <FaTrophy className="text-[9px]" /> +50 XP
+              </span>
             </div>
 
-            <h2 className="text-2xl font-black tracking-tight text-brand-primary uppercase mb-2">{t('mate_in_2')}</h2>
-            <p className="text-sm text-brand-primary opacity-60 font-medium mb-6">{t('puzzle_desc')}</p>
+            <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent uppercase mb-2">
+              {t('mate_in_2')}
+            </h2>
+            <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">{t('puzzle_desc')}</p>
 
             <Link href={`/${locale}/academy/puzzle`}>
-              <button className="w-full py-3 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-sm">
-                {t('start_puzzle')}
-              </button>
+              <motion.button
+                whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.15)" }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] cursor-pointer relative overflow-hidden shadow-neon transition-all"
+              >
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <FaPlay className="text-[9px]" /> {t('start_puzzle')}
+                </span>
+              </motion.button>
             </Link>
           </div>
         </motion.div>
@@ -407,66 +427,86 @@ export default function AcademyPage() {
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={() => setShowPremiumPromo(false)}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+        className="absolute inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-sm" 
       />
       <motion.div 
         initial={{ y: "100%" }} 
         animate={{ y: 0 }} 
         exit={{ y: "100%" }} 
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-20"
+        className="bottom-drawer-sheet relative z-20 overflow-hidden"
       >
-      <div className="bottom-drawer-handle" />
-          <div className="flex flex-col items-center text-center mt-2">
-      <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-        {t('unlock_grid')}
-      </h2>
-      <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
-        {t('level_premium_req')}
-      </p>
-      </div>
-      
-      <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
-        <p className="text-center font-black text-brand-primary text-sm mb-1">{t('premium_perks')}</p>
-        <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
-          <li>{t('perk_li1')}</li>
-          <li>{t('perk_li2')}</li>
-          <li>{t('perk_li3')}</li>
-        </ul>
-        <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-        <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-wider">
-          <span>{t('your_stats', { xp: stats?.xp || 0, balance: ((stats?.balance || 0)/100).toFixed(2) })}</span>
-        </div>
-      </div>
-      
-      <div className="w-full flex flex-col gap-3">
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleUpgradeWithXp}
-          className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm"
-        >
-          <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
-          <span className="text-[8px] font-bold opacity-80">{t('free_unlock_path')}</span>
-        </motion.button>
+        {/* Glowing Backlight */}
+        <div className="absolute top-0 left-1/2 w-72 h-72 bg-gradient-to-b from-amber-500/10 to-transparent rounded-full blur-3xl -translate-x-1/2 pointer-events-none" />
+
+        <div className="bottom-drawer-handle relative z-10" />
         
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleUpgradeWithBalance}
-          className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-          <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
-          <span className="text-[8px] font-bold opacity-90">{t('instant_activation')}</span>
-        </motion.button>
- 
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowPremiumPromo(false)}
-          className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
-        >
-          <span>{t('cancel')}</span>
-        </motion.button>
-      </div>
+        <div className="flex flex-col items-center text-center mt-2 relative z-10">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.4)] mb-3 animate-bounce">
+            <span className="text-xl">👑</span>
+          </div>
+          <h2 className="text-xl font-black uppercase tracking-widest mb-1 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent drop-shadow">
+            {t('unlock_grid')}
+          </h2>
+          <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+            {t('level_premium_req')}
+          </p>
+        </div>
+      
+        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-premium relative z-10">
+          <p className="text-center font-black text-amber-400 text-xs uppercase tracking-widest mb-1">{t('premium_perks')}</p>
+          <ul className="space-y-2.5 text-[11px] text-brand-primary/80">
+            <li className="flex items-start gap-2.5">
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="leading-tight">{t('perk_li1')}</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="leading-tight">{t('perk_li2')}</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="leading-tight">{t('perk_li3')}</span>
+            </li>
+          </ul>
+          <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
+          <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-widest bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
+            <span className="flex items-center gap-1"><FaTrophy className="text-amber-500 text-[8px]" /> {stats?.xp || 0} XP</span>
+            <span className="flex items-center gap-1"><FaWallet className="text-brand-primary/40 text-[8px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
+          </div>
+        </div>
+      
+        <div className="w-full flex flex-col gap-3 relative z-10">
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleUpgradeWithXp}
+            className="w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
+          >
+            <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
+            <span className="text-[8px] font-bold text-brand-primary/50">{t('free_unlock_path')}</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(245, 158, 11, 0.45)" }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleUpgradeWithBalance}
+            className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 border border-yellow-400/30 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
+            <span className="text-[8px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
+          </motion.button>
+    
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowPremiumPromo(false)}
+            className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-primary/60 hover:text-brand-primary/95 transition-all"
+          >
+            <span>{t('cancel')}</span>
+          </motion.button>
+        </div>
       </motion.div>
       </div>
       )}

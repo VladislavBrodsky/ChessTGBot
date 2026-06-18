@@ -450,6 +450,20 @@ class GamificationService:
         db.add(user)
         await db.commit()
         await db.refresh(user)
+
+        # Send Premium welcome notification to the subscriber
+        try:
+            from app.services.telegram_bot import TelegramService
+            await TelegramService.send_premium_welcome(
+                user_id=user.telegram_id,
+                first_name=user.first_name,
+                expires_at=user.premium_expires_at,
+                lang=user.preferred_language
+            )
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to send premium welcome notification: {e}")
+
         return user, "Success"
 
     @staticmethod

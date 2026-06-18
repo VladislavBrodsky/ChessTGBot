@@ -57,20 +57,30 @@ export default function LessonCard({
  <p className="text-xs text-brand-primary opacity-60 font-medium leading-relaxed">{description}</p>
  </div>
 
- <div className="mt-4">
- {/* Progress Bar */}
- <div className="w-full h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden mb-2 border border-brand-border-opacity-5">
- <motion.div
- initial={{ width: 0 }}
- animate={{ width: `${progress}%` }}
- className="h-full bg-brand-primary"
- />
- </div>
- <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-40">
- <span>{progress}% Completed</span>
- {!locked && <span className="flex items-center gap-1 text-brand-primary">Start <FaPlay size={8} /></span>}
- </div>
- </div>
+  <div className="mt-4">
+    {/* Progress Bar */}
+    <div className="w-full h-1.5 bg-brand-void/50 rounded-full overflow-hidden mb-2 border border-brand-border-opacity-5">
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${progress}%` }}
+        className={`h-full rounded-full bg-gradient-to-r ${
+          progress >= 100 
+            ? 'from-emerald-400 to-teal-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' 
+            : 'from-brand-primary to-cyan-400 shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+        }`}
+      />
+    </div>
+    <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+      <span className={progress >= 100 ? 'text-emerald-400' : 'text-brand-primary/55'}>
+        {progress}% Completed
+      </span>
+      {!locked && (
+        <span className="flex items-center gap-1 text-brand-primary hover:text-brand-primary/80 transition-colors">
+          Start <FaPlay size={7} />
+        </span>
+      )}
+    </div>
+  </div>
  </div>
  </motion.div>
  );
