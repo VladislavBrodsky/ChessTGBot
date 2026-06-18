@@ -34,3 +34,15 @@ class User(Base):
 
     # Relationships
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
+
+    @property
+    def is_premium_active(self) -> bool:
+        """Determines if the user's Premium subscription is currently active based on timestamp."""
+        if not self.is_premium:
+            return False
+        if self.premium_expires_at:
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            if self.premium_expires_at < now:
+                return False
+        return True

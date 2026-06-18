@@ -181,7 +181,7 @@ async def upgrade_premium_with_xp(
     return {
         "status": "success",
         "new_xp": updated_user.xp,
-        "is_premium": updated_user.is_premium,
+        "is_premium": updated_user.is_premium_active,
         "premium_tier": updated_user.premium_tier
     }
 
@@ -255,7 +255,7 @@ async def get_puzzles(
             "title": p["title"],
             "description": p["description"],
             "xp_reward": p["xp_reward"],
-            "is_premium_locked": p["id"] > 1 and not current_user.is_premium,
+            "is_premium_locked": p["id"] > 1 and not current_user.is_premium_active,
             "is_solved": p["id"] in solved_ids
         }
         for p in CHESS_PUZZLES
@@ -269,7 +269,7 @@ async def get_puzzle_by_id(
     """Retrieve single puzzle details. Gates puzzles > 1 behind premium check."""
     from app.core.puzzles import CHESS_PUZZLES
     
-    if puzzle_id > 1 and not current_user.is_premium:
+    if puzzle_id > 1 and not current_user.is_premium_active:
         raise HTTPException(
             status_code=403,
             detail="Premium subscription required to access this tactical level."
@@ -306,7 +306,7 @@ async def verify_puzzle_solution(
     if not locked_user:
         raise HTTPException(status_code=404, detail="User not found")
         
-    if puzzle_id > 1 and not locked_user.is_premium:
+    if puzzle_id > 1 and not locked_user.is_premium_active:
         raise HTTPException(
             status_code=403,
             detail="Premium subscription required to access this tactical level."

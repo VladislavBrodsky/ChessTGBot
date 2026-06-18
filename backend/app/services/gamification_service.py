@@ -498,7 +498,7 @@ class GamificationService:
         if not db_user:
             return None, "User not found"
 
-        if db_user.is_premium:
+        if db_user.is_premium_active:
             return db_user, "Already Premium"
             
         if db_user.xp < 5000:
@@ -512,6 +512,7 @@ class GamificationService:
         from datetime import datetime, timezone, timedelta
         now = datetime.now(timezone.utc).replace(tzinfo=None)
         db_user.premium_expires_at = now + timedelta(days=365)
+
 
         db.add(db_user)
         await db.commit()

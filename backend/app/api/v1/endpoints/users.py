@@ -368,11 +368,15 @@ async def subscribe_user(
     )
     db.add(tx)
 
-    # Calculate expiration duration based on billing period
+    # Calculate expiration duration based on billing period (accumulative)
     days = 365 if period == "annual" else 30
-    expires_at = now + timedelta(days=days)
+    if locked_user.is_premium_active and locked_user.premium_expires_at:
+        expires_at = locked_user.premium_expires_at + timedelta(days=days)
+    else:
+        expires_at = now + timedelta(days=days)
 
     updated_user = await user_crud.update_subscription(db, locked_user, "premium", expires_at)
+
     
     # Send Premium welcome notification to the subscriber
     from app.services.telegram_bot import TelegramService

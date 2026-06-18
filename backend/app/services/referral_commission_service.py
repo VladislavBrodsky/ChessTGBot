@@ -200,7 +200,7 @@ class ReferralCommissionService:
             rate = tier_info["rates"].get(depth, 0.0)
 
             # Determine eligibility
-            is_premium_eligible = (depth <= 3) or referrer.is_premium
+            is_premium_eligible = (depth <= 3) or referrer.is_premium_active
             has_tier_rate = rate > 0.0
 
             if is_premium_eligible and has_tier_rate:
@@ -335,7 +335,7 @@ class ReferralCommissionService:
             rate = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[tier_info["name"]].get(depth, 0.0)
 
             # Determine eligibility: Premium referrers get up to 6 levels, Free referrers get up to 3 levels
-            is_premium_eligible = (depth <= 3) or referrer.is_premium
+            is_premium_eligible = (depth <= 3) or referrer.is_premium_active
             has_tier_rate = rate > 0.0
 
             if is_premium_eligible and has_tier_rate:

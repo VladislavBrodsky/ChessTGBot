@@ -622,7 +622,7 @@ class GameService:
                 await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False)
                 
                 # Save XP earned to state and update Redis
-                state.white_xp_gained = ai_xp * 2 if white_user.is_premium else ai_xp
+                state.white_xp_gained = ai_xp * 2 if white_user.is_premium_active else ai_xp
                 state.black_xp_gained = 0
                 await self.session_manager.save_game(game_id, state)
                 
@@ -774,8 +774,8 @@ class GameService:
             black_match_xp += black_streak_xp + black_comeback_xp + black_blitz_xp
 
             # Calculate final rewarded XP
-            white_final_xp = white_match_xp * 2 if white_user.is_premium else white_match_xp
-            black_final_xp = black_match_xp * 2 if black_user.is_premium else black_match_xp
+            white_final_xp = white_match_xp * 2 if white_user.is_premium_active else white_match_xp
+            black_final_xp = black_match_xp * 2 if black_user.is_premium_active else black_match_xp
                 
             await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
             await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
@@ -797,7 +797,7 @@ class GameService:
                 white_xp_breakdown += f"• Comeback Bonus: +{white_comeback_xp} XP\n"
             if white_blitz_xp > 0:
                 white_xp_breakdown += f"• Blitzkrieg Bonus: +{white_blitz_xp} XP\n"
-            if white_user.is_premium:
+            if white_user.is_premium_active:
                 white_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
             white_xp_breakdown += f"• <b>Total Gained:</b> +{white_final_xp} XP\n\n"
 
@@ -813,7 +813,7 @@ class GameService:
                 black_xp_breakdown += f"• Comeback Bonus: +{black_comeback_xp} XP\n"
             if black_blitz_xp > 0:
                 black_xp_breakdown += f"• Blitzkrieg Bonus: +{black_blitz_xp} XP\n"
-            if black_user.is_premium:
+            if black_user.is_premium_active:
                 black_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
             black_xp_breakdown += f"• <b>Total Gained:</b> +{black_final_xp} XP\n\n"
             

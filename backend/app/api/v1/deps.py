@@ -117,4 +117,16 @@ async def get_current_user(
             await db.commit()
             await db.refresh(user)
         
+    # 3. Self-healing premium status sync
+    if user.is_premium and user.premium_expires_at:
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        if user.premium_expires_at < now:
+            user.is_premium = False
+            user.premium_tier = None
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+
     return user
+
