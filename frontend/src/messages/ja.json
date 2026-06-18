@@ -350,7 +350,11 @@
     "success_title": "👑 おめでとうございます！",
     "success_subtitle": "Chess Premium会員になりました！",
     "success_desc": "限定の報酬、アカデミー全100ステージ、最大6階層の紹介報酬がすべて有効化されました。",
-    "success_btn": "♟️ チェス盤へ進む ♟️"
+    "success_btn": "♟️ チェス盤へ進む ♟️",
+    "insufficient_title": "💎 残高が不足しています",
+    "insufficient_desc": "このプレミアム会員を購入するには {cost} USDT が必要です。現在の残高は {balance} USDT です。",
+    "insufficient_topup_btn": "ウォレットをチャージ",
+    "insufficient_cancel_btn": "後で"
   },
   "TierComparison": {
     "title": "機能比較",

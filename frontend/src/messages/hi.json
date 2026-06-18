@@ -350,7 +350,11 @@
     "success_title": "👑 बधाई हो!",
     "success_subtitle": "अब आप चेस प्रीमियम सदस्य हैं!",
     "success_desc": "सभी विशेष पुरस्कार, टैक्टिक्स अकादमी के 100 स्तर और 6-स्तरीय रेफ़रल प्रोग्राम अब पूरी तरह से सक्रिय हैं।",
-    "success_btn": "♟️ शतरंज क्षेत्र में प्रवेश करें ♟️"
+    "success_btn": "♟️ शतरंज क्षेत्र में प्रवेश करें ♟️",
+    "insufficient_title": "💎 अपर्याप्त शेष राशि",
+    "insufficient_desc": "प्रीमियम सदस्यता खरीदने के लिए आपको {cost} USDT की आवश्यकता है। आपका वर्तमान शेष {balance} USDT है।",
+    "insufficient_topup_btn": "वॉलेट टॉप-अप करें",
+    "insufficient_cancel_btn": "बाद में"
   },
   "TierComparison": {
     "title": "फीचर्स की तुलना",

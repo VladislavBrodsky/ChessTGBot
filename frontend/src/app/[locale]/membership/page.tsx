@@ -10,6 +10,8 @@ import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
 import { useLocale, useTranslations } from 'next-intl';
 import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
+import { useUser } from "@/context/UserContext";
+import DepositModal from "@/components/Wallet/DepositModal";
  
 export default function MembershipPage() {
  const locale = useLocale();
@@ -29,11 +31,15 @@ export default function MembershipPage() {
     annual: 29580,
   };
  
+  const { walletBalance, walletAddress, syncBalance } = useUser();
+  const tw = useTranslations('Wallet');
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const [tgUser, setTgUser] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showInsufficient, setShowInsufficient] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 400, height: 600 });
  
   useEffect(() => {
@@ -101,6 +107,13 @@ export default function MembershipPage() {
       return;
     }
 
+    const cost = billingPeriod === 'annual' ? PREMIUM_INFO.annual : PREMIUM_INFO.monthly;
+    if (walletBalance < cost) {
+      telegramHaptic('warning');
+      setShowInsufficient(true);
+      return;
+    }
+
     try {
       const res = await apiFetch("/api/v1/users/subscribe", {
         method: "POST",
@@ -110,14 +123,19 @@ export default function MembershipPage() {
         })
       });
       const data = await res.json();
-      if (data.status === "success") {
+      if (res.ok && data.status === "success") {
         telegramHaptic('success');
         setShowSuccess(true);
         setShowConfetti(true);
         fetchStats();
+        await syncBalance();
       } else {
         telegramHaptic('error');
-        telegramAlert(data.detail || "Subscription failed");
+        if (data.detail && data.detail.toLowerCase().includes("insufficient balance")) {
+          setShowInsufficient(true);
+        } else {
+          telegramAlert(data.detail || "Subscription failed");
+        }
       }
     } catch (e) {
       console.error("Subscription failed", e);
@@ -344,6 +362,100 @@ export default function MembershipPage() {
           </button>
         </motion.div>
       </motion.div>
+    )}
+  </AnimatePresence>
+
+  {/* Insufficient Balance Modal */}
+  <AnimatePresence>
+    {showInsufficient && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-void/80 backdrop-blur-xl px-4"
+      >
+        <motion.div
+          initial={{ scale: 0.9, y: 20, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.9, y: 20, opacity: 0 }}
+          transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          className="w-full max-w-sm glass-panel p-8 rounded-3xl border border-brand-primary/20 bg-brand-surface text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
+        >
+          {/* Decorative Glow */}
+          <div className="absolute -top-12 -left-12 w-24 h-24 bg-brand-primary opacity-10 blur-2xl rounded-full" />
+          <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-brand-primary opacity-10 blur-2xl rounded-full" />
+
+          {/* Coins/Warning Icon */}
+          <div className="w-20 h-20 rounded-2xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center shadow-lg relative group overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <motion.div
+              animate={{ 
+                scale: [1, 1.05, 1],
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 3,
+                ease: "easeInOut"
+              }}
+            >
+              <span className="text-4xl">💎</span>
+            </motion.div>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider leading-none">
+              {tm('insufficient_title')}
+            </h2>
+          </div>
+
+          <p className="text-xs text-brand-primary opacity-60 px-2 leading-relaxed">
+            {tm('insufficient_desc', { 
+              cost: ((billingPeriod === 'annual' ? PREMIUM_INFO.annual : PREMIUM_INFO.monthly) / 100).toFixed(2), 
+              balance: (walletBalance / 100).toFixed(2) 
+            })}
+          </p>
+
+          <div className="w-full flex flex-col space-y-3 pt-2">
+            <button
+              onClick={() => {
+                telegramHaptic('light');
+                setShowInsufficient(false);
+                setShowDepositModal(true);
+              }}
+              className="w-full py-4 rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
+            >
+              {tm('insufficient_topup_btn')}
+            </button>
+            
+            <button
+              onClick={() => {
+                telegramHaptic('light');
+                setShowInsufficient(false);
+              }}
+              className="w-full py-4 rounded-2xl bg-brand-surface/40 border border-brand-border-opacity-10 text-brand-primary opacity-80 font-black uppercase tracking-widest text-xs cursor-pointer hover:bg-brand-bg-opacity-5 active:scale-[0.98] transition-all"
+            >
+              {tm('insufficient_cancel_btn')}
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+  {/* DepositModal Integration */}
+  <AnimatePresence>
+    {showDepositModal && (
+      <DepositModal
+        onClose={() => setShowDepositModal(false)}
+        onSuccess={async () => {
+          await syncBalance();
+          fetchStats();
+          setShowDepositModal(false);
+        }}
+        walletAddress={walletAddress}
+        tgUser={tgUser}
+        tw={tw}
+      />
     )}
   </AnimatePresence>
   </LayoutWrapper>

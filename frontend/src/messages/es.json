@@ -350,7 +350,11 @@
     "success_title": "👑 ¡FELICITACIONES!",
     "success_subtitle": "¡Ahora eres miembro de Chess Premium!",
     "success_desc": "Todos los beneficios exclusivos, los 100 niveles de la Academia y las comisiones de referidos de 6 niveles ya están activos.",
-    "success_btn": "♟️ Entrar a la Arena de Ajedrez ♟️"
+    "success_btn": "♟️ Entrar a la Arena de Ajedrez ♟️",
+    "insufficient_title": "💎 SALDO INSUFICIENTE",
+    "insufficient_desc": "Necesitas {cost} USDT para comprar esta suscripción Premium. Tu saldo actual es {balance} USDT.",
+    "insufficient_topup_btn": "Recargar Billetera",
+    "insufficient_cancel_btn": "Quizás más tarde"
   },
   "TierComparison": {
     "title": "Comparativa de funciones",

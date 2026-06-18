@@ -350,7 +350,11 @@
     "success_title": "👑 恭喜您！",
     "success_subtitle": "您已成功开通黄金会员权益！",
     "success_desc": "专属胜场双倍奖励、100关战术学院挑战以及最高6级推广返佣特权现已全部生效。",
-    "success_btn": "♟️ 进入棋局对战 ♟️"
+    "success_btn": "♟️ 进入棋局对战 ♟️",
+    "insufficient_title": "💎 账户余额不足",
+    "insufficient_desc": "开通黄金会员需要 {cost} USDT。您当前账户余额为 {balance} USDT。",
+    "insufficient_topup_btn": "立即充值",
+    "insufficient_cancel_btn": "暂不考虑"
   },
   "TierComparison": {
     "title": "功能权益对比",

@@ -350,7 +350,11 @@
     "success_title": "👑 HERZLICHEN GLÜCKWUNSCH!",
     "success_subtitle": "Du bist jetzt Chess Premium-Mitglied!",
     "success_desc": "Alle exklusiven Belohnungen, alle 100 Taktik-Levels und die Provisionen über 6 Ebenen sind jetzt aktiv.",
-    "success_btn": "♟️ Schach-Arena betreten ♟️"
+    "success_btn": "♟️ Schach-Arena betreten ♟️",
+    "insufficient_title": "💎 GUTHABEN REICHT NICHT",
+    "insufficient_desc": "Du benötigst {cost} USDT, um dieses Premium-Abonnement zu erwerben. Dein aktuelles Guthaben beträgt {balance} USDT.",
+    "insufficient_topup_btn": "Guthaben aufladen",
+    "insufficient_cancel_btn": "Später"
   },
   "TierComparison": {
     "title": "Feature-Vergleich",

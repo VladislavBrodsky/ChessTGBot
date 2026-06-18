@@ -350,7 +350,11 @@
     "success_title": "👑 تهانينا الحارة!",
     "success_subtitle": "لقد أصبحت الآن عضواً في Chess Premium!",
     "success_desc": "جميع المزايا الحصرية، والـ 100 لغز في الأكاديمية، وعمولات الإحالة حتى 6 مستويات مفعلة بالكامل الآن.",
-    "success_btn": "♟️ دخول ساحة الشطرنج ♟️"
+    "success_btn": "♟️ دخول ساحة الشطرنج ♟️",
+    "insufficient_title": "💎 رصيد غير كافٍ",
+    "insufficient_desc": "أنت بحاجة إلى {cost} USDT لشراء هذا الاشتراك المميز. رصيدك الحالي هو {balance} USDT.",
+    "insufficient_topup_btn": "شحن الرصيد",
+    "insufficient_cancel_btn": "ربما لاحقاً"
   },
   "TierComparison": {
     "title": "مقارنة الميزات",

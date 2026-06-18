@@ -350,7 +350,11 @@
     "success_title": "👑 FÉLICITATIONS !",
     "success_subtitle": "Vous êtes maintenant membre Chess Premium !",
     "success_desc": "Tous les avantages exclusifs, les 100 niveaux de l'Académie et le parrainage sur 6 niveaux sont désormais actifs.",
-    "success_btn": "♟️ Entrer dans l'Arène d'Échecs ♟️"
+    "success_btn": "♟️ Entrer dans l'Arène d'Échecs ♟️",
+    "insufficient_title": "💎 SOLDE INSUFFISANT",
+    "insufficient_desc": "Vous avez besoin de {cost} USDT pour acheter cet abonnement Premium. Votre solde actuel est de {balance} USDT.",
+    "insufficient_topup_btn": "Recharger le portefeuille",
+    "insufficient_cancel_btn": "Plus tard"
   },
   "TierComparison": {
     "title": "Comparatif des fonctionnalités",
