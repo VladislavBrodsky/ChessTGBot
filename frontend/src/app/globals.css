@@ -556,3 +556,228 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
 .animate-radar-sweep {
   animation: spin 3.5s linear infinite;
 }
+
+/* Animated Premium Liquid Glowing Border */
+.premium-liquid-border {
+  position: relative;
+  border-radius: 20px;
+  background: rgba(10, 10, 10, 0.85);
+  padding: 2px; /* border thickness slightly increased for premium look */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: premium-pulse 4s ease-in-out infinite;
+}
+
+.premium-liquid-border:hover {
+  box-shadow: 0 0 45px rgba(168, 85, 247, 0.75);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.premium-liquid-border::before {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 15%,
+    #a855f7 35%,
+    #ec4899 50%,
+    #a855f7 65%,
+    #6366f1 80%,
+    #a855f7 95%,
+    transparent 100%
+  );
+  animation: spin 3.5s linear infinite; /* Slightly faster sweep */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Add a second overlapping border overlay for a more liquid/neon depth */
+.premium-liquid-border::after {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 180deg,
+    transparent 15%,
+    #ec4899 35%,
+    #a855f7 50%,
+    #6366f1 65%,
+    #a855f7 80%,
+    transparent 100%
+  );
+  animation: spin 6s linear infinite reverse; /* counter rotation */
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.premium-liquid-content {
+  position: relative;
+  z-index: 1;
+  background: rgba(14, 8, 28, 0.95) !important; /* Deep dark purple-black matching third image */
+  border-radius: 19px;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px);
+}
+
+.premium-liquid-button {
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #ec4899 100%) !important;
+  background-size: 200% 200% !important;
+  color: #FFFFFF !important;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: none !important;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.45) !important;
+  animation: liquid-gradient-shift 4s ease infinite;
+}
+
+.premium-liquid-button:hover {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.75), 0 0 15px rgba(236, 72, 153, 0.4) !important;
+  transform: scale(1.03) translateY(-3px);
+}
+
+.premium-liquid-button:active {
+  transform: scale(0.97);
+}
+
+/* Animations for liquid gradients */
+@keyframes premium-pulse {
+  0% {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.65), 0 0 15px rgba(99, 102, 241, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+  }
+}
+
+@keyframes liquid-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Premium Liquid Mesh Gradient Background for pages */
+.premium-liquid-mesh-container {
+  position: relative;
+  background-color: #080412; /* Deep space black/purple */
+  overflow: hidden;
+  z-index: 1;
+}
+
+.premium-liquid-mesh-blob1 {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: liquid-mesh-movement-1 20s infinite alternate ease-in-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.premium-liquid-mesh-blob2 {
+  position: absolute;
+  bottom: -20%;
+  right: -20%;
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: liquid-mesh-movement-2 25s infinite alternate ease-in-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.premium-liquid-mesh-blob3 {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+  filter: blur(100px);
+  animation: liquid-mesh-movement-3 30s infinite alternate ease-in-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes liquid-mesh-movement-1 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(80px, -60px) scale(1.2) rotate(90deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes liquid-mesh-movement-2 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(-100px, 80px) scale(1.3) rotate(-90deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes liquid-mesh-movement-3 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(60px, 40px) scale(0.9) rotate(180deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+/* Premium Neon Glow Card border (staggered neon) */
+.premium-neon-card {
+  position: relative;
+  background: rgba(14, 8, 28, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.1), 0 0 15px 0 rgba(168, 85, 247, 0.15);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+}
+
+.premium-neon-text-glow {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.premium-neon-icon-glow {
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
+}
+
