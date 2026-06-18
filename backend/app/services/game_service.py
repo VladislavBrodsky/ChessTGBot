@@ -193,6 +193,7 @@ class GameService:
                         user_id=user_id,
                         type="game_wager",
                         amount=-state.bid_amount,
+                        fee=0,
                         status="completed",
                         reference_id=game_id
                     )
