@@ -111,7 +111,7 @@ class GameService:
     def __init__(self):
         self.session_manager = SessionManager()
 
-    async def create_game(self, game_id: str, is_bot_game: bool = False, time_control_seconds: int = 600) -> GameState:
+    async def create_game(self, game_id: str, is_bot_game: bool = False, time_control_seconds: int = 600, bid_amount: int = 0) -> GameState:
         """Initialize a new game and save to Redis."""
         engine = GameEngine() # Starts with new board
         state = engine.get_state()
@@ -123,6 +123,7 @@ class GameService:
         state.last_move_at = None
         state.move_history = []
         state.result_type = None
+        state.bid_amount = bid_amount
         await self.session_manager.save_game(game_id, state)
         return state
 
@@ -176,6 +177,32 @@ class GameService:
                 state.white_elo = elo
                 changed = True
             elif not state.black_player_id and state.white_player_id != user_id:
+                # If wager game, charge the opponent (black player) on join
+                if state.bid_amount > 0:
+                    db_user = await user_crud.get_user_by_telegram_id(session, user_id, for_update=True)
+                    if not db_user:
+                        raise ValueError("User profile not found")
+                    if db_user.balance < state.bid_amount:
+                        raise ValueError("Insufficient funds. Please top up your Web3 Wallet.")
+                    
+                    db_user.balance -= state.bid_amount
+                    session.add(db_user)
+                    
+                    from app.models.transaction import Transaction
+                    tx = Transaction(
+                        user_id=user_id,
+                        type="game_wager",
+                        amount=-state.bid_amount,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    session.add(tx)
+                    await session.commit()
+                    
+                    # Update local variables to match locked DB state
+                    elo = db_user.elo
+                    username = db_user.first_name
+                
                 state.black_player_id = user_id
                 state.black_username = username
                 state.black_elo = elo
@@ -479,31 +506,31 @@ class GameService:
                 
                 # Refund wager amount
                 bid_amount = getattr(state, "bid_amount", 0)
-                if bid_amount > 0 and white_user and black_user:
-                    white_user.balance += bid_amount
-                    black_user.balance += bid_amount
-                    session.add(white_user)
-                    session.add(black_user)
-                    
-                    # Log refund transactions
-                    tx_w = Transaction(
-                        user_id=white_id,
-                        type="refund",
-                        amount=bid_amount,
-                        fee=0,
-                        status="completed",
-                        reference_id=game_id
-                    )
-                    tx_b = Transaction(
-                        user_id=black_id,
-                        type="refund",
-                        amount=bid_amount,
-                        fee=0,
-                        status="completed",
-                        reference_id=game_id
-                    )
-                    session.add(tx_w)
-                    session.add(tx_b)
+                if bid_amount > 0:
+                    if white_user:
+                        white_user.balance += bid_amount
+                        session.add(white_user)
+                        tx_w = Transaction(
+                            user_id=white_id,
+                            type="refund",
+                            amount=bid_amount,
+                            fee=0,
+                            status="completed",
+                            reference_id=game_id
+                        )
+                        session.add(tx_w)
+                    if black_user:
+                        black_user.balance += bid_amount
+                        session.add(black_user)
+                        tx_b = Transaction(
+                            user_id=black_id,
+                            type="refund",
+                            amount=bid_amount,
+                            fee=0,
+                            status="completed",
+                            reference_id=game_id
+                        )
+                        session.add(tx_b)
                 
                 # Cache ratings and save aborted game history
                 state.white_elo_before = white_elo_before
@@ -514,54 +541,57 @@ class GameService:
                 state.platform_rake = 0
                 await self.session_manager.save_game(game_id, state)
                 
-                # Save game history
-                try:
-                    assert white_id is not None, "white_id cannot be None for aborted game history"
-                    assert black_id is not None, "black_id cannot be None for aborted game history"
-                    await game_history_crud.create_game_history(
-                        db=session,
-                        game_id=game_id,
-                        white_player_id=white_id,
-                        black_player_id=black_id,
-                        winner=None,
-                        result_type='aborted',
-                        white_elo_before=white_elo_before,
-                        white_elo_after=white_elo_before,
-                        black_elo_before=black_elo_before,
-                        black_elo_after=black_elo_before,
-                        total_moves=0,
-                        duration_seconds=None,
-                        final_fen=state.fen,
-                        game_type='online',
-                        bid_amount=bid_amount,
-                        platform_rake=0,
-                        payout_amount=0,
-                        moves_json=json.dumps([]),
-                        commit=False
-                    )
+                # Save game history (only if both users participated)
+                if white_id is not None and black_id is not None:
+                    try:
+                        await game_history_crud.create_game_history(
+                            db=session,
+                            game_id=game_id,
+                            white_player_id=white_id,
+                            black_player_id=black_id,
+                            winner=None,
+                            result_type='aborted',
+                            white_elo_before=white_elo_before,
+                            white_elo_after=white_elo_before,
+                            black_elo_before=black_elo_before,
+                            black_elo_after=black_elo_before,
+                            total_moves=0,
+                            duration_seconds=None,
+                            final_fen=state.fen,
+                            game_type='online',
+                            bid_amount=bid_amount,
+                            platform_rake=0,
+                            payout_amount=0,
+                            moves_json=json.dumps([]),
+                            commit=False
+                        )
+                        await session.commit()
+                    except Exception as hist_err:
+                        print(f"[GameService] WARNING: Failed to save aborted game history: {hist_err}")
+                        await session.rollback()
+                        raise hist_err
+                else:
                     await session.commit()
-                except Exception as hist_err:
-                    print(f"[GameService] WARNING: Failed to save aborted game history: {hist_err}")
-                    await session.rollback()
-                    raise hist_err
                 
                 # Send telegram notifications AFTER successful DB commit
-                if bid_amount > 0 and white_user and black_user:
+                if bid_amount > 0:
                     try:
-                        abort_msg_w = (
-                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
-                        )
-                        abort_msg_b = (
-                            f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
-                            f"<i>The game was aborted because a player did not make their first move. Your wager has been fully refunded.</i>"
-                        )
-                        await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
-                        await TelegramService.send_notification(black_user.telegram_id, abort_msg_b)
+                        if white_user:
+                            abort_msg_w = (
+                                f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                                f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                                f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                                f"<i>The game was aborted. Your wager has been fully refunded.</i>"
+                            )
+                            await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
+                        if black_user:
+                            abort_msg_b = (
+                                f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
+                                f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                                f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                                f"<i>The game was aborted. Your wager has been fully refunded.</i>"
+                            )
+                            await TelegramService.send_notification(black_user.telegram_id, abort_msg_b)
                     except Exception:
                         pass
                 
@@ -589,6 +619,11 @@ class GameService:
                 white_user.games_played += 1
                 session.add(white_user)
                 await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False)
+                
+                # Save XP earned to state and update Redis
+                state.white_xp_gained = ai_xp * 2 if white_user.is_premium else ai_xp
+                state.black_xp_gained = 0
+                await self.session_manager.save_game(game_id, state)
                 
                 # Save bot game history
                 total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
@@ -743,6 +778,10 @@ class GameService:
                 
             await GamificationService.add_xp(session, white_user, white_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
             await GamificationService.add_xp(session, black_user, black_match_xp, trigger_kickback=True, apply_booster=True, commit=False)
+
+            # Cache the dynamic rewarded XP on the state object
+            state.white_xp_gained = white_final_xp
+            state.black_xp_gained = black_final_xp
 
             # Construct XP breakdown strings for white and black
             white_xp_breakdown = (

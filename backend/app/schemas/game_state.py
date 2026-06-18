@@ -38,6 +38,8 @@ class GameState(BaseModel):
     black_elo_after: Optional[int] = None
     payout_amount: Optional[int] = None
     platform_rake: Optional[int] = None
+    white_xp_gained: Optional[int] = None
+    black_xp_gained: Optional[int] = None
 
     @computed_field
     @property

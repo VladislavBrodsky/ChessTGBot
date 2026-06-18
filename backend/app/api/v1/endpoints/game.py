@@ -23,15 +23,45 @@ class CreateGameResponse(BaseModel):
 async def create_game(
     type: str = "online",
     time_control: int = 600,
-    current_user: User = Depends(get_current_user)
+    wager: int = 0,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
     game_id = str(uuid.uuid4())[:8] # Short ID
     service = GameService()
     
     is_bot_game = (type == "computer")
     
+    # Verify and deduct balance if wager > 0 and type is online
+    if not is_bot_game and wager > 0:
+        from sqlalchemy import select
+        from app.models.transaction import Transaction
+        
+        # Lock user balance to prevent race conditions
+        stmt = select(User).where(User.telegram_id == current_user.telegram_id).with_for_update()
+        res = await db.execute(stmt)
+        db_user = res.scalars().first()
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if db_user.balance < wager:
+            raise HTTPException(status_code=400, detail="Insufficient funds. Please top up your Web3 Wallet.")
+        
+        db_user.balance -= wager
+        db.add(db_user)
+        
+        tx = Transaction(
+            user_id=current_user.telegram_id,
+            type="game_wager",
+            amount=-wager,
+            status="completed",
+            reference_id=game_id
+        )
+        db.add(tx)
+        await db.commit()
+    
     # Initialize Game in Redis
-    await service.create_game(game_id, is_bot_game=is_bot_game, time_control_seconds=time_control)
+    await service.create_game(game_id, is_bot_game=is_bot_game, time_control_seconds=time_control, bid_amount=wager)
     
     # Generate Telegram Invite Link
     if is_bot_game:

@@ -16,6 +16,7 @@ interface MatchOverModalProps {
   onShareGame: () => void;
   newElo?: number;
   copied?: boolean;
+  xpGained?: number;
 }
 
 export default function MatchOverModal({
@@ -29,6 +30,7 @@ export default function MatchOverModal({
   onShareGame,
   newElo,
   copied = false,
+  xpGained,
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
@@ -86,6 +88,19 @@ export default function MatchOverModal({
               )}
             </div>
           </div>
+          {xpGained !== undefined && xpGained > 0 && (
+            <>
+              <div className="h-px w-full bg-brand-border-opacity-10" />
+              <div className="flex justify-between items-center animate-fade-in">
+                <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">
+                  {locale === 'ru' ? 'Опыт' : 'XP Reward'}
+                </span>
+                <span className="text-sm font-black text-amber-400 tracking-widest flex items-center gap-1">
+                  +{xpGained} XP ⭐
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="w-full flex flex-col gap-3">

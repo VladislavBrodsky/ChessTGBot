@@ -301,20 +301,29 @@ export default function PlayLobby() {
 
   const playVsFriend = async () => {
     if (isCreating || submittingRef.current) return;
+    
+    // Check if creator has sufficient balance for chosenWager
+    if (walletBalance < chosenWager) {
+      setShowDepositDrawer(true);
+      return;
+    }
+
     submittingRef.current = true;
     setIsCreating(true);
     setMatchmakingError("");
     try {
-      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}`, {
+      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}&wager=${chosenWager}`, {
         method: "POST"
       });
-      if (!res.ok) throw new Error("Backend error");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Backend error");
+      }
       const data = await res.json();
-      setInviteLink(data.invite_link);
-      setShowInviteDrawer(true);
-    } catch (e) {
+      router.push(`/${locale}/game?id=${data.game_id}`);
+    } catch (e: any) {
       console.error("Failed to create friend game", e);
-      setMatchmakingError("Failed to generate invite link.");
+      setMatchmakingError(e.message || "Failed to generate invite link.");
     } finally {
       setIsCreating(false);
       submittingRef.current = false;

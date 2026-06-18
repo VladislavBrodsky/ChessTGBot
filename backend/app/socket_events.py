@@ -124,7 +124,11 @@ async def join_room(sid, data):
             old_state = await service.session_manager.get_game(room)
             had_both_players = (old_state and old_state.white_player_id and old_state.black_player_id)
             
-            state = await service.join_game(room, user_id)
+            try:
+                state = await service.join_game(room, user_id)
+            except ValueError as e:
+                await sio.emit('error', {'message': str(e)}, room=sid)
+                return
             
             # If both players are now present for the first time in a friendly PVP game, start the game and schedule abort timer
             if state and not had_both_players and state.white_player_id and state.black_player_id:
@@ -232,7 +236,7 @@ async def join_matchmaking(sid, data):
             game_id = f"match_{min(user_id, opponent_id)}_{max(user_id, opponent_id)}_{int(asyncio.get_event_loop().time())}"
             
             service = GameService()
-            state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control)
+            state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=bid_amount)
             
             # Randomly assign white and black players
             if random.random() < 0.5:
@@ -454,6 +458,26 @@ async def resign(sid, data):
             await sio.emit('game_state', resigned_state.model_dump(), room=game_id)
 
 @sio.event
+async def abort_game(sid, data):
+    """
+    Allow the creator to cancel/abort a game before it starts (e.g. while waiting for an opponent)
+    """
+    game_id = data.get('game_id')
+    session = await sio.get_session(sid)
+    user_id = session.get('user_id')
+    
+    if game_id and user_id:
+        service = GameService()
+        state = await service.get_game_state(game_id)
+        if state and not state.is_game_over:
+            # Verify that the user is the creator (white player) and the opponent hasn't joined or no moves made
+            if state.white_player_id == user_id and (not state.black_player_id or len(state.move_history) == 0):
+                state.is_game_over = True
+                state.result_type = 'aborted'
+                await service.session_manager.save_game(game_id, state)
+                await service.end_game(game_id, state)
+
+@sio.event
 async def offer_draw(sid, data):
     """
     Data expects: {'game_id': '...'}
@@ -606,8 +630,7 @@ async def accept_rematch(sid, data):
                         new_game_id = str(uuid.uuid4())[:8]
                         # Alternate colors and preserve original time control
                         time_control = getattr(state, "time_control_seconds", 600)
-                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control)
-                        new_state.bid_amount = wager
+                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=wager)
                         
                         new_state.white_player_id = opponent_id
                         new_state.black_player_id = user_id

@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaCopy, FaCheck, FaRobot, FaFlag, FaHandshake } from 'react-icons/fa';
+import { FaArrowLeft, FaCopy, FaCheck, FaRobot, FaFlag, FaHandshake, FaShareAlt, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import ChessBoardComponent from '@/components/game/ChessBoard';
@@ -173,7 +173,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const myTime = isWhite ? whiteTime : blackTime;
   const opponentTime = isWhite ? blackTime : whiteTime;
 
-  // Sync wallet balance on game completion, play warning indicators
+  // Sync wallet balance and user stats on game completion, play warning indicators
   useEffect(() => {
     if (gameState?.is_game_over) {
       apiFetch("/api/v1/wallet/balance")
@@ -183,6 +183,20 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           }
         })
         .catch(() => {});
+
+      if (userId) {
+        apiFetch(`/api/v1/users/${userId}`)
+          .then(res => {
+            if (res.ok) return res.json();
+            return null;
+          })
+          .then(data => {
+            if (data) {
+              setUserStats(data);
+            }
+          })
+          .catch(() => {});
+      }
 
       if (gameState.result_type === 'timeout') {
         playTickSound('timeout');
@@ -198,6 +212,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       }
     }
   }, [gameState?.is_game_over, gameState?.result_type, gameState?.winner_id, userId, playTickSound]);
+
+  // Redirect back if game is aborted and opponent never joined
+  useEffect(() => {
+    if (gameState?.is_game_over && gameState?.result_type === 'aborted' && !gameState?.black_player_id) {
+      telegramHaptic('warning');
+      router.push(`/${locale}/home`);
+    }
+  }, [gameState, locale, router]);
 
   // Socket draw / rematch event handlers
   useEffect(() => {
@@ -369,6 +391,36 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     prevStatusRef.current = currentStatus;
   }, [gameState, userId]);
 
+  const botUsername = userStats?.bot_username || "FinChess_bot";
+  const inviteLink = `https://t.me/${botUsername}/chess?startapp=${gameId}`;
+
+  const handleShareInvite = () => {
+    const shareText = `Play a game of wager chess with me! ♟️ Stake: $${((gameState?.bid_amount || 0) / 100).toFixed(2)} USDT. Click to join:`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(shareText)}`;
+
+    if (window.Telegram?.WebApp) {
+      try {
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
+      } catch (err) {
+        window.open(shareUrl, '_blank');
+      }
+    } else {
+      window.open(shareUrl, '_blank');
+    }
+    handleCopyInvite();
+  };
+
+  const handleCopyInvite = () => {
+    try {
+      navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      telegramHaptic('success');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn("Clipboard copy failed", err);
+    }
+  };
+
   const shareGame = () => {
     let success = false;
     const link = typeof window !== 'undefined' ? window.location.href : "";
@@ -395,6 +447,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const isBotGame = gameState?.black_player_id === -1;
+  const isWaiting = gameState && !isBotGame && !gameState.black_player_id;
   const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
 
   // Toggle Navbar — hide completely for the entire active game match lifecycle
@@ -523,7 +576,106 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       )}
 
       {/* Main Game Area */}
-      <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
+      {isWaiting ? (
+        <div className="w-full max-w-sm flex flex-col items-center gap-6 mx-auto px-1 animate-fade-in">
+          <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center text-center shadow-premium relative overflow-hidden">
+            {/* Ambient corner backlights */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-bg-opacity-5 rounded-full blur-2xl -mr-6 -mt-6 pointer-events-none animate-pulse" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl -ml-6 -mb-6 pointer-events-none animate-pulse" />
+
+            {/* Radar / Sonar pulse loading widget */}
+            <div className="relative w-28 h-28 flex items-center justify-center rounded-full border border-brand-border-opacity-10 bg-brand-void mb-5 shadow-inner-glow">
+              <div className="absolute inset-0 rounded-full border border-brand-primary/20 animate-ping opacity-40" />
+              <div className="absolute w-20 h-20 rounded-full border border-brand-primary/10 animate-pulse opacity-60" />
+              <div className="absolute w-14 h-14 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center shadow-premium">
+                <FaChessKnight className="text-xl text-brand-primary animate-bounce" />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-1.5 mb-6">
+              <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
+                {locale === 'ru' ? 'Ожидание оппонента' : 'Waiting for Opponent'}
+              </span>
+              <span className="text-sm font-bold text-brand-primary uppercase tracking-wide">
+                {locale === 'ru' ? 'Поделитесь ссылкой для дуэли' : 'Share the invite code to begin'}
+              </span>
+            </div>
+
+            {/* Match details card */}
+            <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
+              <div className="flex flex-col items-start text-left">
+                <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                  {locale === 'ru' ? 'Ставка' : 'Wager Tier'}
+                </span>
+                <span className="text-xs font-black text-emerald-400">
+                  {gameState.bid_amount > 0 
+                    ? `$${(gameState.bid_amount / 100).toFixed(2)} USDT` 
+                    : (locale === 'ru' ? 'Бесплатно' : 'Free Match')}
+                </span>
+              </div>
+              <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
+                <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                  {locale === 'ru' ? 'Контроль времени' : 'Time Control'}
+                </span>
+                <span className="text-xs font-black text-amber-400 uppercase">
+                  {gameState.time_control_seconds >= 60 
+                    ? `${gameState.time_control_seconds / 60} MIN` 
+                    : `${gameState.time_control_seconds}s`}
+                </span>
+              </div>
+            </div>
+
+            {/* Share link widget */}
+            <div className="w-full space-y-3">
+              <div className="relative w-full flex items-center bg-brand-void/80 border border-brand-border-opacity-10 rounded-xl px-3.5 py-3 shadow-inner-glow overflow-hidden">
+                <span className="text-[10px] font-mono text-brand-primary opacity-50 truncate select-all pr-8 w-full text-left">
+                  {inviteLink}
+                </span>
+                <button
+                  onClick={handleCopyInvite}
+                  className="absolute right-2 text-brand-primary opacity-50 hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
+                >
+                  {copied ? <FaCheck className="text-emerald-400 text-[11px]" /> : <FaCopy className="text-[11px]" />}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2.5 w-full">
+                <motion.button
+                  whileTap={{ scale: 0.985 }}
+                  onClick={handleShareInvite}
+                  className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-neon"
+                >
+                  <FaShareAlt size={11} />
+                  <span>{locale === 'ru' ? 'Пригласить в Telegram' : 'Invite on Telegram'}</span>
+                </motion.button>
+
+                {gameState.white_player_id === userId && (
+                  <motion.button
+                    whileTap={{ scale: 0.985 }}
+                    onClick={() => {
+                      const socket = getSocket();
+                      socket.emit('abort_game', { game_id: gameId });
+                    }}
+                    className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
+                  >
+                    <span>{locale === 'ru' ? 'Отменить и вернуть средства' : 'Cancel & Refund Match'}</span>
+                  </motion.button>
+                )}
+              </div>
+            </div>
+
+          </div>
+          
+          <div className="w-full text-center px-4">
+            <p className="text-[9px] font-semibold text-brand-primary opacity-30 uppercase tracking-wider leading-relaxed">
+              {locale === 'ru' 
+                ? 'Не закрывайте эту вкладку. Партия начнется автоматически, как только ваш оппонент подключится к дуэли.' 
+                : 'Do not close this page. The match will automatically begin as soon as your opponent joins the lobby.'}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
 
         {/* Opponent Widget */}
         <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
@@ -639,6 +791,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           </motion.button>
         )}
       </div>
+      )}
 
       {/* Premium Match Over Overlay Modal */}
       <AnimatePresence>
@@ -654,6 +807,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             onShareGame={shareGame}
             newElo={myNewElo}
             copied={copied}
+            xpGained={gameState ? (isWhite ? gameState.white_xp_gained : gameState.black_xp_gained) : undefined}
           />
         )}
       </AnimatePresence>
@@ -735,7 +889,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       </AnimatePresence>
 
       {/* Bottom Action Bar — replacing Navbar during match */}
-      {!isGameOver && (
+      {!isGameOver && !isWaiting && (
         <motion.div
           initial={{ x: "-50%", y: 80, opacity: 0 }}
           animate={{ x: "-50%", y: 0, opacity: 1 }}
