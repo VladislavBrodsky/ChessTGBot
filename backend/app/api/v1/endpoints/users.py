@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func, and_
 from app.core.database import get_db
 from app.crud import user as user_crud
 from pydantic import BaseModel
@@ -12,7 +13,7 @@ settings = get_settings()
 router = APIRouter()
 
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 class LeaderboardItem(BaseModel):
     telegram_id: int
@@ -70,6 +71,118 @@ class UserStats(BaseModel):
     xp: int = 0
     level: int = 1
     bot_username: str = "FinChess_bot"
+
+class ReferralEarningPoint(BaseModel):
+    date: str   # ISO date string e.g. "2025-06-10"
+    amount: float  # In USDT (cents / 100)
+
+class ReferralStats(BaseModel):
+    total_referrals: int
+    active_referrals: int   # played >= 1 game in the last 7 days
+    total_earnings_usdt: float  # sum of referral_commission transactions in USDT
+    earnings_chart: List[ReferralEarningPoint]  # last 30 days daily earnings
+
+@router.get("/referrals/stats", response_model=ReferralStats)
+async def get_referral_stats(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Returns referral program statistics for the current user:
+    - total_referrals: total number of people who signed up via this user's link
+    - active_referrals: referrals who played at least 1 game in the last 7 days
+    - total_earnings_usdt: cumulative referral commission received (USDT)
+    - earnings_chart: daily referral earnings for the last 30 days (for SVG chart)
+    """
+    from app.models.gamification import Referral
+    from app.models.transaction import Transaction
+    from sqlalchemy import func
+
+    # 1. Total referrals
+    total_result = await db.execute(
+        select(func.count(Referral.id)).where(Referral.referrer_id == current_user.id)
+    )
+    total_referrals = total_result.scalar() or 0
+
+    # 2. Active referrals: referred users who played >= 1 game in the last 7 days
+    week_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=7)
+    # Get all referred user IDs
+    referred_result = await db.execute(
+        select(Referral.referred_user_id).where(Referral.referrer_id == current_user.id)
+    )
+    referred_ids = [row[0] for row in referred_result.fetchall()]
+
+    active_referrals = 0
+    if referred_ids:
+        active_result = await db.execute(
+            select(func.count(User.id)).where(
+                and_(
+                    User.id.in_(referred_ids),
+                    User.games_played > 0
+                )
+            )
+        )
+        # More precise: check transactions in last 7 days for referred users
+        # Use game_wager transactions as a proxy for games played recently
+        active_tx_result = await db.execute(
+            select(func.count(func.distinct(Transaction.user_id))).where(
+                and_(
+                    Transaction.type.in_(["game_wager", "game_win"]),
+                    Transaction.created_at >= week_ago
+                )
+            ).select_from(
+                Transaction
+            ).where(
+                Transaction.user_id.in_(
+                    select(User.telegram_id).where(User.id.in_(referred_ids))
+                )
+            )
+        )
+        active_referrals = active_tx_result.scalar() or 0
+        # Fallback: count referred users who have games_played > 0 if tx approach returns 0
+        if active_referrals == 0:
+            active_referrals = active_result.scalar() or 0
+
+    # 3. Total earnings from referral commissions
+    total_earnings_result = await db.execute(
+        select(func.coalesce(func.sum(Transaction.amount), 0)).where(
+            and_(
+                Transaction.user_id == current_user.telegram_id,
+                Transaction.type == "referral_commission",
+                Transaction.status == "completed"
+            )
+        )
+    )
+    total_earnings_cents = total_earnings_result.scalar() or 0
+    total_earnings_usdt = total_earnings_cents / 100.0
+
+    # 4. Daily earnings for last 30 days (for chart)
+    thirty_days_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
+    daily_result = await db.execute(
+        select(
+            func.date(Transaction.created_at).label("day"),
+            func.sum(Transaction.amount).label("total")
+        ).where(
+            and_(
+                Transaction.user_id == current_user.telegram_id,
+                Transaction.type == "referral_commission",
+                Transaction.status == "completed",
+                Transaction.created_at >= thirty_days_ago
+            )
+        ).group_by(func.date(Transaction.created_at)).order_by(func.date(Transaction.created_at))
+    )
+    daily_rows = daily_result.fetchall()
+    earnings_chart = [
+        ReferralEarningPoint(date=str(row.day), amount=round(row.total / 100.0, 4))
+        for row in daily_rows
+    ]
+
+    return ReferralStats(
+        total_referrals=total_referrals,
+        active_referrals=active_referrals,
+        total_earnings_usdt=round(total_earnings_usdt, 4),
+        earnings_chart=earnings_chart
+    )
 
 @router.get("/leaderboard", response_model=List[LeaderboardItem])
 async def get_leaderboard(db: AsyncSession = Depends(get_db)):

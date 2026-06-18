@@ -380,5 +380,25 @@
     "item2_desc": "Premium users can now earn rewards in every official match. Invite friends to boost earnings.",
     "item2_fullText": "The decentralized prize pool is now open. Official matches between Premium members now contribute to a global reward matrix. Win games to claim your share of the daily rewards distribution.",
     "item2_date": "1d ago"
+  },
+  "Referral": {
+    "dashboard_title": "Referral Program",
+    "total_label": "Total",
+    "total_sublabel": "Referrals",
+    "total_desc_label": "Total Referrals",
+    "total_detail": "Total number of players who joined via your personal invite link.",
+    "active_label": "Active",
+    "active_sublabel": "This Week",
+    "active_desc_label": "Active Referrals",
+    "active_detail": "Referrals who played at least one game in the last 7 days.",
+    "activity_rate": "Activity Rate",
+    "earnings_label": "Earnings",
+    "earnings_desc_label": "Total Earned",
+    "earnings_detail": "Total USDT earned from game commissions and sign-up bonuses through your referrals.",
+    "chart_label": "30-Day Earnings",
+    "total_earned": "Total Earned",
+    "your_link": "Your Invite Link",
+    "copy": "Copy",
+    "copied": "Copied!"
   }
 }

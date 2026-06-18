@@ -380,5 +380,25 @@
     "item2_desc": "Usuários premium agora ganham recompensas em cada partida oficial. Convide amigos para lucrar.",
     "item2_fullText": "O pool de prêmios descentralizado está aberto. Partidas oficiais entre membros Premium contribuem para a matriz.",
     "item2_date": "Há 1d"
+  },
+  "Referral": {
+    "dashboard_title": "Programa de Indicações",
+    "total_label": "Total",
+    "total_sublabel": "Indicações",
+    "total_desc_label": "Total de Indicações",
+    "total_detail": "Número total de jogadores que entraram via seu link de convite pessoal.",
+    "active_label": "Ativos",
+    "active_sublabel": "Esta Semana",
+    "active_desc_label": "Indicações Ativas",
+    "active_detail": "Indicações que jogaram ao menos uma partida nos últimos 7 dias.",
+    "activity_rate": "Taxa de Atividade",
+    "earnings_label": "Ganhos",
+    "earnings_desc_label": "Total Ganho",
+    "earnings_detail": "Total de USDT ganho com comissões de partidas e bônus de cadastro por indicações.",
+    "chart_label": "Ganhos dos Últimos 30 Dias",
+    "total_earned": "Ganho",
+    "your_link": "Seu Link de Convite",
+    "copy": "Copiar",
+    "copied": "Copiado!"
   }
 }

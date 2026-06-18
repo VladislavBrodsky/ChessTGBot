@@ -380,5 +380,25 @@
     "item2_desc": "Los usuarios premium ahora pueden ganar recompensas en cada partida oficial. Invita amigos para ganar más.",
     "item2_fullText": "El pozo de premios descentralizado ya está abierto. Las partidas oficiales entre miembros Premium contribuyen a una matriz global de recompensas.",
     "item2_date": "Hace 1d"
+  },
+  "Referral": {
+    "dashboard_title": "Programa de Referidos",
+    "total_label": "Total",
+    "total_sublabel": "Referidos",
+    "total_desc_label": "Total de Referidos",
+    "total_detail": "Número total de jugadores que se unieron a través de tu enlace de invitación.",
+    "active_label": "Activos",
+    "active_sublabel": "Esta Semana",
+    "active_desc_label": "Referidos Activos",
+    "active_detail": "Referidos que jugaron al menos una partida en los últimos 7 días.",
+    "activity_rate": "Tasa de Actividad",
+    "earnings_label": "Ganancias",
+    "earnings_desc_label": "Total Ganado",
+    "earnings_detail": "USDT total ganado de comisiones de juegos y bonos de registro por referidos.",
+    "chart_label": "Ganancias de 30 Días",
+    "total_earned": "Ganado",
+    "your_link": "Tu Enlace de Invitación",
+    "copy": "Copiar",
+    "copied": "¡Copiado!"
   }
 }

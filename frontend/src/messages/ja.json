@@ -380,5 +380,25 @@
     "item2_desc": "プレミアムユーザーは公式マッチごとに報酬を獲得できます。友人を招待してブーストしましょう。",
     "item2_fullText": "分散型賞金プールがオープンしました。プレミアム会員同士の公式対局はグローバルな報酬マトリックスに加算されます。",
     "item2_date": "1日前"
+  },
+  "Referral": {
+    "dashboard_title": "紹介プログラム",
+    "total_label": "合計",
+    "total_sublabel": "紹介数",
+    "total_desc_label": "合計紹介数",
+    "total_detail": "あなたの招待リンクを通じて参加したプレイヤーの総数。",
+    "active_label": "アクティブ",
+    "active_sublabel": "今週",
+    "active_desc_label": "アクティブな紹介者",
+    "active_detail": "過去7日間に少なくとも1回対局した紹介者。",
+    "activity_rate": "アクティビティ率",
+    "earnings_label": "収益",
+    "earnings_desc_label": "合計獲得",
+    "earnings_detail": "紹介者からのゲーム手数料とサインアップボーナスで獲得した合計USDT。",
+    "chart_label": "30日間の収益",
+    "total_earned": "獲得済み",
+    "your_link": "招待リンク",
+    "copy": "コピー",
+    "copied": "コピーしました！"
   }
 }

@@ -380,5 +380,25 @@
     "item2_desc": "Les membres premium peuvent gagner des récompenses à chaque match. Invitez des amis pour booster vos gains.",
     "item2_fullText": "La cagnotte décentralisée est ouverte. Les matchs officiels contribuent à la matrice globale des récompenses.",
     "item2_date": "Il y a 1j"
+  },
+  "Referral": {
+    "dashboard_title": "Programme de Parrainage",
+    "total_label": "Total",
+    "total_sublabel": "Parrainages",
+    "total_desc_label": "Total des Parrainages",
+    "total_detail": "Nombre total de joueurs ayant rejoint via votre lien d'invitation personnel.",
+    "active_label": "Actifs",
+    "active_sublabel": "Cette Semaine",
+    "active_desc_label": "Parrainages Actifs",
+    "active_detail": "Parrainages ayant joué au moins une partie lors des 7 derniers jours.",
+    "activity_rate": "Taux d'Activité",
+    "earnings_label": "Gains",
+    "earnings_desc_label": "Total Gagné",
+    "earnings_detail": "USDT total gagné grâce aux commissions de jeu et aux bonus de parrainage.",
+    "chart_label": "Gains sur 30 jours",
+    "total_earned": "Gagné",
+    "your_link": "Votre Lien d'Invitation",
+    "copy": "Copier",
+    "copied": "Copié !"
   }
 }

@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
-import ReferralCard from "@/components/ReferralCard";
+import ReferralDashboard from "@/components/ReferralDashboard";
 
 export default function ProfilePage() {
  const t = useTranslations('Index');
@@ -196,7 +196,7 @@ export default function ProfilePage() {
 
  {/* Gamification Sections */}
  <DailyTasks />
- <ReferralCard />
+ <ReferralDashboard />
 
  {/* Recent Games History */}
  <div className="w-full space-y-4">

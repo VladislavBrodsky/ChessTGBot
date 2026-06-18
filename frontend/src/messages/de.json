@@ -380,5 +380,25 @@
     "item2_desc": "Premium-Nutzer können jetzt in jedem offiziellen Match Belohnungen verdienen. Lade Freunde ein.",
     "item2_fullText": "Der dezentrale Preispool ist eröffnet. Offizielle Spiele zwischen Premium-Mitgliedern zahlen in den Belohnungspool ein.",
     "item2_date": "Vor 1 Tag"
+  },
+  "Referral": {
+    "dashboard_title": "Empfehlungsprogramm",
+    "total_label": "Gesamt",
+    "total_sublabel": "Empfehlungen",
+    "total_desc_label": "Gesamtempfehlungen",
+    "total_detail": "Gesamtzahl der Spieler, die über deinen persönlichen Einladungslink beigetreten sind.",
+    "active_label": "Aktiv",
+    "active_sublabel": "Diese Woche",
+    "active_desc_label": "Aktive Empfehlungen",
+    "active_detail": "Empfehlungen, die in den letzten 7 Tagen mindestens ein Spiel gespielt haben.",
+    "activity_rate": "Aktivitätsrate",
+    "earnings_label": "Einnahmen",
+    "earnings_desc_label": "Gesamt verdient",
+    "earnings_detail": "Gesamt in USDT verdient durch Spielprovisionen und Empfehlungsboni.",
+    "chart_label": "30-Tage-Einnahmen",
+    "total_earned": "Verdient",
+    "your_link": "Dein Einladungslink",
+    "copy": "Kopieren",
+    "copied": "Kopiert!"
   }
 }

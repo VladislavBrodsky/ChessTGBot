@@ -380,5 +380,25 @@
     "item2_desc": "高级用户现在可在每场正式比赛中获得奖励。邀请好友以提升收益。",
     "item2_fullText": "去中心化奖池现已开放。高级会员之间的正式比赛将计入全球奖励矩阵。赢得比赛即可瓜分每日奖励。",
     "item2_date": "1天前"
+  },
+  "Referral": {
+    "dashboard_title": "推荐计划",
+    "total_label": "总计",
+    "total_sublabel": "推荐人数",
+    "total_desc_label": "推荐总数",
+    "total_detail": "通过您的个人邀请链接注册的玩家总数。",
+    "active_label": "活跃",
+    "active_sublabel": "本周",
+    "active_desc_label": "活跃推荐",
+    "active_detail": "过去 7 天内至少玩过一局的推荐玩家。",
+    "activity_rate": "活跃率",
+    "earnings_label": "收益",
+    "earnings_desc_label": "总收益",
+    "earnings_detail": "通过推荐获得的游戏佣金和注册奖励的 USDT 总额。",
+    "chart_label": "30天收益",
+    "total_earned": "已赚取",
+    "your_link": "您的邀请链接",
+    "copy": "复制",
+    "copied": "已复制！"
   }
 }
