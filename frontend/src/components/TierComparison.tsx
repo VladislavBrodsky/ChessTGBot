@@ -27,9 +27,9 @@ export default function TierComparison() {
   <div className="w-full premium-neon-card rounded-3xl overflow-hidden">
   {/* Table Header */}
   <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-5 bg-purple-950/20">
-  <div className="col-span-3 text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
-  <div className="col-span-1.5 text-center text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
-  <div className="col-span-1.5 text-center text-[9px] font-black uppercase text-purple-400 premium-neon-text-glow tracking-widest">{tc('elite')}</div>
+  <div className="col-span-4 text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
+  <div className="col-span-1 text-center text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
+  <div className="col-span-1 text-center text-[9px] font-black uppercase text-purple-400 premium-neon-text-glow tracking-widest">{tc('elite')}</div>
   </div>
 
   {/* Table Rows */}
@@ -42,7 +42,7 @@ export default function TierComparison() {
   transition={{ delay: idx * 0.05 }}
   className="grid grid-cols-6 p-4 items-center group hover:bg-purple-900/5 transition-colors"
   >
-  <div className="col-span-3 flex items-center gap-3">
+  <div className="col-span-4 flex items-center gap-3">
   <div className="text-brand-primary opacity-25 group-hover:opacity-60 transition-colors">
   {row.icon}
   </div>
@@ -50,14 +50,14 @@ export default function TierComparison() {
   {row.feature}
   </span>
   </div>
-  <div className="col-span-1.5 flex justify-center">
+  <div className="col-span-1 flex justify-center">
   {row.basic ? (
   <FaCheck className="text-emerald-500 opacity-50" fontSize={10} />
   ) : (
   <FaTimes className="text-brand-primary opacity-20" fontSize={10} />
   )}
   </div>
-  <div className="col-span-1.5 flex justify-center">
+  <div className="col-span-1 flex justify-center">
   {row.premium ? (
   <div className="relative">
   <FaCheck className="text-purple-400 premium-neon-icon-glow" fontSize={10} />

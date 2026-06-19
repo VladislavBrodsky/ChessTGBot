@@ -40,6 +40,26 @@ export default function MembershipPage() {
   const [showInsufficient, setShowInsufficient] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 400, height: 600 });
+  const [submitting, setSubmitting] = useState(false);
+
+  const getButtonText = () => {
+    if (submitting) return "PROCESSING...";
+    if (stats?.is_premium) {
+      switch (locale) {
+        case 'ru': return "ПРОДЛИТЬ ПОДПИСКУ";
+        case 'es': return "EXTENDER SUSCRIPCIÓN";
+        case 'fr': return "PROLONGER L'ABONNEMENT";
+        case 'de': return "ABONNEMENT VERLÄNGERN";
+        case 'zh': return "延长订阅";
+        case 'ja': return "サブスクリプションを延長";
+        case 'ar': return "تمديد الاشتراك";
+        case 'pt': return "ESTENDER ASSINATURA";
+        case 'hi': return "सदस्यता बढ़ाएं";
+        default: return "EXTEND SUBSCRIPTION";
+      }
+    }
+    return tm('subscribe');
+  };
  
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -87,11 +107,7 @@ export default function MembershipPage() {
   };
 
   const handleSubscribe = async () => {
-    if (!tgUser?.id) {
-      telegramHaptic('warning');
-      telegramAlert("Telegram User not found. Are you in the Mini App?");
-      return;
-    }
+    if (submitting) return;
 
     const cost = billingPeriod === 'annual' ? PREMIUM_INFO.annual : PREMIUM_INFO.monthly;
     if (walletBalance < cost) {
@@ -100,6 +116,7 @@ export default function MembershipPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const res = await apiFetch("/api/v1/users/subscribe", {
         method: "POST",
@@ -127,6 +144,8 @@ export default function MembershipPage() {
       console.error("Subscription failed", e);
       telegramHaptic('error');
       telegramAlert("Subscription failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -164,6 +183,24 @@ export default function MembershipPage() {
       <div className="h-px w-12 bg-purple-500/35 -mt-4 shadow-[0_0_8px_#a855f7]" />
       <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-2">{tm('subtitle')}</span>
 
+      {/* Active Subscription Expiry Badge */}
+      {stats?.is_premium && stats.premium_expires_at && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full premium-neon-card p-4 rounded-2xl text-center space-y-1 relative overflow-hidden"
+        >
+          <div className="absolute -top-12 -left-12 w-24 h-24 bg-purple-500/15 blur-2xl rounded-full" />
+          <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-purple-500/15 blur-2xl rounded-full" />
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-purple-400 premium-neon-text-glow flex items-center justify-center gap-1.5">
+            <FaCrown className="text-[9px]" /> ACTIVE PREMIUM MEMBERSHIP
+          </span>
+          <div className="text-xs font-black text-brand-primary uppercase tracking-wide">
+            Expires: {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
+        </motion.div>
+      )}
+
       {/* Feature Container */}
       <div className="w-full premium-liquid-border">
         <div className="w-full premium-liquid-content p-6 space-y-6">
@@ -185,36 +222,34 @@ export default function MembershipPage() {
       <div className="w-full grid grid-cols-2 gap-3">
         <button
           onClick={() => setBillingPeriod('monthly')}
-          className={`p-5 rounded-2xl text-left transition-all border flex flex-col justify-between h-32 relative group overflow-hidden cursor-pointer shadow-sm ${
+          className={`p-4 rounded-2xl text-left transition-all border flex flex-col justify-between h-28 relative group overflow-hidden cursor-pointer shadow-sm ${
             billingPeriod === 'monthly'
-              ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 border-purple-400/60 text-white shadow-[0_0_25px_rgba(168,85,247,0.55)] scale-[1.03]"
+              ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 border-purple-400/60 text-white shadow-[0_0_25px_rgba(168,85,247,0.55)] scale-[1.02]"
               : "bg-brand-surface border-brand-border-opacity-10 text-brand-primary hover:bg-brand-bg-opacity-5"
           }`}
         >
           <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'monthly' ? "text-white opacity-90 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('monthly')}</span>
           <div>
-            <span className={`text-3xl font-black tracking-tighter leading-none ${billingPeriod === 'monthly' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.monthly / 100).toFixed(2)}</span>
-            <span className={`text-[9px] font-bold block mt-1 ${billingPeriod === 'monthly' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_month')}</span>
+            <span className={`text-2xl font-black tracking-tighter leading-none ${billingPeriod === 'monthly' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.monthly / 100).toFixed(2)}</span>
+            <span className={`text-[8px] font-bold block mt-0.5 ${billingPeriod === 'monthly' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_month')}</span>
           </div>
         </button>
 
         <button
           onClick={() => setBillingPeriod('annual')}
-          className={`p-5 rounded-2xl text-left transition-all border flex flex-col justify-between h-32 relative group overflow-hidden cursor-pointer shadow-sm ${
+          className={`p-4 rounded-2xl text-left transition-all border flex flex-col justify-between h-28 relative group overflow-hidden cursor-pointer shadow-sm ${
             billingPeriod === 'annual'
-              ? "bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-650 border-purple-400/60 text-white shadow-[0_0_30px_rgba(168,85,247,0.65)] scale-[1.03]"
+              ? "bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-650 border-purple-400/60 text-white shadow-[0_0_30px_rgba(168,85,247,0.65)] scale-[1.02]"
               : "bg-brand-surface border-brand-border-opacity-10 text-brand-primary hover:bg-brand-bg-opacity-5"
           }`}
         >
-          <div className={`absolute top-0 right-0 px-2.5 py-1 rounded-bl-xl text-[8px] font-black uppercase tracking-tighter ${billingPeriod === 'annual' ? "bg-white text-purple-600 shadow-[0_0_8px_rgba(255,255,255,0.8)]" : "bg-brand-bg-opacity-10 text-brand-primary opacity-60"}`}>
+          <div className={`absolute top-0 right-0 px-2 py-0.5 rounded-bl-xl text-[7px] font-black uppercase tracking-tighter ${billingPeriod === 'annual' ? "bg-white text-purple-600 shadow-[0_0_8px_rgba(255,255,255,0.8)]" : "bg-brand-bg-opacity-10 text-brand-primary opacity-60"}`}>
             {tm('discount')}
           </div>
           <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-white opacity-90 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('annual')}</span>
-          <div className="flex flex-col">
-            <div>
-              <span className={`text-3xl font-black tracking-tighter leading-none ${billingPeriod === 'annual' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
-              <span className={`text-[9px] font-bold block mt-1 ${billingPeriod === 'annual' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_annum')}</span>
-            </div>
+          <div>
+            <span className={`text-2xl font-black tracking-tighter leading-none ${billingPeriod === 'annual' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
+            <span className={`text-[8px] font-bold block mt-0.5 ${billingPeriod === 'annual' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_annum')}</span>
           </div>
         </button>
       </div>
@@ -250,12 +285,20 @@ export default function MembershipPage() {
 
       {/* Confirm Action */}
       <motion.button
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={submitting ? {} : { scale: 1.01 }}
+        whileTap={submitting ? {} : { scale: 0.98 }}
         onClick={handleSubscribe}
-        className="w-full py-6 premium-liquid-button flex items-center justify-center cursor-pointer"
+        disabled={submitting}
+        className={`w-full py-6 premium-liquid-button flex items-center justify-center cursor-pointer transition-all ${
+          submitting ? "opacity-60 cursor-not-allowed" : ""
+        }`}
       >
-        <span className="text-sm font-black tracking-[0.25em]">{tm('subscribe')}</span>
+        {submitting ? (
+          <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin mr-3" />
+        ) : null}
+        <span className="text-sm font-black tracking-[0.25em]">
+          {getButtonText()}
+        </span>
       </motion.button>
 
       {/* Footer Legal */}

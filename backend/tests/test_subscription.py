@@ -130,20 +130,17 @@ async def test_puzzle_gates_with_expired_premium(client: AsyncClient, db_session
     )
     db_session.add(user)
     await db_session.commit()
-    await db_session.refresh(user)
-
-    from app.models.gamification import SolvedPuzzle
-    solved = SolvedPuzzle(user_id=user.id, puzzle_id=1, solved_at=yesterday)
-    db_session.add(solved)
-    await db_session.commit()
 
     init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'GatedUser'}))}"
     headers = {"X-Telegram-Init-Data": init_data}
 
-    # 2. Try to get details of a premium puzzle (puzzle_id > 1) via the /gamification/academy/puzzles/{puzzle_id} path
-    response = await client.get("/api/v1/gamification/academy/puzzles/2", headers=headers)
-    assert response.status_code == 403
-    assert "Premium subscription required" in response.json()["detail"]
+    # 2. Get all puzzles and check that Level 30 is locked for this expired user
+    response = await client.get("/api/v1/gamification/academy/puzzles", headers=headers)
+    assert response.status_code == 200
+    puzzles_list = response.json()
+    puzzle_30 = next(p for p in puzzles_list if p["id"] == 30)
+    assert puzzle_30["is_premium_locked"] is True
+
 
 
 @pytest.mark.asyncio

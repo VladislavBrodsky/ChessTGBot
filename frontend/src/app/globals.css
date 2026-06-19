@@ -808,3 +808,55 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.5));
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Force deep neon-dark theme rules inside premium mesh containers
+   to prevent light-theme blocks from breaking the aesthetic.
+   ────────────────────────────────────────────────────────────────────────── */
+.premium-liquid-mesh-container,
+[data-theme='light'] .premium-liquid-mesh-container {
+  --bg-primary: #000000 !important;
+  --bg-surface: #0A0A0A !important;
+  --bg-elevated: #111111 !important;
+  --border-muted: #1F1F1F !important;
+  --text-primary: #FFFFFF !important;
+  --text-muted: #A1A1A1 !important;
+  --text-gold: #FBBF24 !important;
+
+  --color-brand-void: #000000 !important;
+  --color-brand-surface: #0A0A0A !important;
+  --color-brand-elevated: #111111 !important;
+  --color-brand-border: #1F1F1F !important;
+  --color-brand-text-gray: #A1A1A1 !important;
+  
+  background-color: #080412 !important;
+}
+
+[data-theme='light'] .premium-liquid-mesh-container .premium-liquid-content,
+.premium-liquid-mesh-container .premium-liquid-content {
+  background: rgba(14, 8, 28, 0.95) !important;
+}
+
+[data-theme='light'] .premium-liquid-mesh-container .premium-liquid-border,
+.premium-liquid-mesh-container .premium-liquid-border {
+  background: #000000 !important;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4) !important;
+}
+
+[data-theme='light'] .premium-liquid-mesh-container .premium-neon-card,
+.premium-liquid-mesh-container .premium-neon-card {
+  background: rgba(14, 8, 28, 0.6) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.1), 0 0 15px 0 rgba(168, 85, 247, 0.15) !important;
+}
+
+[data-theme='light'] .premium-liquid-mesh-container .premium-neon-text-glow,
+.premium-liquid-mesh-container .premium-neon-text-glow {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4) !important;
+}
+
+[data-theme='light'] .premium-liquid-mesh-container .premium-neon-icon-glow,
+.premium-liquid-mesh-container .premium-neon-icon-glow {
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)) !important;
+}
+
+
