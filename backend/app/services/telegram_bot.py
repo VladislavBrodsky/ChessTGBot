@@ -306,7 +306,27 @@ class TelegramService:
             )
 
             # Inline button inside the message
-            keyboard = [[InlineKeyboardButton(msgs["btn"], web_app=WebAppInfo(url=web_app_url))]]
+            SHARE_BUTTONS = {
+                "en": ("🔗  Invite Friends", "Play chess, wager USDT, and earn rewards on FinChess Arena! ♟️🔥"),
+                "ru": ("🔗  Пригласить друзей", "Играй в шахматы, ставь USDT и зарабатывай на FinChess Arena! ♟️🔥"),
+                "de": ("🔗  Freunde einladen", "Spiele Schach, setze USDT und verdiene Belohnungen in der FinChess Arena! ♟️🔥"),
+                "es": ("🔗  Invitar amigos", "¡Juega al ajedrez, apuesta USDT y gana recompensas en FinChess Arena! ♟️🔥"),
+                "fr": ("🔗  Inviter des amis", "Jouez aux échecs, misez des USDT et gagnez des récompenses sur FinChess Arena ! ♟️🔥"),
+                "ar": ("🔗  دعوة الأصدقاء", "العب الشطرنج، راهن بـ USDT، واكسب الجوائز في FinChess Arena! ♟️🔥"),
+                "hi": ("🔗  दोस्तों को आमंत्रित करें", "FinChess Arena पर शतरंज खेलें, USDT दांव पर लगाएं और पुरस्कार जीतें! ♟️🔥"),
+                "pt": ("🔗  Convidar amigos", "Jogue xadrez, aposte USDT e ganhe prêmios na FinChess Arena! ♟️🔥"),
+                "ja": ("🔗  友達を招待", "FinChess Arenaでチェスをプレイし、USDTを賭けて報酬を獲得しましょう！♟️🔥"),
+                "zh": ("🔗  邀请好友", "在 FinChess Arena 对弈、押注 USDT 并赢取奖励！♟️🔥"),
+            }
+            share_btn_text, share_msg_text = SHARE_BUTTONS.get(lang, SHARE_BUTTONS["en"])
+            
+            import urllib.parse
+            share_url = f"https://t.me/share/url?url={urllib.parse.quote(referral_link)}&text={urllib.parse.quote(share_msg_text)}"
+
+            keyboard = [
+                [InlineKeyboardButton(msgs["btn"], web_app=WebAppInfo(url=web_app_url))],
+                [InlineKeyboardButton(share_btn_text, url=share_url)]
+            ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
             # Persistent blue menu button
