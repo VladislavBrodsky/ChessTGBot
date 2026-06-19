@@ -6,6 +6,7 @@ from app.core.config import get_settings
 from app.core.socket import sio
 import app.socket_events # Register events
 import os
+import asyncio
 import logging
 from app.services.telegram_bot import TelegramService
 from app.core.logger import setup_logging, LoggingMiddleware
