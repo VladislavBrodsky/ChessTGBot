@@ -61,11 +61,13 @@ export default function CustomAlertModal() {
   return (
     <AnimatePresence>
       {modal && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-md px-6 pointer-events-auto modal-backdrop">
-          {/* Backdrop click to dismiss alert (but not confirm) */}
-          {modal.type === 'alert' && (
-            <div className="absolute inset-0" onClick={() => handleClose(true)} />
-          )}
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">
+          {/* Backdrop layer with visual overlay & scroll-lock */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+            style={{ touchAction: 'none' }} 
+            onClick={() => modal.type === 'alert' && handleClose(true)} 
+          />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 15 }}

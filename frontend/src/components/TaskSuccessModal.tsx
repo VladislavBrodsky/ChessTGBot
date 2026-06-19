@@ -60,8 +60,8 @@ export default function TaskSuccessModal() {
 
       <AnimatePresence>
         {success && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-md px-6 pointer-events-auto modal-backdrop">
-            <div className="absolute inset-0" onClick={handleClose} />
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" style={{ touchAction: 'none' }} onClick={handleClose} />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 30 }}

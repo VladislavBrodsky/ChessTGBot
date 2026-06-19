@@ -25,13 +25,6 @@ export default function AcademyPage() {
   const nextPuzzle = puzzles.find(p => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
   const allSolved = puzzles.length > 0 && !nextPuzzle;
-  const levelPrefix = locale === 'ru' ? 'Уровень' 
-                    : locale === 'es' ? 'Nivel'
-                    : locale === 'fr' ? 'Niveau'
-                    : locale === 'de' ? 'Level'
-                    : locale === 'zh' ? '关卡'
-                    : locale === 'ja' ? 'レベル'
-                    : 'Level';
 
   const fetchData = async () => {
     try {
@@ -327,7 +320,7 @@ export default function AcademyPage() {
               {allSolved 
                 ? (locale === 'ru' ? 'ВСЕ УРОВНИ РЕШЕНЫ!' : 'ALL LEVELS SOLVED!') 
                 : nextPuzzle 
-                  ? `${levelPrefix} ${nextPuzzle.id}: ${nextPuzzle.title}` 
+                  ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title}` 
                   : t('mate_in_2')
               }
             </h2>

@@ -151,7 +151,8 @@
     "cancel": "Отмена",
     "excellent": "ОТЛИЧНО!",
     "spotted_pattern": "Вы заметили тактический паттерн.",
-    "continue": "Продолжить"
+    "continue": "Продолжить",
+    "level_prefix": "Уровень"
   },
   "Game": {
     "battle_arena": "БАТТЛ АРЕНА",

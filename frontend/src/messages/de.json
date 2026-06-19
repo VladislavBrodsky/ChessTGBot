@@ -151,7 +151,8 @@
     "cancel": "Abbrechen",
     "excellent": "EXZELLENT!",
     "spotted_pattern": "Sie haben das taktische Muster erkannt.",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "level_prefix": "Level"
   },
   "Game": {
     "battle_arena": "BATTLE ARENA",

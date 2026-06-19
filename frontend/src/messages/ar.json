@@ -151,7 +151,8 @@
     "cancel": "إلغاء",
     "excellent": "ممتاز!",
     "spotted_pattern": "لقد رصدت النمط التكتيكي.",
-    "continue": "متابعة"
+    "continue": "متابعة",
+    "level_prefix": "مستوى"
   },
   "Game": {
     "battle_arena": "BATTLE ARENA",

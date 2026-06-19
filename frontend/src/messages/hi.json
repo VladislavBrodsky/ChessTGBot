@@ -151,7 +151,8 @@
     "cancel": "रद्द करें",
     "excellent": "उत्कृष्ट!",
     "spotted_pattern": "आपने सामरिक पैटर्न को देखा है।",
-    "continue": "जारी रखें"
+    "continue": "जारी रखें",
+    "level_prefix": "स्तर"
   },
   "Game": {
     "battle_arena": "BATTLE ARENA",

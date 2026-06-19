@@ -844,6 +844,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               exit={{ opacity: 0 }} 
               onClick={() => setConfirmConfig(null)}
               className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+              style={{ touchAction: 'none' }}
             />
             <motion.div 
               initial={{ y: "100%" }} 

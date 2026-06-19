@@ -144,7 +144,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
 
             {/* Custom Promotion Dialog Overlay */}
             {promotionMove && (
-                <div className="absolute inset-0 bg-brand-void/80 backdrop-blur-md z-30 flex items-center justify-center rounded-2xl p-6">
+                <div className="absolute inset-0 bg-brand-void/80 backdrop-blur-md z-30 flex items-center justify-center rounded-2xl p-6" style={{ touchAction: 'none' }}>
                     <div className="glass-panel p-6 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface max-w-[280px] w-full text-center space-y-5 shadow-premium">
                         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
                             Pawn Promotion

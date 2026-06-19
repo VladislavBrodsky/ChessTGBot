@@ -151,7 +151,8 @@
     "cancel": "取消",
     "excellent": "太棒了！",
     "spotted_pattern": "您已成功看破此战术套路。",
-    "continue": "继续"
+    "continue": "继续",
+    "level_prefix": "关卡"
   },
   "Game": {
     "battle_arena": "BATTLE ARENA",

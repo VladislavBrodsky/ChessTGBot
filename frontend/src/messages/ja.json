@@ -151,7 +151,8 @@
     "cancel": "キャンセル",
     "excellent": "素晴らしい！",
     "spotted_pattern": "タクティカルパターンを見破りました！",
-    "continue": "次に進む"
+    "continue": "次に進む",
+    "level_prefix": "レベル"
   },
   "Game": {
     "battle_arena": "BATTLE ARENA",
