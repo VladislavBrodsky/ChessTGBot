@@ -158,8 +158,8 @@ export default function MembershipPage() {
 
     <div className="w-full max-w-sm flex flex-col items-center mx-auto space-y-8 px-4 relative z-10">
       {/* Header / Brand */}
-      <div className="flex flex-col items-center w-full relative">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2">
+      <div className="w-full flex items-center justify-between relative">
+        <div className="w-16 flex-shrink-0 flex items-center justify-start">
           <Link href={`/${locale}/settings`}>
             <motion.button
               whileHover={{ x: -2 }}
@@ -174,11 +174,13 @@ export default function MembershipPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-purple-400 text-3xl font-black tracking-tighter select-none uppercase premium-neon-text-glow flex items-center gap-2"
+          className="flex-1 text-center px-1 text-xl sm:text-2xl font-black tracking-tighter select-none uppercase premium-neon-text-glow flex items-center justify-center flex-wrap gap-1.5"
         >
-          {tm('title')}
-          <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide self-center normal-case">PRO</span>
+          <span>{tm('title')}</span>
+          <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide self-center normal-case flex-shrink-0">PRO</span>
         </motion.div>
+
+        <div className="w-16 flex-shrink-0" />
       </div>
       <div className="h-px w-12 bg-purple-500/35 -mt-4 shadow-[0_0_8px_#a855f7]" />
       <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-2">{tm('subtitle')}</span>
