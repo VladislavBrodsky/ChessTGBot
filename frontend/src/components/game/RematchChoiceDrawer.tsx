@@ -23,7 +23,7 @@ export default function RematchChoiceDrawer({
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={onClose}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
+        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style={{ touchAction: 'none' }}
       />
       <motion.div 
         initial={{ y: "100%" }} 

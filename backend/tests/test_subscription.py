@@ -130,6 +130,12 @@ async def test_puzzle_gates_with_expired_premium(client: AsyncClient, db_session
     )
     db_session.add(user)
     await db_session.commit()
+    await db_session.refresh(user)
+
+    from app.models.gamification import SolvedPuzzle
+    solved = SolvedPuzzle(user_id=user.id, puzzle_id=1, solved_at=yesterday)
+    db_session.add(solved)
+    await db_session.commit()
 
     init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'GatedUser'}))}"
     headers = {"X-Telegram-Init-Data": init_data}
@@ -184,3 +190,87 @@ async def test_xp_upgrade_for_expired_premium(client: AsyncClient, db_session: A
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     time_diff = db_user.premium_expires_at - now
     assert abs(time_diff.days - 365) <= 1
+
+
+@pytest.mark.asyncio
+async def test_subscription_expiry_and_notifications(db_session: AsyncSession):
+    # Skip if using mock session
+    if hasattr(db_session, "users"):
+        return
+
+    from app.services.subscription_service import SubscriptionService
+    
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    
+    # User 1: Already expired (expired 1 hour ago)
+    u1 = User(
+        telegram_id=999101,
+        first_name="User1",
+        is_premium=True,
+        premium_tier="premium",
+        premium_expires_at=now - timedelta(hours=1),
+        premium_warning_sent=0,
+        xp=100
+    )
+    # User 2: Expiring in 20 hours (within 1 day)
+    u2 = User(
+        telegram_id=999102,
+        first_name="User2",
+        is_premium=True,
+        premium_tier="premium",
+        premium_expires_at=now + timedelta(hours=20),
+        premium_warning_sent=0,
+        xp=100
+    )
+    # User 3: Expiring in 2.5 days (within 3 days)
+    u3 = User(
+        telegram_id=999103,
+        first_name="User3",
+        is_premium=True,
+        premium_tier="premium",
+        premium_expires_at=now + timedelta(days=2, hours=12),
+        premium_warning_sent=0,
+        xp=100
+    )
+    # User 4: Expiring in 5 days (not warning threshold yet)
+    u4 = User(
+        telegram_id=999104,
+        first_name="User4",
+        is_premium=True,
+        premium_tier="premium",
+        premium_expires_at=now + timedelta(days=5),
+        premium_warning_sent=0,
+        xp=100
+    )
+    
+    db_session.add_all([u1, u2, u3, u4])
+    await db_session.commit()
+    
+    # Run the subscription expiration checker
+    await SubscriptionService.check_and_notify_subscriptions(db_session)
+    
+    # Reload all users and assert results
+    res1 = await db_session.execute(select(User).where(User.telegram_id == 999101))
+    db_u1 = res1.scalars().first()
+    # Expired user should have premium removed
+    assert db_u1.is_premium is False
+    assert db_u1.premium_tier is None
+    
+    res2 = await db_session.execute(select(User).where(User.telegram_id == 999102))
+    db_u2 = res2.scalars().first()
+    # 1-day warning user should have premium_warning_sent = 1
+    assert db_u2.is_premium is True
+    assert db_u2.premium_warning_sent == 1
+    
+    res3 = await db_session.execute(select(User).where(User.telegram_id == 999103))
+    db_u3 = res3.scalars().first()
+    # 3-day warning user should have premium_warning_sent = 3
+    assert db_u3.is_premium is True
+    assert db_u3.premium_warning_sent == 3
+    
+    res4 = await db_session.execute(select(User).where(User.telegram_id == 999104))
+    db_u4 = res4.scalars().first()
+    # 5-day user should not have warning sent
+    assert db_u4.is_premium is True
+    assert db_u4.premium_warning_sent == 0
+

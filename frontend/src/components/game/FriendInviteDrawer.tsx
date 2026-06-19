@@ -60,7 +60,7 @@ export default function FriendInviteDrawer({
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={onClose}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" 
+        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
       <motion.div 
         initial={{ y: "100%" }} 

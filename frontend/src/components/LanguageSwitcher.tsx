@@ -87,7 +87,7 @@ export default function LanguageSwitcher() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsOpen(false)}
-                            className="absolute inset-0 bg-[rgba(0,0,0,0.4)]"
+                            className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
                         />
 
                         {/* Sheet Container */}

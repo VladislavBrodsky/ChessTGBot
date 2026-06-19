@@ -25,6 +25,7 @@ class User(Base):
     premium_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     balance: Mapped[int] = mapped_column(Integer, default=0)  # Stored in cents/smallest unit to avoid float issues
     wallet_address: Mapped[Optional[str]] = mapped_column(String, unique=True, index=True, nullable=True)  # TON Wallet Address
+    premium_warning_sent: Mapped[Optional[int]] = mapped_column(Integer, default=0, server_default="0", nullable=True)
 
     # Gamification & i18n
     level: Mapped[int] = mapped_column(Integer, default=1)

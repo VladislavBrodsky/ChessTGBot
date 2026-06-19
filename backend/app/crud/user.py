@@ -32,6 +32,7 @@ async def update_subscription(db: AsyncSession, user: User, tier: str, expires_a
     user.is_premium = True
     user.premium_tier = tier
     user.premium_expires_at = expires_at
+    user.premium_warning_sent = 0
     
     db.add(user)
     await db.commit()

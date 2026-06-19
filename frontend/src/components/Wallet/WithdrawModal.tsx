@@ -90,7 +90,7 @@ export default function WithdrawModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={() => { if (!processing) onClose(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]"
+        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
 
       {/* Content */}
