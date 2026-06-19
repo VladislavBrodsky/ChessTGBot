@@ -276,27 +276,32 @@ class TelegramService:
             xp_per_level = TelegramService.XP_PER_LEVEL
             xp_in_level = user_xp % xp_per_level
             filled = round((xp_in_level / xp_per_level) * 10)
-            bar = "▰" * filled + "▱" * (10 - filled)
+            bar = "█" * filled + "░" * (10 - filled)
             xp_to_next = xp_per_level - xp_in_level
             level_lbl = msgs.get("level_label", "LVL")
             xp_lbl = msgs.get("xp_label", "XP")
             next_lbl = msgs.get("next_label", "next")
 
+            DIV = "────────────────────────"
+
             welcome_msg = (
-                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n\n"
+                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
+                f"{DIV}\n"
                 f"{msgs['greeting'].format(name=name)}\n"
-                f"{msgs['sync']}\n\n"
-                f"🏅 {level_lbl} <b>{user_level}</b>   "
-                f"{xp_lbl} <b>{user_xp}</b>   ┊  +{xp_to_next} {next_lbl}\n"
-                f"<code>{bar}</code>\n\n"
+                f"{msgs['sync']}\n"
+                f"{DIV}\n\n"
+                f"🏅 {level_lbl} <b>{user_level}</b>  •  <b>{user_xp} {xp_lbl}</b>\n"
+                f"<code>{bar}</code>  <i>+{xp_to_next} {next_lbl}</i>\n\n"
                 f"{msgs['features_header']}\n\n"
                 f"{msgs['f1']}\n"
                 f"{msgs['f2']}\n"
                 f"{msgs['f3']}\n"
                 f"{msgs['f4']}\n\n"
+                f"{DIV}\n"
                 f"{msgs['ref_header']}\n"
                 f"<code>{referral_link}</code>\n"
                 f"<i>{msgs['ref_hint']}</i>\n\n"
+                f"{DIV}\n"
                 f"{msgs['cta']}"
             )
 
