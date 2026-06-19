@@ -388,27 +388,11 @@ async def test_chess_puzzles_endpoints(client, db_session):
         assert res.status_code == 200
         data = res.json()
         assert len(data) == 100
-        # Puzzle 1 is unlocked for everyone, puzzle 2 is premium locked
+        # Level 1 is unlocked for everyone, Level 30 is premium locked
         assert data[0]["is_premium_locked"] is False
-        assert data[1]["is_premium_locked"] is True
+        assert data[29]["is_premium_locked"] is True
 
-        # 4. Test fetch puzzle 2 (premium locked)
-        res_p2 = await client.get("/api/v1/gamification/academy/puzzles/2", headers=headers)
-        assert res_p2.status_code == 403 # Locked!
-
-        # 5. Make user Premium to test access
-        user.is_premium = True
-        db_session.add(user)
-        await db_session.commit()
-
-        # Retry fetching puzzle 2
-        res_p2_premium = await client.get("/api/v1/gamification/academy/puzzles/2", headers=headers)
-        assert res_p2_premium.status_code == 200
-        p2_data = res_p2_premium.json()
-        assert p2_data["id"] == 2
-        assert "fen" in p2_data
-
-        # 6. Verify solution for puzzle 1
+        # 4. Verify solution for puzzle 1
         res_verify = await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"solution": ["g5f7"]}, headers=headers)
         assert res_verify.status_code == 200
         verify_data = res_verify.json()
@@ -417,11 +401,34 @@ async def test_chess_puzzles_endpoints(client, db_session):
         await db_session.refresh(user)
         assert user.elo == 1005 # Gained 5 ELO
 
-        # 7. Query puzzles again to verify solved status from database
+        # 5. Query puzzles again to verify solved status from database
         res_after = await client.get("/api/v1/gamification/academy/puzzles", headers=headers)
         assert res_after.status_code == 200
         data_after = res_after.json()
         assert data_after[0]["is_solved"] is True
+
+        # 6. Solve Levels 2 to 29 sequentially to reach the Premium Level 30 threshold
+        from app.models.gamification import SolvedPuzzle
+        for lvl in range(2, 30):
+            solved = SolvedPuzzle(user_id=user.id, puzzle_id=lvl)
+            db_session.add(solved)
+        await db_session.commit()
+
+        # 7. Test fetch puzzle 30 (premium locked)
+        res_p30 = await client.get("/api/v1/gamification/academy/puzzles/30", headers=headers)
+        assert res_p30.status_code == 403 # Locked!
+
+        # 8. Make user Premium to test access
+        user.is_premium = True
+        db_session.add(user)
+        await db_session.commit()
+
+        # Retry fetching puzzle 30
+        res_p30_premium = await client.get("/api/v1/gamification/academy/puzzles/30", headers=headers)
+        assert res_p30_premium.status_code == 200
+        p30_data = res_p30_premium.json()
+        assert p30_data["id"] == 30
+        assert "fen" in p30_data
 
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

@@ -952,7 +952,7 @@ async def test_referral_ach_self_healing(db_session: AsyncSession):
 
     # Verify achievement progress has been synced to 3
     result = await db_session.execute(
-        select(UserTask).where(and_(UserTask.user_id == referrer.id, UserTask.task_id == ach.id))
+        select(UserTask).where(UserTask.user_id == referrer.id, UserTask.task_id == ach.id)
     )
     user_task = result.scalars().first()
     assert user_task is not None

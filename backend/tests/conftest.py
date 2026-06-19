@@ -150,6 +150,27 @@ async def db_session(test_engine):
     async with session_factory() as session:
         yield session
         await session.rollback()
+        
+        # Clean up database tables to prevent cross-test state leakage
+        from sqlalchemy import text
+        tables = [
+            "unlocked_puzzles",
+            "solved_puzzles",
+            "unlocked_lessons",
+            "referrals",
+            "user_tasks",
+            "tasks",
+            "game_history",
+            "transactions",
+            "xp_transactions",
+            "users"
+        ]
+        for table in tables:
+            try:
+                await session.execute(text(f"DELETE FROM {table};"))
+            except Exception:
+                pass
+        await session.commit()
 
 @pytest_asyncio.fixture
 async def client(db_session):
