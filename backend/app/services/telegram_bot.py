@@ -282,28 +282,21 @@ class TelegramService:
             xp_lbl = msgs.get("xp_label", "XP")
             next_lbl = msgs.get("next_label", "next")
 
-            DIV = "━━━━━━━━━━━━━━━━━━━━━━"
-
             welcome_msg = (
-                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
-                f"{DIV}\n"
+                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n\n"
                 f"{msgs['greeting'].format(name=name)}\n"
-                f"{msgs['sync']}\n"
-                f"{DIV}\n\n"
+                f"{msgs['sync']}\n\n"
                 f"🏅 {level_lbl} <b>{user_level}</b>   "
                 f"{xp_lbl} <b>{user_xp}</b>   ┊  +{xp_to_next} {next_lbl}\n"
                 f"<code>{bar}</code>\n\n"
-                f"{DIV}\n"
                 f"{msgs['features_header']}\n\n"
                 f"{msgs['f1']}\n"
                 f"{msgs['f2']}\n"
                 f"{msgs['f3']}\n"
-                f"{msgs['f4']}\n"
-                f"{DIV}\n\n"
+                f"{msgs['f4']}\n\n"
                 f"{msgs['ref_header']}\n"
                 f"<code>{referral_link}</code>\n"
                 f"<i>{msgs['ref_hint']}</i>\n\n"
-                f"{DIV}\n"
                 f"{msgs['cta']}"
             )
 
