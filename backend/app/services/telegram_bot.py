@@ -228,16 +228,26 @@ class TelegramService:
                 db_user = result.scalars().first()
 
                 if not db_user:
+                    from app.services.gamification_service import GamificationService
+                    ref_code = await GamificationService.generate_referral_code(db)
                     db_user = User(
                         telegram_id=user.id,
                         first_name=user.first_name,
                         last_name=user.last_name,
                         username=user.username,
                         preferred_language=tg_lang,
-                        photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot)
+                        photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot),
+                        referral_code=ref_code
                     )
                     db.add(db_user)
                     await db.commit()
+
+                    # Process referral if start_param is present and starts with ref_
+                    if start_param and start_param.startswith("ref_"):
+                        try:
+                            await GamificationService.process_referral(db, db_user, start_param)
+                        except Exception as ref_err:
+                            logger.error(f"Error processing referral in start_command: {ref_err}")
                 else:
                     # If the user has no DB language set yet, save the Telegram one
                     if not db_user.preferred_language or db_user.preferred_language == "en":
