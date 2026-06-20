@@ -303,13 +303,18 @@ class GamificationService:
                 import logging
                 logger = logging.getLogger(__name__)
                 
-                ref_user_display = f"@{new_user.username}" if new_user.username else f"User {new_user.first_name}"
+                username_display = f" (@{new_user.username})" if new_user.username else ""
+                full_name = f"{new_user.first_name} {new_user.last_name or ''}".strip()
                 msg = (
-                    f"🎉 <b>New Recruit Joined!</b>\n\n"
-                    f"• <b>User:</b> {ref_user_display}\n"
-                    f"• <b>Name:</b> {new_user.first_name} {new_user.last_name or ''}\n"
-                    f"• <b>Your Sign-Up Reward:</b> +${referrer_bonus / 100:.2f} USDT & +{referrer_xp} XP!\n\n"
-                    f"<i>Your referral tree is growing! Keep sharing your link. ♟️🚀</i>"
+                    f"🚀 <b>NEW RECRUIT SECURED!</b>\n\n"
+                    f"🔥 <b>Player:</b> {full_name}{username_display} is now in your matrix!\n\n"
+                    f"🎁 <b>Your Sign-Up Reward:</b>\n"
+                    f"💰 <b>+${referrer_bonus / 100:.2f} USDT</b> (Credited instantly)\n"
+                    f"🏅 <b>+{referrer_xp} XP</b> (Boosts your level)\n\n"
+                    f"⚡ <b>Earn from every move they make:</b>\n"
+                    f"You are now earning a <b>10% commission</b> on all wagers from their chess duels!\n\n"
+                    f"👑 <b>Want 2x rewards?</b> Upgrade to <b>Premium</b> to double your passive income from their games and unlock 6 levels of commission splits!\n\n"
+                    f"<i>Don't stop now—the more players you recruit, the bigger your passive network payout! ♟️💸</i>"
                 )
                 await TelegramService.send_notification(referrer.telegram_id, msg)
             except Exception as e:
