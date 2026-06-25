@@ -1,5 +1,8 @@
 import asyncio
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 from app.core.socket import sio
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
@@ -12,7 +15,8 @@ from app.models.transaction import Transaction
 from sqlalchemy import select, and_
 
 async def refund_pending_matchmaking_wager(db, user_id: int):
-    user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
+    # Fetch user just to make sure they exist
+    user = await user_crud.get_user_by_telegram_id(db, user_id)
     if user:
         result = await db.execute(
             select(Transaction).where(
@@ -27,12 +31,13 @@ async def refund_pending_matchmaking_wager(db, user_id: int):
         tx = result.scalars().first()
         if tx:
             refund_amount = abs(tx.amount)
-            user.balance += refund_amount
+            # Atomically credit refund
+            await user_crud.atomic_credit(db, user_id, refund_amount)
             tx.status = "failed"
             tx.reference_id = "matchmaking_refunded"
-            db.add(user)
             db.add(tx)
             await db.commit()
+            logger.info(f"[TRANSACTION] user_id={user_id} | type=game_refund | amount={refund_amount} cents (${refund_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking_refunded | status=completed")
             print(f"Refunded matchmaking wager of {refund_amount} to User {user_id}")
             return True
     return False
@@ -196,14 +201,13 @@ async def join_matchmaking(sid, data):
                 await sio.emit('matchmaking_error', {'message': 'Already in matchmaking queue.'}, room=sid)
                 return
 
-            if user.balance < bid_amount:
+            # Atomically debit wager from player's balance
+            user = await user_crud.atomic_debit(db, user_id, bid_amount)
+            if not user:
                 await sio.emit('matchmaking_error', {
                     'message': 'Insufficient funds. Please top up your Web3 Wallet.'
                 }, room=sid)
                 return
-
-            user.balance -= bid_amount
-            db.add(user)
 
             # Log pending transaction
             tx = Transaction(
@@ -215,6 +219,7 @@ async def join_matchmaking(sid, data):
             )
             db.add(tx)
             await db.commit()
+            logger.info(f"[TRANSACTION] user_id={user_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking | status=pending")
             user_elo = getattr(user, 'elo', 1000)
 
         # 2. Add to matchmaking queue
@@ -305,6 +310,8 @@ async def join_matchmaking(sid, data):
                 state.black_elo = black.elo if black else 1000
                 
                 await db.commit()
+                logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+                logger.info(f"[TRANSACTION] user_id={state.black_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
  
             # Save state after caching players
             await service.session_manager.save_game(game_id, state)
@@ -588,41 +595,48 @@ async def accept_rematch(sid, data):
                 import uuid
                 
                 async with AsyncSessionLocal() as db:
-                    player1 = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
-                    player2 = await user_crud.get_user_by_telegram_id(db, opponent_id, for_update=True)
+                    player1 = await user_crud.get_user_by_telegram_id(db, user_id)
+                    player2 = await user_crud.get_user_by_telegram_id(db, opponent_id)
                     
-                    if player1 and player2:
-                        if player1.balance < wager or player2.balance < wager:
+                    if not player1 or not player2:
+                        await sio.emit('error', {'message': 'Rematch players profiles not found'}, room=sid)
+                        return
+                    
+                    if wager > 0:
+                        p1_debited = await user_crud.atomic_debit(db, user_id, wager)
+                        if not p1_debited:
                             await sio.emit('error', {'message': 'Insufficient funds to start rematch'}, room=sid)
                             return
-                            
-                        if wager > 0:
-                            player1.balance -= wager
-                            player2.balance -= wager
-                            db.add(player1)
-                            db.add(player2)
-                            
-                            tx1 = Transaction(
-                                user_id=player1.telegram_id,
-                                type="game_wager",
-                                amount=-wager,
-                                fee=0,
-                                status="completed",
-                                reference_id=f"rematch_wager_{game_id}"
-                            )
-                            tx2 = Transaction(
-                                user_id=player2.telegram_id,
-                                type="game_wager",
-                                amount=-wager,
-                                fee=0,
-                                status="completed",
-                                reference_id=f"rematch_wager_{game_id}"
-                            )
-                            db.add(tx1)
-                            db.add(tx2)
-                            await db.commit()
-                        else:
-                            await db.commit()
+                        p2_debited = await user_crud.atomic_debit(db, opponent_id, wager)
+                        if not p2_debited:
+                            # Refund player1
+                            await user_crud.atomic_credit(db, user_id, wager)
+                            await sio.emit('error', {'message': 'Opponent has insufficient funds for rematch'}, room=sid)
+                            return
+                        
+                        tx1 = Transaction(
+                            user_id=user_id,
+                            type="game_wager",
+                            amount=-wager,
+                            fee=0,
+                            status="completed",
+                            reference_id=f"rematch_wager_{game_id}"
+                        )
+                        tx2 = Transaction(
+                            user_id=opponent_id,
+                            type="game_wager",
+                            amount=-wager,
+                            fee=0,
+                            status="completed",
+                            reference_id=f"rematch_wager_{game_id}"
+                        )
+                        db.add(tx1)
+                        db.add(tx2)
+                        await db.commit()
+                        logger.info(f"[TRANSACTION] user_id={user_id} | type=game_wager | amount=-{wager} cents (-${wager/100:.2f}) | fee=0 cents ($0.00) | reference_id=rematch_wager_{game_id} | status=completed")
+                        logger.info(f"[TRANSACTION] user_id={opponent_id} | type=game_wager | amount=-{wager} cents (-${wager/100:.2f}) | fee=0 cents ($0.00) | reference_id=rematch_wager_{game_id} | status=completed")
+                    else:
+                        await db.commit()
                             
                         # Delete the pending rematch key to prevent replay attacks
                         await service.redis.delete(f"pending_rematch:{game_id}")

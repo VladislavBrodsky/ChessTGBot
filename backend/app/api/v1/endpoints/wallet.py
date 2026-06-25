@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
+
+logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
 from sqlalchemy import desc
 from app.core.database import get_db
@@ -321,8 +324,9 @@ async def deposit_funds(
             raise HTTPException(status_code=500, detail=f"Invoices API request error: {e}")
 
     # Mock/simulated fallback if TON_CONSOLE_TOKEN is not configured
-    current_user.balance += credited_amount
-    db.add(current_user)
+    updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, credited_amount)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
 
     tx_deposit = Transaction(
         user_id=current_user.telegram_id,
@@ -335,7 +339,7 @@ async def deposit_funds(
     db.add(tx_deposit)
 
     await db.commit()
-    await db.refresh(current_user)
+    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=deposit | amount={credited_amount} cents (${credited_amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id=web3_deposit_mock | status=completed")
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -344,7 +348,7 @@ async def deposit_funds(
             f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
             f"• <b>Platform Deposit Fee (5%):</b> -${fee / 100:.2f} USDT\n"
             f"• <b>Reference ID:</b> <code>{tx_deposit.reference_id}</code>\n\n"
-            f"<i>Your updated platform balance is {current_user.balance / 100:.2f} USDT. Ready to bid! ♟️</i>"
+            f"<i>Your updated platform balance is {updated_user.balance / 100:.2f} USDT. Ready to bid! ♟️</i>"
         )
         await TelegramService.send_notification(current_user.telegram_id, notification_text)
     except Exception as e:
@@ -354,7 +358,7 @@ async def deposit_funds(
         status="success",
         credited_amount=credited_amount,
         fee=fee,
-        new_balance=current_user.balance
+        new_balance=updated_user.balance
     )
 
 @router.post("/withdraw", response_model=WithdrawResponse)
@@ -376,21 +380,14 @@ async def withdraw_funds(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid TON Wallet address format")
     
-    # Fetch user with write lock to prevent race conditions or double-spending
-    user_result = await db.execute(
-        select(User).filter(User.telegram_id == current_user.telegram_id).with_for_update()
-    )
-    db_user = user_result.scalars().first()
-    if not db_user or db_user.balance < request.amount:
+    # Atomically debit — returns None if insufficient funds
+    updated_user = await user_crud.atomic_debit(db, current_user.telegram_id, request.amount)
+    if not updated_user:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
-
-    # Deduct balance first (locked/reserved during pending review)
-    db_user.balance -= request.amount
-    db.add(db_user)
 
     # Log pending review transaction
     tx_withdraw = Transaction(
-        user_id=db_user.telegram_id,
+        user_id=updated_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
         fee=0,
@@ -399,7 +396,7 @@ async def withdraw_funds(
     )
     db.add(tx_withdraw)
     await db.commit()
-    await db.refresh(db_user)
+    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_withdraw.reference_id} | status=completed")
 
     # Send automated Telegram Bot notification
     try:
@@ -410,16 +407,16 @@ async def withdraw_funds(
             f"• <b>Requested Amount:</b> -${request.amount / 100:.2f} USDT\n"
             f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n"
             f"• <b>Status:</b> Pending Admin Review ⏳\n\n"
-            f"<i>Your updated platform balance is {db_user.balance / 100:.2f} USDT. We will notify you once processed!</i>"
+            f"<i>Your updated platform balance is {updated_user.balance / 100:.2f} USDT. We will notify you once processed!</i>"
         )
-        await TelegramService.send_notification(db_user.telegram_id, notification_text)
+        await TelegramService.send_notification(updated_user.telegram_id, notification_text)
     except Exception:
         pass
 
     return WithdrawResponse(
         status="pending_review",
         amount=request.amount,
-        new_balance=db_user.balance
+        new_balance=updated_user.balance
     )
 
 
@@ -709,15 +706,18 @@ async def receive_ton_deposit_webhook(
         select(Transaction).filter(Transaction.reference_id == tx_hash)
     )
     if existing_tx_result.scalars().first():
-        return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": user.balance}
+        user_result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+        user = user_result.scalars().first()
+        return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": user.balance if user else 0}
 
     # Process automatic 5% platform topup fee
     fee = int(amount_cents * 0.05)
     credited_amount = amount_cents - fee
 
-    # Credit user balance
-    user.balance += credited_amount
-    db.add(user)
+    # Atomically credit user balance
+    updated_user = await user_crud.atomic_credit(db, telegram_id, credited_amount)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User associated with comment not found")
 
     # Log deposit transaction
     tx_deposit = Transaction(
@@ -742,7 +742,8 @@ async def receive_ton_deposit_webhook(
     db.add(tx_commission)
 
     await db.commit()
-    await db.refresh(user)
+    logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit | amount={credited_amount} cents (${credited_amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_hash} | status=completed")
+    logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit_fee | amount=-{fee} cents (-${fee/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_commission.reference_id} | status=completed")
 
     # Dispatch Telegram Bot notification
     try:
@@ -754,7 +755,7 @@ async def receive_ton_deposit_webhook(
             f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
             f"• <b>Platform Top-Up Fee (5%):</b> -${fee / 100:.2f} USDT (Routed to Company Wallet)\n"
             f"• <b>Transaction ID:</b> <code>{tx_hash[:10]}...{tx_hash[-8:] if len(tx_hash) > 8 else ''}</code>\n\n"
-            f"<i>Your balance has been automatically synchronized. Updated Platform Balance: {user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
+            f"<i>Your balance has been automatically synchronized. Updated Platform Balance: {updated_user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
         )
         await TelegramService.send_notification(telegram_id, notification_text)
     except Exception as e:
@@ -764,7 +765,7 @@ async def receive_ton_deposit_webhook(
         "status": "success",
         "credited_amount": credited_amount,
         "fee": fee,
-        "new_balance": user.balance
+        "new_balance": updated_user.balance
     }
 
 
@@ -1142,17 +1143,10 @@ async def reject_withdrawal(
     if not tx:
         raise HTTPException(status_code=404, detail="Pending withdrawal transaction not found")
         
-    # Lock user to refund
-    user_result = await db.execute(
-        select(User).where(User.telegram_id == tx.user_id).with_for_update()
-    )
-    db_user = user_result.scalars().first()
-    if not db_user:
+    # Refund balance atomically (tx.amount is negative for withdrawals)
+    updated_user = await user_crud.atomic_credit(db, tx.user_id, abs(tx.amount))
+    if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
-        
-    # Refund balance (tx.amount is negative for withdrawals)
-    db_user.balance += abs(tx.amount)
-    db.add(db_user)
     
     tx.status = "failed"
     db.add(tx)

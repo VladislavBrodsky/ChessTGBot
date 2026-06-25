@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import update
 from app.models.user import User
 from datetime import datetime
 
@@ -85,3 +86,53 @@ async def update_balance(db: AsyncSession, user: User, amount: int):
     await db.commit()
     await db.refresh(user)
     return user
+
+async def atomic_credit(db: AsyncSession, telegram_id: int, amount: int, commit: bool = True) -> User:
+    """
+    Atomically credit a user's balance using SQL-level UPDATE.
+    Always succeeds (amount must be positive).
+    Returns the refreshed User object.
+    """
+    if amount <= 0:
+        raise ValueError("Credit amount must be positive")
+
+    stmt = (
+        update(User)
+        .where(User.telegram_id == telegram_id)
+        .values(balance=User.balance + amount)
+    )
+    await db.execute(stmt)
+    if commit:
+        await db.commit()
+
+    # Re-fetch user with updated balance
+    result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+    return result.scalars().first()
+
+async def atomic_debit(db: AsyncSession, telegram_id: int, amount: int, commit: bool = True) -> User | None:
+    """
+    Atomically debit a user's balance using SQL-level UPDATE with a WHERE guard.
+    The WHERE clause ensures balance >= amount, preventing negative balances
+    and eliminating race conditions from concurrent requests.
+
+    Returns the refreshed User object on success, or None if insufficient funds.
+    """
+    if amount <= 0:
+        raise ValueError("Debit amount must be positive")
+
+    stmt = (
+        update(User)
+        .where(User.telegram_id == telegram_id, User.balance >= amount)
+        .values(balance=User.balance - amount)
+    )
+    result = await db.execute(stmt)
+    if commit:
+        await db.commit()
+
+    if result.rowcount == 0:
+        # No rows updated — insufficient balance
+        return None
+
+    # Re-fetch user with updated balance
+    user_result = await db.execute(select(User).filter(User.telegram_id == telegram_id))
+    return user_result.scalars().first()

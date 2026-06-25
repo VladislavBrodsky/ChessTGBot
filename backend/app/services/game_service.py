@@ -4,6 +4,9 @@ import time
 import asyncio
 import json
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
 from typing import Optional, Dict
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -835,9 +838,11 @@ class GameService:
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
 
-                    # Award payout to white
-                    white_user.balance += payout_amount
-                    session.add(white_user)
+                    # Atomically credit payout to white
+                    white_user = await user_crud.atomic_credit(session, white_id, payout_amount, commit=False)
+                    if not white_user:
+                        logger.error(f"CRITICAL: Failed to credit game win to user {white_id} for game {game_id}. Payout: {payout_amount}")
+                        return
                     
                     # Win Transaction
                     win_tx = Transaction(
@@ -859,6 +864,9 @@ class GameService:
                         status="completed"
                     )
                     session.add(rake_tx)
+                    
+                    logger.info(f"[TRANSACTION] user_id={white_id} | type=game_win | amount={payout_amount} cents (${payout_amount/100:.2f}) | fee={platform_rake + referral_fee} cents (${(platform_rake + referral_fee)/100:.2f}) | reference_id={game_id} | status=completed")
+                    logger.info(f"[TRANSACTION] user_id={white_id} | type=game_rake | amount=-{platform_rake} cents (-${platform_rake/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
 
                     # Prepare notifications
                     win_msg = (
@@ -887,9 +895,11 @@ class GameService:
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
 
-                    # Award payout to black
-                    black_user.balance += payout_amount
-                    session.add(black_user)
+                    # Atomically credit payout to black
+                    black_user = await user_crud.atomic_credit(session, black_id, payout_amount, commit=False)
+                    if not black_user:
+                        logger.error(f"CRITICAL: Failed to credit game win to user {black_id} for game {game_id}. Payout: {payout_amount}")
+                        return
                     
                     # Win Transaction
                     win_tx = Transaction(
@@ -911,6 +921,9 @@ class GameService:
                         status="completed"
                     )
                     session.add(rake_tx)
+                    
+                    logger.info(f"[TRANSACTION] user_id={black_id} | type=game_win | amount={payout_amount} cents (${payout_amount/100:.2f}) | fee={platform_rake + referral_fee} cents (${(platform_rake + referral_fee)/100:.2f}) | reference_id={game_id} | status=completed")
+                    logger.info(f"[TRANSACTION] user_id={black_id} | type=game_rake | amount=-{platform_rake} cents (-${platform_rake/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
 
                     # Prepare notifications
                     win_msg = (
@@ -933,11 +946,11 @@ class GameService:
                     notifications_to_send.append((black_user.telegram_id, win_msg))
                     notifications_to_send.append((white_user.telegram_id, lose_msg))
                 else:
-                    # Draw / Stalemate: Refund wagers in full to both players
-                    white_user.balance += bid_amount
-                    black_user.balance += bid_amount
-                    session.add(white_user)
-                    session.add(black_user)
+                    # Draw / Stalemate: Atomically refund wagers in full to both players
+                    refunded_white = await user_crud.atomic_credit(session, white_id, bid_amount, commit=False)
+                    refunded_black = await user_crud.atomic_credit(session, black_id, bid_amount, commit=False)
+                    if not refunded_white or not refunded_black:
+                        logger.error(f"CRITICAL: Failed to refund draw wagers for game {game_id}. White refunded: {bool(refunded_white)}, Black refunded: {bool(refunded_black)}")
                     
                     # Refund Transactions
                     tx_w = Transaction(
@@ -958,6 +971,9 @@ class GameService:
                     )
                     session.add(tx_w)
                     session.add(tx_b)
+                    
+                    logger.info(f"[TRANSACTION] user_id={white_id} | type=game_refund | amount={bid_amount} cents (${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+                    logger.info(f"[TRANSACTION] user_id={black_id} | type=game_refund | amount={bid_amount} cents (${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
 
                     # Prepare notifications
                     draw_msg_w = (
