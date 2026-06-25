@@ -271,7 +271,8 @@ class TelegramService:
             if start_param:
                 web_app_url += f"&startapp={start_param}"
 
-            bot_username = settings.TELEGRAM_BOT_USERNAME.lstrip("@")
+            raw_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
+            bot_username = raw_username.lstrip("@")
             referral_link = f"https://t.me/{bot_username}?start=ref_{referral_code}"
 
             # Resolve localised strings (fallback to English)
@@ -340,7 +341,7 @@ class TelegramService:
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
         except Exception as e:
-            logger.error(f"Error in start command: {e}")
+            logger.error(f"Error in start command: {e}", exc_info=True)
             await update.message.reply_text("An error occurred while starting the bot. Please try again later.")
 
     @staticmethod
