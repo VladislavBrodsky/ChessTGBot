@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
+import { useUser } from "@/context/UserContext";
 
 interface DepositModalProps {
   onClose: () => void;
@@ -33,6 +34,7 @@ export default function DepositModal({
 }: DepositModalProps) {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
+  const { stats } = useUser();
 
   const [depositAmount, setDepositAmount] = useState<string>("10");
   const [currency, setCurrency] = useState<'TON' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
@@ -54,7 +56,7 @@ export default function DepositModal({
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
   const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
 
-  const tgId = tgUser?.id || 1029384;
+  const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
 
   // Load prices and master wallet address on mount
