@@ -239,7 +239,11 @@ export default function LobbyDepositDrawer({
 
     } catch (err: any) {
       console.error(err);
-      setDepositError(err.message || "Transaction cancelled or failed.");
+      let msg = err.message || "Transaction cancelled or failed.";
+      if (msg.toLowerCase().includes("enough funds") || msg.toLowerCase().includes("insufficient funds")) {
+        msg = "Insufficient Gas: To complete this deposit, your wallet needs a tiny amount of native TON (or GRAM) to pay blockchain network gas fees. Alternatively, use the 'Pay Manually' option below.";
+      }
+      setDepositError(msg);
       telegramHaptic('error');
     } finally {
       setIsDepositing(false);
