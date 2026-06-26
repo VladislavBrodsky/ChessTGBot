@@ -496,8 +496,32 @@ class TelegramService:
             
             while True:
                 try:
+                    # Verify database health before participating in leader election
+                    from sqlalchemy import text
+                    db_healthy = True
+                    try:
+                        async with AsyncSessionLocal() as session:
+                            await session.execute(text("SELECT 1"))
+                    except Exception as db_err:
+                        db_healthy = False
+                        logger.error(f"❌ [LEADER ELECTION] Database health check failed, instance cannot be leader: {db_err}")
+
                     redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
-                    
+
+                    if not db_healthy:
+                        if cls.is_currently_leader:
+                            logger.warning("⚠️ [LEADER ELECTION] Database unhealthy. Demoting leader to PASSIVE...")
+                            cls.is_currently_leader = False
+                            await cls.stop_receiver()
+                        
+                        current_owner = await redis_client.get(lock_key)
+                        if current_owner == instance_id:
+                            await redis_client.delete(lock_key)
+                        
+                        await redis_client.close()
+                        await asyncio.sleep(10)
+                        continue
+
                     # Try to acquire or extend leadership lease
                     # Lock holds for 20 seconds, we check/renew every 10 seconds.
                     acquired = await redis_client.set(lock_key, instance_id, nx=True, ex=20)
