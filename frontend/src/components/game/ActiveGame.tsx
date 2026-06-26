@@ -15,7 +15,7 @@ import { useGameSocket } from '@/hooks/useGameSocket';
 import { useAudioSynth } from '@/hooks/useAudioSynth';
 import { useChessClock } from '@/hooks/useChessClock';
 import { useNavbarHide } from '@/context/NavbarContext';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 
@@ -68,6 +68,38 @@ function getMovesSanList(moveHistory: string[]): { white: string; black?: string
   return result;
 }
 
+interface PlayerAvatarProps {
+  userId?: number | null;
+  fallbackText: string;
+  isBot?: boolean;
+  textClassName?: string;
+}
+
+function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: PlayerAvatarProps) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [userId]);
+
+  if (isBot) {
+    return <FaRobot className="text-xl text-brand-primary opacity-40" />;
+  }
+
+  if (!userId || hasError) {
+    return <span className={textClassName || "text-xl font-bold text-brand-primary opacity-20"}>{fallbackText}</span>;
+  }
+
+  return (
+    <img
+      src={getFullPhotoUrl(`/api/v1/users/avatar/${userId}`)}
+      alt=""
+      className="w-full h-full object-cover"
+      onError={() => setHasError(true)}
+    />
+  );
+}
+
 export default function ActiveGame({ gameId }: ActiveGameProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -94,6 +126,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   } | null>(null);
 
   const isWhite = gameState ? gameState.white_player_id === userId : true;
+  const opponentId = isWhite ? gameState?.black_player_id : gameState?.white_player_id;
 
   const gameStateRef = useRef(gameState);
   const userIdRef = useRef(userId);
@@ -714,11 +747,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
-              {isBotGame ? (
-                <FaRobot className="text-xl text-brand-primary opacity-40" />
-              ) : (
-                <span className="text-xl font-bold text-brand-primary opacity-20">?</span>
-              )}
+              <PlayerAvatar 
+                userId={opponentId} 
+                fallbackText="?" 
+                isBot={isBotGame} 
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
@@ -788,8 +821,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         {/* Player Widget */}
         <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
-              <span className="text-xs font-black text-brand-void uppercase tracking-tighter">{tg('you')}</span>
+            <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm overflow-hidden">
+              <PlayerAvatar 
+                userId={userId} 
+                fallbackText={tg('you')} 
+                textClassName="text-xs font-black text-brand-void uppercase tracking-tighter" 
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">

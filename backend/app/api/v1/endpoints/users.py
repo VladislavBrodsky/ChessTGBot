@@ -203,14 +203,20 @@ async def get_user_avatar(telegram_id: int):
     Does not require authentication (public resource).
     """
     import os
+    import time
     from fastapi.responses import FileResponse
     avatar_dir = "static_avatars"
     os.makedirs(avatar_dir, exist_ok=True)
     file_path = os.path.join(avatar_dir, f"{telegram_id}.jpg")
     
-    # Serve cached version if exists
+    # Serve cached version if exists and is newer than 12 hours (43200 seconds)
     if os.path.exists(file_path):
-        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+        try:
+            mtime = os.path.getmtime(file_path)
+            if time.time() - mtime < 43200:
+                return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=43200"})
+        except Exception:
+            pass
         
     # Fetch from Telegram Bot API
     from app.services.telegram_bot import TelegramService
@@ -226,11 +232,16 @@ async def get_user_avatar(telegram_id: int):
                     if res.status_code == 200:
                         with open(file_path, "wb") as f:
                             f.write(res.content)
-                        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+                        os.utime(file_path, None)
+                        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=43200"})
         except Exception as e:
             import logging
             logging.getLogger(__name__).error(f"Failed to fetch/cache avatar in endpoint for {telegram_id}: {e}")
             
+    # Fallback to older cached file if fetching from Telegram failed
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
+        
     raise HTTPException(status_code=404, detail="Avatar not found")
 
 @router.get("/{telegram_id}", response_model=UserStats)
@@ -307,6 +318,15 @@ async def sync_user(
                 db.add(current_user)
                 await db.commit()
                 await db.refresh(current_user)
+                
+                # Delete cached avatar so it is re-fetched on next request
+                import os
+                cached_avatar = f"static_avatars/{current_user.telegram_id}.jpg"
+                if os.path.exists(cached_avatar):
+                    try:
+                        os.remove(cached_avatar)
+                    except Exception:
+                        pass
     except Exception:
         pass
 

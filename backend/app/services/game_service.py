@@ -315,6 +315,20 @@ class GameService:
             new_state.time_control_seconds = current_state.time_control_seconds
             new_state.move_history = current_state.move_history + [uci]
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+            
+            # Preserve cached player info (names and ELOs)
+            new_state.white_username = current_state.white_username
+            new_state.black_username = current_state.black_username
+            new_state.white_elo = current_state.white_elo
+            new_state.black_elo = current_state.black_elo
+            new_state.white_elo_before = current_state.white_elo_before
+            new_state.white_elo_after = current_state.white_elo_after
+            new_state.black_elo_before = current_state.black_elo_before
+            new_state.black_elo_after = current_state.black_elo_after
+            new_state.payout_amount = current_state.payout_amount
+            new_state.platform_rake = current_state.platform_rake
+            new_state.white_xp_gained = current_state.white_xp_gained
+            new_state.black_xp_gained = current_state.black_xp_gained
 
             # Update Clocks
             now = time.time()
@@ -358,6 +372,20 @@ class GameService:
             new_state.time_control_seconds = current_state.time_control_seconds
             new_state.move_history = current_state.move_history + [bot_move_uci]
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+            
+            # Preserve cached player info (names and ELOs)
+            new_state.white_username = current_state.white_username
+            new_state.black_username = current_state.black_username
+            new_state.white_elo = current_state.white_elo
+            new_state.black_elo = current_state.black_elo
+            new_state.white_elo_before = current_state.white_elo_before
+            new_state.white_elo_after = current_state.white_elo_after
+            new_state.black_elo_before = current_state.black_elo_before
+            new_state.black_elo_after = current_state.black_elo_after
+            new_state.payout_amount = current_state.payout_amount
+            new_state.platform_rake = current_state.platform_rake
+            new_state.white_xp_gained = current_state.white_xp_gained
+            new_state.black_xp_gained = current_state.black_xp_gained
 
             # Update Clocks
             now = time.time()
