@@ -1,0 +1,9 @@
+1:"$Sreact.fragment"
+2:I[1304,[],"ClientPageRoot"]
+3:I[6793,["711","static/chunks/8e1d74a4-fbda4969fcbf5b7b.js","99","static/chunks/6809c4f0-f781abde6f753887.js","989","static/chunks/38170ce7-dda8b3d61f1caaad.js","84","static/chunks/9e84c5da-8d7ad5c186cb48e1.js","779","static/chunks/779-049188cc6a80b6ef.js","500","static/chunks/500-5d45efbf86b8d36e.js","170","static/chunks/170-21f22f136d1140cd.js","747","static/chunks/747-5360a5435b65d942.js","798","static/chunks/798-478c2ba38963e770.js","748","static/chunks/748-38c3bf08cfae681b.js","69","static/chunks/69-d4ce59e9bd34a7fd.js","703","static/chunks/703-73701c6e18283e76.js","892","static/chunks/app/%5Blocale%5D/game/page-9fbb5849b45f0fdf.js"],"default"]
+6:I[484,[],"OutletBoundary"]
+7:"$Sreact.suspense"
+0:{"buildId":"nazJ7_JWk50j9lCqvHKOm","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{"locale":"de"},"promises":["$@4","$@5"]}}],null,["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+4:{}
+5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null
