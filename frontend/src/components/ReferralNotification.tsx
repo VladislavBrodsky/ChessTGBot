@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { FaCoins, FaCheck } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 
+import { usePathname, useSearchParams } from 'next/navigation';
+
 // Simulated referral usernames
 const SIMULATED_USERNAMES = [
   'ton_wizard', 'crypto_knight', 'chess_master99', 'sol_rider', 'vlad_k',
@@ -31,9 +33,20 @@ interface NotificationData {
 
 export default function ReferralNotification() {
   const t = useTranslations('Referral');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const gameId = searchParams?.get('id') || '';
+  const isGameActive = pathname?.includes('/game') && gameId !== '';
+
   const [notification, setNotification] = useState<NotificationData | null>(null);
 
   useEffect(() => {
+    // If currently playing a game, clear any active notification and don't schedule new ones
+    if (isGameActive) {
+      setNotification(null);
+      return;
+    }
+
     // Schedule a notification at random intervals between 45 and 90 seconds
     let timeoutId: NodeJS.Timeout;
 
@@ -68,7 +81,7 @@ export default function ReferralNotification() {
     timeoutId = setTimeout(triggerNotification, 30000);
 
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [isGameActive]);
 
   return (
     <div className="fixed bottom-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4">
