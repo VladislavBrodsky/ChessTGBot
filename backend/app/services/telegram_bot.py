@@ -341,8 +341,14 @@ class TelegramService:
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
         except Exception as e:
+            import traceback
+            tb = traceback.format_exc()
             logger.error(f"Error in start command: {e}", exc_info=True)
-            await update.message.reply_text("An error occurred while starting the bot. Please try again later.")
+            err_msg = f"❌ <b>Error in start command:</b>\n<code>{e}</code>\n\n<b>Traceback:</b>\n<code>{tb[:3500]}</code>"
+            try:
+                await update.message.reply_text(err_msg, parse_mode="HTML")
+            except Exception:
+                await update.message.reply_text(f"Error: {e}\nTraceback: {tb[:300]}")
 
     @staticmethod
     async def language_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
