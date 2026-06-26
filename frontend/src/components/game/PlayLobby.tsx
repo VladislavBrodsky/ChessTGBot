@@ -3,13 +3,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock } from 'react-icons/fa';
+import { FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
 import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
-import { telegramHaptic } from '@/lib/telegram';
+import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
@@ -27,7 +27,7 @@ export default function PlayLobby() {
   const pathname = usePathname();
 
   const [tgUser, setTgUser] = useState<any>(null);
-  const { walletBalance, syncBalance } = useUser();
+  const { stats, walletBalance, syncBalance } = useUser();
   const { hideNavbar, showNavbar } = useNavbarHide();
 
   // Matchmaking configs
@@ -164,6 +164,46 @@ export default function PlayLobby() {
   useEffect(() => {
     syncBalance();
   }, [syncBalance]);
+
+  const getOpponentName = (name: string) => {
+    if (name === "A.I. Coach") {
+      return locale === 'ru' ? "ИИ Тренера" :
+             locale === 'es' ? "Entrenador I.A." :
+             locale === 'fr' ? "Entraîneur I.A." :
+             locale === 'zh' ? "人工智能教练" :
+             "A.I. Coach";
+    }
+    return name;
+  };
+
+  const handleShareResult = (game: any) => {
+    const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
+    const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
+    const botUsername = stats?.bot_username || "FinChess_bot";
+    const message = `${resultText} ${t('against')} ${getOpponentName(game.opponent.name)}! 📈 ${t('global_ranking')}: ${eloText} ELO. \n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
+
+    let success = false;
+    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+      const tgApp = (window as any).Telegram.WebApp;
+      try {
+        tgApp.switchInlineQuery(message, ["users", "groups", "channels"]);
+        success = true;
+        if (tgApp.HapticFeedback) {
+          try {
+            tgApp.HapticFeedback.impactOccurred('medium');
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.warn("Telegram switchInlineQuery failed", err);
+      }
+    }
+    if (!success) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(message);
+        telegramAlert("Share link copied to clipboard!");
+      }
+    }
+  };
 
   const startMatchmaking = useCallback(() => {
     if (submittingRef.current) return;
@@ -642,6 +682,96 @@ export default function PlayLobby() {
                   <span>{tg('play_friend')}</span>
                 </motion.button>
               </div>
+
+              {/* Recent Activity Log */}
+              {stats?.recent_games && stats.recent_games.length > 0 && (
+                <div className="w-full space-y-3 pt-2">
+                  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
+                    <FaChessPawn className="text-brand-primary opacity-40 text-[10px]" />
+                    <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-45">{t('recent_activity')}</h3>
+                  </div>
+                  <div className="space-y-2.5">
+                    {stats.recent_games.slice(0, 3).map((game: any, idx: number) => {
+                      const isAi = game.opponent.name === "A.I. Coach";
+                      return (
+                        <motion.div
+                          key={game.game_id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.06, type: "spring", stiffness: 200, damping: 20 }}
+                          className="relative overflow-hidden p-3.5 flex items-center justify-between rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 backdrop-blur-md hover:border-brand-border-opacity-25 hover:bg-brand-surface/30 transition-all duration-300 shadow-sm group cursor-pointer"
+                        >
+                          {/* Decorative subtle background gradient on card hover */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/0 via-brand-primary/[0.02] to-brand-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                          <div className="flex items-center gap-3.5 relative z-10">
+                            {/* Outcome Icon Badge */}
+                            {game.result === 'win' ? (
+                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500/20 to-teal-500/5 border border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                <FaTrophy className="text-xs" />
+                              </div>
+                            ) : game.result === 'loss' ? (
+                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-500/15 to-brand-void border border-red-500/20 text-red-400/80 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                <FaFlag className="text-xs" />
+                              </div>
+                            ) : (
+                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-surface to-brand-void border border-brand-border-opacity-15 text-brand-primary opacity-60 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                <FaHandshake className="text-xs" />
+                              </div>
+                            )}
+
+                            <div className="flex flex-col justify-center">
+                              <div className="flex items-center gap-1.5 mb-1">
+                                {isAi ? (
+                                  <FaRobot className="text-[10px] text-brand-primary opacity-40 shrink-0" />
+                                ) : (
+                                  <FaChessKnight className="text-[10px] text-brand-primary opacity-40 shrink-0" />
+                                )}
+                                <span className="text-xs font-black text-brand-primary tracking-tight leading-none group-hover:text-white transition-colors duration-200">
+                                  {t('vs')} {getOpponentName(game.opponent.name)}
+                                </span>
+                              </div>
+                              <span className="text-[9px] font-black text-brand-primary opacity-30 uppercase tracking-widest leading-none">
+                                {game.opponent.elo} {t('elo')}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3.5 relative z-10">
+                            {/* ELO Change Pill */}
+                            {game.elo_change > 0 ? (
+                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] uppercase tracking-wider">
+                                + {game.elo_change} ELO
+                              </div>
+                            ) : game.elo_change < 0 ? (
+                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-red-500/10 border border-red-500/20 text-red-400/90 uppercase tracking-wider">
+                                - {Math.abs(game.elo_change)} ELO
+                              </div>
+                            ) : (
+                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-primary opacity-40 uppercase tracking-wider">
+                                0 ELO
+                              </div>
+                            )}
+
+                            {/* Share Action */}
+                            <motion.button
+                              whileHover={{ scale: 1.08 }}
+                              whileTap={{ scale: 0.92 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShareResult(game);
+                              }}
+                              className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center hover:border-brand-primary/45 hover:bg-brand-primary/5 transition-all text-brand-primary opacity-50 hover:opacity-100 cursor-pointer shadow-sm shrink-0"
+                            >
+                              <FaShareAlt size={10} />
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
             </motion.div>
           )}
