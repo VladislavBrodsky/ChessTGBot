@@ -657,7 +657,10 @@ class GameService:
                         moves_json=moves_json,
                         commit=False
                     )
+                    # Check and award deferred referral signup bonus (3-game milestone)
+                    await GamificationService.check_referral_game_milestone(session, white_user.id)
                     await session.commit()
+
                     print(f"[GameService] Bot game history saved: {game_id} ({result_type}, winner={state.winner})")
                 except Exception as hist_err:
                     print(f"[GameService] WARNING: Failed to save bot game history for {game_id}: {hist_err}")
@@ -1030,7 +1033,11 @@ class GameService:
                     commit=False
                 )
                 # Single atomic commit for ELO, balances, XP, transactions, and game history
+                # Check and award deferred referral signup bonus for both players (3-game milestone)
+                await GamificationService.check_referral_game_milestone(session, white_user.id)
+                await GamificationService.check_referral_game_milestone(session, black_user.id)
                 await session.commit()
+
                 print(f"[GameService] Game history saved: {game_id} ({result_type}, winner={state.winner})")
             except Exception as hist_err:
                 print(f"[GameService] WARNING: Failed to settle game in DB for {game_id}: {hist_err}")

@@ -201,9 +201,10 @@ async def test_referral_parsing_strips_prefix(client, db_session):
         referral_record = ref_query.scalars().first()
         assert referral_record is not None
         
-        # Verify XP rewards awarded
+        # Verify NO XP rewards awarded yet — bonus deferred until recruit plays 3 games
         await db_session.refresh(referrer)
-        assert referrer.xp == 100
+        assert referrer.xp == 0
+
         
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

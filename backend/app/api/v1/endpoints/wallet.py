@@ -243,35 +243,6 @@ async def deposit_funds(
     fee = int(request.amount * 0.05)
     credited_amount = request.amount - fee
 
-    if settings.CRYPTO_PAY_API_TOKEN:
-        from app.services.crypto_pay import CryptoPayService
-        try:
-            invoice = await CryptoPayService.create_invoice(request.amount, current_user.telegram_id)
-            payment_link = invoice.get("pay_url")
-            invoice_id = str(invoice.get("invoice_id"))
-
-            tx_deposit = Transaction(
-                user_id=current_user.telegram_id,
-                type="deposit",
-                amount=credited_amount,
-                fee=fee,
-                status="pending",
-                reference_id=f"invoice_{invoice_id}"
-            )
-            db.add(tx_deposit)
-            await db.commit()
-
-            return DepositResponse(
-                status="invoice",
-                payment_link=payment_link,
-                invoice_id=invoice_id,
-                credited_amount=credited_amount,
-                fee=fee,
-                new_balance=current_user.balance
-            )
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Failed to generate invoice on Crypto Pay: {e}")
-
     if settings.TON_CONSOLE_TOKEN:
         # Create an actual invoice via Tonconsole Invoices API
         import httpx

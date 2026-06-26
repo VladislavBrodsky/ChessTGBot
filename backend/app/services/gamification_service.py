@@ -219,25 +219,25 @@ class GamificationService:
     async def process_referral(db: AsyncSession, new_user: User, referral_code: str):
         if not referral_code:
             return False
-            
+
         # Strip any deep link prefix (like "ref_")
         clean_code = referral_code
         if clean_code.startswith("ref_"):
             clean_code = clean_code[4:]
-            
+
         result = await db.execute(select(User).where(User.referral_code == clean_code))
         referrer = result.scalars().first()
-        
+
         if referrer and referrer.id != new_user.id:
             # Lock referrer and new_user in sorted ID order to prevent deadlocks
             sorted_ids = sorted([referrer.id, new_user.id])
             lock_stmt = select(User).where(User.id.in_(sorted_ids)).with_for_update()
             lock_res = await db.execute(lock_stmt)
             users_map = {u.id: u for u in lock_res.scalars().all()}
-            
+
             referrer = users_map.get(referrer.id)
             new_user = users_map.get(new_user.id)
-            
+
             if not referrer or not new_user:
                 return False
 
@@ -249,178 +249,273 @@ class GamificationService:
             )
             if referral_exists_result.scalars().first():
                 return False
-                
+
+            # Record the referral relationship — rewards are NOT granted yet.
+            # They unlock once the recruit plays 3 games (see check_referral_game_milestone).
             referral = Referral(referrer_id=referrer.id, referred_user_id=new_user.id)
             db.add(referral)
-            
-            # Award XP to referrer (pass commit=False to keep it in a single transaction)
-            referrer_xp = 100 if referrer.is_premium_active else 50
-            await GamificationService.add_xp(db, referrer, referrer_xp, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_invite", reference_id=new_user.telegram_id)
-            
-            # Award XP to new user
-            new_user_xp = 50 if new_user.is_premium_active else 20
-            await GamificationService.add_xp(db, new_user, new_user_xp, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_signup", reference_id=referrer.telegram_id)
+            await db.commit()
 
-            # Increment referral task progress for the referrer
-            await GamificationService.update_task_progress(db, referrer.id, TaskType.REFER, increment=1, commit=False)
-
-            # Award Balance (in cents) & log transactions
-            from app.models.transaction import Transaction
-            from app.services.referral_commission_service import ReferralCommissionService
-            from sqlalchemy import func
-            
-            referrer_bonus = 20 if referrer.is_premium_active else 10
-            referrer.balance += referrer_bonus
-            db.add(referrer)
-            
-            tx_referrer = Transaction(
-                user_id=referrer.telegram_id,
-                type="referral_commission",
-                amount=referrer_bonus,
-                fee=0,
-                status="completed",
-                reference_id="sign_up_bonus"
-            )
-            db.add(tx_referrer)
-            
-            new_user_bonus = 10 if new_user.is_premium_active else 5
-            new_user.balance += new_user_bonus
-            db.add(new_user)
-            
-            tx_new_user = Transaction(
-                user_id=new_user.telegram_id,
-                type="referral_commission",
-                amount=new_user_bonus,
-                fee=0,
-                status="completed",
-                reference_id="sign_up_bonus"
-            )
-            db.add(tx_new_user)
-            
-            # Send Telegram push notification to the referrer
+            # Notify the referrer that a new recruit joined — bonus pending 3 games
             try:
                 from app.services.telegram_bot import TelegramService
                 import logging
-                logger = logging.getLogger(__name__)
-                
+
+                referrer_bonus_preview = 20 if referrer.is_premium_active else 10
+                referrer_xp_preview = 100 if referrer.is_premium_active else 50
                 username_display = f" (@{new_user.username})" if new_user.username else ""
                 full_name = f"{new_user.first_name} {new_user.last_name or ''}".strip()
                 msg = (
-                    f"🚀 <b>NEW RECRUIT SECURED!</b>\n\n"
-                    f"🔥 <b>Player:</b> {full_name}{username_display} is now in your matrix!\n\n"
-                    f"🎁 <b>Your Sign-Up Reward:</b>\n"
-                    f"💰 <b>+${referrer_bonus / 100:.2f} USDT</b> (Credited instantly)\n"
-                    f"🏅 <b>+{referrer_xp} XP</b> (Boosts your level)\n\n"
-                    f"⚡ <b>Earn from every move they make:</b>\n"
-                    f"You are now earning a <b>10% commission</b> on all wagers from their chess duels!\n\n"
-                    f"👑 <b>Want 2x rewards?</b> Upgrade to <b>Premium</b> to double your passive income from their games and unlock 6 levels of commission splits!\n\n"
-                    f"<i>Don't stop now—the more players you recruit, the bigger your passive network payout! ♟️💸</i>"
+                    f"🎉 <b>New Recruit Joined!</b>\n\n"
+                    f"👤 <b>{full_name}</b>{username_display} just joined via your referral link!\n\n"
+                    f"🎁 <b>Your Pending Signup Bonus:</b>\n"
+                    f"💰 <b>+${referrer_bonus_preview / 100:.2f} USDT</b>\n"
+                    f"🏅 <b>+{referrer_xp_preview} XP</b>\n\n"
+                    f"⏳ <b>Unlocks when they complete 3 chess games!</b>\n\n"
+                    f"⚡ From game 1, you're already earning a <b>10% commission</b> on all their wagers!\n\n"
+                    f"<i>The more players you recruit, the bigger your passive network payout! ♟️💸</i>"
                 )
                 await TelegramService.send_notification(referrer.telegram_id, msg)
             except Exception as e:
                 import logging
-                logging.getLogger(__name__).warning(f"Failed to send referral sign-up notification: {e}")
+                logging.getLogger(__name__).warning(f"Failed to send referral pending notification to referrer: {e}")
 
-            # Send Telegram push notification to the new user (recruit)
+            # Notify the new user that their signup bonus is pending 3 games
             try:
                 from app.services.telegram_bot import TelegramService
-                referrer_display = f"@{referrer.username}" if referrer.username else f"{referrer.first_name}"
+                referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+                new_user_bonus_preview = 10 if new_user.is_premium_active else 5
+                new_user_xp_preview = 50 if new_user.is_premium_active else 20
                 new_user_msg = (
                     f"♟️ <b>Welcome to the Chess Arena!</b>\n\n"
-                    f"You have successfully joined via {referrer_display}'s invitation.\n"
-                    f"🎁 <b>Instant Signup Bonus:</b> +${new_user_bonus / 100:.2f} USDT & +{new_user_xp} XP has been credited to your balance!\n\n"
-                    f"<i>Unlock the dashboard to start playing and earning! ⚡</i>"
+                    f"You joined via {referrer_display}'s invitation. 🤝\n\n"
+                    f"🎁 <b>Your Signup Bonus (Pending):</b>\n"
+                    f"💰 <b>+${new_user_bonus_preview / 100:.2f} USDT</b>\n"
+                    f"🏅 <b>+{new_user_xp_preview} XP</b>\n\n"
+                    f"⏳ <b>Play 3 games to unlock your reward!</b>\n\n"
+                    f"<i>Open the arena, play your first moves and claim your bonus! ⚡</i>"
                 )
                 await TelegramService.send_notification(new_user.telegram_id, new_user_msg)
             except Exception as e:
                 import logging
-                logging.getLogger(__name__).warning(f"Failed to send welcome notification to new user: {e}")
+                logging.getLogger(__name__).warning(f"Failed to send referral pending notification to recruit: {e}")
 
-            # Send grandparent (L2/L3) notifications
-            try:
-                from app.services.telegram_bot import TelegramService
-                grand_chain = await ReferralCommissionService.get_referrer_chain(db, referrer.id, levels=2)
-                for idx, grand_referrer in enumerate(grand_chain):
-                    g_depth = idx + 2
-                    ref_user_display = f"@{new_user.username}" if new_user.username else f"{new_user.first_name}"
-                    referrer_display = f"@{referrer.username}" if referrer.username else f"{referrer.first_name}"
-                    
-                    grand_msg = (
-                        f"🔗 <b>Network Expansion: Level {g_depth} Recruit!</b>\n\n"
-                        f"🟢 {ref_user_display} just joined the chess matrix under {referrer_display} (L1)!\n"
-                        f"Your decentralized player network is expanding deeper.\n\n"
-                        f"<i>Level up your XP and Premium status to secure higher passive commissions from this network tree branch! ♟️📈</i>"
-                    )
-                    await TelegramService.send_notification(grand_referrer.telegram_id, grand_msg)
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).warning(f"Failed to send grandparent notifications: {e}")
-
-            # Check and award milestone achievements
-            try:
-                l1_count_result = await db.execute(
-                    select(func.count(Referral.id)).where(Referral.referrer_id == referrer.id)
-                )
-                l1_count = l1_count_result.scalar() or 0
-
-                async def claim_milestone(ref_count, xp_reward, usdt_reward_cents, milestone_name):
-                    ref_id = f"milestone_ref_{ref_count}"
-                    tx_check = await db.execute(
-                        select(Transaction).where(
-                            and_(Transaction.user_id == referrer.telegram_id, Transaction.reference_id == ref_id)
-                        )
-                    )
-                    if tx_check.scalars().first():
-                        return
-                    
-                    await GamificationService.add_xp(db, referrer, xp_reward, trigger_kickback=False, apply_booster=False, commit=False, reason="referral_milestone", reference_id=ref_id)
-                    if usdt_reward_cents > 0:
-                        referrer.balance += usdt_reward_cents
-                        db.add(referrer)
-                    
-                    tx_milestone = Transaction(
-                        user_id=referrer.telegram_id,
-                        type="referral_commission",
-                        amount=usdt_reward_cents if usdt_reward_cents > 0 else 0,
-                        fee=0,
-                        status="completed",
-                        reference_id=ref_id
-                    )
-                    db.add(tx_milestone)
-                    
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        msg = (
-                            f"🎯 <b>REFERRAL MILESTONE REACHED!</b>\n\n"
-                            f"Congratulations! You have recruited <b>{ref_count}</b> chess combatants to the arena!\n"
-                            f"🎁 <b>Milestone Rewards:</b>\n"
-                            f"• XP Earned: +{xp_reward} XP\n"
-                        )
-                        if usdt_reward_cents > 0:
-                            msg += f"• Bonus Credited: +${usdt_reward_cents / 100:.2f} USDT\n"
-                        msg += (
-                            f"• Badge Gained: 🎖️ <b>{milestone_name}</b>\n\n"
-                            f"<i>Keep growing your network to unlock the next level of referral commissions! ♟️🏆</i>"
-                        )
-                        await TelegramService.send_notification(referrer.telegram_id, msg)
-                    except Exception as e:
-                        pass
-
-                if l1_count == 1:
-                    await claim_milestone(1, 50, 0, "Network Recruit")
-                elif l1_count == 5:
-                    await claim_milestone(5, 200, 0, "Network Architect")
-                elif l1_count == 10:
-                    await claim_milestone(10, 500, 100, "Network Commander")
-                elif l1_count == 25:
-                    await claim_milestone(25, 1500, 0, "Network Elite")
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).warning(f"Failed to check milestones: {e}")
-
-            await db.commit()
             return True
         return False
+
+    @staticmethod
+    async def check_referral_game_milestone(db: AsyncSession, referred_user_id: int):
+        """
+        Called after every game completion for a user.
+        If the user was referred AND has now played >= 3 games AND hasn't yet received
+        the signup bonus, credit both the referrer and the recruit and notify them.
+        """
+        from app.models.transaction import Transaction
+        from app.services.referral_commission_service import ReferralCommissionService
+        from sqlalchemy import func
+
+        # 1. Check if this user was referred by someone
+        ref_result = await db.execute(
+            select(Referral).where(Referral.referred_user_id == referred_user_id)
+        )
+        referral = ref_result.scalars().first()
+        if not referral:
+            return False  # Not a referred user
+
+        # 2. Lock both users in sorted ID order to prevent deadlocks
+        sorted_ids = sorted([referral.referrer_id, referred_user_id])
+        lock_stmt = select(User).where(User.id.in_(sorted_ids)).with_for_update()
+        lock_res = await db.execute(lock_stmt)
+        users_map = {u.id: u for u in lock_res.scalars().all()}
+
+        referrer = users_map.get(referral.referrer_id)
+        new_user = users_map.get(referred_user_id)
+
+        if not referrer or not new_user:
+            return False
+
+        # 3. Check if the referred user has played at least 3 games
+        if new_user.games_played < 3:
+            return False
+
+        # 4. Idempotency: check if the signup bonus has already been awarded
+        bonus_ref_id = f"ref_signup_bonus_{new_user.telegram_id}"
+        already_rewarded = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == referrer.telegram_id,
+                    Transaction.type == "referral_commission",
+                    Transaction.reference_id == bonus_ref_id
+                )
+            )
+        )
+        if already_rewarded.scalars().first():
+            return False  # Already rewarded — skip
+
+        # 5. Award XP and balance to referrer
+        referrer_xp = 100 if referrer.is_premium_active else 50
+        await GamificationService.add_xp(
+            db, referrer, referrer_xp,
+            trigger_kickback=False, apply_booster=False, commit=False,
+            reason="referral_invite", reference_id=new_user.telegram_id
+        )
+
+        referrer_bonus = 20 if referrer.is_premium_active else 10
+        referrer.balance += referrer_bonus
+        db.add(referrer)
+
+        tx_referrer = Transaction(
+            user_id=referrer.telegram_id,
+            type="referral_commission",
+            amount=referrer_bonus,
+            fee=0,
+            status="completed",
+            reference_id=bonus_ref_id
+        )
+        db.add(tx_referrer)
+
+        # 6. Award XP and balance to the referred user
+        new_user_xp = 50 if new_user.is_premium_active else 20
+        await GamificationService.add_xp(
+            db, new_user, new_user_xp,
+            trigger_kickback=False, apply_booster=False, commit=False,
+            reason="referral_signup", reference_id=referrer.telegram_id
+        )
+
+        new_user_bonus = 10 if new_user.is_premium_active else 5
+        new_user.balance += new_user_bonus
+        db.add(new_user)
+
+        tx_new_user = Transaction(
+            user_id=new_user.telegram_id,
+            type="referral_commission",
+            amount=new_user_bonus,
+            fee=0,
+            status="completed",
+            reference_id=f"ref_signup_bonus_recruit_{new_user.telegram_id}"
+        )
+        db.add(tx_new_user)
+
+        # 7. Increment referral task progress for the referrer
+        await GamificationService.update_task_progress(db, referrer.id, TaskType.REFER, increment=1, commit=False)
+
+        # 8. Check and award referrer milestone achievements
+        try:
+            l1_count_result = await db.execute(
+                select(func.count(Referral.id)).where(Referral.referrer_id == referrer.id)
+            )
+            l1_count = l1_count_result.scalar() or 0
+
+            async def claim_milestone(ref_count, xp_reward, usdt_reward_cents, milestone_name):
+                ref_id = f"milestone_ref_{ref_count}"
+                tx_check = await db.execute(
+                    select(Transaction).where(
+                        and_(Transaction.user_id == referrer.telegram_id, Transaction.reference_id == ref_id)
+                    )
+                )
+                if tx_check.scalars().first():
+                    return
+                await GamificationService.add_xp(
+                    db, referrer, xp_reward,
+                    trigger_kickback=False, apply_booster=False, commit=False,
+                    reason="referral_milestone", reference_id=ref_id
+                )
+                if usdt_reward_cents > 0:
+                    referrer.balance += usdt_reward_cents
+                    db.add(referrer)
+                tx_milestone = Transaction(
+                    user_id=referrer.telegram_id,
+                    type="referral_commission",
+                    amount=usdt_reward_cents if usdt_reward_cents > 0 else 0,
+                    fee=0,
+                    status="completed",
+                    reference_id=ref_id
+                )
+                db.add(tx_milestone)
+                try:
+                    from app.services.telegram_bot import TelegramService
+                    ms_msg = (
+                        f"🎯 <b>REFERRAL MILESTONE REACHED!</b>\n\n"
+                        f"Congratulations! You have recruited <b>{ref_count}</b> chess combatants to the arena!\n"
+                        f"🎁 <b>Milestone Rewards:</b>\n"
+                        f"• XP Earned: +{xp_reward} XP\n"
+                    )
+                    if usdt_reward_cents > 0:
+                        ms_msg += f"• Bonus Credited: +${usdt_reward_cents / 100:.2f} USDT\n"
+                    ms_msg += (
+                        f"• Badge Gained: 🎖️ <b>{milestone_name}</b>\n\n"
+                        f"<i>Keep growing your network to unlock the next level of referral commissions! ♟️🏆</i>"
+                    )
+                    await TelegramService.send_notification(referrer.telegram_id, ms_msg)
+                except Exception:
+                    pass
+
+            if l1_count == 1:
+                await claim_milestone(1, 50, 0, "Network Recruit")
+            elif l1_count == 5:
+                await claim_milestone(5, 200, 0, "Network Architect")
+            elif l1_count == 10:
+                await claim_milestone(10, 500, 100, "Network Commander")
+            elif l1_count == 25:
+                await claim_milestone(25, 1500, 0, "Network Elite")
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to check milestones in game milestone check: {e}")
+
+        # 9. Notify referrer — bonus unlocked!
+        try:
+            from app.services.telegram_bot import TelegramService
+            username_display = f" (@{new_user.username})" if new_user.username else ""
+            full_name = f"{new_user.first_name} {new_user.last_name or ''}".strip()
+            referrer_msg = (
+                f"🏆 <b>Referral Bonus Unlocked!</b>\n\n"
+                f"🎮 <b>{full_name}</b>{username_display} just completed their 3rd chess game!\n\n"
+                f"💰 <b>+${referrer_bonus / 100:.2f} USDT</b> credited to your balance\n"
+                f"🏅 <b>+{referrer_xp} XP</b> added to your account\n\n"
+                f"⚡ Keep earning <b>10% commission</b> on every wager they place!\n\n"
+                f"<i>Recruit more players to multiply your passive income! ♟️💸</i>"
+            )
+            await TelegramService.send_notification(referrer.telegram_id, referrer_msg)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to send referral bonus unlock notification to referrer: {e}")
+
+        # 10. Notify the recruit — bonus unlocked!
+        try:
+            from app.services.telegram_bot import TelegramService
+            referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+            recruit_msg = (
+                f"🎉 <b>Signup Bonus Unlocked!</b>\n\n"
+                f"You completed 3 games — your signup reward is now yours! 🏆\n\n"
+                f"💰 <b>+${new_user_bonus / 100:.2f} USDT</b> credited to your balance\n"
+                f"🏅 <b>+{new_user_xp} XP</b> added to your account\n\n"
+                f"<i>Invite your friends with your referral link and earn even more rewards! ♟️⚡</i>"
+            )
+            await TelegramService.send_notification(new_user.telegram_id, recruit_msg)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to send referral bonus unlock notification to recruit: {e}")
+
+        # 11. Notify L2/L3 grandparents that the network expanded
+        try:
+            from app.services.telegram_bot import TelegramService
+            grand_chain = await ReferralCommissionService.get_referrer_chain(db, referrer.id, levels=2)
+            for idx, grand_referrer in enumerate(grand_chain):
+                g_depth = idx + 2
+                ref_user_display = f"@{new_user.username}" if new_user.username else new_user.first_name
+                referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+                grand_msg = (
+                    f"🔗 <b>Network Expansion: Level {g_depth} Recruit Active!</b>\n\n"
+                    f"🟢 {ref_user_display} just completed 3 games under {referrer_display} (L1)!\n"
+                    f"Your decentralized player network is growing.\n\n"
+                    f"<i>Level up your XP and Premium status to secure higher passive commissions! ♟️📈</i>"
+                )
+                await TelegramService.send_notification(grand_referrer.telegram_id, grand_msg)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to send grandparent milestone notifications: {e}")
+
+        return True
     @staticmethod
     async def claim_task(db: AsyncSession, user_id: int, task_id: int):
         # 1. Lock User row first to prevent deadlock and serialize claims per user

@@ -25,7 +25,7 @@ async def test_process_referral_success(db_session: AsyncSession):
         level=1
     )
     db_session.add(referrer)
-    
+
     # 2. Create a referred user
     referred = User(
         telegram_id=222222,
@@ -39,7 +39,7 @@ async def test_process_referral_success(db_session: AsyncSession):
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
 
-    # 3. Process referral with raw code
+    # 3. Process referral with raw code — no rewards yet, only link is recorded
     success = await GamificationService.process_referral(db_session, referred, "REF12345")
     assert success is True
 
@@ -53,11 +53,26 @@ async def test_process_referral_success(db_session: AsyncSession):
     ref_record = result.scalars().first()
     assert ref_record is not None
 
-    # 5. Verify XP was awarded (referrer gets 50 XP + 50 XP milestone, referred gets 20 XP)
+    # 5. Verify NO XP was awarded yet (bonus is deferred until 3 games)
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 200
-    assert referred.xp == 20
+    assert referrer.xp == 100  # unchanged from initial value
+    assert referred.xp == 0    # unchanged
+
+    # 6. Simulate the referred user completing 3 games
+    referred.games_played = 3
+    db_session.add(referred)
+    await db_session.commit()
+    await db_session.refresh(referred)
+
+    milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
+    assert milestone_triggered is True
+
+    # 7. Now verify bonuses were credited: referrer +50 XP + 50 XP milestone, referred +20 XP
+    await db_session.refresh(referrer)
+    await db_session.refresh(referred)
+    assert referrer.xp == 200   # 100 (initial) + 50 (referral_invite) + 50 (milestone_ref_1)
+    assert referred.xp == 20    # 0 + 20 (referral_signup)
 
 
 @pytest.mark.asyncio
@@ -89,14 +104,29 @@ async def test_process_referral_with_prefix(db_session: AsyncSession):
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
 
-    # Process referral with ref_ prefix
+    # Process referral with ref_ prefix — no rewards granted yet
     success = await GamificationService.process_referral(db_session, referred, "ref_XYZ54321")
     assert success is True
 
-    # Verify XP and linkage (+50 XP milestone for first referral)
+    # Verify no XP was awarded yet
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 100
+    assert referrer.xp == 0
+    assert referred.xp == 0
+
+    # Simulate 3 games and trigger milestone
+    referred.games_played = 3
+    db_session.add(referred)
+    await db_session.commit()
+    await db_session.refresh(referred)
+
+    milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
+    assert milestone_triggered is True
+
+    # Verify XP awarded: referrer +50 invite + 50 milestone = 100, referred +20
+    await db_session.refresh(referrer)
+    await db_session.refresh(referred)
+    assert referrer.xp == 100   # 0 + 50 (invite) + 50 (milestone_ref_1)
     assert referred.xp == 20
 
 
@@ -136,11 +166,30 @@ async def test_process_referral_duplicate_prevented(db_session: AsyncSession):
     success2 = await GamificationService.process_referral(db_session, referred, "DUP11111")
     assert success2 is False
 
-    # XP should only be awarded once
+    # No XP should be awarded yet (bonus deferred to 3 games)
     await db_session.refresh(referrer)
     await db_session.refresh(referred)
-    assert referrer.xp == 100
-    assert referred.xp == 20
+    assert referrer.xp == 0
+    assert referred.xp == 0
+
+    # Simulate 3 games completed and trigger milestone
+    referred.games_played = 3
+    db_session.add(referred)
+    await db_session.commit()
+    await db_session.refresh(referred)
+
+    milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
+    assert milestone_triggered is True
+
+    # Trigger milestone again — should be idempotent
+    milestone_triggered_2 = await GamificationService.check_referral_game_milestone(db_session, referred.id)
+    assert milestone_triggered_2 is False
+
+    # XP should only be awarded once: referrer +50 invite + 50 milestone = 100, referred +20
+    await db_session.refresh(referrer)
+    await db_session.refresh(referred)
+    assert referrer.xp == 100   # 0 + 50 (invite) + 50 (milestone_ref_1)
+    assert referred.xp == 20   # referral_signup XP only
 
 
 @pytest.mark.asyncio
@@ -353,7 +402,7 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     if hasattr(db_session, "users"):
         return
 
-    # Case 1: Premium Referrer, Premium Recruit
+    # Case 1: Premium Referrer, Premium Recruit — bonus deferred until 3 games
     r_prem = User(telegram_id=900101, first_name="RPrem", referral_code="RPREM", is_premium=True, xp=0)
     u_prem = User(telegram_id=900102, first_name="UPrem", referral_code="UPREM", is_premium=True, xp=0)
     db_session.add(r_prem)
@@ -366,7 +415,22 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     await db_session.refresh(r_prem)
     await db_session.refresh(u_prem)
 
-    assert r_prem.xp == 150  # 100 + 50 milestone
+    # No bonuses yet — deferred to 3 games
+    assert r_prem.xp == 0
+    assert u_prem.xp == 0
+
+    # Simulate 3 games and trigger the milestone
+    u_prem.games_played = 3
+    db_session.add(u_prem)
+    await db_session.commit()
+    await db_session.refresh(u_prem)
+
+    await GamificationService.check_referral_game_milestone(db_session, u_prem.id)
+    await db_session.refresh(r_prem)
+    await db_session.refresh(u_prem)
+
+    # Premium referrer gets 100 XP (invite) + 50 XP (milestone) = 150, premium recruit gets 50 XP
+    assert r_prem.xp == 150
     assert u_prem.xp == 50
 
     # Case 2: Non-Premium Referrer, Non-Premium Recruit
@@ -382,7 +446,22 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     await db_session.refresh(r_norm)
     await db_session.refresh(u_norm)
 
-    assert r_norm.xp == 100  # 50 + 50 milestone
+    # No bonuses yet
+    assert r_norm.xp == 0
+    assert u_norm.xp == 0
+
+    # Simulate 3 games and trigger milestone
+    u_norm.games_played = 3
+    db_session.add(u_norm)
+    await db_session.commit()
+    await db_session.refresh(u_norm)
+
+    await GamificationService.check_referral_game_milestone(db_session, u_norm.id)
+    await db_session.refresh(r_norm)
+    await db_session.refresh(u_norm)
+
+    # Non-premium referrer gets 50 XP (invite) + 50 XP (milestone) = 100, non-premium recruit gets 20 XP
+    assert r_norm.xp == 100
     assert u_norm.xp == 20
 
 
@@ -965,10 +1044,18 @@ async def test_referral_ach_self_healing(db_session: AsyncSession):
         db_session.add(rec)
         await db_session.commit()
         await db_session.refresh(rec)
-        
+
         # Process referral using the real-time flow
         success = await GamificationService.process_referral(db_session, rec, "REF991")
         assert success is True
+
+        # Simulate the recruit playing 3 games to trigger the milestone
+        rec.games_played = 3
+        db_session.add(rec)
+        await db_session.commit()
+        await db_session.refresh(rec)
+
+        await GamificationService.check_referral_game_milestone(db_session, rec.id)
 
     # Refresh user task and check it is completed (5/5)
     await db_session.refresh(user_task)
