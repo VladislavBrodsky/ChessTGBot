@@ -214,9 +214,23 @@ class GameService:
                     elo = db_user.elo
                     username = db_user.first_name
                 
-                state.black_player_id = user_id
-                state.black_username = username
-                state.black_elo = elo
+                import random
+                if random.random() < 0.5:
+                    state.black_player_id = user_id
+                    state.black_username = username
+                    state.black_elo = elo
+                else:
+                    creator_id = state.white_player_id
+                    creator_username = state.white_username
+                    creator_elo = state.white_elo
+
+                    state.white_player_id = user_id
+                    state.white_username = username
+                    state.white_elo = elo
+
+                    state.black_player_id = creator_id
+                    state.black_username = creator_username
+                    state.black_elo = creator_elo
                 changed = True
         
         # If it's a bot game, assign bot details

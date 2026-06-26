@@ -709,17 +709,21 @@ async def accept_rematch(sid, data):
                     else:
                         await db.commit()
                             
-                        # Delete the pending rematch key to prevent replay attacks
-                        await service.redis.delete(f"pending_rematch:{game_id}")
-                        
-                        new_game_id = str(uuid.uuid4())[:8]
-                        # Alternate colors and preserve original time control
-                        time_control = getattr(state, "time_control_seconds", 600)
-                        new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=wager)
-                        
+                    # Delete the pending rematch key to prevent replay attacks
+                    await service.redis.delete(f"pending_rematch:{game_id}")
+                    
+                    new_game_id = str(uuid.uuid4())[:8]
+                    # Randomly assign colors and preserve original time control
+                    time_control = getattr(state, "time_control_seconds", 600)
+                    new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=wager)
+                    
+                    if random.random() < 0.5:
                         new_state.white_player_id = opponent_id
                         new_state.black_player_id = user_id
-                        
-                        await service.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
-                        await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
+                    else:
+                        new_state.white_player_id = user_id
+                        new_state.black_player_id = opponent_id
+                    
+                    await service.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
+                    await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
 
