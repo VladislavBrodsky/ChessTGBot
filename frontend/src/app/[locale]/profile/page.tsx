@@ -4,7 +4,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, getFullPhotoUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
@@ -82,7 +82,7 @@ export default function ProfilePage() {
  <div className="absolute inset-0 rounded-full border border-brand-primary opacity-10 animate-pulse scale-105" />
  <div className="w-24 h-24 rounded-full bg-brand-surface border border-brand-border-opacity-20 flex items-center justify-center relative overflow-hidden shadow-premium">
  {(stats?.photo_url || tgUser?.photo_url) ? (
- <img src={stats?.photo_url || tgUser.photo_url} alt="Profile" className="w-full h-full object-cover" />
+ <img src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} alt="Profile" className="w-full h-full object-cover" />
  ) : (
  <FaChessKing className="text-4xl text-brand-primary opacity-40" />
  )}

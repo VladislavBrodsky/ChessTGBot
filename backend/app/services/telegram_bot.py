@@ -17,15 +17,31 @@ class TelegramService:
 
     @staticmethod
     async def get_user_profile_photo(user_id: int, bot):
-        """Get user profile photo URL."""
+        """Get user profile photo and cache it locally, returning the relative proxy URL."""
+        import os
+        import httpx
+        import logging
+        logger = logging.getLogger(__name__)
         try:
             photos = await bot.get_user_profile_photos(user_id, limit=1)
             if photos.total_count > 0:
+                # Ensure cache directory exists
+                avatar_dir = "static_avatars"
+                os.makedirs(avatar_dir, exist_ok=True)
+                file_path = os.path.join(avatar_dir, f"{user_id}.jpg")
+                
                 # Get the largest version of the first photo
                 file = await bot.get_file(photos.photos[0][-1].file_id)
-                return file.file_path
-        except Exception:
-            return None
+                
+                # Download and cache
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    res = await client.get(file.file_path)
+                    if res.status_code == 200:
+                        with open(file_path, "wb") as f:
+                            f.write(res.content)
+                        return f"/api/v1/users/avatar/{user_id}"
+        except Exception as e:
+            logger.error(f"Failed to fetch/cache profile photo for {user_id}: {e}")
         return None
 
     # XP needed to complete each level (200 XP per level, canonical formula)

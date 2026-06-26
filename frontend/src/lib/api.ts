@@ -44,3 +44,12 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
 
   return res;
 };
+
+export const getFullPhotoUrl = (url?: string | null): string | undefined => {
+  if (!url) return undefined;
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `${getApiBaseUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+

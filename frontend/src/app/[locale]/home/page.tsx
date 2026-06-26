@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
 import { 
  FaChessPawn, FaGraduationCap, FaStar, FaChessKnight, 
@@ -175,7 +175,7 @@ export default function Home() {
       <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
       {(stats.photo_url || tgUser?.photo_url) ? (
       <img 
-        src={stats.photo_url || tgUser.photo_url} 
+        src={getFullPhotoUrl(stats.photo_url || tgUser?.photo_url)} 
         alt="Profile" 
         className="w-full h-full rounded-lg object-cover"
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}

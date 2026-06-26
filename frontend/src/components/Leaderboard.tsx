@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { useTranslations } from 'next-intl';
 
 interface LeaderboardItem {
@@ -93,7 +93,7 @@ export default function Leaderboard() {
  </div>
  <div className="relative">
  {item.photo_url ? (
- <img src={item.photo_url} alt="" className="w-8 h-8 rounded-full border border-brand-border-opacity-10" />
+ <img src={getFullPhotoUrl(item.photo_url)} alt="" className="w-8 h-8 rounded-full border border-brand-border-opacity-10" />
  ) : (
  <FaUserCircle className="w-8 h-8 text-brand-primary opacity-20" />
  )}

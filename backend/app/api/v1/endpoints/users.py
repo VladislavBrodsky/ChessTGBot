@@ -189,12 +189,49 @@ async def get_leaderboard(db: AsyncSession = Depends(get_db)):
             telegram_id=user.telegram_id,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo_url=user.photo_url,
+            photo_url=f"/api/v1/users/avatar/{user.telegram_id}" if user.photo_url else None,
             elo=user.elo,
             rank=idx + 1
         )
         for idx, user in enumerate(top_users)
     ]
+
+@router.get("/avatar/{telegram_id}")
+async def get_user_avatar(telegram_id: int):
+    """
+    Get user profile photo from local cache or fetch and cache it from Telegram Bot API.
+    Does not require authentication (public resource).
+    """
+    import os
+    from fastapi.responses import FileResponse
+    avatar_dir = "static_avatars"
+    os.makedirs(avatar_dir, exist_ok=True)
+    file_path = os.path.join(avatar_dir, f"{telegram_id}.jpg")
+    
+    # Serve cached version if exists
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+        
+    # Fetch from Telegram Bot API
+    from app.services.telegram_bot import TelegramService
+    if TelegramService.application and TelegramService.application.bot:
+        bot = TelegramService.application.bot
+        try:
+            photos = await bot.get_user_profile_photos(telegram_id, limit=1)
+            if photos.total_count > 0:
+                file = await bot.get_file(photos.photos[0][-1].file_id)
+                import httpx
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    res = await client.get(file.file_path)
+                    if res.status_code == 200:
+                        with open(file_path, "wb") as f:
+                            f.write(res.content)
+                        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to fetch/cache avatar in endpoint for {telegram_id}: {e}")
+            
+    raise HTTPException(status_code=404, detail="Avatar not found")
 
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
@@ -216,7 +253,7 @@ async def get_user_stats(
         telegram_id=current_user.telegram_id,
         first_name=current_user.first_name,
         last_name=current_user.last_name,
-        photo_url=current_user.photo_url,
+        photo_url=f"/api/v1/users/avatar/{current_user.telegram_id}" if current_user.photo_url else None,
         elo=current_user.elo,
         games_played=current_user.games_played,
         wins=current_user.wins,
@@ -271,7 +308,7 @@ async def sync_user(
         telegram_id=current_user.telegram_id,
         first_name=current_user.first_name,
         last_name=current_user.last_name,
-        photo_url=current_user.photo_url,
+        photo_url=f"/api/v1/users/avatar/{current_user.telegram_id}" if current_user.photo_url else None,
         elo=current_user.elo,
         games_played=current_user.games_played,
         wins=current_user.wins,
