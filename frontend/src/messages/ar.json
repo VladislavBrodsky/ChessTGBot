@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 مضاعفة الرهان (2x)",
     "double_stakes_active": "🔥 الرهان المضاعف نشط",
     "same_stakes": "نفس الرهان",
+    "cancel": "إلغاء",
     "rematch_dialog_title": "تم تقديم عرض إعادة المباراة",
     "rematch_dialog_desc": "هل تقبل مبارزة انتقامية برهان {wager} USDT؟",
     "accept": "قبول",

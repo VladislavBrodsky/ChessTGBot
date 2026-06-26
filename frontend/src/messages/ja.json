@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 ダブルステークス (2x)",
     "double_stakes_active": "🔥 ダブルステークス適用中",
     "same_stakes": "同じステークス",
+    "cancel": "キャンセル",
     "rematch_dialog_title": "リベンジマッチのオファー",
     "rematch_dialog_desc": "{wager} USDTの賭け金でリベンジマッチを受け入れますか？",
     "accept": "承諾",

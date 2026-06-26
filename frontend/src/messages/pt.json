@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 Dobrar apostas (2x)",
     "double_stakes_active": "🔥 Apuesta dupla ativa",
     "same_stakes": "Mesmas apostas",
+    "cancel": "Cancelar",
     "rematch_dialog_title": "Revanche oferecida",
     "rematch_dialog_desc": "Você aceita um duelo de revanche com a aposta de {wager} USDT?",
     "accept": "Aceitar",

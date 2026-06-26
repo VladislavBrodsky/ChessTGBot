@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 Doppelte Einsätze (2x)",
     "double_stakes_active": "🔥 Doppelte Einsätze aktiv",
     "same_stakes": "Gleicher Einsatz",
+    "cancel": "Abbrechen",
     "rematch_dialog_title": "Revanche angeboten",
     "rematch_dialog_desc": "Akzeptieren Sie ein Revanche-Duell mit einem Einsatz von {wager} USDT?",
     "accept": "Annehmen",

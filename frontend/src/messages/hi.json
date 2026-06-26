@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 दुगना दांव (2x)",
     "double_stakes_active": "🔥 दुगना दांव सक्रिय",
     "same_stakes": "समान दांव",
+    "cancel": "रद्द करें",
     "rematch_dialog_title": "बदला मैच की पेशकश की गई",
     "rematch_dialog_desc": "क्या आप {wager} USDT दांव के साथ बदले का मैच स्वीकार करते हैं?",
     "accept": "स्वीकार करें",

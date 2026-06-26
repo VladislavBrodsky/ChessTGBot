@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 Удвоить ставки (2x)",
     "double_stakes_active": "🔥 Двойная ставка активна",
     "same_stakes": "Такая же ставка",
+    "cancel": "Отмена",
     "rematch_dialog_title": "Предложен реванш",
     "rematch_dialog_desc": "Вы принимаете дуэль-реванш со ставкой {wager} USDT?",
     "accept": "Принять",

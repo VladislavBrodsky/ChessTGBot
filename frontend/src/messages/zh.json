@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 双倍下注 (2x)",
     "double_stakes_active": "🔥 双倍下注已激活",
     "same_stakes": "同等下注",
+    "cancel": "取消",
     "rematch_dialog_title": "收到复仇战邀请",
     "rematch_dialog_desc": "您是否接受一场下注为 {wager} USDT 的复仇对决？",
     "accept": "接受",

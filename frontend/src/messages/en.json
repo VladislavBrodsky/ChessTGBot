@@ -214,6 +214,7 @@
     "double_stakes_choice": "🔥 Double Stakes (2x)",
     "double_stakes_active": "🔥 Double Stakes Active",
     "same_stakes": "Same Stakes",
+    "cancel": "Cancel",
     "rematch_dialog_title": "Revenge Match Offered",
     "rematch_dialog_desc": "Do you accept a revenge duel with {wager} USDT stakes?",
     "accept": "Accept",
