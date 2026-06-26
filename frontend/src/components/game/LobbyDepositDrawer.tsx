@@ -432,11 +432,13 @@ export default function LobbyDepositDrawer({
                     setTimeout(() => setCopiedWallet(false), 2000);
                   }}>
                     <span className="truncate">{masterWallet}</span>
-                    {copiedWallet ? (
-                      <FaCheck className="text-emerald-400 shrink-0 ml-2 animate-pulse" />
-                    ) : (
-                      <FaCopy className="text-brand-primary opacity-40 shrink-0 ml-2" />
-                    )}
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0 ml-2">
+                      {copiedWallet ? (
+                        <FaCheck className="text-emerald-400 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-brand-primary opacity-40" />
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -449,11 +451,13 @@ export default function LobbyDepositDrawer({
                     setTimeout(() => setCopiedMemo(false), 2000);
                   }}>
                     <span>{memoComment}</span>
-                    {copiedMemo ? (
-                      <FaCheck className="text-emerald-400 animate-pulse" />
-                    ) : (
-                      <FaCopy className="text-emerald-500 opacity-60" />
-                    )}
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0 ml-2">
+                      {copiedMemo ? (
+                        <FaCheck className="text-emerald-400 animate-pulse" />
+                      ) : (
+                        <FaCopy className="text-emerald-500 opacity-60" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
