@@ -253,17 +253,6 @@ export default function Home() {
 
  {/* Quick Shortcuts Hub Grid (3 Columns) */}
  <div className="grid grid-cols-3 gap-3 w-full relative z-10">
- <Link href={`/${locale}/game`}>
- <motion.div
- whileHover={{ y: -2 }}
- whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
- >
- <FaGamepad className="text-lg text-brand-primary opacity-70" />
- <span className="text-[9px] font-black uppercase tracking-wider">{t('play')}</span>
- </motion.div>
- </Link>
-
  <Link href={`/${locale}/academy`}>
  <motion.div
  whileHover={{ y: -2 }}
@@ -272,6 +261,17 @@ export default function Home() {
  >
  <FaGraduationCap className="text-lg text-brand-primary opacity-70" />
  <span className="text-[9px] font-black uppercase tracking-wider">{t('academy')}</span>
+ </motion.div>
+ </Link>
+
+ <Link href={`/${locale}/game`}>
+ <motion.div
+ whileHover={{ y: -2 }}
+ whileTap={{ scale: 0.97 }}
+ className="play-chess-card-premium w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer text-center"
+ >
+ <FaGamepad className="text-lg text-brand-primary opacity-70 relative z-10" />
+ <span className="text-[9px] font-black uppercase tracking-wider relative z-10">{t('play')}</span>
  </motion.div>
  </Link>
 
