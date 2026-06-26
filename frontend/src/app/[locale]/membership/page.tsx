@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaCheck, FaRocket, FaChevronLeft, FaCoins, FaTrophy, FaPalette, FaAd, FaUserFriends, FaCrown, FaBrain } from "react-icons/fa";
+import { FaCheck, FaChevronLeft } from "react-icons/fa";
+
 import Link from "next/link";
 import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
@@ -12,7 +13,43 @@ import { useLocale, useTranslations } from 'next-intl';
 import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
- 
+
+/* ── Ultra-premium SVG icon set ─────────────────────────────────────── */
+const IconBoost = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+  </svg>
+);
+const IconReferral = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <circle cx="9" cy="7" r="3"/>
+    <circle cx="18" cy="7" r="2"/>
+    <path d="M3 21v-2a5 5 0 0 1 5-5h3"/>
+    <path d="M15 14l2 2 4-4"/>
+  </svg>
+);
+const IconThemes = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <path d="M12 2a5 5 0 0 1 5 5c0 5-5 9-5 9S7 12 7 7a5 5 0 0 1 5-5z"/>
+    <circle cx="12" cy="7" r="2"/>
+    <path d="M8 21h8M10 17h4"/>
+  </svg>
+);
+const IconAcademy = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <path d="M2 10l10-6 10 6-10 6-10-6z"/>
+    <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>
+    <path d="M22 10v6"/>
+    <circle cx="22" cy="17" r="1.5"/>
+  </svg>
+);
+const IconDiamond = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
+    <path d="M6 3h12l4 6-10 12L2 9z"/>
+    <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
+  </svg>
+);
+
 export default function MembershipPage() {
  const locale = useLocale();
  const tm = useTranslations('Membership');
@@ -22,14 +59,15 @@ export default function MembershipPage() {
     id: 'premium',
     name: tm('premium'),
     features: [
-      { icon: <FaRocket />, title: tm('premium_boost'), desc: tm('premium_boost_desc') },
-      { icon: <FaUserFriends />, title: tm('priority_match'), desc: tm('priority_match_desc') },
-      { icon: <FaCrown />, title: tm('elite_skins'), desc: tm('elite_skins_desc') },
-      { icon: <FaBrain />, title: tm('engine_analysis'), desc: tm('engine_analysis_desc') },
+      { icon: <IconBoost />, title: tm('premium_boost'), desc: tm('premium_boost_desc'), gradient: 'from-amber-500 to-orange-600', glow: 'rgba(245,158,11,0.35)' },
+      { icon: <IconReferral />, title: tm('priority_match'), desc: tm('priority_match_desc'), gradient: 'from-emerald-500 to-teal-600', glow: 'rgba(16,185,129,0.35)' },
+      { icon: <IconThemes />, title: tm('elite_skins'), desc: tm('elite_skins_desc'), gradient: 'from-sky-500 to-blue-600', glow: 'rgba(14,165,233,0.35)' },
+      { icon: <IconAcademy />, title: tm('engine_analysis'), desc: tm('engine_analysis_desc'), gradient: 'from-purple-500 to-violet-600', glow: 'rgba(139,92,246,0.35)' },
     ],
     monthly: 2900,
     annual: 29580,
   };
+
  
   const { walletBalance, walletAddress, syncBalance, stats, syncStats } = useUser();
   const tw = useTranslations('Wallet');
@@ -190,32 +228,74 @@ export default function MembershipPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full premium-neon-card p-4 rounded-2xl text-center space-y-1 relative overflow-hidden"
+          className="w-full premium-neon-card rounded-2xl relative overflow-hidden"
+          style={{ border: '1px solid rgba(168,85,247,0.25)' }}
         >
-          <div className="absolute -top-12 -left-12 w-24 h-24 bg-purple-500/15 blur-2xl rounded-full" />
-          <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-purple-500/15 blur-2xl rounded-full" />
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-purple-400 premium-neon-text-glow flex items-center justify-center gap-1.5">
-            <FaCrown className="text-[9px]" /> ACTIVE PREMIUM MEMBERSHIP
-          </span>
-          <div className="text-xs font-black text-brand-primary uppercase tracking-wide">
-            Expires: {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+          <div className="absolute -top-10 -left-10 w-20 h-20 bg-purple-500/10 blur-2xl rounded-full" />
+          <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-purple-500/10 blur-2xl rounded-full" />
+          <div className="flex items-center gap-3 px-4 py-3">
+            {/* SVG Crown icon */}
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center text-white shrink-0 shadow-[0_4px_16px_rgba(139,92,246,0.5)]">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/15 to-transparent" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M2 18h20M4 18L2 8l5 4 5-6 5 6 5-4-2 10"/>
+              </svg>
+            </div>
+            <div className="flex flex-col flex-1 text-left">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                <span className="text-[8px] font-black uppercase tracking-[0.25em] text-purple-300">Active Premium</span>
+              </div>
+              <div className="text-[10px] font-black text-brand-primary/80 uppercase tracking-wide">
+                Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}
+              </div>
+            </div>
           </div>
         </motion.div>
       )}
 
+
       {/* Feature Container */}
       <div className="w-full premium-liquid-border">
-        <div className="w-full premium-liquid-content p-6 space-y-6">
+        <div className="w-full premium-liquid-content p-5 space-y-1">
           {PREMIUM_INFO.features.map((feature, idx) => (
-            <div key={idx} className="flex items-start space-x-4">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 shrink-0 shadow-[0_0_15px_rgba(168,85,247,0.4)] premium-neon-icon-glow">
-                <span className="text-base">{feature.icon}</span>
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.07 }}
+            >
+              <div className="flex items-center gap-4 py-4">
+                {/* Gradient icon badge */}
+                <div
+                  className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shrink-0 relative`}
+                  style={{ boxShadow: `0 4px 20px ${feature.glow}, inset 0 1px 1px rgba(255,255,255,0.15)` }}
+                >
+                  {/* subtle inner shine */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/15 to-transparent" />
+                  {feature.icon}
+                </div>
+
+                <div className="flex flex-col text-left min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className="text-[8px] font-black px-1.5 py-0.5 rounded-md text-white/60 border border-white/10 bg-white/5 tracking-widest leading-none tabular-nums"
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-[11px] font-black text-brand-primary uppercase tracking-widest leading-none truncate">
+                      {feature.title}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-medium text-brand-primary/60 tracking-tight leading-snug">
+                    {feature.desc}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col pt-0.5 text-left">
-                <span className="text-xs font-black text-brand-primary uppercase tracking-wide leading-none mb-1.5">{feature.title}</span>
-                <span className="text-[10px] font-bold text-brand-primary/80 tracking-tight leading-snug">{feature.desc}</span>
-              </div>
-            </div>
+              {idx < PREMIUM_INFO.features.length - 1 && (
+                <div className="h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
+              )}
+            </motion.div>
           ))}
         </div>
       </div>
@@ -444,21 +524,16 @@ export default function MembershipPage() {
           <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-purple-500 opacity-20 blur-2xl rounded-full" />
 
           {/* Coins/Warning Icon */}
-          <div className="w-20 h-20 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shadow-lg relative group overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.45)]">
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <motion.div
-              animate={{ 
-                scale: [1, 1.05, 1],
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 3,
-                ease: "easeInOut"
-              }}
-            >
-              <span className="text-4xl premium-neon-icon-glow">💎</span>
-            </motion.div>
-          </div>
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg relative overflow-hidden" style={{boxShadow: '0 8px 32px rgba(139,92,246,0.55), inset 0 1px 1px rgba(255,255,255,0.15)'}}>
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent" />
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                className="text-white"
+              >
+                <IconDiamond />
+              </motion.div>
+            </div>
 
           <div className="space-y-2">
             <h2 className="text-xl font-black text-purple-300 premium-neon-text-glow uppercase tracking-wider leading-none">
