@@ -312,3 +312,20 @@ class MatchmakerService:
         except Exception as e:
             logger.warning(f"Redis _remove_from_queue_unsafe failed ({e}). Falling back to memory.")
             MatchmakerService._use_memory = True
+
+    async def is_in_queue(self, bid_amount: int, time_control: int, user_id: int) -> bool:
+        """Check if user is currently in the specified queue."""
+        queue_key_mem = (bid_amount, time_control)
+        queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
+        
+        if MatchmakerService._use_memory or not self.redis:
+            queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
+        else:
+            try:
+                data = await self.redis.get(queue_key)
+                queue = json.loads(data) if data else []
+            except Exception:
+                queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
+                
+        return any(item['user_id'] == user_id for item in queue)
+

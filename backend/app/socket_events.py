@@ -159,6 +159,164 @@ async def join_room(sid, data):
             time_left = state.white_time_left if active_turn == 'w' else state.black_time_left
             service.start_timeout_monitor(room, len(state.move_history), time_left, active_turn)
 
+async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponent_sid: str, bid_amount: int, time_control: int):
+    # Generate clean unique game_id
+    game_id = f"match_{min(user_id, opponent_id)}_{max(user_id, opponent_id)}_{int(asyncio.get_event_loop().time())}"
+    
+    service = GameService()
+    state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=bid_amount)
+    
+    # Randomly assign white and black players
+    if random.random() < 0.5:
+        state.white_player_id = user_id
+        state.black_player_id = opponent_id
+    else:
+        state.white_player_id = opponent_id
+        state.black_player_id = user_id
+    
+    state.bid_amount = bid_amount
+    
+    # Resolve pending wagers (update reference_id to game_id and status to completed)
+    async with AsyncSessionLocal() as db:
+        white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
+        black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
+        
+        # Fetch pending transactions
+        res_w = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == state.white_player_id,
+                    Transaction.type == "game_wager",
+                    Transaction.status == "pending",
+                    Transaction.reference_id == "matchmaking"
+                )
+            ).order_by(Transaction.created_at.desc()).limit(1)
+        )
+        tx_w = res_w.scalars().first()
+        
+        res_b = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == state.black_player_id,
+                    Transaction.type == "game_wager",
+                    Transaction.status == "pending",
+                    Transaction.reference_id == "matchmaking"
+                )
+            ).order_by(Transaction.created_at.desc()).limit(1)
+        )
+        tx_b = res_b.scalars().first()
+        
+        if not tx_w or not tx_b:
+            # Rollback and clean up queues (just in case they need refunding)
+            await db.rollback()
+            # Refund anyone who got deducted if one of the transaction gets lost/mismatched
+            async with AsyncSessionLocal() as refund_db:
+                await refund_pending_matchmaking_wager(refund_db, user_id)
+                await refund_pending_matchmaking_wager(refund_db, opponent_id)
+            await MatchmakerService().remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
+            await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=user_sid)
+            return
+        
+        # Update status to completed
+        tx_w.status = "completed"
+        tx_w.reference_id = game_id
+        tx_b.status = "completed"
+        tx_b.reference_id = game_id
+        
+        db.add(tx_w)
+        db.add(tx_b)
+        
+        # Cache player usernames and ELOs
+        state.white_username = white.first_name if white else f"User_{state.white_player_id}"
+        state.white_elo = white.elo if white else 1000
+        state.black_username = black.first_name if black else f"User_{state.black_player_id}"
+        state.black_elo = black.elo if black else 1000
+        
+        await db.commit()
+        logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+        logger.info(f"[TRANSACTION] user_id={state.black_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+
+    # Save state after caching players
+    await service.session_manager.save_game(game_id, state)
+
+    # Send automated matchmaking Telegram notifications
+    try:
+        from app.services.telegram_bot import TelegramService
+        # White Player Notification
+        msg_w = (
+            f"<b>🎮 Wager Chess Battle Connected! (White)</b>\n\n"
+            f"• <b>Opponent:</b> @{state.black_username or 'Opponent'} (ELO {state.black_elo})\n"
+            f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+            f"<i>Your wager has been locked. The board is ready in the Chess Mini App. Make your first move! ♟️⚡️</i>"
+        )
+        await TelegramService.send_notification(state.white_player_id, msg_w)
+        
+        # Black Player Notification
+        msg_b = (
+            f"<b>🎮 Wager Chess Battle Connected! (Black)</b>\n\n"
+            f"• <b>Opponent:</b> @{state.white_username or 'Opponent'} (ELO {state.white_elo})\n"
+            f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
+            f"<i>Your wager has been locked. White is setting up the first move. Keep your eyes on the board! ♟️🛡️</i>"
+        )
+        await TelegramService.send_notification(state.black_player_id, msg_b)
+    except Exception as e:
+        pass
+
+    # Move both sockets into game room
+    await sio.enter_room(user_sid, game_id)
+    await sio.enter_room(opponent_sid, game_id)
+
+    # Notify user_id player
+    await sio.emit('match_found', {
+        'game_id': game_id,
+        'color': 'w' if state.white_player_id == user_id else 'b',
+        'opponent_id': opponent_id,
+        'bid_amount': bid_amount
+    }, room=user_sid)
+
+    # Notify opponent player
+    await sio.emit('match_found', {
+        'game_id': game_id,
+        'color': 'w' if state.white_player_id == opponent_id else 'b',
+        'opponent_id': user_id,
+        'bid_amount': bid_amount
+    }, room=opponent_sid)
+
+    # Broadcast initial state to the room
+    await sio.emit('game_state', state.model_dump(), room=game_id)
+    print(f"Matchmaker: Created wager game {game_id} for User {user_id} and {opponent_id} with bid {bid_amount}")
+
+    # Start White's first-move abort timer
+    service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
+
+async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int):
+    """
+    Background loop that runs for a matchmaking player when they are not matched immediately.
+    Allows ELO thresholds to expand dynamically over time.
+    """
+    matchmaker = MatchmakerService()
+    logger.info(f"Starting background matchmaking polling for user {user_id}")
+    
+    # Run for up to 60 iterations (120 seconds total)
+    for attempt in range(60):
+        await asyncio.sleep(2.0)
+        
+        # Verify if the user is still in the queue
+        in_queue = await matchmaker.is_in_queue(bid_amount, time_control, user_id)
+        if not in_queue:
+            logger.info(f"User {user_id} is no longer in matchmaking queue. Exiting background loop.")
+            break
+            
+        # Try to match
+        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control)
+        if opponent:
+            logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
+            try:
+                await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
+            except Exception as e:
+                logger.error(f"Error establishing background match: {e}")
+            break
+
 @sio.event
 async def join_matchmaking(sid, data):
     """
@@ -233,138 +391,10 @@ async def join_matchmaking(sid, data):
         # 3. Find and pop matching opponent atomically
         opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control)
         if opponent:
-            # Opponent matched!
-            opponent_id = opponent['user_id']
-            opponent_sid = opponent['sid']
-            
-            # Generate clean unique game_id
-            game_id = f"match_{min(user_id, opponent_id)}_{max(user_id, opponent_id)}_{int(asyncio.get_event_loop().time())}"
-            
-            service = GameService()
-            state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=bid_amount)
-            
-            # Randomly assign white and black players
-            if random.random() < 0.5:
-                state.white_player_id = user_id
-                state.black_player_id = opponent_id
-            else:
-                state.white_player_id = opponent_id
-                state.black_player_id = user_id
-            
-            state.bid_amount = bid_amount
-            
-            # 4. Resolve pending wagers (update reference_id to game_id and status to completed)
-            async with AsyncSessionLocal() as db:
-                white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
-                black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
-                
-                # Fetch pending transactions
-                res_w = await db.execute(
-                    select(Transaction).where(
-                        and_(
-                            Transaction.user_id == state.white_player_id,
-                            Transaction.type == "game_wager",
-                            Transaction.status == "pending",
-                            Transaction.reference_id == "matchmaking"
-                        )
-                    ).order_by(Transaction.created_at.desc()).limit(1)
-                )
-                tx_w = res_w.scalars().first()
-                
-                res_b = await db.execute(
-                    select(Transaction).where(
-                        and_(
-                            Transaction.user_id == state.black_player_id,
-                            Transaction.type == "game_wager",
-                            Transaction.status == "pending",
-                            Transaction.reference_id == "matchmaking"
-                        )
-                    ).order_by(Transaction.created_at.desc()).limit(1)
-                )
-                tx_b = res_b.scalars().first()
-                
-                if not tx_w or not tx_b:
-                    # Rollback and clean up queues (just in case they need refunding)
-                    await db.rollback()
-                    # Refund anyone who got deducted if one of the transaction gets lost/mismatched
-                    async with AsyncSessionLocal() as refund_db:
-                        await refund_pending_matchmaking_wager(refund_db, user_id)
-                        await refund_pending_matchmaking_wager(refund_db, opponent_id)
-                    await matchmaker.remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
-                    await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=sid)
-                    return
-                
-                # Update status to completed
-                tx_w.status = "completed"
-                tx_w.reference_id = game_id
-                tx_b.status = "completed"
-                tx_b.reference_id = game_id
-                
-                db.add(tx_w)
-                db.add(tx_b)
-                
-                # Cache player usernames and ELOs
-                state.white_username = white.first_name if white else f"User_{state.white_player_id}"
-                state.white_elo = white.elo if white else 1000
-                state.black_username = black.first_name if black else f"User_{state.black_player_id}"
-                state.black_elo = black.elo if black else 1000
-                
-                await db.commit()
-                logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
-                logger.info(f"[TRANSACTION] user_id={state.black_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
- 
-            # Save state after caching players
-            await service.session_manager.save_game(game_id, state)
- 
-            # Send automated matchmaking Telegram notifications
-            try:
-                from app.services.telegram_bot import TelegramService
-                # White Player Notification
-                msg_w = (
-                    f"<b>🎮 Wager Chess Battle Connected! (White)</b>\n\n"
-                    f"• <b>Opponent:</b> @{state.black_username or 'Opponent'} (ELO {state.black_elo})\n"
-                    f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
-                    f"<i>Your wager has been locked. The board is ready in the Chess Mini App. Make your first move! ♟️⚡️</i>"
-                )
-                await TelegramService.send_notification(state.white_player_id, msg_w)
-                
-                # Black Player Notification
-                msg_b = (
-                    f"<b>🎮 Wager Chess Battle Connected! (Black)</b>\n\n"
-                    f"• <b>Opponent:</b> @{state.white_username or 'Opponent'} (ELO {state.white_elo})\n"
-                    f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
-                    f"<i>Your wager has been locked. White is setting up the first move. Keep your eyes on the board! ♟️🛡️</i>"
-                )
-                await TelegramService.send_notification(state.black_player_id, msg_b)
-            except Exception as e:
-                pass
-
-            # Move both sockets into game room
-            await sio.enter_room(sid, game_id)
-            await sio.enter_room(opponent_sid, game_id)
-
-            # Notify White player
-            await sio.emit('match_found', {
-                'game_id': game_id,
-                'color': 'w' if state.white_player_id == user_id else 'b',
-                'opponent_id': opponent_id,
-                'bid_amount': bid_amount
-            }, room=sid)
-
-            # Notify Black player
-            await sio.emit('match_found', {
-                'game_id': game_id,
-                'color': 'w' if state.white_player_id == opponent_id else 'b',
-                'opponent_id': user_id,
-                'bid_amount': bid_amount
-            }, room=opponent_sid)
-
-            # Broadcast initial state to the room
-            await sio.emit('game_state', state.model_dump(), room=game_id)
-            print(f"Matchmaker: Created wager game {game_id} for User {user_id} and {opponent_id} with bid {bid_amount}")
-
-            # Start White's first-move abort timer
-            service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
+            await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
+        else:
+            # Spawn the background polling task to allow ELO thresholds to expand and match dynamically
+            asyncio.create_task(run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo))
 
     except Exception as e:
         print(f"Error joining matchmaking: {e}")
