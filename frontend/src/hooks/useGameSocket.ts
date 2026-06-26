@@ -12,6 +12,7 @@ export const useGameSocket = (gameId: string) => {
 
     useEffect(() => {
         const socket = getSocket();
+        setIsConnected(socket.connected);
 
         const onConnect = () => {
             setIsConnected(true);
