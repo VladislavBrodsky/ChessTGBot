@@ -32,8 +32,9 @@ async def refund_pending_matchmaking_wager(db, user_id: int):
         if txs:
             for tx in txs:
                 refund_amount = abs(tx.amount)
-                # Atomically credit refund
-                await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
+                # Atomically credit refund if refund_amount > 0
+                if refund_amount > 0:
+                    await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
                 tx.status = "failed"
                 tx.reference_id = "matchmaking_refunded"
                 db.add(tx)
@@ -397,25 +398,27 @@ async def join_matchmaking(sid, data):
                 await sio.emit('matchmaking_error', {'message': 'Already in matchmaking queue.'}, room=sid)
                 return
 
-            # Atomically debit wager from player's balance
-            user = await user_crud.atomic_debit(db, user_id, bid_amount, commit=False)
-            if not user:
-                await sio.emit('matchmaking_error', {
-                    'message': 'Insufficient funds. Please top up your Web3 Wallet.'
-                }, room=sid)
-                return
+            # Atomically debit wager from player's balance if wager > 0
+            if bid_amount > 0:
+                user = await user_crud.atomic_debit(db, user_id, bid_amount, commit=False)
+                if not user:
+                    await sio.emit('matchmaking_error', {
+                        'message': 'Insufficient funds. Please top up your Web3 Wallet.'
+                    }, room=sid)
+                    return
 
-            # Log pending transaction
-            tx = Transaction(
-                user_id=user_id,
-                type="game_wager",
-                amount=-bid_amount,
-                status="pending",
-                reference_id="matchmaking"
-            )
-            db.add(tx)
-            await db.commit()
-            logger.info(f"[TRANSACTION] user_id={user_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking | status=pending")
+                # Log pending transaction
+                tx = Transaction(
+                    user_id=user_id,
+                    type="game_wager",
+                    amount=-bid_amount,
+                    status="pending",
+                    reference_id="matchmaking"
+                )
+                db.add(tx)
+                await db.commit()
+                logger.info(f"[TRANSACTION] user_id={user_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking | status=pending")
+            
             user_elo = getattr(user, 'elo', 1000)
 
         # 2. Add to matchmaking queue

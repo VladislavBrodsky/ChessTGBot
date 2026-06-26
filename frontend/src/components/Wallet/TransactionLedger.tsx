@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { FaHistory, FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { FaHistory, FaArrowDown, FaArrowUp, FaRobot, FaGamepad } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 
 interface Transaction {
@@ -59,6 +59,7 @@ export default function TransactionLedger({ loading, transactions }: Transaction
         <div className="w-full flex flex-col space-y-2 max-h-72 overflow-y-auto">
           {transactions.map((tx) => {
             const isPositive = tx.amount > 0;
+            const isZero = tx.amount === 0;
             const formattedAmt = `$${(Math.abs(tx.amount) / 100).toFixed(2)}`;
             const formattedFee = tx.fee > 0 ? `($${(tx.fee / 100).toFixed(2)} fee)` : "";
             
@@ -70,24 +71,28 @@ export default function TransactionLedger({ loading, transactions }: Transaction
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
+                    tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
+                      ? 'bg-brand-bg-opacity-10 text-brand-primary opacity-80' :
                     tx.type === 'game_win' || tx.type === 'referral_commission' || tx.type === 'subscription_commission' || tx.type === 'refund' || tx.type === 'game_refund'
                       ? 'bg-brand-emerald-opacity-10 text-emerald-500' :
                     tx.type === 'deposit' ? 'bg-brand-cyan-opacity-10 text-cyan-500' :
                     tx.type === 'game_wager' || tx.type === 'game_rake' ? 'bg-brand-rose-opacity-10 text-rose-500' :
                     'bg-brand-amber-opacity-10 text-amber-500'
                   }`}>
-                    {isPositive ? <FaArrowDown /> : <FaArrowUp />}
+                    {tx.type === 'game_against_ai' ? <FaRobot className="text-sm" /> :
+                     tx.type === 'game_free_pvp' ? <FaGamepad className="text-sm" /> :
+                     isPositive ? <FaArrowDown /> : <FaArrowUp />}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[11px] font-black uppercase tracking-wide text-brand-primary">
                       {tx.type === 'deposit' ? tw('tx_deposit') :
                       tx.type === 'withdrawal' ? tw('tx_withdrawal') :
-                      tx.type === 'game_wager' ? tw('tx_wager') :
-                      tx.type === 'game_win' ? tw('tx_win') :
+                      tx.type === 'game_against_ai' ? (tw.has('tx_game_against_ai') ? tw('tx_game_against_ai') : 'Game against AI') :
+                      tx.type === 'game_free_pvp' ? (tw.has('tx_game_free_pvp') ? tw('tx_game_free_pvp') : 'Free game against other players') :
+                      (tx.type === 'game_wager' || tx.type === 'game_win' || tx.type === 'game_refund' || tx.type === 'refund') ? (tw.has('tx_game_paid') ? tw('tx_game_paid') : 'Paid game against other players') :
                       tx.type === 'referral_commission' ? tw('tx_referral') :
                       tx.type === 'subscription_commission' ? tw('tx_subscription') :
                       tx.type === 'game_rake' ? tw('tx_rake') : 
-                      (tx.type === 'refund' || tx.type === 'game_refund') ? (tw.has('tx_refund') ? tw('tx_refund') : 'Wager Refund') :
                       tx.type}
                     </span>
                     <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
@@ -96,8 +101,8 @@ export default function TransactionLedger({ loading, transactions }: Transaction
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className={`text-[12px] font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {isPositive ? '+' : '-'}{formattedAmt}
+                  <span className={`text-[12px] font-black ${isZero ? 'text-brand-primary opacity-60' : isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {isZero ? '' : isPositive ? '+' : '-'}{formattedAmt}
                   </span>
                   {tx.fee > 0 && (
                     <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">

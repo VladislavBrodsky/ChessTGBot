@@ -33,6 +33,13 @@ def compute_best_bot_move(fen: str) -> Optional[str]:
     engine.board = board
     return engine.get_best_move()
 
+def get_concise_game_id(game_id: str) -> str:
+    if game_id and game_id.startswith("match_"):
+        parts = game_id.split("_")
+        if len(parts) >= 4:
+            return f"M-{parts[-1]}"
+    return game_id
+
 class GameService:
     _active_timeout_tasks: Dict[str, asyncio.Task] = {}
     _active_abort_tasks: Dict[str, asyncio.Task] = {}
@@ -611,7 +618,7 @@ class GameService:
                         if white_user:
                             abort_msg_w = (
                                 f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                                f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                                f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                                 f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
                                 f"<i>The game was aborted. Your wager has been fully refunded.</i>"
                             )
@@ -619,7 +626,7 @@ class GameService:
                         if black_user:
                             abort_msg_b = (
                                 f"<b>🛡️ Cyber Chess Match Aborted</b>\n\n"
-                                f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                                f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                                 f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
                                 f"<i>The game was aborted. Your wager has been fully refunded.</i>"
                             )
@@ -655,7 +662,7 @@ class GameService:
                     try:
                         abort_msg_w = (
                             f"<b>🛡️ Cyber Chess Match Cancelled</b>\n\n"
-                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                             f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
                             f"<i>The game was ended before an opponent joined. Your wager has been fully refunded.</i>"
                         )
@@ -723,6 +730,17 @@ class GameService:
                         moves_json=moves_json,
                         commit=False
                     )
+                    # Log AI game transaction in ledger
+                    tx_ai = Transaction(
+                        user_id=white_id,
+                        type="game_against_ai",
+                        amount=0,
+                        fee=0,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    session.add(tx_ai)
+
                     # Check and award deferred referral signup bonus (3-game milestone)
                     await GamificationService.check_referral_game_milestone(session, white_user.id)
                     await session.commit()
@@ -940,7 +958,7 @@ class GameService:
                     # Prepare notifications
                     win_msg = (
                         f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
                         f"• <b>Winner Payout (95%):</b> +${payout_amount / 100:.2f} USDT\n"
                         f"• <b>Company Commission (3% Platform Rake):</b> -${platform_rake / 100:.2f} USDT\n"
@@ -950,7 +968,7 @@ class GameService:
                     )
                     lose_msg = (
                         f"<b>💀 Chess Match Defeat</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
                         f"{black_xp_breakdown}"
                         f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
@@ -997,7 +1015,7 @@ class GameService:
                     # Prepare notifications
                     win_msg = (
                         f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Wager Bid Amount:</b> ${bid_amount / 100:.2f} USDT\n"
                         f"• <b>Winner Payout (95%):</b> +${payout_amount / 100:.2f} USDT\n"
                         f"• <b>Company Commission (3% Platform Rake):</b> -${platform_rake / 100:.2f} USDT\n"
@@ -1007,7 +1025,7 @@ class GameService:
                     )
                     lose_msg = (
                         f"<b>💀 Chess Match Defeat</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Lost Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
                         f"{white_xp_breakdown}"
                         f"<i>Your bid wager was automatically transferred to the victor. Keep refining your tactics! 🧠</i>"
@@ -1047,17 +1065,92 @@ class GameService:
                     # Prepare notifications
                     draw_msg_w = (
                         f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
                         f"{white_xp_breakdown}"
                         f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
                     )
                     draw_msg_b = (
                         f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
-                        f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
                         f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
                         f"{black_xp_breakdown}"
                         f"<i>Chess battle resulted in a draw. Your original wager has been 100% automatically refunded to your platform balance.</i>"
+                    )
+                    notifications_to_send.append((white_user.telegram_id, draw_msg_w))
+                    notifications_to_send.append((black_user.telegram_id, draw_msg_b))
+
+            elif bid_amount == 0 and white_user and black_user:
+                # Log free PvP game transaction in ledger for both players
+                tx_w = Transaction(
+                    user_id=white_id,
+                    type="game_free_pvp",
+                    amount=0,
+                    fee=0,
+                    status="completed",
+                    reference_id=game_id
+                )
+                tx_b = Transaction(
+                    user_id=black_id,
+                    type="game_free_pvp",
+                    amount=0,
+                    fee=0,
+                    status="completed",
+                    reference_id=game_id
+                )
+                session.add(tx_w)
+                session.add(tx_b)
+
+                # Prepare notifications for free game
+                if state.winner == 'w':
+                    win_msg = (
+                        f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Congratulations! ELO ranking updated! ♟️🔥</i>"
+                    )
+                    lose_msg = (
+                        f"<b>💀 Chess Match Defeat</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Better luck next time! Keep refining your tactics! 🧠</i>"
+                    )
+                    notifications_to_send.append((white_user.telegram_id, win_msg))
+                    notifications_to_send.append((black_user.telegram_id, lose_msg))
+                elif state.winner == 'b':
+                    win_msg = (
+                        f"<b>🏆 Cyber Chess Match Victory!</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Congratulations! ELO ranking updated! ♟️🔥</i>"
+                    )
+                    lose_msg = (
+                        f"<b>💀 Chess Match Defeat</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Better luck next time! Keep refining your tactics! 🧠</i>"
+                    )
+                    notifications_to_send.append((black_user.telegram_id, win_msg))
+                    notifications_to_send.append((white_user.telegram_id, lose_msg))
+                else:
+                    # Draw
+                    draw_msg_w = (
+                        f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{white_xp_breakdown}"
+                        f"<i>Chess battle resulted in a draw.</i>"
+                    )
+                    draw_msg_b = (
+                        f"<b>🤝 Stalemate / Draw Resolution</b>\n\n"
+                        f"• <b>Game ID:</b> <code>{get_concise_game_id(game_id)}</code>\n"
+                        f"• <b>Match Type:</b> Free game\n\n"
+                        f"{black_xp_breakdown}"
+                        f"<i>Chess battle resulted in a draw.</i>"
                     )
                     notifications_to_send.append((white_user.telegram_id, draw_msg_w))
                     notifications_to_send.append((black_user.telegram_id, draw_msg_b))
@@ -1159,8 +1252,9 @@ class GameService:
         if matchmaking_txs:
             for tx in matchmaking_txs:
                 refund_amount = abs(tx.amount)
-                # Atomically credit refund
-                await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
+                # Atomically credit refund if positive
+                if refund_amount > 0:
+                    await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
                 tx.status = "failed"
                 tx.reference_id = "matchmaking_refunded"
                 db.add(tx)
@@ -1231,17 +1325,20 @@ class GameService:
                 # Redis key has already expired or doesn't exist. Refund the user immediately in DB.
                 if user:
                     refund_amount = abs(tx.amount)
-                    user.balance += refund_amount
-                    db.add(user)
-                    
-                    refund_tx = Transaction(
-                        user_id=user_id,
-                        type="refund",
-                        amount=refund_amount,
-                        fee=0,
-                        status="completed",
-                        reference_id=game_id
-                    )
-                    db.add(refund_tx)
-                    await db.commit()
-                    logger.info(f"[SELF-HEAL] Refunded expired/dead PVP game wager {game_id} for user {user_id}")
+                    if refund_amount > 0:
+                        user.balance += refund_amount
+                        db.add(user)
+                        
+                        refund_tx = Transaction(
+                            user_id=user_id,
+                            type="refund",
+                            amount=refund_amount,
+                            fee=0,
+                            status="completed",
+                            reference_id=game_id
+                        )
+                        db.add(refund_tx)
+                        await db.commit()
+                        logger.info(f"[SELF-HEAL] Refunded expired/dead PVP game wager {game_id} for user {user_id}")
+                    else:
+                        await db.commit()

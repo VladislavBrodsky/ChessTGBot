@@ -17,6 +17,7 @@ interface MatchOverModalProps {
   newElo?: number;
   copied?: boolean;
   xpGained?: number;
+  isBotGame?: boolean;
 }
 
 export default function MatchOverModal({
@@ -31,6 +32,7 @@ export default function MatchOverModal({
   newElo,
   copied = false,
   xpGained,
+  isBotGame = false,
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
@@ -106,7 +108,7 @@ export default function MatchOverModal({
         <div className="w-full flex flex-col gap-3">
           {rematchStatus === 'waiting' ? (
             <div className="w-full bg-brand-surface py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
-              <span>Pending Opponent...</span>
+              <span>{isBotGame ? (locale === 'ru' ? 'Создание игры...' : 'Creating Game...') : 'Pending Opponent...'}</span>
             </div>
           ) : (
             <motion.button

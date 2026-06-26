@@ -42,6 +42,7 @@ export default function WagerSelector({
           className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
         >
           {[
+            { label: "FREE", val: 0 },
             { label: "$1", val: 100 },
             { label: "$5", val: 500 },
             { label: "$10", val: 1000 },

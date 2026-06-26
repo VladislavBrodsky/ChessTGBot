@@ -338,6 +338,22 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     setRematchStatus('waiting');
   };
 
+  const startBotGameRevenge = async () => {
+    setRematchStatus('waiting');
+    try {
+      const timeControl = gameState?.time_control_seconds || 600;
+      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}`, {
+        method: "POST"
+      });
+      if (!res.ok) throw new Error("Backend error");
+      const data = await res.json();
+      router.push(`/${locale}/game?id=${data.game_id}`);
+    } catch (e) {
+      console.error("Failed to create computer game", e);
+      setRematchStatus('idle');
+    }
+  };
+
   const acceptRematch = () => {
     if (!incomingRematch) return;
     const socket = getSocket();
@@ -873,11 +889,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             netPayout={netPayout}
             wagerAmount={gameState?.wager_amount || 0}
             rematchStatus={rematchStatus}
-            onShowRematchChoice={() => setShowRematchChoice(true)}
+            onShowRematchChoice={isBotGame ? startBotGameRevenge : () => setShowRematchChoice(true)}
             onShareGame={shareGame}
             newElo={myNewElo}
             copied={copied}
             xpGained={gameState ? (isWhite ? gameState.white_xp_gained : gameState.black_xp_gained) : undefined}
+            isBotGame={isBotGame}
           />
         )}
       </AnimatePresence>
