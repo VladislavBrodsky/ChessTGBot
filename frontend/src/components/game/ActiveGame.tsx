@@ -17,7 +17,7 @@ import { useChessClock } from '@/hooks/useChessClock';
 import { useNavbarHide } from '@/context/NavbarContext';
 import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
-import { telegramConfirm, telegramHaptic } from '@/lib/telegram';
+import { telegramHaptic } from '@/lib/telegram';
 
 import { Chess } from 'chess.js';
 
@@ -228,8 +228,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     
     const onDrawOffered = (data: { game_id: string; offered_by: number }) => {
       if (data.offered_by !== userId) {
-        telegramConfirm("Your opponent has offered a draw. Do you accept?", (accepted) => {
-          if (accepted) {
+        setConfirmConfig({
+          title: locale === 'ru' ? "Предложение ничьей" : "Draw Offered",
+          message: locale === 'ru'
+            ? "Ваш оппонент предлагает ничью. Вы согласны?"
+            : "Your opponent has offered a draw. Do you accept?",
+          confirmText: locale === 'ru' ? "Принять" : "Accept Draw",
+          cancelText: locale === 'ru' ? "Отклонить" : "Decline",
+          onConfirm: () => {
             socket.emit("accept_draw", { game_id: gameId });
           }
         });
