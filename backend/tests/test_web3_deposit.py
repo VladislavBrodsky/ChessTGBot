@@ -105,7 +105,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                             "status": "ok",
                             "TonTransfer": {
                                 "sender": {"address": "0:sender_address"},
-                                "recipient": {"address": settings.MASTER_WALLET_ADDRESS},
+                                "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
                                 "amount": 2000000000,  # 2.0 TON
                                 "comment": f"ref_{telegram_id}"
                             }
@@ -120,7 +120,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                             "status": "ok",
                             "JettonTransfer": {
                                 "sender": {"address": "0:sender_address"},
-                                "recipient": {"address": settings.MASTER_WALLET_ADDRESS},
+                                "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
                                 "amount": 10000000,  # 10.0 USDT
                                 "comment": f"ref_{telegram_id}",
                                 "jetton": {

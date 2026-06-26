@@ -31,6 +31,16 @@ def crc16(data: bytes) -> int:
     return crc
 
 def convert_ton_address_to_hex(addr: str) -> str:
+    # If already in raw hex format (e.g. "0:hash"), normalize casing and return
+    if ":" in addr:
+        parts = addr.split(":")
+        if len(parts) == 2:
+            try:
+                int(parts[1], 16)
+                return f"{parts[0]}:{parts[1].lower()}"
+            except ValueError:
+                pass
+
     # Normalize base64url padding
     addr = addr.replace('-', '+').replace('_', '/')
     missing_padding = len(addr) % 4
@@ -48,7 +58,7 @@ def convert_ton_address_to_hex(addr: str) -> str:
     workchain = decoded[1]
     wc = -1 if workchain == 255 else workchain
     hash_bytes = decoded[2:34]
-    return f"{wc}:{hash_bytes.hex()}"
+    return f"{wc}:{hash_bytes.hex().lower()}"
 
 def convert_raw_to_friendly(raw_addr: str, bounceable: bool = True) -> str:
     if ":" not in raw_addr:
