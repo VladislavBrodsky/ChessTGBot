@@ -604,6 +604,44 @@ class GameService:
                 return
             # ──────────────────────────────────────────────────────────
 
+            # If the opponent never joined (friendly game with wager that was cancelled/resigned/aborted before opponent joined)
+            if not black_id:
+                print(f"[GameService] Processing friendly game lobby cancellation refund for {game_id}")
+                bid_amount = getattr(state, "bid_amount", 0)
+                if bid_amount > 0 and white_user:
+                    white_user.balance += bid_amount
+                    session.add(white_user)
+                    tx_w = Transaction(
+                        user_id=white_id,
+                        type="refund",
+                        amount=bid_amount,
+                        fee=0,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    session.add(tx_w)
+                await session.commit()
+                
+                # Send telegram notification
+                if bid_amount > 0 and white_user:
+                    try:
+                        abort_msg_w = (
+                            f"<b>🛡️ Cyber Chess Match Cancelled</b>\n\n"
+                            f"• <b>Game ID:</b> <code>{game_id}</code>\n"
+                            f"• <b>Refunded Wager:</b> +${bid_amount / 100:.2f} USDT\n\n"
+                            f"<i>The game was ended before an opponent joined. Your wager has been fully refunded.</i>"
+                        )
+                        await TelegramService.send_notification(white_user.telegram_id, abort_msg_w)
+                    except Exception:
+                        pass
+                
+                # Broadcast aborted state
+                state.is_game_over = True
+                state.result_type = 'aborted'
+                await self.session_manager.save_game(game_id, state)
+                await sio.emit('game_state', state.model_dump(), room=game_id)
+                return
+
             if not black_user or black_id == -1:
                 # Bot game / Training: update tasks progress, stats, and create game history
                 await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)

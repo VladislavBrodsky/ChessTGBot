@@ -172,9 +172,9 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_ton.status_code == 200
         v_ton_data = res_v_ton.json()
-        # 2 TON * $5.00 = $10.00 = 1000 cents. Minus 5% fee (50 cents) = 950 cents credited.
-        assert v_ton_data["credited_amount"] == 950
-        assert v_ton_data["new_balance"] == 1450 # 500 + 950
+        # 2 TON * $5.00 = $10.00 = 1000 cents. Under new top-up fee math: 1000 / 1.05 = 952 cents credited.
+        assert v_ton_data["credited_amount"] == 952
+        assert v_ton_data["new_balance"] == 1452 # 500 + 952
 
         # Verify DB Transactions were written
         tx_res = await db_session.execute(
@@ -182,7 +182,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         tx = tx_res.scalars().first()
         assert tx is not None
-        assert tx.amount == 950
+        assert tx.amount == 952
         assert tx.type == "deposit"
 
         # 4. Test Replay Protection
@@ -202,9 +202,9 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_usdt.status_code == 200
         v_usdt_data = res_v_usdt.json()
-        # 10 USDT * $1.00 = $10.00 = 1000 cents. Minus 5% fee (50 cents) = 950 cents.
-        assert v_usdt_data["credited_amount"] == 950
-        assert v_usdt_data["new_balance"] == 2400 # 1450 + 950
+        # 10 USDT * $1.00 = $10.00 = 1000 cents. Under new top-up fee math: 1000 / 1.05 = 952 cents.
+        assert v_usdt_data["credited_amount"] == 952
+        assert v_usdt_data["new_balance"] == 2404 # 1452 + 952
 
         # 6. Test Verify Low-Value USDT Jetton Deposit (0.01 USDT)
         res_v_low_usdt = await client.post(
@@ -214,10 +214,9 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_low_usdt.status_code == 200
         v_low_usdt_data = res_v_low_usdt.json()
-        # 0.01 USDT = 1 cent. Fee 5% of 1 cent is 0 cents (int truncation of 0.05).
-        # Credited amount should be 1 cent.
+        # 0.01 USDT = 1 cent. Under new top-up fee math: round(1 / 1.05) = 1 cent.
         assert v_low_usdt_data["credited_amount"] == 1
-        assert v_low_usdt_data["new_balance"] == 2401 # 2400 + 1
+        assert v_low_usdt_data["new_balance"] == 2405 # 2404 + 1
 
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

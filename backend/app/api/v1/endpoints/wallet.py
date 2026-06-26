@@ -692,8 +692,8 @@ async def receive_ton_deposit_webhook(
         return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": user.balance if user else 0}
 
     # Process automatic 5% platform topup fee
-    fee = int(amount_cents * 0.05)
-    credited_amount = amount_cents - fee
+    credited_amount = int(round(amount_cents / 1.05))
+    fee = amount_cents - credited_amount
 
     # Atomically credit user balance
     updated_user = await user_crud.atomic_credit(db, telegram_id, credited_amount)
@@ -969,8 +969,8 @@ async def verify_deposit(
         }
 
     # Deduct 5% platform fee
-    fee = int(amount_cents * 0.05)
-    credited_amount = amount_cents - fee
+    credited_amount = int(round(amount_cents / 1.05))
+    fee = amount_cents - credited_amount
 
     user.balance += credited_amount
     db.add(user)

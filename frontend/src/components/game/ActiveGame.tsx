@@ -95,6 +95,33 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const isWhite = gameState ? gameState.white_player_id === userId : true;
 
+  const gameStateRef = useRef(gameState);
+  const userIdRef = useRef(userId);
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+  useEffect(() => {
+    userIdRef.current = userId;
+  }, [userId]);
+
+  // Automatically abort and refund if the creator leaves/unmounts the lobby before opponent joins
+  useEffect(() => {
+    return () => {
+      const latestState = gameStateRef.current;
+      const latestUserId = userIdRef.current;
+      if (
+        latestState &&
+        !latestState.is_game_over &&
+        !latestState.black_player_id &&
+        latestState.white_player_id === latestUserId
+      ) {
+        const socket = getSocket();
+        socket.emit('abort_game', { game_id: gameId });
+        console.log("Automatically aborted game on unmount because opponent had not joined.");
+      }
+    };
+  }, [gameId]);
+
   // Initialize Telegram User ID on mount
   useEffect(() => {
     if (typeof window !== "undefined") {

@@ -105,7 +105,7 @@ export default function LobbyDepositDrawer({
     loadRatesAndConfig();
   }, []);
 
-  // Recalculate equivalent tokens needed based on USD amount entered
+  // Recalculate equivalent tokens needed based on USD amount entered (charged amount is selected + 5%)
   useEffect(() => {
     const usd = parseFloat(depositAmount);
     if (isNaN(usd) || usd <= 0) {
@@ -113,7 +113,8 @@ export default function LobbyDepositDrawer({
       return;
     }
     const price = prices[currency] || 1.0;
-    const tokens = usd / price;
+    const chargedUsd = usd * 1.05;
+    const tokens = chargedUsd / price;
 
     if (currency === 'BTC') {
       setTokenAmount(tokens.toFixed(6));
@@ -143,7 +144,8 @@ export default function LobbyDepositDrawer({
       if (!selectedCurrencyObj) throw new Error("Invalid currency selection");
 
       const price = prices[currency] || 1.0;
-      const tokensNeeded = amt / price;
+      const chargedAmt = amt * 1.05;
+      const tokensNeeded = chargedAmt / price;
       const decimals = selectedCurrencyObj.decimals;
       const amountUnits = BigInt(Math.round(tokensNeeded * Math.pow(10, decimals)));
 
@@ -378,6 +380,24 @@ export default function LobbyDepositDrawer({
               </div>
             </div>
           </div>
+
+          {/* Fee Breakdown Display */}
+          {!isNaN(parseFloat(depositAmount)) && parseFloat(depositAmount) > 0 && (
+            <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60 mb-3.5">
+              <div className="flex justify-between">
+                <span>Credited to Balance:</span>
+                <span className="text-emerald-400 font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Platform Fee (5%):</span>
+                <span className="text-rose-400 font-mono">${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
+                <span>Total Charged:</span>
+                <span className="font-mono">${(parseFloat(depositAmount) * 1.05).toFixed(2)}</span>
+              </div>
+            </div>
+          )}
 
           {/* Web3 CTA Action */}
           {!wallet ? (

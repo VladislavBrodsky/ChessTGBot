@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,15 +17,18 @@ import TimeControlSelector from './TimeControlSelector';
 import LobbyDepositDrawer from './LobbyDepositDrawer';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import { useUser } from '@/context/UserContext';
+import { useNavbarHide } from '@/context/NavbarContext';
 
 export default function PlayLobby() {
   const t = useTranslations('Index');
   const tg = useTranslations('Game');
   const locale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [tgUser, setTgUser] = useState<any>(null);
   const { walletBalance, syncBalance } = useUser();
+  const { hideNavbar, showNavbar } = useNavbarHide();
 
   // Matchmaking configs
   const [selectedWager, setSelectedWager] = useState<number>(500); // in cents (default $5)
@@ -225,6 +228,49 @@ export default function PlayLobby() {
     return () => clearInterval(interval);
   }, [matchmakingState]);
 
+  // Hide bottom navigation bar (Navbar) when searching for an opponent
+  useEffect(() => {
+    if (matchmakingState === 'searching') {
+      hideNavbar();
+    } else {
+      showNavbar();
+    }
+    return () => {
+      showNavbar();
+    };
+  }, [matchmakingState, hideNavbar, showNavbar]);
+
+  // Manage Telegram WebApp BackButton visibility during active search
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp?.BackButton) {
+      const tg = window.Telegram.WebApp;
+      if (matchmakingState === 'searching') {
+        tg.BackButton.hide();
+      } else {
+        const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
+        if (!isHomePage) {
+          tg.BackButton.show();
+        }
+      }
+    }
+  }, [matchmakingState, pathname, locale]);
+
+  // Auto-cleanup matchmaking queue if component unmounts while searching
+  const matchmakingStateRef = useRef(matchmakingState);
+  useEffect(() => {
+    matchmakingStateRef.current = matchmakingState;
+  }, [matchmakingState]);
+
+  useEffect(() => {
+    return () => {
+      if (matchmakingStateRef.current === 'searching') {
+        const socket = getSocket();
+        socket.emit('leave_matchmaking', {});
+        console.log("Automatically left matchmaking queue on component unmount.");
+      }
+    };
+  }, []);
+
   // Socket.IO Listeners for Matchmaking Online
   useEffect(() => {
     const socket = getSocket();
@@ -242,12 +288,25 @@ export default function PlayLobby() {
       submittingRef.current = false;
     };
 
+    const onMatchmakingStatus = (data: any) => {
+      console.log("Matchmaking status update:", data);
+      if (data.status === 'idle') {
+        setMatchmakingState('idle');
+        submittingRef.current = false;
+        if (data.message) {
+          setMatchmakingError(data.message);
+        }
+      }
+    };
+
     socket.on('match_found', onMatchFound);
     socket.on('matchmaking_error', onMatchmakingError);
+    socket.on('matchmaking_status', onMatchmakingStatus);
 
     return () => {
       socket.off('match_found', onMatchFound);
       socket.off('matchmaking_error', onMatchmakingError);
+      socket.off('matchmaking_status', onMatchmakingStatus);
     };
   }, [locale, router]);
 

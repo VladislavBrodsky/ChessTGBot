@@ -26,19 +26,20 @@ async def refund_pending_matchmaking_wager(db, user_id: int):
                     Transaction.status == "pending",
                     Transaction.reference_id == "matchmaking"
                 )
-            ).order_by(Transaction.created_at.desc()).limit(1)
+            )
         )
-        tx = result.scalars().first()
-        if tx:
-            refund_amount = abs(tx.amount)
-            # Atomically credit refund
-            await user_crud.atomic_credit(db, user_id, refund_amount)
-            tx.status = "failed"
-            tx.reference_id = "matchmaking_refunded"
-            db.add(tx)
+        txs = result.scalars().all()
+        if txs:
+            for tx in txs:
+                refund_amount = abs(tx.amount)
+                # Atomically credit refund
+                await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
+                tx.status = "failed"
+                tx.reference_id = "matchmaking_refunded"
+                db.add(tx)
+                logger.info(f"[TRANSACTION] user_id={user_id} | type=game_refund | amount={refund_amount} cents (${refund_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking_refunded | status=completed")
+                print(f"Refunded matchmaking wager of {refund_amount} to User {user_id}")
             await db.commit()
-            logger.info(f"[TRANSACTION] user_id={user_id} | type=game_refund | amount={refund_amount} cents (${refund_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking_refunded | status=completed")
-            print(f"Refunded matchmaking wager of {refund_amount} to User {user_id}")
             return True
     return False
 
@@ -94,11 +95,25 @@ async def disconnect(sid):
     try:
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
+        game_id = session.get('game_id')
         if user_id:
             async with AsyncSessionLocal() as db:
                 await refund_pending_matchmaking_wager(db, user_id)
             await MatchmakerService().remove_from_queue(user_id)
             print(f"Socket {sid} (User {user_id}) disconnected and removed from matchmaking queue.")
+            
+            # Auto-abort friendly game lobby if creator disconnects before opponent joins
+            if game_id:
+                service = GameService()
+                state = await service.get_game_state(game_id)
+                if state and not state.is_game_over:
+                    if state.white_player_id == user_id and not state.black_player_id:
+                        logger.info(f"Creator {user_id} disconnected from lobby {game_id}. Aborting game and refunding.")
+                        state.is_game_over = True
+                        state.result_type = 'aborted'
+                        await service.session_manager.save_game(game_id, state)
+                        await service.end_game(game_id, state)
+                        await sio.emit('game_state', state.model_dump(), room=game_id)
     except Exception as e:
         print(f"Error on socket disconnect: {e}")
 
@@ -113,6 +128,8 @@ async def join_room(sid, data):
     user_id = session.get('user_id')
     
     if room:
+        if user_id:
+            await sio.save_session(sid, {**session, 'game_id': room})
         service = GameService()
         if user_id:
             state = await service.session_manager.get_game(room)
@@ -297,6 +314,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
     matchmaker = MatchmakerService()
     logger.info(f"Starting background matchmaking polling for user {user_id}")
     
+    matched = False
     # Run for up to 60 iterations (120 seconds total)
     for attempt in range(60):
         await asyncio.sleep(2.0)
@@ -305,6 +323,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
         in_queue = await matchmaker.is_in_queue(bid_amount, time_control, user_id)
         if not in_queue:
             logger.info(f"User {user_id} is no longer in matchmaking queue. Exiting background loop.")
+            matched = True
             break
             
         # Try to match
@@ -313,9 +332,23 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
             logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
             try:
                 await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
+                matched = True
             except Exception as e:
                 logger.error(f"Error establishing background match: {e}")
             break
+
+    if not matched:
+        logger.info(f"Matchmaking timed out for user {user_id} after 120 seconds. Refunding wager.")
+        # Remove from queue
+        await matchmaker.remove_from_queue(user_id)
+        # Refund wager
+        async with AsyncSessionLocal() as db:
+            await refund_pending_matchmaking_wager(db, user_id)
+        # Notify user
+        await sio.emit('matchmaking_status', {
+            'status': 'idle',
+            'message': 'No opponent found within the time limit. Your wager has been fully refunded.'
+        }, room=sid)
 
 @sio.event
 async def join_matchmaking(sid, data):
@@ -360,7 +393,7 @@ async def join_matchmaking(sid, data):
                 return
 
             # Atomically debit wager from player's balance
-            user = await user_crud.atomic_debit(db, user_id, bid_amount)
+            user = await user_crud.atomic_debit(db, user_id, bid_amount, commit=False)
             if not user:
                 await sio.emit('matchmaking_error', {
                     'message': 'Insufficient funds. Please top up your Web3 Wallet.'
@@ -633,14 +666,14 @@ async def accept_rematch(sid, data):
                         return
                     
                     if wager > 0:
-                        p1_debited = await user_crud.atomic_debit(db, user_id, wager)
+                        p1_debited = await user_crud.atomic_debit(db, user_id, wager, commit=False)
                         if not p1_debited:
                             await sio.emit('error', {'message': 'Insufficient funds to start rematch'}, room=sid)
                             return
-                        p2_debited = await user_crud.atomic_debit(db, opponent_id, wager)
+                        p2_debited = await user_crud.atomic_debit(db, opponent_id, wager, commit=False)
                         if not p2_debited:
                             # Refund player1
-                            await user_crud.atomic_credit(db, user_id, wager)
+                            await user_crud.atomic_credit(db, user_id, wager, commit=False)
                             await sio.emit('error', {'message': 'Opponent has insufficient funds for rematch'}, room=sid)
                             return
                         

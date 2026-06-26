@@ -498,6 +498,7 @@ class TelegramService:
                 try:
                     # Verify database health before participating in leader election
                     from sqlalchemy import text
+                    from app.core.database import AsyncSessionLocal
                     db_healthy = True
                     try:
                         async with AsyncSessionLocal() as session:
