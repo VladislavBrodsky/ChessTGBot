@@ -131,6 +131,26 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                             }
                         }]
                     })
+                # Mock a low-value USDT jetton transfer event (0.01 USDT)
+                elif "msg_low_usdt_hash" in url_str:
+                    return MockResponse(200, {
+                        "event_id": "msg_low_usdt_hash",
+                        "actions": [{
+                            "type": "JettonTransfer",
+                            "status": "ok",
+                            "JettonTransfer": {
+                                "sender": {"address": "0:sender_address"},
+                                "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
+                                "amount": 10000,  # 0.01 USDT
+                                "comment": f"ref_{telegram_id}",
+                                "jetton": {
+                                    "address": settings.USDT_MASTER,
+                                    "symbol": "USDT",
+                                    "decimals": 6
+                                }
+                            }
+                        }]
+                    })
             return MockResponse(404, {})
 
         monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
@@ -185,6 +205,19 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         # 10 USDT * $1.00 = $10.00 = 1000 cents. Minus 5% fee (50 cents) = 950 cents.
         assert v_usdt_data["credited_amount"] == 950
         assert v_usdt_data["new_balance"] == 2400 # 1450 + 950
+
+        # 6. Test Verify Low-Value USDT Jetton Deposit (0.01 USDT)
+        res_v_low_usdt = await client.post(
+            "/api/v1/wallet/deposit/verify",
+            json={"message_hash": "msg_low_usdt_hash"},
+            headers=headers
+        )
+        assert res_v_low_usdt.status_code == 200
+        v_low_usdt_data = res_v_low_usdt.json()
+        # 0.01 USDT = 1 cent. Fee 5% of 1 cent is 0 cents (int truncation of 0.05).
+        # Credited amount should be 1 cent.
+        assert v_low_usdt_data["credited_amount"] == 1
+        assert v_low_usdt_data["new_balance"] == 2401 # 2400 + 1
 
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

@@ -598,12 +598,12 @@ async def receive_ton_deposit_webhook(
         currency = (payload.currency or "TON").upper()
         if currency == "USDT":
             amount_micro = int(payload.amount or 0)
-            amount_cents = int(amount_micro / 10000)
+            amount_cents = int(round(amount_micro / 10000.0))
         else:
             amount_nano = int(payload.amount or 0)
             ton_amount = amount_nano / 1_000_000_000.0
             ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-            amount_cents = int(ton_amount * ton_price_usd * 100)
+            amount_cents = int(round(ton_amount * ton_price_usd * 100))
 
         tx_hash = f"invoice_{invoice_id}"
         sender_addr = payload.pay_to_address or "TON_Console_Invoices"
@@ -652,7 +652,7 @@ async def receive_ton_deposit_webhook(
             jetton_amount_raw = decoded_body.get("amount")
             if jetton_amount_raw is not None:
                 try:
-                    amount_cents = int(int(jetton_amount_raw) / 10000)
+                    amount_cents = int(round(int(jetton_amount_raw) / 10000.0))
                 except ValueError:
                     amount_cents = 0
             else:
@@ -671,7 +671,7 @@ async def receive_ton_deposit_webhook(
             # Convert nanoTON to cents
             ton_amount = value_nano / 1_000_000_000.0
             ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-            amount_cents = int(ton_amount * ton_price_usd * 100)
+            amount_cents = int(round(ton_amount * ton_price_usd * 100))
 
         if not comment:
             comment = in_msg.get("message") or ""
@@ -917,7 +917,7 @@ async def verify_deposit(
                 # Calculate value in USD cents
                 ton_amount = amount_nano / 1_000_000_000.0
                 ton_price = prices.get("TON", 5.40)
-                amount_cents = int(ton_amount * ton_price * 100)
+                amount_cents = int(round(ton_amount * ton_price * 100))
                 sender_addr = sender
                 currency_symbol = "TON"
                 verified_tx = True
@@ -959,7 +959,7 @@ async def verify_deposit(
                     decimals = decimals_map.get(matched_symbol, 6)
                     token_amount = amount_raw / (10 ** decimals)
                     token_price = prices.get(matched_symbol, 1.00)
-                    amount_cents = int(token_amount * token_price * 100)
+                    amount_cents = int(round(token_amount * token_price * 100))
                     sender_addr = sender
                     currency_symbol = matched_symbol
                     verified_tx = True
