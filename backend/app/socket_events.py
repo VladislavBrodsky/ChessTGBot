@@ -199,55 +199,56 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     
     state.bid_amount = bid_amount
     
-    # Resolve pending wagers (update reference_id to game_id and status to completed)
+    # Resolve pending wagers if stakes are greater than 0
     async with AsyncSessionLocal() as db:
         white = await user_crud.get_user_by_telegram_id(db, state.white_player_id, for_update=True)
         black = await user_crud.get_user_by_telegram_id(db, state.black_player_id, for_update=True)
         
-        # Fetch pending transactions
-        res_w = await db.execute(
-            select(Transaction).where(
-                and_(
-                    Transaction.user_id == state.white_player_id,
-                    Transaction.type == "game_wager",
-                    Transaction.status == "pending",
-                    Transaction.reference_id == "matchmaking"
-                )
-            ).order_by(Transaction.created_at.desc()).limit(1)
-        )
-        tx_w = res_w.scalars().first()
-        
-        res_b = await db.execute(
-            select(Transaction).where(
-                and_(
-                    Transaction.user_id == state.black_player_id,
-                    Transaction.type == "game_wager",
-                    Transaction.status == "pending",
-                    Transaction.reference_id == "matchmaking"
-                )
-            ).order_by(Transaction.created_at.desc()).limit(1)
-        )
-        tx_b = res_b.scalars().first()
-        
-        if not tx_w or not tx_b:
-            # Rollback and clean up queues (just in case they need refunding)
-            await db.rollback()
-            # Refund anyone who got deducted if one of the transaction gets lost/mismatched
-            async with AsyncSessionLocal() as refund_db:
-                await refund_pending_matchmaking_wager(refund_db, user_id)
-                await refund_pending_matchmaking_wager(refund_db, opponent_id)
-            await MatchmakerService().remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
-            await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=user_sid)
-            return
-        
-        # Update status to completed
-        tx_w.status = "completed"
-        tx_w.reference_id = game_id
-        tx_b.status = "completed"
-        tx_b.reference_id = game_id
-        
-        db.add(tx_w)
-        db.add(tx_b)
+        if bid_amount > 0:
+            # Fetch pending transactions
+            res_w = await db.execute(
+                select(Transaction).where(
+                    and_(
+                        Transaction.user_id == state.white_player_id,
+                        Transaction.type == "game_wager",
+                        Transaction.status == "pending",
+                        Transaction.reference_id == "matchmaking"
+                    )
+                ).order_by(Transaction.created_at.desc()).limit(1)
+            )
+            tx_w = res_w.scalars().first()
+            
+            res_b = await db.execute(
+                select(Transaction).where(
+                    and_(
+                        Transaction.user_id == state.black_player_id,
+                        Transaction.type == "game_wager",
+                        Transaction.status == "pending",
+                        Transaction.reference_id == "matchmaking"
+                    )
+                ).order_by(Transaction.created_at.desc()).limit(1)
+            )
+            tx_b = res_b.scalars().first()
+            
+            if not tx_w or not tx_b:
+                # Rollback and clean up queues (just in case they need refunding)
+                await db.rollback()
+                # Refund anyone who got deducted if one of the transaction gets lost/mismatched
+                async with AsyncSessionLocal() as refund_db:
+                    await refund_pending_matchmaking_wager(refund_db, user_id)
+                    await refund_pending_matchmaking_wager(refund_db, opponent_id)
+                await MatchmakerService().remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
+                await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=user_sid)
+                return
+            
+            # Update status to completed
+            tx_w.status = "completed"
+            tx_w.reference_id = game_id
+            tx_b.status = "completed"
+            tx_b.reference_id = game_id
+            
+            db.add(tx_w)
+            db.add(tx_b)
         
         # Cache player usernames and ELOs
         state.white_username = white.first_name if white else f"User_{state.white_player_id}"
@@ -256,8 +257,9 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
         state.black_elo = black.elo if black else 1000
         
         await db.commit()
-        logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
-        logger.info(f"[TRANSACTION] user_id={state.black_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+        if bid_amount > 0:
+            logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
+            logger.info(f"[TRANSACTION] user_id={state.black_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
 
     # Save state after caching players
     await service.session_manager.save_game(game_id, state)
