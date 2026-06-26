@@ -287,6 +287,16 @@ async def sync_user(
     The user is automatically created/retrieved by the get_current_user dependency 
     which validates the X-Telegram-Init-Data header.
     """
+    # Run self-healing zombie wager routine on app launch sync
+    import logging
+    try:
+        from app.services.game_service import GameService
+        await GameService().heal_zombie_wagers(db, current_user.telegram_id)
+        # Refresh current_user to ensure we have the latest balance and state
+        await db.refresh(current_user)
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Error in heal_zombie_wagers on sync: {e}")
+
     # Refresh photo URL dynamically from Telegram Bot API on sync (as URLs expire after 1 hour)
     try:
         from app.services.telegram_bot import TelegramService

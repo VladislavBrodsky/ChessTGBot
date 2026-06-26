@@ -83,6 +83,11 @@ async def connect(sid, environ, auth):
         await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data})
         print(f"Socket {sid} connected as User {user_id}")
         
+        # Run self-healing zombie wager routine on socket connect
+        if user_id:
+            async with AsyncSessionLocal() as db:
+                await GameService().heal_zombie_wagers(db, user_id)
+        
     except Exception as e:
         print(f"Socket connection rejected: {e}")
         return False # Reject connection

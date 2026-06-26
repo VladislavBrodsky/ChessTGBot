@@ -1103,3 +1103,117 @@ class GameService:
             
             # Broadcast the final state to the socket room
             await sio.emit('game_state', state.model_dump(), room=game_id)
+
+    async def heal_zombie_wagers(self, db: AsyncSession, user_id: int):
+        """
+        Self-healing routine to detect and refund any zombie matchmaking wagers or
+        dangling friendly PVP game wagers (e.g. from previous sessions where the server crashed
+        and clean disconnect/refund events didn't run).
+        """
+        from app.models.transaction import Transaction
+        from app.models.game_history import GameHistory
+        from sqlalchemy import select, and_
+        from app.crud import user as user_crud
+        
+        # 1. Refund any zombie pending matchmaking wagers
+        # This handles wagers from users who were added to the matchmaking queue but never matched
+        result = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == user_id,
+                    Transaction.type == "game_wager",
+                    Transaction.status == "pending",
+                    Transaction.reference_id == "matchmaking"
+                )
+            )
+        )
+        matchmaking_txs = result.scalars().all()
+        if matchmaking_txs:
+            for tx in matchmaking_txs:
+                refund_amount = abs(tx.amount)
+                # Atomically credit refund
+                await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
+                tx.status = "failed"
+                tx.reference_id = "matchmaking_refunded"
+                db.add(tx)
+                logger.info(f"[SELF-HEAL] Refunded zombie matchmaking wager of {refund_amount} cents to User {user_id}")
+            await db.commit()
+
+        # 2. Refund any dangling friendly PVP game wagers (status='completed', reference_id=game_id)
+        # Fetch the user's recent completed game wagers
+        wager_result = await db.execute(
+            select(Transaction).where(
+                and_(
+                    Transaction.user_id == user_id,
+                    Transaction.type == "game_wager",
+                    Transaction.status == "completed"
+                )
+            ).order_by(Transaction.created_at.desc()).limit(10)
+        )
+        completed_wagers = wager_result.scalars().all()
+        
+        for tx in completed_wagers:
+            game_id = tx.reference_id
+            if not game_id or game_id.startswith("matchmaking") or game_id.startswith("rematch"):
+                continue
+            
+            # Check if this game_id already has a refund or payout transaction logged
+            res_check = await db.execute(
+                select(Transaction).where(
+                    and_(
+                        Transaction.reference_id == game_id,
+                        Transaction.type.in_(["refund", "game_win", "game_refund"])
+                    )
+                )
+            )
+            if res_check.scalars().first():
+                continue # Already resolved
+            
+            # Check if there is a GameHistory record for this game_id
+            hist_check = await db.execute(
+                select(GameHistory).where(GameHistory.game_id == game_id)
+            )
+            if hist_check.scalars().first():
+                continue # Already in history
+            
+            # This is a dangling, unresolved game wager!
+            # Fetch state from Redis to check if opponent ever joined
+            state = await self.session_manager.get_game(game_id)
+            user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
+            
+            if state:
+                # If no opponent has joined (black_player_id is None/empty)
+                if not state.black_player_id or state.black_player_id == 0:
+                    # Abort and refund creator
+                    state.is_game_over = True
+                    state.result_type = 'aborted'
+                    await self.session_manager.save_game(game_id, state)
+                    # We use the existing end_game payout logic (which handles refunds for aborted PVP game with no opponent)
+                    await self.end_game(game_id, state)
+                    logger.info(f"[SELF-HEAL] Aborted dangling PVP lobby {game_id} and refunded creator {user_id}")
+                else:
+                    # Both players joined, but the game is unresolved (e.g. server crashed in the middle of active game).
+                    # Settle as aborted and refund both players
+                    state.is_game_over = True
+                    state.result_type = 'aborted'
+                    await self.session_manager.save_game(game_id, state)
+                    await self.end_game(game_id, state)
+                    logger.info(f"[SELF-HEAL] Aborted crashed PVP game {game_id} and refunded both players")
+            else:
+                # Redis key has already expired or doesn't exist. Refund the user immediately in DB.
+                if user:
+                    refund_amount = abs(tx.amount)
+                    user.balance += refund_amount
+                    db.add(user)
+                    
+                    refund_tx = Transaction(
+                        user_id=user_id,
+                        type="refund",
+                        amount=refund_amount,
+                        fee=0,
+                        status="completed",
+                        reference_id=game_id
+                    )
+                    db.add(refund_tx)
+                    await db.commit()
+                    logger.info(f"[SELF-HEAL] Refunded expired/dead PVP game wager {game_id} for user {user_id}")

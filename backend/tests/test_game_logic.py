@@ -186,3 +186,88 @@ async def test_daily_task_reset(db_session):
     assert not test_task.completed
     assert not test_task.claimed
     assert test_task.updated_at.date() == datetime.now(timezone.utc).date()
+
+
+@pytest.mark.asyncio
+async def test_heal_zombie_wagers(db_session):
+    from app.services.game_service import GameService
+    from app.models.user import User
+    from app.models.transaction import Transaction
+    from app.crud import user as user_crud
+    from sqlalchemy import select
+
+    # Skip if using mock session to make sure we test database queries correctly
+    if hasattr(db_session, "users"):
+        return
+
+    # 1. Setup a test user
+    telegram_id = 99999123
+    user = await user_crud.create_user(db_session, telegram_id, "ZombieTester")
+    user.balance = 500  # 5.00 USDT
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # 2. Create a pending matchmaking wager transaction (zombie matchmaking wager)
+    tx = Transaction(
+        user_id=telegram_id,
+        type="game_wager",
+        amount=-100,  # 1.00 USDT wagered
+        fee=0,
+        status="pending",
+        reference_id="matchmaking"
+    )
+    db_session.add(tx)
+    await db_session.commit()
+
+    # 3. Call heal_zombie_wagers
+    service = GameService()
+    await service.heal_zombie_wagers(db_session, telegram_id)
+
+    # 4. Verify user was refunded and transaction marked failed
+    await db_session.refresh(user)
+    assert user.balance == 600  # 500 + 100 refund
+
+    # Verify transaction status
+    res = await db_session.execute(
+        select(Transaction).where(
+            Transaction.user_id == telegram_id,
+            Transaction.reference_id == "matchmaking_refunded"
+        )
+    )
+    db_tx = res.scalars().first()
+    assert db_tx is not None
+    assert db_tx.status == "failed"
+
+    # 5. Create a completed PVP game wager transaction for a dangling game
+    game_id = "test_dangling_game_999"
+    tx2 = Transaction(
+        user_id=telegram_id,
+        type="game_wager",
+        amount=-200,  # 2.00 USDT
+        fee=0,
+        status="completed",
+        reference_id=game_id
+    )
+    db_session.add(tx2)
+    await db_session.commit()
+
+    # Since the Redis key does not exist for "test_dangling_game_999",
+    # heal_zombie_wagers should refund it immediately in DB.
+    await service.heal_zombie_wagers(db_session, telegram_id)
+
+    await db_session.refresh(user)
+    assert user.balance == 800  # 600 + 200 refund
+
+    # Verify a refund transaction was logged
+    res_refund = await db_session.execute(
+        select(Transaction).where(
+            Transaction.user_id == telegram_id,
+            Transaction.type == "refund",
+            Transaction.reference_id == game_id
+        )
+    )
+    refund_tx = res_refund.scalars().first()
+    assert refund_tx is not None
+    assert refund_tx.amount == 200
+
