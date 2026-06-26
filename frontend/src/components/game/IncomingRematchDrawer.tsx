@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
+import { FaChessKnight } from "react-icons/fa";
 
 interface IncomingRematchDrawerProps {
   incomingRematch: {
@@ -21,57 +23,73 @@ export default function IncomingRematchDrawer({
   const tg = useTranslations('Game');
 
   return (
-    <div className="bottom-drawer-backdrop z-[110]">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">
+      {/* Backdrop with visual blur & dim */}
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={onDecline}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style={{ touchAction: 'none' }}
+        className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+        style={{ touchAction: 'none' }}
       />
+      
+      {/* Center Pop-Up Dialog Card */}
       <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-20"
+        initial={{ opacity: 0, scale: 0.9, y: 15 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
+        exit={{ opacity: 0, scale: 0.9, y: 15 }} 
+        transition={{ type: "spring", damping: 25, stiffness: 380 }}
+        className="relative w-full max-w-[290px] bg-[#FFFFFF]/95 dark:bg-[#0A0A0A]/90 border border-zinc-200/50 dark:border-zinc-800/40 rounded-3xl p-5 shadow-[0_24px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl flex flex-col items-center text-center space-y-4"
       >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-orange-400 animate-pulse">
+        {/* Brand/Chess icon badge */}
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
+          <FaChessKnight className="text-amber-500 text-xl" />
+        </div>
+
+        {/* Text Headers */}
+        <div className="space-y-1.5 w-full">
+          <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
             {tg('rematch_dialog_title')}
-          </h2>
-          <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+          </h3>
+          <p className="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed px-1">
             {tg('challenger_offered_rematch', { name: incomingRematch.challenger_name })}
           </p>
         </div>
-        
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 text-center shadow-sm">
-          <span className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest block mb-1">{tg('proposed_wager')}</span>
-          <span className="text-2xl font-black text-brand-primary">
+
+        {/* Proposed Wager Detail Box */}
+        <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl py-3 px-4 border border-zinc-200/50 dark:border-zinc-800/50 text-center shadow-inner-glow">
+          <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
+            {tg('proposed_wager')}
+          </span>
+          <span className="text-xl font-black text-zinc-800 dark:text-zinc-200">
             ${((incomingRematch.wager) / 100).toFixed(2)} USDT
           </span>
           {incomingRematch.double_stakes && (
-            <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block mt-1">{tg('double_stakes_active')}</span>
+            <span className="text-[9px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
+              {tg('double_stakes_active')}
+            </span>
           )}
         </div>
-        
-        <div className="w-full flex flex-col gap-3">
+
+        {/* Accept/Reject Buttons */}
+        <div className="w-full flex gap-2.5 pt-1">
+          {/* Reject button */}
           <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={onAccept}
-            className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+            whileTap={{ scale: 0.96 }}
+            onClick={onDecline}
+            className="flex-1 py-3 rounded-xl border border-red-500/20 dark:border-red-500/25 bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <span>{tg('accept_play')}</span>
+            <span>Reject ❌</span>
           </motion.button>
           
+          {/* Accept button */}
           <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={onDecline}
-            className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+            whileTap={{ scale: 0.96 }}
+            onClick={onAccept}
+            className="flex-1 py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
           >
-            <span>{tg('decline')}</span>
+            <span>Accept ✅</span>
           </motion.button>
         </div>
       </motion.div>
