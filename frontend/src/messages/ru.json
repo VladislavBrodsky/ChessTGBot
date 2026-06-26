@@ -253,7 +253,7 @@
     "usdt_balance": "Баланс USDT",
     "no_wallet": "Кошелек не подключен",
     "version": "ChessPay v1",
-    "link_ton": "Привязать TON",
+    "link_ton": "КОШЕЛЁК",
     "deposit": "Депозит",
     "withdraw": "Вывод",
     "deposit_fee": "Комиссия на ввод:",
@@ -290,7 +290,7 @@
     "insufficient_balance": "🚨 НЕДОСТАТОЧНО СРЕДСТВ НА ПЛАТФОРМЕ",
     "signing_tx": "Подписание TON транзакции...",
     "request_withdraw": "Запросить вывод TON",
-    "connect_title": "Подключить TON-кошелек",
+    "connect_title": "Подключить Web3-кошелёк",
     "connect_desc": "Привяжите кошелек TON для совершения депозитов, ставок и безопасных выплат.",
     "ton_address": " TON адрес кошелька",
     "ton_placeholder": "Введите TON адрес (EQ...)",
@@ -328,7 +328,7 @@
     "tx_rake": "Комиссия платформы"
   },
   "Membership": {
-    "title": "👑 ПОДПИСКА CHESS PREMIUM",
+    "title": "ПОДПИСКА CHESS PREMIUM",
     "subtitle": "Максимум заработка и эксклюзивные возможности.",
     "basic": "Базовый",
     "premium": "Премиум",

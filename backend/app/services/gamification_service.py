@@ -516,8 +516,10 @@ class GamificationService:
             logging.getLogger(__name__).warning(f"Failed to send grandparent milestone notifications: {e}")
 
         return True
+
     @staticmethod
     async def claim_task(db: AsyncSession, user_id: int, task_id: int):
+
         # 1. Lock User row first to prevent deadlock and serialize claims per user
         user_stmt = select(User).where(User.id == user_id).with_for_update()
         res_user = await db.execute(user_stmt)

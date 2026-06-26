@@ -252,7 +252,7 @@
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "Link TON",
+    "link_ton": "WALLET",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -286,7 +286,7 @@
     "insufficient_balance": "🚨 INSUFFICIENT PLATFORM BALANCE",
     "signing_tx": "Signing TON transaction...",
     "request_withdraw": "Request TON Withdrawal",
-    "connect_title": "Conectar Billetera TON",
+    "connect_title": "Conectar Billetera Web3",
     "connect_desc": "Vincula tu billetera TON para habilitar depósitos, apuestas y pagos seguros.",
     "ton_address": "TON Wallet Address",
     "ton_placeholder": "Enter TON wallet address (EQ...)",
@@ -324,7 +324,7 @@
     "tx_rake": "Comisión de la plataforma"
   },
   "Membership": {
-    "title": "👑 CHESS PREMIUM",
+    "title": "CHESS PREMIUM",
     "subtitle": "Desbloquea el máximo de recompensas y funciones exclusivas.",
     "basic": "Basic",
     "premium": "Premium",

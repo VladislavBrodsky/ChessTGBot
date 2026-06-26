@@ -252,7 +252,7 @@
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "Link TON",
+    "link_ton": "WALLET",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -286,7 +286,7 @@
     "insufficient_balance": "🚨 INSUFFICIENT PLATFORM BALANCE",
     "signing_tx": "Signing TON transaction...",
     "request_withdraw": "Request TON Withdrawal",
-    "connect_title": "TONウォレットを接続",
+    "connect_title": "Web3ウォレットを接続",
     "connect_desc": "入出金、賭け対局を有効にするため、TONウォレットをリンクしてください。",
     "ton_address": "TON Wallet Address",
     "ton_placeholder": "Enter TON wallet address (EQ...)",
@@ -324,7 +324,7 @@
     "tx_rake": "プラットフォーム手数料"
   },
   "Membership": {
-    "title": "👑 CHESS PREMIUM 会員",
+    "title": "CHESS PREMIUM 会員",
     "subtitle": "報酬を最大化し、限定機能をアンロックしましょう",
     "basic": "Basic",
     "premium": "Premium",

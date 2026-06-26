@@ -22,7 +22,7 @@ interface LobbyDepositDrawerProps {
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
   { symbol: 'USDC', name: 'USD Coin', decimals: 6, master: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728', color: '#2775CA' },
-  { symbol: 'TON', name: 'The Open Network', decimals: 9, master: '', color: '#0098EA' },
+  { symbol: 'GRAM', name: 'GRAM (TON)', decimals: 9, master: '', color: '#00C49A' },
   { symbol: 'BTC', name: 'Bitcoin (jWBTC)', decimals: 8, master: 'EQDcBkGHmC4pTf34x3Gm05XvepO5w60DNxZ-XT4I6-UGG5L5', color: '#F7931A' },
   { symbol: 'ETH', name: 'Ethereum (jETH)', decimals: 9, master: 'EQAvS52CoZckQWLNFa7_iZL3apL52yuTwa-hlgkdWkdYl7LA', color: '#627EEA' },
 ];
@@ -43,7 +43,7 @@ export default function LobbyDepositDrawer({
   const { stats } = useUser();
 
   const [depositAmount, setDepositAmount] = useState<string>("10.00");
-  const [currency, setCurrency] = useState<'TON' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
+  const [currency, setCurrency] = useState<'GRAM' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
   const [tokenAmount, setTokenAmount] = useState<string>("10.00");
   const [prices, setPrices] = useState<{ [key: string]: number }>({
     TON: 5.40,
@@ -164,7 +164,7 @@ export default function LobbyDepositDrawer({
         .storeStringTail(`ref_${tgId}`)
         .endCell();
 
-      if (currency === 'TON') {
+      if (currency === 'GRAM') {
         targetAddress = masterWallet;
         payloadBase64 = commentCell.toBoc().toString('base64');
         attachedTon = amountUnits.toString();

@@ -5,11 +5,11 @@ import { useTranslations, useLocale } from 'next-intl';
 import { AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { FaArrowUp, FaArrowDown, FaChevronLeft, FaNetworkWired } from "react-icons/fa";
+import { FaArrowUp, FaArrowDown, FaChevronLeft, FaWallet } from "react-icons/fa";
 import Link from "next/link";
 import DepositModal from "@/components/Wallet/DepositModal";
 import WithdrawModal from "@/components/Wallet/WithdrawModal";
-import LinkWalletModal from "@/components/Wallet/LinkWalletModal";
+import WalletSelectorModal from "@/components/Wallet/WalletSelectorModal";
 import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
 import { useUser } from "@/context/UserContext";
@@ -82,9 +82,14 @@ export default function WalletPage() {
         <div className="w-full grid grid-cols-3 gap-2">
           <button 
             onClick={() => { setActiveModal('connect'); }}
-            className="py-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 transition-all text-[10px] font-black uppercase tracking-widest text-brand-primary flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
+            className="py-3.5 rounded-2xl border transition-all text-[10px] font-black uppercase tracking-widest flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
+            style={{
+              borderColor: 'rgba(0,196,154,0.25)',
+              background: 'rgba(0,196,154,0.07)',
+              color: '#00C49A',
+            }}
           >
-            <FaNetworkWired className="text-xs text-brand-primary opacity-60" />
+            <FaWallet className="text-xs" style={{ color: '#00C49A' }} />
             <span>{tw('link_ton')}</span>
           </button>
           <button 
@@ -135,10 +140,9 @@ export default function WalletPage() {
             />
           )}
           {activeModal === 'connect' && (
-            <LinkWalletModal
+            <WalletSelectorModal
               onClose={() => setActiveModal('none')}
-              onSuccess={fetchWalletData}
-              initialAddress={walletAddress}
+              onConnected={fetchWalletData}
               tw={tw}
             />
           )}

@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaCheck, FaChevronLeft } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 
-import Link from "next/link";
 import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
@@ -195,33 +194,17 @@ export default function MembershipPage() {
     <div className="premium-liquid-mesh-blob3" />
 
     <div className="w-full max-w-sm flex flex-col items-center mx-auto space-y-8 px-4 relative z-10">
-      {/* Header / Brand */}
-      <div className="w-full flex items-center justify-between relative">
-        <div className="w-16 flex-shrink-0 flex items-center justify-start">
-          <Link href={`/${locale}/settings`}>
-            <motion.button
-              whileHover={{ x: -2 }}
-              className="text-purple-300 opacity-75 hover:opacity-100 hover:text-white transition-all flex items-center space-x-1.5 text-[9px] font-bold uppercase tracking-widest cursor-pointer premium-neon-text-glow"
-            >
-              <FaChevronLeft className="text-[8px]" />
-              <span>{t('back')}</span>
-            </motion.button>
-          </Link>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-1 text-center px-1 text-xl sm:text-2xl font-black tracking-tighter select-none uppercase premium-neon-text-glow flex items-center justify-center flex-wrap gap-1.5"
-        >
-          <span>{tm('title')}</span>
-          <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide self-center normal-case flex-shrink-0">PRO</span>
-        </motion.div>
-
-        <div className="w-16 flex-shrink-0" />
-      </div>
-      <div className="h-px w-12 bg-purple-500/35 -mt-4 shadow-[0_0_8px_#a855f7]" />
-      <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-2">{tm('subtitle')}</span>
+      {/* Header / Brand — no back button (Telegram native UI handles that) */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full text-center text-xl sm:text-2xl font-black tracking-tighter select-none uppercase premium-neon-text-glow flex items-center justify-center flex-wrap gap-1.5"
+      >
+        <span>{tm('title')}</span>
+        <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide self-center normal-case flex-shrink-0">PRO</span>
+      </motion.div>
+      <div className="h-px w-12 bg-purple-500/35 shadow-[0_0_8px_#a855f7]" />
+      <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-2 text-center">{tm('subtitle')}</span>
 
       {/* Active Subscription Expiry Badge */}
       {stats?.is_premium && stats.premium_expires_at && (
@@ -235,7 +218,7 @@ export default function MembershipPage() {
           <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-purple-500/10 blur-2xl rounded-full" />
           <div className="flex items-center gap-3 px-4 py-3">
             {/* SVG Crown icon */}
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center text-white shrink-0 shadow-[0_4px_16px_rgba(139,92,246,0.5)]">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center text-white shrink-0 shadow-[0_4px_16px_rgba(139,92,246,0.5)] relative overflow-hidden">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/15 to-transparent" />
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                 <path d="M2 18h20M4 18L2 8l5 4 5-6 5 6 5-4-2 10"/>
@@ -325,9 +308,24 @@ export default function MembershipPage() {
               : "bg-brand-surface border-brand-border-opacity-10 text-brand-primary hover:bg-brand-bg-opacity-5"
           }`}
         >
-          <div className={`absolute top-0 right-0 px-2 py-0.5 rounded-bl-xl text-[7px] font-black uppercase tracking-tighter ${billingPeriod === 'annual' ? "bg-white text-purple-600 shadow-[0_0_8px_rgba(255,255,255,0.8)]" : "bg-brand-bg-opacity-10 text-brand-primary opacity-60"}`}>
-            {tm('discount')}
-          </div>
+          {/* 15% OFF — ultra eye-catching animated badge */}
+          <motion.div
+            animate={{ scale: [1, 1.06, 1], boxShadow: ['0 0 12px rgba(168,85,247,0.7)', '0 0 24px rgba(168,85,247,1)', '0 0 12px rgba(168,85,247,0.7)'] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-0 right-0 overflow-hidden"
+            style={{ borderRadius: '0 14px 0 14px' }}
+          >
+            <div className="relative px-2.5 py-1 text-[8px] font-black uppercase tracking-tight text-white" style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', minWidth: 72 }}>
+              {/* shimmer */}
+              <motion.div
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-0 w-1/2 pointer-events-none"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)' }}
+              />
+              <span className="relative z-10">{tm('discount')}</span>
+            </div>
+          </motion.div>
           <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-white opacity-90 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('annual')}</span>
           <div>
             <span className={`text-2xl font-black tracking-tighter leading-none ${billingPeriod === 'annual' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
