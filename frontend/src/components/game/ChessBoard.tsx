@@ -19,6 +19,10 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
 
+    const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const gameForTurn = new Chess(fen === "start" ? START_FEN : fen);
+    const isMyTurn = gameForTurn.turn() === (orientation === "white" ? "w" : "b");
+
     useEffect(() => {
         setSelectedSquare(null);
     }, [fen]);
@@ -26,6 +30,11 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     function handleSquareClick({ square }: { piece: any; square: string }) {
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         const game = new Chess(fen === "start" ? START_FEN : fen);
+        
+        const playerColor = orientation === "white" ? "w" : "b";
+        if (game.turn() !== playerColor) {
+            return;
+        }
         
         // 1. If user clicks one of their own pieces, select/re-select it
         const piece = game.get(square as any);
@@ -89,8 +98,20 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         const game = new Chess(fen === "start" ? START_FEN : fen);
         
-        // Check if this is a pawn promotion move
+        const playerColor = orientation === "white" ? "w" : "b";
+        
+        // 1. Verify it is our turn
+        if (game.turn() !== playerColor) {
+            return false;
+        }
+
+        // 2. Verify the piece belongs to us
         const piece = game.get(sourceSquare as any);
+        if (!piece || piece.color !== playerColor) {
+            return false;
+        }
+        
+        // Check if this is a pawn promotion move
         const isPawn = piece && piece.type === "p";
         const isPromotionRank = targetSquare.endsWith("8") || targetSquare.endsWith("1");
         
@@ -213,7 +234,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                             position: fen === "start" ? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" : fen,
                             onPieceDrop: onDrop,
                             boardOrientation: orientation,
-                            allowDragging: true,
+                            allowDragging: isMyTurn,
                             boardStyle: {
                                 borderRadius: "12px",
                                 overflow: "hidden",
