@@ -815,7 +815,6 @@ async def verify_deposit(
     import logging
 
     logger = logging.getLogger(__name__)
-    url = f"https://tonapi.io/v2/events/{message_hash}"
     headers = {}
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
@@ -825,13 +824,25 @@ async def verify_deposit(
     for attempt in range(15):
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
+                # 1. Try events endpoint directly (if hash is tx_hash or event_id)
+                url = f"https://tonapi.io/v2/events/{message_hash}"
                 res = await client.get(url, headers=headers)
                 if res.status_code == 200:
                     event_data = res.json()
                     break
                 elif res.status_code == 404:
-                    # Not mined yet
-                    pass
+                    # 2. Try resolving message hash to a transaction
+                    msg_url = f"https://tonapi.io/v2/blockchain/messages/{message_hash}/transaction"
+                    msg_res = await client.get(msg_url, headers=headers)
+                    if msg_res.status_code == 200:
+                        tx_data = msg_res.json()
+                        resolved_tx_hash = tx_data.get("hash")
+                        if resolved_tx_hash:
+                            event_url = f"https://tonapi.io/v2/events/{resolved_tx_hash}"
+                            event_res = await client.get(event_url, headers=headers)
+                            if event_res.status_code == 200:
+                                event_data = event_res.json()
+                                break
                 else:
                     logger.warning(f"TonAPI verify status: {res.status_code}")
         except Exception as e:

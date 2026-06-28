@@ -151,6 +151,31 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                             }
                         }]
                     })
+                # Mock resolved transaction event
+                elif "msg_usdt_hash_resolved" in url_str:
+                    return MockResponse(200, {
+                        "event_id": "msg_usdt_hash_resolved",
+                        "actions": [{
+                            "type": "JettonTransfer",
+                            "status": "ok",
+                            "JettonTransfer": {
+                                "sender": {"address": "0:sender_address"},
+                                "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
+                                "amount": 10000000,  # 10.0 USDT
+                                "comment": f"ref_{telegram_id}",
+                                "jetton": {
+                                    "address": settings.USDT_MASTER,
+                                    "symbol": "USDT",
+                                    "decimals": 6
+                                }
+                            }
+                        }]
+                    })
+            elif "blockchain/messages" in url_str:
+                if "msg_resolvable_hash" in url_str:
+                    return MockResponse(200, {
+                        "hash": "msg_usdt_hash_resolved"
+                    })
             return MockResponse(404, {})
 
         monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
@@ -217,6 +242,17 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         # 0.01 USDT = 1 cent. Under new top-up fee math: round(1 / 1.05) = 1 cent.
         assert v_low_usdt_data["credited_amount"] == 1
         assert v_low_usdt_data["new_balance"] == 2405 # 2404 + 1
+
+        # 7. Test Verify via Resolvable Message Hash (Resolves to transaction hash then event)
+        res_v_resolved = await client.post(
+            "/api/v1/wallet/deposit/verify",
+            json={"message_hash": "msg_resolvable_hash"},
+            headers=headers
+        )
+        assert res_v_resolved.status_code == 200
+        v_resolved_data = res_v_resolved.json()
+        assert v_resolved_data["credited_amount"] == 952
+        assert v_resolved_data["new_balance"] == 3357 # 2405 + 952
 
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token

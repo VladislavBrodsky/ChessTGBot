@@ -61,6 +61,7 @@ export default function LobbyDepositDrawer({
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
   const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
+  const [manualTxHash, setManualTxHash] = useState<string>("");
 
   const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
@@ -236,16 +237,62 @@ export default function LobbyDepositDrawer({
         }, 2500);
       } else {
         const errData = await verifyRes.json();
+        setDepositSuccess("");
         setDepositError(errData.detail || "Transaction verification failed. Please check your transaction.");
       }
 
     } catch (err: any) {
       console.error(err);
+      setDepositSuccess("");
       let msg = err.message || "Transaction cancelled or failed.";
       if (msg.toLowerCase().includes("enough funds") || msg.toLowerCase().includes("insufficient funds")) {
         msg = "Insufficient Gas: To complete this deposit, your wallet needs a tiny amount of native TON (or GRAM) to pay blockchain network gas fees. Alternatively, use the 'Pay Manually' option below.";
       }
       setDepositError(msg);
+      telegramHaptic('error');
+    } finally {
+      setIsDepositing(false);
+    }
+  };
+
+  const handleManualVerify = async () => {
+    if (!manualTxHash.trim()) return;
+    setIsDepositing(true);
+    setDepositError("");
+    setDepositSuccess("");
+    try {
+      setDepositSuccess("Verifying transaction on the blockchain...");
+      telegramHaptic('medium');
+
+      const verifyRes = await apiFetch("/api/v1/wallet/deposit/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message_hash: manualTxHash.trim()
+        })
+      });
+
+      if (verifyRes.ok) {
+        const data = await verifyRes.json();
+        setDepositSuccess(`Top-Up Confirmed! +$${(data.credited_amount / 100).toFixed(2)} USDT credited.`);
+        onDepositSuccess(data.new_balance);
+        telegramHaptic('success');
+        setManualTxHash("");
+        setTimeout(() => {
+          onClose();
+          setDepositSuccess("");
+        }, 2500);
+      } else {
+        const errData = await verifyRes.json();
+        setDepositSuccess("");
+        setDepositError(errData.detail || "Transaction verification failed. Please check your transaction.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setDepositSuccess("");
+      setDepositError(err.message || "Verification failed. Please check connection.");
       telegramHaptic('error');
     } finally {
       setIsDepositing(false);
@@ -478,6 +525,31 @@ export default function LobbyDepositDrawer({
                         <FaCopy className="text-emerald-500 opacity-60" />
                       )}
                     </div>
+                  </div>
+                </div>
+
+                {/* Manual Hash Verification Form */}
+                <div className="flex flex-col space-y-1.5 pt-2 border-t border-brand-border-opacity-10 mt-2">
+                  <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
+                    Already paid? Paste transaction hash / event ID to verify:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={manualTxHash}
+                      disabled={isDepositing}
+                      onChange={(e) => setManualTxHash(e.target.value)}
+                      placeholder="e.g. 0:abcd... or msg_hash..."
+                      className="flex-1 bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2 px-3 text-[10px] text-brand-primary font-mono focus:outline-none focus:border-brand-primary h-[34px]"
+                    />
+                    <button
+                      type="button"
+                      disabled={isDepositing || !manualTxHash.trim()}
+                      onClick={handleManualVerify}
+                      className="px-3 rounded-lg bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-[9px] font-black text-brand-primary hover:bg-brand-bg-opacity-20 transition-all uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-[34px]"
+                    >
+                      {isDepositing ? "Checking..." : "Verify"}
+                    </button>
                   </div>
                 </div>
               </div>
