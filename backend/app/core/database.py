@@ -11,7 +11,18 @@ DATABASE_URL = settings.DATABASE_URL
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-engine = create_async_engine(DATABASE_URL, echo=False)
+is_sqlite = DATABASE_URL.startswith("sqlite")
+if is_sqlite:
+    engine = create_async_engine(DATABASE_URL, echo=False)
+else:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+        pool_size=20,
+        max_overflow=50,
+        pool_timeout=30,
+        pool_recycle=1800
+    )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 class Base(DeclarativeBase):

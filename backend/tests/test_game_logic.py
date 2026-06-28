@@ -116,11 +116,14 @@ async def test_game_service_resignation():
     await service.join_game(game_id, 1111) # White
     await service.join_game(game_id, 2222) # Black
     
-    # White resigns
+    # White resigns (originally 1111, but colors are randomized upon join)
     state = await service.resign_game(game_id, 1111)
     assert state is not None
     assert state.is_game_over
-    assert state.winner == 'b'
+    
+    # Whichever color player 1111 was assigned, they resigned, so the other color wins.
+    expected_winner = 'b' if state.white_player_id == 1111 else 'w'
+    assert state.winner == expected_winner
     assert state.result_type == 'resignation'
 
 @pytest.mark.asyncio
