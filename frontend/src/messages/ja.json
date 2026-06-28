@@ -241,7 +241,10 @@
     "balance": "残高",
     "top_up_play": "チャージしてプレイ",
     "amount_needed": "+{amount} 不足",
-    "move_history": "棋譜履歴"
+    "move_history": "棋譜履歴",
+    "game_crashed": "ゲームの接続が切れました",
+    "game_crashed_desc": "ゲームサーバーへの接続が中断されました。ゲームを再読み込みしてください。",
+    "reload_game_btn": "ゲームを再読み込み"
   },
   "Wallet": {
     "title": "Web3ウォレット",

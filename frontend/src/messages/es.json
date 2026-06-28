@@ -241,7 +241,10 @@
     "balance": "Saldo",
     "top_up_play": "Recargar y Jugar",
     "amount_needed": "+{amount} requerido",
-    "move_history": "Historial de movimientos"
+    "move_history": "Historial de movimientos",
+    "game_crashed": "Conexión del juego perdida",
+    "game_crashed_desc": "Se interrumpió la conexión con el servidor del juego. Puedes intentar recargar el juego.",
+    "reload_game_btn": "Recargar juego"
   },
   "Wallet": {
     "title": "Billetera Web3",

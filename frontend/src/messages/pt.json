@@ -241,7 +241,10 @@
     "balance": "Saldo",
     "top_up_play": "Recarregar e Jogar",
     "amount_needed": "+{amount} necessário",
-    "move_history": "Histórico de lances"
+    "move_history": "Histórico de lances",
+    "game_crashed": "Conexão do jogo perdida",
+    "game_crashed_desc": "A conexão com o servidor do jogo foi interrompida. Você pode tentar recarregar o jogo.",
+    "reload_game_btn": "Recarregar jogo"
   },
   "Wallet": {
     "title": "Carteira Web3",

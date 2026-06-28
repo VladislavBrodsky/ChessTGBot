@@ -435,6 +435,56 @@ async def test_chess_puzzles_endpoints(client, db_session):
         settings.TELEGRAM_BOT_TOKEN = original_token
 
 
+@pytest.mark.asyncio
+async def test_get_active_game_endpoint(client, db_session):
+    if hasattr(db_session, "users"):
+        return
+
+    import hmac, hashlib, json, time
+    from urllib.parse import quote
+    from app.core.config import get_settings
+    settings = get_settings()
+    original_token = settings.TELEGRAM_BOT_TOKEN
+    settings.TELEGRAM_BOT_TOKEN = "123456789:test_token"
+    
+    try:
+        telegram_id = 777888
+        user_str = json.dumps({"id": telegram_id, "first_name": "ActiveTester"})
+        auth_date = str(int(time.time()))
+        check_list = [f"auth_date={auth_date}", f"user={user_str}"]
+        data_check_string = "\n".join(check_list)
+        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
+        headers = {"X-Telegram-Init-Data": init_data}
+
+        # Sync/Create user first
+        await client.post("/api/v1/users/sync", headers=headers)
+
+        # Query /active (should return null)
+        res = await client.get("/api/v1/game/active", headers=headers)
+        assert res.status_code == 200
+        assert res.json()["active_game_id"] is None
+
+        # 2. Create a computer (AI) game
+        res_create = await client.post("/api/v1/game/create?type=computer", headers=headers)
+        assert res_create.status_code == 200
+        game_id = res_create.json()["game_id"]
+
+        # Join the game (makes it active)
+        from app.services.game_service import GameService
+        service = GameService()
+        await service.join_game(game_id, telegram_id)
+
+        # Query /active again (should return game_id)
+        res_active = await client.get("/api/v1/game/active", headers=headers)
+        assert res_active.status_code == 200
+        assert res_active.json()["active_game_id"] == game_id
+
+    finally:
+        settings.TELEGRAM_BOT_TOKEN = original_token
+
+
 
 
 

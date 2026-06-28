@@ -241,7 +241,10 @@
     "balance": "الرصيد",
     "top_up_play": "شحن ولعب",
     "amount_needed": "+{amount} مطلوب",
-    "move_history": "سجل الحركات"
+    "move_history": "سجل الحركات",
+    "game_crashed": "فقد الاتصال باللعبة",
+    "game_crashed_desc": "انقطع الاتصال بخادم اللعبة. يمكنك محاولة إعادة تحميل اللعبة.",
+    "reload_game_btn": "إعادة تحميل اللعبة"
   },
   "Wallet": {
     "title": "محفظة Web3",

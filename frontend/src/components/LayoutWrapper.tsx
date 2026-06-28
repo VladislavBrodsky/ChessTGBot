@@ -8,6 +8,7 @@ import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
 import { useNavbar } from '@/context/NavbarContext';
 import { usePathname, useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -19,9 +20,34 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const pathname = usePathname();
     const router = useRouter();
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+    const [activeGameId, setActiveGameId] = useState<string | null>(null);
 
     // Use context-driven navbar hide state (reliable, no DOM polling)
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
+
+    // Check active game status and redirect if needed
+    const checkActiveGame = async () => {
+        try {
+            const res = await apiFetch('/api/v1/game/active');
+            if (res.ok) {
+                const data = await res.json();
+                const activeId = data.active_game_id || null;
+                setActiveGameId(activeId);
+                
+                if (activeId) {
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const urlGameId = searchParams.get('id');
+                    
+                    const isGamePage = pathname === `/${locale}/game` || pathname === '/game';
+                    if (!isGamePage || urlGameId !== activeId) {
+                        router.replace(`/${locale}/game?id=${activeId}`);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Failed to check active game", err);
+        }
+    };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -32,6 +58,11 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         }
     }, []);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            checkActiveGame();
+        }
+    }, [pathname, locale]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -41,7 +72,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
             if (isBackButtonSupported) {
                 try {
-                    if (isHomePage) {
+                    if (isHomePage || activeGameId) {
                         tg.BackButton.hide();
                     } else {
                         tg.BackButton.show();
@@ -62,7 +93,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 }
             }
         }
-    }, [pathname, locale, router]);
+    }, [pathname, locale, router, activeGameId]);
 
     const { theme, toggleTheme } = useTheme();
 
@@ -83,7 +114,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 {children}
             </main>
 
-            <Navbar hide={isNavbarHiddenByContext || showOnboarding} />
+            <Navbar hide={isNavbarHiddenByContext || showOnboarding || !!activeGameId} />
 
             <AnimatePresence>
                 {showOnboarding && (

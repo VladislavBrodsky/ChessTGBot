@@ -241,7 +241,10 @@
     "balance": "Balance",
     "top_up_play": "Top Up & Play",
     "amount_needed": "+{amount} Needed",
-    "move_history": "Move History"
+    "move_history": "Move History",
+    "game_crashed": "Game Connection Lost",
+    "game_crashed_desc": "The connection to the game server was interrupted. You can try to reload the game.",
+    "reload_game_btn": "Reload Game"
   },
   "Wallet": {
     "title": "Web3 Wallet",

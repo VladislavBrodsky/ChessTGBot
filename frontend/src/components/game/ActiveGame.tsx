@@ -111,6 +111,24 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
 
   const [copied, setCopied] = useState(false);
+  const [showCrashOverlay, setShowCrashOverlay] = useState(false);
+
+  useEffect(() => {
+    let timer: any;
+    if (gameState && !gameState.is_game_over && !isConnected) {
+      timer = setTimeout(() => {
+        setShowCrashOverlay(true);
+      }, 3000);
+    } else if (!gameState) {
+      timer = setTimeout(() => {
+        setShowCrashOverlay(true);
+      }, 8000);
+    } else {
+      setShowCrashOverlay(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isConnected, gameState]);
+
   const [userId, setUserId] = useState<number | null>(null);
   const [userStats, setUserStats] = useState<any>(null);
 
@@ -1006,6 +1024,38 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             <span>{tg('offer_draw')}</span>
           </motion.button>
         </motion.div>
+      )}
+
+      {showCrashOverlay && (
+        <div className="fixed inset-0 bg-brand-void/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-full max-w-sm rounded-2xl border border-brand-border-opacity-10 bg-brand-surface p-6 shadow-2xl flex flex-col items-center text-center gap-4"
+          >
+            {/* Warning Icon with pulse */}
+            <div className="relative w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 text-red-500 animate-pulse">
+              <span className="text-3xl font-black">⚠️</span>
+            </div>
+            
+            <h2 className="text-lg font-black uppercase tracking-wider text-brand-primary">
+              {tg('game_crashed')}
+            </h2>
+            
+            <p className="text-xs text-brand-primary opacity-60 leading-relaxed px-2">
+              {tg('game_crashed_desc')}
+            </p>
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => window.location.reload()}
+              className="w-full mt-2 py-3.5 rounded-xl bg-brand-primary text-brand-void font-black text-xs uppercase tracking-widest hover:opacity-90 shadow-md cursor-pointer transition-all"
+            >
+              {tg('reload_game_btn')}
+            </motion.button>
+          </motion.div>
+        </div>
       )}
     </LayoutWrapper>
   );

@@ -241,7 +241,10 @@
     "balance": "Guthaben",
     "top_up_play": "Aufladen & Spielen",
     "amount_needed": "+{amount} benötigt",
-    "move_history": "Spielverlauf"
+    "move_history": "Spielverlauf",
+    "game_crashed": "Spielverbindung verloren",
+    "game_crashed_desc": "Die Verbindung zum Spielserver wurde unterbrochen. Sie können versuchen, das Spiel neu zu laden.",
+    "reload_game_btn": "Spiel neu laden"
   },
   "Wallet": {
     "title": "Web3 Wallet",

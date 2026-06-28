@@ -241,7 +241,10 @@
     "balance": "बैलेंस",
     "top_up_play": "टॉप अप और खेलें",
     "amount_needed": "+{amount} आवश्यक",
-    "move_history": "चालों का इतिहास"
+    "move_history": "चालों का इतिहास",
+    "game_crashed": "खेल कनेक्शन खो गया",
+    "game_crashed_desc": "खेल सर्वर से कनेक्शन बाधित हो गया था। आप खेल को फिर से लोड करने का प्रयास कर सकते हैं।",
+    "reload_game_btn": "खेल रीलोड करें"
   },
   "Wallet": {
     "title": "Web3 वॉलेट",

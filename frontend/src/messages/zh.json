@@ -241,7 +241,10 @@
     "balance": "余额",
     "top_up_play": "充值并开始",
     "amount_needed": "还需+{amount}",
-    "move_history": "棋谱记录"
+    "move_history": "棋谱记录",
+    "game_crashed": "游戏连接已断开",
+    "game_crashed_desc": "与游戏服务器的连接已中断。您可以尝试重新加载游戏。",
+    "reload_game_btn": "重新加载游戏"
   },
   "Wallet": {
     "title": "Web3 钱包",

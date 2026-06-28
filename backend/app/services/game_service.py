@@ -169,6 +169,40 @@ class GameService:
                     
         return state
 
+    async def get_active_game_for_user(self, user_id: int) -> Optional[str]:
+        """Find the active game ID for a user, checking for lazy clock timeouts."""
+        game_ids = []
+        if self.session_manager._use_memory or not self.session_manager.redis:
+            game_ids = [
+                key.split(":", 1)[1]
+                for key in self.session_manager._memory_store.keys()
+                if key.startswith("game:")
+            ]
+        else:
+            try:
+                cursor = 0
+                while True:
+                    cursor, keys = await self.session_manager.redis.scan(cursor, match="game:*", count=100)
+                    for key in keys:
+                        game_ids.append(key.split(":", 1)[1])
+                    if cursor == 0:
+                        break
+            except Exception as e:
+                print(f"Failed to scan active games in Redis: {e}")
+
+        # Check each game's actual state (evaluating lazy timeouts)
+        for g_id in game_ids:
+            try:
+                state = await self.get_game_state(g_id)
+                if state and not state.is_game_over:
+                    if state.white_player_id == user_id or state.black_player_id == user_id:
+                        # For PVP games, both players must have joined to be considered active going on
+                        if state.black_player_id == -1 or (state.white_player_id and state.black_player_id):
+                            return g_id
+            except Exception as e:
+                print(f"Error checking active game state for {g_id}: {e}")
+        return None
+
     async def join_game(self, game_id: str, user_id: int) -> Optional[GameState]:
         """Assign user to White or Black if available."""
         state = await self.session_manager.get_game(game_id)

@@ -241,7 +241,10 @@
     "balance": "Solde",
     "top_up_play": "Recharger et jouer",
     "amount_needed": "+{amount} requis",
-    "move_history": "Historique des coups"
+    "move_history": "Historique des coups",
+    "game_crashed": "Connexion au jeu perdue",
+    "game_crashed_desc": "La connexion au serveur de jeu a été interrompue. Vous pouvez essayer de recharger le jeu.",
+    "reload_game_btn": "Recharger le jeu"
   },
   "Wallet": {
     "title": "Portefeuille Web3",

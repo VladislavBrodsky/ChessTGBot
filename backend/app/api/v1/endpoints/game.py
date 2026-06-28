@@ -156,3 +156,12 @@ async def get_game_history(game_id: str, db: AsyncSession = Depends(get_db)):
         ended_at=history.ended_at.isoformat()
     )
 
+
+@router.get("/active")
+async def get_active_game(
+    current_user: User = Depends(get_current_user)
+):
+    service = GameService()
+    active_game_id = await service.get_active_game_for_user(current_user.telegram_id)
+    return {"active_game_id": active_game_id}
+
