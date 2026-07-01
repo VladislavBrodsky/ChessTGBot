@@ -73,7 +73,7 @@ def convert_raw_to_friendly(raw_addr: str, bounceable: bool = True) -> str:
         buf = bytes([flag, wc_byte]) + bytes.fromhex(hex_hash)
         chk = crc16(buf)
         final_buf = buf + chk.to_bytes(2, "big")
-        return base64.urlsafe_b64encode(final_buf).decode("utf-8")
+        return base64.urlsafe_b64encode(final_buf).decode("utf-8").rstrip('=')
     except Exception:
         return raw_addr
 
@@ -360,6 +360,12 @@ async def withdraw_funds(
         convert_ton_address_to_hex(request.address)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid TON Wallet address format")
+        
+    # Normalize address format to friendly base64 url-safe non-bounceable format
+    try:
+        request.address = convert_raw_to_friendly(request.address, bounceable=False)
+    except Exception:
+        pass
     
     # Atomically debit — returns None if insufficient funds
     updated_user = await user_crud.atomic_debit(db, current_user.telegram_id, request.amount)

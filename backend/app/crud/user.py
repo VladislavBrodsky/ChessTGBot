@@ -63,6 +63,15 @@ async def update_elo(db: AsyncSession, user: User, new_elo: int, result: str, co
     return user
 
 async def update_wallet_address(db: AsyncSession, user: User, wallet_address: str):
+    # Convert raw hex address format (0:...) to user-friendly base64 non-bounceable address format (UQ...)
+    if wallet_address and ":" in wallet_address:
+        try:
+            from app.api.v1.endpoints.wallet import convert_raw_to_friendly
+            wallet_address = convert_raw_to_friendly(wallet_address, bounceable=False)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to convert raw address to friendly: {e}")
+            
     user.wallet_address = wallet_address
     db.add(user)
     await db.commit()
