@@ -235,6 +235,10 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                             onPieceDrop: onDrop,
                             boardOrientation: orientation,
                             allowDragging: isMyTurn,
+                            canDragPiece: ({ piece }) => {
+                                const myColor = orientation === "white" ? "w" : "b";
+                                return isMyTurn && piece.pieceType.startsWith(myColor);
+                            },
                             boardStyle: {
                                 borderRadius: "12px",
                                 overflow: "hidden",
