@@ -148,6 +148,28 @@ class MatchmakerService:
                         MatchmakerService._use_memory = True
                         queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
 
+                # Clean up expired zombie entries (older than 130 seconds)
+                active_queue = []
+                zombies_found = False
+                for item in queue:
+                    wait_time = current_time - item.get('joined_at', current_time)
+                    if wait_time > 130.0:
+                        logger.info(f"Matchmaker: Purging expired zombie user {item['user_id']} from queue")
+                        zombies_found = True
+                    else:
+                        active_queue.append(item)
+
+                if zombies_found:
+                    queue = active_queue
+                    # Update queue in Redis/memory immediately
+                    if MatchmakerService._use_memory or not self.redis:
+                        MatchmakerService._memory_queues[queue_key_mem] = queue
+                    else:
+                        try:
+                            await self.redis.set(queue_key, json.dumps(queue))
+                        except Exception as e:
+                            logger.warning(f"Redis update failed during zombie purge ({e}).")
+
                 best_opponent = None
                 best_diff = float('inf')
                 
