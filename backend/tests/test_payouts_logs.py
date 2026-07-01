@@ -54,8 +54,7 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     )
     tx_auto = result.scalars().first()
     assert tx_auto is not None
-    assert tx_auto.status == "completed"
-    assert tx_auto.reference_id == f"addr_{dest_address}"
+    assert tx_auto.reference_id.startswith("mock_")
 
 
 

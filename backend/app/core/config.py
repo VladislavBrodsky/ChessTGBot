@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN") or ""
     TELEGRAM_BOT_USERNAME: str = os.getenv("TELEGRAM_BOT_USERNAME") or "FinChess_bot"
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
+    PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""
 
     # Security
     # In production, this MUST be set as an environment variable.

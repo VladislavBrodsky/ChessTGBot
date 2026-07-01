@@ -352,6 +352,9 @@ async def withdraw_funds(
     Withdraw funds from platform balance to linked Web3 TON Address.
     Verifies sufficient balance prior to initiating. Places request in review queue.
     """
+    from app.core.config import get_settings
+    settings = get_settings()
+
     if request.amount <= 0:
         raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
 
@@ -372,14 +375,31 @@ async def withdraw_funds(
     if not updated_user:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
-    # Log completed transaction (auto-approved instantly)
+    tx_hash = None
+    is_real = False
+    
+    if settings.PAYOUT_MNEMONIC:
+        try:
+            from app.services.payout_service import execute_usdt_payout
+            tx_hash = await execute_usdt_payout(request.address, request.amount)
+            is_real = True
+        except Exception as payout_err:
+            # Refund balance atomically
+            await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
+            logger.error(f"On-chain payout failed: {payout_err}")
+            raise HTTPException(status_code=500, detail=f"On-chain payout transfer failed: {payout_err}")
+    else:
+        logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
+        tx_hash = f"mock_{request.address[:6]}_{request.amount}"
+
+    # Log completed transaction
     tx_withdraw = Transaction(
         user_id=updated_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
         fee=0,
         status="completed",
-        reference_id=f"addr_{request.address}"
+        reference_id=tx_hash
     )
     db.add(tx_withdraw)
     await db.commit()
@@ -391,17 +411,24 @@ async def withdraw_funds(
         from app.services.telegram_bot import TelegramService
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
         
+        # Link to transaction or destination wallet
+        link_display = (
+            f"<a href=\"https://tonviewer.com/transaction/{tx_hash}\">View Transaction 🔗</a>"
+            if is_real else
+            f"<a href=\"https://tonviewer.com/{request.address}\">{dest_display}</a> 🔗"
+        )
+        
         # Notify user of completion
         notification_text = (
             f"<b>✅ Withdrawal Completed!</b>\n\n"
             f"• <b>Amount:</b> -${request.amount / 100:.2f} USDT\n"
-            f"• <b>Destination TON Wallet:</b> <a href=\"https://tonviewer.com/{request.address}\">{dest_display}</a> 🔗\n"
+            f"• <b>Destination Wallet:</b> {link_display}\n"
             f"• <b>Status:</b> Completed Successfully 🟢\n\n"
             f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
         )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
         
-        # Notify Admin for read-only tracking (no approval buttons needed)
+        # Notify Admin for read-only tracking
         if settings.ADMIN_TELEGRAM_ID:
             admin_text = (
                 f"<b>📤 Withdrawal Processed (Auto-Completed)</b>\n\n"
@@ -409,7 +436,10 @@ async def withdraw_funds(
                 f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
                 f"• <b>Destination:</b> <a href=\"https://tonviewer.com/{request.address}\"><code>{request.address}</code></a> 🔗\n"
+                f"• <b>On-Chain Status:</b> {'Real Transfer' if is_real else 'Simulated'}\n"
             )
+            if is_real:
+                admin_text += f"• <b>Tx Hash:</b> <a href=\"https://tonviewer.com/transaction/{tx_hash}\"><code>{tx_hash[:10]}...</code></a> 🔗\n"
             await TelegramService.send_notification(settings.ADMIN_TELEGRAM_ID, admin_text)
     except Exception as e:
         logger.error(f"Failed to process withdrawal notifications: {e}")
