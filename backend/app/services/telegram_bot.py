@@ -476,6 +476,7 @@ class TelegramService:
             cls.application.add_handler(CommandHandler("start", cls.start_command))
             cls.application.add_handler(CommandHandler("language", cls.language_command))
             cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
+            cls.application.add_handler(CallbackQueryHandler(cls.admin_withdrawal_callback, pattern="^(approve|reject)_withdraw_"))
             
             await cls.application.initialize()
             await cls.application.start()
@@ -764,5 +765,146 @@ class TelegramService:
                 logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
         asyncio.create_task(_do_send())
+
+    @classmethod
+    async def send_admin_withdrawal_alert(cls, tx_id: int, telegram_id: int, first_name: str, amount_cents: int, address: str):
+        """
+        Send a withdrawal authorization request to the administrator with inline approve/reject buttons.
+        """
+        if not settings.TELEGRAM_BOT_TOKEN or not settings.ADMIN_TELEGRAM_ID:
+            logger.warning("Admin withdrawal alert skipped: Bot token or ADMIN_TELEGRAM_ID not set.")
+            return
+
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+        # Inline keyboard with callback queries
+        keyboard = [
+            [
+                InlineKeyboardButton("✅ Approve", callback_data=f"approve_withdraw_{tx_id}"),
+                InlineKeyboardButton("❌ Reject", callback_data=f"reject_withdraw_{tx_id}")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # Truncate/display address format nicely
+        dest_display = f"{address[:6]}...{address[-4:]}" if len(address) > 10 else address
+        text = (
+            f"<b>🔔 NEW WITHDRAWAL REQUEST</b>\n\n"
+            f"• <b>Transaction ID:</b> #{tx_id}\n"
+            f"• <b>User:</b> {first_name} (ID: <code>{telegram_id}</code>)\n"
+            f"• <b>Amount:</b> ${amount_cents / 100:.2f} USDT\n"
+            f"• <b>Destination TON:</b> <code>{address}</code>\n\n"
+            f"<i>Please review the destination address and balance before confirming.</i>"
+        )
+
+        async def _do_send_alert():
+            try:
+                bot = cls.application.bot if (cls.application and cls.application.bot) else None
+                if not bot:
+                    from telegram import Bot
+                    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+                
+                await bot.send_message(
+                    chat_id=settings.ADMIN_TELEGRAM_ID,
+                    text=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+                logger.info(f"Admin alert sent for withdrawal request #{tx_id}.")
+            except Exception as e:
+                logger.error(f"Failed to send admin withdrawal alert: {e}")
+
+        asyncio.create_task(_do_send_alert())
+
+    @classmethod
+    async def admin_withdrawal_callback(cls, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        await query.answer()
+
+        # Enforce admin authorization
+        if not settings.ADMIN_TELEGRAM_ID or query.from_user.id != settings.ADMIN_TELEGRAM_ID:
+            await query.message.reply_text("⛔ Unauthorized: You are not configured as the administrator.")
+            return
+
+        data = query.data
+        parts = data.split("_")
+        action = parts[0]  # "approve" or "reject"
+        tx_id = int(parts[2])
+
+        # Import DB dependency
+        from app.core.database import AsyncSessionLocal
+        from app.models.transaction import Transaction
+        from app.crud import user as user_crud
+        from sqlalchemy import select
+
+        async with AsyncSessionLocal() as db:
+            # Query the transaction
+            tx_result = await db.execute(
+                select(Transaction).where(Transaction.id == tx_id, Transaction.status == "pending_review").with_for_update()
+            )
+            tx = tx_result.scalars().first()
+            if not tx:
+                await query.edit_message_text(
+                    text=query.message.text_html + f"\n\n❌ <b>Failed:</b> Transaction #{tx_id} not found or already processed.",
+                    parse_mode="HTML"
+                )
+                return
+
+            if action == "approve":
+                tx.status = "completed"
+                db.add(tx)
+                await db.commit()
+
+                # Notify user
+                try:
+                    address = tx.reference_id[5:] if tx.reference_id and tx.reference_id.startswith("addr_") else "linked wallet"
+                    dest_display = f"{address[:6]}...{address[-4:]}" if len(address) > 10 else address
+                    notification_text = (
+                        f"<b>✅ Withdrawal Approved!</b>\n\n"
+                        f"• <b>Amount:</b> +${abs(tx.amount) / 100:.2f} USDT\n"
+                        f"• <b>Sent to:</b> <code>{dest_display}</code>\n\n"
+                        f"<i>Your funds have been transferred successfully on-chain!</i>"
+                    )
+                    await cls.send_notification(tx.user_id, notification_text)
+                except Exception:
+                    pass
+
+                await query.edit_message_text(
+                    text=query.message.text_html + f"\n\n🟢 <b>Approved & Completed!</b>",
+                    parse_mode="HTML"
+                )
+                logger.info(f"Withdrawal #{tx_id} approved via Telegram by admin.")
+
+            elif action == "reject":
+                # Refund balance atomically
+                updated_user = await user_crud.atomic_credit(db, tx.user_id, abs(tx.amount))
+                if not updated_user:
+                    await query.edit_message_text(
+                        text=query.message.text_html + f"\n\n❌ <b>Failed:</b> User not found.",
+                        parse_mode="HTML"
+                    )
+                    return
+
+                tx.status = "failed"
+                db.add(tx)
+                await db.commit()
+
+                # Notify user
+                try:
+                    notification_text = (
+                        f"<b>❌ Withdrawal Rejected!</b>\n\n"
+                        f"• <b>Amount:</b> ${abs(tx.amount) / 100:.2f} USDT\n"
+                        f"• <b>Status:</b> Rejected & Refunded\n\n"
+                        f"<i>The requested amount has been fully refunded back to your game balance. Please verify your destination address or contact support.</i>"
+                    )
+                    await cls.send_notification(tx.user_id, notification_text)
+                except Exception:
+                    pass
+
+                await query.edit_message_text(
+                    text=query.message.text_html + f"\n\n🔴 <b>Rejected & Refunded!</b>",
+                    parse_mode="HTML"
+                )
+                logger.info(f"Withdrawal #{tx_id} rejected via Telegram by admin.")
 
 

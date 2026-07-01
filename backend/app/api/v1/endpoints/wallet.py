@@ -383,9 +383,10 @@ async def withdraw_funds(
     )
     db.add(tx_withdraw)
     await db.commit()
+    await db.refresh(tx_withdraw)
     logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_withdraw.reference_id} | status=completed")
 
-    # Send automated Telegram Bot notification
+    # Send automated Telegram Bot notifications
     try:
         from app.services.telegram_bot import TelegramService
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
@@ -397,8 +398,17 @@ async def withdraw_funds(
             f"<i>Your updated platform balance is {updated_user.balance / 100:.2f} USDT. We will notify you once processed!</i>"
         )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
-    except Exception:
-        pass
+        
+        # Send alert to Admin for direct interactive action
+        await TelegramService.send_admin_withdrawal_alert(
+            tx_id=tx_withdraw.id,
+            telegram_id=updated_user.telegram_id,
+            first_name=updated_user.first_name,
+            amount_cents=request.amount,
+            address=request.address
+        )
+    except Exception as e:
+        logger.error(f"Failed to process withdrawal notifications: {e}")
 
     return WithdrawResponse(
         status="pending_review",
