@@ -140,32 +140,8 @@ export default function SettingsPage() {
   {t('account_section')}
   </h3>
   
-  {/* TON Wallet Card */}
-  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm overflow-hidden">
-  <Link href={`/${locale}/wallet`} className="w-full block">
-  <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
-  <div className="flex items-center gap-3">
-  <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
-  <FaWallet />
-  </div>
-  <div className="flex flex-col text-left">
-  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
-  {t('ton_wallet')}
-  </span>
-  <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
-  {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
-  </span>
-  </div>
-  </div>
-  <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-  <FaArrowLeft className="rotate-180 text-[8px] text-brand-primary" />
-  </div>
-  </div>
-  </Link>
-  </div>
-
   {/* Standalone Glowing Premium Card */}
-  <Link href={`/${locale}/membership`} className="w-full block">
+  <Link href={`/${locale}/membership`} className="w-full block mb-3">
   <div className="premium-liquid-border">
   <div className="premium-liquid-content p-4 flex items-center justify-between transition-all cursor-pointer">
   <div className="flex items-center gap-3">
@@ -207,6 +183,30 @@ export default function SettingsPage() {
   </div>
   </div>
   </Link>
+
+  {/* TON Wallet Card */}
+  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm overflow-hidden">
+  <Link href={`/${locale}/wallet`} className="w-full block">
+  <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
+  <div className="flex items-center gap-3">
+  <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+  <FaWallet />
+  </div>
+  <div className="flex flex-col text-left">
+  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1 flex items-center">
+  {t('ton_wallet')}
+  </span>
+  <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+  {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
+  </span>
+  </div>
+  </div>
+  <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
+  <FaArrowLeft className="rotate-180 text-[8px] text-brand-primary" />
+  </div>
+  </div>
+  </Link>
+  </div>
   </div>
 
  {/* versioning */}
