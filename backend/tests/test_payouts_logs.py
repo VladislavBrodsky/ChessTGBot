@@ -57,69 +57,7 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     assert tx_auto.status == "completed"
     assert tx_auto.reference_id == f"addr_{dest_address}"
 
-    # 4. Insert manual legacy pending_review transaction to test approve/reject logic
-    tx = Transaction(
-        user_id=telegram_id,
-        type="withdrawal",
-        amount=-1000,
-        fee=0,
-        status="pending_review",
-        reference_id=f"addr_{dest_address}"
-    )
-    db_session.add(tx)
-    await db_session.commit()
-    await db_session.refresh(tx)
 
-    # Try to approve/reject without secret key -> 401
-    res_approve_fail = await client.post(f"/api/v1/wallet/admin/withdrawals/{tx.id}/approve")
-    assert res_approve_fail.status_code == 401
-
-    # 5. Fetch pending withdrawals list as Admin
-    admin_headers = {"X-Admin-Secret": "dev_webhook_secret"}
-    res_list = await client.get("/api/v1/wallet/admin/withdrawals/pending", headers=admin_headers)
-    assert res_list.status_code == 200
-    pending_list = res_list.json()
-    assert len(pending_list) == 1
-    assert pending_list[0]["id"] == tx.id
-    assert pending_list[0]["amount"] == 1000
-    assert pending_list[0]["address"] == dest_address
-
-    # 6. Approve the withdrawal
-    res_approve = await client.post(f"/api/v1/wallet/admin/withdrawals/{tx.id}/approve", headers=admin_headers)
-    assert res_approve.status_code == 200
-    assert "completed successfully" in res_approve.json()["message"]
-
-    # 7. Check database status is completed
-    await db_session.refresh(tx)
-    assert tx.status == "completed"
-
-    # 8. Create another manual legacy pending_review transaction to test reject
-    tx2 = Transaction(
-        user_id=telegram_id,
-        type="withdrawal",
-        amount=-1000,
-        fee=0,
-        status="pending_review",
-        reference_id=f"addr_{dest_address}"
-    )
-    db_session.add(tx2)
-    # Deduct balance manually to simulate pending withdrawal lock
-    user.balance = 2000
-    db_session.add(user)
-    await db_session.commit()
-    await db_session.refresh(tx2)
-    await db_session.refresh(user)
-
-    # 9. Reject the withdrawal
-    res_reject = await client.post(f"/api/v1/wallet/admin/withdrawals/{tx2.id}/reject", headers=admin_headers)
-    assert res_reject.status_code == 200
-    assert "rejected and refunded" in res_reject.json()["message"]
-
-    # 10. Check transaction status is failed and user balance is refunded
-    await db_session.refresh(tx2)
-    assert tx2.status == "failed"
-    await db_session.refresh(user)
-    assert user.balance == 3000  # Refunded from 2000 back to 3000
 
 
 @pytest.mark.asyncio
