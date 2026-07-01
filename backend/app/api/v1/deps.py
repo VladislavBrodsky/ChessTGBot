@@ -60,16 +60,7 @@ async def get_current_user(
     # 2. Get or Create DB User
     user = await user_crud.get_user_by_telegram_id(db, user_id)
     
-    photo_url = None
-    global _photo_checked_cache
-    if (not user or not user.photo_url) and user_id not in _photo_checked_cache:
-        _photo_checked_cache.add(user_id)
-        try:
-            from app.services.telegram_bot import TelegramService
-            if TelegramService.application and TelegramService.application.bot:
-                photo_url = await TelegramService.get_user_profile_photo(user_id, TelegramService.application.bot)
-        except Exception:
-            pass
+    local_photo_url = f"/api/v1/users/avatar/{user_id}"
 
     if not user:
         # Auto-register
@@ -79,7 +70,7 @@ async def get_current_user(
             telegram_user.get("first_name", f"User_{user_id}"),
             last_name=telegram_user.get("last_name"),
             username=telegram_user.get("username"),
-            photo_url=photo_url or telegram_user.get("photo_url")
+            photo_url=local_photo_url
         )
         
         start_param = telegram_user.get("start_param")
@@ -99,6 +90,9 @@ async def get_current_user(
         last_name = telegram_user.get("last_name")
         username = telegram_user.get("username")
         
+        if not user.photo_url:
+            user.photo_url = local_photo_url
+            updated = True
         if first_name and user.first_name != first_name:
             user.first_name = first_name
             updated = True
@@ -107,9 +101,6 @@ async def get_current_user(
             updated = True
         if username and user.username != username:
             user.username = username
-            updated = True
-        if photo_url and user.photo_url != photo_url:
-            user.photo_url = photo_url
             updated = True
             
         if updated:

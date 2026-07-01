@@ -308,27 +308,7 @@ async def sync_user(
     except Exception as e:
         logging.getLogger(__name__).error(f"Error in heal_zombie_wagers on sync: {e}")
 
-    # Refresh photo URL dynamically from Telegram Bot API on sync (as URLs expire after 1 hour)
-    try:
-        from app.services.telegram_bot import TelegramService
-        if TelegramService.application and TelegramService.application.bot:
-            photo_url = await TelegramService.get_user_profile_photo(current_user.telegram_id, TelegramService.application.bot)
-            if photo_url and current_user.photo_url != photo_url:
-                current_user.photo_url = photo_url
-                db.add(current_user)
-                await db.commit()
-                await db.refresh(current_user)
-                
-                # Delete cached avatar so it is re-fetched on next request
-                import os
-                cached_avatar = f"static_avatars/{current_user.telegram_id}.jpg"
-                if os.path.exists(cached_avatar):
-                    try:
-                        os.remove(cached_avatar)
-                    except Exception:
-                        pass
-    except Exception:
-        pass
+
 
     # Calculate enhanced stats
     from app.services.user_stats import calculate_user_stats
