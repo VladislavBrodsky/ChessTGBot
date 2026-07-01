@@ -933,6 +933,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         {incomingRematch && (
           <IncomingRematchDrawer
             incomingRematch={incomingRematch}
+            timeControl={gameState?.time_control_seconds || 600}
             onAccept={acceptRematch}
             onDecline={declineRematch}
           />

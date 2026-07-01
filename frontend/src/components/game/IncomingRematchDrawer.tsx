@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
-import { FaChessKnight } from "react-icons/fa";
+import { FaChessKnight, FaCheck, FaTimes, FaRegClock } from "react-icons/fa";
 
 interface IncomingRematchDrawerProps {
   incomingRematch: {
@@ -11,12 +10,14 @@ interface IncomingRematchDrawerProps {
     wager: number;
     double_stakes: boolean;
   };
+  timeControl?: number;
   onAccept: () => void;
   onDecline: () => void;
 }
 
 export default function IncomingRematchDrawer({
   incomingRematch,
+  timeControl = 600,
   onAccept,
   onDecline,
 }: IncomingRematchDrawerProps) {
@@ -57,19 +58,30 @@ export default function IncomingRematchDrawer({
           </p>
         </div>
 
-        {/* Proposed Wager Detail Box */}
-        <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl py-3 px-4 border border-zinc-200/50 dark:border-zinc-800/50 text-center shadow-inner-glow">
-          <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
-            {tg('proposed_wager')}
-          </span>
-          <span className="text-xl font-black text-zinc-800 dark:text-zinc-200">
-            ${((incomingRematch.wager) / 100).toFixed(2)} USDT
-          </span>
-          {incomingRematch.double_stakes && (
-            <span className="text-[9px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
-              {tg('double_stakes_active')}
+        {/* Proposed Wager & Settings Detail Box */}
+        <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl py-3.5 px-4 border border-zinc-200/50 dark:border-zinc-800/50 text-center shadow-inner-glow space-y-3">
+          <div>
+            <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
+              {tg('proposed_wager')}
             </span>
-          )}
+            <span className="text-lg font-black text-zinc-800 dark:text-zinc-200">
+              ${((incomingRematch.wager) / 100).toFixed(2)} USDT
+            </span>
+            {incomingRematch.double_stakes && (
+              <span className="text-[8px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
+                {tg('double_stakes_active')}
+              </span>
+            )}
+          </div>
+          <div className="border-t border-zinc-200/40 dark:border-zinc-800/40 pt-2.5 flex items-center justify-between px-2">
+            <div className="flex items-center gap-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+              <FaRegClock className="text-[10px]" />
+              <span>Time Control</span>
+            </div>
+            <span className="text-[11px] font-black text-zinc-800 dark:text-zinc-200">
+              {Math.round(timeControl / 60)} min
+            </span>
+          </div>
         </div>
 
         {/* Accept/Reject Buttons */}
@@ -80,7 +92,8 @@ export default function IncomingRematchDrawer({
             onClick={onDecline}
             className="flex-1 py-3 rounded-xl border border-red-500/20 dark:border-red-500/25 bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <span>Reject ❌</span>
+            <FaTimes className="text-[10px]" />
+            <span>{tg('reject')}</span>
           </motion.button>
           
           {/* Accept button */}
@@ -89,7 +102,8 @@ export default function IncomingRematchDrawer({
             onClick={onAccept}
             className="flex-1 py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
           >
-            <span>Accept ✅</span>
+            <FaCheck className="text-[10px]" />
+            <span>{tg('accept')}</span>
           </motion.button>
         </div>
       </motion.div>
