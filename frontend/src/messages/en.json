@@ -364,8 +364,8 @@
     "success_title": "👑 CONGRATULATIONS!",
     "success_subtitle": "You are now a Chess Premium member!",
     "success_desc": "All exclusive rewards, 100 levels of Tactics Academy, and 6-level referral commissions are now fully active.",
-    "success_btn": "♟️ Enter Chess Arena ♟️",
-    "insufficient_title": "💎 INSUFFICIENT BALANCE",
+    "success_btn": "Enter Chess Arena",
+    "insufficient_title": "INSUFFICIENT BALANCE",
     "insufficient_desc": "You need {cost} USDT to purchase this Premium subscription. Your current balance is {balance} USDT.",
     "insufficient_topup_btn": "Top Up Wallet",
     "insufficient_cancel_btn": "Maybe Later"

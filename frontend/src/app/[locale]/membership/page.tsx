@@ -49,6 +49,11 @@ const IconDiamond = () => (
   </svg>
 );
 
+const stripEmojis = (str: string): string => {
+  if (!str) return "";
+  return str.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
+};
+
 export default function MembershipPage() {
  const locale = useLocale();
  const tm = useTranslations('Membership');
@@ -248,30 +253,30 @@ export default function MembershipPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.07 }}
             >
-              <div className="flex items-center gap-4 py-4">
-                {/* Gradient icon badge */}
+              <div className="flex flex-col items-center text-center py-5">
+                {/* Gradient icon badge centered */}
                 <div
-                  className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shrink-0 relative`}
-                  style={{ boxShadow: `0 4px 20px ${feature.glow}, inset 0 1px 1px rgba(255,255,255,0.15)` }}
+                  className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shrink-0 relative overflow-hidden mb-3.5`}
+                  style={{ boxShadow: `0 6px 24px ${feature.glow}, inset 0 1px 1px rgba(255,255,255,0.18)` }}
                 >
                   {/* subtle inner shine */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/15 to-transparent" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent" />
                   {feature.icon}
                 </div>
 
-                <div className="flex flex-col text-left min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
                     <span
                       className="text-[8px] font-black px-1.5 py-0.5 rounded-md text-white/60 border border-white/10 bg-white/5 tracking-widest leading-none tabular-nums"
                     >
                       {String(idx + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-[11px] font-black text-brand-primary uppercase tracking-widest leading-none truncate">
-                      {feature.title}
+                    <span className="text-xs font-black text-brand-primary uppercase tracking-widest leading-none">
+                      {stripEmojis(feature.title)}
                     </span>
                   </div>
-                  <span className="text-[10px] font-medium text-brand-primary/60 tracking-tight leading-snug">
-                    {feature.desc}
+                  <span className="text-[10px] font-medium text-brand-primary/60 tracking-tight leading-relaxed max-w-[250px]">
+                    {stripEmojis(feature.desc)}
                   </span>
                 </div>
               </div>
@@ -456,34 +461,34 @@ export default function MembershipPage() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-brand-primary uppercase tracking-wider leading-none">
-              {tm('success_title')}
+              {stripEmojis(tm('success_title'))}
             </h2>
             <p className="text-sm font-bold text-brand-primary opacity-80">
-              {tm('success_subtitle')}
+              {stripEmojis(tm('success_subtitle'))}
             </p>
           </div>
 
           <p className="text-xs text-brand-primary opacity-45 px-2 leading-relaxed">
-            {tm('success_desc')}
+            {stripEmojis(tm('success_desc'))}
           </p>
 
           {/* Features Quick List */}
           <div className="w-full bg-brand-void/45 border border-brand-border-opacity-5 rounded-2xl p-4 text-left space-y-3 shadow-inner">
             <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
               <FaCheck className="text-emerald-500 text-sm" />
-              <span>{tm('premium_boost')}</span>
+              <span>{stripEmojis(tm('premium_boost'))}</span>
             </div>
             <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
               <FaCheck className="text-emerald-500 text-sm" />
-              <span>{tm('priority_match')}</span>
+              <span>{stripEmojis(tm('priority_match'))}</span>
             </div>
             <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
               <FaCheck className="text-emerald-500 text-sm" />
-              <span>{tm('engine_analysis')}</span>
+              <span>{stripEmojis(tm('engine_analysis'))}</span>
             </div>
             <div className="flex items-center space-x-3 text-xs font-black text-brand-primary/70 uppercase">
               <FaCheck className="text-emerald-500 text-sm" />
-              <span>{tm('elite_skins')}</span>
+              <span>{stripEmojis(tm('elite_skins'))}</span>
             </div>
           </div>
 
@@ -494,7 +499,7 @@ export default function MembershipPage() {
             }}
             className="w-full py-[18px] rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs cursor-pointer shadow-premium hover:brightness-110 active:scale-[0.98] transition-all"
           >
-            {tm('success_btn')}
+            {stripEmojis(tm('success_btn'))}
           </button>
         </motion.div>
       </motion.div>
@@ -535,7 +540,7 @@ export default function MembershipPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-black text-purple-300 premium-neon-text-glow uppercase tracking-wider leading-none">
-              {tm('insufficient_title')}
+              {stripEmojis(tm('insufficient_title'))}
             </h2>
           </div>
 
