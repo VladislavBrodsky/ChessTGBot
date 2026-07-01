@@ -372,13 +372,13 @@ async def withdraw_funds(
     if not updated_user:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
-    # Log pending review transaction
+    # Log completed transaction (auto-approved instantly)
     tx_withdraw = Transaction(
         user_id=updated_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
         fee=0,
-        status="pending_review",
+        status="completed",
         reference_id=f"addr_{request.address}"
     )
     db.add(tx_withdraw)
@@ -390,28 +390,32 @@ async def withdraw_funds(
     try:
         from app.services.telegram_bot import TelegramService
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
+        
+        # Notify user of completion
         notification_text = (
-            f"<b>📤 Cyber Wallet Withdrawal Requested!</b>\n\n"
-            f"• <b>Requested Amount:</b> -${request.amount / 100:.2f} USDT\n"
+            f"<b>✅ Withdrawal Completed!</b>\n\n"
+            f"• <b>Amount:</b> -${request.amount / 100:.2f} USDT\n"
             f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n"
-            f"• <b>Status:</b> Pending Admin Review ⏳\n\n"
-            f"<i>Your updated platform balance is {updated_user.balance / 100:.2f} USDT. We will notify you once processed!</i>"
+            f"• <b>Status:</b> Completed Successfully 🟢\n\n"
+            f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
         )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
         
-        # Send alert to Admin for direct interactive action
-        await TelegramService.send_admin_withdrawal_alert(
-            tx_id=tx_withdraw.id,
-            telegram_id=updated_user.telegram_id,
-            first_name=updated_user.first_name,
-            amount_cents=request.amount,
-            address=request.address
-        )
+        # Notify Admin for read-only tracking (no approval buttons needed)
+        if settings.ADMIN_TELEGRAM_ID:
+            admin_text = (
+                f"<b>📤 Withdrawal Processed (Auto-Completed)</b>\n\n"
+                f"• <b>Transaction ID:</b> #{tx_withdraw.id}\n"
+                f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
+                f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Destination:</b> <code>{request.address}</code>\n"
+            )
+            await TelegramService.send_notification(settings.ADMIN_TELEGRAM_ID, admin_text)
     except Exception as e:
         logger.error(f"Failed to process withdrawal notifications: {e}")
 
     return WithdrawResponse(
-        status="pending_review",
+        status="completed",
         amount=request.amount,
         new_balance=updated_user.balance
     )

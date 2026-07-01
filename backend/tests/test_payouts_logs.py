@@ -45,19 +45,32 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     )
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "pending_review"
+    assert data["status"] == "completed"
     assert data["new_balance"] == 3000
 
-    # 3. Verify it is logged as pending_review in database
+    # 3. Verify it is logged as completed in database (auto-approved)
     result = await db_session.execute(
         select(Transaction).where(Transaction.user_id == telegram_id, Transaction.type == "withdrawal")
     )
-    tx = result.scalars().first()
-    assert tx is not None
-    assert tx.status == "pending_review"
-    assert tx.reference_id == f"addr_{dest_address}"
+    tx_auto = result.scalars().first()
+    assert tx_auto is not None
+    assert tx_auto.status == "completed"
+    assert tx_auto.reference_id == f"addr_{dest_address}"
 
-    # 4. Try to approve/reject without secret key -> 401
+    # 4. Insert manual legacy pending_review transaction to test approve/reject logic
+    tx = Transaction(
+        user_id=telegram_id,
+        type="withdrawal",
+        amount=-1000,
+        fee=0,
+        status="pending_review",
+        reference_id=f"addr_{dest_address}"
+    )
+    db_session.add(tx)
+    await db_session.commit()
+    await db_session.refresh(tx)
+
+    # Try to approve/reject without secret key -> 401
     res_approve_fail = await client.post(f"/api/v1/wallet/admin/withdrawals/{tx.id}/approve")
     assert res_approve_fail.status_code == 401
 
@@ -68,7 +81,7 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     pending_list = res_list.json()
     assert len(pending_list) == 1
     assert pending_list[0]["id"] == tx.id
-    assert pending_list[0]["amount"] == 2000
+    assert pending_list[0]["amount"] == 1000
     assert pending_list[0]["address"] == dest_address
 
     # 6. Approve the withdrawal
@@ -80,19 +93,22 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     await db_session.refresh(tx)
     assert tx.status == "completed"
 
-    # 8. Create another withdrawal of $10.00 (1000 cents)
-    res_w2 = await client.post(
-        "/api/v1/wallet/withdraw",
-        json={"amount": 1000, "address": dest_address},
-        headers=headers
+    # 8. Create another manual legacy pending_review transaction to test reject
+    tx2 = Transaction(
+        user_id=telegram_id,
+        type="withdrawal",
+        amount=-1000,
+        fee=0,
+        status="pending_review",
+        reference_id=f"addr_{dest_address}"
     )
-    assert res_w2.status_code == 200
-    
-    result2 = await db_session.execute(
-        select(Transaction).where(Transaction.user_id == telegram_id, Transaction.status == "pending_review")
-    )
-    tx2 = result2.scalars().first()
-    assert tx2 is not None
+    db_session.add(tx2)
+    # Deduct balance manually to simulate pending withdrawal lock
+    user.balance = 2000
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(tx2)
+    await db_session.refresh(user)
 
     # 9. Reject the withdrawal
     res_reject = await client.post(f"/api/v1/wallet/admin/withdrawals/{tx2.id}/reject", headers=admin_headers)
