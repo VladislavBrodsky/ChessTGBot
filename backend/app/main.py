@@ -152,6 +152,10 @@ async def lifespan(app: FastAPI):
     from app.services.subscription_service import start_subscription_checker
     asyncio.create_task(start_subscription_checker())
 
+    # Start background deposit crawler to auto-sync transactions
+    from app.services.deposit_crawler import start_deposit_crawler
+    asyncio.create_task(start_deposit_crawler())
+
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
     # to the bug where level was not recalculated after XP deductions.
