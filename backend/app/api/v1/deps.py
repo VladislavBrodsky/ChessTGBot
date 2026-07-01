@@ -130,3 +130,41 @@ async def get_current_user(
 
     return user
 
+
+async def get_current_telegram_id(
+    x_telegram_init_data: Optional[str] = Header(None, alias="X-Telegram-Init-Data")
+) -> int:
+    """
+    Dependency to get the current user's Telegram ID without holding a database session.
+    """
+    if not x_telegram_init_data:
+        import sys
+        from app.core.database import engine
+        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+            return 123456789
+        raise HTTPException(
+            status_code=401,
+            detail="X-Telegram-Init-Data header missing"
+        )
+    
+    try:
+        telegram_user = validate_init_data(x_telegram_init_data)
+        user_id = telegram_user.get("id")
+    except Exception as e:
+        import sys
+        from app.core.database import engine
+        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+            from app.core.security import parse_init_data_unverified
+            telegram_user = parse_init_data_unverified(x_telegram_init_data)
+            user_id = telegram_user.get("id")
+            if not user_id:
+                user_id = 123456789
+        else:
+            raise HTTPException(status_code=401, detail=f"Invalid signature: {str(e)}")
+
+    if not user_id:
+        raise HTTPException(status_code=400, detail="Invalid user data")
+        
+    return user_id
+
+

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
 from sqlalchemy import desc
 from app.core.database import get_db
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import get_current_user, get_current_telegram_id
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
@@ -790,24 +790,24 @@ async def get_jetton_wallet(
 @router.post("/deposit/verify")
 async def verify_deposit(
     request: DepositVerifyRequest,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    telegram_id: int = Depends(get_current_telegram_id)
 ):
     from app.core.config import get_settings
+    from app.core.database import AsyncSessionLocal
     settings = get_settings()
 
     message_hash = request.message_hash
-    telegram_id = current_user.telegram_id
 
     # Enforce replay protection
-    existing_tx_result = await db.execute(
-        select(Transaction).filter(Transaction.reference_id == message_hash)
-    )
-    if existing_tx_result.scalars().first():
-        raise HTTPException(
-            status_code=400,
-            detail="Transaction already processed."
+    async with AsyncSessionLocal() as db:
+        existing_tx_result = await db.execute(
+            select(Transaction).filter(Transaction.reference_id == message_hash)
         )
+        if existing_tx_result.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Transaction already processed."
+            )
 
     # Polling parameters
     import asyncio
@@ -960,56 +960,60 @@ async def verify_deposit(
         )
 
     # Let's acquire user lock and credit the balance
-    user_result = await db.execute(
-        select(User).filter(User.telegram_id == telegram_id).with_for_update()
-    )
-    user = user_result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    from app.core.database import AsyncSessionLocal
 
-    # Double check replay protection (inside db transaction lock)
-    existing_tx_result = await db.execute(
-        select(Transaction).filter(Transaction.reference_id == message_hash)
-    )
-    if existing_tx_result.scalars().first():
-        return {
-            "status": "success",
-            "credited_amount": 0,
-            "new_balance": user.balance,
-            "message": "Already processed"
-        }
+    async with AsyncSessionLocal() as db:
+        user_result = await db.execute(
+            select(User).filter(User.telegram_id == telegram_id).with_for_update()
+        )
+        user = user_result.scalars().first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
 
-    # Deduct 5% platform fee
-    credited_amount = int(round(amount_cents / 1.05))
-    fee = amount_cents - credited_amount
+        # Double check replay protection (inside db transaction lock)
+        existing_tx_result = await db.execute(
+            select(Transaction).filter(Transaction.reference_id == message_hash)
+        )
+        if existing_tx_result.scalars().first():
+            return {
+                "status": "success",
+                "credited_amount": 0,
+                "new_balance": user.balance,
+                "message": "Already processed"
+            }
 
-    user.balance += credited_amount
-    db.add(user)
+        # Deduct 5% platform fee
+        credited_amount = int(round(amount_cents / 1.05))
+        fee = amount_cents - credited_amount
 
-    # Log deposit transaction
-    tx_deposit = Transaction(
-        user_id=telegram_id,
-        type="deposit",
-        amount=credited_amount,
-        fee=fee,
-        status="completed",
-        reference_id=message_hash
-    )
-    db.add(tx_deposit)
+        user.balance += credited_amount
+        db.add(user)
 
-    # Log fee transaction
-    tx_fee = Transaction(
-        user_id=telegram_id,
-        type="deposit_fee",
-        amount=-fee,
-        fee=0,
-        status="completed",
-        reference_id=f"fee_{message_hash[:16]}"
-    )
-    db.add(tx_fee)
+        # Log deposit transaction
+        tx_deposit = Transaction(
+            user_id=telegram_id,
+            type="deposit",
+            amount=credited_amount,
+            fee=fee,
+            status="completed",
+            reference_id=message_hash
+        )
+        db.add(tx_deposit)
 
-    await db.commit()
-    await db.refresh(user)
+        # Log fee transaction
+        tx_fee = Transaction(
+            user_id=telegram_id,
+            type="deposit_fee",
+            amount=-fee,
+            fee=0,
+            status="completed",
+            reference_id=f"fee_{message_hash[:16]}"
+        )
+        db.add(tx_fee)
+
+        await db.commit()
+        await db.refresh(user)
+        final_balance = user.balance
 
     # Send telegram notification
     try:
@@ -1022,7 +1026,7 @@ async def verify_deposit(
             f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
             f"• <b>Platform Top-Up Fee (5%):</b> -${fee / 100:.2f} USDT\n"
             f"• <b>Transaction ID:</b> <code>{message_hash[:10]}...{message_hash[-8:] if len(message_hash) > 8 else ''}</code>\n\n"
-            f"<i>Your balance has been updated. Platform Balance: {user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
+            f"<i>Your balance has been updated. Platform Balance: {final_balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
         )
         await TelegramService.send_notification(telegram_id, notification_text)
     except Exception:
@@ -1032,7 +1036,7 @@ async def verify_deposit(
         "status": "success",
         "credited_amount": credited_amount,
         "fee": fee,
-        "new_balance": user.balance
+        "new_balance": final_balance
     }
 
 
