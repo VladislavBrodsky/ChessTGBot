@@ -395,7 +395,7 @@ async def withdraw_funds(
         notification_text = (
             f"<b>✅ Withdrawal Completed!</b>\n\n"
             f"• <b>Amount:</b> -${request.amount / 100:.2f} USDT\n"
-            f"• <b>Destination TON Wallet:</b> <code>{dest_display}</code>\n"
+            f"• <b>Destination TON Wallet:</b> <a href=\"https://tonviewer.com/{request.address}\">{dest_display}</a> 🔗\n"
             f"• <b>Status:</b> Completed Successfully 🟢\n\n"
             f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
         )
@@ -408,7 +408,7 @@ async def withdraw_funds(
                 f"• <b>Transaction ID:</b> #{tx_withdraw.id}\n"
                 f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
-                f"• <b>Destination:</b> <code>{request.address}</code>\n"
+                f"• <b>Destination:</b> <a href=\"https://tonviewer.com/{request.address}\"><code>{request.address}</code></a> 🔗\n"
             )
             await TelegramService.send_notification(settings.ADMIN_TELEGRAM_ID, admin_text)
     except Exception as e:
@@ -1041,11 +1041,11 @@ async def verify_deposit(
         sender_display = f"{sender_addr[:6]}...{sender_addr[-4:]}" if len(sender_addr) > 10 else sender_addr
         notification_text = (
             f"<b>⚡️ Cyber Web3 Top-Up Confirmed!</b>\n\n"
-            f"• <b>Sender Address:</b> <code>{sender_display}</code>\n"
+            f"• <b>Sender Address:</b> <a href=\"https://tonviewer.com/{sender_addr}\">{sender_display}</a> 🔗\n"
             f"• <b>Currency:</b> {currency_symbol}\n"
             f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
             f"• <b>Platform Top-Up Fee (5%):</b> -${fee / 100:.2f} USDT\n"
-            f"• <b>Transaction ID:</b> <code>{message_hash[:10]}...{message_hash[-8:] if len(message_hash) > 8 else ''}</code>\n\n"
+            f"• <b>Transaction ID:</b> <a href=\"https://tonviewer.com/transaction/{message_hash}\">{message_hash[:10]}...{message_hash[-8:] if len(message_hash) > 8 else ''}</a> 🔗\n\n"
             f"<i>Your balance has been updated. Platform Balance: {final_balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
         )
         await TelegramService.send_notification(telegram_id, notification_text)

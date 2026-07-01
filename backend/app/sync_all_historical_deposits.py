@@ -213,11 +213,11 @@ async def run_historical_sync():
                                     sender_display = f"{sender_addr[:6]}...{sender_addr[-4:]}" if len(sender_addr) > 10 else sender_addr
                                     notification_text = (
                                         f"<b>⚡️ Cyber Web3 Top-Up Recovery Confirmed!</b>\n\n"
-                                        f"• <b>Sender Address:</b> <code>{sender_display}</code>\n"
+                                        f"• <b>Sender Address:</b> <a href=\"https://tonviewer.com/{sender_addr}\">{sender_display}</a> 🔗\n"
                                         f"• <b>Currency:</b> {currency_symbol}\n"
                                         f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
                                         f"• <b>Platform Top-Up Fee (5%):</b> -${fee / 100:.2f} USDT\n"
-                                        f"• <b>Transaction ID:</b> <code>{event_id[:10]}...{event_id[-8:] if len(event_id) > 8 else ''}</code>\n\n"
+                                        f"• <b>Transaction ID:</b> <a href=\"https://tonviewer.com/transaction/{event_id}\">{event_id[:10]}...{event_id[-8:] if len(event_id) > 8 else ''}</a> 🔗\n\n"
                                         f"<i>Your missing deposit has been automatically recovered. Platform Balance: {user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
                                     )
                                     await TelegramService.send_notification(telegram_id, notification_text)

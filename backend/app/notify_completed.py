@@ -40,7 +40,7 @@ async def notify_users():
                 notification_text = (
                     f"<b>✅ Withdrawal Approved!</b>\n\n"
                     f"• <b>Amount:</b> +${abs(tx.amount) / 100:.2f} USDT\n"
-                    f"• <b>Sent to:</b> <code>{dest_display}</code>\n\n"
+                    f"• <b>Sent to:</b> <a href=\"https://tonviewer.com/{address}\">{dest_display}</a> 🔗\n\n"
                     f"<i>Your funds have been transferred successfully on-chain!</i>"
                 )
                 
