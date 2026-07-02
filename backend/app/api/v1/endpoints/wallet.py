@@ -355,8 +355,8 @@ async def withdraw_funds(
     from app.core.config import get_settings
     settings = get_settings()
 
-    if request.amount <= 0:
-        raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
+    if request.amount < 1000:
+        raise HTTPException(status_code=400, detail="Minimum withdrawal amount is $10.00 USDT (1000 cents)")
 
     # Validate destination address format
     try:
@@ -375,13 +375,16 @@ async def withdraw_funds(
     if not updated_user:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
+    fee = 20  # flat $0.20 fee (in cents)
+    transfer_amount_cents = request.amount - fee
+
     tx_hash = None
     is_real = False
     
     if settings.PAYOUT_MNEMONIC:
         try:
             from app.services.payout_service import execute_usdt_payout
-            tx_hash = await execute_usdt_payout(request.address, request.amount)
+            tx_hash = await execute_usdt_payout(request.address, transfer_amount_cents)
             is_real = True
         except Exception as payout_err:
             # Refund balance atomically
@@ -397,14 +400,14 @@ async def withdraw_funds(
         user_id=updated_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
-        fee=0,
+        fee=fee,
         status="completed",
         reference_id=tx_hash
     )
     db.add(tx_withdraw)
     await db.commit()
     await db.refresh(tx_withdraw)
-    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_withdraw.reference_id} | status=completed")
+    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_withdraw.reference_id} | status=completed")
 
     # Send automated Telegram Bot notifications
     try:
@@ -421,7 +424,9 @@ async def withdraw_funds(
         # Notify user of completion
         notification_text = (
             f"<b>✅ Withdrawal Completed!</b>\n\n"
-            f"• <b>Amount:</b> -${request.amount / 100:.2f} USDT\n"
+            f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
+            f"• <b>Withdrawal Fee:</b> -${fee / 100:.2f} USDT\n"
+            f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
             f"• <b>Destination Wallet:</b> {link_display}\n"
             f"• <b>Status:</b> Completed Successfully 🟢\n\n"
             f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
@@ -434,7 +439,9 @@ async def withdraw_funds(
                 f"<b>📤 Withdrawal Processed (Auto-Completed)</b>\n\n"
                 f"• <b>Transaction ID:</b> #{tx_withdraw.id}\n"
                 f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
-                f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Fee Deducted:</b> ${fee / 100:.2f} USDT\n"
+                f"• <b>Net Payout:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination:</b> <a href=\"https://tonviewer.com/{request.address}\"><code>{request.address}</code></a> 🔗\n"
                 f"• <b>On-Chain Status:</b> {'Real Transfer' if is_real else 'Simulated'}\n"
             )

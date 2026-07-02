@@ -90,8 +90,8 @@ async def test_withdraw_real_onchain_success(mock_execute, client: AsyncClient, 
     assert data["status"] == "completed"
     assert data["new_balance"] == 2000
 
-    # Verify mock was called with correct parameters
-    mock_execute.assert_called_once_with(dest_address, 1000)
+    # Verify mock was called with net payout (amount - flat fee = 1000 - 20 = 980 cents)
+    mock_execute.assert_called_once_with(dest_address, 980)
 
     # 4. Check database transaction reference_id is the transaction hash
     from sqlalchemy import select
