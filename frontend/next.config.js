@@ -14,6 +14,10 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
+    experimental: {
+        workerThreads: false,
+        cpus: 1
+    },
     // Rewrites are only supported when running a Node.js server (i.e. not in
     // static export mode). In static export mode the frontend resolves the
     // backend URL dynamically at runtime via getApiBaseUrl() / getSocketUrl().

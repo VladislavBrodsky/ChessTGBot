@@ -166,25 +166,39 @@ async def lifespan(app: FastAPI):
         from sqlalchemy import select as sa_select, update as sa_update
 
         if not engine.url.drivername.startswith("sqlite"):
-            async with AsyncSessionLocal() as session:
-                # Fetch all users with a potentially wrong level
-                result = await session.execute(sa_select(UserModel))
-                all_users = result.scalars().all()
+            # Fetch and process users in batches of 100 to prevent loading everything into memory (OOM safety)
+            chunk_size = 100
+            offset = 0
+            total_fixed = 0
+            
+            while True:
+                async with AsyncSessionLocal() as session:
+                    result = await session.execute(
+                        sa_select(UserModel).order_by(UserModel.id).offset(offset).limit(chunk_size)
+                    )
+                    users = result.scalars().all()
+                    if not users:
+                        break
+                    
+                    fixed_in_batch = 0
+                    for u in users:
+                        correct_level = max(1, int(u.xp // 200) + 1)
+                        if correct_level != u.level:
+                            u.level = max(u.level, correct_level)
+                            fixed_in_batch += 1
+                            total_fixed += 1
+                    
+                    if fixed_in_batch:
+                        await session.commit()
+                
+                offset += chunk_size
+                if len(users) < chunk_size:
+                    break
 
-                fixed = 0
-                for u in all_users:
-                    correct_level = max(1, int(u.xp // 200) + 1)
-                    # High-watermark: only correct upward drift
-                    # (downward drift from XP spend is intentionally kept)
-                    if correct_level != u.level:
-                        u.level = max(u.level, correct_level)
-                        fixed += 1
-
-                if fixed:
-                    await session.commit()
-                    logger.info(f"✅ Level backfill complete: corrected {fixed} user(s).")
-                else:
-                    logger.info("✅ Level backfill: all users are already consistent.")
+            if total_fixed > 0:
+                logger.info(f"✅ Level backfill complete: corrected {total_fixed} user(s) in batches.")
+            else:
+                logger.info("✅ Level backfill: all users are already consistent.")
     except Exception as e:
         logger.error(f"⚠️  Level backfill failed (non-fatal): {e}")
     # ────────────────────────────────────────────────────────────────────────

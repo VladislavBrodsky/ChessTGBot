@@ -495,6 +495,7 @@ class TelegramService:
             lock_key = "telegram_bot_leader"
             
             while True:
+                redis_client = None
                 try:
                     # Verify database health before participating in leader election
                     from sqlalchemy import text
@@ -519,7 +520,6 @@ class TelegramService:
                         if current_owner == instance_id:
                             await redis_client.delete(lock_key)
                         
-                        await redis_client.close()
                         await asyncio.sleep(10)
                         continue
 
@@ -547,8 +547,6 @@ class TelegramService:
                                 logger.warning(f"⚠️ [LEADER ELECTION] Leadership lost to {current_owner}. Demoting to PASSIVE...")
                                 cls.is_currently_leader = False
                                 await cls.stop_receiver()
-                            
-                    await redis_client.close()
                 except Exception as e:
                     logger.error(f"[LEADER ELECTION] Error in loop: {e}")
                     # Local fallback: if Redis connection fails and we are running in localhost/development,
@@ -563,6 +561,12 @@ class TelegramService:
                         if cls.is_currently_leader:
                             cls.is_currently_leader = False
                             await cls.stop_receiver()
+                finally:
+                    if redis_client is not None:
+                        try:
+                            await redis_client.close()
+                        except Exception as close_err:
+                            logger.warning(f"[LEADER ELECTION] Error closing redis client: {close_err}")
                 
                 await asyncio.sleep(10)
 
