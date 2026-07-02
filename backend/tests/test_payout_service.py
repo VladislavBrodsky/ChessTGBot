@@ -102,3 +102,31 @@ async def test_withdraw_real_onchain_success(mock_execute, client: AsyncClient, 
     assert tx is not None
     assert tx.status == "completed"
     assert tx.reference_id == "c6becda5805dcee9e000a32be92d35af2c14b02d446ff8f5231e908261a78de3"
+
+@pytest.mark.asyncio
+async def test_withdraw_amount_below_minimum(client: AsyncClient, db_session: AsyncSession, monkeypatch):
+    if hasattr(db_session, "users"):
+        return
+
+    telegram_id = 777003
+    user = User(
+        telegram_id=telegram_id,
+        first_name="LimitUser",
+        balance=3000
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'LimitUser'}))}"
+    headers = {"X-Telegram-Init-Data": init_data}
+
+    # Request withdrawal below $10.00 (e.g. 500 cents / $5.00)
+    dest_address = "UQCDg8ub3MGCVJSaNo2q3QGTg0bX71RmwrvVOfbrqAzYNuCN"
+    res = await client.post(
+        "/api/v1/wallet/withdraw",
+        json={"amount": 500, "address": dest_address},
+        headers=headers
+    )
+    assert res.status_code == 400
+    assert res.json()["detail"] == "Minimum withdrawal amount is $10.00 USDT"

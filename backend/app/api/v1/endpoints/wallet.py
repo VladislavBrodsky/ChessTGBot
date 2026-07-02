@@ -355,8 +355,8 @@ async def withdraw_funds(
     from app.core.config import get_settings
     settings = get_settings()
 
-    if request.amount <= 0:
-        raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
+    if request.amount < 1000:
+        raise HTTPException(status_code=400, detail="Minimum withdrawal amount is $10.00 USDT")
 
     # Validate destination address format
     try:
