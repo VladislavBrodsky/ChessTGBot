@@ -355,8 +355,8 @@ async def withdraw_funds(
     from app.core.config import get_settings
     settings = get_settings()
 
-    if request.amount < 1000:
-        raise HTTPException(status_code=400, detail="Minimum withdrawal amount is $10.00 USDT (1000 cents)")
+    if request.amount <= 0:
+        raise HTTPException(status_code=400, detail="Withdrawal amount must be positive")
 
     # Validate destination address format
     try:
@@ -375,7 +375,8 @@ async def withdraw_funds(
     if not updated_user:
         raise HTTPException(status_code=400, detail="Insufficient funds in balance")
 
-    fee = 20  # flat $0.20 fee (in cents)
+    # Flat $0.20 fee if amount is 20 cents or more; otherwise 0 fee to allow small test withdrawals
+    fee = 20 if request.amount >= 20 else 0
     transfer_amount_cents = request.amount - fee
 
     tx_hash = None
