@@ -133,17 +133,17 @@
   --cyber-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(15, 23, 42, 0.04) 100%);
 
   --color-action-button-text: #FFFFFF;
-  --gradient-color-1: #0F172A;
-  --gradient-color-2: #1E293B;
-  --gradient-color-3: #334155;
+  --gradient-color-1: #1E293B;
+  --gradient-color-2: #3730A3;
+  --gradient-color-3: #4338CA;
 
-  --shadow-neon: 0 0 20px rgba(0, 0, 0, 0.01), 0 0 40px rgba(0, 0, 0, 0.005);
-  --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
-  --shadow-inner-glow: inset 0 0 10px rgba(0, 0, 0, 0.005);
+  --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
+  --shadow-premium: 0 8px 28px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --shadow-inner-glow: inset 0 0 10px rgba(15, 23, 42, 0.04);
 
-  --glass-button-hover-bg: rgba(0, 0, 0, 0.03);
-  --glass-button-hover-border: rgba(0, 0, 0, 0.08);
-  --glass-button-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
+  --glass-button-hover-bg: rgba(15, 23, 42, 0.04);
+  --glass-button-hover-border: rgba(15, 23, 42, 0.12);
+  --glass-button-hover-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 
   /* Premium play chess shifting gradient variables (Light Theme) */
   --premium-grad-1: #6366F1;
@@ -291,6 +291,33 @@ body {
   }
 }
 
+/* ── Light theme: card & drawer depth ─────────────────────────────────────── */
+[data-theme='light'] .glass-panel {
+  border-color: rgba(15, 23, 42, 0.09) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 4px 16px rgba(15, 23, 42, 0.08),
+              0 1px 4px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme='light'] .glass-panel:hover {
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95),
+              0 0 0 1px rgba(99, 102, 241, 0.12),
+              0 8px 24px rgba(15, 23, 42, 0.10) !important;
+}
+
+[data-theme='light'] .glass-button {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8),
+              0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme='light'] .bottom-drawer-sheet {
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.10),
+              0 -1px 4px rgba(15, 23, 42, 0.06) !important;
+  border-top-color: rgba(15, 23, 42, 0.08) !important;
+}
+
 /* 2026 Bottom Drawer Sheets */
 .bottom-drawer-backdrop {
   position: fixed;
@@ -337,7 +364,7 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   border-top: 1px solid var(--border-muted);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15), 0 -2px 8px rgba(0, 0, 0, 0.08);
   padding: 16px 20px calc(24px + var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))) 20px;
   display: flex;
   flex-direction: column;

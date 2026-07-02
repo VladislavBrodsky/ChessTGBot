@@ -112,8 +112,6 @@ export default function WalletPage() {
         <div className="w-full p-3 rounded-xl border border-brand-border-opacity-5 bg-brand-surface flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">
           <span>{tw('deposit_fee')} <strong className="text-brand-primary">5%</strong></span>
           <span>•</span>
-          <span>{tw('game_rake')} <strong className="text-brand-primary">3%</strong></span>
-          <span>•</span>
           <span>{tw('withdraw_fee')} <strong className="text-brand-primary">{tw('free')}</strong></span>
         </div>
 

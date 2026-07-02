@@ -90,7 +90,7 @@ export default function SettingsPage() {
  <motion.div
  layout
  transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className={`w-5 h-5 rounded-full ${theme === 'dark' ? 'bg-brand-void' : 'bg-brand-primary'}`}
+ className={`w-5 h-5 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-white'}`}
  />
  </button>
  </div>
@@ -119,7 +119,7 @@ export default function SettingsPage() {
  <motion.div
  layout
  transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className={`w-5 h-5 rounded-full ${soundEnabled ? 'bg-brand-void' : 'bg-brand-primary opacity-45'}`}
+ className={`w-5 h-5 rounded-full ${soundEnabled ? 'bg-white' : 'bg-brand-primary opacity-45'}`}
  />
  </button>
  </div>
