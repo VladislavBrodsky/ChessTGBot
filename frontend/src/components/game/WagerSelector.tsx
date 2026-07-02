@@ -68,14 +68,17 @@ export default function WagerSelector({
                     inline: 'center'
                   });
                 }}
-                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative ${
                   isSelected
-                    ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                    ? 'border-brand-primary bg-brand-void text-brand-primary shadow-neon scale-105 font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
                 }`}
               >
                 {opt.val === 100000 && <FaCrown className="text-[9px] text-yellow-400 mr-0.5 animate-pulse" />}
-                {opt.label}
+                <span className={isSelected ? "mb-1.5" : ""}>{opt.label}</span>
+                {isSelected && (
+                  <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />
+                )}
               </button>
             );
           })}
@@ -90,13 +93,16 @@ export default function WagerSelector({
                 inline: 'center'
               });
             }}
-            className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center ${
+            className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative ${
               isCustomWager
-                ? 'border-brand-primary bg-brand-primary text-brand-void shadow-neon scale-105 font-extrabold'
+                ? 'border-brand-primary bg-brand-void text-brand-primary shadow-neon scale-105 font-extrabold'
                 : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
             }`}
           >
-            ···
+            <span className={isCustomWager ? "mb-1.5" : ""}>···</span>
+            {isCustomWager && (
+              <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />
+            )}
           </button>
         </div>
       </div>

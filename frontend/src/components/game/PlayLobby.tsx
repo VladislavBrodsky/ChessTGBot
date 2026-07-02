@@ -658,28 +658,72 @@ export default function PlayLobby() {
                 </div>
               )}
 
-              {/* Secondary Actions */}
-              <div className="grid grid-cols-2 gap-2.5 w-full">
+              {/* Secondary Actions — Upgraded to match Command Center stats cards */}
+              <div className="grid grid-cols-2 gap-3 w-full">
+                {/* Train against AI button */}
                 <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isCreating ? { scale: 1.03 } : {}}
+                  whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={playVsComputer}
                   disabled={isCreating}
-                  className="w-full py-3 glass-panel rounded-2xl border border-brand-border-opacity-10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:border-brand-border-opacity-20 transition-all"
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
+                    border: '1px solid rgba(16,185,129,0.25)',
+                    boxShadow: '0 4px 24px rgba(16,185,129,0.08)',
+                  }}
                 >
-                  <FaRobot className="text-brand-primary opacity-50" size={12} />
-                  <span>{tg('train_ai')}</span>
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.1))',
+                      border: '1px solid rgba(16,185,129,0.3)',
+                      boxShadow: '0 0 12px rgba(16,185,129,0.2)',
+                    }}
+                  >
+                    <FaRobot style={{ color: '#10b981', fontSize: 15 }} />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-black leading-none text-white tracking-wide uppercase">
+                      TRAIN
+                    </span>
+                    <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                      AGAINST A.I.
+                    </span>
+                  </div>
                 </motion.button>
 
+                {/* Play with friend button */}
                 <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isCreating ? { scale: 1.03 } : {}}
+                  whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={playVsFriend}
                   disabled={isCreating}
-                  className="w-full py-3 glass-panel rounded-2xl border border-brand-border-opacity-10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:border-brand-border-opacity-20 transition-all"
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
+                    border: '1px solid rgba(168,85,247,0.25)',
+                    boxShadow: '0 4px 24px rgba(168,85,247,0.08)',
+                  }}
                 >
-                  <FaShareAlt className="text-brand-primary opacity-50" size={12} />
-                  <span>{tg('play_friend')}</span>
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(168,85,247,0.3), rgba(168,85,247,0.1))',
+                      border: '1px solid rgba(168,85,247,0.3)',
+                      boxShadow: '0 0 12px rgba(168,85,247,0.2)',
+                    }}
+                  >
+                    <FaShareAlt style={{ color: '#a855f7', fontSize: 14 }} />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-black leading-none text-white tracking-wide uppercase">
+                      PLAY
+                    </span>
+                    <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                      WITH FRIEND
+                    </span>
+                  </div>
                 </motion.button>
               </div>
 
