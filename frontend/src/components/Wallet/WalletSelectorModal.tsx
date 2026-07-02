@@ -87,14 +87,18 @@ export default function WalletSelectorModal({
     }
   }, [wallet]);
 
-  const handleSelectWallet = async () => {
-    setConnecting("opening");
+  const handleSelectWallet = async (appName: string) => {
+    setConnecting(appName);
     try {
-      // TON Connect built-in modal — shows all registered wallets
-      // (Gram Wallet, Telegram Wallet, Tonkeeper, MyTonWallet, etc.)
-      await tonConnectUI.openModal();
+      // Open the specific wallet modal directly
+      await tonConnectUI.openSingleWalletModal(appName);
     } catch {
-      // ignore
+      // Fallback to general modal if single modal fails
+      try {
+        await tonConnectUI.openModal();
+      } catch {
+        // ignore
+      }
     } finally {
       setConnecting(null);
     }
@@ -258,7 +262,7 @@ export default function WalletSelectorModal({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.06 }}
-                  onClick={handleSelectWallet}
+                  onClick={() => handleSelectWallet(w.app_name)}
                   disabled={connecting !== null}
                   className="w-full relative overflow-hidden rounded-2xl flex items-center gap-4 p-3.5 transition-all cursor-pointer group"
                   style={{

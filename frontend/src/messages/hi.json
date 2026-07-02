@@ -363,7 +363,14 @@
     "insufficient_title": "💎 अपर्याप्त शेष राशि",
     "insufficient_desc": "प्रीमियम सदस्यता खरीदने के लिए आपको {cost} USDT की आवश्यकता है। आपका वर्तमान शेष {balance} USDT है।",
     "insufficient_topup_btn": "वॉलेट टॉप-अप करें",
-    "insufficient_cancel_btn": "बाद में"
+    "insufficient_cancel_btn": "बाद में",
+    "processing": "प्रक्रिया जारी है...",
+    "extend_subscription": "सदस्यता बढ़ाएं",
+    "xp_upgrade_alert": "प्रीमियम में अपग्रेड करने के लिए 5,000 XP की आवश्यकता है। आपके पास वर्तमान में {xp} XP है।",
+    "xp_upgrade_confirm": "5,000 XP खर्च करके प्रीमियम में अपग्रेड करें? (आपके पास {xp} XP है)",
+    "upgrade_failed": "अपग्रेड विफल रहा",
+    "failed_xp_upgrade": "XP के साथ अपग्रेड करने में विफल",
+    "subscription_failed": "सदस्यता विफल रही"
   },
   "TierComparison": {
     "title": "फीचर्स की तुलना",

@@ -363,7 +363,14 @@
     "insufficient_title": "💎 账户余额不足",
     "insufficient_desc": "开通黄金会员需要 {cost} USDT。您当前账户余额为 {balance} USDT。",
     "insufficient_topup_btn": "立即充值",
-    "insufficient_cancel_btn": "暂不考虑"
+    "insufficient_cancel_btn": "暂不考虑",
+    "processing": "处理中...",
+    "extend_subscription": "延长订阅",
+    "xp_upgrade_alert": "升级黄金会员需要 5,000 XP。您目前拥有 {xp} XP。",
+    "xp_upgrade_confirm": "确定花费 5,000 XP 升级黄金会员吗？（您拥有 {xp} XP）",
+    "upgrade_failed": "升级失败",
+    "failed_xp_upgrade": "使用 XP 升级失败",
+    "subscription_failed": "订阅购买失败"
   },
   "TierComparison": {
     "title": "功能权益对比",

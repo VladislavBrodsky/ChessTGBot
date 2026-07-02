@@ -363,7 +363,14 @@
     "insufficient_title": "💎 GUTHABEN REICHT NICHT",
     "insufficient_desc": "Du benötigst {cost} USDT, um dieses Premium-Abonnement zu erwerben. Dein aktuelles Guthaben beträgt {balance} USDT.",
     "insufficient_topup_btn": "Guthaben aufladen",
-    "insufficient_cancel_btn": "Später"
+    "insufficient_cancel_btn": "Später",
+    "processing": "VERARBEITUNG...",
+    "extend_subscription": "ABONNEMENT VERLÄNGERN",
+    "xp_upgrade_alert": "Das Upgrade auf Premium erfordert 5.000 XP. Sie haben derzeit {xp} XP.",
+    "xp_upgrade_confirm": "Premium durch Ausgeben von 5.000 XP freischalten? (Sie haben {xp} XP)",
+    "upgrade_failed": "Upgrade fehlgeschlagen",
+    "failed_xp_upgrade": "Upgrade mit XP fehlgeschlagen",
+    "subscription_failed": "Abonnement fehlgeschlagen"
   },
   "TierComparison": {
     "title": "Feature-Vergleich",

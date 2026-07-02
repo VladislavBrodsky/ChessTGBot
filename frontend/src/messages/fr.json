@@ -363,7 +363,14 @@
     "insufficient_title": "💎 SOLDE INSUFFISANT",
     "insufficient_desc": "Vous avez besoin de {cost} USDT pour acheter cet abonnement Premium. Votre solde actuel est de {balance} USDT.",
     "insufficient_topup_btn": "Recharger le portefeuille",
-    "insufficient_cancel_btn": "Plus tard"
+    "insufficient_cancel_btn": "Plus tard",
+    "processing": "TRAITEMENT...",
+    "extend_subscription": "PROLONGER L'ABONNEMENT",
+    "xp_upgrade_alert": "La mise à niveau vers Premium nécessite 5 000 XP. Vous avez actuellement {xp} XP.",
+    "xp_upgrade_confirm": "Passer à Premium en dépensant 5 000 XP ? (Vous avez {xp} XP)",
+    "upgrade_failed": "Échec de la mise à niveau",
+    "failed_xp_upgrade": "Échec de la mise à niveau avec les XP",
+    "subscription_failed": "Échec de l'abonnement"
   },
   "TierComparison": {
     "title": "Comparatif des fonctionnalités",

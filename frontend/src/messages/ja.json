@@ -363,7 +363,14 @@
     "insufficient_title": "💎 残高が不足しています",
     "insufficient_desc": "このプレミアム会員を購入するには {cost} USDT が必要です。現在の残高は {balance} USDT です。",
     "insufficient_topup_btn": "ウォレットをチャージ",
-    "insufficient_cancel_btn": "後で"
+    "insufficient_cancel_btn": "後で",
+    "processing": "処理中...",
+    "extend_subscription": "サブスクリプションを延長",
+    "xp_upgrade_alert": "プレミアムへのアップグレードには5,000 XPが必要です。現在{xp} XP所有しています。",
+    "xp_upgrade_confirm": "5,000 XPを消費してプレミアムにアップグレードしますか？（現在{xp} XP所有）",
+    "upgrade_failed": "アップグレードに失敗しました",
+    "failed_xp_upgrade": "XPによるアップグレードに失敗しました",
+    "subscription_failed": "サブスクリプションの購入に失敗しました"
   },
   "TierComparison": {
     "title": "機能比較",

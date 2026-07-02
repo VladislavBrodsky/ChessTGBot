@@ -85,21 +85,8 @@ export default function MembershipPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const getButtonText = () => {
-    if (submitting) return "PROCESSING...";
-    if (stats?.is_premium) {
-      switch (locale) {
-        case 'ru': return "ПРОДЛИТЬ ПОДПИСКУ";
-        case 'es': return "EXTENDER SUSCRIPCIÓN";
-        case 'fr': return "PROLONGER L'ABONNEMENT";
-        case 'de': return "ABONNEMENT VERLÄNGERN";
-        case 'zh': return "延长订阅";
-        case 'ja': return "サブスクリプションを延長";
-        case 'ar': return "تمديد الاشتراك";
-        case 'pt': return "ESTENDER ASSINATURA";
-        case 'hi': return "सदस्यता बढ़ाएं";
-        default: return "EXTEND SUBSCRIPTION";
-      }
-    }
+    if (submitting) return tm('processing');
+    if (stats?.is_premium) return tm('extend_subscription');
     return tm('subscribe');
   };
  
@@ -119,11 +106,11 @@ export default function MembershipPage() {
     const currentXp = stats?.xp || 0;
     if (currentXp < 5000) {
       telegramHaptic('error');
-      telegramAlert(`Upgrading to Premium requires 5,000 XP. You currently have ${currentXp} XP.`);
+      telegramAlert(tm('xp_upgrade_alert', { xp: currentXp }));
       return;
     }
 
-    telegramConfirm(`Upgrade to Premium by spending 5,000 XP? (You have ${currentXp} XP)`, async (confirmUpgrade) => {
+    telegramConfirm(tm('xp_upgrade_confirm', { xp: currentXp }), async (confirmUpgrade) => {
       if (!confirmUpgrade) return;
 
       try {
@@ -138,12 +125,12 @@ export default function MembershipPage() {
           syncStats();
         } else {
           telegramHaptic('error');
-          telegramAlert(data.detail || "Failed to upgrade with XP");
+          telegramAlert(data.detail || tm('failed_xp_upgrade'));
         }
       } catch (e) {
         console.error(e);
         telegramHaptic('error');
-        telegramAlert("Upgrade failed");
+        telegramAlert(tm('upgrade_failed'));
       }
     });
   };
@@ -179,13 +166,13 @@ export default function MembershipPage() {
         if (data.detail && data.detail.toLowerCase().includes("insufficient balance")) {
           setShowInsufficient(true);
         } else {
-          telegramAlert(data.detail || "Subscription failed");
+          telegramAlert(data.detail || tm('subscription_failed'));
         }
       }
     } catch (e) {
       console.error("Subscription failed", e);
       telegramHaptic('error');
-      telegramAlert("Subscription failed");
+      telegramAlert(tm('subscription_failed'));
     } finally {
       setSubmitting(false);
     }

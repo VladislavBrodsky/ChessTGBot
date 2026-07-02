@@ -368,7 +368,14 @@
     "insufficient_title": "INSUFFICIENT BALANCE",
     "insufficient_desc": "You need {cost} USDT to purchase this Premium subscription. Your current balance is {balance} USDT.",
     "insufficient_topup_btn": "Top Up Wallet",
-    "insufficient_cancel_btn": "Maybe Later"
+    "insufficient_cancel_btn": "Maybe Later",
+    "processing": "PROCESSING...",
+    "extend_subscription": "EXTEND SUBSCRIPTION",
+    "xp_upgrade_alert": "Upgrading to Premium requires 5,000 XP. You currently have {xp} XP.",
+    "xp_upgrade_confirm": "Upgrade to Premium by spending 5,000 XP? (You have {xp} XP)",
+    "upgrade_failed": "Upgrade failed",
+    "failed_xp_upgrade": "Failed to upgrade with XP",
+    "subscription_failed": "Subscription failed"
   },
   "TierComparison": {
     "title": "Features Comparison",

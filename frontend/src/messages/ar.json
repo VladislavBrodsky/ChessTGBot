@@ -363,7 +363,14 @@
     "insufficient_title": "💎 رصيد غير كافٍ",
     "insufficient_desc": "أنت بحاجة إلى {cost} USDT لشراء هذا الاشتراك المميز. رصيدك الحالي هو {balance} USDT.",
     "insufficient_topup_btn": "شحن الرصيد",
-    "insufficient_cancel_btn": "ربما لاحقاً"
+    "insufficient_cancel_btn": "ربما لاحقاً",
+    "processing": "جاري المعالجة...",
+    "extend_subscription": "تمديد الاشتراك",
+    "xp_upgrade_alert": "يتطلب الترقية إلى بريميوم 5,000 XP. لديك حالياً {xp} XP.",
+    "xp_upgrade_confirm": "هل ترغب في الترقية إلى بريميوم باستخدام 5,000 XP؟ (لديك {xp} XP)",
+    "upgrade_failed": "فشلت الترقية",
+    "failed_xp_upgrade": "فشلت الترقية باستخدام XP",
+    "subscription_failed": "فشل الاشتراك"
   },
   "TierComparison": {
     "title": "مقارنة الميزات",

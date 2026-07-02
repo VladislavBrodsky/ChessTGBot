@@ -367,7 +367,14 @@
     "insufficient_title": "НЕДОСТАТОЧНО СРЕДСТВ",
     "insufficient_desc": "Для покупки подписки Premium требуется {cost} USDT. Ваш текущий баланс: {balance} USDT.",
     "insufficient_topup_btn": "Пополнить кошелек",
-    "insufficient_cancel_btn": "Позже"
+    "insufficient_cancel_btn": "Позже",
+    "processing": "ОБРАБОТКА...",
+    "extend_subscription": "ПРОДЛИТЬ ПОДПИСКУ",
+    "xp_upgrade_alert": "Для перехода на Премиум требуется 5 000 XP. У вас сейчас {xp} XP.",
+    "xp_upgrade_confirm": "Перейти на Премиум, потратив 5 000 XP? (У вас {xp} XP)",
+    "upgrade_failed": "Ошибка активации",
+    "failed_xp_upgrade": "Не удалось активировать за XP",
+    "subscription_failed": "Ошибка подписки"
   },
   "TierComparison": {
     "title": "Сравнение возможностей",

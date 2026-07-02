@@ -363,7 +363,14 @@
     "insufficient_title": "💎 SALDO INSUFICIENTE",
     "insufficient_desc": "Necesitas {cost} USDT para comprar esta suscripción Premium. Tu saldo actual es {balance} USDT.",
     "insufficient_topup_btn": "Recargar Billetera",
-    "insufficient_cancel_btn": "Quizás más tarde"
+    "insufficient_cancel_btn": "Quizás más tarde",
+    "processing": "PROCESANDO...",
+    "extend_subscription": "EXTENDER SUSCRIPCIÓN",
+    "xp_upgrade_alert": "Actualizar a Premium requiere 5,000 XP. Actualmente tienes {xp} XP.",
+    "xp_upgrade_confirm": "¿Actualizar a Premium gastando 5,000 XP? (Tienes {xp} XP)",
+    "upgrade_failed": "Actualización fallida",
+    "failed_xp_upgrade": "Error al actualizar con XP",
+    "subscription_failed": "Suscripción fallida"
   },
   "TierComparison": {
     "title": "Comparativa de funciones",
