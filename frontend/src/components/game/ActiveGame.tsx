@@ -630,6 +630,24 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     ? (gameState.white_player_id === userId ? gameState.white_elo_after : gameState.black_elo_after)
     : (userStats?.elo || 1000);
 
+  if (!gameState) {
+    return (
+      <LayoutWrapper className="justify-center items-center">
+        <div className="flex flex-col items-center justify-center min-h-[50dvh]">
+          <div className="relative w-20 h-20 flex items-center justify-center rounded-full border border-brand-border-opacity-10 bg-brand-surface mb-5 shadow-premium">
+            <div className="absolute inset-0 rounded-full border border-brand-primary/20 animate-ping opacity-40" />
+            <div className="absolute w-14 h-14 rounded-full bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center shadow-inner-glow">
+              <FaChessKnight className="text-xl text-brand-primary animate-bounce" />
+            </div>
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-primary opacity-40 animate-pulse">
+            {locale === 'ru' ? 'СИНХРОНИЗАЦИЯ АРЕНЫ...' : 'SYNCHRONIZING ARENA...'}
+          </span>
+        </div>
+      </LayoutWrapper>
+    );
+  }
+
   return (
     <LayoutWrapper className="pb-12">
       {/* Header / Nav */}
