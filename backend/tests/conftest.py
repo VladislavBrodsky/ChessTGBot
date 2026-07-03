@@ -28,11 +28,23 @@ class MockResult:
         self.data = data
     def scalars(self):
         return MockScalars(self.data)
+    def scalar_one(self):
+        """Return first element or 0 (for COUNT/SUM aggregates)."""
+        if not self.data:
+            return 0
+        val = self.data[0]
+        # If it's a model object, return it; if it's a scalar (int/float), return it
+        return val
+    def scalar_one_or_none(self):
+        if not self.data:
+            return None
+        return self.data[0]
 
 class MockAsyncSession:
     def __init__(self):
         self.users = {}
         self.transactions = []
+        self.broadcasts = []
 
     async def __aenter__(self):
         return self
@@ -62,7 +74,18 @@ class MockAsyncSession:
                     telegram_id = int(word)
                     break
 
-        if "transaction" in stmt_str.lower():
+        # COUNT / aggregate queries — return 0 or empty lists for admin stats
+        stmt_lower = stmt_str.lower()
+        if "count(" in stmt_lower or "sum(" in stmt_lower or "coalesce(" in stmt_lower:
+            return MockResult([0])
+
+        if "broadcast" in stmt_lower:
+            if telegram_id:
+                matched = [b for b in self.broadcasts if b.id == telegram_id]
+                return MockResult(matched)
+            return MockResult(list(self.broadcasts))
+
+        if "transaction" in stmt_lower:
             ref_id = None
             try:
                 params = statement.compile().params
@@ -79,16 +102,18 @@ class MockAsyncSession:
             if ref_id:
                 matched = [tx for tx in self.transactions if tx.reference_id == ref_id]
                 return MockResult(matched)
-            return MockResult(self.transactions)
+            return MockResult(list(self.transactions))
 
-        if "users" in stmt_str or "user" in stmt_str:
+        if "users" in stmt_lower or "user" in stmt_lower:
             if telegram_id and telegram_id in self.users:
                 return MockResult([self.users[telegram_id]])
-            return MockResult([])
+            # Return all users when no specific ID
+            return MockResult(list(self.users.values()))
 
         return MockResult([])
 
     def add(self, obj):
+        from app.models.broadcast import Broadcast
         if isinstance(obj, User):
             if obj.games_played is None: obj.games_played = 0
             if obj.wins is None: obj.wins = 0
@@ -99,6 +124,14 @@ class MockAsyncSession:
             if obj.level is None: obj.level = 1
             if obj.xp is None: obj.xp = 0
             self.users[obj.telegram_id] = obj
+        elif isinstance(obj, Broadcast):
+            # Assign a fake id if not set
+            if not obj.id:
+                obj.id = len(self.broadcasts) + 1
+            if not obj.created_at:
+                from datetime import datetime, timezone
+                obj.created_at = datetime.now(timezone.utc).replace(tzinfo=None)
+            self.broadcasts.append(obj)
         else:
             self.transactions.append(obj)
 
@@ -163,6 +196,7 @@ async def db_session(test_engine):
             "game_history",
             "transactions",
             "xp_transactions",
+            "broadcasts",
             "users"
         ]
         for table in tables:

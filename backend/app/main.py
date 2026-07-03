@@ -235,12 +235,13 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game, users, webhook, gamification, wallet
+    from app.api.v1.endpoints import game, users, webhook, gamification, wallet, admin
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
     application.include_router(webhook.router, prefix="/api/v1/webhook", tags=["webhook"])
     application.include_router(gamification.router, prefix="/api/v1/gamification", tags=["gamification"])
     application.include_router(wallet.router, prefix="/api/v1/wallet", tags=["wallet"])
+    application.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
 
     @application.post("/api/v1/client-log")
     async def client_log(request: Request):

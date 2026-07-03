@@ -39,6 +39,7 @@ async def init_db():
     from app.models.gamification import Task, UserTask, Referral, TaskType, SolvedPuzzle, UnlockedPuzzle
     from app.models.transaction import Transaction
     from app.models.xp_transaction import XpTransaction
+    from app.models.broadcast import Broadcast  # noqa: F401 — registers table with Base
     
     is_sqlite = engine.url.drivername.startswith("sqlite")
     if is_sqlite:
