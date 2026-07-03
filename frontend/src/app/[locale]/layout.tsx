@@ -51,7 +51,7 @@ export default async function LocaleLayout({
     return (
         <html lang={locale} suppressHydrationWarning>
             <head>
-                <script src="https://telegram.org/js/telegram-web-app.js" async />
+                <script src="https://telegram.org/js/telegram-web-app.js" />
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
