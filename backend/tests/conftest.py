@@ -15,6 +15,8 @@ TEST_DATABASE_URL = settings.DATABASE_URL + "_test"
 if TEST_DATABASE_URL.startswith("postgresql://"):
     TEST_DATABASE_URL = TEST_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+_current_mock_session = None
+
 class MockScalars:
     def __init__(self, data):
         self.data = data
@@ -71,64 +73,110 @@ class MockAsyncSession:
         
         # Inspect bound compile params first
         try:
-            params = statement.compile().params
+            from sqlalchemy.dialects import sqlite
+            params = statement.compile(dialect=sqlite.dialect()).params
             for k, v in params.items():
-                if "telegram_id" in k or "id" in k:
+                if "telegram_id" in k:
                     telegram_id = v
+                    break
+            if not telegram_id:
+                for k, v in params.items():
+                    if "id" in k:
+                        telegram_id = v
+                        break
         except Exception:
             pass
 
-        # Parse string query as fallback
+        # Parse string query as fallback (ignore small integers like 0-9 to avoid boolean/index confusion)
         if not telegram_id:
             for word in stmt_str.replace("=", " ").replace(":", " ").replace("(", " ").replace(")", " ").split():
                 if word.isdigit():
-                    telegram_id = int(word)
-                    break
+                    val = int(word)
+                    if val > 9:
+                        telegram_id = val
+                        break
 
         # COUNT / aggregate queries — return 0 or empty lists for admin stats
         stmt_lower = stmt_str.lower()
-        if "count(" in stmt_lower or "sum(" in stmt_lower or "coalesce(" in stmt_lower:
-            if "date" in stmt_lower:
-                from datetime import date
-                return MockResult([MockRow(date=date.today(), count=0, total_cents=0)])
-            return MockResult([0])
+        
+        def do_execute():
+            if "count(" in stmt_lower or "sum(" in stmt_lower or "coalesce(" in stmt_lower:
+                if "date" in stmt_lower:
+                    from datetime import date
+                    return MockResult([MockRow(date=date.today(), count=0, total_cents=0)])
+                return MockResult([0])
 
-        if "broadcast" in stmt_lower:
-            if telegram_id:
-                matched = [b for b in self.broadcasts if b.id == telegram_id]
-                return MockResult(matched)
-            return MockResult(list(self.broadcasts))
+            if "broadcast" in stmt_lower:
+                if telegram_id:
+                    matched = [b for b in self.broadcasts if b.id == telegram_id]
+                    return MockResult(matched)
+                return MockResult(list(self.broadcasts))
 
-        if "transaction" in stmt_lower:
-            ref_id = None
-            try:
-                params = statement.compile().params
-                for k, v in params.items():
-                    if "reference_id" in k or "ref" in k:
-                        ref_id = v
-            except Exception:
-                pass
-            if not ref_id:
-                for tx in self.transactions:
-                    if tx.reference_id and tx.reference_id in stmt_str:
-                        ref_id = tx.reference_id
-                        break
-            if ref_id:
-                matched = [tx for tx in self.transactions if tx.reference_id == ref_id]
-                return MockResult(matched)
-            return MockResult(list(self.transactions))
+            if "transaction" in stmt_lower:
+                ref_id = None
+                try:
+                    params = statement.compile().params
+                    for k, v in params.items():
+                        if "reference_id" in k or "ref" in k:
+                            ref_id = v
+                except Exception:
+                    pass
+                if not ref_id:
+                    for tx in self.transactions:
+                        if tx.reference_id and tx.reference_id in stmt_str:
+                            ref_id = tx.reference_id
+                            break
+                if ref_id:
+                    matched = [tx for tx in self.transactions if tx.reference_id == ref_id]
+                    return MockResult(matched)
+                return MockResult(list(self.transactions))
 
-        if "users" in stmt_lower or "user" in stmt_lower:
-            if telegram_id and telegram_id in self.users:
-                return MockResult([self.users[telegram_id]])
-            # Return all users when no specific ID
-            return MockResult(list(self.users.values()))
+            if "users" in stmt_lower or "user" in stmt_lower:
+                is_wallet_query = False
+                try:
+                    from sqlalchemy.dialects import sqlite
+                    params = statement.compile(dialect=sqlite.dialect()).params
+                    if any("wallet_address" in k for k in params.keys()):
+                        is_wallet_query = True
+                except Exception:
+                    if "where" in stmt_lower and "wallet_address" in stmt_lower.split("where", 1)[1]:
+                        is_wallet_query = True
 
-        return MockResult([])
+                if is_wallet_query:
+                    target_address = None
+                    exclude_user_id = None
+                    try:
+                        from sqlalchemy.dialects import sqlite
+                        params = statement.compile(dialect=sqlite.dialect()).params
+                        for k, v in params.items():
+                            if "wallet_address" in k:
+                                target_address = v
+                            elif "id" in k:
+                                exclude_user_id = v
+                    except Exception:
+                        pass
+                    matched = []
+                    for u in self.users.values():
+                        if u.wallet_address == target_address and target_address is not None:
+                            if exclude_user_id is not None and u.id == exclude_user_id:
+                                continue
+                            matched.append(u)
+                    return MockResult(matched)
+
+                if telegram_id and telegram_id in self.users:
+                    return MockResult([self.users[telegram_id]])
+                # Return all users when no specific ID
+                return MockResult(list(self.users.values()))
+
+            return MockResult([])
+
+        return do_execute()
 
     def add(self, obj):
         from app.models.broadcast import Broadcast
         if isinstance(obj, User):
+            if obj.id is None:
+                obj.id = len(self.users) + 1
             if obj.games_played is None: obj.games_played = 0
             if obj.wins is None: obj.wins = 0
             if obj.losses is None: obj.losses = 0
@@ -147,7 +195,13 @@ class MockAsyncSession:
                 obj.created_at = datetime.now(timezone.utc).replace(tzinfo=None)
             self.broadcasts.append(obj)
         else:
+            if not getattr(obj, "id", None):
+                obj.id = len(self.transactions) + 1
             self.transactions.append(obj)
+
+    def add_all(self, objs):
+        for obj in objs:
+            self.add(obj)
 
     async def commit(self):
         pass
@@ -188,9 +242,12 @@ async def test_engine():
 
 @pytest_asyncio.fixture
 async def db_session(test_engine):
+    global _current_mock_session
     if test_engine is None:
         mock_sess = MockAsyncSession()
+        _current_mock_session = mock_sess
         yield mock_sess
+        _current_mock_session = None
         return
 
     session_factory = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
@@ -239,6 +296,9 @@ def patch_database_sessions(test_engine):
     if test_engine is None:
         class MockSessionFactory:
             def __call__(self):
+                global _current_mock_session
+                if _current_mock_session is not None:
+                    return _current_mock_session
                 return MockAsyncSession()
         
         app.services.game_service.AsyncSessionLocal = MockSessionFactory()
