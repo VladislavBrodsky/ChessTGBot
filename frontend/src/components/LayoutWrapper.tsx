@@ -84,7 +84,11 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                     } else {
                         tg.BackButton.show();
                         const handleBackClick = () => {
-                            router.back();
+                            if (pathname.includes('/admin')) {
+                                router.push(`/${locale}/settings`);
+                            } else {
+                                router.back();
+                            }
                         };
                         tg.BackButton.onClick(handleBackClick);
                         return () => {
