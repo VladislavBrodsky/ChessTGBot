@@ -39,6 +39,7 @@ export default {
                 "brand-gradient": "radial-gradient(circle at 50% 0%, #111111 0%, #000000 100%)",
                 "glass-gradient": "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%)",
                 "silver-gradient": "linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%)",
+                "cyber-card": "var(--cyber-card-bg)",
             },
             boxShadow: {
                 "neon": "0 0 15px rgba(255, 255, 255, 0.05), 0 0 30px rgba(255, 255, 255, 0.02)",

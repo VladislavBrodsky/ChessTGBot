@@ -16,42 +16,51 @@ export default function CyberCard({ balance, walletAddress }: CyberCardProps) {
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full relative overflow-hidden rounded-2xl p-6 glass-panel border border-brand-border-opacity-20 bg-cyber-card shadow-2xl flex flex-col justify-between h-48"
+      className="w-full relative overflow-hidden rounded-3xl p-6 glass-panel border border-brand-border-opacity-10 bg-cyber-card shadow-premium flex flex-col justify-between h-48 select-none"
     >
-      {/* Matrix cyber grid overlay */}
-      <div className="absolute inset-0 bg-cyber-grid opacity-[0.03] pointer-events-none" />
+      {/* Ambient glowing blobs */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-8 -mt-8 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" />
       
       {/* Card Top */}
       <div className="flex justify-between items-start z-10">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest mb-0.5">{tw('connected_status')}</span>
+          <span className="text-[8px] font-black text-brand-primary opacity-45 uppercase tracking-[0.25em] mb-1.5">{tw('connected_status')}</span>
           <div className="flex items-center space-x-2">
-            <FaCoins className="text-brand-primary text-sm animate-pulse" />
-            <span className="text-xs font-bold text-brand-primary opacity-80 uppercase tracking-wider">{tw('usdt_balance')}</span>
+            <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/10">
+              <FaCoins className="text-emerald-500 dark:text-emerald-400 text-[10px]" />
+            </div>
+            <span className="text-[10px] font-black text-brand-primary opacity-90 uppercase tracking-widest">{tw('usdt_balance')}</span>
           </div>
         </div>
-        <div className="w-8 h-8 rounded-lg bg-brand-bg-opacity-10 flex items-center justify-center border border-brand-border-opacity-20">
-          <FaWallet className="text-brand-primary text-sm" />
+        
+        {/* Right Corner indicator (pulsing green dot if connected, red if not) */}
+        <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 shadow-sm shrink-0">
+          <FaWallet size={11} className="text-brand-primary opacity-60" />
+          <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${walletAddress ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'} animate-pulse`} />
         </div>
       </div>
 
       {/* Card Middle Balance */}
-      <div className="z-10 my-auto">
-        <h2 className="text-3xl font-black text-brand-primary tracking-tighter uppercase">
-          ${(balance / 100).toFixed(2)}
-        </h2>
+      <div className="z-10 my-auto flex flex-col justify-center">
+        <div className="flex items-baseline space-x-1.5">
+          <span className="text-[20px] font-extrabold text-brand-primary leading-none">$</span>
+          <h2 className="text-4xl font-black text-brand-primary tracking-tighter leading-none bg-clip-text">
+            {(balance / 100).toFixed(2)}
+          </h2>
+          <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">USDT</span>
+        </div>
       </div>
 
       {/* Card Bottom Linked Wallet */}
-      <div className="flex justify-between items-center z-10 pt-2 border-t border-brand-border-opacity-5">
+      <div className="flex justify-between items-center z-10 pt-3 border-t border-brand-border-opacity-5">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-          <span className="w-2 h-2 rounded-full bg-emerald-500 absolute" />
-          <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest">
+          <span className={`w-1.5 h-1.5 rounded-full ${walletAddress ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0`} />
+          <span className="text-[8.5px] font-black text-brand-primary opacity-60 uppercase tracking-widest font-mono">
             {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : tw('no_wallet')}
           </span>
         </div>
-        <span className="text-[9px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
+        <span className="text-[8px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
       </div>
     </motion.div>
   );

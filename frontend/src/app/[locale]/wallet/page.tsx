@@ -2,7 +2,7 @@
 
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { useTranslations, useLocale } from 'next-intl';
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { FaArrowUp, FaArrowDown, FaChevronLeft, FaWallet } from "react-icons/fa";
@@ -79,40 +79,55 @@ export default function WalletPage() {
         <CyberCard balance={balance} walletAddress={walletAddress} />
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
-        <div className="w-full grid grid-cols-3 gap-2">
-          <button 
+        <div className="w-full grid grid-cols-3 gap-2.5">
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('connect'); }}
-            className="py-3.5 rounded-2xl border transition-all text-[10px] font-black uppercase tracking-widest flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
-            style={{
-              borderColor: 'rgba(0,196,154,0.25)',
-              background: 'rgba(0,196,154,0.07)',
-              color: '#00C49A',
-            }}
+            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-cyan-500/30 transition-all duration-300 group"
           >
-            <FaWallet className="text-xs" style={{ color: '#00C49A' }} />
-            <span>{tw('link_ton')}</span>
-          </button>
-          <button 
+            <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <FaWallet className="text-xs" />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+          </motion.button>
+          
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('deposit'); }}
-            className="py-3.5 rounded-2xl border border-brand-border-opacity-20 bg-brand-primary hover:bg-brand-primary-hover transition-all text-[10px] font-black uppercase tracking-widest text-brand-void flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-md"
+            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-emerald-500/30 transition-all duration-300 group"
           >
-            <FaArrowDown className="text-xs" />
-            <span>{tw('deposit')}</span>
-          </button>
-          <button 
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <FaArrowDown className="text-xs" />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+          </motion.button>
+          
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('withdraw'); }}
-            className="py-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 transition-all text-[10px] font-black uppercase tracking-widest text-brand-primary flex flex-col items-center justify-center space-y-1.5 cursor-pointer shadow-sm"
+            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-rose-500/30 transition-all duration-300 group"
           >
-            <FaArrowUp className="text-xs text-brand-primary opacity-60" />
-            <span>{tw('withdraw')}</span>
-          </button>
+            <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <FaArrowUp className="text-xs" />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+          </motion.button>
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full p-3 rounded-xl border border-brand-border-opacity-5 bg-brand-surface flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider">
-          <span>{tw('deposit_fee')} <strong className="text-brand-primary">5%</strong></span>
-          <span>•</span>
-          <span>{tw('withdraw_fee')} <strong className="text-brand-primary">{tw('free')}</strong></span>
+        <div className="w-full py-2.5 px-4 rounded-xl border border-brand-border-opacity-5 bg-brand-surface/40 flex items-center justify-between text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest shadow-inner">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
+            {tw('deposit_fee')} <strong className="text-emerald-500 dark:text-emerald-400 font-black">5%</strong>
+          </span>
+          <span className="opacity-20">•</span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/40" />
+            {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">{tw('free')}</strong>
+          </span>
         </div>
 
         {/* TRANSACTION LEDGER SECTION */}
