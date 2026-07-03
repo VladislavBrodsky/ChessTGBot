@@ -81,7 +81,7 @@ function PuzzleContent() {
 
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href={`/${locale}/academy`} className="p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+          <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
             <FaArrowLeft />
           </Link>
           <div>

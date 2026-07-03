@@ -181,7 +181,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => router.push(`/${locale}/profile`)}
-          className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer bg-transparent border-0"
+          className="html-back-button text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer bg-transparent border-0"
         >
           <FaArrowLeft />
           <span>{tg('back')}</span>

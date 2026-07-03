@@ -68,7 +68,7 @@ export default function WalletPage() {
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">
-          <Link href={`/${locale}/home`} className="flex items-center text-brand-primary opacity-60 hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
+          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-primary opacity-60 hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
             <FaChevronLeft className="text-xs" />
             <span>{t('back')}</span>
           </Link>

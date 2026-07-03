@@ -89,14 +89,17 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
         if (shouldShow) {
             tg.BackButton.show();
+            document.documentElement.classList.add('tg-back-button-active');
             tg.onEvent('backButtonClicked', handleBackClick);
         } else {
             tg.BackButton.hide();
+            document.documentElement.classList.remove('tg-back-button-active');
         }
 
         return () => {
             try {
                 tg.offEvent('backButtonClicked', handleBackClick);
+                document.documentElement.classList.remove('tg-back-button-active');
             } catch (err) {
                 console.warn('Telegram BackButton offEvent failed', err);
             }

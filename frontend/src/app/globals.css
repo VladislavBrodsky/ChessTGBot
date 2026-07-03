@@ -984,5 +984,13 @@ body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
   opacity: 1.0; /* Full borders glow on hover */
 }
 
+/* 
+ * Hide duplicate HTML back buttons inside the page when the native 
+ * Telegram WebApp header Back Button is active and visible.
+ */
+.tg-back-button-active .html-back-button {
+  display: none !important;
+}
+
 
 

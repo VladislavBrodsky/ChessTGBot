@@ -158,7 +158,7 @@ export default function ChallengesPage() {
       <div className="w-full max-w-sm flex flex-col items-start px-4 mx-auto">
         {/* Header */}
         <div className="w-full flex justify-between items-center mb-8">
-          <Link href={`/${locale}/home`}>
+          <Link href={`/${locale}/home`} className="html-back-button">
             <motion.button
               whileHover={{ x: -2 }}
               className="text-brand-primary opacity-40 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
