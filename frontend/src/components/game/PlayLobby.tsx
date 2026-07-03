@@ -684,7 +684,7 @@ export default function PlayLobby() {
                     <FaRobot style={{ color: '#10b981', fontSize: 15 }} />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-white tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-emerald-600 dark:text-emerald-400 tracking-wide uppercase">
                       TRAIN
                     </span>
                     <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
@@ -692,7 +692,7 @@ export default function PlayLobby() {
                     </span>
                   </div>
                 </motion.button>
-
+ 
                 {/* Play with friend button */}
                 <motion.button
                   whileHover={!isCreating ? { scale: 1.03 } : {}}
@@ -717,7 +717,7 @@ export default function PlayLobby() {
                     <FaShareAlt style={{ color: '#a855f7', fontSize: 14 }} />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-white tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-purple-600 dark:text-purple-400 tracking-wide uppercase">
                       PLAY
                     </span>
                     <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">

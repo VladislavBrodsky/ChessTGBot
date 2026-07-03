@@ -136,17 +136,28 @@ export default function Home() {
       <div className="flex items-center justify-between mb-4 relative z-10">
       <div className="flex items-center space-x-3.5">
       <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
-      {(stats.photo_url || tgUser?.photo_url) ? (
-      <img 
-        src={getFullPhotoUrl(stats.photo_url || tgUser?.photo_url)} 
-        alt="Profile" 
-        className="w-full h-full rounded-lg object-cover"
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
-      />
-      ) : null}
-      <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${(stats.photo_url || tgUser?.photo_url) ? 'hidden' : ''}`}>
-      {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
-      </div>
+      {(() => {
+        const rawPhoto = stats.photo_url || tgUser?.photo_url;
+        const hasPhoto = rawPhoto && rawPhoto !== 'null' && rawPhoto !== 'undefined' && rawPhoto !== '';
+        return (
+          <>
+            {hasPhoto ? (
+              <img 
+                src={getFullPhotoUrl(rawPhoto)} 
+                alt="Profile" 
+                className="w-full h-full rounded-lg object-cover"
+                onError={(e) => { 
+                  (e.target as HTMLImageElement).style.display = 'none'; 
+                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); 
+                }}
+              />
+            ) : null}
+            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${hasPhoto ? 'hidden' : ''}`}>
+              {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
+            </div>
+          </>
+        );
+      })()}
       {stats.is_premium && (
       <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
       <FaStar />

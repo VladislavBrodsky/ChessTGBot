@@ -84,13 +84,13 @@ export default function SettingsPage() {
  <button
  onClick={handleThemeToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- theme === 'dark' ? 'bg-brand-primary justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ theme === 'dark' ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
  <motion.div
  layout
  transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className={`w-5 h-5 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-white'}`}
+ className="w-5 h-5 rounded-full bg-white shadow-sm"
  />
  </button>
  </div>
@@ -113,13 +113,13 @@ export default function SettingsPage() {
  <button
  onClick={handleSoundToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- soundEnabled ? 'bg-brand-primary justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ soundEnabled ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
  <motion.div
  layout
  transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className={`w-5 h-5 rounded-full ${soundEnabled ? 'bg-white' : 'bg-brand-primary opacity-45'}`}
+ className="w-5 h-5 rounded-full bg-white shadow-sm"
  />
  </button>
  </div>

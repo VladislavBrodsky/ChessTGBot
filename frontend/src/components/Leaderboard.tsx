@@ -18,6 +18,7 @@ interface LeaderboardItem {
 export default function Leaderboard() {
  const t = useTranslations('Index');
  const [players, setPlayers] = useState<LeaderboardItem[]>([]);
+ const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [loading, setLoading] = useState(true);
 
  useEffect(() => {
@@ -91,16 +92,21 @@ export default function Leaderboard() {
  <div className="w-6 flex justify-center">
  {getRankIcon(item.rank)}
  </div>
- <div className="relative">
- {item.photo_url ? (
- <img src={getFullPhotoUrl(item.photo_url)} alt="" className="w-8 h-8 rounded-full border border-brand-border-opacity-10" />
- ) : (
- <FaUserCircle className="w-8 h-8 text-brand-primary opacity-20" />
- )}
- {item.rank <= 3 && (
- <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
- )}
- </div>
+  <div className="relative">
+  {item.photo_url && !brokenAvatars[item.telegram_id] ? (
+  <img 
+    src={getFullPhotoUrl(item.photo_url)} 
+    alt="" 
+    onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
+    className="w-8 h-8 rounded-full border border-brand-border-opacity-10 object-cover" 
+  />
+  ) : (
+  <FaUserCircle className="w-8 h-8 text-brand-primary opacity-20" />
+  )}
+  {item.rank <= 3 && (
+  <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
+  )}
+  </div>
  <div className="flex flex-col">
  <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[120px]">
  {item.first_name} {item.last_name}

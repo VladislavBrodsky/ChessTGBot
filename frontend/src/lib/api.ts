@@ -46,7 +46,7 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
 };
 
 export const getFullPhotoUrl = (url?: string | null): string | undefined => {
-  if (!url) return undefined;
+  if (!url || url === 'null' || url === 'undefined' || url === 'None' || url === '') return undefined;
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }

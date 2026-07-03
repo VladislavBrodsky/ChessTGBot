@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaChessPawn } from 'react-icons/fa';
 import { telegramHaptic } from "@/lib/telegram";
+import { motion } from 'framer-motion';
 
 interface TimeControlSelectorProps {
   timeControl: number;
@@ -27,7 +28,12 @@ export default function TimeControlSelector({
         </span>
       </div>
 
-      <div className="relative fade-edges w-full">
+      <motion.div
+        initial={{ x: 0 }}
+        animate={{ x: [0, -30, 20, -10, 0] }}
+        transition={{ delay: 0.7, duration: 0.9, ease: "easeInOut" }}
+        className="relative fade-edges w-full"
+      >
         <div
           ref={timeScrollRef}
           className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
@@ -69,7 +75,7 @@ export default function TimeControlSelector({
             );
           })}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

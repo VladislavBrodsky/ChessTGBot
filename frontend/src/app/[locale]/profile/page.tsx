@@ -34,6 +34,7 @@ export default function ProfilePage() {
 
  const [tgUser, setTgUser] = useState<any>(null);
  const [stats, setStats] = useState<any>(null);
+ const [photoError, setPhotoError] = useState(false);
 
  useEffect(() => {
  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -81,8 +82,13 @@ export default function ProfilePage() {
  {/* Outer rotating/pulsing ring */}
  <div className="absolute inset-0 rounded-full border border-brand-primary opacity-10 animate-pulse scale-105" />
  <div className="w-24 h-24 rounded-full bg-brand-surface border border-brand-border-opacity-20 flex items-center justify-center relative overflow-hidden shadow-premium">
- {(stats?.photo_url || tgUser?.photo_url) ? (
- <img src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} alt="Profile" className="w-full h-full object-cover" />
+ {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
+ <img 
+   src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} 
+   alt="Profile" 
+   className="w-full h-full object-cover" 
+   onError={() => setPhotoError(true)}
+ />
  ) : (
  <FaChessKing className="text-4xl text-brand-primary opacity-40" />
  )}

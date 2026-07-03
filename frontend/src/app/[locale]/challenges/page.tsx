@@ -178,25 +178,20 @@ export default function ChallengesPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           whileHover={{ scale: 1.01 }}
-          className="w-full relative overflow-hidden rounded-3xl mb-8"
-          style={{
-            background: 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb, 255,255,255),0.06) 0%, rgba(var(--color-brand-primary-rgb, 255,255,255),0.02) 100%)',
-            boxShadow: '0 0 40px rgba(var(--color-brand-primary-rgb, 255,255,255),0.05), inset 0 1px 0 rgba(var(--color-brand-primary-rgb, 255,255,255),0.08)',
-            border: '1px solid rgba(var(--color-brand-primary-rgb, 255,255,255),0.08)',
-          }}
+          className="w-full relative overflow-hidden rounded-3xl mb-8 border border-brand-border-opacity-10 bg-brand-surface/40 dark:bg-brand-surface/20 shadow-premium"
         >
           {/* Animated background orbs */}
           <motion.div
             animate={{ x: [0, 20, 0], y: [0, -15, 0], opacity: [0.15, 0.25, 0.15] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-brand-primary blur-3xl pointer-events-none"
+            className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-amber-500 blur-3xl pointer-events-none"
           />
           <motion.div
             animate={{ x: [0, -15, 0], y: [0, 20, 0], opacity: [0.08, 0.18, 0.08] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            className="absolute -bottom-10 -left-8 w-32 h-32 rounded-full bg-brand-primary blur-3xl pointer-events-none"
+            className="absolute -bottom-10 -left-8 w-32 h-32 rounded-full bg-amber-500 blur-3xl pointer-events-none"
           />
-
+ 
           <div className="relative z-10 p-6 flex flex-col items-center text-center">
             {/* Level Badge with pulsing ring */}
             <div className="relative mb-5">
@@ -204,35 +199,24 @@ export default function ChallengesPage() {
               <motion.div
                 animate={{ scale: [1, 1.12, 1], opacity: [0.2, 0.05, 0.2] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-2xl bg-brand-primary pointer-events-none"
+                className="absolute inset-0 rounded-2xl bg-amber-500 pointer-events-none"
                 style={{ filter: 'blur(8px)' }}
               />
               {/* Badge outer ring */}
               <div
-                className="relative w-24 h-24 rounded-2xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(var(--color-brand-primary-rgb,255,255,255),0.15), rgba(var(--color-brand-primary-rgb,255,255,255),0.04))',
-                  border: '1px solid rgba(var(--color-brand-primary-rgb,255,255,255),0.2)',
-                  boxShadow: '0 8px 32px rgba(var(--color-brand-primary-rgb,255,255,255),0.12)',
-                }}
+                className="relative w-24 h-24 rounded-2xl flex items-center justify-center bg-brand-surface border border-brand-border-opacity-20 shadow-premium"
               >
                 {/* Inner badge */}
                 <div
-                  className="w-18 h-18 rounded-xl flex flex-col items-center justify-center"
-                  style={{
-                    background: 'var(--color-brand-void, #000)',
-                    border: '1px solid rgba(var(--color-brand-primary-rgb,255,255,255),0.12)',
-                    width: 64, height: 64,
-                  }}
+                  className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
                 >
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-50" style={{ color: 'var(--color-brand-primary,#fff)' }}>LEVEL</span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-50 text-brand-primary">LEVEL</span>
                   <motion.span
                     key={userLevel}
                     initial={{ scale: 0.6, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    className="text-3xl font-black leading-none"
-                    style={{ color: 'var(--color-brand-primary,#fff)' }}
+                    className="text-3xl font-black leading-none text-brand-primary"
                   >
                     {userLevel}
                   </motion.span>
@@ -244,37 +228,29 @@ export default function ChallengesPage() {
                   key={i}
                   animate={{ scale: [0,1,0], opacity: [0,1,0] }}
                   transition={{ duration: 2, repeat: Infinity, delay: pos.delay, ease: 'easeInOut' }}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-brand-primary"
+                  className="absolute w-1.5 h-1.5 rounded-full bg-amber-400"
                   style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
                 />
               ))}
             </div>
-
-            <h1 className="text-xl font-black tracking-tighter uppercase mb-1" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+ 
+            <h1 className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
               {t('grandmaster_rising')}
             </h1>
-            <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-6 opacity-40" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+            <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-6 opacity-40 text-brand-primary">
               {t('next_level', { xp: nextLevelXp })}
             </p>
-
+ 
             {/* XP Bar — premium with shimmer */}
             <div className="w-full max-w-[260px] mb-3">
               <div
-                className="relative h-3.5 rounded-full overflow-hidden"
-                style={{
-                  background: 'rgba(var(--color-brand-primary-rgb,255,255,255),0.06)',
-                  border: '1px solid rgba(var(--color-brand-primary-rgb,255,255,255),0.1)',
-                }}
+                className="relative h-3.5 rounded-full overflow-hidden bg-brand-void/50 border border-brand-border-opacity-10"
               >
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}
                   transition={{ duration: 1.8, ease: "circOut", delay: 0.3 }}
-                  className="absolute top-0 left-0 h-full rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, rgba(var(--color-brand-primary-rgb,255,255,255),0.6), var(--color-brand-primary,#fff))',
-                    boxShadow: '0 0 12px rgba(var(--color-brand-primary-rgb,255,255,255),0.5)',
-                  }}
+                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
                 />
                 {/* Shimmer sweep */}
                 <motion.div
@@ -285,23 +261,18 @@ export default function ChallengesPage() {
                 />
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-50" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-brand-primary">
                   {userXp} XP
                 </span>
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 text-brand-primary">
                   {nextLevelXp} XP
                 </span>
               </div>
             </div>
-
+ 
             {/* XP percentage pill */}
             <div
-              className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest"
-              style={{
-                background: 'rgba(var(--color-brand-primary-rgb,255,255,255),0.08)',
-                color: 'var(--color-brand-primary,#fff)',
-                border: '1px solid rgba(var(--color-brand-primary-rgb,255,255,255),0.12)',
-              }}
+              className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10"
             >
               {Math.round(progressPercentage)}% to next level
             </div>
@@ -316,26 +287,15 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,80,80,0.12) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
-              border: '1px solid rgba(255,80,80,0.2)',
-              boxShadow: '0 4px 24px rgba(255,80,80,0.08)',
-            }}
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-red-500/20 bg-gradient-to-br from-red-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(239,68,68,0.06)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
-              style={{ background: 'rgba(255,80,80,0.8)' }}
+              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500/80"
             />
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,80,80,0.3), rgba(255,80,80,0.1))',
-                border: '1px solid rgba(255,80,80,0.3)',
-                boxShadow: '0 0 16px rgba(255,80,80,0.2)',
-              }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-500/20 to-red-500/5 border border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
             >
               <FaFire style={{ color: 'rgba(255,120,80,1)', fontSize: 16 }} />
             </div>
@@ -345,43 +305,31 @@ export default function ChallengesPage() {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                className="text-xl font-black leading-none"
-                style={{ color: 'var(--color-brand-primary,#fff)' }}
+                className="text-xl font-black leading-none text-brand-primary"
               >
                 {stats?.games_played ?? 0}
               </motion.span>
-              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
                 {t('battles')}
               </span>
             </div>
           </motion.div>
-
+ 
           {/* ELO stat */}
           <motion.div
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,200,50,0.1) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
-              border: '1px solid rgba(255,200,50,0.2)',
-              boxShadow: '0 4px 24px rgba(255,200,50,0.06)',
-            }}
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(245,158,11,0.05)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
-              style={{ background: 'rgba(255,200,50,0.8)' }}
+              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-500/80"
             />
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,200,50,0.25), rgba(255,200,50,0.08))',
-                border: '1px solid rgba(255,200,50,0.3)',
-                boxShadow: '0 0 16px rgba(255,200,50,0.15)',
-              }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
             >
               <FaTrophy style={{ color: 'rgba(255,210,60,1)', fontSize: 15 }} />
             </div>
@@ -391,12 +339,11 @@ export default function ChallengesPage() {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                className="text-xl font-black leading-none"
-                style={{ color: 'var(--color-brand-primary,#fff)' }}
+                className="text-xl font-black leading-none text-brand-primary"
               >
                 {stats?.elo ?? 1000}
               </motion.span>
-              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50" style={{ color: 'var(--color-brand-primary,#fff)' }}>
+              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
                 {t('elo_rating')}
               </span>
             </div>
