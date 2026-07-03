@@ -88,14 +88,20 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                                 router.push(`/${locale}/settings`);
                             } else {
                                 router.back();
+                                // Fallback just in case history is empty
+                                setTimeout(() => {
+                                    if (window.location.pathname === pathname) {
+                                        router.push(`/${locale}/home`);
+                                    }
+                                }, 100);
                             }
                         };
-                        tg.BackButton.onClick(handleBackClick);
+                        tg.onEvent('backButtonClicked', handleBackClick);
                         return () => {
                             try {
-                                tg.BackButton.offClick(handleBackClick);
+                                tg.offEvent('backButtonClicked', handleBackClick);
                             } catch (err) {
-                                console.warn('Telegram BackButton offClick failed', err);
+                                console.warn('Telegram BackButton offEvent failed', err);
                             }
                         };
                     }
