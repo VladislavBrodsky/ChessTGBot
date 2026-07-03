@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";

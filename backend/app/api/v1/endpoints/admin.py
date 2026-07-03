@@ -65,6 +65,19 @@ async def get_stats(
     user counts, engagement, financials, referral tree summary, and
     14-day daily signup / revenue charts.
     """
+    from app.services.session_manager import SessionManager
+    import json
+
+    session_mgr = SessionManager()
+    cache_key = "admin:dashboard:stats"
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            cached_stats = await session_mgr.redis.get(cache_key)
+            if cached_stats:
+                return json.loads(cached_stats)
+        except Exception as e:
+            logger.warning(f"Failed to fetch admin stats from Redis: {e}")
+
     now = _now_utc()
     ago_24h = now - timedelta(hours=24)
     ago_7d  = now - timedelta(days=7)
@@ -82,25 +95,24 @@ async def get_stats(
 
     # ── Activity (users who played a game or made a transaction in window) ──
     async def _active_users(since: datetime) -> int:
-        # users with a game
-        q_games = (
-            select(func.count(func.distinct(GameHistory.white_player_id)))
+        q_union = (
+            select(GameHistory.white_player_id.label("player_id"))
             .where(
                 GameHistory.game_type == "online",
                 GameHistory.created_at >= since,
             )
-        )
-        r1 = await db.execute(q_games)
-        black_q = (
-            select(func.count(func.distinct(GameHistory.black_player_id)))
-            .where(
-                GameHistory.game_type == "online",
-                GameHistory.created_at >= since,
+            .union(
+                select(GameHistory.black_player_id.label("player_id"))
+                .where(
+                    GameHistory.game_type == "online",
+                    GameHistory.created_at >= since,
+                )
             )
         )
-        r2 = await db.execute(black_q)
-        # rough union via sum (may double-count users who played as both)
-        return max(r1.scalar_one() or 0, r2.scalar_one() or 0)
+        subq = q_union.subquery()
+        q_count = select(func.count(subq.c.player_id))
+        r = await db.execute(q_count)
+        return r.scalar_one() or 0
 
     active_24h = await _active_users(ago_24h)
     active_7d  = await _active_users(ago_7d)
@@ -158,39 +170,55 @@ async def get_stats(
     )
     level_1 = level_1_res.scalar_one() or 0
 
-    # ── Daily signup chart (last 14 days) ────────────────────────────────────
-    # We don't store registration date in User — use first transaction or game.
-    # Fallback: count users by id range as proxy, or just use game created_at.
-    # Best available: count GameHistory entries per day as a proxy for engagement.
+    # ── Optimized Daily signup / revenue chart (last 14 days) ──────────────────
+    # Daily signups (proxy: game activity)
+    games_stmt = (
+        select(
+            func.date(GameHistory.created_at).label("date"),
+            func.count(GameHistory.id).label("count")
+        )
+        .where(
+            GameHistory.game_type == "online",
+            GameHistory.created_at >= ago_14d
+        )
+        .group_by(func.date(GameHistory.created_at))
+    )
+    games_res = await db.execute(games_stmt)
+    
+    # Daily revenue
+    rev_stmt = (
+        select(
+            func.date(Transaction.created_at).label("date"),
+            func.coalesce(func.sum(Transaction.fee), 0).label("total_cents")
+        )
+        .where(
+            Transaction.status == "completed",
+            Transaction.created_at >= ago_14d
+        )
+        .group_by(func.date(Transaction.created_at))
+    )
+    rev_res = await db.execute(rev_stmt)
+
+    def _to_str_key(d):
+        if hasattr(d, "strftime"):
+            return d.strftime("%Y-%m-%d")
+        return str(d)
+
+    games_by_date = {_to_str_key(row.date): row.count for row in games_res}
+    rev_by_date = {_to_str_key(row.date): row.total_cents for row in rev_res}
+
     daily_signups: list[dict] = []
     daily_revenue: list[dict] = []
     for i in range(13, -1, -1):
-        day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
-        day_end   = day_start + timedelta(days=1)
-        day_label = day_start.strftime("%Y-%m-%d")
-
-        games_res = await db.execute(
-            select(func.count(GameHistory.id)).where(
-                GameHistory.game_type == "online",
-                GameHistory.created_at >= day_start,
-                GameHistory.created_at < day_end,
-            )
-        )
-        daily_signups.append({"date": day_label, "count": games_res.scalar_one() or 0})
-
-        rev_res = await db.execute(
-            select(func.coalesce(func.sum(Transaction.fee), 0)).where(
-                Transaction.created_at >= day_start,
-                Transaction.created_at < day_end,
-                Transaction.status == "completed",
-            )
-        )
-        daily_revenue.append({"date": day_label, "total_cents": rev_res.scalar_one() or 0})
+        day_date = (now - timedelta(days=i)).date()
+        day_label = day_date.strftime("%Y-%m-%d")
+        daily_signups.append({"date": day_label, "count": games_by_date.get(day_label, 0)})
+        daily_revenue.append({"date": day_label, "total_cents": rev_by_date.get(day_label, 0)})
 
     conversion_rate = round((premium_users / total_users * 100), 1) if total_users else 0.0
     engagement_rate = round((active_24h / total_users * 100), 1) if total_users else 0.0
 
-    return {
+    stats_payload = {
         "total_users": total_users,
         "premium_users": premium_users,
         "premium_conversion_rate": conversion_rate,
@@ -210,6 +238,15 @@ async def get_stats(
         "daily_activity": daily_signups,
         "daily_revenue": daily_revenue,
     }
+
+    # Save cache (5 min TTL)
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            await session_mgr.redis.set(cache_key, json.dumps(stats_payload), ex=300)
+        except Exception as e:
+            logger.warning(f"Failed to save admin stats to Redis: {e}")
+
+    return stats_payload
 
 
 # ---------------------------------------------------------------------------

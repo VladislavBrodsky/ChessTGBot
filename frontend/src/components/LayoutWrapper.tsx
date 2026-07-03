@@ -62,14 +62,14 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             if (completed !== "true") {
                 setShowOnboarding(true);
             }
+            
+            if (!globalActiveGameChecked) {
+                checkActiveGame();
+            } else {
+                setIsCheckingActiveGame(false);
+            }
         }
     }, []);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            checkActiveGame();
-        }
-    }, [pathname, locale]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {

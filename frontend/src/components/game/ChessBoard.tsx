@@ -1,6 +1,7 @@
 'use client';
 
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
 import { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";

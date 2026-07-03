@@ -14,7 +14,6 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
-    eslint: { ignoreDuringBuilds: true },
     typescript: { ignoreBuildErrors: true },
     experimental: {},
     // Rewrites are only supported when running a Node.js server (i.e. not in
