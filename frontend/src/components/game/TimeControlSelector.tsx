@@ -18,13 +18,10 @@ export default function TimeControlSelector({
 }: TimeControlSelectorProps) {
   return (
     <div className="px-4 pt-3 pb-4">
-      <div className="flex justify-between items-center mb-2.5">
+      <div className="flex justify-center items-center mb-2.5">
         <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
           <FaChessPawn className="opacity-60" size={8} />
           {tg('time_control')}
-        </span>
-        <span className="text-[9px] font-black text-brand-primary opacity-60">
-          {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
         </span>
       </div>
 

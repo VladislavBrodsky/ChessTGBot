@@ -26,13 +26,10 @@ export default function WagerSelector({
 }: WagerSelectorProps) {
   return (
     <div className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-5">
-      <div className="flex justify-between items-center mb-2.5">
+      <div className="flex justify-center items-center mb-2.5">
         <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
           <FaCoins className="opacity-60" size={8} />
           {tg('select_wager')}
-        </span>
-        <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide bg-emerald-500/5 border border-emerald-500/10 px-1.5 py-0.5 rounded-full">
-          {tg('commission')}
         </span>
       </div>
 
