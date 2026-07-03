@@ -252,7 +252,7 @@ function AccessDenied() {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="glass-panel p-8 text-center max-w-sm w-full"
+        className="premium-neon-card p-8 text-center max-w-sm w-full"
       >
         <div className="text-6xl mb-4">🚫</div>
         <h1 className="text-2xl font-black mb-2 text-rose-500 shadow-neon">Access Denied</h1>
@@ -291,10 +291,10 @@ function DashboardTab({ stats }: { stats: Stats }) {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="glass-panel p-5">
+        <div className="premium-neon-card p-5">
           <BarChart data={stats.daily_activity} valueKey="count" label="Daily Activity" color="#8b5cf6" />
         </div>
-        <div className="glass-panel p-5">
+        <div className="premium-neon-card p-5">
           <BarChart data={stats.daily_revenue} valueKey="total_cents" label="Daily Revenue (¢)" color="#22c55e" />
         </div>
       </div>
@@ -467,7 +467,7 @@ function UsersTab() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="glass-panel p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto relative"
+              className="premium-neon-card p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto relative"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -497,9 +497,9 @@ function UsersTab() {
                   ['Wallet', selectedUser.wallet_address ? `${selectedUser.wallet_address.slice(0, 10)}…` : 'None'],
                   ['Referral Code', selectedUser.referral_code || '—'],
                 ].map(([k, v]) => (
-                  <div key={k as string} className="bg-white/5 border border-white/10 rounded-xl p-3">
-                    <p className="text-[10px] text-brand-muted uppercase tracking-[0.08em] mb-1">{k}</p>
-                    <p className="text-xs font-bold truncate" title={v as string}>{v}</p>
+                  <div key={k as string} className="bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/20 rounded-xl p-3 hover:border-purple-500/40 hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all">
+                    <p className="text-[10px] text-purple-400 opacity-80 uppercase tracking-[0.08em] mb-1 font-bold">{k}</p>
+                    <p className="text-xs font-black truncate text-white" title={v as string}>{v}</p>
                   </div>
                 ))}
               </div>
