@@ -33,6 +33,31 @@ interface GameHistoryDetails {
   ended_at: string;
 }
 
+function getChangedSquares(fen1: string, fen2: string): string[] {
+  try {
+    const c1 = new Chess(fen1);
+    const c2 = new Chess(fen2);
+    const changed: string[] = [];
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    for (const file of files) {
+      for (const rank of ranks) {
+        const square = `${file}${rank}`;
+        const p1 = c1.get(square as any);
+        const p2 = c2.get(square as any);
+        if (JSON.stringify(p1) !== JSON.stringify(p2)) {
+          changed.push(square);
+        }
+      }
+    }
+    return changed;
+  } catch (e) {
+    console.error("Error comparing FENs", e);
+    return [];
+  }
+}
+
 interface GameReviewClientProps {
   gameId: string;
 }
@@ -237,7 +262,24 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                   boardStyle: {
                     borderRadius: "12px",
                     overflow: "hidden",
-                  }
+                  },
+                  squareStyles: (() => {
+                    if (currentStep > 0) {
+                      const prevFen = fens[currentStep - 1];
+                      const currentFen = fens[currentStep];
+                      const changed = getChangedSquares(prevFen, currentFen);
+                      if (changed.length >= 2 && changed.length <= 4) {
+                        const styles: { [square: string]: any } = {};
+                        for (const sq of changed) {
+                          styles[sq] = {
+                            backgroundColor: "rgba(245, 158, 11, 0.18)"
+                          };
+                        }
+                        return styles;
+                      }
+                    }
+                    return {};
+                  })()
                 }}
               />
             </div>

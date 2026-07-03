@@ -8,6 +8,31 @@ import { Chess } from "chess.js";
 import { motion } from "framer-motion";
 import { telegramHaptic } from "@/lib/telegram";
 
+function getChangedSquares(fen1: string, fen2: string): string[] {
+    try {
+        const c1 = new Chess(fen1);
+        const c2 = new Chess(fen2);
+        const changed: string[] = [];
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+        for (const file of files) {
+            for (const rank of ranks) {
+                const square = `${file}${rank}`;
+                const p1 = c1.get(square as any);
+                const p2 = c2.get(square as any);
+                if (JSON.stringify(p1) !== JSON.stringify(p2)) {
+                    changed.push(square);
+                }
+            }
+        }
+        return changed;
+    } catch (e) {
+        console.error("Error comparing FENs", e);
+        return [];
+    }
+}
+
 interface ChessBoardProps {
     fen: string;
     onMove: (move: { from: string; to: string; promotion?: string }) => boolean;
@@ -19,6 +44,25 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+    const [prevFen, setPrevFen] = useState<string | null>(null);
+    const [lastMoveSquares, setLastMoveSquares] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (fen) {
+            const currentFen = fen === "start" ? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" : fen;
+            if (prevFen && prevFen !== currentFen) {
+                const changed = getChangedSquares(prevFen, currentFen);
+                if (changed.length >= 2 && changed.length <= 4) {
+                    setLastMoveSquares(changed);
+                } else {
+                    setLastMoveSquares([]);
+                }
+            } else if (!prevFen) {
+                setLastMoveSquares([]);
+            }
+            setPrevFen(currentFen);
+        }
+    }, [fen]);
 
     const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const gameForTurn = new Chess(fen === "start" ? START_FEN : fen);
@@ -246,12 +290,21 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                             },
                             animationDurationInMs: 250,
                             onSquareClick: handleSquareClick,
-                            squareStyles: selectedSquare ? {
-                                [selectedSquare]: {
-                                    backgroundColor: "rgba(255, 215, 0, 0.3)",
-                                    boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.6)"
+                            squareStyles: (() => {
+                                const styles: { [square: string]: any } = {};
+                                for (const sq of lastMoveSquares) {
+                                    styles[sq] = {
+                                        backgroundColor: "rgba(245, 158, 11, 0.18)"
+                                    };
                                 }
-                            } : {}
+                                if (selectedSquare) {
+                                    styles[selectedSquare] = {
+                                        backgroundColor: "rgba(255, 215, 0, 0.3)",
+                                        boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.6)"
+                                    };
+                                }
+                                return styles;
+                            })()
                         }}
                     />
                 </div>
