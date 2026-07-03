@@ -14,13 +14,16 @@ interface LayoutWrapperProps {
     children: React.ReactNode;
     className?: string;
 }
+let globalActiveGameChecked = false;
+let globalActiveGameId: string | null = null;
 
 export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
     const locale = useLocale();
     const pathname = usePathname();
     const router = useRouter();
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
-    const [activeGameId, setActiveGameId] = useState<string | null>(null);
+    const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
+    const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
 
     // Use context-driven navbar hide state (reliable, no DOM polling)
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
@@ -33,6 +36,8 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 const data = await res.json();
                 const activeId = data.active_game_id || null;
                 setActiveGameId(activeId);
+                globalActiveGameId = activeId;
+                globalActiveGameChecked = true;
                 
                 if (activeId) {
                     const searchParams = new URLSearchParams(window.location.search);
@@ -46,6 +51,8 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             }
         } catch (err) {
             console.error("Failed to check active game", err);
+        } finally {
+            setIsCheckingActiveGame(false);
         }
     };
 
@@ -97,6 +104,8 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
     const { theme, toggleTheme } = useTheme();
 
+    const isCorePage = pathname.endsWith('/game') || pathname.endsWith('/home') || pathname === '/' || pathname === `/${locale}`;
+
     return (
         <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
             {/* Ambient Starfield */}
@@ -110,11 +119,19 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
             {/* Content Container */}
             <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] ${className}`}>
-
-                {children}
+                {isCorePage && isCheckingActiveGame ? (
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                        <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.25em] mt-3.5 opacity-40 animate-pulse text-brand-primary">
+                            INITIALIZING ARENA...
+                        </span>
+                    </div>
+                ) : (
+                    children
+                )}
             </main>
 
-            <Navbar hide={isNavbarHiddenByContext || showOnboarding || !!activeGameId} />
+            <Navbar hide={isNavbarHiddenByContext || showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame)} />
 
             <AnimatePresence>
                 {showOnboarding && (
