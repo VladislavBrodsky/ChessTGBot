@@ -344,7 +344,7 @@ function UsersTab() {
           onChange={e => setSearchInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1); } }}
           placeholder="Search by name, username or Telegram ID…"
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-brand-primary text-sm outline-none focus:border-purple-500 transition-colors"
+          className="flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all"
         />
         <button
           onClick={() => { setSearch(searchInput); setPage(1); }}
@@ -367,7 +367,7 @@ function UsersTab() {
       </p>
 
       {/* Table */}
-      <div className="glass-panel overflow-x-auto">
+      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -560,7 +560,7 @@ function TransactionsTab() {
 
   const TX_TYPES = ['', 'deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
 
-  const selectClass = "bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-brand-primary text-xs outline-none focus:border-purple-500 transition-colors cursor-pointer";
+          className="flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all"
 
   return (
     <div>
@@ -589,7 +589,7 @@ function TransactionsTab() {
       </div>
 
       {/* Table */}
-      <div className="glass-panel overflow-x-auto">
+      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -1024,12 +1024,6 @@ export default function AdminPage() {
           </motion.div>
           
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
-            {/* Level/Rank Badge Concept */}
-            <div className="mb-4 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)] relative">
-              <div className="absolute inset-0 rounded-2xl border border-white/5 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-muted mb-0.5">Lvl</span>
-              <span className="text-xl font-black text-white leading-none">A</span>
-            </div>
             
             <h1 className="text-3xl font-black text-white tracking-wide mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
               ADMIN COMMAND
