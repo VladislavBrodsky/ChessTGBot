@@ -60,11 +60,20 @@ export default function LobbyDepositDrawer({
   const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
-  const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
   const [manualTxHash, setManualTxHash] = useState<string>("");
+  const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
+  const [canClose, setCanClose] = useState<boolean>(false);
 
   const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sync depositAmount on load if chosenWager > walletBalance
   useEffect(() => {
@@ -307,7 +316,7 @@ export default function LobbyDepositDrawer({
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
-        onClick={() => { if (!isDepositing) onClose(); }}
+        onClick={() => { if (!isDepositing && canClose) onClose(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
       <motion.div 
