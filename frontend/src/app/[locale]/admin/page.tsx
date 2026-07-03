@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { 
+  FaUsers, FaStar, FaBolt, FaCalendarWeek, FaCalendarDays, 
+  FaChessKnight, FaArrowDown, FaArrowUp, FaChartLine, FaLink,
+  FaChartPie, FaCreditCard, FaChess, FaBullhorn
+} from 'react-icons/fa6';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -182,7 +187,7 @@ function KpiCard({
   value: string | number;
   sub?: string;
   color?: string;
-  icon: string;
+  icon: ReactNode;
 }) {
   return (
     <motion.div
@@ -220,13 +225,13 @@ function KpiCard({
 
       {/* Content */}
       <div className="flex flex-col min-w-0">
-        <p className="text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
+        <p className="text-xl sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
           {value}
         </p>
-        <p className="text-[9px] text-brand-primary opacity-60 uppercase tracking-[0.2em] font-black">
+        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-[0.2em] font-black leading-tight">
           {label}
         </p>
-        {sub && <p className="text-[10px] text-brand-muted mt-1 truncate">{sub}</p>}
+        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 truncate">{sub}</p>}
       </div>
     </motion.div>
   );
@@ -269,19 +274,19 @@ function AccessDenied() {
 
 function DashboardTab({ stats }: { stats: Stats }) {
   return (
-    <div>
+    <div className="w-full">
       {/* KPI Grid */}
-      <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
-        <KpiCard label="Total Users" value={fmt(stats.total_users)} icon="👥" color="#8b5cf6" />
-        <KpiCard label="Premium" value={fmt(stats.premium_users)} sub={pct(stats.premium_conversion_rate) + ' conversion'} icon="⭐" color="#f59e0b" />
-        <KpiCard label="Active 24h" value={fmt(stats.active_24h)} sub={pct(stats.engagement_rate_24h) + ' engagement'} icon="⚡" color="#22c55e" />
-        <KpiCard label="Active 7d" value={fmt(stats.active_7d)} icon="📆" color="#3b82f6" />
-        <KpiCard label="Active 30d" value={fmt(stats.active_30d)} icon="📅" color="#14b8a6" />
-        <KpiCard label="Total Games" value={fmt(stats.total_games)} sub={`${fmt(stats.games_today)} today`} icon="♟️" color="#ec4899" />
-        <KpiCard label="Deposits" value={cents(stats.total_deposits_cents)} icon="💰" color="#22c55e" />
-        <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon="💸" color="#f97316" />
-        <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon="📈" color="#8b5cf6" />
-        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon="🔗" color="#a855f7" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8 w-full">
+        <KpiCard label="Total Users" value={fmt(stats.total_users)} icon={<FaUsers />} color="#8b5cf6" />
+        <KpiCard label="Premium" value={fmt(stats.premium_users)} sub={pct(stats.premium_conversion_rate) + ' conversion'} icon={<FaStar />} color="#f59e0b" />
+        <KpiCard label="Active 24h" value={fmt(stats.active_24h)} sub={pct(stats.engagement_rate_24h) + ' engagement'} icon={<FaBolt />} color="#22c55e" />
+        <KpiCard label="Active 7d" value={fmt(stats.active_7d)} icon={<FaCalendarWeek />} color="#3b82f6" />
+        <KpiCard label="Active 30d" value={fmt(stats.active_30d)} icon={<FaCalendarDays />} color="#14b8a6" />
+        <KpiCard label="Total Games" value={fmt(stats.total_games)} sub={`${fmt(stats.games_today)} today`} icon={<FaChessKnight />} color="#ec4899" />
+        <KpiCard label="Deposits" value={cents(stats.total_deposits_cents)} icon={<FaArrowDown />} color="#22c55e" />
+        <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon={<FaArrowUp />} color="#f97316" />
+        <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon={<FaChartLine />} color="#8b5cf6" />
+        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} color="#a855f7" />
       </div>
 
       {/* Charts */}
@@ -1035,20 +1040,23 @@ export default function AdminPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-2xl mx-auto">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-none px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
-                activeTab === tab 
-                  ? 'bg-white/10 border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
-                  : 'text-brand-muted hover:text-white border border-transparent hover:border-white/5 hover:bg-white/5'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="flex gap-2 justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-3xl mx-auto px-4">
+          {TABS.map(tab => {
+            const Icon = tab === 'Dashboard' ? FaChartPie : tab === 'Users' ? FaUsers : tab === 'Transactions' ? FaCreditCard : tab === 'Games' ? FaChess : FaBullhorn;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-none px-5 md:px-6 py-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                  activeTab === tab 
+                    ? 'bg-white/10 border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
+                    : 'text-brand-muted hover:text-white border border-transparent hover:border-white/5 hover:bg-white/5'
+                }`}
+              >
+                <Icon className="text-sm opacity-80" /> {tab}
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
