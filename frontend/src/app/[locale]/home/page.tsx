@@ -146,6 +146,7 @@ export default function Home() {
                 src={getFullPhotoUrl(rawPhoto)} 
                 alt="Profile" 
                 className="w-full h-full rounded-lg object-cover"
+                fetchPriority="high"
                 onError={(e) => { 
                   (e.target as HTMLImageElement).style.display = 'none'; 
                   (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); 

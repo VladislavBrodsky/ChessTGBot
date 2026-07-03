@@ -9,8 +9,10 @@ import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
 
-const inter = { variable: "--font-geist-sans" };
-const robotoMono = { variable: "--font-geist-mono" };
+import { Inter, Roboto_Mono } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-geist-sans' });
+const robotoMono = Roboto_Mono({ subsets: ['latin'], variable: '--font-geist-mono' });
 
 export const metadata: Metadata = {
     title: "Chess Game",

@@ -666,22 +666,12 @@ export default function PlayLobby() {
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={playVsComputer}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
-                    border: '1px solid rgba(16,185,129,0.25)',
-                    boxShadow: '0 4px 24px rgba(16,185,129,0.08)',
-                  }}
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/10 border border-emerald-500/25 shadow-[0_4px_24px_rgba(16,185,129,0.08)] hover:bg-emerald-500/15 transition-all"
                 >
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.1))',
-                      border: '1px solid rgba(16,185,129,0.3)',
-                      boxShadow: '0 0 12px rgba(16,185,129,0.2)',
-                    }}
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]"
                   >
-                    <FaRobot style={{ color: '#10b981', fontSize: 15 }} />
+                    <FaRobot className="text-emerald-500 text-[15px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-black leading-none text-emerald-600 dark:text-emerald-400 tracking-wide uppercase">
@@ -699,22 +689,12 @@ export default function PlayLobby() {
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={playVsFriend}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(var(--color-brand-primary-rgb,255,255,255),0.03) 100%)',
-                    border: '1px solid rgba(168,85,247,0.25)',
-                    boxShadow: '0 4px 24px rgba(168,85,247,0.08)',
-                  }}
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/10 border border-purple-500/25 shadow-[0_4px_24px_rgba(168,85,247,0.08)] hover:bg-purple-500/15 transition-all"
                 >
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(168,85,247,0.3), rgba(168,85,247,0.1))',
-                      border: '1px solid rgba(168,85,247,0.3)',
-                      boxShadow: '0 0 12px rgba(168,85,247,0.2)',
-                    }}
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-purple-500/30 to-purple-500/10 border border-purple-500/30 shadow-[0_0_12px_rgba(168,85,247,0.2)]"
                   >
-                    <FaShareAlt style={{ color: '#a855f7', fontSize: 14 }} />
+                    <FaShareAlt className="text-purple-500 text-[14px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-black leading-none text-purple-600 dark:text-purple-400 tracking-wide uppercase">
