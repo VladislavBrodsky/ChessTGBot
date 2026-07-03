@@ -21,6 +21,14 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const locale = useLocale();
     const pathname = usePathname();
     const router = useRouter();
+
+    // Safely extract game ID from window URL on client without useSearchParams deopt
+    let urlGameId: string | null = null;
+    if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        urlGameId = params.get('id');
+    }
+
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
     const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
@@ -40,9 +48,6 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 globalActiveGameChecked = true;
                 
                 if (activeId) {
-                    const searchParams = new URLSearchParams(window.location.search);
-                    const urlGameId = searchParams.get('id');
-                    
                     const isGamePage = pathname === `/${locale}/game` || pathname === '/game';
                     if (!isGamePage || urlGameId !== activeId) {
                         router.replace(`/${locale}/game?id=${activeId}`);
@@ -62,14 +67,14 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             if (completed !== "true") {
                 setShowOnboarding(true);
             }
-            
-            if (!globalActiveGameChecked) {
-                checkActiveGame();
-            } else {
-                setIsCheckingActiveGame(false);
-            }
         }
     }, []);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            checkActiveGame();
+        }
+    }, [pathname, locale, urlGameId]);
 
     useEffect(() => {
         if (typeof window === 'undefined' || !window.Telegram?.WebApp) return;
@@ -77,11 +82,14 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         if (!tg.BackButton) return;
 
         const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
-        const shouldShow = !isHomePage && !activeGameId;
+        const hasActiveGame = !!activeGameId || !!urlGameId;
+        const shouldShow = !isHomePage && !hasActiveGame;
 
         const handleBackClick = () => {
             if (pathname.includes('/admin')) {
                 window.location.href = `/${locale}/settings`;
+            } else if (pathname.includes('/game')) {
+                router.push(`/${locale}/home`);
             } else {
                 router.back();
             }
@@ -104,7 +112,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 console.warn('Telegram BackButton offEvent failed', err);
             }
         };
-    }, [pathname, locale, router, activeGameId]);
+    }, [pathname, locale, router, activeGameId, urlGameId]);
 
     const { theme, toggleTheme } = useTheme();
 

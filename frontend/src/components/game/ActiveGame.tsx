@@ -131,6 +131,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const [userId, setUserId] = useState<number | null>(null);
   const [userStats, setUserStats] = useState<any>(null);
+  const [isTelegram, setIsTelegram] = useState<boolean>(false);
 
   const [showRematchChoice, setShowRematchChoice] = useState<boolean>(false);
   const [rematchStatus, setRematchStatus] = useState<'idle' | 'offered_by_me' | 'waiting'>('idle');
@@ -173,7 +174,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     };
   }, [gameId]);
 
-  // Initialize Telegram User ID on mount
+  // Initialize Telegram User ID and environment check on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
@@ -181,6 +182,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       } else if (process.env.NODE_ENV === 'development') {
         setUserId(123456789);
       }
+      setIsTelegram(typeof window !== 'undefined' && !!window.Telegram?.WebApp?.initData);
     }
   }, []);
 
@@ -633,15 +635,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       {/* Header / Nav */}
       <div className="w-full max-w-sm flex justify-between items-center mb-6 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
-          {!isGameOver ? (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleResign}
-              className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer bg-transparent border-0 p-2 -ml-2"
-            >
-              <FaArrowLeft size={16} />
-            </motion.button>
-          ) : (
+          {isGameOver && !isTelegram && (
             <Link href={`/${locale}/home`}>
               <motion.button
                 whileTap={{ scale: 0.95 }}
