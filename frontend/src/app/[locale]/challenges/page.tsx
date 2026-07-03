@@ -369,12 +369,12 @@ export default function ChallengesPage() {
                   </div>
                 ))}
               </div>
-            ) : tasks.length === 0 ? (
+            ) : tasks.filter(t => !t.claimed).length === 0 ? (
               <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
                 {t('no_active_missions')}
               </div>
             ) : (
-              tasks.map((task) => (
+              tasks.filter(t => !t.claimed).map((task) => (
                 <motion.div
                   key={task.id}
                   whileHover={{ scale: 1.01 }}
