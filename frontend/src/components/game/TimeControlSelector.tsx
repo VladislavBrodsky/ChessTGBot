@@ -28,15 +28,13 @@ export default function TimeControlSelector({
         </span>
       </div>
 
-      <motion.div
-        initial={{ x: 0 }}
-        animate={{ x: [0, -30, 20, -10, 0] }}
-        transition={{ delay: 0.7, duration: 0.9, ease: "easeInOut" }}
-        className="relative fade-edges w-full"
-      >
-        <div
+      <div className="relative fade-edges w-full">
+        <motion.div
           ref={timeScrollRef}
           className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
+          initial={{ x: 0 }}
+          animate={{ x: [0, -14, 12, -7, 4, 0] }}
+          transition={{ delay: 0.7, duration: 0.85, ease: "easeInOut" }}
         >
           {[
             { label: "1m", val: 60 },
@@ -74,8 +72,8 @@ export default function TimeControlSelector({
               </button>
             );
           })}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

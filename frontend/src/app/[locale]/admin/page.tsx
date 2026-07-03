@@ -37,6 +37,7 @@ interface UserSummary {
   games_played: number;
   wins: number;
   losses: number;
+  draws: number;
   balance_cents: number;
   is_premium: boolean;
   premium_tier: string | null;

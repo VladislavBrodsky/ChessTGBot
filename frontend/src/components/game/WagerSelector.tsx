@@ -36,15 +36,13 @@ export default function WagerSelector({
         </span>
       </div>
 
-      <motion.div
-        initial={{ x: 0 }}
-        animate={{ x: [0, -30, 20, -10, 0] }}
-        transition={{ delay: 0.5, duration: 0.9, ease: "easeInOut" }}
-        className="relative fade-edges w-full"
-      >
-        <div
+      <div className="relative fade-edges w-full">
+        <motion.div
           ref={wagerScrollRef}
           className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
+          initial={{ x: 0 }}
+          animate={{ x: [0, -14, 12, -7, 4, 0] }}
+          transition={{ delay: 0.5, duration: 0.85, ease: "easeInOut" }}
         >
           {[
             { label: "FREE", val: 0 },
@@ -109,8 +107,8 @@ export default function WagerSelector({
               <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />
             )}
           </button>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {isCustomWager && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-2">
