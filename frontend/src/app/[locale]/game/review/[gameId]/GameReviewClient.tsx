@@ -272,7 +272,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                         const styles: { [square: string]: any } = {};
                         for (const sq of changed) {
                           styles[sq] = {
-                            backgroundColor: "rgba(245, 158, 11, 0.18)"
+                            backgroundColor: "rgba(255, 255, 51, 0.45)"
                           };
                         }
                         return styles;

@@ -294,13 +294,13 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 const styles: { [square: string]: any } = {};
                                 for (const sq of lastMoveSquares) {
                                     styles[sq] = {
-                                        backgroundColor: "rgba(245, 158, 11, 0.18)"
+                                        backgroundColor: "rgba(255, 255, 51, 0.45)"
                                     };
                                 }
                                 if (selectedSquare) {
                                     styles[selectedSquare] = {
-                                        backgroundColor: "rgba(255, 215, 0, 0.3)",
-                                        boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.6)"
+                                        backgroundColor: "rgba(255, 215, 0, 0.4)",
+                                        boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.7)"
                                     };
                                 }
                                 return styles;
