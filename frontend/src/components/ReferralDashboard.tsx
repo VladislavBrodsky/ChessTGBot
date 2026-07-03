@@ -202,7 +202,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   return (
     <div className="w-full space-y-3">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex items-center justify-center gap-2 mb-1">
         <FaChartLine className="text-brand-primary opacity-60 text-sm" />
         <h3 className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] opacity-70">
           {t('dashboard_title')}

@@ -352,7 +352,7 @@ export default function ChallengesPage() {
 
         {/* Tasks Section */}
         <div className="w-full mb-8">
-          <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] pl-1 mb-4">{t('daily_operations')}</h3>
+          <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
           <div className="space-y-3 w-full">
             {loading ? (
               <div className="w-full flex flex-col space-y-3">
