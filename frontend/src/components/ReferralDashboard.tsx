@@ -203,9 +203,10 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
     },
     {
       id: 'earnings' as const,
-      label: 'EARNED',
+      label: 'TOTAL USDT',
       icon: <FaDollarSign />,
-      value: loading ? '—' : `$${totalEarnings.toFixed(2)}`,
+      value: loading ? '—' : `${totalEarnings.toFixed(2)}`,
+
       colorClass: 'text-emerald-500 dark:text-emerald-400',
       borderClass: 'border-emerald-500/20 dark:border-emerald-500/30',
       bgClass: 'bg-gradient-to-br from-emerald-500/10 to-brand-surface/30',
@@ -216,16 +217,16 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
   return (
     <div className="w-full space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-center gap-2 mb-1">
-        <FaChartLine className="text-brand-primary opacity-60 text-sm" />
-        <h3 className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] opacity-70">
+      {/* Header - Pill format */}
+      <div className="flex justify-center mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10">
+          <FaChartLine className="text-[10px] opacity-60" />
           {t('dashboard_title')}
-        </h3>
+        </div>
       </div>
 
-      {/* 2x2 metric blocks - synced with Battles / ELO style */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* 2x2 metric blocks - synced with Wallet style */}
+      <div className="grid grid-cols-2 gap-2">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -234,36 +235,22 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border transition-all duration-300 cursor-pointer text-left w-full
+              className={`glass-panel p-3.5 rounded-2xl border flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm transition-all duration-300 group
                 ${isActive 
-                  ? `${tab.borderClass} ${tab.bgClass} shadow-sm` 
-                  : 'border-brand-border-opacity-10 bg-brand-surface shadow-none'
+                  ? `${tab.borderClass} ${tab.bgClass}` 
+                  : 'border-brand-border-opacity-10 bg-brand-surface hover:border-brand-primary/20'
                 }`}
             >
-              {/* Indicator dot */}
-              <motion.div
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
-                className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full ${isActive ? tab.orbClass : 'bg-brand-primary/20'}`}
-              />
-
-              {/* Icon Container */}
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
-                  isActive 
-                    ? `bg-gradient-to-br ${tab.iconBoxClass}` 
-                    : 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-40'
-                }`}
-              >
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all group-hover:scale-110
+                ${isActive ? `bg-gradient-to-br ${tab.iconBoxClass}` : 'bg-brand-primary/5 text-brand-primary opacity-60'}
+              `}>
                 {tab.icon}
               </div>
-
-              {/* Value / Label */}
-              <div className="flex flex-col min-w-0">
-                <span className={`text-base font-black leading-none ${isActive ? 'text-brand-primary' : 'text-brand-primary'}`}>
+              <div className="flex flex-col items-center min-w-0">
+                <span className={`text-[12px] font-black leading-none uppercase tracking-wider ${isActive ? tab.colorClass : 'text-brand-primary opacity-80'}`}>
                   {tab.value}
                 </span>
-                <span className={`text-[8px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
+                <span className={`text-[7px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-40'}`}>
                   {tab.label}
                 </span>
               </div>
