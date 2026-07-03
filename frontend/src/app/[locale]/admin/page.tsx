@@ -713,7 +713,7 @@ function GamesTab() {
       <p className="text-[11px] text-brand-muted mb-3">
         {total > 0 ? `${fmt(total)} online games total` : 'No games yet'}
       </p>
-      <div className="glass-panel overflow-x-auto">
+      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -856,7 +856,7 @@ function BroadcastsTab() {
   return (
     <div>
       {/* Composer */}
-      <div className="glass-panel p-6 mb-6">
+      <div className="premium-neon-card p-6 mb-6">
         <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-purple-400">
           📢 New Broadcast
         </h3>
@@ -934,7 +934,7 @@ function BroadcastsTab() {
           key={b.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-5 mb-3"
+          className="premium-neon-card p-5 mb-3"
         >
           <div className="flex justify-between items-start mb-2">
             <div>
