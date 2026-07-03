@@ -224,14 +224,14 @@ function KpiCard({
       </div>
 
       {/* Content */}
-      <div className="flex flex-col min-w-0">
+      <div className="flex flex-col min-w-0 flex-1">
         <p className="text-xl sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
           {value}
         </p>
-        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-[0.2em] font-black leading-tight">
+        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-widest sm:tracking-[0.2em] font-black leading-tight break-words">
           {label}
         </p>
-        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 truncate">{sub}</p>}
+        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
       </div>
     </motion.div>
   );

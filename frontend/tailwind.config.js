@@ -7,6 +7,10 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['var(--font-geist-sans)', 'sans-serif'],
+                mono: ['var(--font-geist-mono)', 'monospace'],
+            },
             colors: {
                 brand: {
                     void: "var(--color-brand-void)",
