@@ -11,6 +11,7 @@ import {
   FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
   FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate
 } from 'react-icons/fa6';
+import LayoutWrapper from '@/components/LayoutWrapper';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1215,6 +1216,7 @@ export default function AdminPage() {
   if (accessDenied) return <AccessDenied />;
 
   return (
+    <LayoutWrapper className="justify-start pt-6 pb-32">
     <div className="relative min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]"
       style={{
         backgroundColor: '#050505',
@@ -1294,5 +1296,6 @@ export default function AdminPage() {
         </AnimatePresence>
       </div>
     </div>
+    </LayoutWrapper>
   );
 }
