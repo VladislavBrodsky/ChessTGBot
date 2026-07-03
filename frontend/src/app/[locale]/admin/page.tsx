@@ -1019,14 +1019,7 @@ export default function AdminPage() {
 
         {/* Header & Back Button */}
         <div className="mb-10 flex flex-col items-center text-center">
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="absolute top-6 left-4">
-            <button 
-              onClick={() => router.back()}
-              className="text-brand-muted hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-1 opacity-70"
-            >
-              <span className="text-sm leading-none mt-[-1px]">←</span> BACK
-            </button>
-          </motion.div>
+
           
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
             
