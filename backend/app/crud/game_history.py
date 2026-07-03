@@ -26,6 +26,7 @@ async def create_game_history(
     platform_rake: int = 0,
     payout_amount: int = 0,
     moves_json: Optional[str] = None,
+    difficulty: Optional[str] = None,
     commit: bool = True
 ) -> GameHistory:
     """Create a new game history record."""
@@ -48,7 +49,8 @@ async def create_game_history(
         bid_amount=bid_amount,
         platform_rake=platform_rake,
         payout_amount=payout_amount,
-        moves_json=moves_json
+        moves_json=moves_json,
+        difficulty=difficulty
     )
     db.add(db_game)
     if commit:

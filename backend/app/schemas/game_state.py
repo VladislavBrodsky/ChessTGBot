@@ -24,6 +24,7 @@ class GameState(BaseModel):
     last_move_at: Optional[float] = None
     move_history: List[str] = []
     result_type: Optional[str] = None
+    difficulty: Optional[str] = "medium"
 
     # Cached Player info (to avoid db calls on moves/fetches)
     white_username: Optional[str] = None

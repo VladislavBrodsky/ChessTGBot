@@ -141,9 +141,9 @@ class GameEngine:
                     break
             return min_eval, best_move
 
-    def get_best_move(self) -> str:
-        """Finds the best move using a 3-level deep minimax search with alpha-beta pruning."""
-        _, best_move = self.minimax(3, -float('inf'), float('inf'), self.board.turn == chess.WHITE)
+    def get_best_move(self, depth: int = 3) -> str:
+        """Finds the best move using a minimax search with alpha-beta pruning at the specified depth."""
+        _, best_move = self.minimax(depth, -float('inf'), float('inf'), self.board.turn == chess.WHITE)
         if best_move:
             return best_move.uci()
         

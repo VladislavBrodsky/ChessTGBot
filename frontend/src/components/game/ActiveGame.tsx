@@ -360,7 +360,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     setRematchStatus('waiting');
     try {
       const timeControl = gameState?.time_control_seconds || 600;
-      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}`, {
+      const difficulty = gameState?.difficulty || "medium";
+      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}&difficulty=${difficulty}`, {
         method: "POST"
       });
       if (!res.ok) throw new Error("Backend error");

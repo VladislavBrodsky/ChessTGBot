@@ -24,6 +24,7 @@ async def create_game(
     type: str = "online",
     time_control: int = 600,
     wager: int = 0,
+    difficulty: Optional[str] = "medium",
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -62,7 +63,7 @@ async def create_game(
         await db.commit()
     
     # Initialize Game in Redis
-    await service.create_game(game_id, is_bot_game=is_bot_game, time_control_seconds=time_control, bid_amount=wager)
+    await service.create_game(game_id, is_bot_game=is_bot_game, time_control_seconds=time_control, bid_amount=wager, difficulty=difficulty)
     
     # Generate Telegram Invite Link
     if is_bot_game:
@@ -96,6 +97,7 @@ class GameHistoryDetails(BaseModel):
     moves: List[str]
     game_type: str
     ended_at: str
+    difficulty: Optional[str] = None
 
 from typing import List, Optional
 
@@ -153,7 +155,8 @@ async def get_game_history(game_id: str, db: AsyncSession = Depends(get_db)):
         final_fen=history.final_fen,
         moves=moves_list,
         game_type=history.game_type,
-        ended_at=history.ended_at.isoformat()
+        ended_at=history.ended_at.isoformat(),
+        difficulty=history.difficulty
     )
 
 

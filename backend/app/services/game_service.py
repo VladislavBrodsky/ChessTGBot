@@ -25,13 +25,21 @@ from app.core.socket import sio
 
 _process_pool = None
 
-def compute_best_bot_move(fen: str) -> Optional[str]:
+def compute_best_bot_move(fen: str, difficulty: str = "medium") -> Optional[str]:
     import chess
+    import random
     from app.services.game_engine import GameEngine
     board = chess.Board(fen)
     engine = GameEngine()
     engine.board = board
-    return engine.get_best_move()
+    
+    if difficulty == "easy" and random.random() < 0.25:
+        legal_moves = list(board.legal_moves)
+        if legal_moves:
+            return random.choice(legal_moves).uci()
+            
+    depth = 2 if difficulty == "easy" else (4 if difficulty == "hard" else 3)
+    return engine.get_best_move(depth=depth)
 
 def get_concise_game_id(game_id: str) -> str:
     if game_id and game_id.startswith("match_"):
@@ -121,12 +129,22 @@ class GameService:
     def __init__(self):
         self.session_manager = SessionManager()
 
-    async def create_game(self, game_id: str, is_bot_game: bool = False, time_control_seconds: int = 600, bid_amount: int = 0) -> GameState:
+    async def create_game(self, game_id: str, is_bot_game: bool = False, time_control_seconds: int = 600, bid_amount: int = 0, difficulty: str = "medium") -> GameState:
         """Initialize a new game and save to Redis."""
         engine = GameEngine() # Starts with new board
         state = engine.get_state()
+        state.difficulty = difficulty
         if is_bot_game:
             state.black_player_id = -1 # Special ID for bot
+            if difficulty == "easy":
+                state.black_username = "AI Engine (Easy)"
+                state.black_elo = 800
+            elif difficulty == "hard":
+                state.black_username = "AI Engine (Hard)"
+                state.black_elo = 1600
+            else:
+                state.black_username = "AI Engine (Medium)"
+                state.black_elo = 1200
         state.time_control_seconds = time_control_seconds
         state.white_time_left = float(time_control_seconds)
         state.black_time_left = float(time_control_seconds)
@@ -269,8 +287,16 @@ class GameService:
         
         # If it's a bot game, assign bot details
         if state.black_player_id == -1 and not state.black_username:
-            state.black_username = "AI Engine"
-            state.black_elo = 1200
+            diff = getattr(state, "difficulty", "medium") or "medium"
+            if diff == "easy":
+                state.black_username = "AI Engine (Easy)"
+                state.black_elo = 800
+            elif diff == "hard":
+                state.black_username = "AI Engine (Hard)"
+                state.black_elo = 1600
+            else:
+                state.black_username = "AI Engine (Medium)"
+                state.black_elo = 1200
             changed = True
         
         if changed:
@@ -370,6 +396,7 @@ class GameService:
             new_state.time_control_seconds = current_state.time_control_seconds
             new_state.move_history = current_state.move_history + [uci]
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+            new_state.difficulty = current_state.difficulty
             
             # Preserve cached player info (names and ELOs)
             new_state.white_username = current_state.white_username
@@ -409,16 +436,23 @@ class GameService:
         if not current_state or current_state.is_game_over:
             return None
 
+        difficulty = getattr(current_state, "difficulty", "medium") or "medium"
         board = chess.Board(current_state.fen)
-        engine = GameEngine()
-        engine.board = board
 
         global _process_pool
         if _process_pool is not None:
             loop = asyncio.get_running_loop()
-            bot_move_uci = await loop.run_in_executor(_process_pool, compute_best_bot_move, current_state.fen)
+            bot_move_uci = await loop.run_in_executor(_process_pool, compute_best_bot_move, current_state.fen, difficulty)
         else:
-            bot_move_uci = await asyncio.to_thread(engine.get_best_move)
+            import random
+            if difficulty == "easy" and random.random() < 0.25:
+                legal_moves = list(board.legal_moves)
+                bot_move_uci = random.choice(legal_moves).uci() if legal_moves else None
+            else:
+                depth = 2 if difficulty == "easy" else (4 if difficulty == "hard" else 3)
+                engine = GameEngine()
+                engine.board = board
+                bot_move_uci = await asyncio.to_thread(engine.get_best_move, depth)
 
         if bot_move_uci and engine.make_move(bot_move_uci):
             new_state = engine.get_state()
@@ -427,6 +461,7 @@ class GameService:
             new_state.time_control_seconds = current_state.time_control_seconds
             new_state.move_history = current_state.move_history + [bot_move_uci]
             new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+            new_state.difficulty = current_state.difficulty
             
             # Preserve cached player info (names and ELOs)
             new_state.white_username = current_state.white_username
@@ -776,6 +811,7 @@ class GameService:
                         platform_rake=0,
                         payout_amount=0,
                         moves_json=moves_json,
+                        difficulty=getattr(state, "difficulty", "medium"),
                         commit=False
                     )
                     # Log AI game transaction in ledger

@@ -16,6 +16,7 @@ import TimeControlSelector from './TimeControlSelector';
 
 import LobbyDepositDrawer from './LobbyDepositDrawer';
 import RakeInfoDrawer from './RakeInfoDrawer';
+import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { useUser } from '@/context/UserContext';
 import { useNavbarHide } from '@/context/NavbarContext';
 
@@ -45,6 +46,7 @@ export default function PlayLobby() {
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
+  const [showAiDifficultyDrawer, setShowAiDifficultyDrawer] = useState<boolean>(false);
 
   // Refs for scroll container alignment
   const wagerScrollRef = useRef<HTMLDivElement>(null);
@@ -376,16 +378,23 @@ export default function PlayLobby() {
     submittingRef.current = false;
   };
 
-  const playVsComputer = async () => {
+  const triggerPlayVsComputer = () => {
+    if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
+    telegramHaptic('light');
+    setShowAiDifficultyDrawer(true);
+  };
+
+  const executePlayVsComputer = async (difficulty: string) => {
     if (isCreating || submittingRef.current) return;
     submittingRef.current = true;
     setIsCreating(true);
     try {
-      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}`, {
+      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}&difficulty=${difficulty}`, {
         method: "POST"
       });
       if (!res.ok) throw new Error("Backend error");
       const data = await res.json();
+      setShowAiDifficultyDrawer(false);
       router.push(`/${locale}/game?id=${data.game_id}`);
     } catch (e) {
       console.error("Failed to create computer game", e);
@@ -664,7 +673,7 @@ export default function PlayLobby() {
                 <motion.button
                   whileHover={!isCreating ? { scale: 1.03 } : {}}
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
-                  onClick={playVsComputer}
+                  onClick={triggerPlayVsComputer}
                   disabled={isCreating}
                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/10 border border-emerald-500/25 shadow-[0_4px_24px_rgba(16,185,129,0.08)] hover:bg-emerald-500/15 transition-all"
                 >
@@ -821,6 +830,18 @@ export default function PlayLobby() {
         <AnimatePresence>
           {showRakeInfo && (
             <RakeInfoDrawer onClose={() => setShowRakeInfo(false)} />
+          )}
+        </AnimatePresence>
+
+        {/* AI Difficulty Selector Drawer */}
+        <AnimatePresence>
+          {showAiDifficultyDrawer && (
+            <AiDifficultyDrawer
+              locale={locale}
+              onClose={() => setShowAiDifficultyDrawer(false)}
+              onSelect={executePlayVsComputer}
+              isCreating={isCreating}
+            />
           )}
         </AnimatePresence>
 
