@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from "react";
+
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
@@ -15,6 +17,15 @@ export default function RematchChoiceDrawer({
   onSendRematchOffer,
 }: RematchChoiceDrawerProps) {
   const tg = useTranslations('Game');
+  const [canClose, setCanClose] = useState<boolean>(false);
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="bottom-drawer-backdrop z-[110]">
@@ -22,7 +33,7 @@ export default function RematchChoiceDrawer({
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
-        onClick={onClose}
+        onClick={() => { if (canClose) onClose(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style={{ touchAction: 'none' }}
       />
       <motion.div 

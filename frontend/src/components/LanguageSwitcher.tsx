@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { FaGlobe, FaCheck, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
@@ -14,6 +14,19 @@ export default function LanguageSwitcher() {
     const pathname = usePathname();
     const [isPending, startTransition] = useTransition();
     const [isOpen, setIsOpen] = useState(false);
+    const [canClose, setCanClose] = useState(false);
+
+    // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+    useEffect(() => {
+        if (isOpen) {
+            const timer = setTimeout(() => {
+                setCanClose(true);
+            }, 250);
+            return () => clearTimeout(timer);
+        } else {
+            setCanClose(false);
+        }
+    }, [isOpen]);
 
     const languages = [
         { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -86,7 +99,7 @@ export default function LanguageSwitcher() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => { if (canClose) setIsOpen(false); }}
                             className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
                         />
 

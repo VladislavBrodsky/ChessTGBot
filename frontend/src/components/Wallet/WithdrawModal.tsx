@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
@@ -27,6 +27,15 @@ export default function WithdrawModal({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [checked1, setChecked1] = useState<boolean>(false);
   const [checked2, setChecked2] = useState<boolean>(false);
+  const [canClose, setCanClose] = useState<boolean>(false);
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Withdrawal Submission
   const handleWithdrawSubmit = async () => {
@@ -89,7 +98,7 @@ export default function WithdrawModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={() => { if (!processing) onClose(); }}
+        onClick={() => { if (!processing && canClose) onClose(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
 

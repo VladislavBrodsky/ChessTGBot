@@ -65,6 +65,15 @@ export default function WalletSelectorModal({
   const wallet = useTonWallet();
   const [connecting, setConnecting] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [canClose, setCanClose] = useState(false);
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   // When wallet connects — sync with backend and close
   useEffect(() => {
@@ -126,7 +135,7 @@ export default function WalletSelectorModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={() => { if (canClose) onClose(); }}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         style={{ touchAction: "none" }}
       />

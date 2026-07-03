@@ -55,10 +55,19 @@ export default function DepositModal({
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
   const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
-  const [manualTxHash, setManualTxHash] = useState<string>("");
+  const [manualTxHash, setManualTxHash] = useState<string>(" ");
+  const [canClose, setCanClose] = useState<boolean>(false);
 
   const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Load prices and master wallet address on mount
   useEffect(() => {
@@ -280,11 +289,11 @@ export default function DepositModal({
 
   return (
     <div className="bottom-drawer-backdrop z-[100]">
-      <motion.div
+       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={() => { if (!processing) onClose(); }}
+        onClick={() => { if (!processing && canClose) onClose(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
 

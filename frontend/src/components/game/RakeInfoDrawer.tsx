@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from "react";
+
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
@@ -9,6 +11,15 @@ interface RakeInfoDrawerProps {
 
 export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
   const tg = useTranslations('Game');
+  const [canClose, setCanClose] = useState<boolean>(false);
+
+  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanClose(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="bottom-drawer-backdrop z-[100]">
@@ -16,7 +27,7 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
-        onClick={onClose}
+        onClick={() => { if (canClose) onClose(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
       <motion.div 
