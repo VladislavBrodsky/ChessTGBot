@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaShieldAlt } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -18,7 +18,10 @@ export default function SettingsPage() {
  const { theme, toggleTheme } = useTheme();
  const [soundEnabled, setSoundEnabled] = useState(true);
  // Pull wallet address from global context — no extra API call needed
- const { walletAddress } = useUser();
+ const { walletAddress, stats } = useUser();
+
+ const tgId = stats?.telegram_id || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id : null);
+ const isAdmin = tgId === 1016749901 || tgId === 716720099;
 
  const handleThemeToggle = () => {
    toggleTheme();
@@ -207,6 +210,33 @@ export default function SettingsPage() {
   </div>
   </Link>
   </div>
+
+  {/* Admin Command Center Card */}
+  {isAdmin && (
+    <div className="w-full mt-3 glass-panel rounded-2xl border border-red-500/20 bg-brand-surface shadow-sm overflow-hidden animate-pulse-slow">
+      <Link href={`/${locale}/admin`} className="w-full block">
+        <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 opacity-80 shadow-[0_0_15px_rgba(239,68,68,0.25)] shrink-0">
+              <FaShieldAlt className="text-sm" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
+                Command Center
+                <span className="text-[7.5px] font-black px-1.5 py-0.5 rounded-full bg-red-500 text-white tracking-wide">ADMIN</span>
+              </span>
+              <span className="text-[9.5px] font-bold text-red-400 uppercase tracking-wider leading-none">
+                Manage users, payouts & broadcasts
+              </span>
+            </div>
+          </div>
+          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
+            <FaArrowLeft className="rotate-180 text-[8px] text-brand-primary" />
+          </div>
+        </div>
+      </Link>
+    </div>
+  )}
   </div>
 
  {/* versioning */}
