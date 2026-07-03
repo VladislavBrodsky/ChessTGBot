@@ -104,3 +104,26 @@ async def test_game_history_difficulty_logging(db_session):
     assert history is not None
     assert history.difficulty == "hard"
     assert history.game_type == "computer"
+
+@pytest.mark.asyncio
+async def test_make_bot_move_with_process_pool():
+    service = GameService()
+    game_id = "test_pool_move"
+    
+    # Initialize game
+    state = await service.create_game(game_id, is_bot_game=True, difficulty="medium")
+    state = await service.join_game(game_id, 12345)
+    
+    # Mock _process_pool to be a dummy object (non-None)
+    dummy_executor = mock.MagicMock()
+    
+    # Mock run_in_executor to execute compute_best_bot_move synchronously
+    async def mock_run_in_executor(self_loop, executor, func, *args):
+        return func(*args)
+        
+    with mock.patch("app.services.game_service._process_pool", dummy_executor):
+        with mock.patch("asyncio.BaseEventLoop.run_in_executor", mock_run_in_executor):
+            new_state = await service.make_bot_move(game_id)
+            assert new_state is not None
+            assert len(new_state.move_history) == 1
+            assert new_state.turn == 'b'

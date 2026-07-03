@@ -512,15 +512,18 @@ async def make_move(sid, data):
             await sio.emit('error', {'message': 'Illegal move'}, room=sid)
 
 async def handle_bot_turn(game_id: str):
-    await asyncio.sleep(0.8)
-    service = GameService()
-    bot_state = await service.make_bot_move(game_id)
-    if bot_state:
-        await sio.emit('game_state', bot_state.model_dump(), room=game_id)
-        
-        # Start timer monitoring for White (human) if game is not over
-        if not bot_state.is_game_over:
-            service.start_timeout_monitor(game_id, len(bot_state.move_history), bot_state.white_time_left, 'w')
+    try:
+        await asyncio.sleep(0.8)
+        service = GameService()
+        bot_state = await service.make_bot_move(game_id)
+        if bot_state:
+            await sio.emit('game_state', bot_state.model_dump(), room=game_id)
+            
+            # Start timer monitoring for White (human) if game is not over
+            if not bot_state.is_game_over:
+                service.start_timeout_monitor(game_id, len(bot_state.move_history), bot_state.white_time_left, 'w')
+    except Exception as e:
+        logger.error(f"Error handling bot turn for game {game_id}: {e}", exc_info=True)
 
 @sio.event
 async def resign(sid, data):

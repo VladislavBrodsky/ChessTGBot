@@ -438,6 +438,8 @@ class GameService:
 
         difficulty = getattr(current_state, "difficulty", "medium") or "medium"
         board = chess.Board(current_state.fen)
+        engine = GameEngine()
+        engine.board = board
 
         global _process_pool
         if _process_pool is not None:
@@ -450,8 +452,6 @@ class GameService:
                 bot_move_uci = random.choice(legal_moves).uci() if legal_moves else None
             else:
                 depth = 2 if difficulty == "easy" else (4 if difficulty == "hard" else 3)
-                engine = GameEngine()
-                engine.board = board
                 bot_move_uci = await asyncio.to_thread(engine.get_best_move, depth)
 
         if bot_move_uci and engine.make_move(bot_move_uci):
