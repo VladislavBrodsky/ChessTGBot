@@ -280,8 +280,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       </div>
 
       {/* Detail panel */}
-      <div className="min-h-[240px] w-full">
-        <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 6 }}
@@ -390,8 +389,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             </div>
           )}
         </motion.div>
-        </AnimatePresence>
-      </div>
+      </AnimatePresence>
 
       {/* Invite Link block */}
       <div className="glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface p-4 space-y-3">
