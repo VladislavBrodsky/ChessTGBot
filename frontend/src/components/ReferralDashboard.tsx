@@ -113,7 +113,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'total' | 'active' | 'earnings'>('total');
+  const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
   const [code, setCode] = useState(referralCode || '');
   const [bot, setBot] = useState(botUsername);
 
@@ -165,6 +165,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
   const totalCount = useCountUp(stats?.total_referrals ?? 0);
   const activeCount = useCountUp(stats?.active_referrals ?? 0);
+  const totalEarnings = stats?.total_earnings_usdt ?? 0;
 
   const tabs = [
     {
@@ -172,35 +173,49 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       label: t('total_label'),
       icon: <FaUsers />,
       value: loading ? '—' : totalCount.toString(),
-      sublabel: t('total_sublabel'),
-      color: 'text-violet-400',
-      border: 'border-violet-500/40',
-      bg: 'bg-violet-500/10',
+      colorClass: 'text-purple-500 dark:text-purple-400',
+      borderClass: 'border-purple-500/20 dark:border-purple-500/30',
+      bgClass: 'bg-gradient-to-br from-purple-500/10 to-brand-surface/30',
+      orbClass: 'bg-purple-500/80 shadow-[0_0_8px_#8b5cf6]',
+      iconBoxClass: 'from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.15)] text-purple-500 dark:text-purple-400',
     },
     {
       id: 'active' as const,
       label: t('active_label'),
       icon: <FaBolt />,
       value: loading ? '—' : activeCount.toString(),
-      sublabel: t('active_sublabel'),
-      color: 'text-amber-400',
-      border: 'border-amber-500/40',
-      bg: 'bg-amber-500/10',
+      colorClass: 'text-cyan-500 dark:text-cyan-400',
+      borderClass: 'border-cyan-500/20 dark:border-cyan-500/30',
+      bgClass: 'bg-gradient-to-br from-cyan-500/10 to-brand-surface/30',
+      orbClass: 'bg-cyan-500/80 shadow-[0_0_8px_#06b6d4]',
+      iconBoxClass: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/35 shadow-[0_0_12px_rgba(6,182,212,0.15)] text-cyan-500 dark:text-cyan-400',
+    },
+    {
+      id: 'rate' as const,
+      label: 'RATE',
+      icon: <span className="font-extrabold text-[12px] leading-none">%</span>,
+      value: '15%',
+      colorClass: 'text-amber-500 dark:text-amber-400',
+      borderClass: 'border-amber-500/20 dark:border-amber-500/30',
+      bgClass: 'bg-gradient-to-br from-amber-500/10 to-brand-surface/30',
+      orbClass: 'bg-amber-500/80 shadow-[0_0_8px_#f59e0b]',
+      iconBoxClass: 'from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.15)] text-amber-500 dark:text-amber-400',
     },
     {
       id: 'earnings' as const,
-      label: t('earnings_label'),
+      label: 'EARNED',
       icon: <FaDollarSign />,
-      value: loading ? '—' : `$${(stats?.total_earnings_usdt ?? 0).toFixed(3)}`,
-      sublabel: 'USDT',
-      color: 'text-emerald-400',
-      border: 'border-emerald-500/40',
-      bg: 'bg-emerald-500/10',
+      value: loading ? '—' : `$${totalEarnings.toFixed(2)}`,
+      colorClass: 'text-emerald-500 dark:text-emerald-400',
+      borderClass: 'border-emerald-500/20 dark:border-emerald-500/30',
+      bgClass: 'bg-gradient-to-br from-emerald-500/10 to-brand-surface/30',
+      orbClass: 'bg-emerald-500/80 shadow-[0_0_8px_#10b981]',
+      iconBoxClass: 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.15)] text-emerald-500 dark:text-emerald-400',
     },
   ];
 
   return (
-    <div className="w-full space-y-3">
+    <div className="w-full space-y-4">
       {/* Header */}
       <div className="flex items-center justify-center gap-2 mb-1">
         <FaChartLine className="text-brand-primary opacity-60 text-sm" />
@@ -209,27 +224,52 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         </h3>
       </div>
 
-      {/* Three metric blocks */}
-      <div className="grid grid-cols-3 gap-2">
-        {tabs.map((tab) => (
-          <motion.button
-            key={tab.id}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveTab(tab.id)}
-            className={`glass-panel rounded-2xl p-3 flex flex-col items-center text-center border transition-all duration-300 cursor-pointer
-              ${activeTab === tab.id ? `${tab.border} ${tab.bg}` : 'border-brand-border-opacity-10 bg-brand-surface'}`}
-          >
-            <span className={`text-xs mb-1 ${activeTab === tab.id ? tab.color : 'text-brand-primary opacity-40'}`}>
-              {tab.icon}
-            </span>
-            <span className={`text-base font-black leading-none ${activeTab === tab.id ? tab.color : 'text-brand-primary'}`}>
-              {tab.value}
-            </span>
-            <span className={`text-[7.5px] font-black uppercase tracking-wider mt-1 ${activeTab === tab.id ? tab.color + ' opacity-80' : 'text-brand-primary opacity-30'}`}>
-              {tab.label}
-            </span>
-          </motion.button>
-        ))}
+      {/* 2x2 metric blocks - synced with Battles / ELO style */}
+      <div className="grid grid-cols-2 gap-3">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <motion.button
+              key={tab.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border transition-all duration-300 cursor-pointer text-left w-full
+                ${isActive 
+                  ? `${tab.borderClass} ${tab.bgClass} shadow-sm` 
+                  : 'border-brand-border-opacity-10 bg-brand-surface shadow-none'
+                }`}
+            >
+              {/* Indicator dot */}
+              <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+                className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full ${isActive ? tab.orbClass : 'bg-brand-primary/20'}`}
+              />
+
+              {/* Icon Container */}
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                  isActive 
+                    ? `bg-gradient-to-br ${tab.iconBoxClass}` 
+                    : 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-40'
+                }`}
+              >
+                {tab.icon}
+              </div>
+
+              {/* Value / Label */}
+              <div className="flex flex-col min-w-0">
+                <span className={`text-base font-black leading-none ${isActive ? 'text-brand-primary' : 'text-brand-primary'}`}>
+                  {tab.value}
+                </span>
+                <span className={`text-[8px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
+                  {tab.label}
+                </span>
+              </div>
+            </motion.button>
+          );
+        })}
       </div>
 
       {/* Detail panel */}
@@ -247,11 +287,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('total_desc_label')}</p>
-                  <p className="text-xl font-black text-violet-400 leading-none mt-1">{loading ? '…' : totalCount}</p>
+                  <p className="text-xl font-black text-purple-500 dark:text-purple-400 leading-none mt-1">{loading ? '…' : totalCount}</p>
                   <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('total_sublabel')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                  <FaUsers className="text-violet-400 text-lg" />
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                  <FaUsers className="text-purple-500 dark:text-purple-400 text-lg" />
                 </div>
               </div>
               <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
@@ -265,11 +305,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('active_desc_label')}</p>
-                  <p className="text-xl font-black text-amber-400 leading-none mt-1">{loading ? '…' : activeCount}</p>
+                  <p className="text-xl font-black text-cyan-500 dark:text-cyan-400 leading-none mt-1">{loading ? '…' : activeCount}</p>
                   <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('active_sublabel')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <FaBolt className="text-amber-400 text-lg" />
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                  <FaBolt className="text-cyan-500 dark:text-cyan-400 text-lg" />
                 </div>
               </div>
               {/* Active ratio bar */}
@@ -284,7 +324,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.round(((stats?.active_referrals ?? 0) / (stats?.total_referrals ?? 1)) * 100)}%` }}
                       transition={{ duration: 1, ease: 'easeOut' }}
-                      className="h-full bg-amber-400 rounded-full"
+                      className="h-full bg-cyan-500 dark:bg-cyan-400 rounded-full"
                     />
                   </div>
                 </div>
@@ -295,18 +335,36 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             </div>
           )}
 
+          {activeTab === 'rate' && (
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Share Commission Rate</p>
+                  <p className="text-xl font-black text-amber-500 dark:text-amber-400 leading-none mt-1">15% Lifetime</p>
+                  <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">Of Platform Rake Fee</p>
+                </div>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                  <span className="text-amber-500 dark:text-amber-400 text-lg font-black">%</span>
+                </div>
+              </div>
+              <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
+                Earn 15% of the 3% platform rake fee collected from all games played by your referrals, instantly credited to your wallet in USDT.
+              </p>
+            </div>
+          )}
+
           {activeTab === 'earnings' && (
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('earnings_desc_label')}</p>
-                  <p className="text-xl font-black text-emerald-400 leading-none mt-1">
-                    ${loading ? '0.000' : (stats?.total_earnings_usdt ?? 0).toFixed(3)}
+                  <p className="text-xl font-black text-emerald-500 dark:text-emerald-400 leading-none mt-1">
+                    ${loading ? '0.00' : (stats?.total_earnings_usdt ?? 0).toFixed(2)}
                   </p>
                   <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">USDT {t('total_earned')}</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <FaDollarSign className="text-emerald-400 text-lg" />
+                  <FaDollarSign className="text-emerald-500 dark:text-emerald-400 text-lg" />
                 </div>
               </div>
               {/* SVG Chart */}

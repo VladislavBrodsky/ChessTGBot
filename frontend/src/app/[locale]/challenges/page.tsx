@@ -350,6 +350,11 @@ export default function ChallengesPage() {
           </motion.div>
         </div>
 
+        {/* Referral Dashboard */}
+        <div className="w-full mb-6">
+          <ReferralDashboard referralCode={stats?.referral_code} botUsername={stats?.bot_username} />
+        </div>
+
         {/* Tasks Section */}
         <div className="w-full mb-8">
           <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
@@ -428,9 +433,6 @@ export default function ChallengesPage() {
             )}
           </div>
         </div>
-
-        {/* Referral Dashboard */}
-        <ReferralDashboard referralCode={stats?.referral_code} botUsername={stats?.bot_username} />
       </div>
     </LayoutWrapper>
   );
