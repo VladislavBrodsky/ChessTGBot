@@ -730,3 +730,198 @@ async def _run_broadcast(broadcast_id: int, user_ids: list[int], message: str) -
         f"[Broadcast {broadcast_id}] Done — sent={sent}, failed={failed}, "
         f"total={len(user_ids)}"
     )
+
+
+# ---------------------------------------------------------------------------
+# 6.  System Status
+# ---------------------------------------------------------------------------
+
+@router.get("/system/status")
+async def get_system_status(
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """
+    Returns a real-time health snapshot of all core backend subsystems:
+    Database, Redis, Telegram Bot, Web3 / Wallets, XP Engine, and Notifications.
+    """
+    import time
+    from app.core.config import get_settings
+    from app.services.session_manager import SessionManager
+    from app.services.telegram_bot import TelegramService
+
+    settings = get_settings()
+    results: dict = {}
+
+    # ── 1. Database ───────────────────────────────────────────────────────────
+    try:
+        t0 = time.monotonic()
+        await db.execute(select(func.count(User.id)))
+        db_latency_ms = round((time.monotonic() - t0) * 1000, 1)
+        results["database"] = {
+            "status": "online",
+            "latency_ms": db_latency_ms,
+            "detail": "PostgreSQL async connection healthy",
+        }
+    except Exception as e:
+        results["database"] = {
+            "status": "offline",
+            "latency_ms": None,
+            "detail": str(e),
+        }
+
+    # ── 2. Redis ──────────────────────────────────────────────────────────────
+    session_mgr = SessionManager()
+    if session_mgr._use_memory or not session_mgr.redis:
+        results["redis"] = {
+            "status": "memory_fallback",
+            "latency_ms": None,
+            "detail": "Redis unavailable — using in-process memory store",
+        }
+    else:
+        try:
+            t0 = time.monotonic()
+            await session_mgr.redis.ping()
+            redis_latency_ms = round((time.monotonic() - t0) * 1000, 1)
+            results["redis"] = {
+                "status": "online",
+                "latency_ms": redis_latency_ms,
+                "detail": "Redis connection healthy",
+            }
+        except Exception as e:
+            results["redis"] = {
+                "status": "offline",
+                "latency_ms": None,
+                "detail": str(e),
+            }
+
+    # ── 3. Telegram Bot ───────────────────────────────────────────────────────
+    try:
+        if TelegramService.application and TelegramService.application.bot:
+            t0 = time.monotonic()
+            bot_info = await TelegramService.application.bot.get_me()
+            tg_latency_ms = round((time.monotonic() - t0) * 1000, 1)
+            results["telegram_bot"] = {
+                "status": "online",
+                "latency_ms": tg_latency_ms,
+                "bot_username": f"@{bot_info.username}",
+                "bot_id": bot_info.id,
+                "is_leader": TelegramService.is_currently_leader,
+                "receiver_active": TelegramService.receiver_active,
+                "receiver_type": TelegramService.receiver_type,
+                "detail": "Telegram Bot API reachable",
+            }
+        else:
+            results["telegram_bot"] = {
+                "status": "initializing",
+                "latency_ms": None,
+                "bot_username": f"@{settings.TELEGRAM_BOT_USERNAME}",
+                "bot_id": None,
+                "is_leader": False,
+                "receiver_active": False,
+                "receiver_type": None,
+                "detail": "Bot application not yet started (may be passive instance)",
+            }
+    except Exception as e:
+        results["telegram_bot"] = {
+            "status": "offline",
+            "latency_ms": None,
+            "bot_username": f"@{settings.TELEGRAM_BOT_USERNAME}",
+            "bot_id": None,
+            "is_leader": False,
+            "receiver_active": False,
+            "receiver_type": None,
+            "detail": str(e),
+        }
+
+    # ── 4. Web3 / Wallets ─────────────────────────────────────────────────────
+    ton_api_configured = bool(settings.TON_API_KEY)
+    ton_console_configured = bool(settings.TON_CONSOLE_TOKEN)
+    payout_configured = bool(settings.PAYOUT_MNEMONIC)
+
+    # Try to get master wallet balance via TON API
+    master_balance_nano: int | None = None
+    ton_api_status = "unconfigured"
+    if ton_api_configured:
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(
+                    f"https://tonapi.io/v2/accounts/{settings.MASTER_WALLET_ADDRESS}",
+                    headers={"Authorization": f"Bearer {settings.TON_API_KEY}"},
+                )
+                if resp.status_code == 200:
+                    account_data = resp.json()
+                    master_balance_nano = account_data.get("balance", 0)
+                    ton_api_status = "online"
+                else:
+                    ton_api_status = f"error_{resp.status_code}"
+        except Exception as e:
+            ton_api_status = f"offline: {str(e)[:60]}"
+
+    master_balance_ton = round(master_balance_nano / 1e9, 4) if master_balance_nano is not None else None
+
+    results["web3"] = {
+        "status": ton_api_status,
+        "ton_api_configured": ton_api_configured,
+        "ton_console_configured": ton_console_configured,
+        "payout_mnemonic_configured": payout_configured,
+        "master_wallet_address": settings.MASTER_WALLET_ADDRESS,
+        "company_wallet_address": settings.COMPANY_WALLET_ADDRESS,
+        "master_wallet_balance_ton": master_balance_ton,
+        "detail": "TON API reachable" if ton_api_status == "online" else ton_api_status,
+    }
+
+    # ── 5. XP / Gamification Engine ───────────────────────────────────────────
+    try:
+        xp_count_res = await db.execute(select(func.count()).select_from(__import__('app.models.xp_transaction', fromlist=['XpTransaction']).XpTransaction))
+        xp_total = xp_count_res.scalar_one() or 0
+    except Exception:
+        xp_total = None
+
+    results["xp_engine"] = {
+        "status": "online",
+        "total_xp_transactions": xp_total,
+        "xp_per_level": 200,
+        "detail": "Gamification engine operational",
+    }
+
+    # ── 6. Notifications ──────────────────────────────────────────────────────
+    # Count recent broadcasts
+    try:
+        broadcasts_res = await db.execute(
+            select(func.count(Broadcast.id)).where(Broadcast.status.in_(["running", "pending"]))
+        )
+        active_broadcasts = broadcasts_res.scalar_one() or 0
+        completed_res = await db.execute(
+            select(func.count(Broadcast.id)).where(Broadcast.status == "completed")
+        )
+        completed_broadcasts = completed_res.scalar_one() or 0
+        results["notifications"] = {
+            "status": "online",
+            "active_broadcasts": active_broadcasts,
+            "completed_broadcasts": completed_broadcasts,
+            "detail": "Broadcast notification system operational",
+        }
+    except Exception as e:
+        results["notifications"] = {
+            "status": "offline",
+            "active_broadcasts": 0,
+            "completed_broadcasts": 0,
+            "detail": str(e),
+        }
+
+    # ── Summary ───────────────────────────────────────────────────────────────
+    all_statuses = [v.get("status") for v in results.values()]
+    if all(s == "online" for s in all_statuses):
+        overall = "all_systems_operational"
+    elif any(s == "offline" for s in all_statuses):
+        overall = "degraded"
+    else:
+        overall = "partial"
+
+    return {
+        "overall": overall,
+        "checked_at": _now_utc().isoformat(),
+        "systems": results,
+    }

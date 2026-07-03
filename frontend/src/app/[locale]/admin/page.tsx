@@ -7,7 +7,9 @@ import { useRouter } from 'next/navigation';
 import { 
   FaUsers, FaStar, FaBolt, FaCalendarWeek, FaCalendarDays, 
   FaChessKnight, FaArrowDown, FaArrowUp, FaChartLine, FaLink,
-  FaChartPie, FaCreditCard, FaChess, FaBullhorn
+  FaChartPie, FaCreditCard, FaChess, FaBullhorn, FaServer,
+  FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
+  FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate
 } from 'react-icons/fa6';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -239,7 +241,7 @@ function KpiCard({
 
 // ─── Tab Navigation ───────────────────────────────────────────────────────────
 
-const TABS = ['Dashboard', 'Users', 'Transactions', 'Games', 'Broadcasts'] as const;
+const TABS = ['Dashboard', 'Users', 'Transactions', 'Games', 'Broadcasts', 'System'] as const;
 type Tab = typeof TABS[number];
 
 // ─── Access Denied ────────────────────────────────────────────────────────────
@@ -981,6 +983,217 @@ function BroadcastsTab() {
   );
 }
 
+// ─── System Status Tab ────────────────────────────────────────────────────────
+
+interface SystemStatus {
+  overall: string;
+  checked_at: string;
+  systems: {
+    database?: { status: string; latency_ms: number | null; detail: string };
+    redis?: { status: string; latency_ms: number | null; detail: string };
+    telegram_bot?: { status: string; latency_ms: number | null; bot_username: string; is_leader: boolean; receiver_active: boolean; receiver_type: string | null; detail: string };
+    web3?: { status: string; ton_api_configured: boolean; payout_mnemonic_configured: boolean; master_wallet_address: string; company_wallet_address: string; master_wallet_balance_ton: number | null; detail: string };
+    xp_engine?: { status: string; total_xp_transactions: number | null; xp_per_level: number; detail: string };
+    notifications?: { status: string; active_broadcasts: number; completed_broadcasts: number; detail: string };
+  };
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
+    online: { color: '#22c55e', icon: <FaCircleCheck />, label: 'Online' },
+    offline: { color: '#ef4444', icon: <FaCircleXmark />, label: 'Offline' },
+    memory_fallback: { color: '#f59e0b', icon: <FaTriangleExclamation />, label: 'Memory Fallback' },
+    initializing: { color: '#3b82f6', icon: <FaGear className="animate-spin" />, label: 'Initializing' },
+    unconfigured: { color: '#6b7280', icon: <FaCircleXmark />, label: 'Not Configured' },
+    all_systems_operational: { color: '#22c55e', icon: <FaCircleCheck />, label: 'All Systems Operational' },
+    degraded: { color: '#ef4444', icon: <FaCircleXmark />, label: 'Degraded' },
+    partial: { color: '#f59e0b', icon: <FaTriangleExclamation />, label: 'Partial' },
+  };
+  const c = cfg[status] ?? { color: '#6b7280', icon: <FaGear />, label: status };
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider" style={{ color: c.color, background: `${c.color}18`, border: `1px solid ${c.color}40` }}>
+      {c.icon} {c.label}
+    </span>
+  );
+}
+
+function SysCard({ icon, title, status, latency, rows }: {
+  icon: React.ReactNode;
+  title: string;
+  status: string;
+  latency?: number | null;
+  rows: { label: string; value: React.ReactNode }[];
+}) {
+  const statusColor = status === 'online' ? '#22c55e' : status === 'offline' ? '#ef4444' : status === 'memory_fallback' || status === 'partial' ? '#f59e0b' : '#6b7280';
+  return (
+    <div className="premium-neon-card p-5 flex flex-col gap-4" style={{ borderColor: `${statusColor}30` }}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: `${statusColor}18`, color: statusColor }}>
+            {icon}
+          </div>
+          <div>
+            <div className="text-white font-black text-sm">{title}</div>
+            {latency != null && <div className="text-[10px] text-brand-muted">{latency}ms latency</div>}
+          </div>
+        </div>
+        <StatusBadge status={status} />
+      </div>
+      <div className="space-y-2">
+        {rows.map((r, i) => (
+          <div key={i} className="flex justify-between items-start gap-2 text-[11px]">
+            <span className="text-brand-muted font-medium shrink-0">{r.label}</span>
+            <span className="text-white/80 font-semibold text-right break-all">{r.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SystemTab() {
+  const [data, setData] = useState<SystemStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatus = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiFetch('/api/v1/admin/system/status');
+      if (res.ok) {
+        setData(await res.json());
+      } else {
+        setError(`Server returned ${res.status}`);
+      }
+    } catch (e) {
+      setError('Network error — could not reach backend');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchStatus(); }, [fetchStatus]);
+
+  const sys = data?.systems;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-white font-black text-xl">System Status</h2>
+          <p className="text-brand-muted text-[11px] mt-0.5">
+            {data ? `Last checked: ${new Date(data.checked_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Checking systems…'}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {data && <StatusBadge status={data.overall} />}
+          <button
+            onClick={fetchStatus}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30 transition-all disabled:opacity-50"
+          >
+            <FaArrowsRotate className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="premium-neon-card p-4 border-red-500/30 text-red-400 text-sm flex items-center gap-2">
+          <FaCircleXmark /> {error}
+        </div>
+      )}
+
+      {loading && !data && (
+        <div className="text-center py-16 text-brand-muted">
+          <FaServer className="text-4xl mx-auto mb-4 animate-pulse text-purple-400" />
+          <p>Running system diagnostics…</p>
+        </div>
+      )}
+
+      {sys && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Database */}
+          <SysCard
+            icon={<FaDatabase />}
+            title="Database"
+            status={sys.database?.status ?? 'unknown'}
+            latency={sys.database?.latency_ms}
+            rows={[
+              { label: 'Type', value: 'PostgreSQL (asyncpg)' },
+              { label: 'Detail', value: sys.database?.detail ?? '—' },
+            ]}
+          />
+
+          {/* Redis */}
+          <SysCard
+            icon={<FaMemory />}
+            title="Redis Cache"
+            status={sys.redis?.status ?? 'unknown'}
+            latency={sys.redis?.latency_ms}
+            rows={[
+              { label: 'Mode', value: sys.redis?.status === 'memory_fallback' ? 'In-Process Memory' : 'Redis Server' },
+              { label: 'Detail', value: sys.redis?.detail ?? '—' },
+            ]}
+          />
+
+          {/* Telegram Bot */}
+          <SysCard
+            icon={<FaTelegram />}
+            title="Telegram Bot"
+            status={sys.telegram_bot?.status ?? 'unknown'}
+            latency={sys.telegram_bot?.latency_ms}
+            rows={[
+              { label: 'Bot', value: sys.telegram_bot?.bot_username ?? '—' },
+              { label: 'Leader Instance', value: sys.telegram_bot?.is_leader ? '✅ Yes' : '⬜ No (Passive)' },
+              { label: 'Receiver', value: sys.telegram_bot?.receiver_active ? `Active (${sys.telegram_bot.receiver_type ?? 'polling'})` : 'Inactive' },
+              { label: 'Detail', value: sys.telegram_bot?.detail ?? '—' },
+            ]}
+          />
+
+          {/* Web3 */}
+          <SysCard
+            icon={<FaWallet />}
+            title="Web3 / Payments"
+            status={sys.web3?.status ?? 'unknown'}
+            rows={[
+              { label: 'TON API', value: sys.web3?.ton_api_configured ? '✅ Configured' : '❌ Missing' },
+              { label: 'Payout Mnemonic', value: sys.web3?.payout_mnemonic_configured ? '✅ Configured' : '❌ Missing' },
+              { label: 'Deposit Pool Balance', value: sys.web3?.master_wallet_balance_ton != null ? `${sys.web3.master_wallet_balance_ton} TON` : 'N/A' },
+              { label: 'Master Wallet', value: sys.web3?.master_wallet_address ? `${sys.web3.master_wallet_address.slice(0, 12)}…` : '—' },
+            ]}
+          />
+
+          {/* XP Engine */}
+          <SysCard
+            icon={<FaStar />}
+            title="XP / Gamification"
+            status={sys.xp_engine?.status ?? 'unknown'}
+            rows={[
+              { label: 'Total XP Events', value: sys.xp_engine?.total_xp_transactions?.toLocaleString() ?? '—' },
+              { label: 'XP per Level', value: `${sys.xp_engine?.xp_per_level ?? 200} XP` },
+              { label: 'Detail', value: sys.xp_engine?.detail ?? '—' },
+            ]}
+          />
+
+          {/* Notifications */}
+          <SysCard
+            icon={<FaBell />}
+            title="Notifications"
+            status={sys.notifications?.status ?? 'unknown'}
+            rows={[
+              { label: 'Active Broadcasts', value: sys.notifications?.active_broadcasts?.toString() ?? '0' },
+              { label: 'Completed Broadcasts', value: sys.notifications?.completed_broadcasts?.toLocaleString() ?? '0' },
+              { label: 'Detail', value: sys.notifications?.detail ?? '—' },
+            ]}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -1035,7 +1248,7 @@ export default function AdminPage() {
         {/* Tab Navigation */}
         <div className="flex gap-2 justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-3xl mx-auto px-4">
           {TABS.map(tab => {
-            const Icon = tab === 'Dashboard' ? FaChartPie : tab === 'Users' ? FaUsers : tab === 'Transactions' ? FaCreditCard : tab === 'Games' ? FaChess : FaBullhorn;
+            const Icon = tab === 'Dashboard' ? FaChartPie : tab === 'Users' ? FaUsers : tab === 'Transactions' ? FaCreditCard : tab === 'Games' ? FaChess : tab === 'Broadcasts' ? FaBullhorn : FaServer;
             return (
               <button
                 key={tab}
@@ -1076,6 +1289,8 @@ export default function AdminPage() {
               <GamesTab />
             ) : activeTab === 'Broadcasts' ? (
               <BroadcastsTab />
+            ) : activeTab === 'System' ? (
+              <SystemTab />
             ) : null}
           </motion.div>
         </AnimatePresence>
