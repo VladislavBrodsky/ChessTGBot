@@ -267,7 +267,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
               {/* Value / Label */}
               <div className="flex flex-col min-w-0">
-                <span className={`text-xl font-black leading-none ${isActive ? 'text-white drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]' : 'text-brand-primary'}`}>
+                <span className="text-xl font-black leading-none text-brand-primary">
                   {tab.value}
                 </span>
                 <span className={`text-[9px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
@@ -280,13 +280,14 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       </div>
 
       {/* Detail panel */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.2 }}
+      <div className="min-h-[240px] w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
           className="glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface overflow-hidden"
         >
           {activeTab === 'total' && (
@@ -389,7 +390,8 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             </div>
           )}
         </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
 
       {/* Invite Link block */}
       <div className="glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface p-4 space-y-3">
