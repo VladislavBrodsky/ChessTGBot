@@ -565,7 +565,7 @@ function TransactionsTab() {
 
   const TX_TYPES = ['', 'deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
 
-          className="flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all"
+  const selectClass = "flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all";
 
   return (
     <div>
