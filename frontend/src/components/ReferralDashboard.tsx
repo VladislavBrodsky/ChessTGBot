@@ -6,6 +6,12 @@ import { FaUserPlus, FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign,
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
+const UsdtLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" fill="currentColor" className={className} width="1em" height="1em">
+    <path d="M100 0C44.772 0 0 44.772 0 100s44.772 100 100 100 100-44.772 100-100S155.228 0 100 0zm33.593 72.842v15.932h-22.956V145.4h-21.272V88.774H66.407V72.842h67.186z"/>
+  </svg>
+);
+
 interface EarningPoint {
   date: string;
   amount: number;
@@ -203,8 +209,8 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
     },
     {
       id: 'earnings' as const,
-      label: 'TOTAL USDT',
-      icon: <FaDollarSign />,
+      label: 'EARNED',
+      icon: <UsdtLogo className="text-[16px]" />,
       value: loading ? '—' : `${totalEarnings.toFixed(2)}`,
 
       colorClass: 'text-emerald-500 dark:text-emerald-400',
@@ -225,32 +231,46 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         </div>
       </div>
 
-      {/* 2x2 metric blocks - synced with Wallet style */}
-      <div className="grid grid-cols-2 gap-2">
+      {/* 2x2 metric blocks - synced with Battles / ELO style */}
+      <div className="grid grid-cols-2 gap-3">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <motion.button
               key={tab.id}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`glass-panel p-3.5 rounded-2xl border flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm transition-all duration-300 group
+              className={`relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border transition-all duration-300 cursor-pointer text-left w-full shadow-[0_4px_24px_rgba(0,0,0,0.06)]
                 ${isActive 
-                  ? `${tab.borderClass} ${tab.bgClass}` 
-                  : 'border-brand-border-opacity-10 bg-brand-surface hover:border-brand-primary/20'
+                  ? `${tab.borderClass} ${tab.bgClass} shadow-md` 
+                  : 'border-brand-border-opacity-10 bg-brand-surface hover:border-brand-primary/20 hover:bg-brand-surface/60'
                 }`}
             >
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all group-hover:scale-110
-                ${isActive ? `bg-gradient-to-br ${tab.iconBoxClass}` : 'bg-brand-primary/5 text-brand-primary opacity-60'}
-              `}>
+              {/* Indicator dot */}
+              <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${isActive ? tab.orbClass.split(' ')[0] : 'bg-brand-primary/20'}`}
+              />
+
+              {/* Icon Container */}
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                  isActive 
+                    ? `bg-gradient-to-br ${tab.iconBoxClass}` 
+                    : 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-40'
+                }`}
+              >
                 {tab.icon}
               </div>
-              <div className="flex flex-col items-center min-w-0">
-                <span className={`text-[12px] font-black leading-none uppercase tracking-wider ${isActive ? tab.colorClass : 'text-brand-primary opacity-80'}`}>
+
+              {/* Value / Label */}
+              <div className="flex flex-col min-w-0">
+                <span className={`text-xl font-black leading-none ${isActive ? 'text-white drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]' : 'text-brand-primary'}`}>
                   {tab.value}
                 </span>
-                <span className={`text-[7px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-40'}`}>
+                <span className={`text-[9px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
                   {tab.label}
                 </span>
               </div>
