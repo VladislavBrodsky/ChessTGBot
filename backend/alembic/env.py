@@ -49,6 +49,7 @@ from app.core.database import Base
 from app.models.user import User
 from app.models.game_history import GameHistory
 from app.models.gamification import Task, UserTask, Referral
+from app.models.broadcast import Broadcast
 
 target_metadata = Base.metadata
 
