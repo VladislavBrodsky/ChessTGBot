@@ -188,16 +188,46 @@ function KpiCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-panel p-4 relative overflow-hidden"
+      className="relative rounded-2xl p-4 flex items-center gap-4 overflow-hidden"
+      style={{
+        backgroundColor: 'rgba(10, 10, 15, 0.6)',
+        border: `1px solid ${color}40`,
+        boxShadow: `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 20px ${color}10`,
+        backdropFilter: 'blur(12px)',
+      }}
     >
-      <div className="absolute top-[-10px] right-[-10px] text-5xl opacity-5 pointer-events-none">
+      {/* Top right glowing dot */}
+      <div 
+        className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full"
+        style={{ 
+          backgroundColor: color,
+          boxShadow: `0 0 8px ${color}, 0 0 12px ${color}`
+        }}
+      />
+      
+      {/* Icon Box */}
+      <div 
+        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl"
+        style={{
+          backgroundColor: `${color}15`,
+          color: color,
+          border: `1px solid ${color}30`,
+          boxShadow: `0 0 15px ${color}20`
+        }}
+      >
         {icon}
       </div>
-      <p className="text-[10px] text-brand-muted uppercase tracking-[0.12em] mb-1.5 font-semibold">
-        {label}
-      </p>
-      <p className="text-2xl font-black leading-none drop-shadow-md" style={{ color }}>{value}</p>
-      {sub && <p className="text-[11px] text-brand-muted mt-1">{sub}</p>}
+
+      {/* Content */}
+      <div className="flex flex-col min-w-0">
+        <p className="text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
+          {value}
+        </p>
+        <p className="text-[9px] text-brand-primary opacity-60 uppercase tracking-[0.2em] font-black">
+          {label}
+        </p>
+        {sub && <p className="text-[10px] text-brand-muted mt-1 truncate">{sub}</p>}
+      </div>
     </motion.div>
   );
 }
@@ -969,46 +999,60 @@ export default function AdminPage() {
   if (accessDenied) return <AccessDenied />;
 
   return (
-    <div className="premium-liquid-mesh-container relative min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]">
-      <div className="premium-liquid-mesh-blob1" />
-      <div className="premium-liquid-mesh-blob2" />
-      <div className="premium-liquid-mesh-blob3" />
+    <div className="relative min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]"
+      style={{
+        backgroundColor: '#050505',
+        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
+        backgroundSize: '24px 24px'
+      }}
+    >
+      {/* Ambient background glows */}
+      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[50%] bg-amber-900/10 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="relative z-10 max-w-[1100px] mx-auto px-4 pt-6">
+      <div className="relative z-10 max-w-[1100px] mx-auto px-4 pt-8">
 
         {/* Header & Back Button */}
-        <div className="mb-7">
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="mb-4">
+        <div className="mb-10 flex flex-col items-center text-center">
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="absolute top-6 left-4">
             <button 
               onClick={() => router.back()}
-              className="text-brand-muted hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+              className="text-brand-muted hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-1 opacity-70"
             >
-              <span className="text-lg leading-none mt-[-2px]">←</span> Back
+              <span className="text-sm leading-none mt-[-1px]">←</span> BACK
             </button>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-[26px] font-black bg-gradient-to-br from-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tight mb-1">
-              ♟ Admin Command Center
+          
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
+            {/* Level/Rank Badge Concept */}
+            <div className="mb-4 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)] relative">
+              <div className="absolute inset-0 rounded-2xl border border-white/5 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-muted mb-0.5">Lvl</span>
+              <span className="text-xl font-black text-white leading-none">A</span>
+            </div>
+            
+            <h1 className="text-3xl font-black text-white tracking-wide mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+              ADMIN COMMAND
             </h1>
-            <p className="text-xs text-brand-muted uppercase tracking-widest">
+            <p className="text-[10px] text-brand-muted uppercase tracking-[0.2em] font-black">
               FinChess Arena · Restricted Access
             </p>
           </motion.div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 glass-panel p-2 mb-6 overflow-x-auto scrollbar-none">
+        <div className="flex gap-2 justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-2xl mx-auto">
           {TABS.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-none px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              className={`flex-none px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
                 activeTab === tab 
-                  ? 'bg-purple-600 text-white shadow-neon' 
-                  : 'text-brand-muted hover:text-white glass-button hover:bg-white/5'
+                  ? 'bg-white/10 border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
+                  : 'text-brand-muted hover:text-white border border-transparent hover:border-white/5 hover:bg-white/5'
               }`}
             >
-              {tab === 'Dashboard' ? '📊' : tab === 'Users' ? '👥' : tab === 'Transactions' ? '💳' : tab === 'Games' ? '♟' : '📢'} {tab}
+              {tab}
             </button>
           ))}
         </div>
