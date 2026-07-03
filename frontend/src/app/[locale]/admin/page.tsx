@@ -1201,8 +1201,6 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [accessDenied, setAccessDenied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
   useEffect(() => {
     apiFetch('/api/v1/admin/stats').then(async res => {
       if (res.status === 403) {

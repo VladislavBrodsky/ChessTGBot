@@ -72,44 +72,35 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     }, []);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-            const tg = window.Telegram.WebApp;
-            const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
-            const isBackButtonSupported = tg.isVersionAtLeast && tg.isVersionAtLeast('6.1') && tg.BackButton;
+        if (typeof window === 'undefined' || !window.Telegram?.WebApp) return;
+        const tg = window.Telegram.WebApp;
+        if (!tg.BackButton) return;
 
-            if (isBackButtonSupported) {
-                try {
-                    if (isHomePage || activeGameId) {
-                        tg.BackButton.hide();
-                    } else {
-                        tg.BackButton.show();
-                        const handleBackClick = () => {
-                            if (pathname.includes('/admin')) {
-                                window.location.href = `/${locale}/settings`;
-                            } else {
-                                window.history.back();
-                                // Fallback just in case history is empty or blocked
-                                setTimeout(() => {
-                                    if (window.location.pathname === pathname) {
-                                        window.location.href = `/${locale}/home`;
-                                    }
-                                }, 150);
-                            }
-                        };
-                        tg.BackButton.onClick(handleBackClick);
-                        return () => {
-                            try {
-                                tg.BackButton.offClick(handleBackClick);
-                            } catch (err) {
-                                console.warn('Telegram BackButton offClick failed', err);
-                            }
-                        };
-                    }
-                } catch (err) {
-                    console.warn('Telegram BackButton operation failed', err);
-                }
+        const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
+        const shouldShow = !isHomePage && !activeGameId;
+
+        const handleBackClick = () => {
+            if (pathname.includes('/admin')) {
+                window.location.href = `/${locale}/settings`;
+            } else {
+                router.back();
             }
+        };
+
+        if (shouldShow) {
+            tg.BackButton.show();
+            tg.onEvent('backButtonClicked', handleBackClick);
+        } else {
+            tg.BackButton.hide();
         }
+
+        return () => {
+            try {
+                tg.offEvent('backButtonClicked', handleBackClick);
+            } catch (err) {
+                console.warn('Telegram BackButton offEvent failed', err);
+            }
+        };
     }, [pathname, locale, router, activeGameId]);
 
     const { theme, toggleTheme } = useTheme();
