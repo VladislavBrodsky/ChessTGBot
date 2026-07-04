@@ -17,7 +17,17 @@ class JSONFormatter(logging.Formatter):
 def setup_logging():
     handler = logging.StreamHandler()
     handler.setFormatter(JSONFormatter())
-    logging.basicConfig(level=logging.INFO, handlers=[handler], force=True)
+    
+    handlers = [handler]
+    try:
+        from app.core.alerts import TelegramAlertHandler
+        alert_handler = TelegramAlertHandler()
+        alert_handler.setLevel(logging.ERROR)
+        handlers.append(alert_handler)
+    except Exception as e:
+        print(f"[Logger] Failed to initialize TelegramAlertHandler: {e}")
+        
+    logging.basicConfig(level=logging.INFO, handlers=handlers, force=True)
 
 class LoggingMiddleware:
     """Pure ASGI middleware for request logging.
