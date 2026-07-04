@@ -14,7 +14,15 @@ async def test_send_admin_alert():
         assert mock_send.call_count == len(expected_admins)
         
         for admin_id in expected_admins:
-            mock_send.assert_any_call(admin_id, "🚨 <b>[SYSTEM ALERT]</b>\n\nDatabase connection dropped!")
+            call_args = mock_send.call_args_list
+            matching_calls = [
+                c for c in call_args 
+                if c[0][0] == admin_id 
+                and "Database connection dropped!" in c[0][1] 
+                and "🚨 <b>[SYSTEM ALERT]</b>" in c[0][1] 
+                and "Time:" in c[0][1]
+            ]
+            assert len(matching_calls) > 0
 
 @pytest.mark.asyncio
 async def test_telegram_alert_handler_emits_error_log():

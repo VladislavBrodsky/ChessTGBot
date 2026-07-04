@@ -2,6 +2,7 @@ import logging
 import asyncio
 import time
 import re
+import datetime
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -45,20 +46,56 @@ def normalize_message(msg: str) -> str:
     
     return first_line.strip()[:120]
 
-async def send_admin_alert(text: str):
+def get_eastern_str(dt_utc: datetime.datetime) -> str:
+    """Helper to convert UTC datetime to Eastern Time (EST/EDT) string taking DST into account."""
+    year = dt_utc.year
+    # March: 2nd Sunday
+    march_1st = datetime.datetime(year, 3, 1, tzinfo=datetime.timezone.utc)
+    march_1st_wday = march_1st.weekday()
+    march_dst = march_1st + datetime.timedelta(days=7 + (6 - march_1st_wday) % 7, hours=2)
+    
+    # November: 1st Sunday
+    nov_1st = datetime.datetime(year, 11, 1, tzinfo=datetime.timezone.utc)
+    nov_1st_wday = nov_1st.weekday()
+    nov_dst = nov_1st + datetime.timedelta(days=(6 - nov_1st_wday) % 7, hours=2)
+    
+    if march_dst <= dt_utc < nov_dst:
+        tz = datetime.timezone(datetime.timedelta(hours=-4))
+        name = "EDT"
+    else:
+        tz = datetime.timezone(datetime.timedelta(hours=-5))
+        name = "EST"
+    
+    local_dt = dt_utc.astimezone(tz)
+    return local_dt.strftime(f"%Y-%m-%d %I:%M:%S %p {name}")
+
+def format_alert_time(timestamp: float = None) -> str:
+    """Formats a timestamp (or current time) to both UTC and Eastern Time (EST/EDT) string."""
+    if timestamp is None:
+        timestamp = time.time()
+    dt_utc = datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
+    utc_str = dt_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+    try:
+        est_str = get_eastern_str(dt_utc)
+        return f"{utc_str} / {est_str}"
+    except Exception:
+        return utc_str
+
+async def send_admin_alert(text: str, timestamp: float = None):
     """Sends a system alert message to all configured administrators."""
     from app.services.telegram_bot import TelegramService
+    time_display = format_alert_time(timestamp)
     for admin_id in ADMIN_IDS:
         if admin_id > 0:
             try:
                 # Wrap text with header
-                alert_msg = f"🚨 <b>[SYSTEM ALERT]</b>\n\n{text}"
+                alert_msg = f"🚨 <b>[SYSTEM ALERT]</b>\n<b>Time:</b> {time_display}\n\n{text}"
                 await TelegramService.send_notification(admin_id, alert_msg)
             except Exception as e:
                 # Print directly to stdout/stderr to avoid circular logging loops
                 print(f"[Alerts] Failed to send system alert to {admin_id}: {e}")
 
-async def send_alert_with_redis_rate_limit(fingerprint: str, message: str):
+async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, timestamp: float = None):
     """Checks the rate limit in Redis (or in-memory fallback) and sends alert if permitted."""
     from app.services.session_manager import SessionManager
     session_mgr = SessionManager()
@@ -98,7 +135,7 @@ async def send_alert_with_redis_rate_limit(fingerprint: str, message: str):
         _sent_alerts_cache[fingerprint] = now
 
     # 2. Not throttled, proceed to send Telegram notification
-    await send_admin_alert(message)
+    await send_admin_alert(message, timestamp)
 
 class TelegramAlertHandler(logging.Handler):
     """Logging handler that routes ERROR and CRITICAL logs to Telegram admins with rate-limiting."""
@@ -137,12 +174,12 @@ class TelegramAlertHandler(logging.Handler):
             try:
                 loop = asyncio.get_running_loop()
                 if loop.is_running():
-                    loop.create_task(send_alert_with_redis_rate_limit(fingerprint, message))
+                    loop.create_task(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
                 else:
-                    asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message))
+                    asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
             except RuntimeError:
                 # No running event loop
-                asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message))
+                asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
         except Exception as e:
             # Fail silently to avoid breaking the application execution flow
             print(f"[Alerts] Exception in TelegramAlertHandler emit: {e}")
