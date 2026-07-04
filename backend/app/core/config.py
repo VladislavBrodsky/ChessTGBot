@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     # Database
     # Default to localhost for dev, but in production (Railways) this MUST be set via env vars.
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"
+    DATABASE_READ_URL: str | None = None
 
     # Redis
     # Default to localhost for dev. In production, use REDIS_URL environment variable.

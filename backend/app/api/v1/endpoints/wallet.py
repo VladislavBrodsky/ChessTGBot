@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
 from sqlalchemy import desc
-from app.core.database import get_db
+from app.core.database import get_db, get_read_db
 from app.api.v1.deps import get_current_user, get_current_telegram_id
 from app.models.user import User
 from app.models.transaction import Transaction
@@ -77,11 +77,43 @@ def convert_raw_to_friendly(raw_addr: str, bounceable: bool = True) -> str:
     except Exception:
         return raw_addr
 
+_prices_cache = {
+    "prices": None,
+    "last_fetched": 0.0
+}
+
 async def fetch_all_prices() -> dict:
     """
     Fetches the current prices in USD for TON, USDT, USDC, BTC, and ETH.
     Uses TonAPI rates and falls back to CoinGecko and hardcoded defaults.
+    Caches the result in Redis for 60 seconds (falls back to memory).
     """
+    import time
+    import json
+    from app.services.session_manager import SessionManager
+    
+    redis_client = None
+    try:
+        mgr = SessionManager()
+        if not SessionManager._use_memory and mgr.redis:
+            redis_client = mgr.redis
+    except Exception:
+        pass
+        
+    now = time.time()
+    
+    if redis_client:
+        try:
+            cached_val = await redis_client.get("cache:all_prices")
+            if cached_val:
+                return json.loads(cached_val)
+        except Exception:
+            pass
+    else:
+        # Fallback to local memory cache
+        if _prices_cache["prices"] and (now - _prices_cache["last_fetched"] < 60.0):
+            return _prices_cache["prices"]
+
     import httpx
     from app.core.config import get_settings
     settings = get_settings()
@@ -99,6 +131,7 @@ async def fetch_all_prices() -> dict:
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
+    prices = {}
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             res = await client.get(url, headers=headers)
@@ -106,13 +139,19 @@ async def fetch_all_prices() -> dict:
                 data = res.json()
                 rates = data.get("rates", {})
                 
-                prices = {}
                 for symbol, addr in tokens.items():
                     val = rates.get(addr) or rates.get(symbol.upper()) or rates.get(symbol.lower())
                     if val and "prices" in val and "USD" in val["prices"]:
                         prices[symbol] = float(val["prices"]["USD"])
                 
                 if len(prices) == 5:
+                    if redis_client:
+                        try:
+                            await redis_client.set("cache:all_prices", json.dumps(prices), ex=60)
+                        except Exception:
+                            pass
+                    _prices_cache["prices"] = prices
+                    _prices_cache["last_fetched"] = now
                     return prices
     except Exception as e:
         import logging
@@ -138,10 +177,21 @@ async def fetch_all_prices() -> dict:
                     if val is not None:
                         prices[symbol] = float(val)
                 if len(prices) == 5:
+                    if redis_client:
+                        try:
+                            await redis_client.set("cache:all_prices", json.dumps(prices), ex=60)
+                        except Exception:
+                            pass
+                    _prices_cache["prices"] = prices
+                    _prices_cache["last_fetched"] = now
                     return prices
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning(f"Failed to fetch prices from CoinGecko: {e}")
+
+    # Fallback to older cached version if available
+    if _prices_cache["prices"]:
+        return _prices_cache["prices"]
 
     return {
         "TON": 5.40,
@@ -463,7 +513,7 @@ async def withdraw_funds(
 async def get_transaction_ledger(
     page: int = 1,
     limit: int = 20,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_read_db),
     current_user: User = Depends(get_current_user)
 ):
     """
@@ -496,14 +546,33 @@ _ton_price_cache = {
 async def fetch_ton_price_usd(api_key: Optional[str] = None) -> float:
     """
     Fetches the current TON price in USD from tonapi.io rates endpoint.
-    Caches the result in memory for 60 seconds to prevent rate limiting.
+    Caches the result in Redis for 60 seconds (falls back to memory) to prevent rate limiting.
     """
     import time
-    global _ton_price_cache
+    import json
+    from app.services.session_manager import SessionManager
+    
+    redis_client = None
+    try:
+        mgr = SessionManager()
+        if not SessionManager._use_memory and mgr.redis:
+            redis_client = mgr.redis
+    except Exception:
+        pass
+        
     now = time.time()
     
-    if now - _ton_price_cache["last_fetched"] < 60.0:
-        return _ton_price_cache["price"]
+    if redis_client:
+        try:
+            cached_val = await redis_client.get("cache:ton_price")
+            if cached_val:
+                return float(cached_val)
+        except Exception:
+            pass
+    else:
+        # Fallback to local memory cache
+        if now - _ton_price_cache["last_fetched"] < 60.0:
+            return _ton_price_cache["price"]
         
     import httpx
     url = "https://tonapi.io/v2/rates?tokens=ton&currencies=usd"
@@ -517,9 +586,15 @@ async def fetch_ton_price_usd(api_key: Optional[str] = None) -> float:
                 data = res.json()
                 price = data.get("rates", {}).get("ton", {}).get("prices", {}).get("USD")
                 if price:
-                    _ton_price_cache["price"] = float(price)
+                    price_val = float(price)
+                    if redis_client:
+                        try:
+                            await redis_client.set("cache:ton_price", str(price_val), ex=60)
+                        except Exception:
+                            pass
+                    _ton_price_cache["price"] = price_val
                     _ton_price_cache["last_fetched"] = now
-                    return float(price)
+                    return price_val
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning(f"Failed to fetch TON price from TonAPI: {e}")

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
-from app.core.database import get_db
+from app.core.database import get_db, get_read_db
 from app.crud import user as user_crud
 from pydantic import BaseModel
 from app.models.user import User
@@ -180,7 +180,7 @@ async def get_referral_stats(
     )
 
 @router.get("/leaderboard", response_model=List[LeaderboardItem])
-async def get_leaderboard(db: AsyncSession = Depends(get_db)):
+async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):
     top_users = await user_crud.get_top_users(db, limit=50)
     
     # Return leaderboard data
@@ -247,7 +247,7 @@ async def get_user_avatar(telegram_id: int):
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
     telegram_id: int,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_read_db),
     current_user: User = Depends(get_current_user)
 ):
     """

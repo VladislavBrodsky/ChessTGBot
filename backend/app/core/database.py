@@ -25,11 +25,38 @@ else:
     )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+# Read-only database replica configuration
+DATABASE_READ_URL = settings.DATABASE_READ_URL or DATABASE_URL
+if DATABASE_READ_URL.startswith("postgresql://"):
+    DATABASE_READ_URL = DATABASE_READ_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+if DATABASE_READ_URL == DATABASE_URL:
+    read_engine = engine
+    AsyncReadSessionLocal = AsyncSessionLocal
+else:
+    is_read_sqlite = DATABASE_READ_URL.startswith("sqlite")
+    if is_read_sqlite:
+        read_engine = create_async_engine(DATABASE_READ_URL, echo=False)
+    else:
+        read_engine = create_async_engine(
+            DATABASE_READ_URL,
+            echo=False,
+            pool_size=20,
+            max_overflow=50,
+            pool_timeout=30,
+            pool_recycle=1800
+        )
+    AsyncReadSessionLocal = async_sessionmaker(read_engine, class_=AsyncSession, expire_on_commit=False)
+
 class Base(DeclarativeBase):
     pass
 
 async def get_db():
     async with AsyncSessionLocal() as session:
+        yield session
+
+async def get_read_db():
+    async with AsyncReadSessionLocal() as session:
         yield session
 
 async def init_db():

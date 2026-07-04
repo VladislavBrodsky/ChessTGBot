@@ -3,7 +3,7 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.core.database import Base, get_db
+from app.core.database import Base, get_db, get_read_db
 from app.main import app
 from app.core.config import get_settings
 from app.models.user import User
@@ -226,6 +226,7 @@ async def client(db_session):
         yield db_session
     
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_read_db] = override_get_db
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
@@ -242,7 +243,9 @@ def patch_database_sessions(test_engine):
         
         app.services.game_service.AsyncSessionLocal = MockSessionFactory()
         app.core.database.AsyncSessionLocal = MockSessionFactory()
+        app.core.database.AsyncReadSessionLocal = MockSessionFactory()
     else:
         session_factory = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
         app.services.game_service.AsyncSessionLocal = session_factory
         app.core.database.AsyncSessionLocal = session_factory
+        app.core.database.AsyncReadSessionLocal = session_factory

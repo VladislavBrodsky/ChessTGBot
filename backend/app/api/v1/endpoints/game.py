@@ -4,7 +4,7 @@ from app.services.game_service import GameService
 from app.services.telegram_bot import TelegramService
 from pydantic import BaseModel
 import uuid
-from app.core.database import get_db
+from app.core.database import get_db, get_read_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud import user as user_crud
 from app.core.config import get_settings
@@ -102,7 +102,7 @@ class GameHistoryDetails(BaseModel):
 from typing import List, Optional
 
 @router.get("/history/{game_id}", response_model=GameHistoryDetails)
-async def get_game_history(game_id: str, db: AsyncSession = Depends(get_db)):
+async def get_game_history(game_id: str, db: AsyncSession = Depends(get_read_db)):
     from app.models.game_history import GameHistory
     from app.models.user import User
     from sqlalchemy.future import select
