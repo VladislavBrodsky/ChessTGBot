@@ -251,13 +251,70 @@ def create_application() -> FastAPI:
     application.include_router(wallet.router, prefix="/api/v1/wallet", tags=["wallet"])
     application.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
 
+    # Sliding window rate limiter for client-side logs (max 5 requests per minute per IP)
+    client_log_limits = {}
+
+    async def check_client_log_rate_limit(ip: str) -> bool:
+        import time
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        use_redis = session_mgr.redis and not session_mgr._use_memory
+        
+        now = time.time()
+        
+        if use_redis:
+            try:
+                redis_key = f"rate_limit:client_log:{ip}"
+                current_count_str = await session_mgr.redis.get(redis_key)
+                if current_count_str:
+                    current_count = int(current_count_str)
+                    if current_count >= 5:
+                        return False
+                    await session_mgr.redis.incr(redis_key)
+                else:
+                    await session_mgr.redis.set(redis_key, "1", ex=60)
+                return True
+            except Exception:
+                pass
+                
+        # In-memory token bucket fallback
+        if ip not in client_log_limits:
+            client_log_limits[ip] = (5.0, now)
+            return True
+            
+        tokens, last_refill = client_log_limits[ip]
+        elapsed = now - last_refill
+        new_tokens = min(5.0, tokens + elapsed * (1.0 / 12.0))
+        
+        if new_tokens >= 1.0:
+            client_log_limits[ip] = (new_tokens - 1.0, now)
+            return True
+            
+        client_log_limits[ip] = (new_tokens, now)
+        return False
+
     @application.post("/api/v1/client-log")
     async def client_log(request: Request):
+        from fastapi.responses import JSONResponse
+        
+        ip = request.client.host if request.client else "unknown"
+        if not await check_client_log_rate_limit(ip):
+            return JSONResponse(
+                status_code=429,
+                content={"status": "error", "detail": "Rate limit exceeded. Please slow down."}
+            )
+            
         try:
             data = await request.json()
-            message = data.get("message")
-            level = data.get("level", "INFO")
-            print(f"[CLIENT {level}] {message}")
+            if isinstance(data, list):
+                for item in data[:20]:  # Cap at 20 logs per batch
+                    msg = item.get("message")
+                    lvl = item.get("level", "INFO")
+                    print(f"[CLIENT {lvl}] {msg}")
+            else:
+                msg = data.get("message")
+                lvl = data.get("level", "INFO")
+                print(f"[CLIENT {lvl}] {msg}")
             return {"status": "logged"}
         except Exception as e:
             return {"status": "error", "detail": str(e)}

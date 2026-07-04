@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { getSocket } from "@/lib/socket";
 import { apiFetch } from "@/lib/api";
 import { Chess, Move } from "chess.js";
+import { logClientMessage } from "@/lib/logger";
 
 export const useGameSocket = (gameId: string) => {
     const [fen, setFen] = useState("start");
@@ -23,17 +24,10 @@ export const useGameSocket = (gameId: string) => {
         const onGameState = (data: any) => {
             console.log("Game State Received:", data);
             
-            // Post log to server for diagnostics
-            try {
-                apiFetch("/api/v1/client-log", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        level: "INFO",
-                        message: `onGameState received: fen=${data.fen}, turn=${data.turn}, white_player_id=${data.white_player_id}, black_player_id=${data.black_player_id}`
-                    })
-                }).catch(() => {});
-            } catch (err) {}
+            logClientMessage(
+                "INFO",
+                `onGameState received: fen=${data.fen}, turn=${data.turn}, white_player_id=${data.white_player_id}, black_player_id=${data.black_player_id}`
+            );
 
             setGameState(data);
             setFen(data.fen);
@@ -41,32 +35,20 @@ export const useGameSocket = (gameId: string) => {
                 chess.load(data.fen);
             } catch (e: any) {
                 console.error("Invalid FEN:", data.fen);
-                try {
-                    apiFetch("/api/v1/client-log", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            level: "ERROR",
-                            message: `chess.load failed for FEN: ${data.fen} | error: ${e?.message || e?.toString()}`
-                        })
-                    }).catch(() => {});
-                } catch (err) {}
+                logClientMessage(
+                    "ERROR",
+                    `chess.load failed for FEN: ${data.fen} | error: ${e?.message || e?.toString()}`
+                );
             }
         };
 
         const onError = (data: { message: string }) => {
             setError(data.message);
             setTimeout(() => setError(null), 3000);
-            try {
-                apiFetch("/api/v1/client-log", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        level: "ERROR",
-                        message: `Game socket error event: ${data.message}`
-                    })
-                }).catch(() => {});
-            } catch (err) {}
+            logClientMessage(
+                "ERROR",
+                `Game socket error event: ${data.message}`
+            );
         };
 
         socket.on("connect", onConnect);
@@ -90,19 +72,13 @@ export const useGameSocket = (gameId: string) => {
     const makeMove = useCallback((move: { from: string; to: string; promotion?: string }) => {
         const socket = getSocket();
 
-        // Diagnostic Log
         try {
             const currentTurn = chess.turn();
             const pieceAtSource = chess.get(move.from as any);
-            console.log("makeMove attempt:", { move, currentTurn, pieceAtSource, currentFen: chess.fen() });
-            apiFetch("/api/v1/client-log", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    level: "INFO",
-                    message: `makeMove attempt: move=${JSON.stringify(move)}, turn=${currentTurn}, piece=${JSON.stringify(pieceAtSource)}, fen=${chess.fen()}`
-                })
-            }).catch(() => {});
+            logClientMessage(
+                "INFO",
+                `makeMove attempt: move=${JSON.stringify(move)}, turn=${currentTurn}, piece=${JSON.stringify(pieceAtSource)}, fen=${chess.fen()}`
+            );
         } catch (err) {}
 
         // Optimistic Update
@@ -143,29 +119,17 @@ export const useGameSocket = (gameId: string) => {
                 });
                 return true;
             } else {
-                try {
-                    apiFetch("/api/v1/client-log", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            level: "WARNING",
-                            message: `chess.move returned falsy for cleanMove: ${JSON.stringify(cleanMove)}`
-                        })
-                    }).catch(() => {});
-                } catch (err) {}
+                logClientMessage(
+                    "WARNING",
+                    `chess.move returned falsy for cleanMove: ${JSON.stringify(cleanMove)}`
+                );
             }
         } catch (e: any) {
             console.error("Client move error:", e);
-            try {
-                apiFetch("/api/v1/client-log", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        level: "ERROR",
-                        message: `Client move exception for cleanMove on game ${gameId}: ${e?.message || e?.toString()} | move details: from=${move.from}, to=${move.to}`
-                    })
-                }).catch(() => {});
-            } catch (err) {}
+            logClientMessage(
+                "ERROR",
+                `Client move exception for cleanMove on game ${gameId}: ${e?.message || e?.toString()} | move details: from=${move.from}, to=${move.to}`
+            );
             return false;
         }
         return false;
