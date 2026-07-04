@@ -122,7 +122,6 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
   const [code, setCode] = useState(referralCode || '');
   const [bot, setBot] = useState(botUsername);
-  const [showQrModal, setShowQrModal] = useState(false);
 
   useEffect(() => {
     // Fetch user sync for code + bot username
@@ -153,7 +152,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       });
   }, []);
 
-  const inviteLink = `https://t.me/${bot}?start=ref_${code}`;
+  const inviteLink = `https://t.me/chess_matbot?start=ref_${code}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -401,7 +400,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         <div className="flex items-center gap-2">
           <div className="flex-1 bg-brand-void/40 border border-brand-border-opacity-5 rounded-xl px-3 py-2.5 flex items-center overflow-hidden">
             <span className="font-mono text-[9px] font-bold text-brand-primary opacity-60 tracking-wider truncate">
-              {code || 'Loading...'}
+              {inviteLink}
             </span>
           </div>
           <motion.button
@@ -420,85 +419,42 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           >
             <FaShareAlt size={12} />
           </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowQrModal(true)}
-            className="shrink-0 w-10 h-10 bg-brand-surface border border-brand-border-opacity-10 text-brand-primary rounded-xl flex items-center justify-center shadow-sm hover:bg-brand-bg-opacity-5"
-          >
-            <FaQrcode size={14} />
-          </motion.button>
         </div>
       </div>
 
-      {/* QR Code Modal */}
-      <AnimatePresence>
-        {showQrModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-md"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              transition={{ type: "spring", duration: 0.4 }}
-              className="relative overflow-hidden w-full max-w-[290px] bg-brand-surface border border-purple-500/30 rounded-[32px] p-6 shadow-[0_0_50px_rgba(168,85,247,0.25)] flex flex-col items-center text-center space-y-5"
-            >
-              {/* Radial neon glow overlays in background */}
-              <div className="absolute -top-20 -left-20 w-44 h-44 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-20 -right-20 w-44 h-44 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+      {/* Styled Inline QR Code Card */}
+      <div className="glass-panel rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface p-5 flex flex-col items-center text-center space-y-4 shadow-[0_4px_24px_rgba(0,0,0,0.06)] relative overflow-hidden">
+        {/* Ambient neon glow overlays in background */}
+        <div className="absolute -top-20 -left-20 w-44 h-44 rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-44 h-44 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
 
-              {/* Header */}
-              <div className="w-full flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-50">
-                    {t('referral_protocol')}
-                  </span>
-                </div>
-                <button 
-                  onClick={() => setShowQrModal(false)}
-                  className="w-6 h-6 rounded-full bg-brand-bg-opacity-5 hover:bg-brand-bg-opacity-10 border border-brand-border-opacity-10 flex items-center justify-center text-brand-primary opacity-60 hover:opacity-100 transition-all text-[10px] font-bold"
-                >
-                  ✕
-                </button>
-              </div>
+        <div className="space-y-1 relative z-10">
+          <h4 className="text-[12px] font-black text-brand-primary uppercase tracking-tight">FinChess Invite Matrix</h4>
+          <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-widest">Wager • Play • Earn</p>
+        </div>
 
-              {/* Title & subtitle */}
-              <div className="space-y-1 relative z-10">
-                <h4 className="text-[12px] font-black text-brand-primary uppercase tracking-tight">FinChess Invite Matrix</h4>
-                <p className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">Wager • Play • Earn</p>
-              </div>
+        {/* Styled QR Image Wrapper */}
+        <div className="relative p-2.5 bg-white rounded-3xl border-2 border-purple-500/20 shadow-lg flex items-center justify-center shrink-0 w-44 h-44 transition-transform duration-300 hover:scale-[1.02]">
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
+            alt="Referral QR Code" 
+            className="w-full h-full object-contain"
+          />
+          
+          {/* Central logo overlay (Framer Users icon) */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border border-purple-500/25 flex items-center justify-center shadow-md">
+            <div className="w-6 h-6 bg-purple-500/10 rounded-full flex items-center justify-center border border-purple-500/10">
+              <FaUsers size={11} className="text-purple-600" />
+            </div>
+          </div>
+        </div>
 
-              {/* Styled QR Image Wrapper */}
-              <div className="relative p-2.5 bg-white rounded-3xl border-2 border-purple-500/20 shadow-lg flex items-center justify-center shrink-0 w-44 h-44 transition-transform duration-300 hover:scale-[1.02]">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
-                  alt="Referral QR Code" 
-                  className="w-full h-full object-contain"
-                />
-                
-                {/* Central logo overlay (Framer Trophy icon) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border border-purple-500/25 flex items-center justify-center shadow-md">
-                  <div className="w-6 h-6 bg-purple-500/10 rounded-full flex items-center justify-center border border-purple-500/10">
-                    <FaTrophy size={11} className="text-purple-600" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer text */}
-              <div className="space-y-1.5 relative z-10">
-                <p className="text-[9px] font-black text-brand-primary uppercase tracking-wider">{t('your_link')}</p>
-                <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2">
-                  Show this code to your friend in person. They can scan it with their phone camera to join your network.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div className="space-y-1 relative z-10">
+          <p className="text-[8.5px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2">
+            Show this code to your friend in person. They can scan it with their phone camera to join your network.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

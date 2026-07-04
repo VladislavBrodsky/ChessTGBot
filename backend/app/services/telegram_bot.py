@@ -318,11 +318,6 @@ class TelegramService:
             level_lbl = msgs.get("level_label", "LVL")
             xp_lbl = msgs.get("xp_label", "XP")
 
-            import urllib.parse
-            webapp_base = settings.WEBAPP_URL.rstrip('/')
-            qr_page_url = f"{webapp_base}/en/qr?code={urllib.parse.quote(referral_code)}&bot={urllib.parse.quote(bot_username)}"
-            ref_qr_text = msgs.get("ref_qr", "📷 <b>Invite QR Code:</b> <a href=\"{qr_link}\">Open QR Code</a>").format(qr_link=qr_page_url)
-
             welcome_msg = (
                 f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
                 f"{msgs['greeting'].format(name=name)}\n"
@@ -332,8 +327,7 @@ class TelegramService:
                 f"{msgs['f2']}\n"
                 f"{msgs['f3']}\n"
                 f"{msgs['f4']}\n\n"
-                f"{msgs['ref_header']} <code>{referral_link}</code>\n"
-                f"{ref_qr_text}\n\n"
+                f"{msgs['ref_header']} <code>{referral_link}</code>\n\n"
                 f"{msgs['cta']}"
             )
 
@@ -357,8 +351,7 @@ class TelegramService:
 
             keyboard = [
                 [InlineKeyboardButton(msgs["btn"], web_app=WebAppInfo(url=web_app_url))],
-                [InlineKeyboardButton(share_btn_text, url=share_url)],
-                [InlineKeyboardButton("📷  Show QR Code", url=qr_page_url)]
+                [InlineKeyboardButton(share_btn_text, url=share_url)]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
