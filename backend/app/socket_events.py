@@ -505,9 +505,9 @@ async def make_move(sid, data):
                 if len(new_state.move_history) == 1 and new_state.black_player_id != -1:
                     service.start_abort_monitor(game_id, expected_move_count=1, time_limit=30.0, player_color='b')
             
-            # Check bot turn
-            if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
-                asyncio.create_task(handle_bot_turn(game_id))
+            # Check bot turn (Deactivated: Client-side AI computes and submits bot moves to save CPU)
+            # if not new_state.is_game_over and new_state.black_player_id == -1 and new_state.turn == 'b':
+            #     asyncio.create_task(handle_bot_turn(game_id))
         else:
             await sio.emit('error', {'message': 'Illegal move'}, room=sid)
 

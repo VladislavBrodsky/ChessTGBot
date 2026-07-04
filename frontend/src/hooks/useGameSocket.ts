@@ -3,6 +3,7 @@ import { getSocket } from "@/lib/socket";
 import { apiFetch } from "@/lib/api";
 import { Chess, Move } from "chess.js";
 import { logClientMessage } from "@/lib/logger";
+import { computeClientBotMove } from "@/lib/clientGameEngine";
 
 export const useGameSocket = (gameId: string) => {
     const [fen, setFen] = useState("start");
@@ -14,6 +15,7 @@ export const useGameSocket = (gameId: string) => {
     useEffect(() => {
         const socket = getSocket();
         setIsConnected(socket.connected);
+        let botMoveTimeout: any = null;
 
         const onConnect = () => {
             setIsConnected(true);
@@ -39,6 +41,26 @@ export const useGameSocket = (gameId: string) => {
                     "ERROR",
                     `chess.load failed for FEN: ${data.fen} | error: ${e?.message || e?.toString()}`
                 );
+            }
+
+            // Client-side Bot move calculation
+            if (!data.is_game_over && data.black_player_id === -1 && data.turn === 'b') {
+                if (botMoveTimeout) {
+                    clearTimeout(botMoveTimeout);
+                }
+                
+                botMoveTimeout = setTimeout(() => {
+                    const botUci = computeClientBotMove(data.fen, data.difficulty || "medium");
+                    if (botUci) {
+                        console.log("Client-side Bot computed move:", botUci);
+                        logClientMessage("INFO", `Client-side Bot computed move: ${botUci} for game ${gameId}`);
+                        
+                        socket.emit("make_move", {
+                            game_id: gameId,
+                            uci: botUci
+                        });
+                    }
+                }, 800); // 800ms natural delay
             }
         };
 
@@ -66,6 +88,9 @@ export const useGameSocket = (gameId: string) => {
             socket.off("disconnect", onDisconnect);
             socket.off("game_state", onGameState);
             socket.off("error", onError);
+            if (botMoveTimeout) {
+                clearTimeout(botMoveTimeout);
+            }
         };
     }, [gameId, chess]);
 
