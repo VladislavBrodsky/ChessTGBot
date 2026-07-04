@@ -60,6 +60,7 @@ class TelegramService:
             "f3": "🧩 <b>Academy:</b> 100 levels of chess puzzles",
             "f4": "⚡ <b>Instant:</b> Withdraw winnings to TON in seconds",
             "ref_header": "🔗 <b>Invite Link (tap to copy):</b>",
+            "ref_qr": "📷 <b>Invite QR Code (scan in person):</b> <a href=\"{qr_link}\">Open QR Code</a>",
             "ref_hint": "Invite friends & earn USDT from their moves!",
             "cta": "👇 Tap below to start playing!",
             "btn": "♟️  Open FinChess Arena  ♟️",
@@ -76,6 +77,7 @@ class TelegramService:
             "f3": "🧩 <b>Академия:</b> 100 уровней шахматных задач",
             "f4": "⚡ <b>Вывод:</b> Мгновенно на TON-кошелек",
             "ref_header": "🔗 <b>Ссылка для приглашения (нажмите для копирования):</b>",
+            "ref_qr": "📷 <b>QR-код для приглашения (показать другу):</b> <a href=\"{qr_link}\">Открыть QR-код</a>",
             "ref_hint": "Приглашайте друзей и зарабатывайте с каждой их игры!",
             "cta": "👇 Нажмите кнопку ниже для начала игры!",
             "btn": "♟️  Открыть FinChess Arena  ♟️",
@@ -92,6 +94,7 @@ class TelegramService:
             "f3": "🧩 <b>Akademie:</b> 100 Ebenen von Schachrätseln",
             "f4": "⚡ <b>Auszahlung:</b> Gewinne sofort auf TON auszahlen",
             "ref_header": "🔗 <b>Empfehlungslink (zum Kopieren tippen):</b>",
+            "ref_qr": "📷 <b>Einladungs-QR-Code (persönlich scannen):</b> <a href=\"{qr_link}\">QR-Code öffnen</a>",
             "ref_hint": "Freunde einladen und an jedem ihrer Züge verdienen!",
             "cta": "👇 Tippe unten, um das Spiel zu starten!",
             "btn": "♟️  FinChess Arena öffnen  ♟️",
@@ -108,6 +111,7 @@ class TelegramService:
             "f3": "🧩 <b>Academia:</b> 100 niveles de puzzles de ajedrez",
             "f4": "⚡ <b>Retiro:</b> Saldo a tu billetera TON al instante",
             "ref_header": "🔗 <b>Enlace de invitado (toca para copiar):</b>",
+            "ref_qr": "📷 <b>Código QR de invitado (escanear en persona):</b> <a href=\"{qr_link}\">Abrir código QR</a>",
             "ref_hint": "¡Invita amigos y gana USDT por cada movimiento que hagan!",
             "cta": "👇 ¡Toca abajo para comenzar a jugar!",
             "btn": "♟️  Abrir FinChess Arena  ♟️",
@@ -124,6 +128,7 @@ class TelegramService:
             "f3": "🧩 <b>Académie :</b> 100 niveaux de puzzles d'échecs",
             "f4": "⚡ <b>Retrait :</b> Gains transférés sur TON au plus vite",
             "ref_header": "🔗 <b>Lien d'invitation (cliquez pour copier) :</b>",
+            "ref_qr": "📷 <b>Code QR d'invitation (scanner en personne) :</b> <a href=\"{qr_link}\">Ouvrir le code QR</a>",
             "ref_hint": "Parrainez des amis et gagnez des USDT à chaque coup !",
             "cta": "👇 Appuyez ci-dessous pour commencer !",
             "btn": "♟️  Ouvrir FinChess Arena  ♟️",
@@ -140,6 +145,7 @@ class TelegramService:
             "f3": "🧩 <b>الأكاديمية:</b> 100 مستوى من ألغاز الشطرنج",
             "f4": "⚡ <b>سحب فوري:</b> أرباحك إلى محفظة TON بثوانٍ",
             "ref_header": "🔗 <b>رابط الدعوة (اضغط للنسخ):</b>",
+            "ref_qr": "📷 <b>رمز QR للدعوة (امسحه مباشرة):</b> <a href=\"{qr_link}\">افتح رمز QR</a>",
             "ref_hint": "ادعُ الأصدقاء واكسب USDT مع كل حركة يقومون بها!",
             "cta": "👇 اضغط أدناه لبدء اللعب!",
             "btn": "♟️  فتح FinChess Arena  ♟️",
@@ -156,6 +162,7 @@ class TelegramService:
             "f3": "🧩 <b>अकादमी:</b> 100 पहेलियाँ",
             "f4": "⚡ <b>निकासी:</b> सीधे TON वॉलेट में",
             "ref_header": "🔗 <b>आमंत्रण लिंक:</b>",
+            "ref_qr": "📷 <b>आमंत्रण QR कोड (स्कैन करें):</b> <a href=\"{qr_link}\">QR कोड खोलें</a>",
             "ref_hint": "दोस्तों को आमंत्रित करें और उनकी हर चाल पर कमाएं!",
             "cta": "👇 खेलने के लिए नीचे टैप करें!",
             "btn": "♟️  FinChess Arena खोलें  ♟️",
@@ -172,6 +179,7 @@ class TelegramService:
             "f3": "🧩 <b>Academia:</b> 100 puzzles",
             "f4": "⚡ <b>Saque:</b> Instantâneo via TON",
             "ref_header": "🔗 <b>Link de convite:</b>",
+            "ref_qr": "📷 <b>Código QR de convite (escanear pessoalmente):</b> <a href=\"{qr_link}\">Abrir código QR</a>",
             "ref_hint": "Convide amigos e ganhe USDT a cada lance deles!",
             "cta": "👇 Toque abaixo para começar a jogar!",
             "btn": "♟️  Abrir FinChess Arena  ♟️",
@@ -188,6 +196,7 @@ class TelegramService:
             "f3": "🧩 <b>アカデミー:</b> 100パズル",
             "f4": "⚡ <b>即時出金:</b> TONへ送金",
             "ref_header": "🔗 <b>招待リンク:</b>",
+            "ref_qr": "📷 <b>招待用QRコード (友達に見せてスキャン):</b> <a href=\"{qr_link}\">QRコードを開く</a>",
             "ref_hint": "友達を招待して、彼らの一手ごとにUSDTを獲得しましょう！",
             "cta": "👇 下をタップしてゲームを開始！",
             "btn": "♟️  FinChess Arena を開く  ♟️",
@@ -204,6 +213,7 @@ class TelegramService:
             "f3": "🧩 <b>战术学院:</b> 100 关挑战",
             "f4": "⚡ <b>极速提现:</b> 秒到 TON 钱包",
             "ref_header": "🔗 <b>邀请链接：</b>",
+            "ref_qr": "📷 <b>邀请二维码（面对面扫码）：</b> <a href=\"{qr_link}\">打开二维码</a>",
             "ref_hint": "邀请好友加入，从他们的每一步对局中赚取 USDT！",
             "cta": "👇 点击下方开始您的第一场对局！",
             "btn": "♟️  打开 FinChess Arena  ♟️",
@@ -308,6 +318,10 @@ class TelegramService:
             level_lbl = msgs.get("level_label", "LVL")
             xp_lbl = msgs.get("xp_label", "XP")
 
+            import urllib.parse
+            qr_link = f"https://api.qrserver.com/v1/create-qr-code/?size=400x400&data={urllib.parse.quote(referral_link)}"
+            ref_qr_text = msgs.get("ref_qr", "📷 <b>Invite QR Code:</b> <a href=\"{qr_link}\">Open QR Code</a>").format(qr_link=qr_link)
+
             welcome_msg = (
                 f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
                 f"{msgs['greeting'].format(name=name)}\n"
@@ -317,7 +331,8 @@ class TelegramService:
                 f"{msgs['f2']}\n"
                 f"{msgs['f3']}\n"
                 f"{msgs['f4']}\n\n"
-                f"{msgs['ref_header']} <code>{referral_link}</code>\n\n"
+                f"{msgs['ref_header']} <code>{referral_link}</code>\n"
+                f"{ref_qr_text}\n\n"
                 f"{msgs['cta']}"
             )
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUserPlus, FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine } from 'react-icons/fa';
+import { FaUserPlus, FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine, FaQrcode } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
@@ -122,6 +122,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
   const [code, setCode] = useState(referralCode || '');
   const [bot, setBot] = useState(botUsername);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   useEffect(() => {
     // Fetch user sync for code + bot username
@@ -419,8 +420,65 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           >
             <FaShareAlt size={12} />
           </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowQrModal(true)}
+            className="shrink-0 w-10 h-10 bg-brand-surface border border-brand-border-opacity-10 text-brand-primary rounded-xl flex items-center justify-center shadow-sm hover:bg-brand-bg-opacity-5"
+          >
+            <FaQrcode size={14} />
+          </motion.button>
         </div>
       </div>
+
+      {/* QR Code Modal */}
+      <AnimatePresence>
+        {showQrModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/80 backdrop-blur-md"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="w-full max-w-xs bg-brand-surface border border-brand-border-opacity-10 rounded-[32px] p-6 shadow-2xl flex flex-col items-center text-center space-y-4"
+            >
+              {/* Header */}
+              <div className="w-full flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-50">
+                  {t('referral_protocol')}
+                </span>
+                <button 
+                  onClick={() => setShowQrModal(false)}
+                  className="w-6 h-6 rounded-full bg-brand-bg-opacity-5 hover:bg-brand-bg-opacity-10 flex items-center justify-center text-brand-primary opacity-60 hover:opacity-100 transition-all text-[10px] font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* QR Image Wrapper */}
+              <div className="w-48 h-48 bg-white p-3 rounded-2xl flex items-center justify-center shadow-inner border border-white/20">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}`} 
+                  alt="Referral QR Code" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              {/* Footer text */}
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-brand-primary uppercase">Scan to Join</p>
+                <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase leading-normal">
+                  Show this QR code to your friend in person to scan with their phone camera.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
