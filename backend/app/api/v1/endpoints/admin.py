@@ -911,6 +911,29 @@ async def get_system_status(
             "detail": str(e),
         }
 
+    # ── 7. Ledger Audit ──────────────────────────────────────────────────────
+    try:
+        from app.services.ledger_audit import LedgerAuditService
+        mismatches = await LedgerAuditService.run_audit(db)
+        if mismatches:
+            results["ledger_audit"] = {
+                "status": "partial",
+                "mismatches_count": len(mismatches),
+                "detail": f"Detected {len(mismatches)} balance/ledger mismatch anomalies!",
+            }
+        else:
+            results["ledger_audit"] = {
+                "status": "online",
+                "mismatches_count": 0,
+                "detail": "Ledger double-entry reconciliation healthy.",
+            }
+    except Exception as e:
+        results["ledger_audit"] = {
+            "status": "offline",
+            "mismatches_count": None,
+            "detail": f"Failed to run audit: {str(e)}",
+        }
+
     # ── Summary ───────────────────────────────────────────────────────────────
     all_statuses = [v.get("status") for v in results.values()]
     if all(s == "online" for s in all_statuses):

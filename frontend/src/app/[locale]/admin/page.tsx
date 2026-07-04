@@ -9,7 +9,7 @@ import {
   FaChessKnight, FaArrowDown, FaArrowUp, FaChartLine, FaLink,
   FaChartPie, FaCreditCard, FaChess, FaBullhorn, FaServer,
   FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
-  FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate
+  FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate, FaScaleBalanced
 } from 'react-icons/fa6';
 import LayoutWrapper from '@/components/LayoutWrapper';
 
@@ -1049,6 +1049,7 @@ interface SystemStatus {
     web3?: { status: string; ton_api_configured: boolean; payout_mnemonic_configured: boolean; master_wallet_address: string; company_wallet_address: string; master_wallet_balance_ton: number | null; detail: string };
     xp_engine?: { status: string; total_xp_transactions: number | null; xp_per_level: number; detail: string };
     notifications?: { status: string; active_broadcasts: number; completed_broadcasts: number; detail: string };
+    ledger_audit?: { status: string; mismatches_count: number | null; detail: string };
   };
 }
 
@@ -1240,6 +1241,18 @@ function SystemTab() {
               { label: 'Active Broadcasts', value: sys.notifications?.active_broadcasts?.toString() ?? '0' },
               { label: 'Completed Broadcasts', value: sys.notifications?.completed_broadcasts?.toLocaleString() ?? '0' },
               { label: 'Detail', value: sys.notifications?.detail ?? '—' },
+            ]}
+          />
+
+          {/* Ledger Reconciliation */}
+          <SysCard
+            icon={<FaScaleBalanced />}
+            title="Ledger Reconciliation"
+            status={sys.ledger_audit?.status ?? 'unknown'}
+            rows={[
+              { label: 'Audit Status', value: sys.ledger_audit?.status === 'online' ? '✅ Healthy (0 Mismatches)' : '⚠️ Anomaly Detected' },
+              { label: 'Mismatches Count', value: sys.ledger_audit?.mismatches_count != null ? sys.ledger_audit.mismatches_count.toString() : '—' },
+              { label: 'Detail', value: sys.ledger_audit?.detail ?? '—' },
             ]}
           />
         </div>
