@@ -216,7 +216,7 @@ function KpiCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative rounded-2xl p-4 flex items-center gap-4 overflow-hidden"
+      className="relative rounded-2xl p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4 overflow-hidden w-full min-w-0"
       style={{
         backgroundColor: 'rgba(10, 10, 15, 0.6)',
         border: `1px solid ${color}40`,
@@ -226,7 +226,7 @@ function KpiCard({
     >
       {/* Top right glowing dot */}
       <div 
-        className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full"
+        className="absolute top-2 right-2 w-1 h-1 sm:top-2.5 sm:right-2.5 sm:w-1.5 sm:h-1.5 rounded-full"
         style={{ 
           backgroundColor: color,
           boxShadow: `0 0 8px ${color}, 0 0 12px ${color}`
@@ -235,7 +235,7 @@ function KpiCard({
       
       {/* Icon Box */}
       <div 
-        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl"
+        className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 text-base sm:text-xl"
         style={{
           backgroundColor: `${color}15`,
           color: color,
@@ -248,13 +248,13 @@ function KpiCard({
 
       {/* Content */}
       <div className="flex flex-col min-w-0 flex-1">
-        <p className="text-xl sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
+        <p className="text-lg sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
           {value}
         </p>
-        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-widest sm:tracking-[0.2em] font-black leading-tight break-words">
+        <p className="text-[9px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
           {label}
         </p>
-        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
+        {sub && <p className="text-[9px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
       </div>
     </motion.div>
   );
@@ -1282,8 +1282,8 @@ export default function AdminPage() {
   if (accessDenied) return <AccessDenied />;
 
   return (
-    <LayoutWrapper className="justify-start pt-6 pb-32">
-    <div className="relative min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]"
+    <LayoutWrapper className="justify-start pt-6 pb-32 w-full">
+    <div className="relative w-full min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]"
       style={{
         backgroundColor: '#050505',
         backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
@@ -1294,7 +1294,7 @@ export default function AdminPage() {
       <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[50%] bg-amber-900/10 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="relative z-10 max-w-[1100px] mx-auto px-4 pt-8">
+      <div className="relative z-10 w-full max-w-[1100px] mx-auto px-4 pt-8">
 
         {/* Header & Back Button */}
         <div className="mb-10 flex flex-col items-center text-center">
@@ -1312,7 +1312,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-3xl mx-auto px-4">
+        <div className="flex gap-2 justify-start md:justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-3xl mx-auto px-4">
           {TABS.map(tab => {
             const Icon = tab === 'Dashboard' ? FaChartPie : tab === 'Users' ? FaUsers : tab === 'Transactions' ? FaCreditCard : tab === 'Games' ? FaChess : tab === 'Broadcasts' ? FaBullhorn : FaServer;
             return (
