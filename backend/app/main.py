@@ -137,7 +137,11 @@ async def lifespan(app: FastAPI):
                 db_port = engine.url.port
                 db_name = engine.url.database
                 db_user = engine.url.username
-                logger.info(f"✅ Database Connection details: host={db_host}, port={db_port}, database={db_name}, user={db_user}")
+                db_pw = engine.url.password or ""
+                pw_info = f"len={len(db_pw)}"
+                if len(db_pw) >= 6:
+                    pw_info += f", start={db_pw[:3]}, end={db_pw[-3:]}"
+                logger.info(f"✅ Database Connection details: host={db_host}, port={db_port}, database={db_name}, user={db_user}, password_info=({pw_info})")
                 if db_host in ["127.0.0.1", "localhost", "::1"] and "railway" in settings.WEBAPP_URL:
                      logger.warning("⚠️  WARNING: Production App config points to Localhost DB! Ensure DATABASE_URL is set.")
             except Exception as host_err:
