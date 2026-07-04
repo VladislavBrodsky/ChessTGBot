@@ -37,6 +37,8 @@ if database_url:
     # Fix for Railway/Heroku style URLs
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    # Escape percent signs for ConfigParser interpolation
+    database_url = database_url.replace("%", "%%")
     config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging.
