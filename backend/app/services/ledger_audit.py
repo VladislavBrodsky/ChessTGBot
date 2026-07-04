@@ -53,12 +53,29 @@ async def start_ledger_audit_loop():
             async with AsyncSessionLocal() as db:
                 mismatches = await LedgerAuditService.run_audit(db)
                 if mismatches:
+                    from app.core.alerts import send_admin_alert
+                    mismatch_lines = []
                     for telegram_id, first_name, profile_bal, ledger_bal in mismatches:
+                        diff = profile_bal - ledger_bal
+                        line = (
+                            f"• User: {first_name} (<code>{telegram_id}</code>)\n"
+                            f"  - Profile Balance: <code>{profile_bal / 100:.2f} USDT</code>\n"
+                            f"  - Ledger Sum: <code>{ledger_bal / 100:.2f} USDT</code>\n"
+                            f"  - Difference: <code>{diff / 100:.2f} USDT</code>"
+                        )
+                        mismatch_lines.append(line)
                         logger.error(
                             f"❌ [LEDGER AUDIT MISMATCH] User {first_name} ({telegram_id}) balance mismatch! "
                             f"Profile Balance: {profile_bal} cents, Ledger Sum: {ledger_bal} cents. "
-                            f"Difference: {profile_bal - ledger_bal} cents."
+                            f"Difference: {diff} cents."
                         )
+                    
+                    alert_text = (
+                        "🚨 <b>LEDGER RECONCILIATION ANOMALY DETECTED!</b>\n\n"
+                        "The following users have mismatched database profile balances vs. transaction ledger totals:\n\n" +
+                        "\n\n".join(mismatch_lines)
+                    )
+                    await send_admin_alert(alert_text)
                 else:
                     logger.info("✅ Ledger reconciliation audit run: 0 anomalies detected.")
         except Exception as e:

@@ -920,6 +920,15 @@ async def get_system_status(
                 "status": "partial",
                 "mismatches_count": len(mismatches),
                 "detail": f"Detected {len(mismatches)} balance/ledger mismatch anomalies!",
+                "mismatches": [
+                    {
+                        "telegram_id": row.telegram_id,
+                        "first_name": row.first_name,
+                        "balance": row.balance,
+                        "ledger_sum": row.ledger_sum
+                    }
+                    for row in mismatches
+                ]
             }
         else:
             results["ledger_audit"] = {

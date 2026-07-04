@@ -7,7 +7,7 @@ import { FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessP
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 
@@ -19,6 +19,7 @@ import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { useUser } from '@/context/UserContext';
 import { useNavbarHide } from '@/context/NavbarContext';
+import { useAudio } from '@/hooks/useAudio';
 
 export default function PlayLobby() {
   const t = useTranslations('Index');
@@ -30,12 +31,14 @@ export default function PlayLobby() {
   const [tgUser, setTgUser] = useState<any>(null);
   const { stats, walletBalance, syncBalance } = useUser();
   const { hideNavbar, showNavbar } = useNavbarHide();
+  const { play: playAudio } = useAudio();
 
   // Matchmaking configs
   const [selectedWager, setSelectedWager] = useState<number>(500); // in cents (default $5)
   const [customWagerInput, setCustomWagerInput] = useState<string>("5.00");
   const [isCustomWager, setIsCustomWager] = useState<boolean>(false);
-  const [matchmakingState, setMatchmakingState] = useState<'idle' | 'searching'>('idle');
+  const [matchmakingState, setMatchmakingState] = useState<'idle' | 'searching' | 'matched'>('idle');
+  const [matchFoundData, setMatchFoundData] = useState<any>(null);
   const [searchTimer, setSearchTimer] = useState<number>(0);
   const [matchmakingError, setMatchmakingError] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
@@ -319,8 +322,15 @@ export default function PlayLobby() {
 
     const onMatchFound = (data: any) => {
       console.log("Match matched!", data);
-      setMatchmakingState('idle');
-      router.push(`/${locale}/game?id=${data.game_id}`);
+      setMatchFoundData(data);
+      setMatchmakingState('matched');
+      playAudio('start');
+      telegramHaptic('heavy');
+      
+      setTimeout(() => {
+        setMatchmakingState('idle');
+        router.push(`/${locale}/game?id=${data.game_id}`);
+      }, 2500);
     };
 
     const onMatchmakingError = (data: any) => {
@@ -466,7 +476,81 @@ export default function PlayLobby() {
 
         {/* Cyber Radar Search Interface */}
         <AnimatePresence mode="wait" initial={false}>
-          {matchmakingState === 'searching' ? (
+          {matchmakingState === 'matched' ? (
+            <motion.div
+              key="matched"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="w-full p-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-brand-surface to-emerald-950/10 flex flex-col items-center justify-center space-y-6 text-center shadow-[0_8px_48px_rgba(16,185,129,0.25)] relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-conic-radar opacity-10 pointer-events-none" />
+              <div className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.25em] animate-pulse">
+                MATCH FOUND
+              </div>
+              
+              {/* VS Avatars container */}
+              <div className="flex items-center justify-center gap-6 w-full py-4">
+                {/* Player 1 (Us) */}
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-primary p-0.5 shadow-premium bg-brand-void flex items-center justify-center">
+                    <img
+                      src={getFullPhotoUrl(`/api/v1/users/avatar/${tgUser?.id || 0}`)}
+                      alt=""
+                      className="w-full h-full object-cover rounded-xl"
+                      onError={(e: any) => { e.target.src = "/icon.png"; }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-brand-primary truncate max-w-[80px]">
+                    {tgUser?.first_name || 'You'}
+                  </span>
+                  <span className="text-[8px] font-bold text-brand-primary/50">
+                    {stats?.elo || 1000} ELO
+                  </span>
+                </div>
+
+                {/* VS Pulse */}
+                <div className="relative flex items-center justify-center w-12 h-12">
+                  <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping" />
+                  <div className="w-10 h-10 rounded-full bg-brand-void border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                    <span className="text-[11px] font-black text-emerald-400 tracking-tighter">VS</span>
+                  </div>
+                </div>
+
+                {/* Player 2 (Opponent) */}
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-emerald-500 p-0.5 shadow-premium bg-brand-void flex items-center justify-center">
+                    <img
+                      src={getFullPhotoUrl(`/api/v1/users/avatar/${matchFoundData?.opponent_id || 0}`)}
+                      alt=""
+                      className="w-full h-full object-cover rounded-xl"
+                      onError={(e: any) => { e.target.src = "/icon.png"; }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-emerald-400 truncate max-w-[80px]">
+                    {locale === 'ru' ? 'Соперник' : locale === 'es' ? 'Rival' : locale === 'fr' ? 'Adversaire' : 'Opponent'}
+                  </span>
+                  <span className="text-[8px] font-bold text-emerald-400/50">
+                    {stats?.elo ? Math.min(Math.max(stats.elo + (Math.random() > 0.5 ? 20 : -20), 800), 2200) : 1000} ELO
+                  </span>
+                </div>
+              </div>
+
+              {/* Stake & loading */}
+              <div className="w-full p-3 rounded-2xl bg-brand-void border border-brand-border-opacity-10 text-center">
+                <span className="text-[7.5px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">Stakes locked</span>
+                <span className="text-xs font-black text-emerald-400">
+                  ${((matchFoundData?.bid_amount || 0) / 100).toFixed(2)} USDT
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 text-[8px] font-bold text-emerald-400/60 uppercase tracking-widest animate-pulse">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span>Entering arena...</span>
+              </div>
+            </motion.div>
+          ) : matchmakingState === 'searching' ? (
             <motion.div
               key="searching"
               initial={{ opacity: 0, scale: 0.96 }}

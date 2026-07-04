@@ -13,6 +13,7 @@ import IncomingRematchDrawer from '@/components/game/IncomingRematchDrawer';
 
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { useAudioSynth } from '@/hooks/useAudioSynth';
+import { useAudio } from '@/hooks/useAudio';
 import { useChessClock } from '@/hooks/useChessClock';
 import { useNavbarHide } from '@/context/NavbarContext';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
@@ -107,6 +108,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const tIndex = useTranslations('Index');
 
   const { playTickSound } = useAudioSynth();
+  const { play: playAudio } = useAudio();
   // @ts-ignore
   const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
 
@@ -450,10 +452,9 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   useEffect(() => {
     if (!gameState) return;
 
-    const playSound = (soundName: string) => {
+    const playSound = (soundName: any) => {
       try {
-        const audio = new Audio(`/sounds/${soundName}.mp3`);
-        audio.play().catch(() => {});
+        playAudio(soundName);
       } catch (e) {}
     };
 

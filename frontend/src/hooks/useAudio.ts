@@ -1,39 +1,92 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
-type SoundType = 'move' | 'capture' | 'check' | 'win' | 'loss' | 'start';
-
-const SOUNDS: Record<SoundType, string> = {
-    move: '/sounds/move.mp3',
-    capture: '/sounds/capture.mp3',
-    check: '/sounds/check.mp3',
-    win: '/sounds/win.mp3',
-    loss: '/sounds/loss.mp3',
-    start: '/sounds/start.mp3',
-};
+type SoundType = 'move' | 'capture' | 'check' | 'win' | 'loss' | 'start' | 'topup';
 
 export const useAudio = () => {
-    const audioRefs = useRef<Record<string, HTMLAudioElement>>({});
-    const enabledRef = useRef(true); // Default to enabled, can be toggled via context later
-
-    useEffect(() => {
-        // Preload sounds
-        Object.entries(SOUNDS).forEach(([key, src]) => {
-            const audio = new Audio(src);
-            audio.volume = 0.6; // Not too loud
-            audioRefs.current[key] = audio;
-        });
-    }, []);
+    const enabledRef = useRef(true);
 
     const play = useCallback((type: SoundType) => {
-        if (!enabledRef.current) return;
+        if (!enabledRef.current || typeof window === 'undefined') return;
 
-        const audio = audioRefs.current[type];
-        if (audio) {
-            audio.currentTime = 0;
-            audio.play().catch(err => {
-                // Auto-play policy might block this if no user interaction yet
-                console.warn("Audio play blocked:", err);
-            });
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioCtx) return;
+
+            const ctx = new AudioCtx();
+            
+            // Helper to play a tone with precise envelope settings and frequency slides
+            const playNote = (
+                freq: number, 
+                startOffset: number, 
+                duration: number, 
+                waveType: OscillatorType = 'triangle', 
+                volume: number = 0.15,
+                frequencyRampTarget?: number
+            ) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = waveType;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + startOffset);
+                
+                if (frequencyRampTarget) {
+                    osc.frequency.exponentialRampToValueAtTime(
+                        frequencyRampTarget, 
+                        ctx.currentTime + startOffset + duration
+                    );
+                }
+                
+                gain.gain.setValueAtTime(volume, ctx.currentTime + startOffset);
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001, 
+                    ctx.currentTime + startOffset + duration
+                );
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(ctx.currentTime + startOffset);
+                osc.stop(ctx.currentTime + startOffset + duration);
+            };
+
+            if (type === 'move') {
+                // Short warm wood knock
+                playNote(300, 0, 0.08, 'triangle', 0.18, 150);
+            } 
+            else if (type === 'capture') {
+                // Two quick metallic/wood knock pulses
+                playNote(480, 0, 0.04, 'triangle', 0.18, 240);
+                playNote(400, 0.03, 0.06, 'triangle', 0.15, 180);
+            } 
+            else if (type === 'check') {
+                // Dual-tone warning chord
+                playNote(650, 0, 0.18, 'sine', 0.10);
+                playNote(820, 0, 0.18, 'sine', 0.08);
+            } 
+            else if (type === 'start') {
+                // Rise upward swell
+                playNote(220, 0, 0.25, 'sine', 0.12, 440);
+            } 
+            else if (type === 'win') {
+                // Ascending bright major chord arpeggio
+                playNote(523.25, 0, 0.12, 'sine', 0.12);     // C5
+                playNote(659.25, 0.08, 0.12, 'sine', 0.10);  // E5
+                playNote(783.99, 0.16, 0.12, 'sine', 0.08);  // G5
+                playNote(1046.50, 0.24, 0.25, 'sine', 0.06); // C6
+            } 
+            else if (type === 'loss') {
+                // Descending minor sweep
+                playNote(392.00, 0, 0.15, 'triangle', 0.15, 293.66); // G4 -> D4
+                playNote(311.13, 0.12, 0.15, 'triangle', 0.12, 233.08); // Eb4 -> Bb3
+                playNote(261.63, 0.24, 0.35, 'triangle', 0.10, 130.81); // C4 -> C3
+            } 
+            else if (type === 'topup') {
+                // Satisfying double coin register chime
+                playNote(987.77, 0, 0.12, 'sine', 0.08);   // B5
+                playNote(1318.51, 0.06, 0.25, 'sine', 0.06); // E6
+            }
+        } catch (err) {
+            console.error("Synthesizer playback failed:", err);
         }
     }, []);
 

@@ -1049,7 +1049,12 @@ interface SystemStatus {
     web3?: { status: string; ton_api_configured: boolean; payout_mnemonic_configured: boolean; master_wallet_address: string; company_wallet_address: string; master_wallet_balance_ton: number | null; detail: string };
     xp_engine?: { status: string; total_xp_transactions: number | null; xp_per_level: number; detail: string };
     notifications?: { status: string; active_broadcasts: number; completed_broadcasts: number; detail: string };
-    ledger_audit?: { status: string; mismatches_count: number | null; detail: string };
+    ledger_audit?: { 
+      status: string; 
+      mismatches_count: number | null; 
+      detail: string;
+      mismatches?: { telegram_id: number; first_name: string; balance: number; ledger_sum: number }[];
+    };
   };
 }
 
@@ -1255,6 +1260,43 @@ function SystemTab() {
               { label: 'Detail', value: sys.ledger_audit?.detail ?? '—' },
             ]}
           />
+        </div>
+      )}
+
+      {sys?.ledger_audit?.mismatches && sys.ledger_audit.mismatches.length > 0 && (
+        <div className="premium-neon-card p-6 border-amber-500/30 bg-amber-950/5 mt-6">
+          <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-amber-500 flex items-center gap-2">
+            ⚠️ Ledger Anomalies Details
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold">User</th>
+                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold">Telegram ID</th>
+                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Profile Balance</th>
+                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Ledger Sum</th>
+                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Difference</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sys.ledger_audit.mismatches.map((m, i) => {
+                  const diff = m.balance - m.ledger_sum;
+                  return (
+                    <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-2.5 font-bold text-white">{m.first_name}</td>
+                      <td className="px-4 py-2.5 font-mono text-[11px] text-brand-muted">{m.telegram_id}</td>
+                      <td className="px-4 py-2.5 font-mono text-right tabular-nums text-white">{cents(m.balance)}</td>
+                      <td className="px-4 py-2.5 font-mono text-right tabular-nums text-white">{cents(m.ledger_sum)}</td>
+                      <td className="px-4 py-2.5 font-mono text-right tabular-nums text-amber-400 font-bold">
+                        {diff > 0 ? '+' : ''}{cents(diff)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

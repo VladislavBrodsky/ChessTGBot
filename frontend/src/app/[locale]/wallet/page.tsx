@@ -4,7 +4,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { useTranslations, useLocale } from 'next-intl';
 import { AnimatePresence, motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaArrowUp, FaArrowDown, FaChevronLeft, FaWallet } from "react-icons/fa";
 import Link from "next/link";
 import DepositModal from "@/components/Wallet/DepositModal";
@@ -13,6 +13,7 @@ import WalletSelectorModal from "@/components/Wallet/WalletSelectorModal";
 import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
 import { useUser } from "@/context/UserContext";
+import { useAudio } from "@/hooks/useAudio";
 
 interface Transaction {
   id: number;
@@ -31,8 +32,17 @@ export default function WalletPage() {
 
   // Balance & wallet state
   const { walletBalance: balance, walletAddress, syncBalance } = useUser();
+  const { play: playAudio } = useAudio();
+  const prevBalanceRef = useRef<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (prevBalanceRef.current !== null && balance > prevBalanceRef.current) {
+      playAudio('topup');
+    }
+    prevBalanceRef.current = balance;
+  }, [balance, playAudio]);
 
   // Modals
   const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
