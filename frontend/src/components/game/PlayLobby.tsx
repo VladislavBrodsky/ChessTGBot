@@ -126,6 +126,7 @@ export default function PlayLobby() {
   // Visual Header Stats states (Players Online & Active Users)
   const [playersOnline, setPlayersOnline] = useState<number>(782);
   const [activeUsers, setActiveUsers] = useState<number>(3768);
+  const [contendersCount, setContendersCount] = useState<number>(5);
 
   useEffect(() => {
     const calcPlayersOnline = () => {
@@ -266,9 +267,15 @@ export default function PlayLobby() {
     if (matchmakingState === 'searching') {
       interval = setInterval(() => {
         setSearchTimer(prev => prev + 1);
+        setContendersCount(prev => {
+          const delta = Math.random() > 0.5 ? 1 : -1;
+          const next = prev + delta;
+          return next >= 4 && next <= 9 ? next : (next < 4 ? 4 : 9);
+        });
       }, 1000);
     } else {
       setSearchTimer(0);
+      setContendersCount(5);
     }
     return () => clearInterval(interval);
   }, [matchmakingState]);
@@ -562,6 +569,12 @@ export default function PlayLobby() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
               <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary),1)]" />
               
+              {/* Active Contenders Badge */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/10 text-purple-400 animate-pulse text-[8px] font-black uppercase tracking-widest relative z-10">
+                <span className="w-1 h-1 rounded-full bg-purple-400 animate-ping" />
+                <span>{locale === 'ru' ? `Сканирование: ${contendersCount} соперников` : `Scanning: ${contendersCount} contenders`}</span>
+              </div>
+
               {/* Conic sonar radar widget */}
               <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-primary/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(var(--brand-primary),0.2)]">
                 <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none" />
@@ -579,6 +592,9 @@ export default function PlayLobby() {
                 <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
                 <span className="text-2xl font-black text-brand-primary opacity-80 tracking-tighter">
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
+                </span>
+                <span className="text-[8px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
+                  {locale === 'ru' ? 'Ср. ожидание: ~15с' : 'Est. Wait: ~15s'}
                 </span>
               </div>
 

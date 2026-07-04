@@ -141,7 +141,7 @@ export default function WalletPage() {
         </div>
 
         {/* TRANSACTION LEDGER SECTION */}
-        <TransactionLedger loading={loading} transactions={transactions} />
+        <TransactionLedger loading={loading} transactions={transactions} balance={balance} />
 
         <AnimatePresence>
           {activeModal === 'deposit' && (

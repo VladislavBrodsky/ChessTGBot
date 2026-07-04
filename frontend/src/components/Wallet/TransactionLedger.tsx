@@ -17,6 +17,82 @@ interface Transaction {
 interface TransactionLedgerProps {
   loading: boolean;
   transactions: Transaction[];
+  balance?: number;
+}
+
+function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Transaction[]; balance: number }) {
+  if (!transactions || transactions.length === 0) return null;
+
+  let currentVal = balance;
+  const historyPoints: { amount: number; date: string }[] = [];
+  
+  historyPoints.unshift({
+    amount: currentVal / 100,
+    date: 'Now'
+  });
+
+  for (const tx of transactions) {
+    currentVal = currentVal - tx.amount;
+    historyPoints.unshift({
+      amount: currentVal / 100,
+      date: new Date(tx.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })
+    });
+  }
+
+  const maxPoints = historyPoints.slice(-15);
+
+  const WIDTH = 300;
+  const HEIGHT = 90;
+  const PAD = 8;
+
+  const minAmt = Math.min(...maxPoints.map(p => p.amount));
+  const maxAmt = Math.max(...maxPoints.map(p => p.amount));
+  const amtRange = maxAmt - minAmt || 0.001;
+
+  const pts = maxPoints.map((p, i) => {
+    const x = PAD + (i / (maxPoints.length - 1)) * (WIDTH - PAD * 2);
+    const y = PAD + (1 - (p.amount - minAmt) / amtRange) * (HEIGHT - PAD * 2);
+    return { x, y, ...p };
+  });
+
+  const pathD = pts
+    .map((p, i) => (i === 0 ? `M ${p.x},${p.y}` : `L ${p.x},${p.y}`))
+    .join(' ');
+
+  const areaD = `${pathD} L ${pts[pts.length - 1].x},${HEIGHT - PAD} L ${pts[0].x},${HEIGHT - PAD} Z`;
+
+  return (
+    <div className="w-full rounded-2xl border border-brand-border-opacity-5 bg-brand-void/35 overflow-hidden shadow-inner-glow mt-1 mb-2 p-3 space-y-2 relative">
+      <div className="absolute -top-12 -left-12 w-28 h-28 rounded-full bg-purple-500/[0.03] blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-12 -right-12 w-28 h-28 rounded-full bg-cyan-500/[0.03] blur-2xl pointer-events-none" />
+      
+      <div className="flex justify-between items-center px-1">
+        <span className="text-[7.5px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+          Balance History (USDT)
+        </span>
+        <span className="text-[7.5px] font-mono text-emerald-400 font-black uppercase tracking-wider">
+          Range: ${minAmt.toFixed(2)} - ${maxAmt.toFixed(2)}
+        </span>
+      </div>
+
+      <div className="w-full relative px-1 py-1">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" style={{ height: HEIGHT }}>
+          <defs>
+            <linearGradient id="walletChartGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={areaD} fill="url(#walletChartGrad)" />
+          <path d={pathD} stroke="#a855f7" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+          
+          {pts.length > 0 && (
+            <circle cx={pts[pts.length - 1].x} cy={pts[pts.length - 1].y} r="3" fill="#a855f7" className="animate-pulse" />
+          )}
+        </svg>
+      </div>
+    </div>
+  );
 }
 
 const TransactionSkeleton = () => (
@@ -36,7 +112,7 @@ const TransactionSkeleton = () => (
   </div>
 );
 
-export default function TransactionLedger({ loading, transactions }: TransactionLedgerProps) {
+export default function TransactionLedger({ loading, transactions, balance = 0 }: TransactionLedgerProps) {
   const tw = useTranslations('Wallet');
 
   return (
@@ -48,6 +124,10 @@ export default function TransactionLedger({ loading, transactions }: Transaction
         </div>
         <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
       </div>
+
+      {!loading && transactions.length > 0 && (
+        <BalanceHistoryChart transactions={transactions} balance={balance} />
+      )}
 
       {loading ? (
         <TransactionSkeleton />

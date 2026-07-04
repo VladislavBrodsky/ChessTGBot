@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { FaRedo, FaShareAlt } from "react-icons/fa";
+import { FaRedo, FaShareAlt, FaTrophy, FaShieldAlt, FaBalanceScale } from "react-icons/fa";
 import { useLocale, useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
 
 interface MatchOverModalProps {
   matchResultLabel: string;
@@ -37,67 +38,149 @@ export default function MatchOverModal({
   const locale = useLocale();
   const tg = useTranslations('Game');
 
+  const [animatedElo, setAnimatedElo] = useState<number>(0);
+  const [animatedPayout, setAnimatedPayout] = useState<number>(0);
+
+  // Extract ELO change number
+  const changeVal = parseInt(eloChange.replace('+', '')) || 0;
+  const startElo = (newElo ?? 1000) - changeVal;
+
+  useEffect(() => {
+    // ELO rollup animation
+    let eloStartTimestamp: number | null = null;
+    const duration = 1200; // 1.2s
+
+    const stepElo = (timestamp: number) => {
+      if (!eloStartTimestamp) eloStartTimestamp = timestamp;
+      const progress = Math.min((timestamp - eloStartTimestamp) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      setAnimatedElo(Math.round(startElo + eased * changeVal));
+      if (progress < 1) {
+        requestAnimationFrame(stepElo);
+      }
+    };
+    requestAnimationFrame(stepElo);
+
+    // Payout rollup animation
+    let payoutStartTimestamp: number | null = null;
+    const stepPayout = (timestamp: number) => {
+      if (!payoutStartTimestamp) payoutStartTimestamp = timestamp;
+      const progress = Math.min((timestamp - payoutStartTimestamp) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimatedPayout(eased * netPayout);
+      if (progress < 1) {
+        requestAnimationFrame(stepPayout);
+      }
+    };
+    if (netPayout > 0) {
+      requestAnimationFrame(stepPayout);
+    } else {
+      setAnimatedPayout(0);
+    }
+  }, [newElo, eloChange, netPayout, startElo, changeVal]);
+
+  // Determine game outcome type for themed styling
+  const labelLower = matchResultLabel.toLowerCase();
+  const isWin = labelLower.includes('victory') || labelLower.includes('won') || labelLower.includes('побед');
+  const isLoss = labelLower.includes('defeat') || labelLower.includes('lost') || labelLower.includes('пораж');
+  const isDraw = !isWin && !isLoss;
+
+  // Theme configuration mapping
+  const theme = isWin 
+    ? {
+        ambientGlow: "bg-emerald-500/10",
+        radialBorder: "border-emerald-500/30",
+        shadow: "shadow-[0_0_50px_rgba(16,185,129,0.25)]",
+        titleClass: "text-emerald-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(16,185,129,0.3)]",
+        icon: <FaTrophy className="text-5xl text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)] animate-bounce mt-1" />
+      }
+    : isLoss 
+      ? {
+          ambientGlow: "bg-rose-500/10",
+          radialBorder: "border-rose-500/30",
+          shadow: "shadow-[0_0_50px_rgba(239,68,68,0.25)]",
+          titleClass: "text-rose-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(239,68,68,0.3)]",
+          icon: <FaShieldAlt className="text-5xl text-rose-500/70 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] rotate-12 mt-1" />
+        }
+      : {
+          ambientGlow: "bg-cyan-500/10",
+          radialBorder: "border-cyan-500/30",
+          shadow: "shadow-[0_0_50px_rgba(6,182,212,0.25)]",
+          titleClass: "text-cyan-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(6,182,212,0.3)]",
+          icon: <FaBalanceScale className="text-5xl text-cyan-400/80 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-1" />
+        };
+
   return (
-    <div className="bottom-drawer-backdrop z-[100]">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-md">
+      {/* Backdrop fading in */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
+        className="absolute inset-0" style={{ touchAction: 'none' }}
       />
 
-      {/* Modal Content as slide-up drawer */}
+      {/* Full-Screen Premium Modal container */}
       <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
+        initial={{ scale: 0.94, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.94, y: 20 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className={`relative overflow-hidden w-full max-w-[300px] bg-brand-surface border rounded-[32px] p-6 flex flex-col items-center text-center space-y-6 z-10 ${theme.radialBorder} ${theme.shadow}`}
       >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <h2 className={`text-2xl font-black uppercase tracking-widest mb-1 ${resultColor}`}>
+        {/* Ambient neon radial glows in background */}
+        <div className={`absolute -top-20 -left-20 w-44 h-44 rounded-full ${theme.ambientGlow} blur-3xl pointer-events-none`} />
+        <div className={`absolute -bottom-20 -right-20 w-44 h-44 rounded-full ${theme.ambientGlow} blur-3xl pointer-events-none`} />
+
+        {/* Visual Outcome Header */}
+        <div className="flex flex-col items-center space-y-1 relative z-10 w-full mt-2">
+          <div className="mb-2">
+            {theme.icon}
+          </div>
+          <h2 className={`text-xl ${theme.titleClass}`}>
             {matchResultLabel}
           </h2>
-          <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.3em] mb-6">
+          <p className="text-[9px] font-black text-brand-primary opacity-30 uppercase tracking-[0.25em]">
             {tg('verification_complete')}
           </p>
         </div>
 
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-2 space-y-4 shadow-sm">
+        {/* Metrics Grid */}
+        <div className="w-full bg-brand-void/40 rounded-2xl p-4.5 border border-brand-border-opacity-10 space-y-3.5 shadow-inner-glow relative z-10">
           <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{tg('global_elo')}</span>
-            <div className="flex items-baseline gap-2">
-              <span className="text-sm font-black text-brand-primary tracking-widest">{newElo ?? 1000}</span>
-              <span className={`text-[10px] font-black tracking-widest text-brand-primary`}>
-                {eloChange}
+            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('global_elo')}</span>
+            <div className="flex items-center gap-1.5 font-mono">
+              <span className="text-xs font-black text-brand-primary tracking-wider">{animatedElo} ELO</span>
+              <span className={`text-[8.5px] font-black tracking-widest ${changeVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {changeVal >= 0 ? `+${changeVal}` : changeVal}
               </span>
             </div>
           </div>
-          <div className="h-px w-full bg-brand-border-opacity-10" />
+          
+          <div className="h-px w-full bg-brand-border-opacity-5" />
+          
           <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{tg('net_payout')}</span>
+            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('net_payout')}</span>
             <div className="flex flex-col items-end">
-              <span className="text-sm font-black tracking-widest text-brand-primary">
-                {netPayout > 0 ? '+' : ''}{netPayout.toFixed(2)} USDT
+              <span className={`text-xs font-black tracking-wider font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-primary opacity-60'}`}>
+                {netPayout > 0 ? `+$${animatedPayout.toFixed(2)}` : '$0.00'} USDT
               </span>
-              {wagerAmount > 0 && matchResultLabel === tg('victory_secured') && (
-                <span className="text-[8px] text-brand-primary opacity-40 uppercase tracking-widest mt-1">
-                  {tg('platform_rake')}
+              {wagerAmount > 0 && isWin && (
+                <span className="text-[7.5px] text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">
+                  {tg('platform_rake')} (3%)
                 </span>
               )}
             </div>
           </div>
+
           {xpGained !== undefined && xpGained > 0 && (
             <>
-              <div className="h-px w-full bg-brand-border-opacity-10" />
+              <div className="h-px w-full bg-brand-border-opacity-5" />
               <div className="flex justify-between items-center animate-fade-in">
-                <span className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">
+                <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
                   {locale === 'ru' ? 'Опыт' : 'XP Reward'}
                 </span>
-                <span className="text-sm font-black text-amber-400 tracking-widest flex items-center gap-1">
+                <span className="text-xs font-black text-amber-400 tracking-wider font-mono flex items-center gap-1">
                   +{xpGained} XP ⭐
                 </span>
               </div>
@@ -105,30 +188,32 @@ export default function MatchOverModal({
           )}
         </div>
 
-        <div className="w-full flex flex-col gap-3">
+        {/* Buttons / Actions */}
+        <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
-            <div className="w-full bg-brand-surface py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
-              <span>{isBotGame ? (locale === 'ru' ? 'Создание игры...' : 'Creating Game...') : 'Pending Opponent...'}</span>
+            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[9px] uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
+              <span>{isBotGame ? (locale === 'ru' ? 'Создание дуэли...' : 'Creating Match...') : 'Pending Opponent...'}</span>
             </div>
           ) : (
             <motion.button
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onShowRematchChoice}
-              className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+              className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[9px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-300"
             >
               <span>{tg('revenge_match')}</span>
             </motion.button>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             <Link href={`/${locale}/home`} className="w-full">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
+                className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
               >
-                <FaRedo />
-                <span>{tg('return_hub')}</span>
+                <FaRedo size={10} className="text-brand-primary opacity-60" />
+                <span>{locale === 'ru' ? 'В лобби' : 'To Lobby'}</span>
               </motion.button>
             </Link>
             
@@ -136,9 +221,9 @@ export default function MatchOverModal({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onShareGame}
-              className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+              className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
             >
-              <FaShareAlt className="text-brand-primary opacity-60" />
+              <FaShareAlt size={10} className="text-brand-primary opacity-60" />
               <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>
             </motion.button>
           </div>

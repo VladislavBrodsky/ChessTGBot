@@ -273,6 +273,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const myTime = isWhite ? whiteTime : blackTime;
   const opponentTime = isWhite ? blackTime : whiteTime;
+  const isMyTurn = gameState && !gameState.is_game_over && gameState.turn === (isWhite ? 'w' : 'b');
+  const isOpponentTurn = gameState && !gameState.is_game_over && gameState.turn !== (isWhite ? 'w' : 'b');
 
   // Sync wallet balance and user stats on game completion, play warning indicators
   useEffect(() => {
@@ -829,7 +831,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
 
         {/* Opponent Widget */}
-        <div className="w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border border-brand-border-opacity-10 opacity-70">
+        <div className={`w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border transition-all duration-300 ${
+          isOpponentTurn 
+            ? 'border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-gradient-to-r from-purple-500/[0.02] to-transparent opacity-100' 
+            : 'border-brand-border-opacity-10 opacity-60'
+        }`}>
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
               <PlayerAvatar 
@@ -844,11 +850,22 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                   ? tg('ai_combatant') 
                   : (isWhite ? gameState?.black_username : gameState?.white_username) || tg('opponent')}
               </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
-                {isBotGame 
-                  ? tg('ai_engine') 
-                  : `ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
-              </span>
+              {isOpponentTurn ? (
+                <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1 animate-pulse">
+                  {locale === 'ru' ? 'Думает' : 'Thinking'}
+                  <span className="inline-flex gap-0.5 ml-0.5">
+                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </span>
+                </span>
+              ) : (
+                <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                  {isBotGame 
+                    ? tg('ai_engine') 
+                    : `ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
+                </span>
+              )}
             </div>
           </div>
           <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
@@ -905,7 +922,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         )}
       
         {/* Player Widget */}
-        <div className="w-full flex justify-between items-center px-4 py-4 glass-panel border border-brand-border-opacity-10 bg-brand-surface">
+        <div className={`w-full flex justify-between items-center px-4 py-4 glass-panel border transition-all duration-300 ${
+          isMyTurn 
+            ? 'border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-gradient-to-r from-emerald-500/[0.02] to-transparent opacity-100' 
+            : 'border-brand-border-opacity-10'
+        }`}>
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm overflow-hidden">
               <PlayerAvatar 
@@ -918,9 +939,16 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
                 {(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
               </span>
-              <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">
-                MASTER • ELO {(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}
-              </span>
+              {isMyTurn ? (
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+                  {locale === 'ru' ? 'Ваш ход' : 'Your turn'}
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                </span>
+              ) : (
+                <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">
+                  MASTER • ELO {(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}
+                </span>
+              )}
             </div>
           </div>
           <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
