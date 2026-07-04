@@ -44,7 +44,11 @@ export const useGameSocket = (gameId: string) => {
             }
 
             // Client-side Bot move calculation
-            if (!data.is_game_over && data.black_player_id === -1 && data.turn === 'b') {
+            const isBotTurn = !data.is_game_over && (
+                (data.black_player_id === -1 && data.turn === 'b') ||
+                (data.white_player_id === -1 && data.turn === 'w')
+            );
+            if (isBotTurn) {
                 if (botMoveTimeout) {
                     clearTimeout(botMoveTimeout);
                 }
