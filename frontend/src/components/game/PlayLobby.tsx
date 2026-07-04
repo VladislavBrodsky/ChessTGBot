@@ -473,19 +473,20 @@ export default function PlayLobby() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-6 text-center shadow-lg relative overflow-hidden"
+              className="w-full p-6 rounded-3xl border border-brand-primary/20 bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 flex flex-col items-center justify-center space-y-6 text-center shadow-[0_8px_32px_rgba(var(--brand-primary),0.15)] relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bg-opacity-5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+              <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary),1)]" />
               
               {/* Conic sonar radar widget */}
-              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-border-opacity-10 overflow-hidden bg-brand-void shadow-inner-glow">
+              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-primary/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(var(--brand-primary),0.2)]">
                 <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none" />
-                <div className="absolute w-32 h-32 rounded-full border border-brand-border-opacity-10 animate-ping opacity-60" />
-                <div className="absolute w-24 h-24 rounded-full border border-brand-border-opacity-5" />
-                <div className="absolute w-12 h-12 rounded-full border border-brand-border-opacity-20 animate-pulse bg-brand-bg-opacity-5" />
+                <div className="absolute w-32 h-32 rounded-full border border-brand-primary/30 shadow-[0_0_15px_rgba(var(--brand-primary),0.2)] animate-ping opacity-60" />
+                <div className="absolute w-24 h-24 rounded-full border border-brand-primary/20 shadow-[0_0_10px_rgba(var(--brand-primary),0.1)]" />
+                <div className="absolute w-12 h-12 rounded-full border border-brand-primary/40 animate-pulse bg-brand-primary/5 shadow-[0_0_8px_rgba(var(--brand-primary),0.3)]" />
 
-                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-primary flex items-center justify-center shadow-premium">
-                  <FaChessKnight className="text-lg text-brand-primary animate-bounce" />
+                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-primary flex items-center justify-center shadow-[0_0_15px_rgba(var(--brand-primary),0.4)]">
+                  <FaChessKnight className="text-lg text-brand-primary animate-bounce drop-shadow-[0_0_5px_rgba(var(--brand-primary),0.8)]" />
                 </div>
               </div>
 
@@ -669,18 +670,18 @@ export default function PlayLobby() {
 
               {/* Secondary Actions — Upgraded to match Command Center stats cards */}
               <div className="grid grid-cols-2 gap-3 w-full">
-                {/* Train against AI button */}
                 <motion.button
                   whileHover={!isCreating ? { scale: 1.03 } : {}}
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={triggerPlayVsComputer}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/10 border border-emerald-500/25 shadow-[0_4px_24px_rgba(16,185,129,0.08)] hover:bg-emerald-500/15 transition-all"
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 shadow-[0_4px_24px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_32px_rgba(16,185,129,0.25)] transition-all group"
                 >
+                  <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_24px_rgba(16,185,129,0.5)] transition-all"
                   >
-                    <FaRobot className="text-emerald-500 text-[15px]" />
+                    <FaRobot className="text-emerald-500 text-[15px] drop-shadow-md group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-black leading-none text-emerald-600 dark:text-emerald-400 tracking-wide uppercase">
@@ -694,16 +695,17 @@ export default function PlayLobby() {
  
                 {/* Play with friend button */}
                 <motion.button
-                  whileHover={!isCreating ? { scale: 1.03 } : {}}
-                  whileTap={!isCreating ? { scale: 0.98 } : {}}
-                  onClick={playVsFriend}
-                  disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/10 border border-purple-500/25 shadow-[0_4px_24px_rgba(168,85,247,0.08)] hover:bg-purple-500/15 transition-all"
-                >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-purple-500/30 to-purple-500/10 border border-purple-500/30 shadow-[0_0_12px_rgba(168,85,247,0.2)]"
-                  >
-                    <FaShareAlt className="text-purple-500 text-[14px]" />
+                   whileHover={!isCreating ? { scale: 1.03 } : {}}
+                   whileTap={!isCreating ? { scale: 0.98 } : {}}
+                   onClick={playVsFriend}
+                   disabled={isCreating}
+                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/30 shadow-[0_4px_24px_rgba(168,85,247,0.15)] hover:shadow-[0_4px_32px_rgba(168,85,247,0.25)] transition-all group"
+                 >
+                   <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                   <div
+                     className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-purple-500/30 to-purple-500/10 border border-purple-500/40 shadow-[0_0_16px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_24px_rgba(168,85,247,0.5)] transition-all"
+                   >
+                     <FaShareAlt className="text-purple-500 text-[14px] drop-shadow-md group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-black leading-none text-purple-600 dark:text-purple-400 tracking-wide uppercase">

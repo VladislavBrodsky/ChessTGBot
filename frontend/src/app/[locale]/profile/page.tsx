@@ -80,8 +80,8 @@ export default function ProfilePage() {
  <div className="w-full flex flex-col items-center text-center">
  <div className="relative mb-4">
  {/* Outer rotating/pulsing ring */}
- <div className="absolute inset-0 rounded-full border border-brand-primary opacity-10 animate-pulse scale-105" />
- <div className="w-24 h-24 rounded-full bg-brand-surface border border-brand-border-opacity-20 flex items-center justify-center relative overflow-hidden shadow-premium">
+ <div className="absolute inset-0 rounded-full border border-brand-primary/30 animate-pulse scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none" />
+ <div className="w-24 h-24 rounded-full bg-brand-surface border-2 border-brand-primary/10 flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.15)]">
  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
  <img 
    src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} 
@@ -90,11 +90,11 @@ export default function ProfilePage() {
    onError={() => setPhotoError(true)}
  />
  ) : (
- <FaChessKing className="text-4xl text-brand-primary opacity-40" />
+ <FaChessKing className="text-4xl text-brand-primary opacity-40 drop-shadow-md" />
  )}
  </div>
  {/* Premium overlay badge */}
- <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border-opacity-20 bg-brand-surface text-brand-primary text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
+ <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
  👑 {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
  </div>
  </div>
@@ -232,39 +232,49 @@ export default function ProfilePage() {
          const isWin = game.result === 'win';
          const isLoss = game.result === 'loss';
          const badgeColor = isWin 
-           ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" 
+           ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.15)]" 
            : isLoss 
-             ? "border-red-500/20 bg-red-500/10 text-red-400" 
+             ? "border-red-500/20 bg-red-500/10 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.15)]" 
              : "border-brand-primary/20 bg-brand-primary/10 text-brand-primary opacity-60";
          
+         const rowGlow = isWin
+           ? "hover:border-emerald-500/20 bg-gradient-to-r from-emerald-500/[0.03] to-transparent shadow-[0_2px_12px_rgba(16,185,129,0.03)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.06)]"
+           : isLoss
+             ? "hover:border-red-500/20 bg-gradient-to-r from-red-500/[0.03] to-transparent shadow-[0_2px_12px_rgba(239,68,68,0.03)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.06)]"
+             : "hover:border-brand-primary/20 bg-brand-surface border-brand-border-opacity-10 shadow-[0_2px_8px_rgba(0,0,0,0.03)]";
+
          return (
            <motion.div
              key={game.game_id}
              whileHover={{ scale: 1.01 }}
              whileTap={{ scale: 0.99 }}
              onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
-             className="glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface flex justify-between items-center cursor-pointer hover:border-brand-primary/20 transition-all"
+             className={`p-4 rounded-2xl border border-brand-border-opacity-10 flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden ${rowGlow}`}
            >
-             <div className="flex items-center gap-3">
-               <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
-                 <FaChessPawn className="text-brand-primary opacity-40" />
+             {/* Ambient hover glow indicator */}
+             {isWin && <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />}
+             {isLoss && <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />}
+
+             <div className="flex items-center gap-3 relative z-10">
+               <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
+                 <FaChessPawn className="text-brand-primary opacity-40 drop-shadow-sm" />
                </div>
                <div className="flex flex-col">
-                 <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+                 <span className="text-xs font-black text-brand-primary uppercase tracking-tight">
                    vs {game.opponent?.name || "AI Engine"}
                  </span>
-                 <span className="text-[9px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                 <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em]">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
                  </span>
                </div>
              </div>
              
-             <div className="flex items-center gap-4">
+             <div className="flex items-center gap-4 relative z-10">
                <div className="flex flex-col items-end">
                  <span className={`px-2 py-0.5 rounded border text-[8px] font-black uppercase tracking-widest ${badgeColor}`}>
                    {game.result}
                  </span>
-                 <span className="text-[9px] font-black text-brand-primary mt-1">
+                 <span className="text-[9px] font-black text-brand-primary mt-1.5 drop-shadow-sm">
                    {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                  </span>
                </div>

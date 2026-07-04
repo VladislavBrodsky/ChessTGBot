@@ -144,33 +144,53 @@ function BarChart({
   label: string;
   color?: string;
 }) {
+  const [hovered, setHovered] = useState<number | null>(null);
   const values = data.map(d => Number(d[valueKey]));
   const maxVal = Math.max(...values, 1);
+  const total = values.reduce((a, b) => a + b, 0);
 
   return (
     <div className="w-full">
-      <p className="text-[11px] text-brand-muted mb-2 uppercase tracking-widest">
-        {label} — Last 14 Days
-      </p>
-      <div className="flex items-end gap-[3px] h-[60px]">
+      <div className="flex justify-between items-center mb-3">
+        <p className="text-[11px] text-brand-muted uppercase tracking-widest font-bold">{label}</p>
+        <p className="text-[11px] font-black" style={{ color }}>
+          {valueKey.includes('cents') ? cents(total) : fmt(total)} total
+        </p>
+      </div>
+      <div className="flex items-end gap-[3px] h-[72px] relative">
         {data.map((d, i) => {
-          const h = Math.max(2, (values[i] / maxVal) * 60);
+          const h = Math.max(3, (values[i] / maxVal) * 72);
           return (
             <div
               key={i}
-              title={`${d.date}: ${values[i]}`}
-              className="flex-1 rounded-t-[2px] transition-all duration-300 cursor-default"
-              style={{
-                height: h,
-                background: color,
-                opacity: 0.7 + (i / data.length) * 0.3,
-              }}
-            />
+              className="flex-1 relative group cursor-default"
+              style={{ height: 72, display: 'flex', alignItems: 'flex-end' }}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              {hovered === i && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 bg-black/90 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white whitespace-nowrap z-10 pointer-events-none">
+                  <div className="font-bold">{d.date.slice(5)}</div>
+                  <div style={{ color }}>{valueKey.includes('cents') ? cents(values[i]) : fmt(values[i])}</div>
+                </div>
+              )}
+              <div
+                className="w-full rounded-t-[3px] transition-all duration-200"
+                style={{
+                  height: h,
+                  background: hovered === i
+                    ? color
+                    : `linear-gradient(180deg, ${color}cc, ${color}55)`,
+                  boxShadow: hovered === i ? `0 -4px 12px ${color}60` : 'none',
+                }}
+              />
+            </div>
           );
         })}
       </div>
-      <div className="flex justify-between mt-1 text-[9px] text-brand-muted">
+      <div className="flex justify-between mt-1.5 text-[9px] text-brand-muted">
         <span>{data[0]?.date?.slice(5)}</span>
+        <span className="opacity-50">14 days</span>
         <span>{data[data.length - 1]?.date?.slice(5)}</span>
       </div>
     </div>
@@ -240,6 +260,43 @@ function KpiCard({
   );
 }
 
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+function Pagination({ page, pages, onPage }: { page: number; pages: number; onPage: (p: number) => void }) {
+  if (pages <= 1) return null;
+  const visiblePages = Array.from({ length: Math.min(5, pages) }, (_, i) => {
+    const start = Math.max(1, Math.min(page - 2, pages - 4));
+    return start + i;
+  }).filter(p => p >= 1 && p <= pages);
+
+  return (
+    <div className="flex justify-center items-center gap-1.5 mt-5">
+      <button
+        disabled={page === 1}
+        onClick={() => onPage(page - 1)}
+        className="w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
+      >‹</button>
+      {visiblePages.map(p => (
+        <button
+          key={p}
+          onClick={() => onPage(p)}
+          className={`w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all ${
+            p === page
+              ? 'bg-purple-600 text-white shadow-[0_0_12px_rgba(147,51,234,0.5)]'
+              : 'bg-white/5 hover:bg-white/10 border border-white/5 text-brand-muted'
+          }`}
+        >{p}</button>
+      ))}
+      <button
+        disabled={page >= pages}
+        onClick={() => onPage(page + 1)}
+        className="w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
+      >›</button>
+      <span className="text-[10px] text-brand-muted ml-1">{page}/{pages}</span>
+    </div>
+  );
+}
+
 // ─── Tab Navigation ───────────────────────────────────────────────────────────
 
 const TABS = ['Dashboard', 'Users', 'Transactions', 'Games', 'Broadcasts', 'System'] as const;
@@ -276,8 +333,21 @@ function AccessDenied() {
 // ─── Dashboard Tab ────────────────────────────────────────────────────────────
 
 function DashboardTab({ stats }: { stats: Stats }) {
+  const now = new Date();
+  const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 18 ? 'Good afternoon' : 'Good evening';
   return (
     <div className="w-full">
+      {/* Greeting Banner */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-lg font-black text-white">{greeting}, Admin 👋</h2>
+          <p className="text-[11px] text-brand-muted mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        </div>
+        <div className="px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-green-500/10 border border-green-500/20 text-green-400">
+          ● Live
+        </div>
+      </div>
+
       {/* KPI Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8 w-full">
         <KpiCard label="Total Users" value={fmt(stats.total_users)} icon={<FaUsers />} color="#8b5cf6" />
@@ -298,7 +368,7 @@ function DashboardTab({ stats }: { stats: Stats }) {
           <BarChart data={stats.daily_activity} valueKey="count" label="Daily Activity" color="#8b5cf6" />
         </div>
         <div className="premium-neon-card p-5">
-          <BarChart data={stats.daily_revenue} valueKey="total_cents" label="Daily Revenue (¢)" color="#22c55e" />
+          <BarChart data={stats.daily_revenue} valueKey="total_cents" label="Daily Revenue" color="#22c55e" />
         </div>
       </div>
     </div>
@@ -306,6 +376,8 @@ function DashboardTab({ stats }: { stats: Stats }) {
 }
 
 // ─── Users Tab ────────────────────────────────────────────────────────────────
+
+
 
 function UsersTab() {
   const [users, setUsers] = useState<UserSummary[]>([]);
@@ -334,6 +406,7 @@ function UsersTab() {
 
   const openUser = async (u: UserSummary) => {
     setSelectedUser(u);
+    setUserDetail(null);
     const res = await apiFetch(`/api/v1/admin/users/${u.telegram_id}`);
     if (res.ok) {
       const data = await res.json();
@@ -345,84 +418,87 @@ function UsersTab() {
 
   return (
     <div>
-      {/* Search */}
-      <div className="flex gap-2 mb-4">
-        <input
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1); } }}
-          placeholder="Search by name, username or Telegram ID…"
-          className="flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all"
-        />
+      {/* Search Bar */}
+      <div className="flex gap-2 mb-5">
+        <div className="flex-1 relative">
+          <FaUsers className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-xs" />
+          <input
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1); } }}
+            placeholder="Search name, username or Telegram ID…"
+            className="w-full pl-9 pr-4 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all"
+          />
+        </div>
         <button
           onClick={() => { setSearch(searchInput); setPage(1); }}
-          className="action-button px-6 py-2.5 text-xs"
-        >
-          Search
-        </button>
+          className="action-button px-5 py-2.5 text-xs"
+        >Search</button>
         {search && (
           <button
             onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-            className="glass-button px-4 py-2.5 text-xs font-bold uppercase tracking-wider"
-          >
-            Clear
-          </button>
+            className="glass-button px-4 py-2.5 text-xs font-bold"
+          >✕ Clear</button>
         )}
       </div>
 
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>
-        {total > 0 ? `${fmt(total)} users found` : 'No results'}
-      </p>
+      {/* Count + Loading indicator */}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[11px] text-brand-muted">
+          {loading ? 'Loading…' : total > 0 ? `${fmt(total)} users found` : 'No results'}
+        </p>
+        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
+      </div>
 
       {/* Table */}
-      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
+      <div className="premium-neon-card overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              {['ID', 'Name', 'Username', 'ELO', 'Games', 'Balance', 'Level', 'Premium', ''].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">
-                  {h}
-                </th>
+              {['User', 'ELO', 'W/L/D', 'Balance', 'Level', 'Status', ''].map(h => (
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr><td colSpan={9} className="text-center py-8 text-brand-muted">Loading…</td></tr>
+            {loading && users.length === 0 ? (
+              <tr><td colSpan={7} className="text-center py-12 text-brand-muted">
+                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                Loading users…
+              </td></tr>
             ) : users.length === 0 ? (
-              <tr><td colSpan={9} className="text-center py-8 text-brand-muted">No users found</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-brand-muted">No users found</td></tr>
             ) : users.map(u => (
               <tr
                 key={u.telegram_id}
-                className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+                className="border-b border-white/5 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                onClick={() => openUser(u)}
               >
-                <td className="px-4 py-2.5 text-brand-muted font-mono">{u.telegram_id}</td>
-                <td className="px-4 py-2.5 font-bold">{u.first_name} {u.last_name || ''}</td>
-                <td className="px-4 py-2.5 text-brand-muted">{u.username ? `@${u.username}` : '—'}</td>
-                <td className="px-4 py-2.5 font-black text-purple-400">{u.elo}</td>
-                <td className="px-4 py-2.5">{fmt(u.games_played)}</td>
-                <td className={`px-4 py-2.5 ${u.balance_cents > 0 ? 'text-green-400 font-bold' : 'text-brand-muted'}`}>{cents(u.balance_cents)}</td>
-                <td className="px-4 py-2.5">
-                  <span className="bg-purple-500/20 text-purple-400 rounded-md px-2 py-1 text-[10px] font-bold">
-                    L{u.level}
-                  </span>
+                <td className="px-4 py-3">
+                  <div className="font-bold text-white group-hover:text-purple-300 transition-colors">{u.first_name} {u.last_name || ''}</div>
+                  <div className="text-[10px] text-brand-muted mt-0.5">{u.username ? `@${u.username}` : `#${u.telegram_id}`}</div>
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-3">
+                  <span className="font-black text-purple-400 text-sm">{u.elo}</span>
+                </td>
+                <td className="px-4 py-3 text-brand-muted">
+                  <span className="text-green-500">{u.wins}</span>/<span className="text-red-500">{u.losses}</span>/<span className="text-blue-400">{u.draws}</span>
+                </td>
+                <td className={`px-4 py-3 font-bold ${u.balance_cents > 0 ? 'text-green-400' : 'text-brand-muted'}`}>
+                  {cents(u.balance_cents)}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="bg-purple-500/15 text-purple-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-purple-500/20">L{u.level}</span>
+                </td>
+                <td className="px-4 py-3">
                   {u.is_premium ? (
-                    <span className="bg-amber-500/20 text-amber-400 rounded-md px-2 py-1 text-[10px] font-bold">
-                      ⭐ {u.premium_tier || 'PRO'}
-                    </span>
+                    <span className="bg-amber-500/15 text-amber-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-amber-500/20">⭐ {u.premium_tier || 'PRO'}</span>
                   ) : (
-                    <span className="text-brand-muted text-[10px]">—</span>
+                    <span className="text-brand-muted text-[10px]">Standard</span>
                   )}
                 </td>
-                <td className="px-4 py-2.5">
-                  <button
-                    onClick={() => openUser(u)}
-                    className="bg-purple-500/20 hover:bg-purple-500/40 text-purple-400 rounded-lg px-3 py-1 text-[10px] font-bold transition-colors"
-                  >
-                    View
-                  </button>
+                <td className="px-4 py-3">
+                  <span className="text-purple-400/60 group-hover:text-purple-400 text-[11px] font-bold transition-colors">→</span>
                 </td>
               </tr>
             ))}
@@ -430,104 +506,107 @@ function UsersTab() {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(p => p - 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page === 1 ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          ← Prev
-        </button>
-        <span className="px-3 text-xs text-brand-muted">
-          {page} / {pages}
-        </span>
-        <button
-          disabled={page >= pages}
-          onClick={() => setPage(p => p + 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page >= pages ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          Next →
-        </button>
-      </div>
+      <Pagination page={page} pages={pages} onPage={setPage} />
 
-      {/* User Detail Drawer */}
+      {/* User Detail Modal */}
       <AnimatePresence>
         {selectedUser && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4"
             onClick={() => { setSelectedUser(null); setUserDetail(null); }}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="premium-neon-card p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto relative"
+              className="premium-neon-card p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto relative"
             >
+              {/* Modal Header */}
               <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="text-xl font-black mb-1 text-purple-400">
-                    {selectedUser.first_name} {selectedUser.last_name || ''}
-                  </h2>
-                  <p className="text-xs text-brand-muted">
-                    {selectedUser.username ? `@${selectedUser.username} · ` : ''}{selectedUser.telegram_id}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl font-black text-purple-400">
+                    {selectedUser.first_name[0]}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-white">{selectedUser.first_name} {selectedUser.last_name || ''}</h2>
+                    <p className="text-[11px] text-brand-muted">
+                      {selectedUser.username ? `@${selectedUser.username} · ` : ''}{selectedUser.telegram_id}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => { setSelectedUser(null); setUserDetail(null); }}
-                  className="text-brand-muted hover:text-white transition-colors text-2xl leading-none -mt-1"
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-brand-muted hover:text-white transition-all text-lg leading-none"
                 >
                   ✕
                 </button>
               </div>
 
+              {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {[
-                  ['ELO', selectedUser.elo],
-                  ['Level', `L${selectedUser.level} (${fmt(selectedUser.xp)} XP)`],
-                  ['Games', `${fmt(selectedUser.games_played)} (${selectedUser.wins}W/${selectedUser.losses}L/${selectedUser.draws}D)`],
-                  ['Balance', cents(selectedUser.balance_cents)],
-                  ['Premium', selectedUser.is_premium ? `⭐ ${selectedUser.premium_tier || 'PRO'}` : 'Standard'],
-                  ['Referrals', userDetail ? fmt(userDetail.referral_count) : '…'],
-                  ['Wallet', selectedUser.wallet_address ? `${selectedUser.wallet_address.slice(0, 10)}…` : 'None'],
-                  ['Referral Code', selectedUser.referral_code || '—'],
-                ].map(([k, v]) => (
-                  <div key={k as string} className="bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/20 rounded-xl p-3 hover:border-purple-500/40 hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all">
-                    <p className="text-[10px] text-purple-400 opacity-80 uppercase tracking-[0.08em] mb-1 font-bold">{k}</p>
-                    <p className="text-xs font-black truncate text-white" title={v as string}>{v}</p>
+                  { k: 'ELO', v: selectedUser.elo, color: '#8b5cf6' },
+                  { k: 'Level', v: `L${selectedUser.level}`, color: '#a855f7' },
+                  { k: 'XP', v: fmt(selectedUser.xp), color: '#f59e0b' },
+                  { k: 'Balance', v: cents(selectedUser.balance_cents), color: '#22c55e' },
+                  { k: 'Games', v: fmt(selectedUser.games_played), color: '#3b82f6' },
+                  { k: 'Record', v: `${selectedUser.wins}W/${selectedUser.losses}L/${selectedUser.draws}D`, color: '#ec4899' },
+                  { k: 'Status', v: selectedUser.is_premium ? `⭐ ${selectedUser.premium_tier || 'PRO'}` : 'Standard', color: '#f59e0b' },
+                  { k: 'Referrals', v: userDetail ? fmt(userDetail.referral_count) : '…', color: '#14b8a6' },
+                ].map(({ k, v, color }) => (
+                  <div key={k} className="rounded-xl p-3 border border-white/5 bg-white/3 hover:border-white/10 transition-all" style={{ background: `${color}08` }}>
+                    <p className="text-[10px] uppercase tracking-[0.08em] mb-1 font-bold" style={{ color }}>{k}</p>
+                    <p className="text-sm font-black text-white truncate" title={String(v)}>{v}</p>
                   </div>
                 ))}
               </div>
 
+              {/* Wallet & Referral */}
+              {(selectedUser.wallet_address || selectedUser.referral_code) && (
+                <div className="flex gap-3 mb-5 flex-wrap">
+                  {selectedUser.wallet_address && (
+                    <div className="flex-1 min-w-[180px] bg-white/3 border border-white/5 rounded-xl p-3">
+                      <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Wallet</p>
+                      <p className="text-[11px] font-mono text-white/80 truncate">{selectedUser.wallet_address}</p>
+                    </div>
+                  )}
+                  {selectedUser.referral_code && (
+                    <div className="bg-white/3 border border-white/5 rounded-xl p-3">
+                      <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Referral Code</p>
+                      <p className="text-[11px] font-mono text-purple-400 font-bold">{selectedUser.referral_code}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Recent Transactions */}
               {userDetail && userDetail.transactions.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-muted mb-3">
-                    Recent Transactions
-                  </p>
-                  {userDetail.transactions.slice(0, 8).map(tx => (
-                    <div key={tx.id} className="flex justify-between items-center py-2.5 border-b border-white/5">
-                      <div className="flex items-center gap-2">
-                        <span style={{
-                          background: `${TX_COLORS[tx.type] || '#6b7280'}20`,
-                          color: TX_COLORS[tx.type] || '#6b7280',
-                        }} className="rounded-md px-2 py-1 text-[10px] font-bold">
-                          {tx.type}
+                  <p className="text-[11px] font-black uppercase tracking-[0.1em] text-brand-muted mb-3">Recent Transactions</p>
+                  <div className="space-y-1">
+                    {userDetail.transactions.slice(0, 8).map(tx => (
+                      <div key={tx.id} className="flex justify-between items-center py-2 px-3 rounded-lg bg-white/3 hover:bg-white/5 transition-colors">
+                        <div className="flex items-center gap-2.5">
+                          <span style={{
+                            background: `${TX_COLORS[tx.type] || '#6b7280'}15`,
+                            color: TX_COLORS[tx.type] || '#6b7280',
+                            borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
+                          }} className="rounded-lg px-2.5 py-1 text-[10px] font-bold border">
+                            {tx.type.replace('_', ' ')}
+                          </span>
+                          <span className="text-[10px] text-brand-muted">{formatDate(tx.created_at)}</span>
+                        </div>
+                        <span className="text-xs font-bold" style={{ color: tx.amount_cents >= 0 ? '#22c55e' : '#f97316' }}>
+                          {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
                         </span>
-                        <span className="text-[11px] text-brand-muted">{formatDate(tx.created_at)}</span>
                       </div>
-                      <span className="text-xs font-bold" style={{ color: tx.amount_cents >= 0 ? '#22c55e' : '#f97316' }}>
-                        {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -565,120 +644,110 @@ function TransactionsTab() {
   useEffect(() => { loadTxs(); }, [loadTxs]);
 
   const pages = Math.max(1, Math.ceil(total / 25));
-
-  const TX_TYPES = ['', 'deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
-
-  const selectClass = "flex-1 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all";
+  const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
+  const STATUSES = ['completed', 'pending', 'failed'];
 
   return (
     <div>
-      {/* Filters */}
-      <div className="flex gap-2 mb-4 flex-wrap">
-        <select value={typeFilter} onChange={e => { setTypeFilter(e.target.value); setPage(1); }} className={selectClass}>
-          {TX_TYPES.map(t => <option key={t} value={t} className="bg-gray-900">{t || 'All Types'}</option>)}
-        </select>
-        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }} className={selectClass}>
-          <option value="" className="bg-gray-900">All Statuses</option>
-          <option value="completed" className="bg-gray-900">Completed</option>
-          <option value="pending" className="bg-gray-900">Pending</option>
-          <option value="failed" className="bg-gray-900">Failed</option>
-        </select>
-        {(typeFilter || statusFilter) && (
+      {/* Filter Pills */}
+      <div className="flex flex-wrap gap-2 mb-5">
+        <button
+          onClick={() => { setTypeFilter(''); setPage(1); }}
+          className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+            !typeFilter ? 'bg-purple-600 text-white border-purple-500' : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
+          }`}
+        >All Types</button>
+        {TX_TYPES.map(t => (
           <button
-            onClick={() => { setTypeFilter(''); setStatusFilter(''); setPage(1); }}
-            className="glass-button px-4 py-2 text-xs font-bold uppercase tracking-wider"
-          >
-            Clear
-          </button>
-        )}
+            key={t}
+            onClick={() => { setTypeFilter(typeFilter === t ? '' : t); setPage(1); }}
+            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+              typeFilter === t
+                ? 'text-white border-transparent'
+                : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
+            }`}
+            style={typeFilter === t ? { background: TX_COLORS[t] || '#6b7280', borderColor: TX_COLORS[t] } : {}}
+          >{t.replace('_', ' ')}</button>
+        ))}
+        <div className="w-px bg-white/10 self-stretch mx-1" />
+        {STATUSES.map(s => (
+          <button
+            key={s}
+            onClick={() => { setStatusFilter(statusFilter === s ? '' : s); setPage(1); }}
+            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+              statusFilter === s
+                ? 'text-white border-transparent'
+                : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
+            }`}
+            style={statusFilter === s ? { background: STATUS_COLORS[s] || '#6b7280', borderColor: STATUS_COLORS[s] } : {}}
+          >{s}</button>
+        ))}
         <span className="ml-auto text-[11px] text-brand-muted self-center">
-          {total > 0 ? `${fmt(total)} transactions` : ''}
+          {total > 0 ? `${fmt(total)} records` : ''}
         </span>
       </div>
 
       {/* Table */}
-      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
+      <div className="premium-neon-card overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              {['ID', 'User', 'Type', 'Amount', 'Fee', 'Status', 'Reference', 'Date'].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">
-                  {h}
-                </th>
+              {['#', 'User', 'Type', 'Amount', 'Fee', 'Status', 'Reference', 'Date'].map(h => (
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr><td colSpan={8} className="text-center py-8 text-brand-muted">Loading…</td></tr>
+            {loading && txs.length === 0 ? (
+              <tr><td colSpan={8} className="text-center py-12 text-brand-muted">
+                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                Loading…
+              </td></tr>
             ) : txs.length === 0 ? (
-              <tr><td colSpan={8} className="text-center py-8 text-brand-muted">No transactions</td></tr>
+              <tr><td colSpan={8} className="text-center py-12 text-brand-muted">No transactions</td></tr>
             ) : txs.map(tx => (
-              <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer">
-                <td className="px-4 py-2.5 text-brand-muted font-mono">{tx.id}</td>
-                <td className="px-4 py-2.5 font-mono text-[11px]">{tx.user_id}</td>
+              <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px]">{tx.id}</td>
+                <td className="px-4 py-2.5 font-mono text-[10px] text-brand-muted">{tx.user_id}</td>
                 <td className="px-4 py-2.5">
                   <span style={{
-                    background: `${TX_COLORS[tx.type] || '#6b7280'}20`,
+                    background: `${TX_COLORS[tx.type] || '#6b7280'}18`,
                     color: TX_COLORS[tx.type] || '#6b7280',
-                  }} className="rounded-md px-2 py-1 text-[10px] font-bold">
-                    {tx.type}
+                    borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
+                  }} className="rounded-lg px-2.5 py-1 text-[10px] font-bold border">
+                    {tx.type.replace('_', ' ')}
                   </span>
                 </td>
-                <td className={`px-4 py-2.5 font-bold ${tx.amount_cents >= 0 ? 'text-green-500' : 'text-orange-500'}`}>
+                <td className={`px-4 py-2.5 font-bold tabular-nums ${tx.amount_cents >= 0 ? 'text-green-400' : 'text-orange-400'}`}>
                   {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted">
-                  {tx.fee_cents > 0 ? cents(tx.fee_cents) : '—'}
-                </td>
+                <td className="px-4 py-2.5 text-brand-muted tabular-nums">{tx.fee_cents > 0 ? cents(tx.fee_cents) : '—'}</td>
                 <td className="px-4 py-2.5">
                   <span style={{
-                    background: `${STATUS_COLORS[tx.status] || '#6b7280'}20`,
+                    background: `${STATUS_COLORS[tx.status] || '#6b7280'}18`,
                     color: STATUS_COLORS[tx.status] || '#6b7280',
-                  }} className="rounded-md px-2 py-1 text-[10px] font-bold">
+                    borderColor: `${STATUS_COLORS[tx.status] || '#6b7280'}30`,
+                  }} className="rounded-lg px-2.5 py-1 text-[10px] font-black border">
                     {tx.status}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px] max-w-[120px] truncate">
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px] max-w-[100px] truncate">
                   {tx.reference_id ? (
                     tx.reference_id.length > 20
-                      ? <a href={`https://tonviewer.com/transaction/${tx.reference_id}`} target="_blank" rel="noreferrer" className="text-purple-500 hover:text-purple-400 no-underline transition-colors">
-                          {tx.reference_id.slice(0, 12)}…
+                      ? <a href={`https://tonviewer.com/transaction/${tx.reference_id}`} target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors" onClick={e => e.stopPropagation()}>
+                          {tx.reference_id.slice(0, 10)}…
                         </a>
                       : tx.reference_id
                   ) : '—'}
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap">{formatDate(tx.created_at)}</td>
+                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-[10px]">{formatDate(tx.created_at)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(p => p - 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page === 1 ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          ← Prev
-        </button>
-        <span className="px-3 text-xs text-brand-muted">
-          {page} / {pages}
-        </span>
-        <button
-          disabled={page >= pages}
-          onClick={() => setPage(p => p + 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page >= pages ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          Next →
-        </button>
-      </div>
+      <Pagination page={page} pages={pages} onPage={setPage} />
     </div>
   );
 }
@@ -706,94 +775,78 @@ function GamesTab() {
 
   const pages = Math.max(1, Math.ceil(total / 20));
 
-  const resultIcon = (g: Game) => {
-    if (!g.winner) return '🤝';
-    return g.winner === 'w' ? '⬜' : '⬛';
+  const EloDelta = ({ before, after }: { before: number; after: number }) => {
+    const delta = after - before;
+    return (
+      <span className={`text-[10px] font-bold ${ delta > 0 ? 'text-green-400' : delta < 0 ? 'text-red-400' : 'text-brand-muted' }`}>
+        {delta > 0 ? '+' : ''}{delta}
+      </span>
+    );
   };
 
   return (
     <div>
-      <p className="text-[11px] text-brand-muted mb-3">
-        {total > 0 ? `${fmt(total)} online games total` : 'No games yet'}
-      </p>
-      <div className="premium-neon-card overflow-x-auto p-1 mt-2">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-[11px] text-brand-muted">
+          {total > 0 ? `${fmt(total)} online games total` : 'No games yet'}
+        </p>
+        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
+      </div>
+      <div className="premium-neon-card overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              {['Game ID', 'White', 'Black', 'Result', 'Moves', 'Wager', 'Rake', 'Date'].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">
-                  {h}
-                </th>
+              {['Game', 'White', 'Black', 'Result', 'Moves', 'Duration', 'Wager', 'Date'].map(h => (
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr><td colSpan={8} className="text-center py-8 text-brand-muted">Loading…</td></tr>
+            {loading && games.length === 0 ? (
+              <tr><td colSpan={8} className="text-center py-12 text-brand-muted">
+                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                Loading games…
+              </td></tr>
             ) : games.length === 0 ? (
-              <tr><td colSpan={8} className="text-center py-8 text-brand-muted">No games found</td></tr>
+              <tr><td colSpan={8} className="text-center py-12 text-brand-muted">No games found</td></tr>
             ) : games.map(g => (
-              <tr key={g.id} className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer">
-                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px] max-w-[100px] truncate">
-                  {g.game_id?.slice(0, 12)}…
-                </td>
-                <td className="px-4 py-2.5 font-mono text-[11px]">
-                  {g.white_player_id}
-                  <br />
-                  <span className="text-[9px] text-brand-muted">
-                    {g.white_elo_before} → <span className={g.white_elo_after >= g.white_elo_before ? 'text-green-500' : 'text-orange-500'}>{g.white_elo_after}</span>
-                  </span>
-                </td>
-                <td className="px-4 py-2.5 font-mono text-[11px]">
-                  {g.black_player_id}
-                  <br />
-                  <span className="text-[9px] text-brand-muted">
-                    {g.black_elo_before} → <span className={g.black_elo_after >= g.black_elo_before ? 'text-green-500' : 'text-orange-500'}>{g.black_elo_after}</span>
-                  </span>
+              <tr key={g.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px]">{g.game_id?.slice(0, 8)}…</td>
+                <td className="px-4 py-2.5">
+                  <div className="font-mono text-[11px]">{g.white_player_id}</div>
+                  <div className="text-[10px] text-brand-muted mt-0.5">
+                    {g.white_elo_before} → {g.white_elo_after} <EloDelta before={g.white_elo_before} after={g.white_elo_after} />
+                  </div>
                 </td>
                 <td className="px-4 py-2.5">
-                  <span title={g.result_type || ''}>
-                    {resultIcon(g)} {g.result_type || 'draw'}
-                  </span>
+                  <div className="font-mono text-[11px]">{g.black_player_id}</div>
+                  <div className="text-[10px] text-brand-muted mt-0.5">
+                    {g.black_elo_before} → {g.black_elo_after} <EloDelta before={g.black_elo_before} after={g.black_elo_after} />
+                  </div>
                 </td>
-                <td className="px-4 py-2.5">{g.total_moves}</td>
-                <td className={`px-4 py-2.5 ${g.bid_amount_cents > 0 ? 'text-green-400 font-bold' : 'text-brand-muted'}`}>
+                <td className="px-4 py-2.5">
+                  <span className={`text-[11px] font-bold ${
+                    !g.winner ? 'text-blue-400' : g.winner === 'w' ? 'text-white' : 'text-brand-muted'
+                  }`}>
+                    {!g.winner ? '🤝 Draw' : g.winner === 'w' ? '⬜ White' : '⬛ Black'}
+                  </span>
+                  {g.result_type && <div className="text-[9px] text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
+                </td>
+                <td className="px-4 py-2.5 tabular-nums">{g.total_moves}</td>
+                <td className="px-4 py-2.5 text-brand-muted tabular-nums">
+                  {g.duration_seconds ? `${Math.floor(g.duration_seconds / 60)}m ${g.duration_seconds % 60}s` : '—'}
+                </td>
+                <td className={`px-4 py-2.5 tabular-nums ${g.bid_amount_cents > 0 ? 'text-green-400 font-bold' : 'text-brand-muted'}`}>
                   {g.bid_amount_cents > 0 ? cents(g.bid_amount_cents) : '—'}
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted">
-                  {g.platform_rake_cents > 0 ? cents(g.platform_rake_cents) : '—'}
-                </td>
-                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap">{formatDate(g.created_at)}</td>
+                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-[10px]">{formatDate(g.created_at)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(p => p - 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page === 1 ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          ← Prev
-        </button>
-        <span className="px-3 text-xs text-brand-muted">
-          {page} / {pages}
-        </span>
-        <button
-          disabled={page >= pages}
-          onClick={() => setPage(p => p + 1)}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-            page >= pages ? 'text-brand-muted bg-white/5 cursor-not-allowed' : 'glass-button'
-          }`}
-        >
-          Next →
-        </button>
-      </div>
+      <Pagination page={page} pages={pages} onPage={setPage} />
     </div>
   );
 }

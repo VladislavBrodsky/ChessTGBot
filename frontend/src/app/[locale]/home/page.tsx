@@ -126,8 +126,14 @@ export default function Home() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.2 } }}
       onClick={() => router.push(`/${locale}/profile`)}
-      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden group cursor-pointer hover:border-brand-border-opacity-20 transition-all"
+      className="w-full relative overflow-hidden rounded-2xl p-5 border border-brand-border-opacity-10 shadow-[0_4px_24px_rgba(0,0,0,0.06)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 group cursor-pointer hover:border-brand-primary/20 hover:shadow-md transition-all duration-300"
     >
+      {/* Indicator dot */}
+      <motion.div
+        animate={{ opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-brand-primary/80 shadow-[0_0_8px_rgba(var(--brand-primary),0.8)]"
+      />
       {/* Decorative background chess piece */}
       <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
       <FaChessKnight size={140} />
@@ -160,7 +166,7 @@ export default function Home() {
         );
       })()}
       {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brand-primary rounded-full flex items-center justify-center text-[8px] text-brand-void border-2 border-brand-void shadow-premium">
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] border border-brand-primary/40 bg-gradient-to-br from-amber-400/20 to-amber-600/20 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)] backdrop-blur-md">
       <FaStar />
       </div>
       )}
@@ -230,34 +236,40 @@ export default function Home() {
  <div className="grid grid-cols-3 gap-3 w-full relative z-10">
  <Link href={`/${locale}/academy`}>
  <motion.div
- whileHover={{ y: -2 }}
+ whileHover={{ y: -2, scale: 1.02 }}
  whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
+ className="relative overflow-hidden w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-primary/20 hover:shadow-md transition-all duration-300 text-center"
  >
- <FaGraduationCap className="text-lg text-brand-primary opacity-70" />
- <span className="text-[9px] font-black uppercase tracking-wider">{t('academy')}</span>
+ <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
+ <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
+ <FaGraduationCap className="text-lg text-brand-primary opacity-80" />
+ <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">{t('academy')}</span>
  </motion.div>
  </Link>
 
  <Link href={`/${locale}/game`}>
  <motion.div
- whileHover={{ y: -2 }}
+ whileHover={{ y: -2, scale: 1.02 }}
  whileTap={{ scale: 0.97 }}
- className="play-chess-card-premium w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer text-center"
+ className="relative overflow-hidden w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-primary/30 rounded-2xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/5 shadow-[0_4px_24px_rgba(var(--brand-primary),0.15)] hover:bg-brand-primary/15 transition-all duration-300 text-center"
  >
- <FaGamepad className="text-lg text-brand-primary opacity-70 relative z-10" />
- <span className="text-[9px] font-black uppercase tracking-wider relative z-10">{t('play')}</span>
+ <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.1] to-brand-primary/0 pointer-events-none animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+ <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--brand-primary),1)]" />
+ <FaGamepad className="text-lg text-brand-primary relative z-10 drop-shadow-[0_2px_8px_rgba(var(--brand-primary),0.5)]" />
+ <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary relative z-10">{t('play')}</span>
  </motion.div>
  </Link>
 
  <Link href={`/${locale}/challenges`}>
  <motion.div
- whileHover={{ y: -2 }}
+ whileHover={{ y: -2, scale: 1.02 }}
  whileTap={{ scale: 0.97 }}
- className="glass-button w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 hover:border-brand-border-opacity-25 transition-all text-center shadow-sm"
+ className="relative overflow-hidden w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-primary/20 hover:shadow-md transition-all duration-300 text-center"
  >
- <FaTrophy className="text-lg text-brand-primary opacity-70" />
- <span className="text-[9px] font-black uppercase tracking-wider">{t('daily_tasks')}</span>
+ <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
+ <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3.5, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
+ <FaTrophy className="text-lg text-brand-primary opacity-80" />
+ <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">{t('daily_tasks')}</span>
  </motion.div>
  </Link>
  </div>
