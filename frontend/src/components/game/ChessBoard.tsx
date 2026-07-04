@@ -38,9 +38,10 @@ interface ChessBoardProps {
     onMove: (move: { from: string; to: string; promotion?: string }) => boolean;
     orientation?: "white" | "black";
     showConfetti?: boolean;
+    autoPromoteToQueen?: boolean;
 }
 
-export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false }: ChessBoardProps) {
+export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
@@ -103,10 +104,23 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                         (m) => m.from === selectedSquare && m.to === square && m.promotion
                     );
                     if (isPromoMove) {
-                        telegramHaptic('medium');
-                        setPromotionMove({ from: selectedSquare, to: square });
-                        setSelectedSquare(null);
-                        return;
+                        if (autoPromoteToQueen) {
+                            const moveResult = onMove({
+                                from: selectedSquare,
+                                to: square,
+                                promotion: "q"
+                            });
+                            if (moveResult) {
+                                telegramHaptic('light');
+                            }
+                            setSelectedSquare(null);
+                            return;
+                        } else {
+                            telegramHaptic('medium');
+                            setPromotionMove({ from: selectedSquare, to: square });
+                            setSelectedSquare(null);
+                            return;
+                        }
                     }
                 } catch (e) {
                     console.error("Error checking promotion legality:", e);
@@ -167,11 +181,24 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                     (m) => m.from === sourceSquare && m.to === targetSquare && m.promotion
                 );
                 if (isPromoMove) {
-                    telegramHaptic('medium');
-                    // Store details and open custom selection dialog; block immediate move
-                    setPromotionMove({ from: sourceSquare, to: targetSquare });
-                    setSelectedSquare(null);
-                    return false;
+                    if (autoPromoteToQueen) {
+                        const moveResult = onMove({
+                            from: sourceSquare,
+                            to: targetSquare,
+                            promotion: "q"
+                        });
+                        if (moveResult) {
+                            telegramHaptic('light');
+                        }
+                        setSelectedSquare(null);
+                        return moveResult;
+                    } else {
+                        telegramHaptic('medium');
+                        // Store details and open custom selection dialog; block immediate move
+                        setPromotionMove({ from: sourceSquare, to: targetSquare });
+                        setSelectedSquare(null);
+                        return false;
+                    }
                 }
             } catch (e) {
                 console.error("Error checking promotion legality:", e);

@@ -114,6 +114,25 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const [copied, setCopied] = useState(false);
   const [showCrashOverlay, setShowCrashOverlay] = useState(false);
+  const [autoPromote, setAutoPromote] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("setting_auto_promote_queen");
+      if (saved === "true") {
+        setAutoPromote(true);
+      }
+    }
+  }, []);
+
+  const handleToggleAutoPromote = () => {
+    const newVal = !autoPromote;
+    setAutoPromote(newVal);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("setting_auto_promote_queen", String(newVal));
+    }
+    telegramHaptic('light');
+  };
 
   useEffect(() => {
     let timer: any;
@@ -481,12 +500,15 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     else if (prevFenRef.current && prevFenRef.current !== currentFen && !isGameOver) {
       if (isCheck) {
         playSound('check');
+        telegramHaptic('warning');
       } else {
         const getPieceCount = (f: string) => f.split(' ')[0].replace(/[^a-zA-Z]/g, '').length;
         if (getPieceCount(currentFen) < getPieceCount(prevFenRef.current)) {
           playSound('capture');
+          telegramHaptic('medium');
         } else {
           playSound('move');
+          telegramHaptic('light');
         }
       }
     }
@@ -664,6 +686,21 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               </motion.button>
             </Link>
           )}
+          {!isGameOver && (
+            <button
+              onClick={handleToggleAutoPromote}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all cursor-pointer ${
+                autoPromote 
+                  ? 'bg-brand-primary/20 border-brand-primary text-brand-primary' 
+                  : 'bg-brand-surface border-brand-border-opacity-10 text-brand-primary opacity-60'
+              }`}
+            >
+              <span className="text-[8px] font-black uppercase tracking-wider">
+                {locale === 'ru' ? 'Авто-Ферзь' : 'Auto-Queen'}
+              </span>
+              <div className={`w-2 h-2 rounded-full ${autoPromote ? 'bg-brand-primary animate-pulse' : 'bg-brand-primary/30'}`} />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
@@ -833,6 +870,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               onMove={handleBoardMove}
               orientation={isWhite ? "white" : "black"}
               showConfetti={isGameOver && gameState?.winner_id === userId}
+              autoPromoteToQueen={autoPromote}
             />
           </div>
         </div>
