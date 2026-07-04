@@ -24,6 +24,8 @@ async def test_telegram_alert_handler_emits_error_log():
     logger.setLevel(logging.INFO)
     logger.propagate = False
     
+    from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    clear_alerts_cache()
     alert_handler = TelegramAlertHandler()
     alert_handler.setLevel(logging.ERROR) # Only ERROR and above
     logger.addHandler(alert_handler)

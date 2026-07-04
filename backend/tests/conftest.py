@@ -39,6 +39,17 @@ class MockResult:
         if not self.data:
             return None
         return self.data[0]
+    def __iter__(self):
+        return iter(self.data)
+    def all(self):
+        return self.data
+
+class MockRow:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+    def __getitem__(self, item):
+        return getattr(self, item, None)
 
 class MockAsyncSession:
     def __init__(self):
@@ -77,6 +88,9 @@ class MockAsyncSession:
         # COUNT / aggregate queries — return 0 or empty lists for admin stats
         stmt_lower = stmt_str.lower()
         if "count(" in stmt_lower or "sum(" in stmt_lower or "coalesce(" in stmt_lower:
+            if "date" in stmt_lower:
+                from datetime import date
+                return MockResult([MockRow(date=date.today(), count=0, total_cents=0)])
             return MockResult([0])
 
         if "broadcast" in stmt_lower:
