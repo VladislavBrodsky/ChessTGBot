@@ -20,6 +20,7 @@ export default function Leaderboard() {
  const [players, setPlayers] = useState<LeaderboardItem[]>([]);
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [loading, setLoading] = useState(true);
+ const [showModal, setShowModal] = useState(false);
 
  useEffect(() => {
  apiFetch('/api/v1/users/leaderboard')
@@ -69,7 +70,6 @@ export default function Leaderboard() {
     );
   }
 
-  const [showModal, setShowModal] = useState(false);
   const displayedPlayers = players.slice(0, 5);
 
   return (
