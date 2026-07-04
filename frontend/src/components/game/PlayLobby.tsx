@@ -721,9 +721,9 @@ export default function PlayLobby() {
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
                     disabled={isCreating}
-                    className={`w-full py-4 rounded-2xl flex flex-col items-center justify-center gap-0.5 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-200 ${
+                    className={`w-full py-5 rounded-2xl flex flex-col items-center justify-center gap-0.5 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 ${
                       hasSufficient && !isCreating
-                        ? 'bg-brand-primary text-brand-void shadow-neon'
+                        ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.35)]'
                         : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
