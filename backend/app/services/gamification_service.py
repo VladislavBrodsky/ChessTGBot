@@ -19,24 +19,22 @@ class GamificationService:
         user_stmt = select(User).where(User.id == user_id).with_for_update()
         await db.execute(user_stmt)
 
-        # Logic: Check if user has daily tasks for today. If not, assign them.
-        # This is a simplified version.
-        
         # 1. Get all daily tasks definitions
         result = await db.execute(select(Task).where(Task.is_daily == True))
         daily_tasks_defs = result.scalars().all()
         
+        # Pre-fetch existing user tasks in a single query to eliminate N+1 database lookups
+        task_ids = [t.id for t in daily_tasks_defs]
+        existing_ut = await db.execute(
+            select(UserTask).where(
+                and_(UserTask.user_id == user_id, UserTask.task_id.in_(task_ids))
+            )
+        )
+        user_tasks_map = {ut.task_id: ut for ut in existing_ut.scalars().all()}
+        
         user_tasks = []
         for task_def in daily_tasks_defs:
-            # Check if user has this task assigned today
-            # We can check created_at or updated_at
-            # For simplicity, we just check if a record exists and if it's "fresh"
-            # In a real app, we'd have a 'date' field or reset logic
-            
-            result = await db.execute(select(UserTask).where(
-                and_(UserTask.user_id == user_id, UserTask.task_id == task_def.id)
-            ))
-            user_task = result.scalars().first()
+            user_task = user_tasks_map.get(task_def.id)
             
             if not user_task:
                 user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=0, completed=False, claimed=False)
@@ -67,13 +65,18 @@ class GamificationService:
         result = await db.execute(select(Task).where(Task.is_daily == False))
         achievement_defs = result.scalars().all()
         
+        # Pre-fetch existing user achievements in a single query to eliminate N+1 database lookups
+        task_ids = [t.id for t in achievement_defs]
+        existing_ut = await db.execute(
+            select(UserTask).where(
+                and_(UserTask.user_id == user_id, UserTask.task_id.in_(task_ids))
+            )
+        )
+        user_tasks_map = {ut.task_id: ut for ut in existing_ut.scalars().all()}
+        
         user_tasks = []
         for task_def in achievement_defs:
-            # Check if user already has this achievement assigned
-            result_ut = await db.execute(select(UserTask).where(
-                and_(UserTask.user_id == user_id, UserTask.task_id == task_def.id)
-            ))
-            user_task = result_ut.scalars().first()
+            user_task = user_tasks_map.get(task_def.id)
             
             # Determine progress for REFER task if applicable
             progress = 0
