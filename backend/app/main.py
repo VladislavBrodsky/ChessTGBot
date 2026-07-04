@@ -131,10 +131,13 @@ async def lifespan(app: FastAPI):
             await init_db()
             logger.info("✅ SQLite Schema Initialized successfully.")
         else:
-            # Check host from the engine URL itself, avoiding SQL queries that can fail on some PG configurations
+            # Check connection details from the engine URL, avoiding SQL queries that can fail on startup
             try:
                 db_host = engine.url.host
-                logger.info(f"✅ Database Host detected: {db_host}")
+                db_port = engine.url.port
+                db_name = engine.url.database
+                db_user = engine.url.username
+                logger.info(f"✅ Database Connection details: host={db_host}, port={db_port}, database={db_name}, user={db_user}")
                 if db_host in ["127.0.0.1", "localhost", "::1"] and "railway" in settings.WEBAPP_URL:
                      logger.warning("⚠️  WARNING: Production App config points to Localhost DB! Ensure DATABASE_URL is set.")
             except Exception as host_err:
