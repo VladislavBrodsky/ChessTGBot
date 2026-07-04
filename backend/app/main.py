@@ -160,6 +160,10 @@ async def lifespan(app: FastAPI):
     from app.services.ledger_audit import start_ledger_audit_loop
     asyncio.create_task(start_ledger_audit_loop())
 
+    # Start background payout backlog processor
+    from app.process_payouts_backlog import start_payout_backlog_loop
+    asyncio.create_task(start_payout_backlog_loop())
+
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
     # to the bug where level was not recalculated after XP deductions.
