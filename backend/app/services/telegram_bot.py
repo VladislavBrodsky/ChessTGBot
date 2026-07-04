@@ -319,8 +319,9 @@ class TelegramService:
             xp_lbl = msgs.get("xp_label", "XP")
 
             import urllib.parse
-            qr_link = f"https://api.qrserver.com/v1/create-qr-code/?size=400x400&data={urllib.parse.quote(referral_link)}"
-            ref_qr_text = msgs.get("ref_qr", "📷 <b>Invite QR Code:</b> <a href=\"{qr_link}\">Open QR Code</a>").format(qr_link=qr_link)
+            webapp_base = settings.WEBAPP_URL.rstrip('/')
+            qr_page_url = f"{webapp_base}/en/qr?code={urllib.parse.quote(referral_code)}"
+            ref_qr_text = msgs.get("ref_qr", "📷 <b>Invite QR Code:</b> <a href=\"{qr_link}\">Open QR Code</a>").format(qr_link=qr_page_url)
 
             welcome_msg = (
                 f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
@@ -356,7 +357,8 @@ class TelegramService:
 
             keyboard = [
                 [InlineKeyboardButton(msgs["btn"], web_app=WebAppInfo(url=web_app_url))],
-                [InlineKeyboardButton(share_btn_text, url=share_url)]
+                [InlineKeyboardButton(share_btn_text, url=share_url)],
+                [InlineKeyboardButton("📷  Show QR Code", url=qr_page_url)]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
