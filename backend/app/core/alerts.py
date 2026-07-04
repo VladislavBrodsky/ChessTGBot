@@ -81,6 +81,63 @@ def format_alert_time(timestamp: float = None) -> str:
     except Exception:
         return utc_str
 
+def get_alert_metadata() -> str:
+    """Collects system, database, and container env metadata to identify the host container."""
+    import os
+    import socket
+    metadata_lines = []
+    
+    # 1. Host information
+    try:
+        hostname = socket.gethostname()
+        metadata_lines.append(f"• <b>Host:</b> <code>{hostname}</code>")
+    except Exception:
+        pass
+        
+    # 2. Database connection details (derived from DB URL safely)
+    try:
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.DATABASE_URL:
+            from sqlalchemy.engine.url import make_url
+            url = make_url(settings.DATABASE_URL)
+            metadata_lines.append(f"• <b>DB Host:</b> <code>{url.host}</code>")
+            metadata_lines.append(f"• <b>DB Name:</b> <code>{url.database}</code>")
+            
+            pw = url.password or ""
+            pw_info = f"len={len(pw)}"
+            if len(pw) >= 5:
+                pw_info += f", start={pw[:5]}, end={pw[-3:] if len(pw) >= 3 else ''}"
+            metadata_lines.append(f"• <b>DB PW Info:</b> <code>{pw_info}</code>")
+    except Exception as e:
+        metadata_lines.append(f"• <b>DB Config Parse Error:</b> <code>{e}</code>")
+
+    # 3. Railway-specific metadata
+    r_project = os.environ.get("RAILWAY_PROJECT_NAME")
+    r_env = os.environ.get("RAILWAY_ENVIRONMENT_NAME")
+    r_service = os.environ.get("RAILWAY_SERVICE_NAME")
+    r_branch = os.environ.get("RAILWAY_GIT_BRANCH")
+    
+    if r_project:
+        metadata_lines.append(f"• <b>Railway Project:</b> <code>{r_project}</code>")
+    if r_env:
+        metadata_lines.append(f"• <b>Railway Env:</b> <code>{r_env}</code>")
+    if r_service:
+        metadata_lines.append(f"• <b>Railway Service:</b> <code>{r_service}</code>")
+    if r_branch:
+        metadata_lines.append(f"• <b>Git Branch:</b> <code>{r_branch}</code>")
+        
+    # 4. Fallback system env keys (like username)
+    user_keys = ["USER", "USERNAME", "COMPUTERNAME"]
+    for key in user_keys:
+        val = os.environ.get(key)
+        if val:
+            metadata_lines.append(f"• <b>System {key}:</b> <code>{val}</code>")
+            
+    if metadata_lines:
+        return "\n<b>🔍 Debugging Metadata:</b>\n" + "\n".join(metadata_lines)
+    return ""
+
 async def send_admin_alert(text: str, timestamp: float = None):
     """Sends a system alert message to all configured administrators."""
     from app.services.telegram_bot import TelegramService
@@ -88,8 +145,9 @@ async def send_admin_alert(text: str, timestamp: float = None):
     for admin_id in ADMIN_IDS:
         if admin_id > 0:
             try:
-                # Wrap text with header
-                alert_msg = f"🚨 <b>[SYSTEM ALERT]</b>\n<b>Time:</b> {time_display}\n\n{text}"
+                # Wrap text with header and append debugging metadata
+                metadata = get_alert_metadata()
+                alert_msg = f"🚨 <b>[SYSTEM ALERT]</b>\n<b>Time:</b> {time_display}\n\n{text}\n{metadata}"
                 await TelegramService.send_notification(admin_id, alert_msg)
             except Exception as e:
                 # Print directly to stdout/stderr to avoid circular logging loops

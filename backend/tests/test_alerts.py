@@ -33,6 +33,8 @@ async def test_telegram_alert_handler_emits_error_log():
     logger.propagate = False
     
     from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    from app.services.session_manager import SessionManager
+    SessionManager._use_memory = True
     clear_alerts_cache()
     alert_handler = TelegramAlertHandler()
     alert_handler.setLevel(logging.ERROR) # Only ERROR and above
@@ -69,6 +71,8 @@ async def test_telegram_alert_handler_rate_limiting():
     logger.propagate = False
     
     from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    from app.services.session_manager import SessionManager
+    SessionManager._use_memory = True
     clear_alerts_cache()
     alert_handler = TelegramAlertHandler()
     alert_handler.setLevel(logging.ERROR)
