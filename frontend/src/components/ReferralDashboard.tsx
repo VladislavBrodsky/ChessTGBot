@@ -153,7 +153,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       });
   }, []);
 
-  const inviteLink = `https://t.me/${bot}/app?startapp=ref_${code}`;
+  const inviteLink = `https://t.me/${bot}?start=ref_${code}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);

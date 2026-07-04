@@ -320,7 +320,7 @@ class TelegramService:
 
             import urllib.parse
             webapp_base = settings.WEBAPP_URL.rstrip('/')
-            qr_page_url = f"{webapp_base}/en/qr?code={urllib.parse.quote(referral_code)}"
+            qr_page_url = f"{webapp_base}/en/qr?code={urllib.parse.quote(referral_code)}&bot={urllib.parse.quote(bot_username)}"
             ref_qr_text = msgs.get("ref_qr", "📷 <b>Invite QR Code:</b> <a href=\"{qr_link}\">Open QR Code</a>").format(qr_link=qr_page_url)
 
             welcome_msg = (
