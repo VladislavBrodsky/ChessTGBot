@@ -3,7 +3,7 @@ import { getSocket } from "@/lib/socket";
 import { apiFetch } from "@/lib/api";
 import { Chess, Move } from "chess.js";
 import { logClientMessage } from "@/lib/logger";
-import { computeClientBotMove } from "@/lib/clientGameEngine";
+import { computeStockfishMove } from "@/lib/stockfishEngine";
 
 export const useGameSocket = (gameId: string) => {
     const [fen, setFen] = useState("start");
@@ -49,16 +49,21 @@ export const useGameSocket = (gameId: string) => {
                     clearTimeout(botMoveTimeout);
                 }
                 
-                botMoveTimeout = setTimeout(() => {
-                    const botUci = computeClientBotMove(data.fen, data.difficulty || "medium");
-                    if (botUci) {
-                        console.log("Client-side Bot computed move:", botUci);
-                        logClientMessage("INFO", `Client-side Bot computed move: ${botUci} for game ${gameId}`);
-                        
-                        socket.emit("make_move", {
-                            game_id: gameId,
-                            uci: botUci
-                        });
+                botMoveTimeout = setTimeout(async () => {
+                    try {
+                        const botUci = await computeStockfishMove(data.fen, data.difficulty || "medium");
+                        if (botUci) {
+                            console.log("Client-side Bot computed move:", botUci);
+                            logClientMessage("INFO", `Client-side Bot computed move: ${botUci} for game ${gameId}`);
+                            
+                            socket.emit("make_move", {
+                                game_id: gameId,
+                                uci: botUci
+                            });
+                        }
+                    } catch (err: any) {
+                        console.error("Stockfish/Minimax execution failed entirely:", err);
+                        logClientMessage("ERROR", `Stockfish/Minimax failed entirely: ${err?.message || err}`);
                     }
                 }, 800); // 800ms natural delay
             }
