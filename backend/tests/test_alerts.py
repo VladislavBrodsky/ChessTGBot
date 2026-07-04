@@ -53,6 +53,33 @@ async def test_telegram_alert_handler_emits_error_log():
     finally:
         logger.removeHandler(alert_handler)
 
+@pytest.mark.asyncio
+async def test_telegram_alert_handler_rate_limiting():
+    """Verify that logging multiple duplicate ERRORs within the rate limit window only notifies once."""
+    logger = logging.getLogger("test_rate_limit_logger")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    
+    from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    clear_alerts_cache()
+    alert_handler = TelegramAlertHandler()
+    alert_handler.setLevel(logging.ERROR)
+    logger.addHandler(alert_handler)
+    
+    try:
+        with patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_send:
+            # Log 5 identical errors (dynamic messages that normalize to the same string)
+            for i in range(5):
+                logger.error(f"Database connection dropped! Session ID: {1000 + i}")
+            
+            await asyncio_sleep_helper()
+            
+            # Should only alert once per config admin
+            expected_admins = [admin_id for admin_id in ADMIN_IDS if admin_id > 0]
+            assert mock_send.call_count == len(expected_admins)
+    finally:
+        logger.removeHandler(alert_handler)
+
 async def asyncio_sleep_helper():
     # Helper to allow async loop tasks to execute
     await pytest.importorskip("asyncio").sleep(0.05)

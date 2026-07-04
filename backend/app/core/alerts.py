@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import time
+import re
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -19,6 +20,30 @@ def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
     global _sent_alerts_cache
     _sent_alerts_cache.clear()
+
+def normalize_message(msg: str) -> str:
+    """Strips dynamic content (hex addresses, numbers, UUIDs, quoted content) from log messages
+    to produce a stable fingerprint for rate-limiting.
+    """
+    if not msg:
+        return ""
+    # Take first line and truncate
+    first_line = msg.split('\n')[0]
+    
+    # 1. Normalize hex addresses (e.g. 0xabcdef123)
+    first_line = re.sub(r'0x[0-9a-fA-F]+', '<HEX>', first_line)
+    
+    # 2. Normalize UUIDs
+    first_line = re.sub(r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', '<UUID>', first_line)
+    
+    # 3. Normalize quoted values (single and double quotes)
+    first_line = re.sub(r"'[^']*'", "'<STR>'", first_line)
+    first_line = re.sub(r'"[^"]*"', '"<STR>"', first_line)
+    
+    # 4. Normalize standalone numbers (but preserve versions like 1.6.1)
+    first_line = re.sub(r'(?<!\.)\b\d+\b(?!\.)', '<NUM>', first_line)
+    
+    return first_line.strip()[:120]
 
 async def send_admin_alert(text: str):
     """Sends a system alert message to all configured administrators."""
@@ -47,9 +72,10 @@ class TelegramAlertHandler(logging.Handler):
             message = record.getMessage()
             
             # Generate a unique error fingerprint to identify duplicate alerts.
-            # Normalize message by taking the first line (up to 120 chars) to ignore tracebacks/variable IDs.
-            normalized_message = message.split('\n')[0][:120]
-            fingerprint = f"{record.name}:{record.levelname}:{normalized_message}"
+            normalized_message = normalize_message(message)
+            
+            # Group by file path, line number, level, and normalized message
+            fingerprint = f"{record.pathname}:{record.lineno}:{record.levelname}:{normalized_message}"
             if record.exc_info:
                 exc_type, _, _ = record.exc_info
                 if exc_type:

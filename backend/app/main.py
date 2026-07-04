@@ -260,6 +260,32 @@ def create_application() -> FastAPI:
 
     @application.get("/health")
     async def health_check():
+        # 1. Check Database
+        try:
+            from app.core.database import AsyncSessionLocal
+            from sqlalchemy import text
+            async with AsyncSessionLocal() as session:
+                await session.execute(text("SELECT 1"))
+        except Exception as db_err:
+            logger.error(f"Health Check Database Failure: {db_err}")
+            return JSONResponse(
+                status_code=500,
+                content={"status": "unhealthy", "detail": f"Database connection error: {str(db_err)}"}
+            )
+
+        # 2. Check Redis
+        try:
+            from app.services.session_manager import SessionManager
+            session_mgr = SessionManager()
+            if session_mgr.redis and not session_mgr._use_memory:
+                await session_mgr.redis.ping()
+        except Exception as redis_err:
+            logger.error(f"Health Check Redis Failure: {redis_err}")
+            return JSONResponse(
+                status_code=500,
+                content={"status": "unhealthy", "detail": f"Redis connection error: {str(redis_err)}"}
+            )
+
         return {"status": "ok", "version": settings.VERSION}
 
     # API Fallback Route (To return JSON 404 instead of falling through to Socket.IO mount at '/')
