@@ -54,6 +54,7 @@ ADMIN_ENDPOINTS = [
     ("GET",  "/api/v1/admin/transactions"),
     ("GET",  "/api/v1/admin/games"),
     ("GET",  "/api/v1/admin/broadcasts"),
+    ("POST", "/api/v1/admin/benchmark"),
 ]
 
 
@@ -247,3 +248,15 @@ async def test_admin_broadcast_empty_message(client: AsyncClient, db_session: As
     payload = {"message": "   ", "audience": "all"}
     res = await client.post("/api/v1/admin/broadcasts", json=payload, headers=ADMIN_HEADERS)
     assert res.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_admin_benchmark(client: AsyncClient, db_session: AsyncSession):
+    await _ensure_user(db_session, ADMIN_ID, "AdminUser")
+    res = await client.post("/api/v1/admin/benchmark", headers=ADMIN_HEADERS)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "benchmarks" in data
+    assert "engine" in data["benchmarks"]
+    assert "database_ms" in data["benchmarks"]

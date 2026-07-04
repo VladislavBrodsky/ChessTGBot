@@ -948,3 +948,87 @@ async def get_system_status(
         "checked_at": _now_utc().isoformat(),
         "systems": results,
     }
+
+
+@router.post("/benchmark")
+async def trigger_benchmark(
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """
+    Runs production-safe performance benchmarks inside the live server container:
+    - Minimax search time for depths 2, 3, and 4.
+    - Measure live Database connection latency.
+    - Measure live Redis cache connection latency (if configured).
+    """
+    import time
+    import statistics
+    import chess
+    from app.services.game_engine import GameEngine
+    from app.services.session_manager import SessionManager
+
+    engine_results = {}
+    positions = {
+        "Starting": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "Mid-game": "r1bq1rk1/pp2bppp/2n1pn2/2pp4/2PP4/2N1PNP1/PP1B1PBP/R2Q1RK1 w - - 0 9",
+        "End-game": "8/k7/8/8/8/8/1Q6/K7 w - - 0 1"
+    }
+
+    # 1. Engine Benchmarks
+    for depth in [2, 3, 4]:
+        depth_key = f"depth_{depth}"
+        engine_results[depth_key] = {}
+        for pos_name, fen in positions.items():
+            engine = GameEngine()
+            engine.board = chess.Board(fen)
+            
+            # Warmup
+            engine.get_best_move(depth=1)
+            
+            # Measure
+            start = time.perf_counter()
+            engine.get_best_move(depth=depth)
+            end = time.perf_counter()
+            engine_results[depth_key][pos_name] = round((end - start) * 1000.0, 2)
+
+    # 2. Database latency benchmark (20 trials)
+    db_latencies = []
+    for _ in range(20):
+        start = time.perf_counter()
+        await db.execute(select(func.count(User.id)))
+        db_latencies.append((time.perf_counter() - start) * 1000.0)
+    db_avg = round(statistics.mean(db_latencies), 2)
+    db_p95 = round(statistics.quantiles(db_latencies, n=20)[18], 2)
+
+    # 3. Redis latency benchmark (20 trials)
+    redis_avg = None
+    redis_p95 = None
+    session_mgr = SessionManager()
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            redis_latencies = []
+            for _ in range(20):
+                start = time.perf_counter()
+                await session_mgr.redis.ping()
+                redis_latencies.append((time.perf_counter() - start) * 1000.0)
+            redis_avg = round(statistics.mean(redis_latencies), 2)
+            redis_p95 = round(statistics.quantiles(redis_latencies, n=20)[18], 2)
+        except Exception as redis_err:
+            logger.warning(f"Redis benchmark failed: {redis_err}")
+            session_mgr._use_memory = True
+
+    return {
+        "status": "success",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "benchmarks": {
+            "engine": engine_results,
+            "database_ms": {
+                "average": db_avg,
+                "p95": db_p95
+            },
+            "redis_ms": {
+                "average": redis_avg,
+                "p95": redis_p95
+            } if redis_avg is not None else None
+        }
+    }
