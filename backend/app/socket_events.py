@@ -487,9 +487,27 @@ async def make_move(sid, data):
              return
              
         turn_color = current_state.turn
-        if (turn_color == 'w' and not is_white) or (turn_color == 'b' and not is_black):
-             await sio.emit('error', {'message': 'Not your turn'}, room=sid)
-             return
+        is_white_bot = (current_state.white_player_id == -1)
+        is_black_bot = (current_state.black_player_id == -1)
+        
+        if turn_color == 'w':
+             if is_white_bot:
+                  if not is_black:
+                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                       return
+             else:
+                  if not is_white:
+                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                       return
+        elif turn_color == 'b':
+             if is_black_bot:
+                  if not is_white:
+                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                       return
+             else:
+                  if not is_black:
+                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                       return
 
         new_state = await service.make_move(game_id, uci, preloaded_state=current_state)
         if new_state:
