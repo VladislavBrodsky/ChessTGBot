@@ -251,12 +251,10 @@ export default function Home() {
   <motion.div
   whileHover={{ y: -2, scale: 1.02 }}
   whileTap={{ scale: 0.97 }}
-  className="relative overflow-hidden w-full py-5 flex flex-col items-center justify-center gap-2 cursor-pointer rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 shadow-[0_4px_24px_rgba(168,85,247,0.25)] hover:shadow-[0_4px_32px_rgba(168,85,247,0.35)] transition-all duration-300 text-center"
+  className="play-chess-card-premium w-full py-5 flex flex-col items-center justify-center gap-2 cursor-pointer text-center"
   >
-  <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/[0.12] to-white/0 pointer-events-none animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-  <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,1)]" />
-  <FaGamepad className="text-lg text-white relative z-10 drop-shadow-[0_2px_8px_rgba(168,85,247,0.5)]" />
-  <span className="text-[9px] font-black uppercase tracking-wider text-white relative z-10">{t('play')}</span>
+  <FaGamepad className="text-lg text-brand-primary opacity-70 relative z-10 drop-shadow-[0_2px_8px_rgba(168,85,247,0.4)]" />
+  <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary relative z-10">{t('play')}</span>
   </motion.div>
   </Link>
 

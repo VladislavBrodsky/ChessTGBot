@@ -737,23 +737,22 @@ export default function PlayLobby() {
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
                     disabled={isCreating}
-                    className={`w-full py-5 rounded-2xl flex flex-col items-center justify-center gap-0.5 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 ${
+                    className={`w-full py-5 flex flex-col items-center justify-center gap-0.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 ${
                       hasSufficient && !isCreating
-                        ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.35)]'
-                        : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30'
+                        ? 'play-chess-card-premium text-brand-primary'
+                        : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30 rounded-2xl shadow-lg'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 relative z-10">
                       <FaChessKnight size={13} className="text-current" />
                       <span className="text-[11px] font-black tracking-[0.2em] text-current uppercase">
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
                     </div>
                     {hasSufficient && chosenWager > 0 && (
-                      <span className="text-[8.5px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75">
+                      <span className="text-[8.5px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75 relative z-10">
                         <FaFire className="text-emerald-500 text-[9.5px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
                       </span>
                     )}
