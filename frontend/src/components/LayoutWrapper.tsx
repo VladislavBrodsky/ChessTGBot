@@ -32,6 +32,16 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
     const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
+    const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+            const platform = window.Telegram.WebApp.platform;
+            if (['weba', 'webk', 'web', 'desktop', 'unknown'].includes(platform)) {
+                setIsTelegramWeb(true);
+            }
+        }
+    }, []);
 
     // Use context-driven navbar hide state (reliable, no DOM polling)
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
@@ -130,7 +140,11 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] ${className}`}>
+            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] ${
+                isTelegramWeb 
+                    ? "pb-[calc(150px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]" 
+                    : "pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]"
+            } ${className}`}>
                 {isCorePage && isCheckingActiveGame ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />

@@ -18,6 +18,16 @@ const NAV_ITEMS = [
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
     const locale = useLocale();
+    const [isTelegramWeb, setIsTelegramWeb] = React.useState(false);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+            const platform = window.Telegram.WebApp.platform;
+            if (['weba', 'webk', 'web', 'desktop', 'unknown'].includes(platform)) {
+                setIsTelegramWeb(true);
+            }
+        }
+    }, []);
 
     const localizedItems = NAV_ITEMS.map(item => ({
         ...item,
@@ -34,7 +44,11 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             style={{ pointerEvents: hide ? 'none' : 'auto' }}
-            className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-3xl shadow-premium justify-between"
+            className={`fixed left-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-3xl shadow-premium justify-between ${
+                isTelegramWeb 
+                    ? "bottom-[calc(66px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]" 
+                    : "bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]"
+            }`}
         >
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-3xl" />

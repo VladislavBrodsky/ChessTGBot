@@ -120,6 +120,16 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     message: string;
   } | null>(null);
   const lastCheckedFenRef = useRef<string | null>(null);
+  const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const platform = window.Telegram.WebApp.platform;
+      if (['weba', 'webk', 'web', 'desktop', 'unknown'].includes(platform)) {
+        setIsTelegramWeb(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1211,7 +1221,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           initial={{ x: "-50%", y: 80, opacity: 0 }}
           animate={{ x: "-50%", y: 0, opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 p-3 rounded-2xl shadow-premium"
+          className={`fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 p-3 rounded-2xl shadow-premium ${
+            isTelegramWeb 
+              ? "bottom-[calc(66px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]" 
+              : "bottom-[calc(16px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]"
+          }`}
         >
           {/* Resign Button */}
           <motion.button
