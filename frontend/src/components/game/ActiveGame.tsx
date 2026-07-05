@@ -115,6 +115,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const [copied, setCopied] = useState(false);
   const [showCrashOverlay, setShowCrashOverlay] = useState(false);
   const [autoPromote, setAutoPromote] = useState<boolean>(false);
+  const [gameNotice, setGameNotice] = useState<{
+    type: 'error' | 'warning' | 'info';
+    message: string;
+  } | null>(null);
+  const lastCheckedFenRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -368,9 +373,103 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     };
   }, [gameId, userId, gameState, locale, router]);
 
+  // Auto-dismiss game notices after 3.5 seconds
+  useEffect(() => {
+    if (gameNotice) {
+      const timer = setTimeout(() => {
+        setGameNotice(null);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [gameNotice]);
+
+  const getNoticeMessage = (key: 'check' | 'illegal' | 'illegal_check') => {
+    const dictionary: { [lang: string]: { check: string; illegal: string; illegal_check: string } } = {
+      en: {
+        check: '⚠️ YOU ARE IN CHECK!',
+        illegal: '❌ Illegal move!',
+        illegal_check: '❌ Illegal move! Escape check.'
+      },
+      ru: {
+        check: '⚠️ ВАМ ШАХ!',
+        illegal: '❌ Недопустимый ход!',
+        illegal_check: '❌ Недопустимый ход! Защитите короля от шаха.'
+      },
+      es: {
+        check: '⚠️ ¡ESTÁS EN JAQUE!',
+        illegal: '❌ ¡Movimiento ilegal!',
+        illegal_check: '❌ ¡Movimiento ilegal! Escapa del jaque.'
+      },
+      fr: {
+        check: '⚠️ VOUS ÊTES EN ÉCHEC !',
+        illegal: '❌ Mouvement illégal !',
+        illegal_check: '❌ Mouvement illégal ! Échappez à l\'échec.'
+      },
+      de: {
+        check: '⚠️ SIE SIND IM SCHACH!',
+        illegal: '❌ Ungültiger Zug!',
+        illegal_check: '❌ Ungültiger Zug! Schützen Sie den König.'
+      },
+      zh: {
+        check: '⚠️ 您处于被将军状态！',
+        illegal: '❌ 违规移动！',
+        illegal_check: '❌ 违规移动！请避开将军。'
+      },
+      ja: {
+        check: '⚠️ 王手がかかっています！',
+        illegal: '❌ 無効な手です！',
+        illegal_check: '❌ 無効な手です！王手を防いでください。'
+      },
+      pt: {
+        check: '⚠️ VOCÊ ESTÁ EM XEQUE!',
+        illegal: '❌ Movimento ilegal!',
+        illegal_check: '❌ Movimento ilegal! Fuja do xeque.'
+      },
+      ar: {
+        check: '⚠️ أنت في وضع كش ملك!',
+        illegal: '❌ نقلة غير قانونية!',
+        illegal_check: '❌ نقلة غير قانونية! تخلص من الكش.'
+      },
+      hi: {
+        check: '⚠️ आप शह में हैं!',
+        illegal: '❌ अवैध चाल!',
+        illegal_check: '❌ अवैध चाल! शह से बचें।'
+      }
+    };
+    const lang = locale || 'en';
+    const dict = dictionary[lang] || dictionary.en;
+    return dict[key];
+  };
+
+  // Trigger check notification on turn start
+  useEffect(() => {
+    if (!gameState || isGameOver) return;
+    
+    const currentFen = gameState.fen;
+    if (isMyTurn && gameState.is_check && lastCheckedFenRef.current !== currentFen) {
+      lastCheckedFenRef.current = currentFen;
+      setGameNotice({
+        type: 'warning',
+        message: getNoticeMessage('check')
+      });
+      telegramHaptic('warning');
+    } else if (!isMyTurn || !gameState.is_check) {
+      lastCheckedFenRef.current = currentFen;
+    }
+  }, [gameState, isMyTurn, isGameOver, locale]);
+
   const handleBoardMove = (move: { from: string; to: string; promotion?: string }): boolean => {
     const success = makeMove(move);
-    telegramHaptic('light');
+    if (!success) {
+      telegramHaptic('error');
+      const isInCheck = gameState?.is_check || false;
+      setGameNotice({
+        type: 'error',
+        message: isInCheck ? getNoticeMessage('illegal_check') : getNoticeMessage('illegal')
+      });
+    } else {
+      telegramHaptic('light');
+    }
     return success;
   };
 
@@ -712,6 +811,37 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           </span>
         </div>
       </div>
+
+      {/* Game Notice Toast */}
+      <AnimatePresence>
+        {gameNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none w-[90vw] max-w-[280px]"
+          >
+            <div className={`p-3.5 rounded-2xl border bg-brand-surface/95 backdrop-blur-xl shadow-premium text-center pointer-events-auto transition-all ${
+              gameNotice.type === 'error' 
+                ? 'border-red-500/30 text-red-400' 
+                : gameNotice.type === 'warning'
+                ? 'border-amber-500/30 text-amber-400'
+                : 'border-brand-primary/20 text-brand-primary'
+            }`}>
+              <span className="text-[8.5px] font-black uppercase tracking-[0.2em] block mb-1 opacity-60">
+                {gameNotice.type === 'error' 
+                  ? (locale === 'ru' ? 'ВНИМАНИЕ' : 'ATTENTION') 
+                  : gameNotice.type === 'warning'
+                  ? (locale === 'ru' ? 'ПРЕДУПРЕЖДЕНИЕ' : 'WARNING')
+                  : 'INFO'}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wide leading-tight block">
+                {gameNotice.message}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Error Toast */}
       {error && (
