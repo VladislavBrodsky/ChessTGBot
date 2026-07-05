@@ -137,7 +137,13 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         pathname.endsWith('/challenges') || 
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
-    const shouldHideNavbar = showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || (!isMainNavbarPage && isNavbarHiddenByContext);
+    // On main dashboard pages (home, settings, wallet, etc.) the navbar must ALWAYS
+    // be visible once loaded. A lingering/stale activeGameId or a leftover context
+    // hide must never suppress it — otherwise the user is stranded with no menu.
+    // Only onboarding and the initial active-game check may hide it on these pages.
+    const shouldHideNavbar = isMainNavbarPage
+        ? (showOnboarding || (isCorePage && isCheckingActiveGame))
+        : (showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || isNavbarHiddenByContext);
 
     return (
         <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
