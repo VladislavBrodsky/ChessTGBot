@@ -35,9 +35,10 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(false);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-            const platform = window.Telegram.WebApp.platform;
-            if (['weba', 'webk', 'web', 'desktop', 'unknown'].includes(platform)) {
+        if (typeof window !== 'undefined') {
+            const isIframe = window.self !== window.top;
+            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
+            if (isIframe || isWebPlatform) {
                 setIsTelegramWeb(true);
             }
         }
