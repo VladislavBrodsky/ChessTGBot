@@ -36,7 +36,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
     }));
 
     return (
-        <motion.nav 
+        <motion.nav
+            data-app-navbar
             initial={{ x: "-50%", y: 0, opacity: 1 }}
             animate={{
                 x: "-50%",
@@ -44,9 +45,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 opacity: hide ? 0 : 1
             }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            style={{ 
+            style={{
                 pointerEvents: hide ? 'none' : 'auto',
-                bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, 0px)))`
+                bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             className="fixed left-1/2 w-[92%] max-w-md z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-6 py-3 rounded-3xl shadow-premium justify-between"
         >

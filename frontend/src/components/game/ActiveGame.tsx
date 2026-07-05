@@ -1223,7 +1223,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           animate={{ x: "-50%", y: 0, opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           style={{
-            bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, 0px)))`
+            bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
           }}
           className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 p-3 rounded-2xl shadow-premium"
         >

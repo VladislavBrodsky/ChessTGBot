@@ -152,9 +152,9 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
             {/* Content Container */}
             <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] ${
-                isTelegramWeb 
-                    ? "pb-[calc(150px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]" 
-                    : "pb-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))]"
+                isTelegramWeb
+                    ? "pb-[calc(150px+var(--app-safe-bottom))]"
+                    : "pb-[calc(100px+var(--app-safe-bottom))]"
             } ${className}`}>
                 {isCorePage && isCheckingActiveGame ? (
                     <div className="flex-1 flex flex-col items-center justify-center">

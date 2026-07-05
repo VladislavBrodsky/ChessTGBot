@@ -84,7 +84,7 @@ export default function ReferralNotification() {
   }, [isGameActive]);
 
   return (
-    <div className="fixed bottom-[calc(100px+var(--tg-content-safe-area-inset-bottom,var(--tg-safe-area-inset-bottom,0px)))] left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-[calc(100px+var(--app-safe-bottom))] left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4">
       <AnimatePresence>
         {notification && (
           <motion.div

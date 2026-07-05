@@ -37,6 +37,16 @@
 }
 
 :root {
+  /*
+   * Single source of truth for the bottom safe-area inset.
+   * Telegram only sets --tg-*-safe-area-inset-* on Bot API 8.0+. On older
+   * clients (e.g. iOS Bot API 6.0) those vars are undefined, so we MUST fall
+   * back to the CSS env() inset — otherwise fixed bottom bars (navbar,
+   * in-game action bar) land in the iOS home-indicator zone and disappear.
+   * Every fixed bottom element and bottom page padding should use this.
+   */
+  --app-safe-bottom: var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+
   --font-inter: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-sans: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -350,7 +360,7 @@ body:has(.modal-backdrop) {
  * — no per-page JS hookup needed. Works as a universal safety net on top of
  * the NavbarContext approach.
  */
-body:has(.bottom-drawer-backdrop) nav[class*="fixed bottom-"] {
+body:has(.bottom-drawer-backdrop) nav[data-app-navbar] {
   transform: translateX(-50%) translateY(150px) !important;
   opacity: 0 !important;
   pointer-events: none !important;
