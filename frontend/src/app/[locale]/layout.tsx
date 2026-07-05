@@ -24,6 +24,10 @@ export const viewport = {
     initialScale: 1.0,
     maximumScale: 1.0,
     userScalable: false,
+    // Required so iOS exposes non-zero env(safe-area-inset-*). Without this,
+    // env() insets are forced to 0 and fixed bottom bars (navbar) land in the
+    // iOS home-indicator zone and disappear. Pairs with --app-safe-bottom.
+    viewportFit: "cover" as const,
 };
 
 export function generateStaticParams() {
