@@ -129,6 +129,16 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
     const isCorePage = pathname.endsWith('/game') || pathname.endsWith('/home') || pathname === '/' || pathname === `/${locale}`;
 
+    const isMainNavbarPage = 
+        pathname.endsWith('/home') || 
+        pathname.endsWith('/settings') || 
+        pathname.endsWith('/profile') || 
+        pathname.endsWith('/wallet') || 
+        pathname.endsWith('/challenges') || 
+        (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
+
+    const shouldHideNavbar = showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || (!isMainNavbarPage && isNavbarHiddenByContext);
+
     return (
         <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
             {/* Ambient Starfield */}
@@ -158,7 +168,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 )}
             </main>
 
-            <Navbar hide={isNavbarHiddenByContext || showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame)} />
+            <Navbar hide={shouldHideNavbar} />
 
             <AnimatePresence>
                 {showOnboarding && (
