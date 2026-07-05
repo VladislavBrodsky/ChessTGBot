@@ -321,7 +321,15 @@
     "top_up": "充值",
     "tx_referral": "推荐红利",
     "tx_subscription": "订阅分红",
-    "tx_rake": "平台抽水"
+    "tx_rake": "平台抽水",
+    "tab_crypto": "加密钱包",
+    "tab_card": "银行卡 · Apple Pay",
+    "card_desc": "通过 Transak 使用 Visa、Mastercard、Apple Pay 或 Google Pay 购买 USDT，直接发送到您连接的钱包。",
+    "card_min_notice": "最低 {min} 美元。Transak 可能需要身份验证 (KYC)。",
+    "connect_wallet_cta": "连接钱包以继续",
+    "buy_with_card_cta": "用银行卡 / Apple Pay 购买",
+    "card_destination_label": "接收钱包（您的地址）",
+    "card_await_funds_notice": "购买后，USDT 将到达您的钱包（可能需要几分钟）。然后切换到“加密”标签为余额充值。"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

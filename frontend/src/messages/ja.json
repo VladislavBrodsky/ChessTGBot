@@ -321,7 +321,15 @@
     "top_up": "チャージ",
     "tx_referral": "紹介コミッション",
     "tx_subscription": "購読コミッション",
-    "tx_rake": "プラットフォーム手数料"
+    "tx_rake": "プラットフォーム手数料",
+    "tab_crypto": "暗号ウォレット",
+    "tab_card": "カード · Apple Pay",
+    "card_desc": "Transak経由でVisa、Mastercard、Apple Pay、Google PayでUSDTを購入。接続中のウォレットに届きます。",
+    "card_min_notice": "最低 {min} USD。Transakで本人確認（KYC）が必要な場合があります。",
+    "connect_wallet_cta": "ウォレットを接続して続行",
+    "buy_with_card_cta": "カード / Apple Pay で購入",
+    "card_destination_label": "受取ウォレット（あなたのアドレス）",
+    "card_await_funds_notice": "購入後、USDTがウォレットに届きます（数分かかる場合あり）。その後「暗号」タブで残高をチャージしてください。"
   },
   "Membership": {
     "title": "CHESS PREMIUM 会員",

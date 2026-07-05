@@ -321,7 +321,15 @@
     "top_up": "Aufladen",
     "tx_referral": "Empfehlungs-Bonus",
     "tx_subscription": "Abo-Provision",
-    "tx_rake": "Plattform-Gebühr"
+    "tx_rake": "Plattform-Gebühr",
+    "tab_crypto": "Krypto-Wallet",
+    "tab_card": "Karte · Apple Pay",
+    "card_desc": "Kaufe USDT mit Visa, Mastercard, Apple Pay oder Google Pay über Transak — direkt an deine verbundene Wallet.",
+    "card_min_notice": "Mindestens {min} USD. Eine Identitätsprüfung (KYC) über Transak kann erforderlich sein.",
+    "connect_wallet_cta": "Wallet verbinden, um fortzufahren",
+    "buy_with_card_cta": "Mit Karte / Apple Pay kaufen",
+    "card_destination_label": "Empfänger-Wallet (deine Adresse)",
+    "card_await_funds_notice": "Nach dem Kauf trifft USDT in deiner Wallet ein (einige Minuten). Wechsle dann zum Krypto-Tab, um dein Guthaben aufzuladen."
   },
   "Membership": {
     "title": "CHESS PREMIUM",

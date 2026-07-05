@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
+import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
@@ -16,6 +16,13 @@ interface DepositModalProps {
   tgUser: any;
   tw: any;
 }
+
+// Transak fiat on-ramp config. Card tab is only shown when an API key is provided.
+// Funds are delivered to the user's OWN connected wallet; the platform balance is then
+// credited via the existing on-chain deposit flow (ref_ comment + 5% fee). See plan.
+const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
+const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
+const TRANSAK_MIN_USD = 15;
 
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
@@ -35,6 +42,9 @@ export default function DepositModal({
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const { stats } = useUser();
+
+  const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
+  const cardEnabled = !!TRANSAK_API_KEY;
 
   const [depositAmount, setDepositAmount] = useState<string>("10");
   const [currency, setCurrency] = useState<'GRAM' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
@@ -285,6 +295,59 @@ export default function DepositModal({
     }
   };
 
+  // Launch the Transak on-ramp to buy USDT-on-TON into the user's OWN connected wallet.
+  // No platform balance is credited here; the user later deposits via the Crypto tab.
+  const handleCardTopUp = () => {
+    const amt = parseFloat(depositAmount);
+    if (isNaN(amt) || amt < TRANSAK_MIN_USD) {
+      setErrorMessage(tw('card_min_notice', { min: TRANSAK_MIN_USD }));
+      return;
+    }
+    if (!wallet) {
+      setErrorMessage(tw('connect_wallet_cta'));
+      return;
+    }
+    if (!TRANSAK_API_KEY) {
+      setErrorMessage("Card payments are not configured.");
+      return;
+    }
+
+    // Transak expects a user-friendly (non-bounceable) TON address as destination.
+    let destAddress = wallet.account.address;
+    try {
+      destAddress = Address.parse(wallet.account.address).toString({ urlSafe: true, bounceable: false });
+    } catch { /* fall back to raw address */ }
+
+    const base = TRANSAK_ENVIRONMENT === "PRODUCTION"
+      ? "https://global.transak.com"
+      : "https://global-stg.transak.com";
+    const params = new URLSearchParams({
+      apiKey: TRANSAK_API_KEY,
+      environment: TRANSAK_ENVIRONMENT,
+      productsAvailed: "BUY",
+      cryptoCurrencyList: "USDT",
+      defaultCryptoCurrency: "USDT",
+      network: "ton",
+      walletAddress: destAddress,
+      disableWalletAddressForm: "true",
+      defaultFiatAmount: String(Math.floor(amt)),
+      fiatCurrency: "USD",
+    });
+    const url = `${base}/?${params.toString()}`;
+
+    setErrorMessage("");
+    telegramHaptic('medium');
+    try {
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
+        window.Telegram.WebApp.openLink(url);
+      } else {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
 
   return (
@@ -316,6 +379,23 @@ export default function DepositModal({
         <div className="space-y-4">
           <h3 className="text-base font-black uppercase tracking-widest text-brand-primary">{tw('deposit_invoice')}</h3>
 
+          {cardEnabled && (
+            <div className="flex p-1 rounded-xl bg-brand-void border border-brand-border-opacity-10 gap-1">
+              {(['crypto', 'card'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  disabled={processing}
+                  onClick={() => { setActiveTab(tab); setErrorMessage(""); }}
+                  className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${activeTab === tab ? 'bg-brand-primary text-brand-void shadow-lg' : 'text-brand-primary/50 hover:text-brand-primary'}`}
+                >
+                  {tab === 'crypto' ? tw('tab_crypto') : tw('tab_card')}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'crypto' && (
           <div className="space-y-4">
             <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
               Deposit instantly using your connected Web3 wallet.
@@ -525,12 +605,72 @@ export default function DepositModal({
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Commission Alert */}
-          <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider">
-            <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+            {/* Commission Alert */}
+            <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-wider">
+              <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+            </div>
           </div>
+          )}
+
+          {activeTab === 'card' && (
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+              {tw('card_desc')}
+            </p>
+
+            {/* Amount (USD) */}
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
+              <div className="relative">
+                <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[10px] font-black font-mono">$</span>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  disabled={processing}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
+                  placeholder={`${TRANSAK_MIN_USD}.00`}
+                  min={TRANSAK_MIN_USD}
+                />
+              </div>
+              <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-wider">{tw('card_min_notice', { min: TRANSAK_MIN_USD })}</span>
+            </div>
+
+            {/* Destination + CTA */}
+            {!wallet ? (
+              <button
+                type="button"
+                onClick={() => tonConnectUI.openModal()}
+                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <FaWallet size={11} />
+                <span>{tw('connect_wallet_cta')}</span>
+              </button>
+            ) : (
+              <>
+                <div className="flex flex-col space-y-1">
+                  <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('card_destination_label')}</label>
+                  <div className="w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate">
+                    {wallet.account.address.slice(0, 6)}...{wallet.account.address.slice(-4)}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCardTopUp}
+                  className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <FaCreditCard size={11} />
+                  <span>{tw('buy_with_card_cta')}</span>
+                </button>
+              </>
+            )}
+
+            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
+              {tw('card_await_funds_notice')}
+            </div>
+          </div>
+          )}
 
           {/* Messages */}
           <div className="w-full pt-1">

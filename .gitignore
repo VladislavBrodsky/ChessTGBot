@@ -13,6 +13,9 @@ video/
 coverage/
 .npm-cache/
 
+# Local env overrides (never commit secrets/keys)
+.env*.local
+
 # OS
 .DS_Store
 Thumbs.db

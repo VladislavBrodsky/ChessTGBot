@@ -321,7 +321,15 @@
     "top_up": "شحن",
     "tx_referral": "عمولة الإحالة",
     "tx_subscription": "عمولة الاشتراك",
-    "tx_rake": "عمولة المنصة"
+    "tx_rake": "عمولة المنصة",
+    "tab_crypto": "محفظة الكريبتو",
+    "tab_card": "بطاقة · Apple Pay",
+    "card_desc": "اشترِ USDT عبر Visa أو Mastercard أو Apple Pay أو Google Pay من خلال Transak — يُرسل إلى محفظتك المتصلة.",
+    "card_min_notice": "الحد الأدنى {min} دولار. قد يلزم التحقق من الهوية (KYC) عبر Transak.",
+    "connect_wallet_cta": "اربط المحفظة للمتابعة",
+    "buy_with_card_cta": "اشترِ بالبطاقة / Apple Pay",
+    "card_destination_label": "محفظة الاستلام (عنوانك)",
+    "card_await_funds_notice": "بعد الشراء يصل USDT إلى محفظتك (قد يستغرق بضع دقائق). ثم انتقل إلى تبويب الكريبتو لشحن رصيدك."
   },
   "Membership": {
     "title": "اشتراك CHESS PREMIUM",

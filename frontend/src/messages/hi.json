@@ -321,7 +321,15 @@
     "top_up": "टॉप अप",
     "tx_referral": "रेफ़रल कमीशन",
     "tx_subscription": "सदस्यता कमीशन",
-    "tx_rake": "प्लेटफ़ॉर्म शुल्क"
+    "tx_rake": "प्लेटफ़ॉर्म शुल्क",
+    "tab_crypto": "क्रिप्टो वॉलेट",
+    "tab_card": "कार्ड · Apple Pay",
+    "card_desc": "Transak के ज़रिए Visa, Mastercard, Apple Pay या Google Pay से USDT खरीदें — आपके जुड़े वॉलेट में मिलेगा।",
+    "card_min_notice": "न्यूनतम {min} USD। Transak पर पहचान सत्यापन (KYC) आवश्यक हो सकता है।",
+    "connect_wallet_cta": "जारी रखने के लिए वॉलेट कनेक्ट करें",
+    "buy_with_card_cta": "कार्ड / Apple Pay से खरीदें",
+    "card_destination_label": "डिलीवरी वॉलेट (आपका पता)",
+    "card_await_funds_notice": "खरीद के बाद USDT आपके वॉलेट में आएगा (कुछ मिनट)। फिर बैलेंस टॉप-अप करने के लिए क्रिप्टो टैब पर जाएँ।"
   },
   "Membership": {
     "title": "चेस प्रीमियम (CHESS PREMIUM)",

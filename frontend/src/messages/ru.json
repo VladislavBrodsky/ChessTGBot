@@ -326,7 +326,15 @@
     "top_up": "Пополнить",
     "tx_referral": "Реферальный бонус",
     "tx_subscription": "Бонус от подписки",
-    "tx_rake": "Комиссия платформы"
+    "tx_rake": "Комиссия платформы",
+    "tab_crypto": "Крипто-кошелёк",
+    "tab_card": "Карта · Apple Pay",
+    "card_desc": "Купите USDT картой Visa, Mastercard, через Apple Pay или Google Pay в Transak — средства придут на ваш кошелёк.",
+    "card_min_notice": "Минимум {min} USD. Может потребоваться проверка личности (KYC) в Transak.",
+    "connect_wallet_cta": "Подключить кошелёк",
+    "buy_with_card_cta": "Купить картой / Apple Pay",
+    "card_destination_label": "Кошелёк для зачисления (ваш адрес)",
+    "card_await_funds_notice": "После покупки USDT поступит на ваш кошелёк (несколько минут). Затем перейдите на вкладку «Крипто», чтобы пополнить баланс."
   },
   "Membership": {
     "title": "ПОДПИСКА CHESS PREMIUM",

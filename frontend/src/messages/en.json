@@ -327,7 +327,15 @@
     "tx_referral": "Referral Cut",
     "tx_subscription": "Sub Commission",
     "tx_rake": "Platform Rake",
-    "tx_refund": "Wager Refund"
+    "tx_refund": "Wager Refund",
+    "tab_crypto": "Crypto Wallet",
+    "tab_card": "Card · Apple Pay",
+    "card_desc": "Buy USDT with Visa, Mastercard, Apple Pay or Google Pay via Transak — delivered to your connected wallet.",
+    "card_min_notice": "Minimum {min} USD. Identity verification (KYC) via Transak may be required.",
+    "connect_wallet_cta": "Connect Wallet to Continue",
+    "buy_with_card_cta": "Buy with Card / Apple Pay",
+    "card_destination_label": "Delivery Wallet (Your Address)",
+    "card_await_funds_notice": "After purchase, USDT arrives in your wallet (may take a few minutes). Then switch to the Crypto tab to top up your platform balance."
   },
   "Membership": {
     "title": "CHESS PREMIUM",

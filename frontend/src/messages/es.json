@@ -321,7 +321,15 @@
     "top_up": "Recargar",
     "tx_referral": "Comisión de referido",
     "tx_subscription": "Comisión de suscripción",
-    "tx_rake": "Comisión de la plataforma"
+    "tx_rake": "Comisión de la plataforma",
+    "tab_crypto": "Cartera Cripto",
+    "tab_card": "Tarjeta · Apple Pay",
+    "card_desc": "Compra USDT con Visa, Mastercard, Apple Pay o Google Pay vía Transak — se envía a tu cartera conectada.",
+    "card_min_notice": "Mínimo {min} USD. Puede requerirse verificación de identidad (KYC) en Transak.",
+    "connect_wallet_cta": "Conectar cartera para continuar",
+    "buy_with_card_cta": "Comprar con tarjeta / Apple Pay",
+    "card_destination_label": "Cartera de entrega (tu dirección)",
+    "card_await_funds_notice": "Tras la compra, el USDT llega a tu cartera (unos minutos). Luego cambia a la pestaña Cripto para recargar tu saldo."
   },
   "Membership": {
     "title": "CHESS PREMIUM",
