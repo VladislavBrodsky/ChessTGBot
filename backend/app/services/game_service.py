@@ -214,8 +214,18 @@ class GameService:
                 state = await self.get_game_state(g_id)
                 if state and not state.is_game_over:
                     if state.white_player_id == user_id or state.black_player_id == user_id:
-                        # For PVP games, both players must have joined to be considered active going on
-                        if state.black_player_id == -1 or (state.white_player_id and state.black_player_id):
+                        is_ai_game = state.black_player_id == -1
+                        if is_ai_game:
+                            # A training (AI) game that never had a first move never
+                            # triggers a clock timeout (see get_game_state), so it would
+                            # otherwise linger as "active" for the full 24h TTL and strand
+                            # the user "in a game" (hiding the navbar / forcing a redirect).
+                            # There is no opponent or stake to preserve, so ignore it until
+                            # it has actually started.
+                            if state.last_move_at is not None:
+                                return g_id
+                        elif state.white_player_id and state.black_player_id:
+                            # PVP: both players joined (a wager may be held) — keep active.
                             return g_id
             except Exception as e:
                 print(f"Error checking active game state for {g_id}: {e}")
