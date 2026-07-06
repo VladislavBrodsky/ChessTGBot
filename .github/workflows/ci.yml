@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend (build + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Build static export
+        run: npm run build
+        env:
+          STATIC_EXPORT: "true"
+      - name: Unit tests
+        run: npm run test:ci
+      # Non-blocking: the codebase carries pre-existing lint warnings and one
+      # intentional sync <script> (the Telegram SDK must load before hydration).
+      # Surfaces issues without blocking merges on existing debt.
+      - name: Lint (informational)
+        run: npm run lint
+        continue-on-error: true
+
+  backend:
+    name: Backend (import + pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r requirements.txt
+      # Import the ASGI app so a broken import/syntax error fails CI instead of
+      # the production container crash-looping on boot.
+      - name: Import check
+        run: python -c "import app.main; print('app imports OK')"
+      - name: Pytest
+        run: python -m pytest
+
+  static-export-fresh:
+    name: Static export is up to date
+    runs-on: ubuntu-latest
+    # Only meaningful on PRs, where there is a base branch to diff against.
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check frontend/src changes shipped a rebuilt export
+        run: bash scripts/check-static-export-fresh.sh "${{ github.event.pull_request.base.sha }}"

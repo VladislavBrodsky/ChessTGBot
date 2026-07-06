@@ -20,7 +20,16 @@ A committed static export used only when deploying as a single monolith containe
 cd frontend && npm run build:static
 ```
 
-then commit the result. A stale committed export has caused confusion during debugging before.
+then commit the result. A stale committed export has caused confusion during debugging before. CI enforces this: the `static-export-fresh` job fails a PR that changes `frontend/src` (or frontend config) without a rebuilt `backend/static_frontend`. Run the check locally with `bash scripts/check-static-export-fresh.sh`.
+
+## CI & tests
+
+`.github/workflows/ci.yml` runs on every PR and push to `main`:
+- **frontend**: `npm ci` → `npm run build` (static export) → `npm run test:ci` (jest) → `npm run lint` (non-blocking).
+- **backend**: `pip install` → import check (`python -c "import app.main"`) → `python -m pytest`.
+- **static-export-fresh**: the staleness guard above (PRs only).
+
+Run locally: `cd frontend && npm test` and `cd backend && python -m pytest`. Backend tests live in `backend/app/tests/test_security.py` (pure-unit, no DB/network); `test_head_requests.py` and `verify_fix.py` there are manual live-server scripts, excluded from collection via `backend/pytest.ini`.
 
 ## iOS Telegram gotchas (hard-won)
 
