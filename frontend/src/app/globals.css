@@ -354,18 +354,16 @@ body:has(.modal-backdrop) {
 }
 
 /*
- * Auto-hide the bottom navbar whenever any bottom-drawer-backdrop is present.
- * :has() is supported in all modern browsers (Chromium 105+, Safari 15.4+, Firefox 121+).
- * This covers game-over, wallet modals, academy modals, language switcher, etc.
- * — no per-page JS hookup needed. Works as a universal safety net on top of
- * the NavbarContext approach.
+ * NOTE: A previous "auto-hide navbar when a backdrop is present" rule lived here
+ * (body:has(.bottom-drawer-backdrop) nav[data-app-navbar] { opacity:0 !important; ... }).
+ * It was REMOVED because it used !important and fired on ANY lingering/stale
+ * backdrop element anywhere in the DOM, force-hiding the bottom navbar even on
+ * the main dashboard pages and overriding the component's own hide logic. Since
+ * every modal/drawer backdrop is z-index >= 100 and the navbar is z-50, open
+ * modals already cover the navbar via stacking — the rule was redundant and was
+ * the cause of the navbar disappearing. Navbar visibility is driven solely by the
+ * `hide` prop (NavbarContext + LayoutWrapper), which keeps it visible on main pages.
  */
-body:has(.bottom-drawer-backdrop) nav[data-app-navbar] {
-  transform: translateX(-50%) translateY(150px) !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
-}
 
 .bottom-drawer-sheet {
   width: 100%;
