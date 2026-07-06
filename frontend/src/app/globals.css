@@ -340,18 +340,16 @@ body {
   justify-content: center;
 }
 
-/* 
- * Prevent background page scrolling when overlay drawers or modal backdrops are active.
- * Using :has() is fully supported by iOS Safari 15.4+, Telegram WebApp, and modern browsers.
+/*
+ * NOTE: A blanket scroll-lock rule lived here:
+ *   html:has(.bottom-drawer-backdrop), body:has(.modal-backdrop) { overflow:hidden !important; ... }
+ * It was REMOVED. Combined with :has(), it locked scrolling off the mere PRESENCE of a
+ * backdrop element anywhere in the DOM. When a backdrop got orphaned (e.g. a framer-motion
+ * exit clone left behind during navigation), scrolling stayed permanently locked (and, via a
+ * sibling rule, the navbar stayed hidden) with no way to recover. Modals still block the page
+ * via their z-index >= 100 full-screen backdrop; individual overlays that must stop background
+ * scroll (e.g. Onboarding) manage document.body overflow themselves with proper cleanup.
  */
-html:has(.bottom-drawer-backdrop),
-body:has(.bottom-drawer-backdrop),
-html:has(.modal-backdrop),
-body:has(.modal-backdrop) {
-  overflow: hidden !important;
-  height: 100dvh !important;
-  touch-action: none;
-}
 
 /*
  * NOTE: A previous "auto-hide navbar when a backdrop is present" rule lived here
