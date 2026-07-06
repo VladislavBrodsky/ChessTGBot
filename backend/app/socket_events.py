@@ -14,6 +14,42 @@ from app.models.transaction import Transaction
 
 from sqlalchemy import select, and_
 
+# ---------------------------------------------------------------------------
+# Pending draw-offer tracking
+# ---------------------------------------------------------------------------
+# A draw may only be settled when the opponent has an outstanding offer. We store
+# the offer in Redis (shared across workers) with a short TTL, falling back to an
+# in-process dict when Redis is unavailable (dev/memory mode, single process).
+# NOTE: GameService exposes Redis via `.session_manager.redis` — there is no
+# `GameService.redis` attribute (using it raises AttributeError).
+_PENDING_DRAW_TTL = 120  # seconds
+_pending_draw_fallback: dict[str, int] = {}
+
+
+async def _set_pending_draw(service: GameService, game_id: str, offered_by: int) -> None:
+    redis = service.session_manager.redis
+    if redis:
+        await redis.set(f"pending_draw:{game_id}", str(offered_by), ex=_PENDING_DRAW_TTL)
+    else:
+        _pending_draw_fallback[game_id] = offered_by
+
+
+async def _get_pending_draw(service: GameService, game_id: str) -> int | None:
+    redis = service.session_manager.redis
+    if redis:
+        val = await redis.get(f"pending_draw:{game_id}")
+        return int(val) if val is not None else None
+    return _pending_draw_fallback.get(game_id)
+
+
+async def _clear_pending_draw(service: GameService, game_id: str) -> None:
+    redis = service.session_manager.redis
+    if redis:
+        await redis.delete(f"pending_draw:{game_id}")
+    else:
+        _pending_draw_fallback.pop(game_id, None)
+
+
 async def refund_pending_matchmaking_wager(db, user_id: int):
     # Fetch user just to make sure they exist
     user = await user_crud.get_user_by_telegram_id(db, user_id)
@@ -569,10 +605,19 @@ async def offer_draw(sid, data):
     game_id = data.get('game_id')
     session = await sio.get_session(sid)
     user_id = session.get('user_id')
-    
+
     if game_id and user_id:
-        state = await GameService().get_game_state(game_id)
+        service = GameService()
+        state = await service.get_game_state(game_id)
         if state and not state.is_game_over:
+            # Only a player in the game may offer a draw.
+            if user_id not in (state.white_player_id, state.black_player_id):
+                await sio.emit('error', {'message': 'Forbidden: You are not a player in this game.'}, room=sid)
+                return
+            # Persist the pending offer so acceptance can be verified. Without a
+            # recorded offer, accept_draw could be used to unilaterally settle a
+            # draw (refunding both wagers) to escape a losing position.
+            await _set_pending_draw(service, game_id, user_id)
             await sio.emit('draw_offered', {'game_id': game_id, 'offered_by': user_id}, room=game_id)
 
 @sio.event
@@ -583,7 +628,7 @@ async def accept_draw(sid, data):
     game_id = data.get('game_id')
     session = await sio.get_session(sid)
     user_id = session.get('user_id')
-    
+
     if game_id and user_id:
         service = GameService()
         state = await service.get_game_state(game_id)
@@ -591,6 +636,20 @@ async def accept_draw(sid, data):
             if user_id not in (state.white_player_id, state.black_player_id):
                 await sio.emit('error', {'message': 'Forbidden: You are not a player in this game.'}, room=sid)
                 return
+            if state.is_game_over:
+                return
+            # Require a pending draw offer made by the OPPONENT. A player must never
+            # be able to force a draw on their own — that would let a losing player
+            # convert a loss into a full wager refund unilaterally.
+            offered_by = await _get_pending_draw(service, game_id)
+            if offered_by is None:
+                await sio.emit('error', {'message': 'No active draw offer found or it has expired.'}, room=sid)
+                return
+            if offered_by == user_id:
+                await sio.emit('error', {'message': 'You cannot accept your own draw offer.'}, room=sid)
+                return
+            # Consume the offer so it cannot be replayed.
+            await _clear_pending_draw(service, game_id)
             draw_state = await service.settle_draw(game_id)
             if draw_state:
                 await sio.emit('game_state', draw_state.model_dump(), room=game_id)
@@ -621,7 +680,7 @@ async def offer_rematch(sid, data):
                 
                 # Store pending rematch details in Redis
                 import json
-                await service.redis.set(f"pending_rematch:{game_id}", json.dumps({
+                await service.session_manager.redis.set(f"pending_rematch:{game_id}", json.dumps({
                     'challenger_id': user_id,
                     'wager': new_wager,
                     'double_stakes': double_stakes
@@ -653,7 +712,7 @@ async def accept_rematch(sid, data):
             if opponent_id and opponent_id != -1:
                 # 1. Fetch pending rematch details from Redis
                 import json
-                pending_raw = await service.redis.get(f"pending_rematch:{game_id}")
+                pending_raw = await service.session_manager.redis.get(f"pending_rematch:{game_id}")
                 if not pending_raw:
                     await sio.emit('error', {'message': 'No active rematch offer found or offer expired.'}, room=sid)
                     return
@@ -716,7 +775,7 @@ async def accept_rematch(sid, data):
                         await db.commit()
                             
                     # Delete the pending rematch key to prevent replay attacks
-                    await service.redis.delete(f"pending_rematch:{game_id}")
+                    await service.session_manager.redis.delete(f"pending_rematch:{game_id}")
                     
                     new_game_id = str(uuid.uuid4())[:8]
                     # Randomly assign colors and preserve original time control
@@ -730,6 +789,6 @@ async def accept_rematch(sid, data):
                         new_state.white_player_id = user_id
                         new_state.black_player_id = opponent_id
                     
-                    await service.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
+                    await service.session_manager.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
                     await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
 
