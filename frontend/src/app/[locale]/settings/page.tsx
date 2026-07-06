@@ -95,7 +95,9 @@ export default function SettingsPage() {
  <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide">PRO</span>
  </span>
  <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest leading-none premium-neon-text-glow">
- {t('enhanced_access')}
+ {/* Only claim "Active" when the user actually has premium — this label
+     previously showed "Premium Status: Active" to everyone. */}
+ {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
  </span>
  </div>
  </div>

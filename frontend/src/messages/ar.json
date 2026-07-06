@@ -50,7 +50,9 @@
     "cyber_knight": "Cyber Knight",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "تعذّر تحميل بياناتك",
+    "retry": "إعادة المحاولة"
   },
   "Settings": {
     "return": "عودة",
@@ -72,7 +74,8 @@
     "account_section": "الحساب وعمليات الدمج",
     "ton_wallet": "محفظة TON",
     "ton_not_connected": "غير متصل",
-    "premium_membership": "العضوية المميزة"
+    "premium_membership": "العضوية المميزة",
+    "upgrade_for_access": "افتح الوصول المتقدم"
   },
   "Language": {
     "select": "اختر اللغة"
@@ -329,7 +332,9 @@
     "connect_wallet_cta": "اربط المحفظة للمتابعة",
     "buy_with_card_cta": "اشترِ بالبطاقة / Apple Pay",
     "card_destination_label": "محفظة الاستلام (عنوانك)",
-    "card_await_funds_notice": "بعد الشراء يصل USDT إلى محفظتك (قد يستغرق بضع دقائق). ثم انتقل إلى تبويب الكريبتو لشحن رصيدك."
+    "card_await_funds_notice": "بعد الشراء يصل USDT إلى محفظتك (قد يستغرق بضع دقائق). ثم انتقل إلى تبويب الكريبتو لشحن رصيدك.",
+    "balance_unavailable": "الرصيد غير متاح — انقر لإعادة المحاولة",
+    "link_wallet_hint": "اربط محفظة TON الخاصة بك"
   },
   "Membership": {
     "title": "اشتراك CHESS PREMIUM",

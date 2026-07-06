@@ -50,7 +50,9 @@
     "cyber_knight": "Cyber Knight",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "Impossible de charger vos données",
+    "retry": "Réessayer"
   },
   "Settings": {
     "return": "Retour",
@@ -72,7 +74,8 @@
     "account_section": "Compte et intégrations",
     "ton_wallet": "Portefeuille TON",
     "ton_not_connected": "Non connecté",
-    "premium_membership": "Abonnement Premium"
+    "premium_membership": "Abonnement Premium",
+    "upgrade_for_access": "Débloquez l'accès avancé"
   },
   "Language": {
     "select": "Choisir la Langue"
@@ -329,7 +332,9 @@
     "connect_wallet_cta": "Connecter le portefeuille",
     "buy_with_card_cta": "Acheter par carte / Apple Pay",
     "card_destination_label": "Portefeuille de réception (votre adresse)",
-    "card_await_funds_notice": "Après l’achat, l’USDT arrive sur votre portefeuille (quelques minutes). Passez ensuite à l’onglet Crypto pour recharger votre solde."
+    "card_await_funds_notice": "Après l’achat, l’USDT arrive sur votre portefeuille (quelques minutes). Passez ensuite à l’onglet Crypto pour recharger votre solde.",
+    "balance_unavailable": "Solde indisponible — touchez pour réessayer",
+    "link_wallet_hint": "Liez votre portefeuille TON"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

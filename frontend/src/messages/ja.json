@@ -50,7 +50,9 @@
     "cyber_knight": "Cyber Knight",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "データを読み込めませんでした",
+    "retry": "再試行"
   },
   "Settings": {
     "return": "戻る",
@@ -72,7 +74,8 @@
     "account_section": "アカウントと連携",
     "ton_wallet": "TONウォレット",
     "ton_not_connected": "未接続",
-    "premium_membership": "プレミアムメンバーシップ"
+    "premium_membership": "プレミアムメンバーシップ",
+    "upgrade_for_access": "上位アクセスをアンロック"
   },
   "Language": {
     "select": "言語を選択"
@@ -329,7 +332,9 @@
     "connect_wallet_cta": "ウォレットを接続して続行",
     "buy_with_card_cta": "カード / Apple Pay で購入",
     "card_destination_label": "受取ウォレット（あなたのアドレス）",
-    "card_await_funds_notice": "購入後、USDTがウォレットに届きます（数分かかる場合あり）。その後「暗号」タブで残高をチャージしてください。"
+    "card_await_funds_notice": "購入後、USDTがウォレットに届きます（数分かかる場合あり）。その後「暗号」タブで残高をチャージしてください。",
+    "balance_unavailable": "残高を取得できません — タップして再試行",
+    "link_wallet_hint": "TONウォレットを連携"
   },
   "Membership": {
     "title": "CHESS PREMIUM 会員",

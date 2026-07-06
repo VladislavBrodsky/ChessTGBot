@@ -22,7 +22,7 @@ export default function Home() {
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
- const { stats, walletBalance, loadingStats } = useUser();
+ const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -71,7 +71,27 @@ export default function Home() {
 
  {/* Unified Premium Profile Card */}
   <AnimatePresence mode="wait" initial={false}>
-  {(!stats || loadingStats) ? (
+  {(!stats && !loadingStats && statsError) ? (
+    /* Stats failed to load — say so and offer a retry instead of pulsing a
+       skeleton forever (the old behavior when the API was unreachable). */
+    <motion.div
+      key="stats-error"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium bg-brand-surface flex flex-col items-center text-center space-y-3"
+    >
+      <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">
+        {t('load_failed')}
+      </span>
+      <button
+        onClick={() => syncStats()}
+        className="px-6 py-2.5 rounded-xl bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-wider active:scale-95 transition-transform"
+      >
+        {t('retry')}
+      </button>
+    </motion.div>
+  ) : (!stats || loadingStats) ? (
     <motion.div
       key="skeleton"
       initial={{ opacity: 1 }}
@@ -189,8 +209,9 @@ export default function Home() {
       className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
       >
       <FaWallet className="text-[9px] text-brand-primary opacity-60" />
-      <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">
-      ${(walletBalance / 100).toFixed(2)}
+      <span className={`text-[9px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
+      {/* Never present a failed balance fetch as "$0.00" */}
+      {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
       </span>
       </motion.div>
       </Link>

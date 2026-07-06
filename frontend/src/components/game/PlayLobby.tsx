@@ -29,7 +29,7 @@ export default function PlayLobby() {
   const pathname = usePathname();
 
   const [tgUser, setTgUser] = useState<any>(null);
-  const { stats, walletBalance, syncBalance } = useUser();
+  const { stats, walletBalance, syncBalance, balanceError } = useUser();
   const { hideNavbar, showNavbar } = useNavbarHide();
   const { play: playAudio } = useAudio();
 
@@ -649,8 +649,9 @@ export default function PlayLobby() {
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
-                      <span className={`text-[11px] font-black tracking-wide leading-none truncate ${hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
-                        ${(walletBalance / 100).toFixed(2)}
+                      <span className={`text-[11px] font-black tracking-wide leading-none truncate ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+                        {/* Never present a failed balance fetch as "$0.00" */}
+                        {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
                       </span>
                     </div>
                   </Link>

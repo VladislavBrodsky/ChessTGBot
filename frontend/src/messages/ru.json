@@ -51,7 +51,9 @@
     "cyber_knight": "Кибер-рыцарь",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "Не удалось загрузить данные",
+    "retry": "Повторить"
   },
   "Settings": {
     "return": "Назад",
@@ -73,7 +75,8 @@
     "account_section": "Аккаунт и интеграции",
     "ton_wallet": "Кошелек TON",
     "ton_not_connected": "Не подключен",
-    "premium_membership": "Премиум-подписка"
+    "premium_membership": "Премиум-подписка",
+    "upgrade_for_access": "Откройте расширенный доступ"
   },
   "Language": {
     "select": "Выберите Язык"
@@ -334,7 +337,9 @@
     "connect_wallet_cta": "Подключить кошелёк",
     "buy_with_card_cta": "Купить картой / Apple Pay",
     "card_destination_label": "Кошелёк для зачисления (ваш адрес)",
-    "card_await_funds_notice": "После покупки USDT поступит на ваш кошелёк (несколько минут). Затем перейдите на вкладку «Крипто», чтобы пополнить баланс."
+    "card_await_funds_notice": "После покупки USDT поступит на ваш кошелёк (несколько минут). Затем перейдите на вкладку «Крипто», чтобы пополнить баланс.",
+    "balance_unavailable": "Баланс недоступен — нажмите, чтобы повторить",
+    "link_wallet_hint": "Привяжите TON-кошелёк"
   },
   "Membership": {
     "title": "ПОДПИСКА CHESS PREMIUM",

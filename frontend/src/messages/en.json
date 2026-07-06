@@ -51,7 +51,9 @@
     "return": "Return",
     "daily_missions": "Daily Tasks",
     "claim": "Claim",
-    "cyber_knight": "Cyber Knight"
+    "cyber_knight": "Cyber Knight",
+    "load_failed": "Couldn't load your data",
+    "retry": "Retry"
   },
   "Settings": {
     "return": "Back",
@@ -73,7 +75,8 @@
     "account_section": "Account & Integrations",
     "ton_wallet": "TON Wallet",
     "ton_not_connected": "Not Connected",
-    "premium_membership": "Premium Membership"
+    "premium_membership": "Premium Membership",
+    "upgrade_for_access": "Unlock Enhanced Access"
   },
   "Language": {
     "select": "Choose Language"
@@ -335,7 +338,9 @@
     "connect_wallet_cta": "Connect Wallet to Continue",
     "buy_with_card_cta": "Buy with Card / Apple Pay",
     "card_destination_label": "Delivery Wallet (Your Address)",
-    "card_await_funds_notice": "After purchase, USDT arrives in your wallet (may take a few minutes). Then switch to the Crypto tab to top up your platform balance."
+    "card_await_funds_notice": "After purchase, USDT arrives in your wallet (may take a few minutes). Then switch to the Crypto tab to top up your platform balance.",
+    "balance_unavailable": "Balance unavailable — tap to retry",
+    "link_wallet_hint": "Link your TON wallet"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

@@ -50,7 +50,9 @@
     "cyber_knight": "Cyber Knight",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "डेटा लोड नहीं हो सका",
+    "retry": "पुनः प्रयास करें"
   },
   "Settings": {
     "return": "वापस",
@@ -72,7 +74,8 @@
     "account_section": "खाता और एकीकरण",
     "ton_wallet": "टॉन वॉलेट",
     "ton_not_connected": "कनेक्ट नहीं है",
-    "premium_membership": "प्रीमियम सदस्यता"
+    "premium_membership": "प्रीमियम सदस्यता",
+    "upgrade_for_access": "उन्नत एक्सेस अनलॉक करें"
   },
   "Language": {
     "select": "भाषा चुनें"
@@ -329,7 +332,9 @@
     "connect_wallet_cta": "जारी रखने के लिए वॉलेट कनेक्ट करें",
     "buy_with_card_cta": "कार्ड / Apple Pay से खरीदें",
     "card_destination_label": "डिलीवरी वॉलेट (आपका पता)",
-    "card_await_funds_notice": "खरीद के बाद USDT आपके वॉलेट में आएगा (कुछ मिनट)। फिर बैलेंस टॉप-अप करने के लिए क्रिप्टो टैब पर जाएँ।"
+    "card_await_funds_notice": "खरीद के बाद USDT आपके वॉलेट में आएगा (कुछ मिनट)। फिर बैलेंस टॉप-अप करने के लिए क्रिप्टो टैब पर जाएँ।",
+    "balance_unavailable": "बैलेंस उपलब्ध नहीं — पुनः प्रयास के लिए टैप करें",
+    "link_wallet_hint": "अपना TON वॉलेट लिंक करें"
   },
   "Membership": {
     "title": "चेस प्रीमियम (CHESS PREMIUM)",

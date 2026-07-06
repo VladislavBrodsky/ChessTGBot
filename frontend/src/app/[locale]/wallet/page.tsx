@@ -31,7 +31,7 @@ export default function WalletPage() {
   const locale = useLocale();
 
   // Balance & wallet state
-  const { walletBalance: balance, walletAddress, syncBalance } = useUser();
+  const { walletBalance: balance, walletAddress, syncBalance, balanceError } = useUser();
   const { play: playAudio } = useAudio();
   const prevBalanceRef = useRef<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -86,7 +86,7 @@ export default function WalletPage() {
         </div>
 
         {/* HOLOGRAPHIC CYBER-CARD */}
-        <CyberCard balance={balance} walletAddress={walletAddress} />
+        <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={fetchWalletData} />
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
         <div className="w-full grid grid-cols-3 gap-2.5">

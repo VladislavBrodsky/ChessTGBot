@@ -50,7 +50,9 @@
     "cyber_knight": "Cyber Knight",
     "no_games_logged": "No games logged",
     "initiate_combat": "Initiate combat to update history",
-    "opponent_elo": "Opponent ELO"
+    "opponent_elo": "Opponent ELO",
+    "load_failed": "无法加载数据",
+    "retry": "重试"
   },
   "Settings": {
     "return": "返回",
@@ -72,7 +74,8 @@
     "account_section": "账户与集成",
     "ton_wallet": "TON钱包",
     "ton_not_connected": "未连接",
-    "premium_membership": "高级会员"
+    "premium_membership": "高级会员",
+    "upgrade_for_access": "解锁高级权限"
   },
   "Language": {
     "select": "选择语言"
@@ -329,7 +332,9 @@
     "connect_wallet_cta": "连接钱包以继续",
     "buy_with_card_cta": "用银行卡 / Apple Pay 购买",
     "card_destination_label": "接收钱包（您的地址）",
-    "card_await_funds_notice": "购买后，USDT 将到达您的钱包（可能需要几分钟）。然后切换到“加密”标签为余额充值。"
+    "card_await_funds_notice": "购买后，USDT 将到达您的钱包（可能需要几分钟）。然后切换到“加密”标签为余额充值。",
+    "balance_unavailable": "余额不可用 — 点击重试",
+    "link_wallet_hint": "绑定您的 TON 钱包"
   },
   "Membership": {
     "title": "CHESS PREMIUM",
