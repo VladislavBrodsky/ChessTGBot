@@ -102,7 +102,14 @@ class GameHistoryDetails(BaseModel):
 from typing import List, Optional
 
 @router.get("/history/{game_id}", response_model=GameHistoryDetails)
-async def get_game_history(game_id: str, db: AsyncSession = Depends(get_read_db)):
+async def get_game_history(
+    game_id: str,
+    db: AsyncSession = Depends(get_read_db),
+    # Require authentication: this endpoint returns both players' telegram_ids,
+    # names, ELO, and full move list. Game IDs are short (8 hex chars) and leak in
+    # invite links, so leaving this open allowed anonymous enumeration/harvesting.
+    current_user: User = Depends(get_current_user),
+):
     from app.models.game_history import GameHistory
     from app.models.user import User
     from sqlalchemy.future import select

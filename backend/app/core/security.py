@@ -1,15 +1,24 @@
 import hmac
 import hashlib
 import json
+import time
 from urllib.parse import unquote
 from fastapi import HTTPException
 from app.core.config import get_settings
 
 settings = get_settings()
 
-def validate_init_data(init_data: str) -> dict:
+# Max age of a Telegram initData string before it is rejected as stale. Telegram
+# signs an `auth_date` into every initData payload; without this check a captured
+# initData string authenticates as its user forever (indefinite replay). 24h is a
+# generous window that still bounds the value of a leaked string.
+INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
+
+
+def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_SECONDS) -> dict:
     """
-    Validates the Telegram WebApp initData string using HMAC-SHA256.
+    Validates the Telegram WebApp initData string using HMAC-SHA256 and rejects
+    stale payloads based on their signed `auth_date`.
     Returns the parsed user data dictionary if valid, raises HTTPException otherwise.
     """
     if not settings.TELEGRAM_BOT_TOKEN:
@@ -39,8 +48,23 @@ def validate_init_data(init_data: str) -> dict:
         secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
         calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
-        if calculated_hash != received_hash:
+        if not hmac.compare_digest(calculated_hash, received_hash):
             raise HTTPException(status_code=403, detail="Invalid initData signature")
+
+        # Reject stale payloads (replay protection). auth_date is a signed unix
+        # timestamp; it is inside the HMAC so it cannot be forged, only replayed.
+        if max_age_seconds is not None:
+            auth_date_raw = data_dict.get('auth_date')
+            if not auth_date_raw:
+                raise HTTPException(status_code=401, detail="Missing auth_date in initData")
+            try:
+                auth_date = int(auth_date_raw)
+            except (TypeError, ValueError):
+                raise HTTPException(status_code=400, detail="Invalid auth_date in initData")
+            age = time.time() - auth_date
+            # Allow a small negative skew for clock differences between servers.
+            if age > max_age_seconds or age < -300:
+                raise HTTPException(status_code=401, detail="initData has expired, please reopen the app")
 
         # Extract user data
         user_data_str = data_dict.get('user')

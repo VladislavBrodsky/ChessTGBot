@@ -354,7 +354,20 @@ async def deposit_funds(
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Invoices API request error: {e}")
 
-    # Mock/simulated fallback if TON_CONSOLE_TOKEN is not configured
+    # Mock/simulated fallback if TON_CONSOLE_TOKEN is not configured.
+    # SECURITY: this credits real balance with NO on-chain payment. It must NEVER
+    # be reachable in production — otherwise a missing TON_CONSOLE_TOKEN env var
+    # turns this endpoint into an unlimited free-money mint. Gate it to the local
+    # dev database (sqlite) / pytest, mirroring the webhook's dev-simulation guard.
+    import sys
+    from app.core.database import engine
+    is_dev = engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules
+    if not is_dev:
+        raise HTTPException(
+            status_code=503,
+            detail="Deposits are temporarily unavailable. Please try again later."
+        )
+
     updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, credited_amount)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
