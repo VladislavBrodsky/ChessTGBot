@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
@@ -21,6 +22,21 @@ export default function Leaderboard() {
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [loading, setLoading] = useState(true);
  const [showModal, setShowModal] = useState(false);
+
+ // Lock background scroll while the full ranking modal is open — otherwise
+ // the Home page underneath can still scroll/repaint behind this "fixed"
+ // overlay (observed on iOS Telegram: the News section bled through).
+ useEffect(() => {
+   if (!showModal) return;
+   const originalOverflow = document.body.style.overflow;
+   const originalOverflowX = document.body.style.overflowX;
+   document.body.style.overflow = 'hidden';
+   document.body.style.overflowX = 'hidden';
+   return () => {
+     document.body.style.overflow = originalOverflow;
+     document.body.style.overflowX = originalOverflowX;
+   };
+ }, [showModal]);
 
  useEffect(() => {
  apiFetch('/api/v1/users/leaderboard')
@@ -153,13 +169,14 @@ export default function Leaderboard() {
         )}
       </div>
 
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
         {showModal && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-void/80 backdrop-blur-md modal-backdrop"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 15 }}
@@ -238,7 +255,9 @@ export default function Leaderboard() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </div>
   );
 }
