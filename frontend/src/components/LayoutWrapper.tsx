@@ -137,12 +137,14 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         pathname.endsWith('/challenges') || 
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
-    // On main dashboard pages (home, settings, wallet, etc.) the navbar must ALWAYS
-    // be visible once loaded. A lingering/stale activeGameId or a leftover context
-    // hide must never suppress it — otherwise the user is stranded with no menu.
-    // Only onboarding and the initial active-game check may hide it on these pages.
+    // On main dashboard pages (home, settings, wallet, etc.) the navbar is NEVER
+    // hidden — no exceptions. Every conditional hide here has eventually stranded
+    // users with no menu (stale activeGameId, leftover context hides, states stuck
+    // during the active-game check on iOS Telegram). Overlays that must cover it
+    // (Onboarding, modals) render at z-index >= 100 above the z-50 navbar, so
+    // hiding it for them is redundant anyway.
     const shouldHideNavbar = isMainNavbarPage
-        ? (showOnboarding || (isCorePage && isCheckingActiveGame))
+        ? false
         : (showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || isNavbarHiddenByContext);
 
     return (
