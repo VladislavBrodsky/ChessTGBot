@@ -378,9 +378,24 @@ def create_application() -> FastAPI:
     # We check if the 'static_frontend' directory exists (created by Docker)
     static_dir = "static_frontend"
     if os.path.isdir(static_dir):
+        # Cache policy:
+        #  - /_next/static assets are content-hashed -> safe to cache forever.
+        #  - HTML documents must ALWAYS be revalidated. Telegram's in-app WebView
+        #    (WKWebView on iOS in particular) heuristically caches responses that
+        #    have no Cache-Control header, so without "no-cache" users keep getting
+        #    a stale build (e.g. the missing-bottom-navbar bug) long after a deploy.
+        HTML_NO_CACHE = {"Cache-Control": "no-cache, must-revalidate"}
+
         # Mount assets (Next.js config usually puts them in _next)
         application.mount("/_next", StaticFiles(directory=f"{static_dir}/_next"), name="next-assets")
-        
+
+        @application.middleware("http")
+        async def static_cache_headers(request: Request, call_next):
+            response = await call_next(request)
+            if request.url.path.startswith("/_next/static/"):
+                response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            return response
+
         # SPA Catch-All
         # We need a custom route logic to fallback to index.html for unknown routes (like /game/123)
         @application.exception_handler(404)
@@ -390,7 +405,7 @@ def create_application() -> FastAPI:
                     status_code=404,
                     content={"detail": getattr(exc, "detail", "Not Found")}
                 )
-            return FileResponse(f"{static_dir}/index.html")
+            return FileResponse(f"{static_dir}/index.html", headers=HTML_NO_CACHE)
 
         @application.get("/{full_path:path}")
         async def serve_frontend(full_path: str):
@@ -404,22 +419,23 @@ def create_application() -> FastAPI:
             # 1. Exact file match
             potential_file = f"{static_dir}/{full_path}"
             if os.path.isfile(potential_file):
-                return FileResponse(potential_file)
-            
+                headers = HTML_NO_CACHE if potential_file.endswith(".html") else None
+                return FileResponse(potential_file, headers=headers)
+
             # 2. HTML file match (clean URLs)
             # e.g. /en/home -> /en/home.html
             potential_html = f"{static_dir}/{full_path}.html"
             if os.path.isfile(potential_html):
-                return FileResponse(potential_html)
+                return FileResponse(potential_html, headers=HTML_NO_CACHE)
 
             # 3. Directory index match
             # e.g. /en/home -> /en/home/index.html
             potential_index = f"{static_dir}/{full_path}/index.html"
             if os.path.isfile(potential_index):
-                return FileResponse(potential_index)
+                return FileResponse(potential_index, headers=HTML_NO_CACHE)
 
             # 4. Fallback to SPA root (for client-side routing if static file not found)
-            return FileResponse(f"{static_dir}/index.html")
+            return FileResponse(f"{static_dir}/index.html", headers=HTML_NO_CACHE)
 
     return application
 
