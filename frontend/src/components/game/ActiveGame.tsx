@@ -291,6 +291,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const opponentTime = isWhite ? blackTime : whiteTime;
   const isMyTurn = gameState && !gameState.is_game_over && gameState.turn === (isWhite ? 'w' : 'b');
   const isOpponentTurn = gameState && !gameState.is_game_over && gameState.turn !== (isWhite ? 'w' : 'b');
+  // Declared here (not just before its later usages) because the "check notification"
+  // effect below references it in its dependency array; a `const` declared further
+  // down in this same component scope would throw "Cannot access before
+  // initialization" (TDZ) the moment that effect's deps are evaluated during render.
+  const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
 
   // Sync wallet balance and user stats on game completion, play warning indicators
   useEffect(() => {
@@ -686,7 +691,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const isBotGame = gameState?.black_player_id === -1;
   const isWaiting = gameState && !isBotGame && !gameState.black_player_id;
-  const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
 
   // Toggle Navbar — hide completely for the entire active game match lifecycle
   const { hideNavbar, showNavbar } = useNavbarHide();

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaRobot, FaGamepad, FaAward } from "react-icons/fa";
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
 interface AiDifficultyDrawerProps {
   locale: string;
@@ -72,6 +73,11 @@ const localTranslations: { [locale: string]: any } = {
 export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreating }: AiDifficultyDrawerProps) {
   const [canClose, setCanClose] = useState<boolean>(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("medium");
+
+  // The navbar is otherwise still visible on this page (/game is not a
+  // "main navbar page") and its fixed bottom position overlaps the
+  // "Start Training Session" button, silently swallowing taps on it.
+  useNavbarHideWhileMounted();
 
   const trans = localTranslations[locale] || localTranslations["en"];
 
