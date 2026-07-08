@@ -77,6 +77,64 @@ def convert_raw_to_friendly(raw_addr: str, bounceable: bool = True) -> str:
     except Exception:
         return raw_addr
 
+
+# ---------------------------------------------------------------------------
+# USDT-only settlement guards
+# ---------------------------------------------------------------------------
+# The platform credits deposits ONLY in USDT (1:1 with USD). Crediting a
+# volatile asset (TON/BTC/ETH) at its USD value would make the platform hold a
+# basket while owing USD — uncontrolled FX / insolvency risk. Every deposit
+# credit path (interactive verify, webhook, background crawler) gates on these.
+
+def _is_usdt_master(jetton_master_address: str) -> bool:
+    """True iff the given jetton master is the configured USDT master."""
+    from app.core.config import get_settings
+    s = get_settings()
+    if not jetton_master_address or not s.USDT_MASTER:
+        return False
+    try:
+        return convert_ton_address_to_hex(jetton_master_address) == convert_ton_address_to_hex(s.USDT_MASTER)
+    except Exception:
+        return False
+
+
+_master_usdt_jetton_wallet_cache = {"hex": None}
+
+async def get_master_usdt_jetton_wallet_hex() -> Optional[str]:
+    """
+    Resolve (and cache) the master wallet's USDT jetton wallet address in raw hex.
+    Used by the watched-account webhook to verify that a transfer_notification
+    actually originated from the master's USDT jetton wallet — i.e. that it is a
+    genuine USDT deposit and not native TON or a spoofed/worthless jetton. The
+    address is static, so it is cached for the process lifetime.
+    """
+    if _master_usdt_jetton_wallet_cache["hex"]:
+        return _master_usdt_jetton_wallet_cache["hex"]
+    from app.core.config import get_settings
+    s = get_settings()
+    if not s.MASTER_WALLET_ADDRESS or not s.USDT_MASTER:
+        return None
+    import httpx
+    headers = {}
+    if s.TON_API_KEY:
+        headers["Authorization"] = f"Bearer {s.TON_API_KEY}"
+    url = f"https://tonapi.io/v2/accounts/{s.MASTER_WALLET_ADDRESS}/jettons/{s.USDT_MASTER}"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.get(url, headers=headers)
+            if res.status_code != 200:
+                return None
+            data = res.json()
+        jw = data.get("wallet_address", {}).get("address")
+        if not jw:
+            return None
+        hex_addr = convert_ton_address_to_hex(jw)
+        _master_usdt_jetton_wallet_cache["hex"] = hex_addr
+        return hex_addr
+    except Exception:
+        return None
+
+
 _prices_cache = {
     "prices": None,
     "last_fetched": 0.0
@@ -723,16 +781,13 @@ async def receive_ton_deposit_webhook(
         except (ValueError, IndexError):
             raise HTTPException(status_code=400, detail="Malformed Telegram ID")
 
-        # Convert to cents
+        # USDT-only: credit only USDT invoices. A non-USDT (e.g. TON) invoice is
+        # ignored rather than credited at a fluctuating price.
         currency = (payload.currency or "TON").upper()
-        if currency == "USDT":
-            amount_micro = int(payload.amount or 0)
-            amount_cents = int(round(amount_micro / 10000.0))
-        else:
-            amount_nano = int(payload.amount or 0)
-            ton_amount = amount_nano / 1_000_000_000.0
-            ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-            amount_cents = int(round(ton_amount * ton_price_usd * 100))
+        if currency != "USDT":
+            return {"status": "ignored", "reason": f"Only USDT deposits are credited (invoice currency was {currency})."}
+        amount_micro = int(payload.amount or 0)
+        amount_cents = int(round(amount_micro / 10000.0))
 
         tx_hash = f"invoice_{invoice_id}"
         sender_addr = payload.pay_to_address or "TON_Console_Invoices"
@@ -760,47 +815,47 @@ async def receive_ton_deposit_webhook(
 
         in_msg = tx_data.get("in_msg", {})
         sender_addr = in_msg.get("source", {}).get("address", "unknown")
-        
-        # Extract comment and amount based on whether it is a Jetton transfer notification
+
         decoded_body = in_msg.get("decoded_body") or {}
         op_name = in_msg.get("decoded_op_name") or ""
         op_code = in_msg.get("op_code") or ""
-        
         is_jetton = op_name == "transfer_notification" or op_code == "0x7362d09c" or "jetton" in str(decoded_body.get("type", "")).lower()
 
+        # USDT-only: native TON transfers are never credited.
+        if not is_jetton:
+            return {"status": "ignored", "reason": "Only USDT deposits are credited (native TON ignored)."}
+
+        # Verify the jetton transfer_notification actually came from the master
+        # wallet's USDT jetton wallet. This both enforces USDT-only and closes a
+        # spoofing hole: previously ANY 6-decimal jetton was credited 1:1 as USDT.
+        master_usdt_jw = await get_master_usdt_jetton_wallet_hex()
+        try:
+            source_hex = convert_ton_address_to_hex(sender_addr)
+        except Exception:
+            source_hex = None
+        if not master_usdt_jw or source_hex != master_usdt_jw:
+            return {"status": "ignored", "reason": "Transfer is not a verified USDT deposit."}
+
+        # Extract the ref_ comment (nested in the jetton forward_payload) and the
+        # USDT amount (6 decimals; 1 cent = 10^4 raw units).
         comment = ""
-        if is_jetton and isinstance(decoded_body, dict):
-            # For Jetton transfers, the comment is nested in forward_payload
+        amount_cents = 0
+        if isinstance(decoded_body, dict):
             fwd = decoded_body.get("forward_payload") or {}
             if isinstance(fwd, dict):
                 comment = fwd.get("text") or fwd.get("comment") or ""
             elif isinstance(fwd, str):
                 comment = fwd
-            
-            # If amount is present in decoded_body, use it (decimals for USDT is 6, so amount is in micro-USDT)
             jetton_amount_raw = decoded_body.get("amount")
             if jetton_amount_raw is not None:
                 try:
                     amount_cents = int(round(int(jetton_amount_raw) / 10000.0))
-                except ValueError:
+                except (ValueError, TypeError):
                     amount_cents = 0
-            else:
-                amount_cents = 0
-        else:
-            # Standard TON transfer
-            value_nano = int(in_msg.get("value", 0))
-            if isinstance(decoded_body, dict):
-                comment = decoded_body.get("text") or decoded_body.get("Text") or decoded_body.get("comment") or ""
-            elif isinstance(decoded_body, str):
-                comment = decoded_body
-
-            if not comment:
-                comment = in_msg.get("message") or ""
-            
-            # Convert nanoTON to cents
-            ton_amount = value_nano / 1_000_000_000.0
-            ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-            amount_cents = int(round(ton_amount * ton_price_usd * 100))
+            # The real human sender for the notification (not the jetton wallet).
+            real_sender = decoded_body.get("sender")
+            if real_sender:
+                sender_addr = real_sender
 
         if not comment:
             comment = in_msg.get("message") or ""
@@ -1029,8 +1084,10 @@ async def verify_deposit(
         "ETH": 9
     }
 
-    # Fetch fresh prices
-    prices = await fetch_all_prices()
+    # USDT-only: track whether the user actually sent a non-USDT asset (TON or
+    # another jetton) to the master with the right comment, so we can return a
+    # clear "only USDT" error instead of a generic verification failure.
+    non_usdt_detected = False
 
     for action in actions:
         if action.get("status") != "ok":
@@ -1041,27 +1098,19 @@ async def verify_deposit(
         if action_type == "TonTransfer":
             ton_transfer = action.get("TonTransfer", {})
             recipient = ton_transfer.get("recipient", {}).get("address", "")
-            sender = ton_transfer.get("sender", {}).get("address", "")
-            amount_nano = int(ton_transfer.get("amount", 0))
             comment = ton_transfer.get("comment", "")
 
-            # Convert addresses to raw format for comparison
             try:
                 recipient_raw = convert_ton_address_to_hex(recipient)
                 master_raw = convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)
             except Exception:
                 continue
 
+            # Native TON is not a creditable deposit asset under USDT-only
+            # settlement. Detect the attempt but never credit it.
             if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
-                # Successfully verified direct TON transfer!
-                # Calculate value in USD cents
-                ton_amount = amount_nano / 1_000_000_000.0
-                ton_price = prices.get("TON", 5.40)
-                amount_cents = int(round(ton_amount * ton_price * 100))
-                sender_addr = sender
-                currency_symbol = "TON"
-                verified_tx = True
-                break
+                non_usdt_detected = True
+                continue
 
         elif action_type == "JettonTransfer":
             jetton_transfer = action.get("JettonTransfer", {})
@@ -1070,42 +1119,35 @@ async def verify_deposit(
             amount_raw = int(jetton_transfer.get("amount", 0))
             comment = jetton_transfer.get("comment", "")
             jetton_master = jetton_transfer.get("jetton", {}).get("address", "")
-            jetton_symbol = jetton_transfer.get("jetton", {}).get("symbol", "").upper()
 
             # Compare recipient with our master address
             try:
                 recipient_raw = convert_ton_address_to_hex(recipient)
                 master_raw = convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)
-                jetton_master_raw = convert_ton_address_to_hex(jetton_master)
             except Exception:
                 continue
 
             if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
-                # Find matching Jetton
-                matched_symbol = None
-                masters = {
-                    "USDT": settings.USDT_MASTER,
-                    "USDC": settings.USDC_MASTER,
-                    "BTC": settings.BTC_MASTER,
-                    "ETH": settings.ETH_MASTER
-                }
-                for sym, addr in masters.items():
-                    if convert_ton_address_to_hex(addr) == jetton_master_raw:
-                        matched_symbol = sym
-                        break
-
-                if matched_symbol:
-                    # Verified Jetton transfer!
-                    decimals = decimals_map.get(matched_symbol, 6)
-                    token_amount = amount_raw / (10 ** decimals)
-                    token_price = prices.get(matched_symbol, 1.00)
-                    amount_cents = int(round(token_amount * token_price * 100))
+                if _is_usdt_master(jetton_master):
+                    # Verified USDT transfer — credit at face value (6 decimals,
+                    # 1 USDT = 100 cents). No price feed needed.
+                    token_amount = amount_raw / (10 ** 6)
+                    amount_cents = int(round(token_amount * 100))
                     sender_addr = sender
-                    currency_symbol = matched_symbol
+                    currency_symbol = "USDT"
                     verified_tx = True
                     break
+                else:
+                    # A non-USDT jetton (USDC/BTC/ETH/other) — not credited.
+                    non_usdt_detected = True
+                    continue
 
     if not verified_tx:
+        if non_usdt_detected:
+            raise HTTPException(
+                status_code=400,
+                detail="Only USDT deposits are supported. You sent a different asset — please deposit USDT.",
+            )
         raise HTTPException(
             status_code=400,
             detail="Transaction verification failed. Destination, comment, or status mismatch."

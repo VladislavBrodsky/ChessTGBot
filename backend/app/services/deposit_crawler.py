@@ -6,7 +6,7 @@ from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.api.v1.endpoints.wallet import fetch_all_prices, convert_ton_address_to_hex
+from app.api.v1.endpoints.wallet import fetch_all_prices, convert_ton_address_to_hex, _is_usdt_master
 
 logger = logging.getLogger(__name__)
 
@@ -69,39 +69,41 @@ async def start_deposit_crawler():
                             sender_addr = "unknown"
                             currency_symbol = "USDT"
                             telegram_id = None
-                            
+                            # USDT-only: a non-USDT asset (TON or another jetton) sent to
+                            # the master with a ref_ comment is REAL money we will not
+                            # auto-credit. Flag it so we can alert the treasury to handle
+                            # it manually (convert / refund), but never credit it.
+                            non_usdt_detected = False
+                            non_usdt_symbol = None
+                            non_usdt_tg = None
+
                             for action in actions:
                                 if action.get("status") != "ok":
                                     continue
-                                    
+
                                 action_type = action.get("type")
-                                
+
                                 if action_type == "TonTransfer":
                                     ton_transfer = action.get("TonTransfer", {})
                                     recipient = ton_transfer.get("recipient", {}).get("address", "")
-                                    sender = ton_transfer.get("sender", {}).get("address", "")
-                                    amount_nano = int(ton_transfer.get("amount", 0))
                                     comment = ton_transfer.get("comment", "").strip()
-                                    
+
                                     try:
                                         recipient_raw = convert_ton_address_to_hex(recipient)
                                         master_raw = convert_ton_address_to_hex(master_wallet)
                                     except Exception:
                                         continue
-                                        
+
                                     if recipient_raw == master_raw and comment.startswith("ref_"):
+                                        # Native TON is not creditable under USDT-only.
+                                        non_usdt_detected = True
+                                        non_usdt_symbol = "TON"
                                         try:
-                                            telegram_id = int(comment[4:])
-                                            ton_amount = amount_nano / 1_000_000_000.0
-                                            ton_price = prices.get("TON", 5.40)
-                                            amount_cents = int(round(ton_amount * ton_price * 100))
-                                            sender_addr = sender
-                                            currency_symbol = "TON"
-                                            verified_tx = True
-                                            break
+                                            non_usdt_tg = int(comment[4:])
                                         except Exception:
-                                            continue
-                                            
+                                            non_usdt_tg = None
+                                        continue
+
                                 elif action_type == "JettonTransfer":
                                     jetton_transfer = action.get("JettonTransfer", {})
                                     recipient = jetton_transfer.get("recipient", {}).get("address", "")
@@ -109,42 +111,58 @@ async def start_deposit_crawler():
                                     amount_raw = int(jetton_transfer.get("amount", 0))
                                     comment = jetton_transfer.get("comment", "").strip()
                                     jetton_master = jetton_transfer.get("jetton", {}).get("address", "")
-                                    
+                                    jetton_symbol = jetton_transfer.get("jetton", {}).get("symbol", "").upper()
+
                                     try:
                                         recipient_raw = convert_ton_address_to_hex(recipient)
                                         master_raw = convert_ton_address_to_hex(master_wallet)
-                                        jetton_master_raw = convert_ton_address_to_hex(jetton_master)
                                     except Exception:
                                         continue
-                                        
+
                                     if recipient_raw == master_raw and comment.startswith("ref_"):
-                                        try:
-                                            telegram_id = int(comment[4:])
-                                            # Find matching Jetton symbol
-                                            matched_symbol = None
-                                            masters = {
-                                                "USDT": settings.USDT_MASTER,
-                                                "USDC": settings.USDC_MASTER,
-                                                "BTC": settings.BTC_MASTER,
-                                                "ETH": settings.ETH_MASTER
-                                            }
-                                            for sym, addr in masters.items():
-                                                if convert_ton_address_to_hex(addr) == jetton_master_raw:
-                                                    matched_symbol = sym
-                                                    break
-                                            
-                                            if matched_symbol:
-                                                decimals = decimals_map.get(matched_symbol, 6)
-                                                token_amount = amount_raw / (10 ** decimals)
-                                                token_price = prices.get(matched_symbol, 1.00)
-                                                amount_cents = int(round(token_amount * token_price * 100))
+                                        if _is_usdt_master(jetton_master):
+                                            try:
+                                                telegram_id = int(comment[4:])
+                                                # USDT: 6 decimals, credit at face value.
+                                                token_amount = amount_raw / (10 ** 6)
+                                                amount_cents = int(round(token_amount * 100))
                                                 sender_addr = sender
-                                                currency_symbol = matched_symbol
+                                                currency_symbol = "USDT"
                                                 verified_tx = True
                                                 break
-                                        except Exception:
+                                            except Exception:
+                                                continue
+                                        else:
+                                            # Non-USDT jetton (USDC/BTC/ETH/other).
+                                            non_usdt_detected = True
+                                            non_usdt_symbol = jetton_symbol or "JETTON"
+                                            try:
+                                                non_usdt_tg = int(comment[4:])
+                                            except Exception:
+                                                non_usdt_tg = None
                                             continue
-                            
+
+                            # Alert the treasury about un-creditable non-USDT deposits so
+                            # they can be converted/refunded manually. Rate-limited per
+                            # (user, asset) so a single arrival doesn't spam.
+                            if non_usdt_detected and not verified_tx:
+                                try:
+                                    from app.core.alerts import send_alert_with_redis_rate_limit
+                                    await send_alert_with_redis_rate_limit(
+                                        f"nonusdt_deposit:{non_usdt_tg}:{non_usdt_symbol}",
+                                        (
+                                            "💱 <b>Non-USDT deposit received — NOT auto-credited</b>\n\n"
+                                            f"• <b>Asset:</b> {non_usdt_symbol}\n"
+                                            f"• <b>User:</b> <code>{non_usdt_tg}</code>\n"
+                                            f"• <b>Event:</b> <code>{event_id}</code>\n\n"
+                                            "<i>Under USDT-only settlement the platform does not credit this. "
+                                            "Convert or refund it manually.</i>"
+                                        ),
+                                    )
+                                except Exception as alert_err:
+                                    logger.warning(f"Failed to send non-USDT deposit alert: {alert_err}")
+                                continue
+
                             if verified_tx and telegram_id and amount_cents > 0:
                                 # Process the deposit (credit user balance and log transactions)
                                 logger.info(f"DepositCrawler: Found uncredited transfer in event {event_id} for user {telegram_id}. Amount: {amount_cents} cents. Processing...")
