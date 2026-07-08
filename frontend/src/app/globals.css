@@ -1006,5 +1006,32 @@ body {
   display: none !important;
 }
 
+/*
+ * Reduced-motion support. Users who enable "Reduce Motion" at the OS level
+ * (common on low-end devices and for motion sensitivity) get a near-static UI:
+ * the app's many infinite CSS animations (pulse/ping/spin) collapse to a single
+ * frame, and the large animated background blur blobs stop drifting. This cuts
+ * continuous GPU compositing on exactly the devices that struggle with it, with
+ * zero effect on users who haven't opted in. Framer-motion animations are
+ * handled separately via <MotionConfig reducedMotion="user"> in Providers.tsx.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Freeze the drifting mesh-gradient background blobs. */
+  .premium-liquid-mesh-blob1,
+  .premium-liquid-mesh-blob2,
+  .premium-liquid-mesh-blob3 {
+    animation: none !important;
+  }
+}
+
 
 
