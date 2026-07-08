@@ -175,6 +175,10 @@ async def lifespan(app: FastAPI):
     from app.process_payouts_backlog import start_payout_backlog_loop
     asyncio.create_task(start_payout_backlog_loop())
 
+    # Start background withdrawal verification crawler
+    from app.services.withdrawal_crawler import start_withdrawal_crawler
+    asyncio.create_task(start_withdrawal_crawler())
+
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
     # to the bug where level was not recalculated after XP deductions.
@@ -304,28 +308,45 @@ def create_application() -> FastAPI:
         client_log_limits[ip] = (new_tokens, now)
         return False
 
+    # Dedicated logger for client-reported errors. It is NOT in the
+    # TelegramAlertHandler ignore-list, so ERROR records here are fingerprinted,
+    # rate-limited, and forwarded to admins on Telegram — the same path backend
+    # errors already use. This is what turns a frontend crash from "printed to a
+    # log nobody reads" into an actual notification.
+    client_logger = logging.getLogger("app.client")
+
+    def _handle_client_log_item(item: dict):
+        lvl = str(item.get("level", "INFO")).upper()
+        msg = str(item.get("message", ""))[:2000]
+        # Optional context the frontend may attach to crash reports.
+        url = str(item.get("url", ""))[:500]
+        context = f" | page={url}" if url else ""
+
+        if lvl in ("ERROR", "CRITICAL"):
+            # Routes to admins via TelegramAlertHandler (rate-limited + deduped).
+            client_logger.error(f"[CLIENT ERROR] {msg}{context}")
+        else:
+            print(f"[CLIENT {lvl}] {msg}{context}")
+
     @application.post("/api/v1/client-log")
     async def client_log(request: Request):
         from fastapi.responses import JSONResponse
-        
+
         ip = request.client.host if request.client else "unknown"
         if not await check_client_log_rate_limit(ip):
             return JSONResponse(
                 status_code=429,
                 content={"status": "error", "detail": "Rate limit exceeded. Please slow down."}
             )
-            
+
         try:
             data = await request.json()
             if isinstance(data, list):
                 for item in data[:20]:  # Cap at 20 logs per batch
-                    msg = item.get("message")
-                    lvl = item.get("level", "INFO")
-                    print(f"[CLIENT {lvl}] {msg}")
-            else:
-                msg = data.get("message")
-                lvl = data.get("level", "INFO")
-                print(f"[CLIENT {lvl}] {msg}")
+                    if isinstance(item, dict):
+                        _handle_client_log_item(item)
+            elif isinstance(data, dict):
+                _handle_client_log_item(data)
             return {"status": "logged"}
         except Exception as e:
             return {"status": "error", "detail": str(e)}

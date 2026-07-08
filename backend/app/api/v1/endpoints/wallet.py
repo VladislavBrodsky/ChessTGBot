@@ -459,19 +459,20 @@ async def withdraw_funds(
         logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
         tx_hash = f"mock_{request.address[:6]}_{request.amount}"
 
-    # Log completed transaction
+    # Log transaction
+    status = "pending" if is_real else "completed"
     tx_withdraw = Transaction(
         user_id=updated_user.telegram_id,
         type="withdrawal",
         amount=-request.amount,
         fee=fee,
-        status="completed",
+        status=status,
         reference_id=tx_hash
     )
     db.add(tx_withdraw)
     await db.commit()
     await db.refresh(tx_withdraw)
-    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_withdraw.reference_id} | status=completed")
+    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_withdraw.reference_id} | status={status}")
 
     # Send automated Telegram Bot notifications
     try:
@@ -485,29 +486,40 @@ async def withdraw_funds(
             f"<a href=\"https://tonviewer.com/{request.address}\">{dest_display}</a> 🔗"
         )
         
-        # Notify user of completion
-        notification_text = (
-            f"<b>✅ Withdrawal Completed!</b>\n\n"
-            f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
-            f"• <b>Withdrawal Fee:</b> -${fee / 100:.2f} USDT\n"
-            f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
-            f"• <b>Destination Wallet:</b> {link_display}\n"
-            f"• <b>Status:</b> Completed Successfully 🟢\n\n"
-            f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
-        )
+        # Notify user of completion/processing
+        if is_real:
+            notification_text = (
+                f"<b>📤 Withdrawal Processing...</b>\n\n"
+                f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Withdrawal Fee:</b> -${fee / 100:.2f} USDT\n"
+                f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
+                f"• <b>Destination Wallet:</b> {link_display}\n"
+                f"• <b>Status:</b> Processing (Pending On-Chain Confirmation) 🟡\n\n"
+                f"<i>Your funds have been broadcasted to the blockchain. You will receive another notification once confirmed on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+            )
+        else:
+            notification_text = (
+                f"<b>✅ Withdrawal Completed!</b>\n\n"
+                f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Withdrawal Fee:</b> -${fee / 100:.2f} USDT\n"
+                f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
+                f"• <b>Destination Wallet:</b> {link_display}\n"
+                f"• <b>Status:</b> Completed Successfully 🟢\n\n"
+                f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+            )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
         
         # Notify Admin for read-only tracking
         if settings.ADMIN_TELEGRAM_ID:
             admin_text = (
-                f"<b>📤 Withdrawal Processed (Auto-Completed)</b>\n\n"
+                f"<b>📤 Withdrawal Processed ({'Pending On-Chain' if is_real else 'Auto-Completed'})</b>\n\n"
                 f"• <b>Transaction ID:</b> #{tx_withdraw.id}\n"
                 f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
                 f"• <b>Fee Deducted:</b> ${fee / 100:.2f} USDT\n"
                 f"• <b>Net Payout:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination:</b> <a href=\"https://tonviewer.com/{request.address}\"><code>{request.address}</code></a> 🔗\n"
-                f"• <b>On-Chain Status:</b> {'Real Transfer' if is_real else 'Simulated'}\n"
+                f"• <b>On-Chain Status:</b> {'Real Transfer (Pending)' if is_real else 'Simulated'}\n"
             )
             if is_real:
                 admin_text += f"• <b>Tx Hash:</b> <a href=\"https://tonviewer.com/transaction/{tx_hash}\"><code>{tx_hash[:10]}...</code></a> 🔗\n"
@@ -516,7 +528,7 @@ async def withdraw_funds(
         logger.error(f"Failed to process withdrawal notifications: {e}")
 
     return WithdrawResponse(
-        status="completed",
+        status=status,
         amount=request.amount,
         new_balance=updated_user.balance
     )
