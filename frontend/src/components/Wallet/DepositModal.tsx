@@ -19,18 +19,19 @@ interface DepositModalProps {
 }
 
 // Transak fiat on-ramp config. Card tab is only shown when an API key is provided.
-// Funds are delivered to the user's OWN connected wallet; the platform balance is then
-// credited via the existing on-chain deposit flow (ref_ comment + 5% fee). See plan.
+// Funds are delivered to the user's OWN connected wallet as USDT; the platform
+// balance is then credited via the on-chain deposit flow (ref_ comment + 5% fee).
 const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
 const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
 const TRANSAK_MIN_USD = 15;
 
+// USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
+// The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
+// must only ever let a user deposit USDT. Users holding TON/BTC/etc. use the
+// Card tab's on-ramp to acquire USDT first. Do NOT re-add other assets here
+// without also re-enabling them in the backend credit paths.
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
-  { symbol: 'USDC', name: 'USD Coin', decimals: 6, master: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728', color: '#2775CA' },
-  { symbol: 'GRAM', name: 'GRAM (TON)', decimals: 9, master: '', color: '#00C49A' },
-  { symbol: 'BTC', name: 'Bitcoin (jWBTC)', decimals: 8, master: 'EQDcBkGHmC4pTf34x3Gm05XvepO5w60DNxZ-XT4I6-UGG5L5', color: '#F7931A' },
-  { symbol: 'ETH', name: 'Ethereum (jETH)', decimals: 9, master: 'EQAvS52CoZckQWLNFa7_iZL3apL52yuTwa-hlgkdWkdYl7LA', color: '#627EEA' },
 ];
 
 export default function DepositModal({
@@ -405,11 +406,14 @@ export default function DepositModal({
 
             {/* Currency Selector Dropdown */}
             <div className="flex flex-col space-y-1.5 relative">
-              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Select Asset</label>
+              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Asset</label>
               <button
                 type="button"
-                onClick={() => { if (!processing) setShowCurrencyDropdown(!showCurrencyDropdown); }}
-                className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between cursor-pointer hover:border-brand-primary transition-all"
+                // Only interactive when more than one asset is offered. Under
+                // USDT-only settlement there is a single asset, so this is a
+                // static display (no dropdown).
+                onClick={() => { if (!processing && currenciesList.length > 1) setShowCurrencyDropdown(!showCurrencyDropdown); }}
+                className={`w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
               >
                 <div className="flex items-center space-x-2">
                   <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
@@ -417,11 +421,13 @@ export default function DepositModal({
                   </div>
                   <span>{selectedCurrencyObj?.name} ({currency})</span>
                 </div>
-                <FaAngleDown className={`text-brand-primary opacity-40 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+                {currenciesList.length > 1 && (
+                  <FaAngleDown className={`text-brand-primary opacity-40 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+                )}
               </button>
 
               <AnimatePresence>
-                {showCurrencyDropdown && (
+                {showCurrencyDropdown && currenciesList.length > 1 && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
