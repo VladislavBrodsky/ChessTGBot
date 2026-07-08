@@ -6,7 +6,7 @@ from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.api.v1.endpoints.wallet import fetch_all_prices, convert_ton_address_to_hex, _is_usdt_master
+from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +26,7 @@ async def start_deposit_crawler():
         
     master_wallet = settings.MASTER_WALLET_ADDRESS
     url = f"https://tonapi.io/v2/accounts/{master_wallet}/events?limit=25"
-    
-    decimals_map = {
-        "TON": 9,
-        "USDT": 6,
-        "USDC": 6,
-        "BTC": 8,
-        "ETH": 9
-    }
-    
+
     while True:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -42,11 +34,9 @@ async def start_deposit_crawler():
                 if res.status_code == 200:
                     events_data = res.json()
                     events = events_data.get("events", [])
-                    
+
                     if events:
-                        # Fetch fresh token prices
-                        prices = await fetch_all_prices()
-                        
+                        # USDT-only settlement: no price feed needed — USDT is 1:1.
                         # Process each event
                         for event in events:
                             event_id = event.get("event_id")

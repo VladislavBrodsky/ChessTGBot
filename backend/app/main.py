@@ -168,8 +168,11 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(start_ledger_audit_loop())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
-    from app.services.solvency_service import start_solvency_alert_loop
+    from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
     asyncio.create_task(start_solvency_alert_loop())
+
+    # Start background gas-float alert loop (no-op unless GAS_FLOAT_ALERTS_ENABLED)
+    asyncio.create_task(start_gas_float_alert_loop())
 
     # Start background payout backlog processor
     from app.process_payouts_backlog import start_payout_backlog_loop

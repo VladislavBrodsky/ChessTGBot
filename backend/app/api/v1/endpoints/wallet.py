@@ -1075,15 +1075,6 @@ async def verify_deposit(
     sender_addr = "unknown"
     currency_symbol = "USDT"
 
-    # Define currency decimals
-    decimals_map = {
-        "TON": 9,
-        "USDT": 6,
-        "USDC": 6,
-        "BTC": 8,
-        "ETH": 9
-    }
-
     # USDT-only: track whether the user actually sent a non-USDT asset (TON or
     # another jetton) to the master with the right comment, so we can return a
     # clear "only USDT" error instead of a generic verification failure.

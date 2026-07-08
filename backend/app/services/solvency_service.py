@@ -123,6 +123,32 @@ class SolvencyService:
             return None, str(e)
 
     @classmethod
+    async def get_master_ton_balance(cls) -> tuple[Optional[float], Optional[str]]:
+        """
+        Best-effort fetch of the master wallet's native TON balance (in TON), used
+        for the gas-float guard. Returns (ton, None) on success or (None, error).
+        """
+        settings = get_settings()
+        if not settings.MASTER_WALLET_ADDRESS:
+            return None, "MASTER_WALLET_ADDRESS not configured"
+        import httpx
+        headers = {}
+        if settings.TON_API_KEY:
+            headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
+        url = f"https://tonapi.io/v2/accounts/{settings.MASTER_WALLET_ADDRESS}"
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(url, headers=headers)
+                if res.status_code != 200:
+                    return None, f"TonAPI returned {res.status_code}"
+                data = res.json()
+            nano = int(data.get("balance", 0))
+            return nano / 1_000_000_000.0, None
+        except Exception as e:  # noqa: BLE001
+            logger.warning(f"Failed to fetch master TON balance: {e}")
+            return None, str(e)
+
+    @classmethod
     async def run_solvency_report(cls, db, include_onchain: bool = True) -> dict:
         """
         Full report: internal ledger summary + (optionally) the on-chain USDT
@@ -136,6 +162,8 @@ class SolvencyService:
         usdt_coverage_ratio: Optional[float] = None
         usdt_surplus_deficit_cents: Optional[int] = None
 
+        master_ton_balance: Optional[float] = None
+
         if include_onchain:
             onchain_usdt_cents, onchain_error = await cls.get_onchain_usdt_cents()
             if onchain_usdt_cents is not None:
@@ -144,6 +172,8 @@ class SolvencyService:
                 usdt_coverage_ratio = (
                     round(onchain_usdt_cents / liabilities, 4) if liabilities > 0 else None
                 )
+            # Gas float — the native TON the master wallet needs to pay payout gas.
+            master_ton_balance, _ = await cls.get_master_ton_balance()
 
         return {
             **summary,
@@ -151,6 +181,7 @@ class SolvencyService:
             "onchain_error": onchain_error,
             "usdt_coverage_ratio": usdt_coverage_ratio,
             "usdt_surplus_deficit_cents": usdt_surplus_deficit_cents,
+            "master_ton_gas_balance": master_ton_balance,
             "onchain_note": (
                 "onchain_usdt_cents counts USDT only. The custody wallet may also "
                 "hold TON/USDC/BTC/ETH, so this is a floor indicator of "
@@ -255,3 +286,46 @@ async def start_solvency_alert_loop():
             logger.error(f"Error in solvency alert loop: {e}", exc_info=True)
 
         await asyncio.sleep(settings.SOLVENCY_CHECK_INTERVAL_SECONDS)
+
+
+async def start_gas_float_alert_loop():
+    """
+    Background loop that warns admins BEFORE the master wallet's TON gas float
+    runs dry. USDT payouts are jetton transfers that each spend ~0.05 TON; if the
+    native TON balance depletes, withdrawals fail. (A failed payout already alerts
+    via error logging and refunds the user — this is the proactive early warning.)
+
+    Off unless GAS_FLOAT_ALERTS_ENABLED. A low reading fires a rate-limited alert;
+    an unknown reading (TonAPI failure) is skipped, never treated as zero.
+    """
+    settings = get_settings()
+    if not settings.GAS_FLOAT_ALERTS_ENABLED:
+        logger.info("Gas-float alert loop disabled (GAS_FLOAT_ALERTS_ENABLED=false). Skipping.")
+        return
+
+    await asyncio.sleep(35)  # let startup settle
+    logger.info("Gas-float alert loop started.")
+
+    while True:
+        try:
+            ton_balance, err = await SolvencyService.get_master_ton_balance()
+            if ton_balance is None:
+                logger.warning(f"Gas-float check: master TON balance unavailable ({err}). Skipping.")
+            elif ton_balance < settings.GAS_FLOAT_MIN_TON:
+                logger.warning(
+                    f"Gas-float check: master TON balance {ton_balance:.3f} below "
+                    f"threshold {settings.GAS_FLOAT_MIN_TON}. Alerting."
+                )
+                from app.core.alerts import send_alert_with_redis_rate_limit
+                alert_text = (
+                    "⛽ <b>GAS FLOAT LOW: master wallet running out of TON</b>\n\n"
+                    f"• <b>Master TON balance:</b> <code>{ton_balance:.3f} TON</code>\n"
+                    f"• <b>Threshold:</b> <code>{settings.GAS_FLOAT_MIN_TON} TON</code>\n\n"
+                    "<i>USDT payouts spend ~0.05 TON gas each. Top up the master wallet "
+                    "with TON or withdrawals will start failing.</i>"
+                )
+                await send_alert_with_redis_rate_limit("gas_float_low", alert_text)
+        except Exception as e:
+            logger.error(f"Error in gas-float alert loop: {e}", exc_info=True)
+
+        await asyncio.sleep(settings.GAS_FLOAT_CHECK_INTERVAL_SECONDS)

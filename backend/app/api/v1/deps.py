@@ -163,15 +163,13 @@ async def get_current_telegram_id(
 # Admin authentication
 # ---------------------------------------------------------------------------
 
-ADMIN_TELEGRAM_IDS: set[int] = {1016749901, 716720099}
-
-
 async def get_admin_user(current_user: User = Depends(get_current_user)) -> User:
     """
     Dependency that extends get_current_user by asserting that the authenticated
     user is one of the designated admin accounts.  Returns 403 for everyone else.
     """
-    if current_user.telegram_id not in ADMIN_TELEGRAM_IDS:
+    from app.core.config import get_settings
+    if current_user.telegram_id not in get_settings().admin_telegram_ids:
         raise HTTPException(
             status_code=403,
             detail="Access denied: admin privileges required"

@@ -35,6 +35,29 @@ class Settings(BaseSettings):
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
     PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""
 
+    @property
+    def admin_telegram_ids(self) -> set[int]:
+        raw = os.getenv("ADMIN_TELEGRAM_IDS")
+        ids = set()
+        if raw:
+            for part in raw.split(","):
+                part = part.strip()
+                if part.isdigit():
+                    ids.add(int(part))
+        else:
+            # Default fallback admins to prevent lockout
+            ids = {1016749901, 716720099}
+            
+        legacy = os.getenv("ADMIN_TELEGRAM_ID")
+        if legacy:
+            try:
+                val = int(legacy)
+                if val > 0:
+                    ids.add(val)
+            except ValueError:
+                pass
+        return ids
+
     # Security
     # In production, this MUST be set as an environment variable.
     SECRET_KEY: str = ""
@@ -61,6 +84,15 @@ class Settings(BaseSettings):
     SOLVENCY_DEFICIT_BUFFER_CENTS: int = 5000          # $50 tolerance before a deficit counts
     SOLVENCY_CHECK_INTERVAL_SECONDS: int = 3600        # check hourly
     SOLVENCY_SUSTAINED_CHECKS: int = 3                 # consecutive deficits required to alert
+
+    # Gas-float alerting. USDT payouts are jetton transfers that each burn ~0.05
+    # TON of gas from the master wallet. If its native TON balance runs low,
+    # withdrawals start failing (each failure already alerts + refunds the user).
+    # This is a PROACTIVE early warning so the float can be topped up first.
+    # Opt-in for consistency; strongly recommended once MASTER_WALLET is verified.
+    GAS_FLOAT_ALERTS_ENABLED: bool = False
+    GAS_FLOAT_MIN_TON: float = 2.0                     # warn when master TON balance drops below this
+    GAS_FLOAT_CHECK_INTERVAL_SECONDS: int = 3600       # check hourly
 
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool

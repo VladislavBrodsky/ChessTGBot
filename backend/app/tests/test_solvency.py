@@ -142,3 +142,22 @@ def test_streak_unknown_onchain_holds_and_never_alerts():
     # a TonAPI failure (None) must neither reset a building streak nor alarm
     streak, alert = SolvencyService.evaluate_deficit_streak(_report(100000, None), 2, BUF, SUSTAINED)
     assert (streak, alert) == (2, False)
+
+
+# --- gas float ---
+
+async def test_master_ton_balance_unconfigured_returns_error(monkeypatch):
+    # No network: with no master wallet configured the fetch reports an error
+    # (never a false zero that could trip a "gas low" alert).
+    from app.core.config import get_settings
+    monkeypatch.setattr(get_settings(), "MASTER_WALLET_ADDRESS", "")
+    balance, err = await SolvencyService.get_master_ton_balance()
+    assert balance is None
+    assert err is not None
+
+
+async def test_gas_float_loop_dormant_by_default():
+    import asyncio
+    from app.services.solvency_service import start_gas_float_alert_loop
+    # Disabled by default -> returns immediately (no 35s sleep, no loop, no network).
+    await asyncio.wait_for(start_gas_float_alert_loop(), timeout=5)

@@ -7,10 +7,8 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# Target admin accounts (hardcoded IDs + settings dynamic config)
-ADMIN_IDS = {1016749901, 716720099}
-if settings.ADMIN_TELEGRAM_ID:
-    ADMIN_IDS.add(settings.ADMIN_TELEGRAM_ID)
+# Target admin accounts (loaded dynamically from config)
+ADMIN_IDS = settings.admin_telegram_ids
 
 # Global in-memory cache to rate limit identical admin alerts.
 # key: fingerprint string -> value: timestamp float
