@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 import { useUser } from "@/context/UserContext";
 
 interface DepositModalProps {
@@ -39,6 +40,7 @@ export default function DepositModal({
   tgUser,
   tw,
 }: DepositModalProps) {
+  useNavbarHideWhileMounted();
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const { stats } = useUser();

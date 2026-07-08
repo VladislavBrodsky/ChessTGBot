@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
+
 interface WithdrawModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -20,6 +22,7 @@ export default function WithdrawModal({
   initialWithdrawAddress,
   tw,
 }: WithdrawModalProps) {
+  useNavbarHideWhileMounted();
   const [withdrawAmount, setWithdrawAmount] = useState<string>("10");
   const [withdrawAddress, setWithdrawAddress] = useState<string>(initialWithdrawAddress);
   const [processing, setProcessing] = useState<boolean>(false);

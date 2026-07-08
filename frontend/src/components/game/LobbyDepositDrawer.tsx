@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 import { useUser } from "@/context/UserContext";
 
 interface LobbyDepositDrawerProps {
@@ -35,6 +36,7 @@ export default function LobbyDepositDrawer({
   syncBalance,
   onDepositSuccess,
 }: LobbyDepositDrawerProps) {
+  useNavbarHideWhileMounted();
   const t = useTranslations('Index');
   const tw = useTranslations('Wallet');
 
