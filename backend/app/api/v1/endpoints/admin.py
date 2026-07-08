@@ -446,6 +446,41 @@ def _tx_summary(t: Transaction) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# 3b.  Solvency / reserve reconciliation
+# ---------------------------------------------------------------------------
+
+@router.get("/solvency")
+async def get_solvency(
+    onchain: bool = Query(True, description="Include the on-chain USDT custody balance"),
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """
+    Reserve reconciliation report. Combines total user liabilities and the ledger
+    accounting breakdown with the custody wallet's on-chain USDT balance.
+
+    Read-only. See SolvencyService for the multi-asset caveat on the on-chain
+    figure — it counts USDT only and is a payout-capacity floor, not total
+    reserves.
+    """
+    from app.services.solvency_service import SolvencyService
+
+    report = await SolvencyService.run_solvency_report(db, include_onchain=onchain)
+
+    # Add human-readable dollar figures alongside the raw cents.
+    def _d(key: str):
+        v = report.get(key)
+        return _cents_to_dollars(v) if isinstance(v, int) else None
+
+    report["total_liabilities_usd"] = _d("total_liabilities_cents")
+    report["platform_revenue_usd"] = _d("platform_revenue_cents")
+    report["onchain_usdt_usd"] = _d("onchain_usdt_cents")
+    report["usdt_surplus_deficit_usd"] = _d("usdt_surplus_deficit_cents")
+    report["internal_discrepancy_usd"] = _d("internal_discrepancy_cents")
+    return report
+
+
+# ---------------------------------------------------------------------------
 # 4.  Game history
 # ---------------------------------------------------------------------------
 
