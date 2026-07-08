@@ -51,6 +51,17 @@ class Settings(BaseSettings):
     TON_API_KEY: str | None = os.getenv("TON_API_KEY")
     TON_CONSOLE_TOKEN: str | None = os.getenv("TON_CONSOLE_TOKEN")
 
+    # Solvency alerting (see app/services/solvency_service.py).
+    # OFF by default: the on-chain figure counts USDT only while the custody
+    # wallet may hold other assets, so validate GET /admin/solvency against
+    # reality before enabling autonomous alerts. When enabled, an alert fires
+    # only after the USDT deficit exceeds the buffer for several consecutive
+    # checks (sustained), so a transient dip or a TonAPI hiccup never triggers it.
+    SOLVENCY_ALERTS_ENABLED: bool = False
+    SOLVENCY_DEFICIT_BUFFER_CENTS: int = 5000          # $50 tolerance before a deficit counts
+    SOLVENCY_CHECK_INTERVAL_SECONDS: int = 3600        # check hourly
+    SOLVENCY_SUSTAINED_CHECKS: int = 3                 # consecutive deficits required to alert
+
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection

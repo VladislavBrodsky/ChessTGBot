@@ -23,6 +23,7 @@ held. Because of this, the service is intentionally REPORT-ONLY: it does not
 auto-alert. Validate the numbers via GET /admin/solvency before wiring alerts.
 """
 
+import asyncio
 import logging
 from typing import Optional
 
@@ -158,3 +159,99 @@ class SolvencyService:
                 "of insolvency on its own."
             ),
         }
+
+    @staticmethod
+    def evaluate_deficit_streak(
+        report: dict,
+        prev_streak: int,
+        buffer_cents: int,
+        sustained_checks: int,
+    ) -> tuple[int, bool]:
+        """
+        Pure decision function for the alert loop. Given a solvency report and the
+        prior consecutive-deficit streak, returns (new_streak, should_alert).
+
+          • on-chain unknown  -> keep the streak unchanged, never alert
+          • deficit <= buffer -> reset streak to 0, never alert
+          • deficit >  buffer -> increment streak; alert once it reaches the
+                                 sustained threshold
+        """
+        onchain = report.get("onchain_usdt_cents")
+        if onchain is None:
+            return prev_streak, False  # unknown: neither count nor reset
+
+        deficit = report.get("total_liabilities_cents", 0) - onchain
+        if deficit > buffer_cents:
+            new_streak = prev_streak + 1
+            return new_streak, new_streak >= sustained_checks
+        return 0, False
+
+
+async def start_solvency_alert_loop():
+    """
+    Background loop that alerts admins when USDT payout capacity falls short of
+    liabilities for a SUSTAINED period.
+
+    Safety properties (see the config knobs in core/config.py):
+      • OFF unless SOLVENCY_ALERTS_ENABLED — validate GET /admin/solvency first.
+      • A deficit must exceed SOLVENCY_DEFICIT_BUFFER_CENTS for
+        SOLVENCY_SUSTAINED_CHECKS consecutive checks before alerting, so a
+        transient dip (e.g. mid payout-batch) never fires it.
+      • An unknown on-chain reading (TonAPI failure) is skipped, not treated as
+        zero, and does not reset the streak — a flaky API neither alarms nor
+        masks a real, building deficit.
+      • Alerts go through the Redis rate limiter, so multiple workers collapse to
+        one notification per window.
+    """
+    from app.core.database import AsyncSessionLocal
+
+    settings = get_settings()
+    if not settings.SOLVENCY_ALERTS_ENABLED:
+        logger.info("Solvency alert loop disabled (SOLVENCY_ALERTS_ENABLED=false). Skipping.")
+        return
+
+    # Let startup settle (mirrors the ledger audit loop).
+    await asyncio.sleep(30)
+    logger.info("Solvency alert loop started.")
+
+    consecutive_deficits = 0
+    while True:
+        try:
+            async with AsyncSessionLocal() as db:
+                report = await SolvencyService.run_solvency_report(db, include_onchain=True)
+
+            consecutive_deficits, should_alert = SolvencyService.evaluate_deficit_streak(
+                report,
+                consecutive_deficits,
+                settings.SOLVENCY_DEFICIT_BUFFER_CENTS,
+                settings.SOLVENCY_SUSTAINED_CHECKS,
+            )
+
+            if report.get("onchain_usdt_cents") is None:
+                logger.warning(
+                    f"Solvency check: on-chain balance unavailable ({report.get('onchain_error')}). "
+                    "Skipping this cycle."
+                )
+            elif should_alert:
+                liabilities = report["total_liabilities_cents"]
+                onchain = report["onchain_usdt_cents"]
+                deficit = liabilities - onchain
+                logger.warning(
+                    f"Solvency check: sustained USDT deficit {deficit} cents "
+                    f"(streak {consecutive_deficits}). Alerting."
+                )
+                from app.core.alerts import send_alert_with_redis_rate_limit
+                alert_text = (
+                    "🏦 <b>SOLVENCY WARNING: USDT payout capacity below liabilities</b>\n\n"
+                    f"• <b>Owed to users (liabilities):</b> <code>${liabilities / 100:,.2f}</code>\n"
+                    f"• <b>On-chain USDT (custody):</b> <code>${onchain / 100:,.2f}</code>\n"
+                    f"• <b>Deficit:</b> <code>${deficit / 100:,.2f}</code>\n"
+                    f"• <b>Sustained for:</b> {consecutive_deficits} consecutive checks\n\n"
+                    "<i>Note: counts USDT only; the custody wallet may hold other assets. "
+                    "Verify reserves and top up the payout wallet if withdrawals are at risk.</i>"
+                )
+                await send_alert_with_redis_rate_limit("solvency_deficit", alert_text)
+        except Exception as e:
+            logger.error(f"Error in solvency alert loop: {e}", exc_info=True)
+
+        await asyncio.sleep(settings.SOLVENCY_CHECK_INTERVAL_SECONDS)

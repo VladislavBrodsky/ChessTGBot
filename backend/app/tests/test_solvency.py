@@ -102,3 +102,43 @@ async def test_onchain_disabled_returns_none_safely(db):
     assert report["onchain_usdt_cents"] is None
     assert report["usdt_coverage_ratio"] is None
     assert report["total_liabilities_cents"] == 100
+
+
+# --- evaluate_deficit_streak: pure alert-decision logic (no DB, no network) ---
+
+BUF = 5000        # $50 buffer
+SUSTAINED = 3
+
+
+def _report(liabilities, onchain):
+    return {"total_liabilities_cents": liabilities, "onchain_usdt_cents": onchain}
+
+
+def test_streak_no_deficit_within_buffer_never_alerts():
+    # onchain just below liabilities but within the buffer -> not a deficit
+    streak, alert = SolvencyService.evaluate_deficit_streak(_report(100000, 96000), 0, BUF, SUSTAINED)
+    assert streak == 0 and alert is False
+
+
+def test_streak_builds_and_alerts_only_when_sustained():
+    r = _report(100000, 50000)  # $500 deficit, well over buffer
+    streak, alert = SolvencyService.evaluate_deficit_streak(r, 0, BUF, SUSTAINED)
+    assert (streak, alert) == (1, False)
+    streak, alert = SolvencyService.evaluate_deficit_streak(r, streak, BUF, SUSTAINED)
+    assert (streak, alert) == (2, False)
+    streak, alert = SolvencyService.evaluate_deficit_streak(r, streak, BUF, SUSTAINED)
+    assert (streak, alert) == (3, True)  # sustained -> fire
+
+
+def test_streak_resets_on_recovery():
+    # a deficit that recovers within buffer wipes the streak (no alert)
+    streak, alert = SolvencyService.evaluate_deficit_streak(_report(100000, 50000), 2, BUF, SUSTAINED)
+    assert (streak, alert) == (3, True)
+    streak, alert = SolvencyService.evaluate_deficit_streak(_report(100000, 99000), streak, BUF, SUSTAINED)
+    assert (streak, alert) == (0, False)
+
+
+def test_streak_unknown_onchain_holds_and_never_alerts():
+    # a TonAPI failure (None) must neither reset a building streak nor alarm
+    streak, alert = SolvencyService.evaluate_deficit_streak(_report(100000, None), 2, BUF, SUSTAINED)
+    assert (streak, alert) == (2, False)
