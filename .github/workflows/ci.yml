@@ -53,8 +53,13 @@ jobs:
           cache-dependency-path: backend/requirements.txt
       - run: pip install -r requirements.txt
       # Import the ASGI app so a broken import/syntax error fails CI instead of
-      # the production container crash-looping on boot.
+      # the production container crash-looping on boot. Dummy secrets satisfy the
+      # production config guard in get_settings() (non-sqlite + non-pytest), so
+      # this genuinely exercises the production boot path — not a dev bypass.
       - name: Import check
+        env:
+          SECRET_KEY: ci-dummy-secret
+          WEBHOOK_SECRET: ci-dummy-webhook-secret
         run: python -c "import app.main; print('app imports OK')"
       - name: Pytest
         run: python -m pytest
