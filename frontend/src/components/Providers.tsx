@@ -7,6 +7,7 @@ import { MotionConfig } from 'framer-motion';
 import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
+import ClientErrorReporter from './ClientErrorReporter';
 
 // Lazy-load the TON Connect provider so its JS chunk (the TON SDK) and its
 // network cost (wallets-v2.json + ~35 wallet icon PNGs from config.ton.org) are
@@ -30,6 +31,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         // pings and drifts for users who opt in (often low-end devices), cutting
         // continuous compositing work without changing the default experience.
         <MotionConfig reducedMotion="user">
+            <ClientErrorReporter />
             <Suspense fallback={null}>
                 <ReferralNotification />
             </Suspense>

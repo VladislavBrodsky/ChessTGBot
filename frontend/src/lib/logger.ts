@@ -4,6 +4,7 @@ interface LogItem {
   level: "INFO" | "WARNING" | "ERROR";
   message: string;
   timestamp: string;
+  url?: string;
 }
 
 let logBuffer: LogItem[] = [];
@@ -17,6 +18,7 @@ export const logClientMessage = (level: "INFO" | "WARNING" | "ERROR", message: s
     level,
     message,
     timestamp: new Date().toISOString(),
+    url: typeof window !== "undefined" ? window.location.pathname + window.location.search : undefined,
   };
 
   logBuffer.push(item);
@@ -71,5 +73,23 @@ export const flushLogs = async () => {
   } catch (err) {
     // Fail silently in client to prevent infinite errors
     console.error("Failed to flush client logs to server:", err);
+  }
+};
+
+/**
+ * Report a caught client-side error (render crash, unhandled rejection, global
+ * error) to the backend, which forwards ERROR-level client logs to admins.
+ * Best-effort and never throws — reporting must not itself cause errors.
+ */
+export const reportClientError = (error: unknown, context?: string) => {
+  try {
+    const err = error as { message?: string; stack?: string } | undefined;
+    const name = context ? `[${context}] ` : "";
+    const message = err?.message || String(error);
+    // Include a trimmed stack so the alert is actionable, not just "Error".
+    const stack = err?.stack ? `\n${err.stack.split("\n").slice(0, 6).join("\n")}` : "";
+    logClientMessage("ERROR", `${name}${message}${stack}`.slice(0, 1800));
+  } catch {
+    // Never let error reporting throw.
   }
 };
