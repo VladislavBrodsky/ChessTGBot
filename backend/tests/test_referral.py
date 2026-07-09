@@ -1112,3 +1112,40 @@ async def test_referrer_chain_loop_breaking(db_session: AsyncSession):
     # The chain should break the cycle and only return user_b, not containing user_a itself
     assert len(chain) == 1
     assert chain[0].id == user_b.id
+
+
+@pytest.mark.asyncio
+async def test_ai_match_xp_daily_cap(db_session: AsyncSession):
+    if hasattr(db_session, "users"):
+        return
+
+    # Create a user
+    user = User(telegram_id=992401, first_name="UserAI", xp=0)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # 1. Earn 100 XP from AI match (should succeed)
+    user = await GamificationService.add_xp(db_session, user, 100, reason="ai_match")
+    await db_session.commit()
+    assert user.xp == 100
+
+    # 2. Earn another 100 XP (should succeed)
+    user = await GamificationService.add_xp(db_session, user, 100, reason="ai_match")
+    await db_session.commit()
+    assert user.xp == 200
+
+    # 3. Earn another 100 XP (should hit daily cap of 250, only adding 50 XP)
+    user = await GamificationService.add_xp(db_session, user, 100, reason="ai_match")
+    await db_session.commit()
+    assert user.xp == 250
+
+    # 4. Earn another 100 XP (should be completely capped, adding 0 XP)
+    user = await GamificationService.add_xp(db_session, user, 100, reason="ai_match")
+    await db_session.commit()
+    assert user.xp == 250
+
+    # 5. Earn XP from regular activities (should bypass AI match cap)
+    user = await GamificationService.add_xp(db_session, user, 100, reason="game_win")
+    await db_session.commit()
+    assert user.xp == 350

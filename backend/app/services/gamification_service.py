@@ -145,6 +145,34 @@ class GamificationService:
         if apply_booster and db_user.is_premium_active and amount > 0:
             xp_earned = amount * 2
 
+        if reason == "ai_match" and xp_earned > 0:
+            from app.models.xp_transaction import XpTransaction
+            from sqlalchemy import func, and_
+            from datetime import datetime, timezone
+            
+            today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).replace(tzinfo=None)
+            
+            result = await db.execute(
+                select(func.sum(XpTransaction.amount)).where(
+                    and_(
+                        XpTransaction.user_id == db_user.telegram_id,
+                        XpTransaction.reason == "ai_match",
+                        XpTransaction.created_at >= today_start
+                    )
+                )
+            )
+            daily_xp = result.scalar() or 0
+            
+            XP_CAP = 250
+            if daily_xp >= XP_CAP:
+                return db_user
+            
+            if daily_xp + xp_earned > XP_CAP:
+                xp_earned = XP_CAP - daily_xp
+
+        if xp_earned <= 0:
+            return db_user
+
         db_user.xp += xp_earned
 
         # Use canonical level formula. Level is a high-watermark: only increases.
