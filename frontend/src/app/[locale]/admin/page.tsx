@@ -312,7 +312,7 @@ function AccessDenied() {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="premium-neon-card p-8 text-center max-w-sm w-full"
+        className="premium-neon-card p-8 text-center max-w-sm md:max-w-xl lg:max-w-3xl w-full"
       >
         <div className="text-6xl mb-4">🚫</div>
         <h1 className="text-2xl font-black mb-2 text-rose-500 shadow-neon">Access Denied</h1>

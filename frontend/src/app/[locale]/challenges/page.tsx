@@ -155,7 +155,7 @@ export default function ChallengesPage() {
 
   return (
     <LayoutWrapper className="justify-start pt-8 pb-32">
-      <div className="w-full max-w-sm flex flex-col items-start px-4 mx-auto">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto">
         {/* Header */}
         <div className="w-full flex justify-between items-center mb-8">
           <Link href={`/${locale}/home`} className="html-back-button">

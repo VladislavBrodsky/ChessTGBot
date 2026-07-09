@@ -190,7 +190,7 @@ export default function AcademyPage() {
   if (loading) {
     return (
       <LayoutWrapper className="pb-32 pt-6">
-        <div className="w-full max-w-sm mx-auto px-4 space-y-8 animate-pulse">
+        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8 animate-pulse">
           {/* Header Skeleton */}
           <div className="flex flex-col items-center w-full mb-4">
             <div className="h-8 bg-brand-primary opacity-10 rounded-lg w-1/2 mb-3" />
@@ -251,7 +251,7 @@ export default function AcademyPage() {
 
   return (
     <LayoutWrapper className="pb-32 pt-6">
-      <div className="w-full max-w-sm mx-auto px-4 space-y-8">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8">
 
         {/* Header */}
         <div className="flex flex-col items-center w-full mb-4">

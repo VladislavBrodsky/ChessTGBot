@@ -151,7 +151,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
  if (completed) {
  return (
  <LayoutWrapper className="pb-32 pt-6">
- <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 max-w-sm mx-auto">
+ <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto">
  <motion.div
  initial={{ scale: 0.8, opacity: 0 }}
  animate={{ scale: 1, opacity: 1 }}
@@ -175,7 +175,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
  return (
  <LayoutWrapper className="pb-32 pt-6">
- <div className="w-full max-w-sm mx-auto px-4 h-full">
+ <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full">
  {/* Header */}
  <div className="flex items-center gap-4 mb-6">
  <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">

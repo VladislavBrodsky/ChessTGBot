@@ -3,7 +3,7 @@ export const getApiBaseUrl = () => {
     const host = window.location.hostname;
     
     // 1. Hardcoded production fallback
-    if (host === "chesstgbot-frontend-production.up.railway.app") {
+    if (host === "chesstgbot-frontend-production.up.railway.app" || host === "web3chess.online" || host === "www.web3chess.online") {
       return "https://chesstgbot-backend-production.up.railway.app";
     }
 
@@ -24,8 +24,12 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
 
   // Retrieve Telegram Init Data automatically if in client-side WebApp
   let initData = "";
-  if (typeof window !== "undefined" && window.Telegram?.WebApp) {
-    initData = (window.Telegram.WebApp as any).initData || "";
+  if (typeof window !== "undefined") {
+    if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
+      initData = (window.Telegram.WebApp as any).initData;
+    } else {
+      initData = localStorage.getItem('telegram_web_auth') || "";
+    }
   }
 
   const headers = new Headers(options.headers || {});

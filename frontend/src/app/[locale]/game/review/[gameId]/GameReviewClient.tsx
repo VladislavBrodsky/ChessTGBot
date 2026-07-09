@@ -166,7 +166,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   if (error || !gameData) {
     return (
       <LayoutWrapper className="justify-center items-center">
-        <div className="glass-panel p-6 rounded-2xl border border-brand-rose-opacity-20 bg-brand-surface max-w-sm text-center">
+        <div className="glass-panel p-6 rounded-2xl border border-brand-rose-opacity-20 bg-brand-surface max-w-sm md:max-w-xl lg:max-w-3xl text-center">
           <span className="text-sm font-black text-rose-400 uppercase tracking-widest block mb-2">
             Link Failure
           </span>
@@ -202,7 +202,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   return (
     <LayoutWrapper className="pb-12 justify-start pt-6">
       {/* Header / Nav */}
-      <div className="w-full max-w-sm flex justify-between items-center mb-4 relative z-10 px-2 mx-auto">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex justify-between items-center mb-4 relative z-10 px-2 mx-auto">
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => router.push(`/${locale}/profile`)}
@@ -220,7 +220,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
       </div>
 
       {/* Main Review Body */}
-      <div className="w-full max-w-sm flex flex-col items-center gap-4 mx-auto">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center gap-4 mx-auto">
         
         {/* Opponent Widget (Black) */}
         <div className={`w-full flex justify-between items-center px-4 py-3 glass-panel border bg-brand-surface transition-all ${

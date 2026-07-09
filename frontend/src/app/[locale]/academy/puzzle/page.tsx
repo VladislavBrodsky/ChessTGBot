@@ -77,7 +77,7 @@ function PuzzleContent() {
 
   return (
     <LayoutWrapper className="pb-32 pt-6">
-      <div className="w-full max-w-sm mx-auto px-4 space-y-6">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-6">
 
         {/* Header */}
         <div className="flex items-center gap-4">

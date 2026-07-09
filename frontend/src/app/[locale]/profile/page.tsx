@@ -74,7 +74,7 @@ export default function ProfilePage() {
 
  return (
  <LayoutWrapper className="justify-start pt-8 pb-32">
- <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-8">
+ <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8">
 
  {/* Profile Header */}
  <div className="w-full flex flex-col items-center text-center">
