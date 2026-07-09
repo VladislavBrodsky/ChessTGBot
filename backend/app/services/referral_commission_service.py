@@ -116,19 +116,14 @@ class ReferralCommissionService:
             return []
             
         referrer_ids = []
-        if row.l1:
-            referrer_ids.append(row.l1)
-        if row.l2 and levels >= 2:
-            referrer_ids.append(row.l2)
-        if row.l3 and levels >= 3:
-            referrer_ids.append(row.l3)
-        if row.l4 and levels >= 4:
-            referrer_ids.append(row.l4)
-        if row.l5 and levels >= 5:
-            referrer_ids.append(row.l5)
-        if row.l6 and levels >= 6:
-            referrer_ids.append(row.l6)
-            
+        seen = {user_id}
+        
+        for idx, rid in enumerate([row.l1, row.l2, row.l3, row.l4, row.l5, row.l6]):
+            depth = idx + 1
+            if depth <= levels and rid and rid not in seen:
+                seen.add(rid)
+                referrer_ids.append(rid)
+                
         if not referrer_ids:
             return []
             
@@ -176,7 +171,7 @@ class ReferralCommissionService:
         Sends engaging success or FOMO (Premium / Level Up) notifications.
         Returns the total commission distributed in cents.
         """
-        if bid_amount <= 0:
+        if not is_winner or bid_amount <= 0:
             return 0
 
         # Fetch the player's info to personalize notifications

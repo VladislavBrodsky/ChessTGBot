@@ -861,7 +861,7 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
     db_session.add(Referral(referrer_id=r6_p.id, referred_user_id=r5_p.id))
     await db_session.commit()
 
-    total_dist_p = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_escalating_p", player2.id, wager, is_winner=False)
+    total_dist_p = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_escalating_p", player2.id, wager, is_winner=True)
     await db_session.commit()
 
     await db_session.refresh(r1_p)
@@ -1061,3 +1061,54 @@ async def test_referral_ach_self_healing(db_session: AsyncSession):
     await db_session.refresh(user_task)
     assert user_task.progress == 5
     assert user_task.completed
+
+
+@pytest.mark.asyncio
+async def test_circular_referral_loop_prevention(db_session: AsyncSession):
+    if hasattr(db_session, "users"):
+        return
+
+    # Create two users: A and B
+    user_a = User(telegram_id=992201, first_name="UserA", referral_code="CODEA")
+    user_b = User(telegram_id=992202, first_name="UserB", referral_code="CODEB")
+    db_session.add_all([user_a, user_b])
+    await db_session.commit()
+    await db_session.refresh(user_a)
+    await db_session.refresh(user_b)
+
+    # 1. A refers B (should succeed)
+    success1 = await GamificationService.process_referral(db_session, user_b, "CODEA")
+    assert success1 is True
+
+    # 2. B attempts to refer A (should fail because A is B's parent)
+    success2 = await GamificationService.process_referral(db_session, user_a, "CODEB")
+    assert success2 is False
+
+
+@pytest.mark.asyncio
+async def test_referrer_chain_loop_breaking(db_session: AsyncSession):
+    if hasattr(db_session, "users"):
+        return
+
+    # Create two users: A and B
+    user_a = User(telegram_id=992301, first_name="UserA", referral_code="CODEA")
+    user_b = User(telegram_id=992302, first_name="UserB", referral_code="CODEB")
+    db_session.add_all([user_a, user_b])
+    await db_session.commit()
+    await db_session.refresh(user_a)
+    await db_session.refresh(user_b)
+
+    # Manually inject a circular loop in the database bypass of service validation to test retrieval robustness:
+    # A refers B and B refers A
+    ref1 = Referral(referrer_id=user_a.id, referred_user_id=user_b.id)
+    ref2 = Referral(referrer_id=user_b.id, referred_user_id=user_a.id)
+    db_session.add_all([ref1, ref2])
+    await db_session.commit()
+
+    # When retrieving the chain for user_a, it should not infinitely loop or contain duplicates
+    from app.services.referral_commission_service import ReferralCommissionService
+    chain = await ReferralCommissionService.get_referrer_chain(db_session, user_a.id, levels=6)
+    
+    # The chain should break the cycle and only return user_b, not containing user_a itself
+    assert len(chain) == 1
+    assert chain[0].id == user_b.id

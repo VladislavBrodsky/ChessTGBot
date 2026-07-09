@@ -253,6 +253,12 @@ class GamificationService:
             if referral_exists_result.scalars().first():
                 return False
 
+            # Circular referral loop check: prevent cycles (e.g. A -> B -> A)
+            from app.services.referral_commission_service import ReferralCommissionService
+            referrer_chain = await ReferralCommissionService.get_referrer_chain(db, referrer.id, levels=6)
+            if any(u.id == new_user.id for u in referrer_chain):
+                return False
+
             # Record the referral relationship — rewards are NOT granted yet.
             # They unlock once the recruit plays 3 games (see check_referral_game_milestone).
             referral = Referral(referrer_id=referrer.id, referred_user_id=new_user.id)

@@ -1016,7 +1016,6 @@ class GameService:
                     # White wins!
                     # Settle referral commissions (funded from the 2% referral pool)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=True)
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=False)
 
                     # Atomically credit payout to white
                     white_user = await user_crud.atomic_credit(session, white_id, payout_amount, commit=False)
@@ -1073,7 +1072,6 @@ class GameService:
                     # Black wins!
                     # Settle referral commissions (funded from the 2% referral pool)
                     await ReferralCommissionService.distribute_wager_commissions(session, game_id, black_user.id, bid_amount, is_winner=True)
-                    await ReferralCommissionService.distribute_wager_commissions(session, game_id, white_user.id, bid_amount, is_winner=False)
 
                     # Atomically credit payout to black
                     black_user = await user_crud.atomic_credit(session, black_id, payout_amount, commit=False)
