@@ -20,12 +20,13 @@ interface LobbyDepositDrawerProps {
   onDepositSuccess: (newBalance: number) => void;
 }
 
+// USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD)
+// and the backend rejects any other asset (see wallet.py _is_usdt_master). This
+// list MUST stay USDT-only to match DepositModal — offering another asset here
+// lets a user pay on-chain only to be rejected. Do not re-add assets without
+// re-enabling them in the backend credit paths.
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
-  { symbol: 'USDC', name: 'USD Coin', decimals: 6, master: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728', color: '#2775CA' },
-  { symbol: 'GRAM', name: 'GRAM (TON)', decimals: 9, master: '', color: '#00C49A' },
-  { symbol: 'BTC', name: 'Bitcoin (jWBTC)', decimals: 8, master: 'EQDcBkGHmC4pTf34x3Gm05XvepO5w60DNxZ-XT4I6-UGG5L5', color: '#F7931A' },
-  { symbol: 'ETH', name: 'Ethereum (jETH)', decimals: 9, master: 'EQAvS52CoZckQWLNFa7_iZL3apL52yuTwa-hlgkdWkdYl7LA', color: '#627EEA' },
 ];
 
 export default function LobbyDepositDrawer({
@@ -247,9 +248,13 @@ export default function LobbyDepositDrawer({
           setDepositSuccess("");
         }, 2500);
       } else {
-        const errData = await verifyRes.json();
-        setDepositSuccess("");
-        setDepositError(errData.detail || "Transaction verification failed. Please check your transaction.");
+        // Already broadcast on-chain — funds are on their way even if immediate
+        // verification lagged (TonAPI indexing). The deposit crawler credits it
+        // within ~2 min, so reassure rather than alarm.
+        setDepositError("");
+        setDepositSuccess("Deposit sent! ✅ It will be credited automatically within a couple of minutes — you can safely close this.");
+        telegramHaptic('success');
+        setTimeout(() => { onClose(); setDepositSuccess(""); }, 6000);
       }
 
     } catch (err: any) {
@@ -257,7 +262,7 @@ export default function LobbyDepositDrawer({
       setDepositSuccess("");
       let msg = err.message || "Transaction cancelled or failed.";
       if (msg.toLowerCase().includes("enough funds") || msg.toLowerCase().includes("insufficient funds")) {
-        msg = "Insufficient Gas: To complete this deposit, your wallet needs a tiny amount of native TON (or GRAM) to pay blockchain network gas fees. Alternatively, use the 'Pay Manually' option below.";
+        msg = "Insufficient Gas: To complete this deposit, your wallet needs a tiny amount of native TON to pay blockchain network gas fees. Alternatively, use the 'Pay Manually' option below.";
       }
       setDepositError(msg);
       telegramHaptic('error');
@@ -363,11 +368,13 @@ export default function LobbyDepositDrawer({
 
           {/* Currency Selector Dropdown */}
           <div className="flex flex-col space-y-1.5 relative">
-            <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Select Asset</label>
+            <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Asset</label>
             <button
               type="button"
-              onClick={() => { if (!isDepositing) setShowCurrencyDropdown(!showCurrencyDropdown); }}
-              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between cursor-pointer hover:border-brand-primary transition-all"
+              // Static display under USDT-only settlement (single asset) — only
+              // interactive if more than one asset is ever offered again.
+              onClick={() => { if (!isDepositing && currenciesList.length > 1) setShowCurrencyDropdown(!showCurrencyDropdown); }}
+              className={`w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
             >
               <div className="flex items-center space-x-2">
                 <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
@@ -375,11 +382,13 @@ export default function LobbyDepositDrawer({
                 </div>
                 <span>{selectedCurrencyObj?.name} ({currency})</span>
               </div>
-              <FaAngleDown className={`text-brand-primary opacity-40 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+              {currenciesList.length > 1 && (
+                <FaAngleDown className={`text-brand-primary opacity-40 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+              )}
             </button>
 
             <AnimatePresence>
-              {showCurrencyDropdown && (
+              {showCurrencyDropdown && currenciesList.length > 1 && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
