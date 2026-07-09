@@ -605,7 +605,7 @@ export default function PlayLobby() {
                     <FaFire className="text-emerald-500 text-[9.5px]" /> {tg('win_up_to')}
                   </span>
                   <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none">
-                    ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                    ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                   </span>
                 </div>
               )}
@@ -710,7 +710,7 @@ export default function PlayLobby() {
                           <FaFire className="text-emerald-400 text-[8px] animate-pulse" /> {tg('win_up_to')}
                         </span>
                         <span className="text-[11px] font-black text-emerald-400 tracking-tight leading-none">
-                          ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                          ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
                       </button>
                       
@@ -754,7 +754,7 @@ export default function PlayLobby() {
                     </div>
                     {hasSufficient && chosenWager > 0 && (
                       <span className="text-[8.5px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75 relative z-10">
-                        <FaFire className="text-emerald-500 text-[9.5px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.97) / 100).toFixed(2)}
+                        <FaFire className="text-emerald-500 text-[9.5px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                       </span>
                     )}
                   </motion.button>

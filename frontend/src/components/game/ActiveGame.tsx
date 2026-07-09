@@ -744,8 +744,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
       }
       netPayout = (gameState.payout_amount !== undefined && gameState.payout_amount !== null)
-        ? gameState.payout_amount / 100 
-        : (gameState.wager_amount * 2) * 0.97;
+        ? gameState.payout_amount / 100
+        : (gameState.wager_amount * 2) * 0.95;
     } else {
       if (isTimeout) {
         matchResultLabel = tg('lost_on_time');
