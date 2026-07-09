@@ -50,15 +50,15 @@ export default function LoginPage() {
                         <div className="flex flex-col items-center space-y-6 text-center">
                             <div className="inline-flex items-center space-x-2 bg-brand-primary/10 text-brand-primary text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
                                 <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
-                                <span>Secure Web Portal</span>
+                                <span>{t('secure_web_portal')}</span>
                             </div>
                             
                             <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-brand-rose uppercase tracking-widest font-mono">
-                                Web3Chess
+                                {t('web3chess')}
                             </h1>
                             
                             <p className="text-sm text-brand-muted max-w-[280px]">
-                                Premium decentralized chess. Log in via the official Telegram secure widget to access your account.
+                                {t('premium_desc')}
                             </p>
                             
                             <div className="pt-4 pb-2">
@@ -74,7 +74,7 @@ export default function LoginPage() {
                                 <svg className="w-4 h-4 text-brand-primary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
-                                <span>Secure authorization via Telegram</span>
+                                <span>{t('secure_auth')}</span>
                             </div>
                         </div>
                     </div>
@@ -86,11 +86,11 @@ export default function LoginPage() {
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
-                                <span>Play on Mobile</span>
+                                <span>{t('play_on_mobile')}</span>
                             </h3>
                             
                             <p className="text-sm text-brand-muted max-w-[240px]">
-                                Scan this QR code with your phone camera to instantly open the Telegram Mini App.
+                                {t('scan_qr')}
                             </p>
                             
                             <div className="bg-white p-4 rounded-2xl shadow-lg mt-4">
@@ -111,7 +111,7 @@ export default function LoginPage() {
                                 rel="noopener noreferrer"
                                 className="text-xs font-bold text-brand-primary hover:text-brand-rose transition-colors uppercase tracking-widest mt-4"
                             >
-                                Open in Telegram →
+                                {t('open_in_telegram')}
                             </a>
                         </div>
                     </div>

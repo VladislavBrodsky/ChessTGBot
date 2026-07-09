@@ -442,5 +442,14 @@
     "commission_earned": "收到 +{amount} USDT 佣金！",
     "referral_toast_single_line": "{username} 获胜: +{amount} USDT",
     "referral_toast_rich": "推荐用户 <gold>{username}</gold> 获胜！获得 <green>+{amount} USDT</green> 佣金"
+  },
+  "Login": {
+    "secure_web_portal": "安全网络门户",
+    "web3chess": "Web3Chess",
+    "premium_desc": "高级去中心化国际象棋。通过官方Telegram安全小部件登录以访问您的帐户。",
+    "secure_auth": "通过Telegram进行安全授权",
+    "play_on_mobile": "在手机上玩",
+    "scan_qr": "用手机相机扫描此二维码，立即打开Telegram小程序。",
+    "open_in_telegram": "在Telegram中打开 →"
   }
 }
