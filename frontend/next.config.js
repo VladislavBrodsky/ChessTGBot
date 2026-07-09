@@ -8,7 +8,11 @@ const withNextIntl = createNextIntlPlugin(
 const isStaticExport = process.env.STATIC_EXPORT === 'true';
 
 const nextConfig = {
-    reactStrictMode: false,
+    // Strict Mode double-invokes effects in DEV only (no production impact), which
+    // surfaces effect bugs early — e.g. the provider-absent-on-first-render class
+    // that caused the "Play Game" TonConnect crash. Dev-only aid; ship output is
+    // unchanged.
+    reactStrictMode: true,
     transpilePackages: ['react-chessboard'],
     ...(isStaticExport ? { output: 'export' } : {}),
     images: {

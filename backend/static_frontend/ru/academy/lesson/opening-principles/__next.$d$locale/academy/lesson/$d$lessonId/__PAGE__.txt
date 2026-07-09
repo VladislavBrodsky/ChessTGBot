@@ -2,5 +2,5 @@
 2:I[2952,["6711","static/chunks/8e1d74a4-2eb552a26a2c4ae2.js","5093","static/chunks/5093-d065b98870aa884c.js","282","static/chunks/282-13fcf65a04898d11.js","8500","static/chunks/8500-41fa79ac743d83f1.js","7170","static/chunks/7170-b06c6b2967c00360.js","4798","static/chunks/4798-4f26348bcfb0da29.js","5020","static/chunks/5020-d03a9933486a34c0.js","4785","static/chunks/4785-bd472a7087ee1cbd.js","7333","static/chunks/app/%5Blocale%5D/academy/lesson/%5BlessonId%5D/page-dc2bfe5f76cc1fba.js"],"default"]
 3:I[484,[],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"buildId":"WCxZ2plz8lXhZfyGdcvR0","rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"opening-principles"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+0:{"buildId":"FclPsd7FlYOveZk3oqHBo","rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"opening-principles"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
 5:null
