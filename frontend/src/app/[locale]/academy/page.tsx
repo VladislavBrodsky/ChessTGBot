@@ -144,8 +144,8 @@ export default function AcademyPage() {
 
   const handleUpgradeWithXp = async () => {
     const currentXp = stats?.xp || 0;
-    if (currentXp < 500) {
-      telegramAlert(`Upgrading requires 500 XP. You only have ${currentXp} XP.`);
+    if (currentXp < 5000) {
+      telegramAlert(`Upgrading requires 5,000 XP. You only have ${currentXp} XP.`);
       return;
     }
     try {

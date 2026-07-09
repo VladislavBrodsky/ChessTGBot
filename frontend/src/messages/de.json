@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "Daten konnten nicht geladen werden",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "show_top_50": "Top 50 anzeigen"
   },
   "Settings": {
     "return": "Zurück",
@@ -147,7 +148,7 @@
     "perk_li2": "2x XP-Multiplikator für tägliche Aufgaben und ELO-Matches.",
     "perk_li3": "Keine Werbung oder Einschränkungen bei der Schach-Engine-Analyse.",
     "your_stats": "Ihre aktuellen Werte: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "Mit 500 XP freischalten",
+    "unlock_with_xp": "Mit 5000 XP freischalten",
     "free_unlock_path": "Kostenloser Weg durch Level-Up",
     "buy_premium": "Premium kaufen ($295.80 USDT / Jahr)",
     "instant_activation": "Sofortige Aktivierung über das Spielguthaben",
@@ -247,7 +248,8 @@
     "move_history": "Spielverlauf",
     "game_crashed": "Spielverbindung verloren",
     "game_crashed_desc": "Die Verbindung zum Spielserver wurde unterbrochen. Sie können versuchen, das Spiel neu zu laden.",
-    "reload_game_btn": "Spiel neu laden"
+    "reload_game_btn": "Spiel neu laden",
+    "reject": "Ablehnen"
   },
   "Wallet": {
     "title": "Web3 Wallet",
@@ -334,7 +336,11 @@
     "card_destination_label": "Empfänger-Wallet (deine Adresse)",
     "card_await_funds_notice": "Nach dem Kauf trifft USDT in deiner Wallet ein (einige Minuten). Wechsle dann zum Krypto-Tab, um dein Guthaben aufzuladen.",
     "balance_unavailable": "Guthaben nicht verfügbar – tippen zum Wiederholen",
-    "link_wallet_hint": "TON-Wallet verknüpfen"
+    "link_wallet_hint": "TON-Wallet verknüpfen",
+    "tx_game_against_ai": "Spiel gegen KI",
+    "tx_game_free_pvp": "Kostenloses Spiel gegen andere Spieler",
+    "tx_game_paid": "Einsatzspiel gegen andere Spieler",
+    "tx_refund": "Einsatz-Rückerstattung"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

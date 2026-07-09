@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "تعذّر تحميل بياناتك",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "show_top_50": "عرض أفضل 50"
   },
   "Settings": {
     "return": "عودة",
@@ -147,7 +148,7 @@
     "perk_li2": "مضاعف XP بمعدل 2x في المهام اليومية ومباريات ELO.",
     "perk_li3": "لا إعلانات أو قيود على تحليل محرك الشطرنج.",
     "your_stats": "إحصائياتك الحالية: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "فتح باستخدام 500 XP",
+    "unlock_with_xp": "فتح باستخدام 5000 XP",
     "free_unlock_path": "مسار فتح مجاني عبر رفع المستوى",
     "buy_premium": "شراء العضوية المميزة ($295.80 USDT / سنة)",
     "instant_activation": "تفعيل فوري باستخدام رصيد اللعبة",
@@ -247,7 +248,8 @@
     "move_history": "سجل الحركات",
     "game_crashed": "فقد الاتصال باللعبة",
     "game_crashed_desc": "انقطع الاتصال بخادم اللعبة. يمكنك محاولة إعادة تحميل اللعبة.",
-    "reload_game_btn": "إعادة تحميل اللعبة"
+    "reload_game_btn": "إعادة تحميل اللعبة",
+    "reject": "رفض"
   },
   "Wallet": {
     "title": "محفظة Web3",
@@ -334,7 +336,11 @@
     "card_destination_label": "محفظة الاستلام (عنوانك)",
     "card_await_funds_notice": "بعد الشراء يصل USDT إلى محفظتك (قد يستغرق بضع دقائق). ثم انتقل إلى تبويب الكريبتو لشحن رصيدك.",
     "balance_unavailable": "الرصيد غير متاح — انقر لإعادة المحاولة",
-    "link_wallet_hint": "اربط محفظة TON الخاصة بك"
+    "link_wallet_hint": "اربط محفظة TON الخاصة بك",
+    "tx_game_against_ai": "لعبة ضد الذكاء الاصطناعي",
+    "tx_game_free_pvp": "لعبة مجانية ضد لاعبين آخرين",
+    "tx_game_paid": "لعبة برهان ضد لاعبين آخرين",
+    "tx_refund": "استرداد الرهان"
   },
   "Membership": {
     "title": "اشتراك CHESS PREMIUM",

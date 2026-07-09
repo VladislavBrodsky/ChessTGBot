@@ -54,6 +54,7 @@ def test_validate_init_data_extracts_start_param():
     import hmac
     import hashlib
     import json
+    import time
     from urllib.parse import quote
     from app.core.security import validate_init_data
     from app.core.config import get_settings
@@ -70,7 +71,7 @@ def test_validate_init_data_extracts_start_param():
         }
         user_str = json.dumps(user_data)
         
-        auth_date = "1710000000"
+        auth_date = str(int(time.time()))
         start_param = "ref_12345"
         
         check_list = [
@@ -474,7 +475,10 @@ async def test_get_active_game_endpoint(client, db_session):
         # Join the game (makes it active)
         from app.services.game_service import GameService
         service = GameService()
-        await service.join_game(game_id, telegram_id)
+        state = await service.join_game(game_id, telegram_id)
+        if state:
+            state.last_move_at = time.time()
+            await service.session_manager.save_game(game_id, state)
 
         # Query /active again (should return game_id)
         res_active = await client.get("/api/v1/game/active", headers=headers)

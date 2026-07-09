@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "No se pudieron cargar tus datos",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "show_top_50": "Ver Top 50"
   },
   "Settings": {
     "return": "Voltar",
@@ -147,7 +148,7 @@
     "perk_li2": "Multiplicador de XP de 2x en tareas diarias y partidas de ELO.",
     "perk_li3": "Sin anuncios ni límites en el análisis de ajedrez con motor.",
     "your_stats": "Tus estadísticas actuales: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "Desbloquear con 500 XP",
+    "unlock_with_xp": "Desbloquear con 5000 XP",
     "free_unlock_path": "Ruta de desbloqueio gratuita subiendo de nivel",
     "buy_premium": "Comprar Premium ($295.80 USDT / año)",
     "instant_activation": "Activación instantánea usando el saldo del juego",
@@ -247,7 +248,8 @@
     "move_history": "Historial de movimientos",
     "game_crashed": "Conexión del juego perdida",
     "game_crashed_desc": "Se interrumpió la conexión con el servidor del juego. Puedes intentar recargar el juego.",
-    "reload_game_btn": "Recargar juego"
+    "reload_game_btn": "Recargar juego",
+    "reject": "Rechazar"
   },
   "Wallet": {
     "title": "Billetera Web3",
@@ -334,7 +336,11 @@
     "card_destination_label": "Cartera de entrega (tu dirección)",
     "card_await_funds_notice": "Tras la compra, el USDT llega a tu cartera (unos minutos). Luego cambia a la pestaña Cripto para recargar tu saldo.",
     "balance_unavailable": "Saldo no disponible — toca para reintentar",
-    "link_wallet_hint": "Vincula tu billetera TON"
+    "link_wallet_hint": "Vincula tu billetera TON",
+    "tx_game_against_ai": "Partida contra la IA",
+    "tx_game_free_pvp": "Partida gratis contra otros jugadores",
+    "tx_game_paid": "Partida con apuesta contra otros jugadores",
+    "tx_refund": "Reembolso de apuesta"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

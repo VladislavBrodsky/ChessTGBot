@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "Impossible de charger vos données",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "show_top_50": "Voir le Top 50"
   },
   "Settings": {
     "return": "Retour",
@@ -147,7 +148,7 @@
     "perk_li2": "Multiplicateur d'XP de 2x sur les tâches quotidiennes et les matchs ELO.",
     "perk_li3": "Aucune publicité ni limite sur l'analyse de parties par le moteur.",
     "your_stats": "Vos stats actuelles : {xp} XP • {balance} USDT",
-    "unlock_with_xp": "Déverrouiller avec 500 XP",
+    "unlock_with_xp": "Déverrouiller avec 5000 XP",
     "free_unlock_path": "Voie de déverrouillage gratuite par montée de niveau",
     "buy_premium": "Acheter Premium ($295.80 USDT / an)",
     "instant_activation": "Activation instantanée via le solde du jeu",
@@ -247,7 +248,8 @@
     "move_history": "Historique des coups",
     "game_crashed": "Connexion au jeu perdue",
     "game_crashed_desc": "La connexion au serveur de jeu a été interrompue. Vous pouvez essayer de recharger le jeu.",
-    "reload_game_btn": "Recharger le jeu"
+    "reload_game_btn": "Recharger le jeu",
+    "reject": "Refuser"
   },
   "Wallet": {
     "title": "Portefeuille Web3",
@@ -334,7 +336,11 @@
     "card_destination_label": "Portefeuille de réception (votre adresse)",
     "card_await_funds_notice": "Après l’achat, l’USDT arrive sur votre portefeuille (quelques minutes). Passez ensuite à l’onglet Crypto pour recharger votre solde.",
     "balance_unavailable": "Solde indisponible — touchez pour réessayer",
-    "link_wallet_hint": "Liez votre portefeuille TON"
+    "link_wallet_hint": "Liez votre portefeuille TON",
+    "tx_game_against_ai": "Partie contre l'IA",
+    "tx_game_free_pvp": "Partie gratuite contre d'autres joueurs",
+    "tx_game_paid": "Partie misée contre d'autres joueurs",
+    "tx_refund": "Remboursement de mise"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

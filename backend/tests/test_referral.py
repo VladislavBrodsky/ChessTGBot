@@ -826,17 +826,17 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
 
     # L1 (r1) gets Elite L1 = 0.7% of 100000 = 700 cents
     assert r1.balance == 700
-    # L2 (r2) gets Master L2 = 0.5% of 100000 = 500 cents
-    assert r2.balance == 500
-    # L3 (r3) gets Knight L3 = 0.4% of 100000 = 400 cents
-    assert r3.balance == 400
-    # L4 (r4) gets Pawn L4 = 0% = 0 cents
-    assert r4.balance == 0
-    # L5 (r5) gets Recruit L5 = 0% = 0 cents
-    assert r5.balance == 0
-    # L6 (r6) gets Elite L6 = 0.15% but is Free, so skipped
+    # L2 (r2) gets Elite L2 = 0.4% of 100000 = 400 cents
+    assert r2.balance == 400
+    # L3 (r3) gets Elite L3 = 0.3% of 100000 = 300 cents
+    assert r3.balance == 300
+    # L4 (r4) gets Elite L4 = 0.25% of 100000 = 250 cents
+    assert r4.balance == 250
+    # L5 (r5) gets Elite L5 = 0.2% of 100000 = 200 cents
+    assert r5.balance == 200
+    # L6 (r6) is Free, so skipped
     assert r6.balance == 0
-    assert total_dist == 1600
+    assert total_dist == 1850
 
     # 2. Test L4-L6 deep commissions with Premium referrers
     r1_p = User(telegram_id=600001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)
@@ -873,17 +873,17 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
 
     # L1 (r1_p): Recruit, L1 = 2% of 100000 = 2000 cents
     assert r1_p.balance == 2000
-    # L2 (r2_p): Pawn, L2 = 0.8% of 100000 = 800 cents
-    assert r2_p.balance == 800
-    # L3 (r3_p): Knight, L3 = 0.4% of 100000 = 400 cents
-    assert r3_p.balance == 400
-    # L4 (r4_p): Master, L4 = 0.3% of 100000 = 300 cents
-    assert r4_p.balance == 300
-    # L5 (r5_p): Elite, L5 = 0.2% of 100000 = 200 cents
-    assert r5_p.balance == 200
-    # L6 (r6_p): Elite, L6 = 0.15% of 100000 = 150 cents
-    assert r6_p.balance == 150
-    assert total_dist_p == 3850
+    # L2 (r2_p): Pawn, L2 = 0% of 100000 = 0 cents
+    assert r2_p.balance == 0
+    # L3 (r3_p): Knight, L3 = 0% of 100000 = 0 cents
+    assert r3_p.balance == 0
+    # L4 (r4_p): Master, L4 = 0% of 100000 = 0 cents
+    assert r4_p.balance == 0
+    # L5 (r5_p): Elite, L5 = 0% of 100000 = 0 cents
+    assert r5_p.balance == 0
+    # L6 (r6_p): Elite, L6 = 0% of 100000 = 0 cents
+    assert r6_p.balance == 0
+    assert total_dist_p == 2000
 
 
 @pytest.mark.asyncio
@@ -934,17 +934,17 @@ async def test_subscription_commission_distribution(db_session):
 
     # L1 (r1) gets Recruit L1 = 15.0% of 29580 = 4437 cents
     assert r1.balance == 4437
-    # L2 (r2) gets Pawn L2 = 8.0% of 29580 = 2366 cents
-    assert r2.balance == 2366
-    # L3 (r3) gets Knight L3 = 5.0% of 29580 = 1479 cents
-    assert r3.balance == 1479
-    # L4 (r4) is Master! Master gets 7.0% for L4, but is Free user at depth > 3, so skipped!
+    # L2 (r2) gets Recruit L2 = 0% of 29580 = 0 cents
+    assert r2.balance == 0
+    # L3 (r3) gets Recruit L3 = 0% of 29580 = 0 cents
+    assert r3.balance == 0
+    # L4 (r4) gets Recruit L4 = 0% = 0 cents
     assert r4.balance == 0
-    # L5 (r5) is Elite! Elite gets 3.0% for L5, but is Free user, so skipped!
+    # L5 (r5) gets Recruit L5 = 0% = 0 cents
     assert r5.balance == 0
-    # L6 (r6) is Elite! Elite gets 2.0% for L6, but is Free user, so skipped!
+    # L6 (r6) gets Recruit L6 = 0% = 0 cents
     assert r6.balance == 0
-    assert total_dist == 4437 + 2366 + 1479
+    assert total_dist == 4437
 
     # 2. Now test with Premium referrers
     r1_p = User(telegram_id=800001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)
@@ -981,17 +981,17 @@ async def test_subscription_commission_distribution(db_session):
 
     # L1 (r1_p): Recruit -> 15% of 29580 = 4437 cents
     assert r1_p.balance == 4437
-    # L2 (r2_p): Pawn -> 8% of 29580 = 2366 cents
-    assert r2_p.balance == 2366
-    # L3 (r3_p): Knight -> 5% of 29580 = 1479 cents
-    assert r3_p.balance == 1479
-    # L4 (r4_p): Master -> 7% of 29580 = 2070 cents
-    assert r4_p.balance == 2070
-    # L5 (r5_p): Elite -> 3% of 29580 = 887 cents
-    assert r5_p.balance == 887
-    # L6 (r6_p): Elite -> 2% of 29580 = 591 cents
-    assert r6_p.balance == 591
-    assert total_dist_p == 4437 + 2366 + 1479 + 2070 + 887 + 591
+    # L2 (r2_p): Pawn -> 0% of 29580 = 0 cents
+    assert r2_p.balance == 0
+    # L3 (r3_p): Knight -> 0% of 29580 = 0 cents
+    assert r3_p.balance == 0
+    # L4 (r4_p): Master -> 0% of 29580 = 0 cents
+    assert r4_p.balance == 0
+    # L5 (r5_p): Elite -> 0% of 29580 = 0 cents
+    assert r5_p.balance == 0
+    # L6 (r6_p): Elite -> 0% of 29580 = 0 cents
+    assert r6_p.balance == 0
+    assert total_dist_p == 4437
 @pytest.mark.asyncio
 async def test_referral_ach_self_healing(db_session: AsyncSession):
     # Skip if using mock session

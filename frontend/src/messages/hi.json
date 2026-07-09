@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "डेटा लोड नहीं हो सका",
-    "retry": "पुनः प्रयास करें"
+    "retry": "पुनः प्रयास करें",
+    "show_top_50": "शीर्ष 50 देखें"
   },
   "Settings": {
     "return": "वापस",
@@ -147,7 +148,7 @@
     "perk_li2": "दैनिक कार्यों और ELO मैचों पर 2x XP गुणक।",
     "perk_li3": "इंजन शतरंज विश्लेषण पर कोई विज्ञापन या सीमा नहीं।",
     "your_stats": "आपके वर्तमान आंकड़े: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "500 XP के साथ अनलॉक करें",
+    "unlock_with_xp": "5000 XP के साथ अनलॉक करें",
     "free_unlock_path": "निःशुल्क स्तर-अप अनलॉक पथ",
     "buy_premium": "प्रीमियम खरीदें ($295.80 USDT / वर्ष)",
     "instant_activation": "खेल संतुलन का उपयोग करके त्वरित सक्रियण",
@@ -247,7 +248,8 @@
     "move_history": "चालों का इतिहास",
     "game_crashed": "खेल कनेक्शन खो गया",
     "game_crashed_desc": "खेल सर्वर से कनेक्शन बाधित हो गया था। आप खेल को फिर से लोड करने का प्रयास कर सकते हैं।",
-    "reload_game_btn": "खेल रीलोड करें"
+    "reload_game_btn": "खेल रीलोड करें",
+    "reject": "अस्वीकार करें"
   },
   "Wallet": {
     "title": "Web3 वॉलेट",
@@ -334,7 +336,11 @@
     "card_destination_label": "डिलीवरी वॉलेट (आपका पता)",
     "card_await_funds_notice": "खरीद के बाद USDT आपके वॉलेट में आएगा (कुछ मिनट)। फिर बैलेंस टॉप-अप करने के लिए क्रिप्टो टैब पर जाएँ।",
     "balance_unavailable": "बैलेंस उपलब्ध नहीं — पुनः प्रयास के लिए टैप करें",
-    "link_wallet_hint": "अपना TON वॉलेट लिंक करें"
+    "link_wallet_hint": "अपना TON वॉलेट लिंक करें",
+    "tx_game_against_ai": "AI के विरुद्ध खेल",
+    "tx_game_free_pvp": "अन्य खिलाड़ियों के विरुद्ध मुफ्त खेल",
+    "tx_game_paid": "अन्य खिलाड़ियों के विरुद्ध सशुल्क खेल",
+    "tx_refund": "दांव वापसी"
   },
   "Membership": {
     "title": "चेस प्रीमियम (CHESS PREMIUM)",

@@ -192,12 +192,17 @@ class ReferralCommissionService:
         if not chain:
             return 0
 
+        # The split rates are determined by the direct referrer's tier (chain[0])
+        direct_referrer = chain[0]
+        direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
+        rates = direct_tier_info["rates"]
+
         total_distributed = 0
 
         for idx, referrer in enumerate(chain):
             depth = idx + 1
             tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
-            rate = tier_info["rates"].get(depth, 0.0)
+            rate = rates.get(depth, 0.0)
 
             # Determine eligibility
             is_premium_eligible = (depth <= 3) or referrer.is_premium_active
@@ -324,6 +329,11 @@ class ReferralCommissionService:
         chain = await ReferralCommissionService.get_referrer_chain(db, subscriber_id, levels=6)
         if not chain:
             return 0
+            
+        # The split rates are determined by the direct referrer's tier (chain[0])
+        direct_referrer = chain[0]
+        direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
+        rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[direct_tier_info["name"]]
 
         total_distributed = 0
 
@@ -331,8 +341,8 @@ class ReferralCommissionService:
             depth = idx + 1
             tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
             
-            # Use subscription rate matrix
-            rate = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[tier_info["name"]].get(depth, 0.0)
+            # Use subscription rate matrix from direct referrer's tier
+            rate = rates.get(depth, 0.0)
 
             # Determine eligibility: Premium referrers get up to 6 levels, Free referrers get up to 3 levels
             is_premium_eligible = (depth <= 3) or referrer.is_premium_active

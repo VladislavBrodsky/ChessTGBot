@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "无法加载数据",
-    "retry": "重试"
+    "retry": "重试",
+    "show_top_50": "查看前 50 名"
   },
   "Settings": {
     "return": "返回",
@@ -147,7 +148,7 @@
     "perk_li2": "每日任务与 ELO 排位赛双倍经验值（XP）奖励。",
     "perk_li3": "免除广告干扰，引擎复盘分析无上限。",
     "your_stats": "您当前的属性: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "使用 500 XP 解锁",
+    "unlock_with_xp": "使用 5000 XP 解锁",
     "free_unlock_path": "免费升级解锁路径",
     "buy_premium": "购买黄金会员 ($295.80 USDT / 年)",
     "instant_activation": "使用游戏余额立即激活",
@@ -247,7 +248,8 @@
     "move_history": "棋谱记录",
     "game_crashed": "游戏连接已断开",
     "game_crashed_desc": "与游戏服务器的连接已中断。您可以尝试重新加载游戏。",
-    "reload_game_btn": "重新加载游戏"
+    "reload_game_btn": "重新加载游戏",
+    "reject": "拒绝"
   },
   "Wallet": {
     "title": "Web3 钱包",
@@ -334,7 +336,11 @@
     "card_destination_label": "接收钱包（您的地址）",
     "card_await_funds_notice": "购买后，USDT 将到达您的钱包（可能需要几分钟）。然后切换到“加密”标签为余额充值。",
     "balance_unavailable": "余额不可用 — 点击重试",
-    "link_wallet_hint": "绑定您的 TON 钱包"
+    "link_wallet_hint": "绑定您的 TON 钱包",
+    "tx_game_against_ai": "对战 AI",
+    "tx_game_free_pvp": "与其他玩家的免费对局",
+    "tx_game_paid": "与其他玩家的下注对局",
+    "tx_refund": "赌注退款"
   },
   "Membership": {
     "title": "CHESS PREMIUM",

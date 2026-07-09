@@ -52,7 +52,8 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "データを読み込めませんでした",
-    "retry": "再試行"
+    "retry": "再試行",
+    "show_top_50": "トップ50を表示"
   },
   "Settings": {
     "return": "戻る",
@@ -147,7 +148,7 @@
     "perk_li2": "デイリータスクおよびELO対局でのXP獲得量が2倍に。",
     "perk_li3": "広告非表示、チェスエンジン解析が無制限に。",
     "your_stats": "現在のステータス: {xp} XP • {balance} USDT",
-    "unlock_with_xp": "500 XPでアンロック",
+    "unlock_with_xp": "5000 XPでアンロック",
     "free_unlock_path": "レベルアップによる無料アンロック",
     "buy_premium": "プレミアムを購入 ($295.80 USDT / 年)",
     "instant_activation": "ゲームバランスを使用して即座に有効化",
@@ -247,7 +248,8 @@
     "move_history": "棋譜履歴",
     "game_crashed": "ゲームの接続が切れました",
     "game_crashed_desc": "ゲームサーバーへの接続が中断されました。ゲームを再読み込みしてください。",
-    "reload_game_btn": "ゲームを再読み込み"
+    "reload_game_btn": "ゲームを再読み込み",
+    "reject": "拒否"
   },
   "Wallet": {
     "title": "Web3ウォレット",
@@ -334,7 +336,11 @@
     "card_destination_label": "受取ウォレット（あなたのアドレス）",
     "card_await_funds_notice": "購入後、USDTがウォレットに届きます（数分かかる場合あり）。その後「暗号」タブで残高をチャージしてください。",
     "balance_unavailable": "残高を取得できません — タップして再試行",
-    "link_wallet_hint": "TONウォレットを連携"
+    "link_wallet_hint": "TONウォレットを連携",
+    "tx_game_against_ai": "AIとの対局",
+    "tx_game_free_pvp": "他のプレイヤーとの無料対局",
+    "tx_game_paid": "他のプレイヤーとの賭け対局",
+    "tx_refund": "賭け金の払い戻し"
   },
   "Membership": {
     "title": "CHESS PREMIUM 会員",
