@@ -42,7 +42,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [balanceError, setBalanceError] = useState<boolean>(false);
     const [statsError, setStatsError] = useState<boolean>(false);
 
+    const isAuthenticated = useCallback((): boolean => {
+        if (typeof window === 'undefined') return false;
+        const isTMA = !!(window as any).Telegram?.WebApp?.initData;
+        const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
+        return isTMA || hasWebAuth;
+    }, []);
+
     const syncBalance = useCallback(async () => {
+        if (!isAuthenticated()) return null;
         setLoadingBalance(true);
         try {
             const res = await apiFetch("/api/v1/wallet/balance");
@@ -58,14 +66,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             console.error("Failed to sync wallet balance", err);
             setBalanceError(true);
         } finally {
-            // Always resolve the loading state — leaving it stuck on true made
-            // consumers show skeletons forever whenever the API was unreachable.
             setLoadingBalance(false);
         }
         return null;
-    }, []);
+    }, [isAuthenticated]);
 
     const syncStats = useCallback(async () => {
+        if (!isAuthenticated()) return null;
         setLoadingStats(true);
         try {
             const res = await apiFetch("/api/v1/users/sync", { method: "POST" });
@@ -83,13 +90,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setLoadingStats(false);
         }
         return null;
-    }, []);
+    }, [isAuthenticated]);
 
     useEffect(() => {
-        // Load initial data on mount
+        // Only fetch data if user is authenticated
+        if (!isAuthenticated()) {
+            setLoadingBalance(false);
+            setLoadingStats(false);
+            return;
+        }
         syncBalance();
         syncStats();
-    }, [syncBalance, syncStats]);
+    }, [syncBalance, syncStats, isAuthenticated]);
 
     return (
         <UserContext.Provider value={{

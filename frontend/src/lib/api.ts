@@ -46,6 +46,18 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
     headers,
   });
 
+  // Global 401 Unauthorized handler
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem('telegram_web_auth');
+      const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/);
+      const locale = localeMatch ? localeMatch[1] : 'en';
+      if (!window.location.pathname.includes('/login')) {
+         window.location.href = `/${locale}/login`;
+      }
+    }
+  }
+
   return res;
 };
 
