@@ -56,7 +56,7 @@ class TelegramService:
             "next_label": "next",
             "features_header": "🎮 <b>ARENA FEATURES:</b>",
             "f1": "♟️ <b>Play & Earn:</b> Wager USDT in live chess",
-            "f2": "👥 <b>Invite & Earn:</b> Get 10% of wagers from friends",
+            "f2": "👥 <b>Invite & Earn:</b> Get up to 2% of wagers from friends",
             "f3": "🧩 <b>Academy:</b> 100 levels of chess puzzles",
             "f4": "⚡ <b>Instant:</b> Withdraw winnings to TON in seconds",
             "ref_header": "🔗 <b>Invite Link (tap to copy):</b>",

@@ -275,7 +275,7 @@ class GamificationService:
                     f"💰 <b>+${referrer_bonus_preview / 100:.2f} USDT</b>\n"
                     f"🏅 <b>+{referrer_xp_preview} XP</b>\n\n"
                     f"⏳ <b>Unlocks when they complete 3 chess games!</b>\n\n"
-                    f"⚡ From game 1, you're already earning a <b>10% commission</b> on all their wagers!\n\n"
+                    f"⚡ From game 1, you're already earning <b>up to 2% commission</b> on all their wagers!\n\n"
                     f"<i>The more players you recruit, the bigger your passive network payout! ♟️💸</i>"
                 )
                 await TelegramService.send_notification(referrer.telegram_id, msg)
@@ -475,7 +475,7 @@ class GamificationService:
                 f"🎮 <b>{full_name}</b>{username_display} just completed their 3rd chess game!\n\n"
                 f"💰 <b>+${referrer_bonus / 100:.2f} USDT</b> credited to your balance\n"
                 f"🏅 <b>+{referrer_xp} XP</b> added to your account\n\n"
-                f"⚡ Keep earning <b>10% commission</b> on every wager they place!\n\n"
+                f"⚡ Keep earning <b>up to 2% commission</b> on every wager they place!\n\n"
                 f"<i>Recruit more players to multiply your passive income! ♟️💸</i>"
             )
             await TelegramService.send_notification(referrer.telegram_id, referrer_msg)
