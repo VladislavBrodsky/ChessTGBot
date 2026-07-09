@@ -17,6 +17,9 @@ BASE_REF="${1:-origin/main}"
 # Paths whose changes require a rebuilt export.
 SOURCE_PATHS='^frontend/(src/|public/|package\.json|package-lock\.json|next\.config\.js|postcss\.config\.|tailwind)'
 EXPORT_PATH='^backend/static_frontend/'
+# Test/mock files are not part of the built app, so a change to them alone never
+# makes the export stale — exclude them to avoid false "rebuild required" failures.
+TEST_PATHS='(\.test\.|\.spec\.|/tests/|/__tests__/|/__mocks__/)'
 
 if ! git rev-parse --verify "$BASE_REF" >/dev/null 2>&1; then
   echo "check-static-export-fresh: base ref '$BASE_REF' not found; skipping." >&2
@@ -30,7 +33,7 @@ if [ -z "$CHANGED" ]; then
   exit 0
 fi
 
-SOURCE_CHANGED="$(echo "$CHANGED" | grep -E "$SOURCE_PATHS" || true)"
+SOURCE_CHANGED="$(echo "$CHANGED" | grep -E "$SOURCE_PATHS" | grep -vE "$TEST_PATHS" || true)"
 EXPORT_CHANGED="$(echo "$CHANGED" | grep -E "$EXPORT_PATH" || true)"
 
 if [ -n "$SOURCE_CHANGED" ] && [ -z "$EXPORT_CHANGED" ]; then
