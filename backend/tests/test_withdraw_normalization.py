@@ -36,3 +36,25 @@ async def test_convert_raw_to_friendly_helper():
     # Converting it back to hex should result in the same raw representation
     raw_converted = convert_ton_address_to_hex(friendly)
     assert raw_converted == raw
+
+
+@pytest.mark.asyncio
+async def test_update_wallet_address_deduplication(db_session: AsyncSession):
+    # Create two users
+    user1 = User(telegram_id=987654322, first_name="User1", balance=1000)
+    user2 = User(telegram_id=987654323, first_name="User2", balance=1000)
+    db_session.add_all([user1, user2])
+    await db_session.commit()
+    await db_session.refresh(user1)
+    await db_session.refresh(user2)
+
+    # Link wallet to user1
+    raw_address = "0:b0874b89b99015fdbd2c72c2c77af800ce61758742abc13f4365b204e90890f8"
+    friendly_address = convert_raw_to_friendly(raw_address, bounceable=False)
+    await user_crud.update_wallet_address(db_session, user1, friendly_address)
+    assert user1.wallet_address == friendly_address
+
+    # Try linking same wallet to user2 (should raise ValueError)
+    with pytest.raises(ValueError) as excinfo:
+        await user_crud.update_wallet_address(db_session, user2, friendly_address)
+    assert "already linked to another account" in str(excinfo.value)

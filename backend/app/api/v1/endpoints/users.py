@@ -357,7 +357,10 @@ async def link_wallet(
     if current_user.telegram_id != request.telegram_id:
         raise HTTPException(status_code=403, detail="Forbidden: Cannot link wallet for another user")
         
-    updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
+    try:
+        updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"status": "success", "wallet_address": updated_user.wallet_address}
 
 class SubscriptionRequest(BaseModel):

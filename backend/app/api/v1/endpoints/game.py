@@ -8,7 +8,7 @@ from app.core.database import get_db, get_read_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud import user as user_crud
 from app.core.config import get_settings
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import get_current_user, rate_limit
 from app.models.user import User
 
 settings = get_settings()
@@ -19,7 +19,7 @@ class CreateGameResponse(BaseModel):
     game_id: str
     invite_link: str
 
-@router.post("/create", response_model=CreateGameResponse)
+@router.post("/create", response_model=CreateGameResponse, dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def create_game(
     type: str = "online",
     time_control: int = 600,

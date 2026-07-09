@@ -72,6 +72,20 @@ async def update_wallet_address(db: AsyncSession, user: User, wallet_address: st
             import logging
             logging.getLogger(__name__).warning(f"Failed to convert raw address to friendly: {e}")
             
+    if wallet_address:
+        from sqlalchemy import and_
+        exists_result = await db.execute(
+            select(User).where(
+                and_(
+                    User.wallet_address == wallet_address,
+                    User.id != user.id
+                )
+            )
+        )
+        existing_user = exists_result.scalars().first()
+        if existing_user:
+            raise ValueError("This wallet address is already linked to another account.")
+            
     user.wallet_address = wallet_address
     db.add(user)
     await db.commit()

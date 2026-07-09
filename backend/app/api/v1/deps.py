@@ -175,3 +175,57 @@ async def get_admin_user(current_user: User = Depends(get_current_user)) -> User
             detail="Access denied: admin privileges required"
         )
     return current_user
+
+
+# ---------------------------------------------------------------------------
+# Rate limiting
+# ---------------------------------------------------------------------------
+
+_rate_limits = {}
+
+def rate_limit(limit: int, window: int):
+    """
+    FastAPI dependency for rate limiting by user and endpoint path.
+    """
+    from fastapi import Request
+    
+    async def check_rate_limit(
+        request: Request,
+        current_user: User = Depends(get_current_user)
+    ):
+        import time
+        user_key = f"rl:{current_user.telegram_id}:{request.url.path}"
+        now = time.time()
+        
+        # Try to use Redis from SessionManager
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        use_redis = session_mgr.redis and not session_mgr._use_memory
+        
+        if use_redis:
+            try:
+                current_count_str = await session_mgr.redis.get(user_key)
+                if current_count_str:
+                    current_count = int(current_count_str)
+                    if current_count >= limit:
+                        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+                    await session_mgr.redis.incr(user_key)
+                else:
+                    await session_mgr.redis.set(user_key, "1", ex=window)
+                return
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+                
+        # In-memory fallback
+        history = _rate_limits.get(user_key, [])
+        history = [t for t in history if now - t < window]
+        
+        if len(history) >= limit:
+            raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+            
+        history.append(now)
+        _rate_limits[user_key] = history
+        
+    return check_rate_limit

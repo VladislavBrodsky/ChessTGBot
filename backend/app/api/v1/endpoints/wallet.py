@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
 from sqlalchemy import desc, func, or_
 from app.core.database import get_db, get_read_db
-from app.api.v1.deps import get_current_user, get_current_telegram_id
+from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
@@ -314,13 +314,16 @@ async def connect_web3_wallet(
     """
     Connect a TON web3 wallet address to the user's account.
     """
-    updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
+    try:
+        updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return BalanceResponse(
         balance=updated_user.balance,
         wallet_address=updated_user.wallet_address
     )
 
-@router.post("/withdraw", response_model=WithdrawResponse)
+@router.post("/withdraw", response_model=WithdrawResponse, dependencies=[Depends(rate_limit(limit=3, window=60))])
 async def withdraw_funds(
     request: WithdrawRequest,
     db: AsyncSession = Depends(get_db),
@@ -869,7 +872,7 @@ async def get_jetton_wallet(
     raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
 
 
-@router.post("/deposit/verify")
+@router.post("/deposit/verify", dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def verify_deposit(
     request: DepositVerifyRequest,
     telegram_id: int = Depends(get_current_telegram_id)
