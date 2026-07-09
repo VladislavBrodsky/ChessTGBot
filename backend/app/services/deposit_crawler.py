@@ -30,7 +30,13 @@ async def start_deposit_crawler():
     while True:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.get(url, headers=headers)
+                try:
+                    res = await client.get(url, headers=headers)
+                except Exception as api_err:
+                    logger.warning(f"DepositCrawler: API request failed (will retry): {api_err}")
+                    await asyncio.sleep(90)
+                    continue
+
                 if res.status_code == 200:
                     events_data = res.json()
                     events = events_data.get("events", [])
