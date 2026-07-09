@@ -33,13 +33,21 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
     const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
     const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(false);
+    // true when running in a real desktop browser (not inside Telegram)
+    const [isDesktopBrowser, setIsDesktopBrowser] = useState<boolean>(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const isIframe = window.self !== window.top;
             const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
+            const isTMA = !!(window as any).Telegram?.WebApp?.initData;
             if (isIframe || isWebPlatform) {
                 setIsTelegramWeb(true);
+            }
+            // Desktop browser: has web auth token but no real TMA initData
+            const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
+            if (!isTMA && hasWebAuth && window.innerWidth >= 768) {
+                setIsDesktopBrowser(true);
             }
         }
     }, []);
@@ -159,10 +167,13 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] ${
-                isTelegramWeb
-                    ? "pb-[calc(150px+var(--app-safe-bottom))]"
-                    : "pb-[calc(100px+var(--app-safe-bottom))]"
+            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] ${
+                isDesktopBrowser
+                    // Desktop: sidebar is 72px wide; top padding only
+                    ? 'md:pl-[72px] pt-6 pb-8'
+                    : isTelegramWeb
+                        ? 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(150px+var(--app-safe-bottom))]'
+                        : 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--app-safe-bottom))]'
             } ${className}`}>
                 {isCorePage && isCheckingActiveGame ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
