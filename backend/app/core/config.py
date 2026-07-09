@@ -94,6 +94,13 @@ class Settings(BaseSettings):
     GAS_FLOAT_MIN_TON: float = 2.0                     # warn when master TON balance drops below this
     GAS_FLOAT_CHECK_INTERVAL_SECONDS: int = 3600       # check hourly
 
+    # Withdrawal velocity controls. Payouts are instant + irreversible from the
+    # hot wallet, so a stolen session could otherwise drain a balance in one shot.
+    # A rolling-24h per-user cap bounds the blast radius; withdrawals at/above the
+    # review threshold are held for manual admin approval instead of auto-paid.
+    WITHDRAWAL_DAILY_CAP_CENTS: int = 100000            # $1,000 per user per rolling 24h
+    WITHDRAWAL_REVIEW_THRESHOLD_CENTS: int = 50000      # hold withdrawals >= $500 for admin review
+
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection

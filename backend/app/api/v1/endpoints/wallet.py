@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from app.core.database import get_db, get_read_db
 from app.api.v1.deps import get_current_user, get_current_telegram_id
 from app.models.user import User
@@ -12,7 +12,7 @@ from app.models.transaction import Transaction
 from app.crud import user as user_crud
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 router = APIRouter()
 
@@ -267,17 +267,6 @@ class BalanceResponse(BaseModel):
 class DepositVerifyRequest(BaseModel):
     message_hash: str
 
-class DepositRequest(BaseModel):
-    amount: int  # In cents (smallest unit, e.g. 1000 = $10.00)
-
-class DepositResponse(BaseModel):
-    status: str
-    credited_amount: int
-    fee: int
-    new_balance: int
-    payment_link: Optional[str] = None
-    invoice_id: Optional[str] = None
-
 class WithdrawRequest(BaseModel):
     amount: int  # In cents
     address: str
@@ -331,138 +320,6 @@ async def connect_web3_wallet(
         wallet_address=updated_user.wallet_address
     )
 
-@router.post("/deposit", response_model=DepositResponse)
-async def deposit_funds(
-    request: DepositRequest,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Initiate a deposit. If TON Console token is configured, creates a real TON invoice.
-    Otherwise, simulates a mock instant deposit.
-    """
-    if request.amount <= 0:
-        raise HTTPException(status_code=400, detail="Deposit amount must be positive")
-
-    from app.core.config import get_settings
-    settings = get_settings()
-
-    # Calculate 5% fee and credit amount
-    fee = int(request.amount * 0.05)
-    credited_amount = request.amount - fee
-
-    if settings.TON_CONSOLE_TOKEN:
-        # Create an actual invoice via Tonconsole Invoices API
-        import httpx
-        ton_price_usd = await fetch_ton_price_usd(settings.TON_API_KEY)
-        
-        # Convert cents (amount) to nanoTON
-        usd_amount = request.amount / 100.0
-        ton_needed = usd_amount / ton_price_usd
-        nano_ton = int(ton_needed * 1_000_000_000)
-
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(
-                    "https://tonconsole.com/api/v1/services/invoices/invoice",
-                    headers={
-                        "Authorization": f"Bearer {settings.TON_CONSOLE_TOKEN}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "amount": str(nano_ton),
-                        "currency": "TON",
-                        "life_time": 1800, # 30 mins
-                        "description": f"ref_{current_user.telegram_id}"
-                    }
-                )
-                if res.status_code != 200:
-                    import logging
-                    logging.getLogger(__name__).error(
-                        f"Tonconsole Invoice creation failed: {res.status_code} - {res.text}"
-                    )
-                    raise HTTPException(status_code=400, detail="Failed to generate invoice on TON Console")
-                
-                invoice_data = res.json()
-                payment_link = invoice_data.get("payment_link")
-                invoice_id = invoice_data.get("id")
-                
-                # Create a pending transaction ledger entry
-                tx_deposit = Transaction(
-                    user_id=current_user.telegram_id,
-                    type="deposit",
-                    amount=credited_amount,
-                    fee=fee,
-                    status="pending",
-                    reference_id=f"invoice_{invoice_id}"
-                )
-                db.add(tx_deposit)
-                await db.commit()
-
-                return DepositResponse(
-                    status="invoice",
-                    payment_link=payment_link,
-                    invoice_id=invoice_id,
-                    credited_amount=credited_amount,
-                    fee=fee,
-                    new_balance=current_user.balance
-                )
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Invoices API request error: {e}")
-
-    # Mock/simulated fallback if TON_CONSOLE_TOKEN is not configured.
-    # SECURITY: this credits real balance with NO on-chain payment. It must NEVER
-    # be reachable in production — otherwise a missing TON_CONSOLE_TOKEN env var
-    # turns this endpoint into an unlimited free-money mint. Gate it to the local
-    # dev database (sqlite) / pytest, mirroring the webhook's dev-simulation guard.
-    import sys
-    from app.core.database import engine
-    is_dev = engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules
-    if not is_dev:
-        raise HTTPException(
-            status_code=503,
-            detail="Deposits are temporarily unavailable. Please try again later."
-        )
-
-    updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, credited_amount)
-    if not updated_user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    tx_deposit = Transaction(
-        user_id=current_user.telegram_id,
-        type="deposit",
-        amount=credited_amount,
-        fee=fee,
-        status="completed",
-        reference_id="web3_deposit_mock"
-    )
-    db.add(tx_deposit)
-
-    await db.commit()
-    logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=deposit | amount={credited_amount} cents (${credited_amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id=web3_deposit_mock | status=completed")
-
-    try:
-        from app.services.telegram_bot import TelegramService
-        notification_text = (
-            f"<b>⚡️ Cyber Wallet Top-Up Complete!</b>\n\n"
-            f"• <b>Credited Amount:</b> +${credited_amount / 100:.2f} USDT\n"
-            f"• <b>Platform Deposit Fee (5%):</b> -${fee / 100:.2f} USDT\n"
-            f"• <b>Reference ID:</b> <code>{tx_deposit.reference_id}</code>\n\n"
-            f"<i>Your updated platform balance is {updated_user.balance / 100:.2f} USDT. Ready to bid! ♟️</i>"
-        )
-        await TelegramService.send_notification(current_user.telegram_id, notification_text)
-    except Exception as e:
-        pass
-
-    return DepositResponse(
-        status="success",
-        credited_amount=credited_amount,
-        fee=fee,
-        new_balance=updated_user.balance
-    )
-
 @router.post("/withdraw", response_model=WithdrawResponse)
 async def withdraw_funds(
     request: WithdrawRequest,
@@ -490,7 +347,29 @@ async def withdraw_funds(
         request.address = convert_raw_to_friendly(request.address, bounceable=False)
     except Exception:
         pass
-    
+
+    # Velocity control: enforce a rolling-24h per-user withdrawal cap BEFORE
+    # debiting. Payouts are instant and irreversible, so this bounds how much a
+    # stolen session can move — including via many small withdrawals.
+    from app.services.withdrawal_policy import exceeds_daily_cap, remaining_daily_allowance_cents, needs_manual_review
+    since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=24)
+    recent_res = await db.execute(
+        select(func.coalesce(func.sum(Transaction.amount), 0)).where(
+            Transaction.user_id == current_user.telegram_id,
+            Transaction.type == "withdrawal",
+            Transaction.status != "failed",
+            Transaction.created_at >= since,
+        )
+    )
+    # Withdrawal amounts are stored negative; negate the sum to get the total out.
+    withdrawn_24h = -int(recent_res.scalar() or 0)
+    if exceeds_daily_cap(withdrawn_24h, request.amount, settings.WITHDRAWAL_DAILY_CAP_CENTS):
+        remaining = remaining_daily_allowance_cents(withdrawn_24h, settings.WITHDRAWAL_DAILY_CAP_CENTS)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Daily withdrawal limit reached. You can withdraw up to ${remaining / 100:.2f} more within 24 hours.",
+        )
+
     # Atomically debit — returns None if insufficient funds
     updated_user = await user_crud.atomic_debit(db, current_user.telegram_id, request.amount)
     if not updated_user:
@@ -500,9 +379,56 @@ async def withdraw_funds(
     fee = 20 if request.amount >= 20 else 0
     transfer_amount_cents = request.amount - fee
 
+    # Large withdrawals are HELD for manual admin approval rather than auto-paid.
+    # Funds are already debited (held); the destination address is stashed in
+    # reference_id so an admin can execute the payout later via /admin/withdrawals.
+    if needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS):
+        tx_review = Transaction(
+            user_id=updated_user.telegram_id,
+            type="withdrawal",
+            amount=-request.amount,
+            fee=fee,
+            status="pending_review",
+            reference_id=f"pending_review:{request.address}",
+        )
+        db.add(tx_review)
+        await db.commit()
+        await db.refresh(tx_review)
+        logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | reference_id={tx_review.reference_id} | status=pending_review")
+
+        # Alert admins to review (reuses the rate-limited alert infra).
+        try:
+            from app.core.alerts import send_admin_alert
+            await send_admin_alert(
+                "🔎 <b>Withdrawal held for review (large amount)</b>\n\n"
+                f"• <b>Transaction ID:</b> #{tx_review.id}\n"
+                f"• <b>User:</b> {updated_user.first_name} (<code>{updated_user.telegram_id}</code>)\n"
+                f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                f"• <b>Destination:</b> <code>{request.address}</code>\n\n"
+                "<i>Approve or reject via /admin/withdrawals. Funds are held (already debited).</i>"
+            )
+        except Exception as alert_err:
+            logger.warning(f"Failed to send withdrawal review alert: {alert_err}")
+
+        # Notify the user.
+        try:
+            from app.services.telegram_bot import TelegramService
+            await TelegramService.send_notification(
+                updated_user.telegram_id,
+                "<b>🔎 Withdrawal Under Review</b>\n\n"
+                f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
+                "• <b>Status:</b> Pending manual review 🟡\n\n"
+                "<i>Larger withdrawals are reviewed for your security and usually clear shortly. "
+                "Your funds are safely reserved.</i>"
+            )
+        except Exception:
+            pass
+
+        return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=updated_user.balance)
+
     tx_hash = None
     is_real = False
-    
+
     if settings.PAYOUT_MNEMONIC:
         try:
             from app.services.payout_service import execute_usdt_payout
@@ -619,69 +545,6 @@ async def get_transaction_ledger(
         .limit(limit)
     )
     return result.scalars().all()
-
-
-_ton_price_cache = {
-    "price": 5.40,
-    "last_fetched": 0.0
-}
-
-async def fetch_ton_price_usd(api_key: Optional[str] = None) -> float:
-    """
-    Fetches the current TON price in USD from tonapi.io rates endpoint.
-    Caches the result in Redis for 60 seconds (falls back to memory) to prevent rate limiting.
-    """
-    import time
-    import json
-    from app.services.session_manager import SessionManager
-    
-    redis_client = None
-    try:
-        mgr = SessionManager()
-        if not SessionManager._use_memory and mgr.redis:
-            redis_client = mgr.redis
-    except Exception:
-        pass
-        
-    now = time.time()
-    
-    if redis_client:
-        try:
-            cached_val = await redis_client.get("cache:ton_price")
-            if cached_val:
-                return float(cached_val)
-        except Exception:
-            pass
-    else:
-        # Fallback to local memory cache
-        if now - _ton_price_cache["last_fetched"] < 60.0:
-            return _ton_price_cache["price"]
-        
-    import httpx
-    url = "https://tonapi.io/v2/rates?tokens=ton&currencies=usd"
-    headers = {}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(url, headers=headers)
-            if res.status_code == 200:
-                data = res.json()
-                price = data.get("rates", {}).get("ton", {}).get("prices", {}).get("USD")
-                if price:
-                    price_val = float(price)
-                    if redis_client:
-                        try:
-                            await redis_client.set("cache:ton_price", str(price_val), ex=60)
-                        except Exception:
-                            pass
-                    _ton_price_cache["price"] = price_val
-                    _ton_price_cache["last_fetched"] = now
-                    return price_val
-    except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning(f"Failed to fetch TON price from TonAPI: {e}")
-    return _ton_price_cache["price"]
 
 
 class TonWebhookPayload(BaseModel):

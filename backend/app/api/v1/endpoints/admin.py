@@ -481,6 +481,134 @@ async def get_solvency(
 
 
 # ---------------------------------------------------------------------------
+# 3c.  Withdrawal review (velocity control)
+# ---------------------------------------------------------------------------
+# Withdrawals at/above WITHDRAWAL_REVIEW_THRESHOLD_CENTS are debited (funds held)
+# and parked as status="pending_review" with the destination address stashed in
+# reference_id ("pending_review:<address>"). An admin approves (executes the
+# on-chain payout) or rejects (refunds the held balance).
+
+@router.get("/withdrawals/pending")
+async def list_pending_withdrawals(
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """List withdrawals held for manual review."""
+    res = await db.execute(
+        select(Transaction)
+        .where(Transaction.type == "withdrawal", Transaction.status == "pending_review")
+        .order_by(Transaction.created_at.asc())
+    )
+    txs = res.scalars().all()
+    out = []
+    for t in txs:
+        address = ""
+        if t.reference_id and t.reference_id.startswith("pending_review:"):
+            address = t.reference_id.split(":", 1)[1]
+        out.append({
+            "id": t.id,
+            "user_id": t.user_id,
+            "amount_cents": -t.amount,      # stored negative; report the positive amount
+            "amount_usd": _cents_to_dollars(-t.amount),
+            "fee_cents": t.fee,
+            "destination_address": address,
+            "created_at": t.created_at.isoformat() if t.created_at else None,
+        })
+    return {"pending": out, "count": len(out)}
+
+
+@router.post("/withdrawals/{tx_id}/approve")
+async def approve_withdrawal(
+    tx_id: int,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Approve a held withdrawal: execute the on-chain payout and mark it sent."""
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
+    tx = res.scalars().first()
+    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
+        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+
+    if not tx.reference_id or not tx.reference_id.startswith("pending_review:"):
+        raise HTTPException(status_code=400, detail="Withdrawal is missing its destination address")
+    address = tx.reference_id.split(":", 1)[1]
+
+    amount = -tx.amount                    # positive requested amount
+    transfer_amount_cents = amount - (tx.fee or 0)
+
+    tx_hash = None
+    is_real = False
+    if settings.PAYOUT_MNEMONIC:
+        try:
+            from app.services.payout_service import execute_usdt_payout
+            tx_hash = await execute_usdt_payout(address, transfer_amount_cents)
+            is_real = True
+        except Exception as payout_err:
+            # Leave held (still reviewable); surface the failure so the admin can retry/reject.
+            logger.error(f"Approved withdrawal payout failed for tx {tx_id}: {payout_err}")
+            raise HTTPException(status_code=500, detail=f"On-chain payout failed: {payout_err}")
+    else:
+        tx_hash = f"mock_{address[:6]}_{amount}"
+
+    tx.status = "pending" if is_real else "completed"
+    tx.reference_id = tx_hash
+    db.add(tx)
+    await db.commit()
+
+    try:
+        from app.services.telegram_bot import TelegramService
+        await TelegramService.send_notification(
+            tx.user_id,
+            "<b>✅ Withdrawal Approved</b>\n\n"
+            f"• <b>Amount:</b> ${amount / 100:.2f} USDT\n"
+            f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
+            "<i>Your withdrawal has been approved and is being processed on-chain.</i>"
+        )
+    except Exception:
+        pass
+
+    return {"status": "approved", "tx_id": tx_id, "reference_id": tx_hash}
+
+
+@router.post("/withdrawals/{tx_id}/reject")
+async def reject_withdrawal(
+    tx_id: int,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Reject a held withdrawal: refund the held balance to the user."""
+    from app.crud import user as user_crud
+
+    res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
+    tx = res.scalars().first()
+    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
+        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+
+    refund = -tx.amount                    # positive amount to return
+    await user_crud.atomic_credit(db, tx.user_id, refund, commit=False)
+    tx.status = "failed"
+    tx.reference_id = "rejected"
+    db.add(tx)
+    await db.commit()
+
+    try:
+        from app.services.telegram_bot import TelegramService
+        await TelegramService.send_notification(
+            tx.user_id,
+            "<b>↩️ Withdrawal Declined</b>\n\n"
+            f"• <b>Amount refunded:</b> ${refund / 100:.2f} USDT\n\n"
+            "<i>Your withdrawal could not be approved and the full amount has been returned to your balance.</i>"
+        )
+    except Exception:
+        pass
+
+    return {"status": "rejected", "tx_id": tx_id, "refunded_cents": refund}
+
+
+# ---------------------------------------------------------------------------
 # 4.  Game history
 # ---------------------------------------------------------------------------
 

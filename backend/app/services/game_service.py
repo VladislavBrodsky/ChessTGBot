@@ -1002,6 +1002,7 @@ class GameService:
             black_xp_breakdown += f"• <b>Total Gained:</b> +{black_final_xp} XP\n\n"
             
             # Settle Web3 Bids / Wagers & Rakes
+            from app.services.settlement import compute_wager_settlement
             bid_amount = getattr(state, "bid_amount", 0)
             platform_rake = 0
             referral_fee = 0
@@ -1009,9 +1010,7 @@ class GameService:
             notifications_to_send = []
 
             if bid_amount > 0 and white_user and black_user:
-                referral_fee = int(2 * bid_amount * 0.02)
-                platform_rake = int(2 * bid_amount * 0.03)
-                payout_amount = max(0, (2 * bid_amount) - platform_rake - referral_fee)
+                payout_amount, platform_rake, referral_fee = compute_wager_settlement(bid_amount)
 
                 if state.winner == 'w':
                     # White wins!
