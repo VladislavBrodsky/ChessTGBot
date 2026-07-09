@@ -147,11 +147,20 @@ async def verify_task(
             return {"status": "success", "completed": True}
         else:
             raise HTTPException(status_code=400, detail="You have not joined this channel or group yet.")
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Telegram subscription verification failed for {chat_username}: {e}")
+        from telegram.error import BadRequest
+        if isinstance(e, BadRequest) or "chat not found" in str(e).lower() or "user not found" in str(e).lower():
+            logger.warning(f"Telegram subscription check failed for {chat_username} (User not joined): {e}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Verification failed: Please make sure you have joined {chat_username}."
+            )
+        logger.error(f"Telegram subscription verification failed for {chat_username}: {e}", exc_info=True)
         raise HTTPException(
-            status_code=400,
-            detail=f"Verification failed: Please make sure you have joined {chat_username}."
+            status_code=500,
+            detail="Verification service temporarily unavailable"
         )
 
 @router.put("/language")
