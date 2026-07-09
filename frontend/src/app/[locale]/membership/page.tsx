@@ -185,7 +185,7 @@ export default function MembershipPage() {
     <div className="premium-liquid-mesh-blob2" />
     <div className="premium-liquid-mesh-blob3" />
 
-    <div className="w-full max-w-sm flex flex-col items-center mx-auto space-y-8 px-4 relative z-10">
+    <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center mx-auto space-y-8 px-4 relative z-10">
       {/* Header / Brand — no back button (Telegram native UI handles that) */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -403,7 +403,7 @@ export default function MembershipPage() {
           animate={{ scale: 1, y: 0, opacity: 1 }}
           exit={{ scale: 0.9, y: 20, opacity: 0 }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="w-full max-w-sm premium-neon-card p-8 rounded-3xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
+          className="w-full max-w-sm md:max-w-xl lg:max-w-3xl premium-neon-card p-8 rounded-3xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
         >
           {/* Decorative Glow */}
           <div className="absolute -top-12 -left-12 w-24 h-24 bg-purple-500 opacity-20 blur-2xl rounded-full" />
@@ -507,7 +507,7 @@ export default function MembershipPage() {
           animate={{ scale: 1, y: 0, opacity: 1 }}
           exit={{ scale: 0.9, y: 20, opacity: 0 }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="w-full max-w-sm premium-neon-card p-8 rounded-3xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
+          className="w-full max-w-sm md:max-w-xl lg:max-w-3xl premium-neon-card p-8 rounded-3xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center space-y-6"
         >
           {/* Decorative Glow */}
           <div className="absolute -top-12 -left-12 w-24 h-24 bg-purple-500 opacity-20 blur-2xl rounded-full" />

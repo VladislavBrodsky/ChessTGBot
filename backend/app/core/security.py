@@ -17,8 +17,8 @@ INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
 
 def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_SECONDS) -> dict:
     """
-    Validates the Telegram WebApp initData string using HMAC-SHA256 and rejects
-    stale payloads based on their signed `auth_date`.
+    Validates the Telegram WebApp initData string or Telegram Login Widget string using HMAC-SHA256
+    and rejects stale payloads based on their signed `auth_date`.
     Returns the parsed user data dictionary if valid, raises HTTPException otherwise.
     """
     if not settings.TELEGRAM_BOT_TOKEN:
@@ -40,12 +40,20 @@ def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_
 
         received_hash = data_dict.pop('hash')
 
+        # Determine payload type
+        is_tma = 'query_id' in data_dict or 'user' in data_dict
+
         # Prepare payload for HMAC
         # Keys must be sorted alphabetically
         data_check_string = '\n'.join(f'{k}={v}' for k, v in sorted(data_dict.items()))
 
-        # Calculate HMAC-SHA256 signature
-        secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        if is_tma:
+            # TMA Auth Signature
+            secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+        else:
+            # Web Widget Auth Signature
+            secret_key = hashlib.sha256(settings.TELEGRAM_BOT_TOKEN.encode()).digest()
+
         calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
         if not hmac.compare_digest(calculated_hash, received_hash):
@@ -66,15 +74,30 @@ def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_
             if age > max_age_seconds or age < -300:
                 raise HTTPException(status_code=401, detail="initData has expired, please reopen the app")
 
-        # Extract user data
-        user_data_str = data_dict.get('user')
-        if not user_data_str:
-             raise HTTPException(status_code=400, detail="Missing user data in initData")
-        
-        user_data = json.loads(user_data_str)
-        if 'start_param' in data_dict:
-            user_data['start_param'] = data_dict['start_param']
-        return user_data
+        if is_tma:
+            # Extract user data from JSON 'user' string
+            user_data_str = data_dict.get('user')
+            if not user_data_str:
+                 raise HTTPException(status_code=400, detail="Missing user data in initData")
+            user_data = json.loads(user_data_str)
+            if 'start_param' in data_dict:
+                user_data['start_param'] = data_dict['start_param']
+            return user_data
+        else:
+            # Web Widget data is flat, normalize it to match TMA format
+            # Convert 'id' to int since it comes as string in query params
+            user_id = data_dict.get('id')
+            if not user_id:
+                 raise HTTPException(status_code=400, detail="Missing id in widget data")
+                 
+            user_data = {
+                'id': int(user_id),
+                'first_name': data_dict.get('first_name', ''),
+                'last_name': data_dict.get('last_name'),
+                'username': data_dict.get('username'),
+                'photo_url': data_dict.get('photo_url')
+            }
+            return user_data
 
     except HTTPException:
         raise
@@ -84,7 +107,7 @@ def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_
 
 def parse_init_data_unverified(init_data: str) -> dict:
     """
-    Parses Telegram WebApp initData string without validating the signature.
+    Parses Telegram WebApp initData string or Telegram Login Widget string without validating the signature.
     Useful for local dev testing with real Telegram accounts when bot token is not configured.
     """
     if not init_data:
@@ -96,14 +119,28 @@ def parse_init_data_unverified(init_data: str) -> dict:
                 key, value = part.split('=', 1)
                 data_dict[key] = unquote(value)
         
-        user_data_str = data_dict.get('user')
-        if not user_data_str:
-            return {}
+        is_tma = 'query_id' in data_dict or 'user' in data_dict
         
-        user_data = json.loads(user_data_str)
-        if 'start_param' in data_dict:
-            user_data['start_param'] = data_dict['start_param']
-        return user_data
+        if is_tma:
+            user_data_str = data_dict.get('user')
+            if not user_data_str:
+                return {}
+            
+            user_data = json.loads(user_data_str)
+            if 'start_param' in data_dict:
+                user_data['start_param'] = data_dict['start_param']
+            return user_data
+        else:
+            user_id = data_dict.get('id')
+            if not user_id:
+                return {}
+            return {
+                'id': int(user_id),
+                'first_name': data_dict.get('first_name', ''),
+                'last_name': data_dict.get('last_name'),
+                'username': data_dict.get('username'),
+                'photo_url': data_dict.get('photo_url')
+            }
     except Exception:
         return {}
 

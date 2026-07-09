@@ -74,7 +74,7 @@ export default function WalletPage() {
 
   return (
     <LayoutWrapper className="justify-start pt-6 pb-32">
-      <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-6">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-6">
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">

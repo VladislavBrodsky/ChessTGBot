@@ -442,5 +442,14 @@
     "commission_earned": "+{amount} USDT の手数料を受け取りました！",
     "referral_toast_single_line": "{username} が勝利: +{amount} USDT",
     "referral_toast_rich": "紹介の <gold>{username}</gold> が勝利！<green>+{amount} USDT</green> の報酬を獲得"
+  },
+  "Login": {
+    "secure_web_portal": "安全なWebポータル",
+    "web3chess": "Web3Chess",
+    "premium_desc": "プレミアムな分散型チェス。公式のTelegramセキュアウィジェット経由でログインしてアカウントにアクセスします。",
+    "secure_auth": "Telegramによる安全な承認",
+    "play_on_mobile": "モバイルでプレイ",
+    "scan_qr": "スマートフォンのカメラでこのQRコードをスキャンして、Telegramミニアプリをすぐに開きます。",
+    "open_in_telegram": "Telegramで開く →"
   }
 }

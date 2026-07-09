@@ -447,5 +447,14 @@
     "commission_earned": "Получена комиссия +{amount} USDT!",
     "referral_toast_single_line": "{username} выиграл: +{amount} USDT",
     "referral_toast_rich": "Реферал <gold>{username}</gold> выиграл! Получено <green>+{amount} USDT</green> комиссии"
+  },
+  "Login": {
+    "secure_web_portal": "Защищенный веб-портал",
+    "web3chess": "Web3Chess",
+    "premium_desc": "Премиальные децентрализованные шахматы. Войдите через официальный безопасный виджет Telegram для доступа к вашему аккаунту.",
+    "secure_auth": "Безопасная авторизация через Telegram",
+    "play_on_mobile": "Играть на мобильном",
+    "scan_qr": "Отсканируйте этот QR-код камерой телефона, чтобы мгновенно открыть мини-приложение Telegram.",
+    "open_in_telegram": "Открыть в Telegram →"
   }
 }

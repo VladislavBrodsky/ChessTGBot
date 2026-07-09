@@ -448,5 +448,14 @@
     "commission_earned": "+{amount} USDT Commission received!",
     "referral_toast_single_line": "{username} won: +{amount} USDT",
     "referral_toast_rich": "Referral <gold>{username}</gold> won! <green>+{amount} USDT</green> Commission"
+  },
+  "Login": {
+    "secure_web_portal": "Secure Web Portal",
+    "web3chess": "Web3Chess",
+    "premium_desc": "Premium decentralized chess. Log in via the official Telegram secure widget to access your account.",
+    "secure_auth": "Secure authorization via Telegram",
+    "play_on_mobile": "Play on Mobile",
+    "scan_qr": "Scan this QR code with your phone camera to instantly open the Telegram Mini App.",
+    "open_in_telegram": "Open in Telegram →"
   }
 }

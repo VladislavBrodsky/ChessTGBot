@@ -13,7 +13,7 @@ const getSocketUrl = () => {
         const host = window.location.hostname;
         
         // 1. Hardcoded production fallback
-        if (host === "chesstgbot-frontend-production.up.railway.app") {
+        if (host === "chesstgbot-frontend-production.up.railway.app" || host === "web3chess.online" || host === "www.web3chess.online") {
             return "https://chesstgbot-backend-production.up.railway.app";
         }
 
@@ -33,8 +33,12 @@ export const getSocket = () => {
 
         // Retrieve initData from window.Telegram.WebApp (client-side only)
         let initData = "";
-        if (typeof window !== "undefined" && window.Telegram?.WebApp) {
-            initData = (window.Telegram.WebApp as any).initData;
+        if (typeof window !== "undefined") {
+            if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
+                initData = (window.Telegram.WebApp as any).initData;
+            } else {
+                initData = localStorage.getItem('telegram_web_auth') || "";
+            }
         }
 
         socket = io(url, {
@@ -61,8 +65,14 @@ export const getSocket = () => {
     }
     
     // Dynamically update initData right before returning the socket instance to ensure fresh auth handshake
-    if (socket && typeof window !== "undefined" && window.Telegram?.WebApp) {
-        const freshInitData = (window.Telegram.WebApp as any).initData || "";
+    if (socket && typeof window !== "undefined") {
+        let freshInitData = "";
+        if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
+            freshInitData = (window.Telegram.WebApp as any).initData;
+        } else {
+            freshInitData = localStorage.getItem('telegram_web_auth') || "";
+        }
+        
         if (freshInitData) {
             (socket as any).auth = {
                 ...(socket as any).auth,

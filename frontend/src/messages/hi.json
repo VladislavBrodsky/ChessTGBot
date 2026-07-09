@@ -442,5 +442,14 @@
     "commission_earned": "+{amount} USDT कमीशन प्राप्त हुआ!",
     "referral_toast_single_line": "{username} ने जीता: +{amount} USDT",
     "referral_toast_rich": "रेफ़रल <gold>{username}</gold> ने जीता! <green>+{amount} USDT</green> कमीशन मिला"
+  },
+  "Login": {
+    "secure_web_portal": "सुरक्षित वेब पोर्टल",
+    "web3chess": "Web3Chess",
+    "premium_desc": "प्रीमियम विकेंद्रीकृत शतरंज। अपने खाते तक पहुंचने के लिए आधिकारिक टेलीग्राम सुरक्षित विजेट के माध्यम से लॉग इन करें।",
+    "secure_auth": "टेलीग्राम के माध्यम से सुरक्षित प्राधिकरण",
+    "play_on_mobile": "मोबाइल पर खेलें",
+    "scan_qr": "टेलीग्राम मिनी ऐप को तुरंत खोलने के लिए अपने फोन कैमरे से इस क्यूआर कोड को स्कैन करें।",
+    "open_in_telegram": "टेलीग्राम में खोलें →"
   }
 }

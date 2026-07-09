@@ -2,19 +2,36 @@
 
 import { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function TelegramInit() {
     const { theme } = useTheme();
+    const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-            const tg = window.Telegram.WebApp as any;
+        if (typeof window !== 'undefined') {
+            const isTMA = window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData;
+            const hasWebAuth = localStorage.getItem('telegram_web_auth');
+            
+            // Allow admin or public routes if any, otherwise redirect to login
+            if (!isTMA && !hasWebAuth && pathname && !pathname.includes('/login')) {
+                const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/);
+                const locale = localeMatch ? localeMatch[1] : 'en';
+                const validLocales = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
+                const targetLocale = validLocales.includes(locale) ? locale : 'en';
+                router.replace(`/${targetLocale}/login`);
+                return;
+            }
 
-            // Notify Telegram that the Mini App is ready to be displayed
-            tg.ready();
+            if (isTMA) {
+                const tg = window.Telegram.WebApp as any;
 
-            // Expand the Mini App to the maximum available height
-            tg.expand();
+                // Notify Telegram that the Mini App is ready to be displayed
+                tg.ready();
+
+                // Expand the Mini App to the maximum available height
+                tg.expand();
 
             // Request fullscreen mode if supported (Telegram Bot API 8.0+)
             try {
@@ -44,6 +61,7 @@ export default function TelegramInit() {
             }
 
             console.log('Telegram WebApp Initialized: Expanded & Ready');
+            }
         }
     }, []);
 

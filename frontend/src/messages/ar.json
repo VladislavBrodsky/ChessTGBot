@@ -442,5 +442,14 @@
     "commission_earned": "تم استلام عمولة +{amount} USDT!",
     "referral_toast_single_line": "فاز {username}: +{amount} USDT",
     "referral_toast_rich": "فاز <gold>{username}</gold>! تم استلام عمولة <green>+{amount} USDT</green>"
+  },
+  "Login": {
+    "secure_web_portal": "بوابة ويب آمنة",
+    "web3chess": "Web3Chess",
+    "premium_desc": "شطرنج لامركزي متميز. قم بتسجيل الدخول عبر أداة تيليجرام الرسمية الآمنة للوصول إلى حسابك.",
+    "secure_auth": "تفويض آمن عبر تيليجرام",
+    "play_on_mobile": "العب على الهاتف المحمول",
+    "scan_qr": "امسح رمز الاستجابة السريعة هذا بكاميرا هاتفك لفتح تطبيق تيليجرام المصغر على الفور.",
+    "open_in_telegram": "افتح في تيليجرام ←"
   }
 }

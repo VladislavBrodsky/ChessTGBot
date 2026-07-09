@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
+import AuthGuard from "@/components/AuthGuard";
 
 import { Inter, Roboto_Mono } from 'next/font/google';
 
@@ -85,7 +86,9 @@ export default async function LocaleLayout({
                             <UserProvider>
                                 <Providers>
                                     <TelegramInit />
-                                    {children}
+                                    <AuthGuard>
+                                        {children}
+                                    </AuthGuard>
                                 </Providers>
                             </UserProvider>
                         </NavbarProvider>
