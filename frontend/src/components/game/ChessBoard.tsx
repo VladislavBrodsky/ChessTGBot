@@ -153,6 +153,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
 
     function onDrop({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) {
         if (!targetSquare) return false;
+        if (sourceSquare === targetSquare) return false;
 
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         const game = new Chess(fen === "start" ? START_FEN : fen);
