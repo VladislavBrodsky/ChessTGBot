@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy.future import select
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, or_
 from app.core.database import get_db, get_read_db
 from app.api.v1.deps import get_current_user, get_current_telegram_id
 from app.models.user import User
@@ -431,13 +431,19 @@ async def withdraw_funds(
 
     if settings.PAYOUT_MNEMONIC:
         try:
-            from app.services.payout_service import execute_usdt_payout
+            from app.services.payout_service import execute_usdt_payout, BlockchainBroadcastError
             tx_hash = await execute_usdt_payout(request.address, transfer_amount_cents)
             is_real = True
+        except BlockchainBroadcastError as broadcast_err:
+            # We failed during/after broadcast. It is UNSAFE to refund!
+            # We log it as pending, and the background crawler will verify it.
+            tx_hash = broadcast_err.msg_hash
+            is_real = True
+            logger.warning(f"On-chain payout broadcast failed/timed out: {broadcast_err}. Saving as pending withdrawal.")
         except Exception as payout_err:
-            # Refund balance atomically
+            # Safe to refund: failure occurred before broadcast
             await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
-            logger.error(f"On-chain payout failed: {payout_err}")
+            logger.error(f"On-chain payout failed before broadcast: {payout_err}")
             raise HTTPException(status_code=500, detail=f"On-chain payout transfer failed: {payout_err}")
     else:
         logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
@@ -931,6 +937,9 @@ async def verify_deposit(
             detail="Transaction trace not found. Please wait a few seconds and try again."
         )
 
+    # 3. Resolve the true on-chain transaction/event hash
+    tx_hash = event_data.get("event_id") or message_hash
+
     # Walk through the actions to verify the transaction
     actions = event_data.get("actions", [])
     verified_tx = False
@@ -1026,7 +1035,12 @@ async def verify_deposit(
 
         # Double check replay protection (inside db transaction lock)
         existing_tx_result = await db.execute(
-            select(Transaction).filter(Transaction.reference_id == message_hash)
+            select(Transaction).filter(
+                or_(
+                    Transaction.reference_id == message_hash,
+                    Transaction.reference_id == tx_hash
+                )
+            )
         )
         if existing_tx_result.scalars().first():
             return {
@@ -1050,7 +1064,7 @@ async def verify_deposit(
             amount=credited_amount,
             fee=fee,
             status="completed",
-            reference_id=message_hash
+            reference_id=tx_hash
         )
         db.add(tx_deposit)
 

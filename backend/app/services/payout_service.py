@@ -8,6 +8,11 @@ from tonsdk.utils import Address
 
 logger = logging.getLogger(__name__)
 
+class BlockchainBroadcastError(Exception):
+    def __init__(self, message: str, msg_hash: str):
+        super().__init__(message)
+        self.msg_hash = msg_hash
+
 async def execute_usdt_payout(destination_address: str, amount_cents: int) -> str:
     """
     Executes a real on-chain transfer of USDT from the master wallet to the destination_address
@@ -116,7 +121,7 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
                 raise ValueError(f"TonAPI returned status {res_send.status_code}: {res_send.text}")
     except Exception as send_err:
         logger.error(f"Failed to broadcast transaction: {send_err}")
-        raise ValueError(f"Blockchain broadcast failure: {send_err}")
+        raise BlockchainBroadcastError(f"Blockchain broadcast failure: {send_err}", msg_hash)
 
     logger.info(f"USDT payout transaction successfully broadcasted. Message Hash: {msg_hash}")
     return msg_hash

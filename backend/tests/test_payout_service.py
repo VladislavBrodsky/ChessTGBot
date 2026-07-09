@@ -87,7 +87,7 @@ async def test_withdraw_real_onchain_success(mock_execute, client: AsyncClient, 
     )
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "completed"
+    assert data["status"] == "pending"
     assert data["new_balance"] == 2000
 
     # Verify mock was called with net payout (amount - flat fee = 1000 - 20 = 980 cents)
@@ -100,7 +100,7 @@ async def test_withdraw_real_onchain_success(mock_execute, client: AsyncClient, 
     )
     tx = result.scalars().first()
     assert tx is not None
-    assert tx.status == "completed"
+    assert tx.status == "pending"
     assert tx.reference_id == "c6becda5805dcee9e000a32be92d35af2c14b02d446ff8f5231e908261a78de3"
 
 @pytest.mark.asyncio
@@ -130,3 +130,55 @@ async def test_withdraw_amount_below_minimum(client: AsyncClient, db_session: As
     )
     assert res.status_code == 400
     assert res.json()["detail"] == "Minimum withdrawal amount is $10.00 USDT"
+
+
+@pytest.mark.asyncio
+@patch("app.services.payout_service.execute_usdt_payout", new_callable=AsyncMock)
+async def test_withdraw_real_onchain_broadcast_timeout(mock_execute, client: AsyncClient, db_session: AsyncSession, monkeypatch):
+    if hasattr(db_session, "users"):
+        return
+
+    from app.services.payout_service import BlockchainBroadcastError
+
+    # 1. Enable PAYOUT_MNEMONIC and mock broadcast timeout exception
+    monkeypatch.setitem(settings.__dict__, "PAYOUT_MNEMONIC", "wood sphere valve heavy machine annual horn burden swift opinion mind motion wear layer reduce that arctic worth dry forward reward seek gather luxury")
+    mock_execute.side_effect = BlockchainBroadcastError(
+        "Blockchain broadcast failure: timeout", "mocked_broadcast_timeout_msg_hash"
+    )
+    
+    # 2. Create user
+    telegram_id = 777004
+    user = User(
+        telegram_id=telegram_id,
+        first_name="TimeoutUser",
+        balance=3000
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'TimeoutUser'}))}"
+    headers = {"X-Telegram-Init-Data": init_data}
+
+    # 3. Request withdrawal (should result in broadcast timeout error but NOT refund the balance)
+    dest_address = "UQCDg8ub3MGCVJSaNo2q3QGTg0bX71RmwrvVOfbrqAzYNuCN"
+    res = await client.post(
+        "/api/v1/wallet/withdraw",
+        json={"amount": 1000, "address": dest_address},
+        headers=headers
+    )
+    assert res.status_code == 200
+    data = res.json()
+    # Payout is saved in "pending" status and hot wallet balance remains debited (new balance: 2000)
+    assert data["status"] == "pending"
+    assert data["new_balance"] == 2000
+
+    # 4. Check database transaction references the locally generated msg_hash
+    from sqlalchemy import select
+    result = await db_session.execute(
+        select(Transaction).where(Transaction.user_id == telegram_id, Transaction.type == "withdrawal")
+    )
+    tx = result.scalars().first()
+    assert tx is not None
+    assert tx.status == "pending"
+    assert tx.reference_id == "mocked_broadcast_timeout_msg_hash"

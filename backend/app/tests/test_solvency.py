@@ -52,6 +52,21 @@ async def test_reconciled_ledger(db):
     assert s["internal_discrepancy_cents"] == 0
 
 
+async def test_reconciled_ledger_with_reversal(db):
+    db.add_all([_user(1, 100)])  # liabilities = 100
+    db.add_all([
+        _tx(1, "deposit", 1036),
+        _tx(1, "deposit_reversal", -936),
+    ])
+    await db.commit()
+
+    s = await SolvencyService.get_ledger_summary(db)
+    assert s["total_liabilities_cents"] == 100
+    assert s["ledger_user_sum_cents"] == 100
+    assert s["internal_reconciled"] is True
+    assert s["internal_discrepancy_cents"] == 0
+
+
 async def test_discrepancy_detected(db):
     # Balance mutated without a matching ledger row: liabilities 1000, ledger 950.
     db.add_all([_user(1, 1000)])

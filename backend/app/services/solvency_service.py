@@ -42,6 +42,7 @@ USER_BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
     "referral_commission", "subscription_commission",
+    "deposit_reversal", "ledger_adjustment",
 ]
 PLATFORM_REVENUE_TYPES = ["deposit_fee", "game_rake"]
 
