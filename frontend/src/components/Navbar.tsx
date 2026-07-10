@@ -177,7 +177,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 pointerEvents: hide ? 'none' : 'auto',
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
-            className="fixed left-1/2 w-[88%] max-w-[340px] z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-4 py-1.5 rounded-full shadow-premium justify-between"
+            className="fixed left-1/2 w-[90%] max-w-[390px] z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-5 py-2.5 rounded-full shadow-premium justify-between"
         >
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-full" />
@@ -186,13 +186,13 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
-                        <li key={item.href} className="flex-1 max-w-[56px] min-w-[44px]">
+                        <li key={item.href} className="flex-1 max-w-[60px] min-w-[48px]">
                             <Link href={item.href}>
-                                <div className="relative h-9 flex items-center justify-center transition-all duration-300">
+                                <div className="relative h-11 flex items-center justify-center transition-all duration-300">
                                     {isActive && (
-                                        <div className="absolute inset-[1px] bg-brand-bg-opacity-5 rounded-full border border-brand-border-opacity-5 shadow-inner-glow" />
+                                        <div className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-5 shadow-inner-glow" />
                                     )}
-                                    <div className={`text-lg relative z-20 transition-all duration-200 ${
+                                    <div className={`text-xl relative z-20 transition-all duration-200 ${
                                         isActive
                                             ? "text-[var(--text-primary)] scale-110"
                                             : "text-[var(--text-muted)]"
