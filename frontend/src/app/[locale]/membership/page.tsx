@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaCheck } from "react-icons/fa";
-
+import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
 import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
@@ -13,15 +12,21 @@ import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
+import Link from "next/link";
 
-/* ── Ultra-premium SVG icon set ─────────────────────────────────────── */
+const stripEmojis = (str: string): string => {
+  if (!str) return "";
+  return str.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
+};
+
+/* ─── SVG Icons ────────────────────────────────────────────────────────────── */
 const IconBoost = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
   </svg>
 );
 const IconReferral = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <circle cx="9" cy="7" r="3"/>
     <circle cx="18" cy="7" r="2"/>
     <path d="M3 21v-2a5 5 0 0 1 5-5h3"/>
@@ -29,65 +34,51 @@ const IconReferral = () => (
   </svg>
 );
 const IconThemes = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-    <path d="M12 2a5 5 0 0 1 5 5c0 5-5 9-5 9S7 12 7 7a5 5 0 0 1 5-5z"/>
-    <circle cx="12" cy="7" r="2"/>
-    <path d="M8 21h8M10 17h4"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a5 5 0 0 1 4.9 6H7.1A5 5 0 0 1 12 2z"/>
+    <path d="M7.1 8h9.8l1.4 3.5c.4 1 .1 2.1-.7 2.8A4 4 0 0 1 12 15a4 4 0 0 1-5.6-1.2.8.8 0 0 1-.7-2.3z"/>
   </svg>
 );
 const IconAcademy = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <path d="M2 10l10-6 10 6-10 6-10-6z"/>
     <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>
-    <path d="M22 10v6"/>
-    <circle cx="22" cy="17" r="1.5"/>
   </svg>
 );
 const IconWager = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <circle cx="12" cy="12" r="10"/>
     <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
     <path d="M12 18V6"/>
   </svg>
 );
-const IconDiamond = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
-    <path d="M6 3h12l4 6-10 12L2 9z"/>
-    <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
+const IconCrown = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+    <path d="M2 18h20M4 18L2 8l5 4 5-6 5 6 5-4-2 10H4z"/>
   </svg>
 );
 
-const stripEmojis = (str: string): string => {
-  if (!str) return "";
-  return str.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
-};
-
 export default function MembershipPage() {
- const locale = useLocale();
- const tm = useTranslations('Membership');
- const t = useTranslations('Index');
- 
-  // Hide bottom menu explicitly on this page
-  useNavbarHideWhileMounted();
- 
-  const PREMIUM_INFO = {
-    id: 'premium',
-    name: tm('premium'),
-    features: [
-      { icon: <IconBoost />, title: tm('premium_boost'), desc: tm('premium_boost_desc'), gradient: 'from-amber-500 to-orange-600', glow: 'rgba(245,158,11,0.45)' },
-      { icon: <IconReferral />, title: tm('priority_match'), desc: tm('priority_match_desc'), gradient: 'from-emerald-500 to-teal-600', glow: 'rgba(16,185,129,0.45)' },
-      { icon: <IconWager />, title: "💸 Higher Wagers", desc: "Unlock premium max-stakes and high-roller tables for massive payouts.", gradient: 'from-rose-500 to-red-600', glow: 'rgba(244,63,94,0.45)' },
-      { icon: <IconThemes />, title: tm('elite_skins'), desc: tm('elite_skins_desc'), gradient: 'from-sky-500 to-blue-600', glow: 'rgba(14,165,233,0.45)' },
-      { icon: <IconAcademy />, title: tm('engine_analysis'), desc: tm('engine_analysis_desc'), gradient: 'from-purple-500 to-violet-600', glow: 'rgba(139,92,246,0.45)' },
-    ],
-    monthly: 2900,
-    annual: 29580,
-  };
-
- 
-  const { walletBalance, walletAddress, syncBalance, stats, syncStats } = useUser();
+  const locale = useLocale();
+  const tm = useTranslations('Membership');
   const tw = useTranslations('Wallet');
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual'); // Default to annual for better conversion
+
+  useNavbarHideWhileMounted();
+
+  const FEATURES = [
+    { icon: <IconBoost />,    title: tm('premium_boost'),   desc: tm('premium_boost_desc')   },
+    { icon: <IconReferral />, title: tm('priority_match'),  desc: tm('priority_match_desc')  },
+    { icon: <IconWager />,    title: "Higher Wagers",        desc: "Unlock premium max-stakes and high-roller tables."        },
+    { icon: <IconThemes />,   title: tm('elite_skins'),     desc: tm('elite_skins_desc')     },
+    { icon: <IconAcademy />,  title: tm('engine_analysis'), desc: tm('engine_analysis_desc') },
+  ];
+
+  const MONTHLY_CENTS = 2900;
+  const ANNUAL_CENTS  = 29580;
+
+  const { walletBalance, walletAddress, syncBalance, stats, syncStats } = useUser();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
   const [tgUser, setTgUser] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -97,23 +88,14 @@ export default function MembershipPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
 
-  const getButtonText = () => {
-    if (submitting) return tm('processing');
-    if (stats?.is_premium) return tm('extend_subscription');
-    return tm('subscribe');
-  };
- 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
+      if (window.Telegram?.WebApp) setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
     }
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
-    }
-  }, []);
+  const cost = billingPeriod === 'annual' ? ANNUAL_CENTS : MONTHLY_CENTS;
 
   const handleXpUpgrade = async () => {
     const currentXp = stats?.xp || 0;
@@ -122,306 +104,254 @@ export default function MembershipPage() {
       telegramAlert(tm('xp_upgrade_alert', { xp: currentXp }));
       return;
     }
-
-    telegramConfirm(tm('xp_upgrade_confirm', { xp: currentXp }), async (confirmUpgrade) => {
-      if (!confirmUpgrade) return;
-
+    telegramConfirm(tm('xp_upgrade_confirm', { xp: currentXp }), async (ok) => {
+      if (!ok) return;
       try {
-        const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", {
-          method: "POST"
-        });
+        const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", { method: "POST" });
         const data = await res.json();
         if (res.ok && data.status === "success") {
-          telegramHaptic('success');
-          setShowSuccess(true);
-          setShowConfetti(true);
-          syncStats();
+          telegramHaptic('success'); setShowSuccess(true); setShowConfetti(true); syncStats();
         } else {
-          telegramHaptic('error');
-          telegramAlert(data.detail || tm('failed_xp_upgrade'));
+          telegramHaptic('error'); telegramAlert(data.detail || tm('failed_xp_upgrade'));
         }
-      } catch (e) {
-        console.error(e);
-        telegramHaptic('error');
-        telegramAlert(tm('upgrade_failed'));
-      }
+      } catch { telegramHaptic('error'); telegramAlert(tm('upgrade_failed')); }
     });
   };
 
   const handleSubscribe = async () => {
     if (submitting) return;
-
-    const cost = billingPeriod === 'annual' ? PREMIUM_INFO.annual : PREMIUM_INFO.monthly;
-    if (walletBalance < cost) {
-      telegramHaptic('warning');
-      setShowInsufficient(true);
-      return;
-    }
-
+    if (walletBalance < cost) { telegramHaptic('warning'); setShowInsufficient(true); return; }
     setSubmitting(true);
     try {
       const res = await apiFetch("/api/v1/users/subscribe", {
         method: "POST",
-        body: JSON.stringify({
-          tier: 'premium',
-          billing_period: billingPeriod
-        })
+        body: JSON.stringify({ tier: 'premium', billing_period: billingPeriod })
       });
       const data = await res.json();
       if (res.ok && data.status === "success") {
-        telegramHaptic('success');
-        setShowSuccess(true);
-        setShowConfetti(true);
-        syncStats();
-        await syncBalance();
+        telegramHaptic('success'); setShowSuccess(true); setShowConfetti(true);
+        syncStats(); await syncBalance();
       } else {
         telegramHaptic('error');
-        if (data.detail && data.detail.toLowerCase().includes("insufficient balance")) {
-          setShowInsufficient(true);
-        } else {
-          telegramAlert(data.detail || tm('subscription_failed'));
-        }
+        if (data.detail?.toLowerCase().includes("insufficient balance")) setShowInsufficient(true);
+        else telegramAlert(data.detail || tm('upgrade_failed'));
       }
-    } catch (e) {
-      console.error("Subscription failed", e);
-      telegramHaptic('error');
-      telegramAlert(tm('subscription_failed'));
-    } finally {
-      setSubmitting(false);
-    }
+    } catch { telegramHaptic('error'); telegramAlert(tm('upgrade_failed')); }
+    finally { setSubmitting(false); }
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-6 min-h-screen relative">
-      <div className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center mx-auto space-y-6 px-4 relative z-10">
-        
-        {/* Header / Brand */}
+    <LayoutWrapper className="pb-32 pt-6 min-h-screen">
+      <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4">
+
+        {/* ── Back + Hero ─────────────────────────────────────── */}
+        <div className="w-full flex items-center justify-between pt-1">
+          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-primary opacity-40 hover:opacity-80 transition-opacity">
+            <FaArrowLeft className="text-[10px]" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
+          </Link>
+          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-primary opacity-30">Membership</span>
+        </div>
+
+        {/* Hero */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full flex flex-col items-center justify-center text-center pt-2 mb-2"
+          className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
-              <span className="text-3xl">👑</span>
-              <span className="text-3xl font-black tracking-tighter uppercase text-brand-primary">
-                {stripEmojis(tm('title'))}
-              </span>
-              <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-brand-primary text-brand-void tracking-widest">PRO</span>
+          <div className="w-16 h-16 rounded-[22px] bg-brand-primary flex items-center justify-center text-brand-void shadow-[0_8px_32px_rgba(0,0,0,0.18)]">
+            <IconCrown />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-50 mt-3 text-center">
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none">
+              {stripEmojis(tm('title'))}
+            </h1>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-primary opacity-40 mt-2">
               {tm('subtitle')}
-          </p>
+            </p>
+          </div>
         </motion.div>
 
-        {/* Active Subscription Badge */}
+        {/* ── Active membership badge ──────────────────────────── */}
         {stats?.is_premium && stats.premium_expires_at && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-3xl p-5 shadow-sm"
+            className="w-full bg-brand-surface border border-brand-border-opacity-10 rounded-[20px] p-4 flex items-center gap-3 shadow-sm"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-brand-primary flex items-center justify-center text-brand-void">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                  <path d="M2 18h20M4 18L2 8l5 4 5-6 5 6 5-4-2 10"/>
-                </svg>
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">Active Membership</span>
-                </div>
-                <div className="text-xs font-bold text-brand-primary">
-                  Expires: {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
-                </div>
-              </div>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-50">Active Membership</span>
+              <span className="text-xs font-bold text-brand-primary">
+                Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
             </div>
           </motion.div>
         )}
 
-        {/* Minimalist Feature Cards */}
-        <div className="w-full flex flex-col space-y-3 mt-2">
-          {PREMIUM_INFO.features.map((feature, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] p-4 flex items-center gap-4"
+        {/* ── Pricing toggle ───────────────────────────────────── */}
+        <div className="w-full flex bg-brand-surface border border-brand-border-opacity-10 rounded-[16px] p-1">
+          {(['monthly', 'annual'] as const).map((period) => (
+            <button
+              key={period}
+              onClick={() => { telegramHaptic('light'); setBillingPeriod(period); }}
+              className={`flex-1 py-2.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest transition-all ${
+                billingPeriod === period
+                  ? 'bg-brand-primary text-brand-void shadow-sm'
+                  : 'text-brand-primary opacity-40 hover:opacity-70'
+              }`}
             >
-              <div className="w-12 h-12 shrink-0 rounded-2xl bg-brand-primary/5 flex items-center justify-center text-brand-primary">
-                {feature.icon}
+              {period === 'annual' ? `${tm('annual')} — Save 15%` : tm('monthly')}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Price display ────────────────────────────────────── */}
+        <motion.div
+          key={billingPeriod}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] p-6 flex flex-col items-center text-center shadow-sm"
+        >
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-primary opacity-30 mb-3">
+            {billingPeriod === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
+          </span>
+          <div className="flex items-end gap-1.5 leading-none">
+            <span className="text-5xl font-black tracking-tighter text-brand-primary">
+              ${(cost / 100).toFixed(0)}
+            </span>
+            <span className="text-lg font-black text-brand-primary opacity-30 mb-1">
+              .{String(cost % 100).padStart(2, '0')}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-primary opacity-40 mt-2">
+            {billingPeriod === 'annual' ? tm('per_annum') : tm('per_month')}
+          </span>
+          {billingPeriod === 'annual' && (
+            <div className="mt-3 px-3 py-1 rounded-full bg-brand-primary/10 text-[9px] font-black uppercase tracking-widest text-brand-primary">
+              {tm('discount')}
+            </div>
+          )}
+        </motion.div>
+
+        {/* ── Features list ────────────────────────────────────── */}
+        <div className="w-full flex flex-col space-y-2.5">
+          {FEATURES.map((f, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className="flex items-center gap-3 px-4 py-3.5 bg-brand-surface border border-brand-border-opacity-10 rounded-[18px]"
+            >
+              <div className="w-9 h-9 rounded-[12px] bg-brand-primary/8 flex items-center justify-center text-brand-primary shrink-0">
+                {f.icon}
               </div>
-              <div className="flex flex-col">
-                <span className="text-[11px] font-black uppercase tracking-widest text-brand-primary mb-0.5">
-                  {stripEmojis(feature.title)}
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-none mb-0.5">
+                  {stripEmojis(f.title)}
                 </span>
-                <span className="text-[10px] text-brand-primary opacity-50 font-medium leading-snug">
-                  {stripEmojis(feature.desc)}
+                <span className="text-[10px] text-brand-primary opacity-45 font-medium leading-snug truncate">
+                  {stripEmojis(f.desc)}
                 </span>
               </div>
+              <FaCheck className="text-brand-primary opacity-60 shrink-0" fontSize={10} />
             </motion.div>
           ))}
         </div>
 
-        {/* Pricing Options */}
-        <div className="w-full grid grid-cols-2 gap-3 mt-4">
-          <button
-            onClick={() => {
-              telegramHaptic('light');
-              setBillingPeriod('monthly');
-            }}
-            className={`p-5 rounded-3xl text-left transition-all flex flex-col justify-between h-36 ${
-              billingPeriod === 'monthly'
-                ? "bg-brand-surface border-2 border-brand-primary text-brand-primary"
-                : "bg-brand-surface/50 border border-brand-border-opacity-10 text-brand-primary opacity-70 hover:opacity-100"
-            }`}
-          >
-            <span className="text-[10px] font-black uppercase tracking-widest">{tm('monthly')}</span>
-            <div>
-              <span className="text-3xl font-black tracking-tighter leading-none">${(PREMIUM_INFO.monthly / 100).toFixed(2)}</span>
-              <span className="text-[9px] font-bold block mt-1 uppercase opacity-50">{tm('per_month')}</span>
-            </div>
-          </button>
+        {/* ── Subscribe CTA ────────────────────────────────────── */}
+        <motion.button
+          whileHover={submitting ? {} : { scale: 1.015 }}
+          whileTap={submitting ? {} : { scale: 0.985 }}
+          onClick={handleSubscribe}
+          disabled={submitting}
+          className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[13px] transition-all flex items-center justify-center shadow-md ${
+            submitting ? 'opacity-60 cursor-not-allowed bg-brand-primary text-brand-void' : 'bg-brand-primary text-brand-void active:opacity-90'
+          }`}
+        >
+          {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+          {submitting ? tm('processing') : stats?.is_premium ? tm('extend_subscription') : tm('subscribe')}
+        </motion.button>
 
-          <button
-            onClick={() => {
-              telegramHaptic('light');
-              setBillingPeriod('annual');
-            }}
-            className={`relative p-5 rounded-3xl text-left transition-all flex flex-col justify-between h-36 ${
-              billingPeriod === 'annual'
-                ? "bg-brand-primary border-2 border-brand-primary text-brand-void shadow-md"
-                : "bg-brand-surface/50 border border-brand-border-opacity-10 text-brand-primary opacity-70 hover:opacity-100"
-            }`}
-          >
-            <div className="absolute top-0 right-0">
-              <div className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-wider rounded-bl-2xl rounded-tr-[22px] ${billingPeriod === 'annual' ? 'bg-brand-void text-brand-primary' : 'bg-brand-primary text-brand-void'}`}>
-                {tm('discount')}
-              </div>
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest">{tm('annual')}</span>
-            <div>
-              <span className="text-3xl font-black tracking-tighter leading-none">${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
-              <span className="text-[9px] font-bold block mt-1 uppercase opacity-70">{tm('per_annum')}</span>
-            </div>
-          </button>
-        </div>
+        {/* ── Compare tiers toggle ─────────────────────────────── */}
+        <button
+          onClick={() => { telegramHaptic('light'); setShowComparison(v => !v); }}
+          className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40 hover:opacity-70 transition-opacity py-1"
+        >
+          {showComparison ? '▴ Hide Comparison' : '▾ Compare Free vs Pro'}
+        </button>
 
-        {/* Subscribe Action */}
-        <div className="w-full pt-4 sticky bottom-4 z-50">
-          <motion.button
-            whileHover={submitting ? {} : { scale: 1.02 }}
-            whileTap={submitting ? {} : { scale: 0.98 }}
-            onClick={handleSubscribe}
-            disabled={submitting}
-            className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-md ${
-              billingPeriod === 'annual' ? "bg-brand-primary text-brand-void" : "bg-brand-surface border border-brand-primary text-brand-primary"
-            } ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
-          >
-            {submitting ? (
-              <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2" />
-            ) : null}
-            {getButtonText()}
-          </motion.button>
-        </div>
-
-        {/* Comparison Trigger */}
-        <div className="w-full flex justify-center pt-2">
-          <button
-            onClick={() => {
-              telegramHaptic('light');
-              setShowComparison(!showComparison);
-            }}
-            className="px-6 py-3 rounded-2xl glass-panel bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100 font-black uppercase text-[9px] tracking-widest transition-all"
-          >
-            {showComparison 
-              ? (tm('hide_comparison') === 'hide_comparison' ? 'Hide Comparison Details ▴' : tm('hide_comparison'))
-              : (tm('compare_tiers') === 'compare_tiers' ? 'Compare Tiers & Features ▾' : tm('compare_tiers'))
-            }
-          </button>
-        </div>
-
-        {/* Tier Comparison Matrix */}
         <AnimatePresence>
           {showComparison && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="w-full overflow-hidden mt-2"
+              className="w-full overflow-hidden"
             >
               <TierComparison />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* XP Upgrade */}
+        {/* ── XP Upgrade (non-premium users only) ─────────────── */}
         {stats && !stats.is_premium && (
-          <div className="w-full pt-4">
-            <div className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 p-6 rounded-[32px] text-center space-y-4 shadow-sm">
-              <div className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-primary opacity-50">{tm('xp_upgrade_badge')}</div>
-              <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">{tm('xp_upgrade_title')}</h3>
-              <p className="text-[10px] text-brand-primary opacity-60 px-2 leading-relaxed">
-                  {tm('xp_upgrade_desc')}
-              </p>
-              <div className="bg-brand-primary/5 rounded-xl py-2.5 border border-brand-border-opacity-5 w-fit px-6 mx-auto text-[10px] font-black uppercase text-brand-primary tracking-widest">
-                  {tm('xp_upgrade_cost', { xp: stats.xp })}
-              </div>
-              <button
-                  onClick={handleXpUpgrade}
-                  className="w-full py-3.5 rounded-2xl bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary text-[11px] font-black uppercase tracking-widest transition-all border border-brand-border-opacity-10"
-              >
-                  {tm('xp_upgrade_btn')}
-              </button>
+          <div className="w-full bg-brand-surface border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40 block">
+              {tm('xp_upgrade_badge')}
+            </span>
+            <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
+              {tm('xp_upgrade_title')}
+            </h3>
+            <p className="text-[10px] text-brand-primary opacity-50 leading-relaxed">
+              {tm('xp_upgrade_desc')}
+            </p>
+            <div className="bg-brand-primary/5 rounded-xl py-2 border border-brand-border-opacity-5 text-[10px] font-black uppercase text-brand-primary tracking-widest">
+              {tm('xp_upgrade_cost', { xp: stats.xp })}
             </div>
+            <button
+              onClick={handleXpUpgrade}
+              className="w-full py-3 rounded-2xl border border-brand-border-opacity-10 bg-transparent text-brand-primary text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary/5 transition-all active:scale-[0.98]"
+            >
+              {tm('xp_upgrade_btn')}
+            </button>
           </div>
         )}
 
-        <p className="w-full text-[9px] text-brand-primary opacity-30 text-center leading-[1.6] font-bold uppercase tracking-widest px-4 pb-12 pt-4">
+        <p className="w-full text-[9px] text-brand-primary opacity-25 text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
           {tm('legal')}
         </p>
       </div>
 
+      {/* ── Success modal ────────────────────────────────────────── */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
           >
             {showConfetti && typeof window !== 'undefined' && (
               <Confetti
-                width={windowDimensions.width}
-                height={windowDimensions.height}
-                recycle={false}
-                numberOfPieces={400}
-                gravity={0.15}
+                width={windowDimensions.width} height={windowDimensions.height}
+                recycle={false} numberOfPieces={300} gravity={0.2}
                 onConfettiComplete={() => setShowConfetti(false)}
               />
             )}
             <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              initial={{ scale: 0.92, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-6"
+              exit={{ scale: 0.92, y: 20, opacity: 0 }}
+              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[24px] bg-brand-primary flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10 text-brand-void">
-                  <path d="M12 2v3M10.5 3.5h3" />
-                  <path d="M9 8.5c1.2-1.5 2.8-1.5 4 0" />
-                  <path d="M7 10h10v1.5c0 1.2-1.5 2-3 2H10c-1.5 0-3-.8-3-2V10z" />
-                  <path d="M9.5 13.5v2.5h5v-2.5" />
-                  <path d="M8 17.5h8" />
-                  <path d="M6.5 20.5h11" />
-                </svg>
+              <div className="w-20 h-20 rounded-[24px] bg-brand-primary flex items-center justify-center text-brand-void shadow-lg">
+                <IconCrown />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('success_title'))}</h2>
-                <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
+                <p className="text-[10px] font-bold text-brand-primary opacity-50 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
               </div>
-              <p className="text-[11px] text-brand-primary/60 px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
+              <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
               <button
                 onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}
                 className="w-full py-4 rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
@@ -433,31 +363,35 @@ export default function MembershipPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Insufficient balance modal ───────────────────────────── */}
       <AnimatePresence>
         {showInsufficient && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              initial={{ scale: 0.92, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-6"
+              exit={{ scale: 0.92, y: 20, opacity: 0 }}
+              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[20px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center">
-                <IconDiamond />
+              <div className="w-20 h-20 rounded-[24px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center text-brand-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
+                  <path d="M6 3h12l4 6-10 12L2 9z"/>
+                  <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
+                </svg>
               </div>
-              <h2 className="text-lg font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('insufficient_title'))}</h2>
-              <p className="text-[11px] text-brand-primary/50 px-2 leading-relaxed">
-                {tm('insufficient_desc', { 
-                  cost: ((billingPeriod === 'annual' ? PREMIUM_INFO.annual : PREMIUM_INFO.monthly) / 100).toFixed(2), 
-                  balance: (walletBalance / 100).toFixed(2) 
-                })}
-              </p>
-              <div className="w-full flex flex-col space-y-3 pt-2">
+              <div className="space-y-1.5">
+                <h2 className="text-lg font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('insufficient_title'))}</h2>
+                <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">
+                  {tm('insufficient_desc', {
+                    cost: (cost / 100).toFixed(2),
+                    balance: (walletBalance / 100).toFixed(2)
+                  })}
+                </p>
+              </div>
+              <div className="w-full flex flex-col space-y-2.5">
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); setShowDepositModal(true); }}
                   className="w-full py-4 rounded-2xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
@@ -466,7 +400,7 @@ export default function MembershipPage() {
                 </button>
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); }}
-                  className="w-full py-4 rounded-2xl bg-brand-primary/5 text-brand-primary/60 font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                  className="w-full py-3.5 rounded-2xl bg-brand-primary/5 text-brand-primary opacity-60 font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_cancel_btn')}
                 </button>
@@ -476,6 +410,7 @@ export default function MembershipPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Deposit modal ────────────────────────────────────────── */}
       <AnimatePresence>
         {showDepositModal && (
           <DepositModal
