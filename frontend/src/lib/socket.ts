@@ -45,7 +45,10 @@ export const getSocket = () => {
             transports: ["polling", "websocket"],
             autoConnect: true,
             path: "/socket.io/", // Standard Socket.IO path
-            reconnectionAttempts: 5,
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: Infinity,
             auth: {
                 initData: initData
             },

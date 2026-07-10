@@ -210,7 +210,7 @@ class GameService:
         return state
 
     async def get_game_state(self, game_id: str) -> Optional[GameState]:
-        """Fetch current state from Redis."""
+        """Fetch current state from Redis and dynamically adjust clock time left."""
         state = await self.session_manager.get_game(game_id)
         if not state or state.is_game_over:
             return state
@@ -229,6 +229,8 @@ class GameService:
                     state.result_type = 'timeout'
                     await self.session_manager.save_game(game_id, state)
                     await self.end_game(game_id, state)
+                else:
+                    state.white_time_left = time_left
             else:
                 time_left = max(0.0, state.black_time_left - elapsed)
                 if time_left <= 0.0:
@@ -238,6 +240,8 @@ class GameService:
                     state.result_type = 'timeout'
                     await self.session_manager.save_game(game_id, state)
                     await self.end_game(game_id, state)
+                else:
+                    state.black_time_left = time_left
                     
         return state
 
@@ -287,7 +291,7 @@ class GameService:
 
     async def join_game(self, game_id: str, user_id: int) -> Optional[GameState]:
         """Assign user to White or Black if available."""
-        state = await self.session_manager.get_game(game_id)
+        state = await self.get_game_state(game_id)
         if not state:
             return None
         
