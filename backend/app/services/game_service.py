@@ -149,6 +149,7 @@ class GameService:
         state.white_time_left = float(time_control_seconds)
         state.black_time_left = float(time_control_seconds)
         state.last_move_at = None
+        state.created_at = time.time()
         state.move_history = []
         state.result_type = None
         state.bid_amount = bid_amount

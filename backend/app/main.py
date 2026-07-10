@@ -182,6 +182,11 @@ async def lifespan(app: FastAPI):
     from app.services.withdrawal_crawler import start_withdrawal_crawler
     asyncio.create_task(start_withdrawal_crawler())
 
+    # Start background stale-game sweeper: aborts + refunds matched wager games
+    # that never got a first move (backstop for the ephemeral in-process abort timer).
+    from app.services.stale_game_sweeper import start_stale_game_sweeper
+    asyncio.create_task(start_stale_game_sweeper())
+
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
     # to the bug where level was not recalculated after XP deductions.

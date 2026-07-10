@@ -22,6 +22,7 @@ class GameState(BaseModel):
     white_time_left: float = 600.0
     black_time_left: float = 600.0
     last_move_at: Optional[float] = None
+    created_at: Optional[float] = None  # time.time() at creation; used by the stale-game sweeper
     move_history: List[str] = []
     result_type: Optional[str] = None
     difficulty: Optional[str] = "medium"
