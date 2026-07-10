@@ -83,7 +83,7 @@ class MatchmakerService:
             logger.warning(f"Failed to release lock {key}: {e}")
 
     @staticmethod
-    def _would_collude(user_id: int, ip_hash: Optional[str], referrer_id: Optional[int], candidate: dict) -> bool:
+    def _would_collude(user_id: int, ip_hash: Optional[str], referrer_id: Optional[int], candidate: dict, recent_opponents: Optional[set] = None) -> bool:
         """
         True if `candidate` must NOT be auto-matched with the requesting user because
         they look like the same person / a colluding pair. This is the ranked-
@@ -94,13 +94,16 @@ class MatchmakerService:
             "two accounts, one person" self-match), or
           - there is a direct referral edge between them in either direction (a
             referrer ranked-matching their own referee is the collusion/commission-
-            farming pattern; legit friends can still use the friend invite).
+            farming pattern; legit friends can still use the friend invite), or
+          - candidate is in the requester's recent opponents list (last 5 games).
         Deliberately does NOT block "shared referrer" siblings: a popular referrer
         would otherwise wall thousands of unrelated users off from each other, and
         the platform rake already makes wager transfer between colluders net-negative.
         """
         cand_id = candidate.get('user_id')
         if cand_id == user_id:
+            return True
+        if recent_opponents and cand_id in recent_opponents:
             return True
         cand_ip = candidate.get('ip_hash')
         if ip_hash and cand_ip and cand_ip == ip_hash:
@@ -164,6 +167,19 @@ class MatchmakerService:
         Atomically find and pop a matching opponent and the user from the queue.
         This ensures that no other worker thread or container can match the same opponent.
         """
+        recent_opponents = set()
+        try:
+            from app.core.database import AsyncSessionLocal
+            from app.crud.game_history import get_user_recent_games
+            async with AsyncSessionLocal() as db:
+                games = await get_user_recent_games(db, telegram_id=user_id, limit=5)
+                for g in games:
+                    opp_id = g.black_player_id if g.white_player_id == user_id else g.white_player_id
+                    if opp_id:
+                        recent_opponents.add(opp_id)
+        except Exception as e:
+            logger.warning(f"Matchmaker: failed to fetch recent games for user {user_id}: {e}")
+
         lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
             try:
@@ -209,8 +225,8 @@ class MatchmakerService:
                 
                 for item in queue:
                     # Anti-collusion: never auto-match the same person / a directly
-                    # referral-linked pair (self-match, same IP, referrer<->referee).
-                    if self._would_collude(user_id, ip_hash, referrer_id, item):
+                    # referral-linked pair (self-match, same IP, referrer<->referee, or recent opponent).
+                    if self._would_collude(user_id, ip_hash, referrer_id, item, recent_opponents):
                         continue
 
                     # ELO threshold expands by 10 points per second of wait time, starting at 100
@@ -250,6 +266,19 @@ class MatchmakerService:
         """
         Deprecated: Use try_match_and_pop instead for atomic matching.
         """
+        recent_opponents = set()
+        try:
+            from app.core.database import AsyncSessionLocal
+            from app.crud.game_history import get_user_recent_games
+            async with AsyncSessionLocal() as db:
+                games = await get_user_recent_games(db, telegram_id=exclude_user_id, limit=5)
+                for g in games:
+                    opp_id = g.black_player_id if g.white_player_id == exclude_user_id else g.white_player_id
+                    if opp_id:
+                        recent_opponents.add(opp_id)
+        except Exception as e:
+            logger.warning(f"Matchmaker: failed to fetch recent games for user {exclude_user_id}: {e}")
+
         async with self._lock:
             current_time = time.time()
             queue_key_mem = (bid_amount, time_control)
@@ -270,7 +299,7 @@ class MatchmakerService:
             best_diff = float('inf')
             
             for item in queue:
-                if self._would_collude(exclude_user_id, ip_hash, referrer_id, item):
+                if self._would_collude(exclude_user_id, ip_hash, referrer_id, item, recent_opponents):
                     continue
 
                 # ELO threshold expands by 10 points per second of wait time, starting at 100
