@@ -26,10 +26,10 @@ export default function TierComparison() {
 
    <div className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] overflow-hidden shadow-sm">
    {/* Table Header */}
-   <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-10 bg-brand-primary/5">
+   <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-10 bg-amber-500/5">
    <div className="col-span-4 text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
    <div className="col-span-1 text-center text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
-   <div className="col-span-1 text-center text-[9px] font-black uppercase text-brand-primary tracking-widest">{tc('elite')}</div>
+   <div className="col-span-1 text-center text-[9px] font-black uppercase text-amber-500 tracking-widest">{tc('elite')}</div>
    </div>
 
    {/* Table Rows */}
@@ -40,7 +40,7 @@ export default function TierComparison() {
    initial={{ opacity: 0, y: 5 }}
    animate={{ opacity: 1, y: 0 }}
    transition={{ delay: idx * 0.05 }}
-   className="grid grid-cols-6 p-4 items-center group hover:bg-brand-primary/5 transition-colors"
+   className="grid grid-cols-6 p-4 items-center group hover:bg-amber-500/5 transition-colors"
    >
    <div className="col-span-4 flex items-center gap-3">
    <div className="text-brand-primary opacity-25 group-hover:opacity-60 transition-colors">
@@ -52,14 +52,14 @@ export default function TierComparison() {
    </div>
    <div className="col-span-1 flex justify-center">
    {row.basic ? (
-   <FaCheck className="text-emerald-500 opacity-50" fontSize={10} />
+   <FaCheck className="text-brand-primary opacity-35" fontSize={10} />
    ) : (
    <FaTimes className="text-brand-primary opacity-20" fontSize={10} />
    )}
    </div>
    <div className="col-span-1 flex justify-center">
    {row.premium ? (
-   <FaCheck className="text-brand-primary" fontSize={10} />
+   <FaCheck className="text-amber-500" fontSize={10} />
    ) : (
    <FaTimes className="text-brand-primary opacity-20" fontSize={10} />
    )}
@@ -70,8 +70,8 @@ export default function TierComparison() {
    </div>
 
    {/* Bottom Insight */}
-   <div className="p-4 rounded-2xl bg-brand-primary/5 border border-brand-border-opacity-10 text-center">
-   <p className="text-[9px] font-black text-brand-primary uppercase tracking-widest">
+   <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
+   <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">
    {tc('bottom_insight')}
    </p>
    </div>

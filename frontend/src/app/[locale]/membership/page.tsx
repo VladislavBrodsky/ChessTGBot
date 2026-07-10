@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
+import { FaCheck, FaArrowLeft } from "react-icons/fa";
 import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
@@ -19,14 +19,14 @@ const stripEmojis = (str: string): string => {
   return str.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
 };
 
-/* ─── SVG Icons ────────────────────────────────────────────────────────────── */
+/* ─── Ultra-Premium Gold Themed SVG Icons ─────────────────────────────────── */
 const IconBoost = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
   </svg>
 );
 const IconReferral = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <circle cx="9" cy="7" r="3"/>
     <circle cx="18" cy="7" r="2"/>
     <path d="M3 21v-2a5 5 0 0 1 5-5h3"/>
@@ -34,28 +34,28 @@ const IconReferral = () => (
   </svg>
 );
 const IconThemes = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a5 5 0 0 1 4.9 6H7.1A5 5 0 0 1 12 2z"/>
-    <path d="M7.1 8h9.8l1.4 3.5c.4 1 .1 2.1-.7 2.8A4 4 0 0 1 12 15a4 4 0 0 1-5.6-1.2.8.8 0 0 1-.7-2.3z"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <path d="M12 2a5 5 0 0 1 5 5c0 5-5 9-5 9S7 12 7 7a5 5 0 0 1 5-5z"/>
+    <circle cx="12" cy="7" r="2"/>
   </svg>
 );
 const IconAcademy = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <path d="M2 10l10-6 10 6-10 6-10-6z"/>
     <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>
   </svg>
 );
 const IconWager = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
     <circle cx="12" cy="12" r="10"/>
     <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
     <path d="M12 18V6"/>
   </svg>
 );
 const IconCrown = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-    <path d="M2 18h20M4 18L2 8l5 4 5-6 5 6 5-4-2 10H4z"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-amber-400">
+    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+    <path d="M3 20h18v2H3z"/>
   </svg>
 );
 
@@ -141,32 +141,46 @@ export default function MembershipPage() {
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-6 min-h-screen">
-      <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4">
+    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative overflow-hidden bg-gradient-to-b from-[#140e08] via-brand-void to-brand-void">
+      {/* Background Ambient Radial Glow */}
+      <div 
+        className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[350px] h-[350px] rounded-full pointer-events-none opacity-20 filter blur-[120px]"
+        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.6) 0%, rgba(0,0,0,0) 80%)' }}
+      />
+
+      <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
 
         {/* ── Back + Hero ─────────────────────────────────────── */}
         <div className="w-full flex items-center justify-between pt-1">
-          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-primary opacity-40 hover:opacity-80 transition-opacity">
+          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-primary opacity-40 hover:opacity-85 transition-opacity">
             <FaArrowLeft className="text-[10px]" />
             <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
           </Link>
           <span className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-primary opacity-30">Membership</span>
         </div>
 
-        {/* Hero */}
+        {/* Hero with Gold Accents */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3"
         >
-          <div className="w-16 h-16 rounded-[22px] bg-brand-primary flex items-center justify-center text-brand-void shadow-[0_8px_32px_rgba(0,0,0,0.18)]">
-            <IconCrown />
+          <div className="relative">
+            {/* Soft pulsing glow behind crown */}
+            <motion.div 
+              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 rounded-[22px] bg-amber-500/20 blur-xl pointer-events-none"
+            />
+            <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-[0_8px_32px_rgba(245,158,11,0.25)] border border-amber-300/30">
+              <IconCrown />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none">
+            <h1 className="text-2xl font-black tracking-tighter uppercase bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent leading-none drop-shadow-sm">
               {stripEmojis(tm('title'))}
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-primary opacity-40 mt-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500/70 mt-2">
               {tm('subtitle')}
             </p>
           </div>
@@ -177,11 +191,11 @@ export default function MembershipPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full bg-brand-surface border border-brand-border-opacity-10 rounded-[20px] p-4 flex items-center gap-3 shadow-sm"
+            className="w-full bg-brand-surface/40 backdrop-blur-md border border-amber-500/20 rounded-[20px] p-4 flex items-center gap-3 shadow-md"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-50">Active Membership</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400/80">Active Membership</span>
               <span className="text-xs font-bold text-brand-primary">
                 Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
@@ -189,52 +203,57 @@ export default function MembershipPage() {
           </motion.div>
         )}
 
-        {/* ── Pricing toggle ───────────────────────────────────── */}
-        <div className="w-full flex bg-brand-surface border border-brand-border-opacity-10 rounded-[16px] p-1">
-          {(['monthly', 'annual'] as const).map((period) => (
-            <button
-              key={period}
-              onClick={() => { telegramHaptic('light'); setBillingPeriod(period); }}
-              className={`flex-1 py-2.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest transition-all ${
-                billingPeriod === period
-                  ? 'bg-brand-primary text-brand-void shadow-sm'
-                  : 'text-brand-primary opacity-40 hover:opacity-70'
-              }`}
-            >
-              {period === 'annual' ? `${tm('annual')} — Save 15%` : tm('monthly')}
-            </button>
-          ))}
+        {/* ── Pricing Selector (Cards Side-by-Side) ─────────────── */}
+        <div className="grid grid-cols-2 gap-3 w-full max-[350px]:grid-cols-1">
+          {/* Monthly Card */}
+          <button
+            onClick={() => { telegramHaptic('light'); setBillingPeriod('monthly'); }}
+            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
+              billingPeriod === 'monthly'
+                ? "bg-brand-surface/80 border-amber-500 shadow-[0_4px_20px_rgba(245,158,11,0.1)] text-brand-primary"
+                : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
+            }`}
+          >
+            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">{tm('monthly')}</span>
+            <div>
+              <div className="flex items-end leading-none">
+                <span className="text-2xl font-black tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
+                <span className="text-xs font-black opacity-40 mb-0.5">.00</span>
+              </div>
+              <span className="text-[8px] font-bold block mt-1 uppercase opacity-40">{tm('per_month')}</span>
+            </div>
+          </button>
+
+          {/* Annual Card */}
+          <button
+            onClick={() => { telegramHaptic('light'); setBillingPeriod('annual'); }}
+            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
+              billingPeriod === 'annual'
+                ? "bg-[#20150b]/80 border-amber-500 shadow-[0_4px_20px_rgba(245,158,11,0.15)] text-brand-primary"
+                : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
+            }`}
+          >
+            {/* Savings Badge */}
+            <div className="absolute top-0 right-0">
+              <div className="px-2 py-1 text-[7px] font-black uppercase tracking-wider rounded-bl-xl bg-amber-500 text-brand-void">
+                15% OFF
+              </div>
+            </div>
+
+            <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">{tm('annual')}</span>
+            <div>
+              <div className="flex items-end leading-none">
+                <span className="text-2xl font-black tracking-tighter text-amber-400">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
+                <span className="text-xs font-black text-amber-500/50 mb-0.5">/mo</span>
+              </div>
+              <span className="text-[8px] font-bold block mt-1 uppercase opacity-50 text-amber-500/80">
+                ${(ANNUAL_CENTS / 100).toFixed(0)} billed yearly
+              </span>
+            </div>
+          </button>
         </div>
 
-        {/* ── Price display ────────────────────────────────────── */}
-        <motion.div
-          key={billingPeriod}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] p-6 flex flex-col items-center text-center shadow-sm"
-        >
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-primary opacity-30 mb-3">
-            {billingPeriod === 'annual' ? 'Annual Plan' : 'Monthly Plan'}
-          </span>
-          <div className="flex items-end gap-1.5 leading-none">
-            <span className="text-5xl font-black tracking-tighter text-brand-primary">
-              ${(cost / 100).toFixed(0)}
-            </span>
-            <span className="text-lg font-black text-brand-primary opacity-30 mb-1">
-              .{String(cost % 100).padStart(2, '0')}
-            </span>
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-primary opacity-40 mt-2">
-            {billingPeriod === 'annual' ? tm('per_annum') : tm('per_month')}
-          </span>
-          {billingPeriod === 'annual' && (
-            <div className="mt-3 px-3 py-1 rounded-full bg-brand-primary/10 text-[9px] font-black uppercase tracking-widest text-brand-primary">
-              {tm('discount')}
-            </div>
-          )}
-        </motion.div>
-
-        {/* ── Features list ────────────────────────────────────── */}
+        {/* ── Features list with Gold Accents ──────────────────── */}
         <div className="w-full flex flex-col space-y-2.5">
           {FEATURES.map((f, i) => (
             <motion.div
@@ -242,9 +261,9 @@ export default function MembershipPage() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="flex items-center gap-3 px-4 py-3.5 bg-brand-surface border border-brand-border-opacity-10 rounded-[18px]"
+              className="flex items-center gap-3 px-4 py-3 bg-brand-surface/50 backdrop-blur-sm border border-brand-border-opacity-10 rounded-[18px] hover:border-amber-500/20 transition-all duration-300 group"
             >
-              <div className="w-9 h-9 rounded-[12px] bg-brand-primary/8 flex items-center justify-center text-brand-primary shrink-0">
+              <div className="w-9 h-9 rounded-[12px] bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform duration-300">
                 {f.icon}
               </div>
               <div className="flex flex-col flex-1 min-w-0">
@@ -255,29 +274,33 @@ export default function MembershipPage() {
                   {stripEmojis(f.desc)}
                 </span>
               </div>
-              <FaCheck className="text-brand-primary opacity-60 shrink-0" fontSize={10} />
+              <FaCheck className="text-amber-500/80 shrink-0" fontSize={10} />
             </motion.div>
           ))}
         </div>
 
-        {/* ── Subscribe CTA ────────────────────────────────────── */}
-        <motion.button
-          whileHover={submitting ? {} : { scale: 1.015 }}
-          whileTap={submitting ? {} : { scale: 0.985 }}
-          onClick={handleSubscribe}
-          disabled={submitting}
-          className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[13px] transition-all flex items-center justify-center shadow-md ${
-            submitting ? 'opacity-60 cursor-not-allowed bg-brand-primary text-brand-void' : 'bg-brand-primary text-brand-void active:opacity-90'
-          }`}
-        >
-          {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
-          {submitting ? tm('processing') : stats?.is_premium ? tm('extend_subscription') : tm('subscribe')}
-        </motion.button>
+        {/* ── Subscribe CTA (Glowing Gold Button) ───────────────── */}
+        <div className="w-full pt-1">
+          <motion.button
+            whileHover={submitting ? {} : { scale: 1.015 }}
+            whileTap={submitting ? {} : { scale: 0.985 }}
+            onClick={handleSubscribe}
+            disabled={submitting}
+            className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(245,158,11,0.15)] relative overflow-hidden ${
+              submitting 
+                ? 'opacity-60 cursor-not-allowed bg-amber-500 text-brand-void' 
+                : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-brand-void hover:opacity-95'
+            }`}
+          >
+            {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+            {submitting ? tm('processing') : stats?.is_premium ? tm('extend_subscription') : tm('subscribe')}
+          </motion.button>
+        </div>
 
         {/* ── Compare tiers toggle ─────────────────────────────── */}
         <button
           onClick={() => { telegramHaptic('light'); setShowComparison(v => !v); }}
-          className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40 hover:opacity-70 transition-opacity py-1"
+          className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40 hover:opacity-75 transition-opacity py-1 mt-1"
         >
           {showComparison ? '▴ Hide Comparison' : '▾ Compare Free vs Pro'}
         </button>
@@ -295,10 +318,10 @@ export default function MembershipPage() {
           )}
         </AnimatePresence>
 
-        {/* ── XP Upgrade (non-premium users only) ─────────────── */}
+        {/* ── XP Upgrade (Free Path) ───────────────────────────── */}
         {stats && !stats.is_premium && (
-          <div className="w-full bg-brand-surface border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40 block">
+          <div className="w-full bg-brand-surface/40 backdrop-blur-sm border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 opacity-70 block">
               {tm('xp_upgrade_badge')}
             </span>
             <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
@@ -307,12 +330,12 @@ export default function MembershipPage() {
             <p className="text-[10px] text-brand-primary opacity-50 leading-relaxed">
               {tm('xp_upgrade_desc')}
             </p>
-            <div className="bg-brand-primary/5 rounded-xl py-2 border border-brand-border-opacity-5 text-[10px] font-black uppercase text-brand-primary tracking-widest">
+            <div className="bg-amber-500/10 rounded-xl py-2 border border-amber-500/25 text-[10px] font-black uppercase text-amber-400 tracking-widest max-w-[220px] mx-auto">
               {tm('xp_upgrade_cost', { xp: stats.xp })}
             </div>
             <button
               onClick={handleXpUpgrade}
-              className="w-full py-3 rounded-2xl border border-brand-border-opacity-10 bg-transparent text-brand-primary text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary/5 transition-all active:scale-[0.98]"
+              className="w-full py-3 rounded-2xl border border-amber-500/30 bg-transparent text-amber-400 text-[11px] font-black uppercase tracking-widest hover:bg-amber-500/5 transition-all active:scale-[0.98]"
             >
               {tm('xp_upgrade_btn')}
             </button>
@@ -344,17 +367,17 @@ export default function MembershipPage() {
               exit={{ scale: 0.92, y: 20, opacity: 0 }}
               className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[24px] bg-brand-primary flex items-center justify-center text-brand-void shadow-lg">
+              <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-brand-void shadow-lg border border-amber-300/20">
                 <IconCrown />
               </div>
               <div className="space-y-1.5">
                 <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('success_title'))}</h2>
-                <p className="text-[10px] font-bold text-brand-primary opacity-50 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
+                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
               </div>
               <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
               <button
                 onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}
-                className="w-full py-4 rounded-2xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-brand-void font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
               >
                 {stripEmojis(tm('success_btn'))}
               </button>
@@ -376,7 +399,7 @@ export default function MembershipPage() {
               exit={{ scale: 0.92, y: 20, opacity: 0 }}
               className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[24px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center text-brand-primary">
+              <div className="w-20 h-20 rounded-[24px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center text-amber-500">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
                   <path d="M6 3h12l4 6-10 12L2 9z"/>
                   <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
@@ -394,13 +417,13 @@ export default function MembershipPage() {
               <div className="w-full flex flex-col space-y-2.5">
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); setShowDepositModal(true); }}
-                  className="w-full py-4 rounded-2xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-brand-void text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_topup_btn')}
                 </button>
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); }}
-                  className="w-full py-3.5 rounded-2xl bg-brand-primary/5 text-brand-primary opacity-60 font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                  className="w-full py-3.5 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-60 font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_cancel_btn')}
                 </button>
