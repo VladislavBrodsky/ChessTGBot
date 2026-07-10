@@ -162,11 +162,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       label: t('total_label'),
       icon: <FaUsers />,
       value: loading ? <div className="h-4 w-10 bg-current/20 animate-pulse rounded" /> : totalCount.toString(),
-      colorClass: 'text-purple-500 dark:text-purple-400',
-      borderClass: 'border-purple-500/20 dark:border-purple-500/30',
-      bgClass: 'bg-gradient-to-br from-purple-500/10 to-brand-surface/30',
-      orbClass: 'bg-purple-500/80 shadow-[0_0_8px_#8b5cf6]',
-      iconBoxClass: 'from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.15)] text-purple-500 dark:text-purple-400',
+      colorClass: 'text-brand-gold dark:text-brand-gold',
+      borderClass: 'border-brand-gold/20 dark:border-brand-gold/30',
+      bgClass: 'bg-gradient-to-br from-brand-gold/10 to-brand-surface/30',
+      orbClass: 'bg-brand-gold/80 shadow-[0_0_8px_rgba(251,191,36,0.6)]',
+      iconBoxClass: 'from-brand-gold/20 to-brand-gold/5 border-brand-gold/35 shadow-[0_0_12px_rgba(251,191,36,0.15)] text-brand-gold dark:text-brand-gold',
     },
     {
       id: 'active' as const,
@@ -277,11 +277,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('total_desc_label')}</p>
-                  <p className="text-xl font-black text-purple-500 dark:text-purple-400 leading-none mt-1">{loading ? '…' : totalCount}</p>
+                  <p className="text-xl font-black text-brand-gold leading-none mt-1">{loading ? '…' : totalCount}</p>
                   <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('total_sublabel')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                  <FaUsers className="text-purple-500 dark:text-purple-400 text-lg" />
+                <div className="w-12 h-12 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center">
+                  <FaUsers className="text-brand-gold text-lg" />
                 </div>
               </div>
               <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
@@ -417,7 +417,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         </div>
 
         {/* Styled QR Image Wrapper */}
-        <div className="relative p-2.5 bg-white rounded-3xl border-2 border-purple-500/20 shadow-lg flex items-center justify-center shrink-0 w-44 h-44 transition-transform duration-300 hover:scale-[1.02]">
+        <div className="relative p-2.5 bg-white rounded-3xl border-2 border-brand-gold/25 shadow-lg flex items-center justify-center shrink-0 w-44 h-44 transition-transform duration-300 hover:scale-[1.02]">
           <img 
             src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
             alt="Referral QR Code" 
@@ -425,8 +425,8 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           />
           
           {/* Central logo overlay (Framer Users icon) */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border border-purple-500/25 flex items-center justify-center shadow-md">
-            <div className="w-6 h-6 bg-purple-500/10 rounded-full flex items-center justify-center border border-purple-500/10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border border-brand-gold/25 flex items-center justify-center shadow-md">
+            <div className="w-6 h-6 bg-brand-gold/10 rounded-full flex items-center justify-center border border-brand-gold/10">
               <FaUsers size={11} className="text-purple-600" />
             </div>
           </div>

@@ -64,10 +64,9 @@ export default function SettingsPage() {
 
  {/* Standalone Glowing Premium Card */}
  <Link href={`/${locale}/membership`} className="w-full block mb-6">
- <div className="premium-liquid-border">
- <div className="premium-liquid-content p-4 flex items-center justify-between transition-all cursor-pointer">
+ <div className="w-full glass-panel bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-brand-gold/60 transition-all duration-300 shadow-sm">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 text-sm shadow-[0_0_20px_rgba(168,85,247,0.55)] shrink-0">
+ <div className="w-9 h-9 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center text-brand-gold text-sm shrink-0">
  <svg
    viewBox="0 0 24 24"
    fill="none"
@@ -75,16 +74,12 @@ export default function SettingsPage() {
    strokeWidth="1.8"
    strokeLinecap="round"
    strokeLinejoin="round"
-   className="w-5 h-5 text-purple-400 premium-neon-icon-glow animate-pulse"
+   className="w-5 h-5"
  >
-   {/* Cross on top of king */}
    <path d="M12 2v3M10.5 3.5h3" />
-   {/* King crown head shape */}
    <path d="M9 8.5c1.2-1.5 2.8-1.5 4 0" />
    <path d="M7 10h10v1.5c0 1.2-1.5 2-3 2H10c-1.5 0-3-.8-3-2V10z" />
-   {/* Waist / Body */}
    <path d="M9.5 13.5v2.5h5v-2.5" />
-   {/* Base layers */}
    <path d="M8 17.5h8" />
    <path d="M6.5 20.5h11" />
  </svg>
@@ -92,18 +87,15 @@ export default function SettingsPage() {
  <div className="flex flex-col text-left">
  <span className="text-xs font-black text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
  {t('premium_membership')}
- <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide">PRO</span>
+ <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wide">PRO</span>
  </span>
- <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest leading-none premium-neon-text-glow">
- {/* Only claim "Active" when the user actually has premium — this label
-     previously showed "Premium Status: Active" to everyone. */}
+ <span className="text-[9px] font-bold text-brand-gold uppercase tracking-widest leading-none opacity-80">
  {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
  </span>
  </div>
  </div>
- <div className="w-7 h-7 rounded-full border border-purple-500/30 bg-purple-500/10 flex items-center justify-center opacity-90 shadow-[0_0_12px_rgba(168,85,247,0.25)] shrink-0">
- <FaArrowLeft className="rotate-180 text-[8px] text-purple-300" />
- </div>
+ <div className="w-7 h-7 rounded-full border border-brand-gold/25 bg-brand-gold/10 flex items-center justify-center shrink-0">
+ <FaArrowLeft className="rotate-180 text-[8px] text-brand-gold" />
  </div>
  </div>
  </Link>

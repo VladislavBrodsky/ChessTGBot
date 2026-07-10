@@ -41,9 +41,9 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       title: "XP Progression & Premium",
       subtitle: "Claim Elite Privileges",
       description: "Earn Experience Points (XP) by completing daily tasks and playing matches. Save your XP to upgrade to Premium for free—unlocking 2x rewards multipliers, priority matching, custom 3D themes, and AI-powered game reviews.",
-      icon: <FaCrown className="text-purple-400 text-6xl drop-shadow-[0_0_15px_rgba(192,132,252,0.5)]" />,
-      gradient: "from-purple-600/25 to-pink-500/10",
-      accentColor: "text-purple-400"
+      icon: <FaCrown className="text-brand-gold text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />,
+      gradient: "from-brand-gold/15 to-brand-gold/5",
+      accentColor: "text-brand-gold"
     }
   ];
 
@@ -117,15 +117,12 @@ export default function Onboarding({ onClose }: OnboardingProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center premium-liquid-mesh-container bg-black/80 backdrop-blur-md px-4 modal-backdrop"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4 modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
       aria-describedby="onboarding-desc"
     >
-      <div className="premium-liquid-mesh-blob1" />
-      <div className="premium-liquid-mesh-blob2" />
-      <div className="premium-liquid-mesh-blob3" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -137,7 +134,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         {/* Skip button top right */}
         <button
           onClick={handleComplete}
-          className="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
           title="Skip onboarding"
           aria-label="Skip onboarding"
         >
