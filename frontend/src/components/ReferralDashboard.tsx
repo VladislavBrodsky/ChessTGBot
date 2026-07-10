@@ -123,6 +123,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
+  const [showQr, setShowQr] = useState(false);
   
   const code = userStats?.referral_code || referralCode || '';
   const bot = userStats?.bot_username || botUsername;
@@ -374,70 +375,104 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         </motion.div>
       </AnimatePresence>
 
-      {/* Invite Link block */}
-      <div className="glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface p-4 space-y-3">
-        <div className="flex items-center gap-2 mb-1">
-          <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest flex-1">{t('your_link')}</p>
-          <span className="text-[8px] font-black text-brand-primary opacity-20 uppercase tracking-widest">+50 XP</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex-1 bg-brand-void/40 border border-brand-border-opacity-5 rounded-xl px-3 py-2.5 flex items-center overflow-hidden">
-            <span className="font-mono text-[9px] font-bold text-brand-primary opacity-60 tracking-wider truncate">
-              {inviteLink}
+      {/* Invite Link block - Liquid Premium Styling */}
+      <div className="premium-liquid-border w-full">
+        <div className="premium-liquid-content p-4 space-y-4">
+          
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col">
+              <p className="text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                {t('your_link')}
+                <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wider shadow-[0_0_10px_rgba(251,191,36,0.3)]">VIP</span>
+              </p>
+              <p className="text-[8px] font-bold text-brand-primary/50 uppercase tracking-widest">Share to earn 15%</p>
+            </div>
+            <span className="text-[9px] font-black text-brand-gold/60 uppercase tracking-widest bg-brand-gold/10 px-2 py-1 rounded-full border border-brand-gold/20 shadow-inner">
+              +50 XP
             </span>
           </div>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={handleCopy}
-            className={`shrink-0 rounded-xl px-3 py-2.5 flex items-center gap-1.5 font-black text-[9px] uppercase tracking-wider transition-all
-              ${copied ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400' : 'bg-brand-primary/10 border border-brand-border-opacity-10 text-brand-primary'}`}
-          >
-            {copied ? <FaCheck size={10} /> : <FaCopy size={10} />}
-            {copied ? t('copied') : t('copy')}
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={handleShare}
-            className="shrink-0 w-10 h-10 bg-brand-primary text-brand-void rounded-xl flex items-center justify-center shadow-premium"
-          >
-            <FaShareAlt size={12} />
-          </motion.button>
-        </div>
-      </div>
 
-      {/* Styled Inline QR Code Card */}
-      <div className="glass-panel rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface p-5 flex flex-col items-center text-center space-y-4 shadow-[0_4px_24px_rgba(0,0,0,0.06)] relative overflow-hidden">
-        {/* Ambient neon glow overlays in background */}
-        <div className="absolute -top-20 -left-20 w-44 h-44 rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 w-44 h-44 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
-
-        <div className="space-y-1 relative z-10">
-          <h4 className="text-[12px] font-black text-brand-primary uppercase tracking-tight">FinChess Invite Matrix</h4>
-          <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-widest">Wager • Play • Earn</p>
-        </div>
-
-        {/* Styled QR Image Wrapper */}
-        <div className="relative p-2.5 bg-white rounded-3xl border-2 border-brand-gold/25 shadow-lg flex items-center justify-center shrink-0 w-44 h-44 transition-transform duration-300 hover:scale-[1.02]">
-          <img 
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
-            alt="Referral QR Code" 
-            className="w-full h-full object-contain"
-          />
-          
-          {/* Central logo overlay (Framer Users icon) */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border border-brand-gold/25 flex items-center justify-center shadow-md">
-            <div className="w-6 h-6 bg-brand-gold/10 rounded-full flex items-center justify-center border border-brand-gold/10">
-              <FaUsers size={11} className="text-purple-600" />
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-brand-surface border-2 border-brand-gold/30 rounded-xl px-3 py-3 flex items-center overflow-hidden shadow-inner relative group cursor-pointer transition-all hover:border-brand-gold/50" onClick={handleCopy}>
+              <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <span className="font-mono text-[10px] font-bold text-brand-primary opacity-80 tracking-wider truncate">
+                {inviteLink}
+              </span>
             </div>
-          </div>
-        </div>
+            
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleCopy}
+              className={`shrink-0 rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-wider transition-all shadow-md
+                ${copied ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400' : 'bg-brand-gold text-brand-void hover:bg-brand-gold/90'}`}
+            >
+              {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
+              {copied ? t('copied') : t('copy')}
+            </motion.button>
 
-        <div className="space-y-1 relative z-10">
-          <p className="text-[8.5px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2">
-            Show this code to your friend in person. They can scan it with their phone camera to join your network.
-          </p>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleShare}
+              className="shrink-0 w-11 h-11 bg-brand-surface border-2 border-brand-gold/40 text-brand-gold rounded-xl flex items-center justify-center shadow-md hover:bg-brand-gold/10 transition-colors"
+            >
+              <FaShareAlt size={14} />
+            </motion.button>
+          </div>
+          
+          <button 
+            onClick={() => setShowQr(!showQr)}
+            className="w-full mt-2 py-2.5 rounded-xl border border-brand-gold/20 bg-brand-gold/5 text-[9px] font-bold text-brand-gold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-gold/10 transition-colors"
+          >
+            <FaQrcode size={12} />
+            {showQr ? "Hide QR Code" : "Show QR Code"}
+          </button>
         </div>
       </div>
+
+      {/* Styled Inline QR Code Card - Collapsible */}
+      <AnimatePresence>
+        {showQr && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="glass-panel rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface p-5 flex flex-col items-center text-center space-y-4 shadow-[0_4px_24px_rgba(0,0,0,0.06)] relative overflow-hidden mx-1">
+              
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-gold/5 rounded-full blur-[60px] pointer-events-none" />
+
+              <div className="space-y-1 relative z-10">
+                <h4 className="text-[12px] font-black text-brand-gold uppercase tracking-tight drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">FinChess Invite Matrix</h4>
+                <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-widest">Wager • Play • Earn</p>
+              </div>
+
+              {/* Styled QR Image Wrapper */}
+              <div className="relative p-2.5 bg-white rounded-3xl border-2 border-brand-gold/30 shadow-lg flex items-center justify-center shrink-0 w-48 h-48 transition-transform duration-300 hover:scale-[1.02]">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
+                  alt="Referral QR Code" 
+                  className="w-full h-full object-contain"
+                />
+                
+                {/* Central logo overlay (Framer Users icon) */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-white rounded-full border-2 border-brand-gold/30 flex items-center justify-center shadow-md">
+                  <div className="w-7 h-7 bg-brand-gold/10 rounded-full flex items-center justify-center border border-brand-gold/20">
+                    <FaUsers size={12} className="text-brand-gold" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1 relative z-10">
+                <p className="text-[8.5px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2 max-w-[240px] mx-auto">
+                  Show this code to your friend in person. They can scan it with their phone camera to join your network.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
