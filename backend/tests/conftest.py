@@ -9,6 +9,8 @@ from app.core.config import get_settings
 from app.models.user import User
 
 settings = get_settings()
+settings.TESTING = True
+settings.ENV = "development"
 
 # Use a test database
 TEST_DATABASE_URL = settings.DATABASE_URL + "_test"

@@ -108,9 +108,10 @@ async def connect(sid, environ, auth):
                 user_data = validate_init_data(init_data)
                 user_id = user_data.get('id')
             except Exception as e:
-                # If validation fails but we are on SQLite (dev), use fallback
-                from app.core.database import engine
-                if engine.url.drivername.startswith("sqlite"):
+                # If validation fails but we are in dev/testing, use fallback
+                from app.core.config import get_settings
+                settings = get_settings()
+                if settings.TESTING or settings.ENV == "development":
                     print(f"Dev fallback: InitData validation failed: {e}")
                     from app.core.security import parse_init_data_unverified
                     user_data = parse_init_data_unverified(init_data)
@@ -119,10 +120,11 @@ async def connect(sid, environ, auth):
                     await register_auth_failure(ip_hash)
                     raise e
 
-        # If no user_id found (e.g. testing in desktop browser tab), check if we are in dev (SQLite)
+        # If no user_id found (e.g. testing in desktop browser tab), check if we are in dev/testing
         if not user_id:
-            from app.core.database import engine
-            if engine.url.drivername.startswith("sqlite"):
+            from app.core.config import get_settings
+            settings = get_settings()
+            if settings.TESTING or settings.ENV == "development":
                 user_id = 123456789
                 user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
                 print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")

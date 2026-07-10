@@ -73,9 +73,9 @@ async def get_current_user(
     ip_hash = hash_ip(extract_client_ip_from_request(request))
 
     if not x_telegram_init_data:
-        import sys
-        from app.core.database import engine
-        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.TESTING or settings.ENV == "development":
             user_id = 123456789
             user = await user_crud.get_user_by_telegram_id(db, user_id)
             if not user:
@@ -103,9 +103,9 @@ async def get_current_user(
         telegram_user = validate_init_data(x_telegram_init_data)
         user_id = telegram_user.get("id")
     except Exception as e:
-        import sys
-        from app.core.database import engine
-        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.TESTING or settings.ENV == "development":
             from app.core.security import parse_init_data_unverified
             telegram_user = parse_init_data_unverified(x_telegram_init_data)
             user_id = telegram_user.get("id")
@@ -195,9 +195,9 @@ async def get_current_telegram_id(
     ip_hash = hash_ip(extract_client_ip_from_request(request))
 
     if not x_telegram_init_data:
-        import sys
-        from app.core.database import engine
-        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.TESTING or settings.ENV == "development":
             return 123456789
         await register_auth_failure(ip_hash)
         raise HTTPException(
@@ -212,9 +212,9 @@ async def get_current_telegram_id(
         telegram_user = validate_init_data(x_telegram_init_data)
         user_id = telegram_user.get("id")
     except Exception as e:
-        import sys
-        from app.core.database import engine
-        if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.TESTING or settings.ENV == "development":
             from app.core.security import parse_init_data_unverified
             telegram_user = parse_init_data_unverified(x_telegram_init_data)
             user_id = telegram_user.get("id")

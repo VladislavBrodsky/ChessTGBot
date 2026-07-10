@@ -3,6 +3,9 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 class Settings(BaseSettings):
+    ENV: str = "production"
+    TESTING: bool = False
+    
     PROJECT_NAME: str = "Chess Mini App"
     VERSION: str = "1.6.4"
     API_V1_STR: str = "/api/v1"
@@ -123,10 +126,12 @@ class Settings(BaseSettings):
 def get_settings():
     settings = Settings()
     import sys
-    # If not running in SQLite (development) and not in pytest (testing), enforce production checks
-    is_testing = "pytest" in sys.modules
+    # If not running in development or testing mode, enforce production security checks
+    is_testing = settings.TESTING or "pytest" in sys.modules
+    is_dev = settings.ENV == "development"
     is_sqlite = settings.DATABASE_URL.startswith("sqlite")
-    if not is_testing and not is_sqlite:
+    
+    if not is_testing and not is_dev and not is_sqlite:
         if not settings.SECRET_KEY or settings.SECRET_KEY == "":
             raise ValueError("SECRET_KEY environment variable must be set in production!")
         if not settings.WEBHOOK_SECRET or settings.WEBHOOK_SECRET == "dev_webhook_secret":
