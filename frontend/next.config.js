@@ -14,7 +14,7 @@ const nextConfig = {
     // unchanged.
     reactStrictMode: true,
     transpilePackages: ['react-chessboard'],
-    ...(isStaticExport ? { output: 'export' } : {}),
+    ...(isStaticExport ? { output: 'export' } : { output: 'standalone' }),
     images: {
         unoptimized: true,
     },
