@@ -83,6 +83,7 @@ export default function MembershipPage() {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 400, height: 600 });
   const [submitting, setSubmitting] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   const getButtonText = () => {
     if (submitting) return tm('processing');
@@ -185,18 +186,18 @@ export default function MembershipPage() {
     <div className="premium-liquid-mesh-blob2" />
     <div className="premium-liquid-mesh-blob3" />
 
-    <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center mx-auto space-y-8 px-4 relative z-10">
-      {/* Header / Brand — no back button (Telegram native UI handles that) */}
+    <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center mx-auto space-y-7 px-4 relative z-10">
+      {/* Header / Brand */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full text-center text-xl sm:text-2xl font-black tracking-tighter select-none uppercase premium-neon-text-glow flex items-center justify-center flex-wrap gap-1.5"
       >
-        <span>{tm('title')}</span>
+        <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 bg-clip-text text-transparent">{tm('title')}</span>
         <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.6)] tracking-wide self-center normal-case flex-shrink-0">PRO</span>
       </motion.div>
-      <div className="h-px w-12 bg-purple-500/35 shadow-[0_0_8px_#a855f7]" />
-      <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-2 text-center">{tm('subtitle')}</span>
+      <div className="h-px w-12 bg-purple-500/35 shadow-[0_0_8px_#a855f7] -mt-4" />
+      <span className="text-[8px] font-black uppercase tracking-[0.4em] text-purple-300 premium-neon-text-glow -mt-4 text-center leading-none">{tm('subtitle')}</span>
 
       {/* Active Subscription Expiry Badge */}
       {stats?.is_premium && stats.premium_expires_at && (
@@ -229,63 +230,57 @@ export default function MembershipPage() {
         </motion.div>
       )}
 
-
-      {/* Feature Container */}
-      <div className="w-full premium-liquid-border">
-        <div className="w-full premium-liquid-content p-5 space-y-1">
-          {PREMIUM_INFO.features.map((feature, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.07 }}
+      {/* Features Bento Grid (2x2) */}
+      <div className="w-full grid grid-cols-2 gap-3">
+        {PREMIUM_INFO.features.map((feature, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            className="premium-neon-card p-4.5 rounded-2xl flex flex-col items-start text-left relative overflow-hidden group hover:border-purple-500/40 transition-colors cursor-default"
+            style={{ 
+              background: 'rgba(14, 8, 28, 0.45)',
+              border: '1px solid rgba(168,85,247,0.15)'
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            
+            {/* Gradient icon badge */}
+            <div
+              className={`w-9 h-9 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shrink-0 relative overflow-hidden mb-3.5`}
+              style={{ boxShadow: `0 4px 16px ${feature.glow}, inset 0 1px 1px rgba(255,255,255,0.15)` }}
             >
-              <div className="flex flex-col items-center text-center py-5">
-                {/* Gradient icon badge centered */}
-                <div
-                  className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shrink-0 relative overflow-hidden mb-3.5`}
-                  style={{ boxShadow: `0 6px 24px ${feature.glow}, inset 0 1px 1px rgba(255,255,255,0.18)` }}
-                >
-                  {/* subtle inner shine */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 to-transparent" />
-                  {feature.icon}
-                </div>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+              {feature.icon}
+            </div>
 
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span
-                      className="text-[8px] font-black px-1.5 py-0.5 rounded-md text-white/60 border border-white/10 bg-white/5 tracking-widest leading-none tabular-nums"
-                    >
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-xs font-black text-brand-primary uppercase tracking-widest leading-none">
-                      {stripEmojis(feature.title)}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-medium text-brand-primary/60 tracking-tight leading-relaxed max-w-[250px]">
-                    {stripEmojis(feature.desc)}
-                  </span>
-                </div>
-              </div>
-              {idx < PREMIUM_INFO.features.length - 1 && (
-                <div className="h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
-              )}
-            </motion.div>
-          ))}
-        </div>
+            <div className="flex flex-col space-y-1">
+              <span className="text-[10px] font-black text-white uppercase tracking-wider leading-none">
+                {stripEmojis(feature.title)}
+              </span>
+              <span className="text-[9px] font-medium text-brand-primary/65 leading-relaxed tracking-tight">
+                {stripEmojis(feature.desc)}
+              </span>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
       {/* Pricing Options */}
-      <div className="w-full grid grid-cols-2 gap-3">
+      <div className="w-full grid grid-cols-2 gap-3.5">
         <button
-          onClick={() => setBillingPeriod('monthly')}
+          onClick={() => {
+            telegramHaptic('light');
+            setBillingPeriod('monthly');
+          }}
           className={`p-4 rounded-2xl text-left transition-all border flex flex-col justify-between h-28 relative group overflow-hidden cursor-pointer shadow-sm ${
             billingPeriod === 'monthly'
-              ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 border-purple-400/60 text-white shadow-[0_0_25px_rgba(168,85,247,0.55)] scale-[1.02]"
-              : "bg-brand-surface border-brand-border-opacity-10 text-brand-primary hover:bg-brand-bg-opacity-5"
+              ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 border-purple-400/60 text-white shadow-[0_0_25px_rgba(168,85,247,0.45)] scale-[1.02]"
+              : "bg-white/[0.03] border-white/[0.08] text-brand-primary hover:bg-white/[0.05] hover:border-white/[0.12]"
           }`}
         >
-          <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'monthly' ? "text-white opacity-90 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('monthly')}</span>
+          <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'monthly' ? "text-white opacity-95 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('monthly')}</span>
           <div>
             <span className={`text-2xl font-black tracking-tighter leading-none ${billingPeriod === 'monthly' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.monthly / 100).toFixed(2)}</span>
             <span className={`text-[8px] font-bold block mt-0.5 ${billingPeriod === 'monthly' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_month')}</span>
@@ -293,32 +288,30 @@ export default function MembershipPage() {
         </button>
 
         <button
-          onClick={() => setBillingPeriod('annual')}
+          onClick={() => {
+            telegramHaptic('light');
+            setBillingPeriod('annual');
+          }}
           className={`p-4 rounded-2xl text-left transition-all border flex flex-col justify-between h-28 relative group overflow-hidden cursor-pointer shadow-sm ${
             billingPeriod === 'annual'
-              ? "bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-650 border-purple-400/60 text-white shadow-[0_0_30px_rgba(168,85,247,0.65)] scale-[1.02]"
-              : "bg-brand-surface border-brand-border-opacity-10 text-brand-primary hover:bg-brand-bg-opacity-5"
+              ? "bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-700 border-purple-400/60 text-white shadow-[0_0_30px_rgba(168,85,247,0.55)] scale-[1.02]"
+              : "bg-white/[0.03] border-white/[0.08] text-brand-primary hover:bg-white/[0.05] hover:border-white/[0.12]"
           }`}
         >
-          {/* 15% OFF — ultra eye-catching animated badge */}
-          <motion.div
-            animate={{ scale: [1, 1.06, 1], boxShadow: ['0 0 12px rgba(168,85,247,0.7)', '0 0 24px rgba(168,85,247,1)', '0 0 12px rgba(168,85,247,0.7)'] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-0 right-0 overflow-hidden"
-            style={{ borderRadius: '0 14px 0 14px' }}
-          >
-            <div className="relative px-2.5 py-1 text-[8px] font-black uppercase tracking-tight text-white" style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', minWidth: 72 }}>
+          {/* 15% OFF Badge */}
+          <div className="absolute top-0 right-0 overflow-hidden" style={{ borderRadius: '0 14px 0 14px' }}>
+            <div className="relative px-2.5 py-1 text-[8.5px] font-black uppercase tracking-tight text-white flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', minHeight: 20 }}>
               {/* shimmer */}
               <motion.div
                 animate={{ x: ['-100%', '200%'] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                 className="absolute inset-0 w-1/2 pointer-events-none"
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)' }}
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }}
               />
-              <span className="relative z-10">{tm('discount')}</span>
+              <span className="relative z-10 leading-none">{tm('discount')}</span>
             </div>
-          </motion.div>
-          <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-white opacity-90 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('annual')}</span>
+          </div>
+          <span className={`text-[9px] font-black uppercase tracking-widest ${billingPeriod === 'annual' ? "text-white opacity-95 premium-neon-text-glow" : "text-brand-primary opacity-30"}`}>{tm('annual')}</span>
           <div>
             <span className={`text-2xl font-black tracking-tighter leading-none ${billingPeriod === 'annual' ? "premium-neon-text-glow text-white" : ""}`}>${(PREMIUM_INFO.annual / 100).toFixed(2)}</span>
             <span className={`text-[8px] font-bold block mt-0.5 ${billingPeriod === 'annual' ? "text-white opacity-85" : "text-brand-primary opacity-30"}`}>{tm('per_annum')}</span>
@@ -326,15 +319,13 @@ export default function MembershipPage() {
         </button>
       </div>
 
-      {/* Tier Comparison Matrix */}
-      <TierComparison />
-
       {/* XP Upgrade Protocol */}
       {stats && !stats.is_premium && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full premium-neon-card p-6 rounded-3xl relative overflow-hidden text-center space-y-4 shadow-xl"
+          style={{ border: '1px solid rgba(168,85,247,0.2)' }}
         >
           <div className="text-[9px] font-black uppercase tracking-[0.2em] text-purple-400 premium-neon-text-glow">{tm('xp_upgrade_badge')}</div>
           <h3 className="text-xl font-black text-brand-primary uppercase tracking-tight">{tm('xp_upgrade_title')}</h3>
@@ -361,17 +352,50 @@ export default function MembershipPage() {
         whileTap={submitting ? {} : { scale: 0.98 }}
         onClick={handleSubscribe}
         disabled={submitting}
-        className={`w-full py-6 premium-liquid-button flex items-center justify-center cursor-pointer transition-all ${
+        className={`w-full py-[18px] rounded-2xl premium-liquid-button flex items-center justify-center cursor-pointer transition-all ${
           submitting ? "opacity-60 cursor-not-allowed" : ""
         }`}
       >
         {submitting ? (
           <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin mr-3" />
         ) : null}
-        <span className="text-sm font-black tracking-[0.25em]">
+        <span className="text-xs font-black tracking-[0.25em]">
           {getButtonText()}
         </span>
       </motion.button>
+
+      {/* Collapsible Tier Comparison Accordion Trigger */}
+      <div className="w-full flex justify-center pt-2">
+        <button
+          onClick={() => {
+            telegramHaptic('light');
+            setShowComparison(!showComparison);
+          }}
+          className="px-6 py-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-purple-500/20 text-purple-300 font-black uppercase text-[10px] tracking-widest transition-all cursor-pointer flex items-center gap-2 hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] active:scale-[0.98]"
+        >
+          <span>
+            {showComparison 
+              ? (tm('hide_comparison') === 'hide_comparison' ? 'Hide Comparison Details ▴' : tm('hide_comparison'))
+              : (tm('compare_tiers') === 'compare_tiers' ? 'Compare Tiers & Features ▾' : tm('compare_tiers'))
+            }
+          </span>
+        </button>
+      </div>
+
+      {/* Collapsible Tier Comparison Matrix */}
+      <AnimatePresence>
+        {showComparison && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="w-full overflow-hidden"
+          >
+            <TierComparison />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer Legal */}
       <p className="w-full text-[8px] text-brand-primary opacity-20 text-center leading-[1.6] font-bold uppercase tracking-widest px-4">

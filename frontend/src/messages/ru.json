@@ -389,7 +389,9 @@
     "xp_upgrade_confirm": "Перейти на Премиум, потратив 5 000 XP? (У вас {xp} XP)",
     "upgrade_failed": "Ошибка активации",
     "failed_xp_upgrade": "Не удалось активировать за XP",
-    "subscription_failed": "Ошибка подписки"
+    "subscription_failed": "Ошибка подписки",
+    "compare_tiers": "Сравнить тарифы и функции",
+    "hide_comparison": "Скрыть детали сравнения"
   },
   "TierComparison": {
     "title": "Сравнение возможностей",

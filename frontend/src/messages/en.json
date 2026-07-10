@@ -389,7 +389,9 @@
     "xp_upgrade_confirm": "Upgrade to Premium by spending 5,000 XP? (You have {xp} XP)",
     "upgrade_failed": "Upgrade failed",
     "failed_xp_upgrade": "Failed to upgrade with XP",
-    "subscription_failed": "Subscription failed"
+    "subscription_failed": "Subscription failed",
+    "compare_tiers": "Compare Tiers & Features",
+    "hide_comparison": "Hide Comparison Details"
   },
   "TierComparison": {
     "title": "Features Comparison",
