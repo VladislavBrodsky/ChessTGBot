@@ -1,22 +1,77 @@
-from fastapi import Header, HTTPException, Depends
+import time
+from fastapi import Header, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db, get_read_db
 from app.crud import user as user_crud
 from app.models.user import User
-from app.core.security import validate_init_data
+from app.core.security import validate_init_data, extract_client_ip_from_request, hash_ip
 from typing import Optional
 
 _photo_checked_cache = set()
 
+# ---------------------------------------------------------------------------
+# IP-keyed failed-auth throttle (roadmap 2b)
+#
+# The per-user rate_limit() below cannot guard the auth VALIDATION step itself:
+# it depends on get_current_user, so there is no trusted identity to key on
+# before login. This throttle keys on a salted hash of the client IP and counts
+# ONLY FAILED validations, so legitimate users — even many sharing one NAT /
+# carrier IP — are never throttled, while an attacker spraying forged/guessed
+# initData (brute-force, token-generation, or HMAC-DoS) trips the limit quickly
+# and gets 429s (HTTP) / rejected sockets. Redis-backed with an in-memory
+# fallback, and fail-open on infra errors so a Redis hiccup never blocks auth.
+# ---------------------------------------------------------------------------
+AUTH_FAIL_LIMIT = 20
+AUTH_FAIL_WINDOW = 60  # seconds
+_auth_fail_memory: dict = {}
+
+
+async def auth_ip_is_blocked(ip_hash: Optional[str]) -> bool:
+    if not ip_hash:
+        return False
+    key = f"authfail:{ip_hash}"
+    try:
+        from app.services.session_manager import SessionManager
+        sm = SessionManager()
+        if sm.redis and not sm._use_memory:
+            val = await sm.redis.get(key)
+            return bool(val) and int(val) >= AUTH_FAIL_LIMIT
+    except Exception:
+        pass
+    now = time.time()
+    hist = [t for t in _auth_fail_memory.get(key, []) if now - t < AUTH_FAIL_WINDOW]
+    _auth_fail_memory[key] = hist
+    return len(hist) >= AUTH_FAIL_LIMIT
+
+
+async def register_auth_failure(ip_hash: Optional[str]) -> None:
+    if not ip_hash:
+        return
+    key = f"authfail:{ip_hash}"
+    try:
+        from app.services.session_manager import SessionManager
+        sm = SessionManager()
+        if sm.redis and not sm._use_memory:
+            count = await sm.redis.incr(key)
+            if count == 1:
+                await sm.redis.expire(key, AUTH_FAIL_WINDOW)
+            return
+    except Exception:
+        pass
+    _auth_fail_memory.setdefault(key, []).append(time.time())
+
 async def get_current_user(
+    request: Request,
     x_telegram_init_data: Optional[str] = Header(None, alias="X-Telegram-Init-Data"),
-    # Keep legacy header for backward compat during migration? Or strict fail? 
+    # Keep legacy header for backward compat during migration? Or strict fail?
     # Strict fail is safer for Phase 1.
     db: AsyncSession = Depends(get_db)
 ) -> User:
     """
     Dependency to get the current user by validating the Telegram InitData.
     """
+    ip_hash = hash_ip(extract_client_ip_from_request(request))
+
     if not x_telegram_init_data:
         import sys
         from app.core.database import engine
@@ -31,11 +86,18 @@ async def get_current_user(
                     username="Protagonist"
                 )
             return user
+        # 2b: a bare unauthenticated request is a failed auth attempt.
+        await register_auth_failure(ip_hash)
         raise HTTPException(
             status_code=401,
             detail="X-Telegram-Init-Data header missing"
         )
-    
+
+    # 2b: block IPs with too many recent failed auth attempts before doing the
+    # (relatively expensive) HMAC validation + DB lookup below.
+    if await auth_ip_is_blocked(ip_hash):
+        raise HTTPException(status_code=429, detail="Too many authentication attempts. Please slow down.")
+
     # 1. Validate Signature & Extract Data
     try:
         telegram_user = validate_init_data(x_telegram_init_data)
@@ -51,6 +113,7 @@ async def get_current_user(
                 telegram_user = {"id": 123456789, "first_name": "Protagonist", "username": "Protagonist"}
                 user_id = 123456789
         else:
+            await register_auth_failure(ip_hash)
             raise HTTPException(status_code=401, detail=f"Invalid signature: {str(e)}")
 
     
@@ -123,21 +186,28 @@ async def get_current_user(
 
 
 async def get_current_telegram_id(
+    request: Request,
     x_telegram_init_data: Optional[str] = Header(None, alias="X-Telegram-Init-Data")
 ) -> int:
     """
     Dependency to get the current user's Telegram ID without holding a database session.
     """
+    ip_hash = hash_ip(extract_client_ip_from_request(request))
+
     if not x_telegram_init_data:
         import sys
         from app.core.database import engine
         if engine.url.drivername.startswith("sqlite") or "pytest" in sys.modules:
             return 123456789
+        await register_auth_failure(ip_hash)
         raise HTTPException(
             status_code=401,
             detail="X-Telegram-Init-Data header missing"
         )
-    
+
+    if await auth_ip_is_blocked(ip_hash):
+        raise HTTPException(status_code=429, detail="Too many authentication attempts. Please slow down.")
+
     try:
         telegram_user = validate_init_data(x_telegram_init_data)
         user_id = telegram_user.get("id")
@@ -151,6 +221,7 @@ async def get_current_telegram_id(
             if not user_id:
                 user_id = 123456789
         else:
+            await register_auth_failure(ip_hash)
             raise HTTPException(status_code=401, detail=f"Invalid signature: {str(e)}")
 
     if not user_id:

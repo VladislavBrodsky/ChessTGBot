@@ -42,6 +42,28 @@ def extract_client_ip(environ: dict) -> str | None:
     return None
 
 
+def extract_client_ip_from_request(request) -> str | None:
+    """
+    Best-effort client IP from a Starlette/FastAPI Request. Same rationale as
+    extract_client_ip(): behind the Railway edge proxy the real client is the
+    first hop of X-Forwarded-For; request.client would just be the proxy.
+    """
+    if request is None:
+        return None
+    try:
+        xff = request.headers.get("x-forwarded-for")
+        if xff:
+            first = xff.split(",")[0].strip()
+            if first:
+                return first
+        real_ip = request.headers.get("x-real-ip")
+        if real_ip:
+            return real_ip.strip()
+        return request.client.host if request.client else None
+    except Exception:
+        return None
+
+
 def hash_ip(ip: str | None) -> str | None:
     """
     Salted, one-way hash of a client IP for anti-collusion comparisons. We store

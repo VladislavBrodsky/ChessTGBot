@@ -7,6 +7,7 @@ from app.core.socket import sio
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
 from app.core.security import validate_init_data, extract_client_ip, hash_ip
+from app.api.v1.deps import auth_ip_is_blocked, register_auth_failure
 from app.services.matchmaker import MatchmakerService
 from app.core.database import AsyncSessionLocal
 from app.crud import user as user_crud
@@ -90,7 +91,16 @@ async def connect(sid, environ, auth):
     try:
         user_id = None
         user_data = None
-        
+
+        # Capture a salted hash of the client IP up-front. Used both for the
+        # anti-collusion matchmaking guard (2a) and the failed-auth throttle (2b).
+        ip_hash = hash_ip(extract_client_ip(environ))
+
+        # 2b: reject sockets from IPs with too many recent failed auth attempts.
+        if await auth_ip_is_blocked(ip_hash):
+            print(f"Socket {sid} rejected: too many failed auth attempts from this IP")
+            return False
+
         # Check if we have auth and initData
         if auth and auth.get('initData'):
             init_data = auth.get('initData')
@@ -106,8 +116,9 @@ async def connect(sid, environ, auth):
                     user_data = parse_init_data_unverified(init_data)
                     user_id = user_data.get('id')
                 else:
+                    await register_auth_failure(ip_hash)
                     raise e
-        
+
         # If no user_id found (e.g. testing in desktop browser tab), check if we are in dev (SQLite)
         if not user_id:
             from app.core.database import engine
@@ -116,11 +127,8 @@ async def connect(sid, environ, auth):
                 user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
                 print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")
             else:
+                await register_auth_failure(ip_hash)
                 raise Exception("Unauthorized: initData missing or invalid")
-                
-        # Capture a salted hash of the client IP for anti-collusion matchmaking
-        # (two accounts joining ranked from the same device/network are not matched).
-        ip_hash = hash_ip(extract_client_ip(environ))
 
         # Save user_id to session
         await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data, 'ip_hash': ip_hash})
