@@ -53,8 +53,13 @@ export default async function LocaleLayout({
     // Providing all messages to the client which is the easiest way to get started
     const messages = await getMessages();
 
+    // Right-to-left scripts (Arabic, and any future he/fa/ur) must flip the
+    // document direction, otherwise the translated copy still lays out LTR.
+    const RTL_LOCALES = ['ar'];
+    const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
+
     return (
-        <html lang={locale} suppressHydrationWarning>
+        <html lang={locale} dir={dir} suppressHydrationWarning>
             <head>
                 <script src="https://telegram.org/js/telegram-web-app.js" />
                 <script
