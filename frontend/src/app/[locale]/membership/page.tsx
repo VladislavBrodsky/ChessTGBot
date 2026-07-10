@@ -196,11 +196,11 @@ export default function MembershipPage() {
   };
 
   return (
-  <LayoutWrapper className="pb-8 pt-6 min-h-screen bg-brand-void relative overflow-hidden">
-    {/* Atmospheric Background glow */}
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-purple-600/20 blur-[100px] rounded-full opacity-60 mix-blend-screen" />
-       <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-pink-600/15 blur-[80px] rounded-full opacity-40 mix-blend-screen" />
+  <LayoutWrapper className="pb-8 pt-6 min-h-screen relative">
+    {/* Atmospheric Background glow (Fixed to viewport so it never cuts off during scroll/rubber-banding) */}
+    <div className="fixed inset-0 z-0 pointer-events-none bg-brand-void">
+       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] h-[500px] bg-purple-600/20 blur-[100px] rounded-[100%] opacity-60 mix-blend-screen" />
+       <div className="absolute bottom-[-10%] right-[-20%] w-[120%] h-[400px] bg-pink-600/15 blur-[100px] rounded-[100%] opacity-40 mix-blend-screen" />
     </div>
 
     <div className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center mx-auto space-y-7 px-4 relative z-10 pb-8">
