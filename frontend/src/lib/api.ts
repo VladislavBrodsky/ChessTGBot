@@ -34,6 +34,13 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
 
   const headers = new Headers(options.headers || {});
   headers.set('bypass-tunnel-reminder', 'true');
+  
+  // Generate and set unique request ID for correlation tracking
+  const requestId = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  headers.set('X-Request-ID', requestId);
+
   if (initData) {
     headers.set('X-Telegram-Init-Data', initData);
   }

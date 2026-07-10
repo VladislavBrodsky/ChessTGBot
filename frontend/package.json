@@ -17,6 +17,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@sentry/react": "^10.65.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@ton/core": "^0.63.1",
     "@tonconnect/sdk": "^3.3.1",

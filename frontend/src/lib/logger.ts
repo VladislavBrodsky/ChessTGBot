@@ -1,4 +1,20 @@
 import { apiFetch } from "./api";
+import * as Sentry from "@sentry/react";
+
+// Initialize Sentry client-side if DSN is set
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+if (typeof window !== "undefined" && SENTRY_DSN) {
+  try {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      tracesSampleRate: 1.0,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
+    });
+  } catch (err) {
+    console.error("Failed to initialize Sentry:", err);
+  }
+}
 
 interface LogItem {
   level: "INFO" | "WARNING" | "ERROR";
@@ -83,6 +99,17 @@ export const flushLogs = async () => {
  */
 export const reportClientError = (error: unknown, context?: string) => {
   try {
+    // Report to Sentry
+    if (typeof window !== "undefined" && SENTRY_DSN) {
+      try {
+        Sentry.captureException(error, {
+          extra: { context }
+        });
+      } catch (sentryErr) {
+        console.error("Failed to send error to Sentry:", sentryErr);
+      }
+    }
+
     const err = error as { message?: string; stack?: string } | undefined;
     const name = context ? `[${context}] ` : "";
     const message = err?.message || String(error);

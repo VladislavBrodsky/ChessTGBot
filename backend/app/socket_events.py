@@ -3,6 +3,43 @@ import random
 import logging
 
 logger = logging.getLogger(__name__)
+
+def ws_correlation(event_name: str):
+    def decorator(func):
+        import functools
+        from app.core.logger import request_id_var
+        
+        if asyncio.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def wrapper(sid, *args, **kwargs):
+                game_id_str = ""
+                try:
+                    session = await sio.get_session(sid)
+                    game_id = session.get('game_id')
+                    if game_id:
+                        game_id_str = f":{game_id}"
+                except Exception:
+                    pass
+                
+                req_id = f"ws:{sid}{game_id_str}:{event_name}"
+                token = request_id_var.set(req_id)
+                try:
+                    return await func(sid, *args, **kwargs)
+                finally:
+                    request_id_var.reset(token)
+            return wrapper
+        else:
+            @functools.wraps(func)
+            def wrapper(sid, *args, **kwargs):
+                req_id = f"ws:{sid}:{event_name}"
+                token = request_id_var.set(req_id)
+                try:
+                    return func(sid, *args, **kwargs)
+                finally:
+                    request_id_var.reset(token)
+            return wrapper
+    return decorator
+
 from app.core.socket import sio
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
@@ -84,6 +121,7 @@ async def refund_pending_matchmaking_wager(db, user_id: int):
     return False
 
 @sio.event
+@ws_correlation('connect')
 async def connect(sid, environ, auth):
     """
     Handle connection with auth handshake.
@@ -146,6 +184,7 @@ async def connect(sid, environ, auth):
         return False # Reject connection
 
 @sio.event
+@ws_correlation('disconnect')
 async def disconnect(sid):
     """
     Handle user disconnection: clean up matchmaking queues.
@@ -176,6 +215,7 @@ async def disconnect(sid):
         print(f"Error on socket disconnect: {e}")
 
 @sio.event
+@ws_correlation('join_room')
 async def join_room(sid, data):
     """
     Data expects: {'room': 'game_id'} (user_id inferred from auth)
@@ -411,6 +451,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
         }, room=sid)
 
 @sio.event
+@ws_correlation('join_matchmaking')
 async def join_matchmaking(sid, data):
     """
     Join matchmaking queue for a specific bid tier.
@@ -514,6 +555,7 @@ async def join_matchmaking(sid, data):
         await sio.emit('matchmaking_error', {'message': 'Server matchmaking error.'}, room=sid)
 
 @sio.event
+@ws_correlation('leave_matchmaking')
 async def leave_matchmaking(sid, data):
     """
     Cancel matchmaking and leave the queue.
@@ -531,6 +573,7 @@ async def leave_matchmaking(sid, data):
         print(f"Error leaving matchmaking: {e}")
 
 @sio.event
+@ws_correlation('make_move')
 async def make_move(sid, data):
     """
     Data expects: {'game_id': '...', 'uci': 'e2e4'}
@@ -597,6 +640,7 @@ async def make_move(sid, data):
             await sio.emit('error', {'message': 'Illegal move'}, room=sid)
 
 @sio.event
+@ws_correlation('resign')
 async def resign(sid, data):
     """
     Data expects: {'game_id': '...'}
@@ -612,6 +656,7 @@ async def resign(sid, data):
             await sio.emit('game_state', resigned_state.model_dump(), room=game_id)
 
 @sio.event
+@ws_correlation('abort_game')
 async def abort_game(sid, data):
     """
     Allow the creator to cancel/abort a game before it starts (e.g. while waiting for an opponent)
@@ -632,6 +677,7 @@ async def abort_game(sid, data):
                 await service.end_game(game_id, state)
 
 @sio.event
+@ws_correlation('offer_draw')
 async def offer_draw(sid, data):
     """
     Data expects: {'game_id': '...'}
@@ -655,6 +701,7 @@ async def offer_draw(sid, data):
             await sio.emit('draw_offered', {'game_id': game_id, 'offered_by': user_id}, room=game_id)
 
 @sio.event
+@ws_correlation('accept_draw')
 async def accept_draw(sid, data):
     """
     Data expects: {'game_id': '...'}
@@ -689,6 +736,7 @@ async def accept_draw(sid, data):
                 await sio.emit('game_state', draw_state.model_dump(), room=game_id)
 
 @sio.event
+@ws_correlation('offer_rematch')
 async def offer_rematch(sid, data):
     """
     Data expects: {'game_id': '...', 'double_stakes': bool}
@@ -729,6 +777,7 @@ async def offer_rematch(sid, data):
                 }, room=game_id)
 
 @sio.event
+@ws_correlation('accept_rematch')
 async def accept_rematch(sid, data):
     """
     Data expects: {'game_id': '...'}
