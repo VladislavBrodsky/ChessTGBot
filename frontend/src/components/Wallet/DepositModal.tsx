@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
+import { copyToClipboard } from "@/lib/clipboard";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
@@ -557,10 +558,12 @@ export default function DepositModal({
                   <div className="flex flex-col space-y-1">
                     <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('destination')}</label>
                     <div className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all" onClick={() => {
-                      navigator.clipboard.writeText(masterWallet);
-                      setCopiedWallet(true);
-                      telegramHaptic('light');
-                      setTimeout(() => setCopiedWallet(false), 2000);
+                      copyToClipboard(masterWallet).then((ok) => {
+                        if (!ok) return;
+                        setCopiedWallet(true);
+                        telegramHaptic('light');
+                        setTimeout(() => setCopiedWallet(false), 2000);
+                      });
                     }}>
                       <span className="truncate">{masterWallet}</span>
                       <div className="w-5 h-5 flex items-center justify-center shrink-0 ml-2">
@@ -576,10 +579,12 @@ export default function DepositModal({
                   <div className="flex flex-col space-y-1">
                     <label className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{tw('comment_memo')}</label>
                     <div className="cyber-input w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-[10px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-emerald-500 transition-all" onClick={() => {
-                      navigator.clipboard.writeText(memoComment);
-                      setCopiedMemo(true);
-                      telegramHaptic('light');
-                      setTimeout(() => setCopiedMemo(false), 2000);
+                      copyToClipboard(memoComment).then((ok) => {
+                        if (!ok) return;
+                        setCopiedMemo(true);
+                        telegramHaptic('light');
+                        setTimeout(() => setCopiedMemo(false), 2000);
+                      });
                     }}>
                       <span>{memoComment}</span>
                       <div className="w-5 h-5 flex items-center justify-center shrink-0 ml-2">

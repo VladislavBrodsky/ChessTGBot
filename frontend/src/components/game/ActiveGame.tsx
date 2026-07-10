@@ -19,6 +19,7 @@ import { useNavbarHide } from '@/context/NavbarContext';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
+import { copyToClipboard } from '@/lib/clipboard';
 
 import { Chess } from 'chess.js';
 
@@ -654,14 +655,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const handleCopyInvite = () => {
-    try {
-      navigator.clipboard.writeText(inviteLink);
+    copyToClipboard(inviteLink).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       telegramHaptic('success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.warn("Clipboard copy failed", err);
-    }
+    });
   };
 
   const shareGame = () => {
@@ -680,13 +679,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     }
     
     // Copy to clipboard as backup / confirmation
-    try {
-      navigator.clipboard.writeText(link);
+    copyToClipboard(link).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.warn("Clipboard copy failed", err);
-    }
+    });
   };
 
   const isBotGame = gameState?.black_player_id === -1;

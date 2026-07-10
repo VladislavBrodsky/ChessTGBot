@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaCrown, FaCoins, FaUsers, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import { telegramHaptic } from '@/lib/telegram';
 
 export default function MarketingBanners() {
  const locale = useLocale();
@@ -37,9 +38,7 @@ export default function MarketingBanners() {
  ];
 
  const handleHaptic = () => {
- if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.HapticFeedback) {
- (window as any).Telegram.WebApp.HapticFeedback.impactOccurred('medium');
- }
+ telegramHaptic('medium');
  };
 
  return (

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FaCopy, FaUserPlus, FaCheck } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface ReferralCardProps {
     referralCode?: string;
@@ -41,9 +42,11 @@ export default function ReferralCard({ referralCode, onInteraction }: ReferralCa
     const inviteLink = `https://t.me/${botUsername}/app?startapp=ref_${displayCode}`;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(inviteLink);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        copyToClipboard(inviteLink).then((ok) => {
+            if (!ok) return;
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
         if (onInteraction) {
             onInteraction();
         }

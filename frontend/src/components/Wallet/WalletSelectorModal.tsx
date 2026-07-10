@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface WalletSelectorModalProps {
   onClose: () => void;
@@ -122,9 +123,11 @@ export default function WalletSelectorModal({
 
   const copyAddress = () => {
     if (wallet?.account.address) {
-      navigator.clipboard?.writeText(wallet.account.address);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(wallet.account.address).then((ok) => {
+        if (!ok) return;
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     }
   };
 

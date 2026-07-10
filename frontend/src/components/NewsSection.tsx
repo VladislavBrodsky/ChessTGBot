@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaClock, FaChevronDown } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
+import { telegramHaptic } from '@/lib/telegram';
 
 export default function NewsSection() {
     const t = useTranslations('News');
@@ -31,10 +32,7 @@ export default function NewsSection() {
     const toggleExpand = (id: number) => {
         setExpandedId(expandedId === id ? null : id);
 
-        // Haptic feedback if available (simulated here for consistency)
-        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.HapticFeedback) {
-            (window as any).Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
+        telegramHaptic('light');
     };
 
     return (

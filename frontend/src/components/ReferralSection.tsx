@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUserPlus, FaCopy, FaShareAlt, FaCheck } from 'react-icons/fa';
 import { apiFetch } from '@/lib/api';
+import { telegramHaptic } from '@/lib/telegram';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface ReferralSectionProps {
  referralCode: string;
@@ -27,13 +29,12 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
  const inviteLink = `https://t.me/${botUsername}?start=${referralCode}`;
 
  const handleCopy = () => {
- navigator.clipboard.writeText(inviteLink);
+ copyToClipboard(inviteLink).then((ok) => {
+ if (!ok) return;
  setCopied(true);
  setTimeout(() => setCopied(false), 2000);
-
- if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.HapticFeedback) {
- (window as any).Telegram.WebApp.HapticFeedback.notificationOccurred('success');
- }
+ telegramHaptic('success');
+ });
  };
 
  const handleShare = () => {
@@ -47,9 +48,11 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
       }
     }
     if (!success) {
-      navigator.clipboard.writeText(inviteLink);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(inviteLink).then((ok) => {
+        if (!ok) return;
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     }
   };
 

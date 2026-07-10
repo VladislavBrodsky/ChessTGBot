@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { telegramHaptic } from '@/lib/telegram';
+import { copyToClipboard } from '@/lib/clipboard';
 
 const UsdtLogo = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 200 200" fill="currentColor" className={className} width="1em" height="1em">
@@ -139,12 +141,12 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const inviteLink = `https://t.me/chess_matbot?start=ref_${code}`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.HapticFeedback) {
-      (window as any).Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-    }
+    copyToClipboard(inviteLink).then((ok) => {
+      if (!ok) return;
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      telegramHaptic('success');
+    });
   };
 
   const handleShare = () => {

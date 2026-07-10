@@ -10,6 +10,7 @@ import WalletConnect from '@/components/WalletConnect';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic, telegramAlert } from '@/lib/telegram';
+import { copyToClipboard } from '@/lib/clipboard';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
@@ -194,20 +195,15 @@ export default function PlayLobby() {
       try {
         tgApp.switchInlineQuery(message, ["users", "groups", "channels"]);
         success = true;
-        if (tgApp.HapticFeedback) {
-          try {
-            tgApp.HapticFeedback.impactOccurred('medium');
-          } catch (e) {}
-        }
+        telegramHaptic('medium');
       } catch (err) {
         console.warn("Telegram switchInlineQuery failed", err);
       }
     }
     if (!success) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(message);
-        telegramAlert("Share link copied to clipboard!");
-      }
+      copyToClipboard(message).then((ok) => {
+        if (ok) telegramAlert("Share link copied to clipboard!");
+      });
     }
   };
 

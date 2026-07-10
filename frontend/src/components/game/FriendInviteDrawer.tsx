@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+import { telegramHaptic } from "@/lib/telegram";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface FriendInviteDrawerProps {
   inviteLink: string;
@@ -37,11 +39,7 @@ export default function FriendInviteDrawer({
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       try {
         window.Telegram.WebApp.openTelegramLink(fullUrl);
-        if (window.Telegram.WebApp.HapticFeedback) {
-          try {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-          } catch {}
-        }
+        telegramHaptic('medium');
       } catch (err) {
         console.warn("Telegram openTelegramLink failed", err);
         window.open(fullUrl, '_blank');
@@ -52,14 +50,12 @@ export default function FriendInviteDrawer({
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setCopiedLink(true);
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp?.HapticFeedback) {
-      try {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-      } catch {}
-    }
-    setTimeout(() => setCopiedLink(false), 2000);
+    copyToClipboard(inviteLink).then((ok) => {
+      if (!ok) return;
+      setCopiedLink(true);
+      telegramHaptic('light');
+      setTimeout(() => setCopiedLink(false), 2000);
+    });
   };
 
   return (
