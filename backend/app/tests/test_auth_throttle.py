@@ -13,6 +13,28 @@ import pytest
 
 from app.core import security
 from app.api.v1 import deps
+from app.services.session_manager import SessionManager
+
+
+@pytest.fixture(autouse=True)
+def _force_in_memory_throttle():
+    """Force the throttle's in-memory store for these unit tests.
+
+    Without this the throttle attempts Redis; in a Redis-less CI/test env every
+    op TIMES OUT (~seconds), so the 20 registers span longer than the 60s sliding
+    window (AUTH_FAIL_WINDOW) and the count never reaches the limit — the tests
+    flaked/failed for an environmental reason, not a logic one. Forcing memory
+    mode makes them instant, deterministic, and network-free (as the module
+    docstring intends). The production Redis path is exercised by the live stack.
+    """
+    prev_use_memory = SessionManager._use_memory
+    SessionManager._use_memory = True
+    deps._auth_fail_memory.clear()
+    try:
+        yield
+    finally:
+        SessionManager._use_memory = prev_use_memory
+        deps._auth_fail_memory.clear()
 
 
 class _FakeClient:
