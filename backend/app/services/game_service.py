@@ -18,6 +18,59 @@ from app.crud import user as user_crud
 from app.crud import game_history as game_history_crud
 from app.models.game_history import GameHistory
 from app.models.transaction import Transaction
+import contextlib
+import secrets
+
+_local_game_locks = {}
+
+@contextlib.asynccontextmanager
+async def game_lock(redis_client, game_id: str, use_memory: bool = False):
+    """
+    Acquire a distributed lock in Redis for a specific game_id,
+    falling back to a local process-level lock if Redis is disabled/in-memory.
+    """
+    if use_memory or not redis_client:
+        global _local_game_locks
+        if game_id not in _local_game_locks:
+            _local_game_locks[game_id] = asyncio.Lock()
+        
+        async with _local_game_locks[game_id]:
+            yield
+            return
+
+    lock_key = f"lock:game:{game_id}"
+    token = secrets.token_hex(16)
+    acquired = False
+    retries = 30  # retry for up to 3 seconds
+    
+    try:
+        for _ in range(retries):
+            # Attempt to set the lock key with a 5 second expiry (ex=5, nx=True)
+            res = await redis_client.set(lock_key, token, nx=True, ex=5)
+            if res:
+                acquired = True
+                break
+            await asyncio.sleep(0.1)
+            
+        if not acquired:
+            logger.warning(f"Failed to acquire Redis lock for game {game_id} after retries. Proceeding anyway.")
+            
+        yield
+        
+    finally:
+        if acquired:
+            # Release lock atomically using Lua script
+            lua_release = """
+            if redis.call('get', KEYS[1]) == ARGV[1] then
+                return redis.call('del', KEYS[1])
+            else
+                return 0
+            end
+            """
+            try:
+                await redis_client.eval(lua_release, 1, lock_key, token)
+            except Exception as e:
+                logger.warning(f"Failed to release Redis lock {game_id}: {e}")
 from app.services.telegram_bot import TelegramService
 from app.services.gamification_service import GamificationService, TaskType
 from app.services.referral_commission_service import ReferralCommissionService
@@ -387,59 +440,60 @@ class GameService:
 
     async def make_move(self, game_id: str, uci: str, preloaded_state: Optional[GameState] = None) -> Optional[GameState]:
         """Load state, apply move, save state. Returns new state if valid."""
-        # 1. Load from Redis if not preloaded
-        current_state = preloaded_state or await self.session_manager.get_game(game_id)
-        if not current_state:
+        async with game_lock(self.session_manager.redis, game_id, use_memory=self.session_manager._use_memory):
+            # 1. Load from Redis (always re-fetch inside lock to prevent stale states)
+            current_state = await self.session_manager.get_game(game_id)
+            if not current_state:
+                return None
+
+            # 2. Reconstruct Board
+            board = chess.Board(current_state.fen)
+            engine = GameEngine()
+            engine.board = board # Inject state
+
+            # 3. Validate & Move
+            if engine.make_move(uci):
+                new_state = engine.get_state()
+                
+                # Preserve Players and Configs
+                new_state.white_player_id = current_state.white_player_id
+                new_state.black_player_id = current_state.black_player_id
+                new_state.time_control_seconds = current_state.time_control_seconds
+                new_state.move_history = current_state.move_history + [uci]
+                new_state.bid_amount = getattr(current_state, "bid_amount", 0)
+                new_state.difficulty = current_state.difficulty
+                
+                # Preserve cached player info (names and ELOs)
+                new_state.white_username = current_state.white_username
+                new_state.black_username = current_state.black_username
+                new_state.white_elo = current_state.white_elo
+                new_state.black_elo = current_state.black_elo
+                new_state.white_elo_before = current_state.white_elo_before
+                new_state.white_elo_after = current_state.white_elo_after
+                new_state.black_elo_before = current_state.black_elo_before
+                new_state.black_elo_after = current_state.black_elo_after
+                new_state.payout_amount = current_state.payout_amount
+                new_state.platform_rake = current_state.platform_rake
+                new_state.white_xp_gained = current_state.white_xp_gained
+                new_state.black_xp_gained = current_state.black_xp_gained
+
+                # Update Clocks
+                now = time.time()
+                self._apply_clock_update(current_state, new_state, now)
+                
+                # Since a successful move is applied, cancel the abort timer
+                self.cancel_abort_task(game_id)
+
+                # 4. Save to Redis
+                await self.session_manager.save_game(game_id, new_state)
+                
+                # 5. Handle Game Over in Background
+                if new_state.is_game_over:
+                    asyncio.create_task(self.end_game(game_id, new_state))
+                
+                return new_state
+            
             return None
-
-        # 2. Reconstruct Board
-        board = chess.Board(current_state.fen)
-        engine = GameEngine()
-        engine.board = board # Inject state
-
-        # 3. Validate & Move
-        if engine.make_move(uci):
-            new_state = engine.get_state()
-            
-            # Preserve Players and Configs
-            new_state.white_player_id = current_state.white_player_id
-            new_state.black_player_id = current_state.black_player_id
-            new_state.time_control_seconds = current_state.time_control_seconds
-            new_state.move_history = current_state.move_history + [uci]
-            new_state.bid_amount = getattr(current_state, "bid_amount", 0)
-            new_state.difficulty = current_state.difficulty
-            
-            # Preserve cached player info (names and ELOs)
-            new_state.white_username = current_state.white_username
-            new_state.black_username = current_state.black_username
-            new_state.white_elo = current_state.white_elo
-            new_state.black_elo = current_state.black_elo
-            new_state.white_elo_before = current_state.white_elo_before
-            new_state.white_elo_after = current_state.white_elo_after
-            new_state.black_elo_before = current_state.black_elo_before
-            new_state.black_elo_after = current_state.black_elo_after
-            new_state.payout_amount = current_state.payout_amount
-            new_state.platform_rake = current_state.platform_rake
-            new_state.white_xp_gained = current_state.white_xp_gained
-            new_state.black_xp_gained = current_state.black_xp_gained
-
-            # Update Clocks
-            now = time.time()
-            self._apply_clock_update(current_state, new_state, now)
-            
-            # Since a successful move is applied, cancel the abort timer
-            self.cancel_abort_task(game_id)
-
-            # 4. Save to Redis
-            await self.session_manager.save_game(game_id, new_state)
-            
-            # 5. Handle Game Over in Background
-            if new_state.is_game_over:
-                asyncio.create_task(self.end_game(game_id, new_state))
-            
-            return new_state
-        
-        return None
 
     async def make_bot_move(self, game_id: str) -> Optional[GameState]:
         """Calculates and applies the best move for the bot."""
