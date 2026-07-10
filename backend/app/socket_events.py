@@ -6,11 +6,13 @@ logger = logging.getLogger(__name__)
 from app.core.socket import sio
 from app.services.game_service import GameService
 from app.schemas.game_state import GameState
-from app.core.security import validate_init_data
+from app.core.security import validate_init_data, extract_client_ip, hash_ip
 from app.services.matchmaker import MatchmakerService
 from app.core.database import AsyncSessionLocal
 from app.crud import user as user_crud
 from app.models.transaction import Transaction
+from app.models.user import User
+from app.models.gamification import Referral
 
 from sqlalchemy import select, and_
 
@@ -116,8 +118,12 @@ async def connect(sid, environ, auth):
             else:
                 raise Exception("Unauthorized: initData missing or invalid")
                 
+        # Capture a salted hash of the client IP for anti-collusion matchmaking
+        # (two accounts joining ranked from the same device/network are not matched).
+        ip_hash = hash_ip(extract_client_ip(environ))
+
         # Save user_id to session
-        await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data})
+        await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data, 'ip_hash': ip_hash})
         print(f"Socket {sid} connected as User {user_id}")
         
         # Run self-healing zombie wager routine on socket connect
@@ -350,7 +356,7 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     # Start White's first-move abort timer
     service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
 
-async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int):
+async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int, ip_hash: str = None, referrer_id: int = None):
     """
     Background loop that runs for a matchmaking player when they are not matched immediately.
     Allows ELO thresholds to expand dynamically over time.
@@ -371,7 +377,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
             break
             
         # Try to match
-        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control)
+        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id)
         if opponent:
             logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
             try:
@@ -407,6 +413,8 @@ async def join_matchmaking(sid, data):
             await sio.emit('matchmaking_error', {'message': 'Unauthorized connection'}, room=sid)
             return
 
+        ip_hash = session.get('ip_hash')
+
         bid_amount = int(data.get('bid_amount', 0))
         time_control = int(data.get('time_control', 600))
         if bid_amount < 0:
@@ -414,6 +422,7 @@ async def join_matchmaking(sid, data):
             return
 
         user_elo = 1000
+        referrer_tid = None
         # 1. Verify player balance, check for existing pending queue wager, and deduct wager immediately
         async with AsyncSessionLocal() as db:
             user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
@@ -459,21 +468,36 @@ async def join_matchmaking(sid, data):
             
             user_elo = getattr(user, 'elo', 1000)
 
+            # Resolve the user's direct referrer (telegram_id) for the anti-collusion
+            # guard — a referrer must not be ranked-matched with their own referee.
+            # Referral.*_id columns are DB users.id, so we join back to User for the tid.
+            try:
+                ref_row = await db.execute(
+                    select(User.telegram_id)
+                    .select_from(Referral)
+                    .join(User, User.id == Referral.referrer_id)
+                    .where(Referral.referred_user_id == user.id)
+                    .limit(1)
+                )
+                referrer_tid = ref_row.scalar_one_or_none()
+            except Exception as e:
+                logger.warning(f"Anti-collusion: failed to resolve referrer for user {user_id}: {e}")
+
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
-        await matchmaker.add_to_queue(user_id, bid_amount, sid, elo=user_elo, time_control=time_control)
+        await matchmaker.add_to_queue(user_id, bid_amount, sid, elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
         await sio.emit('matchmaking_status', {
             'status': 'searching',
             'bid_amount': bid_amount
         }, room=sid)
 
         # 3. Find and pop matching opponent atomically
-        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control)
+        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
         if opponent:
             await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
         else:
             # Spawn the background polling task to allow ELO thresholds to expand and match dynamically
-            asyncio.create_task(run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo))
+            asyncio.create_task(run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo, ip_hash=ip_hash, referrer_id=referrer_tid))
 
     except Exception as e:
         print(f"Error joining matchmaking: {e}")

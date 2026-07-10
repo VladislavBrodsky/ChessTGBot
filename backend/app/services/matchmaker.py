@@ -80,7 +80,37 @@ class MatchmakerService:
         except Exception as e:
             logger.warning(f"Failed to release lock {key}: {e}")
 
-    async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600) -> None:
+    @staticmethod
+    def _would_collude(user_id: int, ip_hash: Optional[str], referrer_id: Optional[int], candidate: dict) -> bool:
+        """
+        True if `candidate` must NOT be auto-matched with the requesting user because
+        they look like the same person / a colluding pair. This is the ranked-
+        matchmaking anti-self-match guard (friend-invite games are intentionally
+        exempt — you choose a known opponent there). Skips a candidate when:
+          - it is the same account,
+          - it connected from the same IP (same device/network — the classic
+            "two accounts, one person" self-match), or
+          - there is a direct referral edge between them in either direction (a
+            referrer ranked-matching their own referee is the collusion/commission-
+            farming pattern; legit friends can still use the friend invite).
+        Deliberately does NOT block "shared referrer" siblings: a popular referrer
+        would otherwise wall thousands of unrelated users off from each other, and
+        the platform rake already makes wager transfer between colluders net-negative.
+        """
+        cand_id = candidate.get('user_id')
+        if cand_id == user_id:
+            return True
+        cand_ip = candidate.get('ip_hash')
+        if ip_hash and cand_ip and cand_ip == ip_hash:
+            return True
+        cand_ref = candidate.get('referrer_id')
+        if referrer_id and cand_id == referrer_id:
+            return True  # candidate is the requester's direct referrer
+        if cand_ref and cand_ref == user_id:
+            return True  # requester is the candidate's direct referrer
+        return False
+
+    async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> None:
         """
         Add a user's connection to the matchmaking queue for a specific bid tier and time control.
         Uses distributed lock for multi-instance safety.
@@ -90,13 +120,15 @@ class MatchmakerService:
             try:
                 # Remove player from all other queues first to avoid double matching
                 await self._remove_from_queue_unsafe(user_id)
-                
+
                 player_data = {
                     'user_id': user_id,
                     'sid': sid,
                     'elo': elo,
                     'joined_at': time.time(),
-                    'time_control': time_control
+                    'time_control': time_control,
+                    'ip_hash': ip_hash,
+                    'referrer_id': referrer_id
                 }
 
                 queue_key_mem = (bid_amount, time_control)
@@ -125,7 +157,7 @@ class MatchmakerService:
                 if lock_token:
                     await self._release_distributed_lock("global", lock_token)
 
-    async def try_match_and_pop(self, bid_amount: int, user_id: int, user_elo: int = 1000, time_control: int = 600) -> Optional[dict]:
+    async def try_match_and_pop(self, bid_amount: int, user_id: int, user_elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> Optional[dict]:
         """
         Atomically find and pop a matching opponent and the user from the queue.
         This ensures that no other worker thread or container can match the same opponent.
@@ -174,21 +206,23 @@ class MatchmakerService:
                 best_diff = float('inf')
                 
                 for item in queue:
-                    if item['user_id'] == user_id:
+                    # Anti-collusion: never auto-match the same person / a directly
+                    # referral-linked pair (self-match, same IP, referrer<->referee).
+                    if self._would_collude(user_id, ip_hash, referrer_id, item):
                         continue
-                    
+
                     # ELO threshold expands by 10 points per second of wait time, starting at 100
                     wait_time = current_time - item.get('joined_at', current_time)
                     elo_threshold = 100 + 10 * wait_time
-                    
+
                     opponent_elo = item.get('elo', 1000)
                     elo_diff = abs(user_elo - opponent_elo)
-                    
+
                     if elo_diff <= elo_threshold:
                         if elo_diff < best_diff:
                             best_diff = elo_diff
                             best_opponent = item
-                            
+
                 if best_opponent:
                     # Pop both players from the queue atomically
                     new_queue = [item for item in queue if item['user_id'] not in (user_id, best_opponent['user_id'])]
@@ -210,7 +244,7 @@ class MatchmakerService:
                 if lock_token:
                     await self._release_distributed_lock("global", lock_token)
 
-    async def find_opponent(self, bid_amount: int, exclude_user_id: int, user_elo: int = 1000, time_control: int = 600) -> Optional[dict]:
+    async def find_opponent(self, bid_amount: int, exclude_user_id: int, user_elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> Optional[dict]:
         """
         Deprecated: Use try_match_and_pop instead for atomic matching.
         """
@@ -234,21 +268,21 @@ class MatchmakerService:
             best_diff = float('inf')
             
             for item in queue:
-                if item['user_id'] == exclude_user_id:
+                if self._would_collude(exclude_user_id, ip_hash, referrer_id, item):
                     continue
-                
+
                 # ELO threshold expands by 10 points per second of wait time, starting at 100
                 wait_time = current_time - item.get('joined_at', current_time)
                 elo_threshold = 100 + 10 * wait_time
-                
+
                 opponent_elo = item.get('elo', 1000)
                 elo_diff = abs(user_elo - opponent_elo)
-                
+
                 if elo_diff <= elo_threshold:
                     if elo_diff < best_diff:
                         best_diff = elo_diff
                         best_opponent = item
-                        
+
             return best_opponent
 
     async def remove_from_queue(self, user_id: int) -> None:

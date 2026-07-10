@@ -15,6 +15,46 @@ settings = get_settings()
 INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
 
 
+def extract_client_ip(environ: dict) -> str | None:
+    """
+    Best-effort client IP from a Socket.IO ASGI `environ`. In production the app
+    sits behind the Railway edge proxy, so the real client IP is the first hop of
+    X-Forwarded-For; REMOTE_ADDR / the ASGI client tuple would just be the proxy.
+    """
+    if not environ:
+        return None
+    xff = environ.get("HTTP_X_FORWARDED_FOR")
+    if xff:
+        # "client, proxy1, proxy2" -> client
+        first = xff.split(",")[0].strip()
+        if first:
+            return first
+    real_ip = environ.get("HTTP_X_REAL_IP")
+    if real_ip:
+        return real_ip.strip()
+    remote = environ.get("REMOTE_ADDR")
+    if remote:
+        return remote
+    scope = environ.get("asgi.scope") or {}
+    client = scope.get("client")
+    if client and len(client) >= 1:
+        return client[0]
+    return None
+
+
+def hash_ip(ip: str | None) -> str | None:
+    """
+    Salted, one-way hash of a client IP for anti-collusion comparisons. We store
+    only the hash (never the raw IP) in the transient matchmaking queue so two
+    connections from the same network can be compared for equality without
+    retaining PII. Salted with SECRET_KEY so hashes are not portable/enumerable.
+    """
+    if not ip:
+        return None
+    secret = getattr(settings, "SECRET_KEY", "") or ""
+    return hashlib.sha256(f"{secret}:{ip}".encode("utf-8")).hexdigest()[:32]
+
+
 def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_SECONDS) -> dict:
     """
     Validates the Telegram WebApp initData string or Telegram Login Widget string using HMAC-SHA256
