@@ -820,25 +820,14 @@ function GamesTab() {
 // ─── Broadcasts Tab ───────────────────────────────────────────────────────────
 
 function BroadcastsTab() {
-  const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data, isLoading: loading, mutate: loadBroadcasts } = useSWRFetch('/api/v1/admin/broadcasts?limit=20');
+  const broadcasts: Broadcast[] = data?.broadcasts || [];
+
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
   const [audience, setAudience] = useState('all');
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-
-  const loadBroadcasts = useCallback(async () => {
-    setLoading(true);
-    const res = await apiFetch('/api/v1/admin/broadcasts?limit=20');
-    if (res.ok) {
-      const data = await res.json();
-      setBroadcasts(data.broadcasts);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { loadBroadcasts(); }, [loadBroadcasts]);
 
   const sendBroadcast = async () => {
     if (!message.trim()) { setErrorMsg('Message cannot be empty.'); return; }
@@ -1078,29 +1067,9 @@ function SysCard({ icon, title, status, latency, rows }: {
 }
 
 function SystemTab() {
-  const [data, setData] = useState<SystemStatus | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchStatus = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await apiFetch('/api/v1/admin/system/status');
-      if (res.ok) {
-        setData(await res.json());
-      } else {
-        setError(`Server returned ${res.status}`);
-      }
-    } catch (e) {
-      setError('Network error — could not reach backend');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchStatus(); }, [fetchStatus]);
-
+  const { data, isLoading: loading, mutate: fetchStatus } = useSWRFetch('/api/v1/admin/system/status', {
+    refreshInterval: 60000 
+  });
   const sys = data?.systems;
 
   return (
@@ -1116,7 +1085,7 @@ function SystemTab() {
         <div className="flex items-center gap-3">
           {data && <StatusBadge status={data.overall} />}
           <button
-            onClick={fetchStatus}
+            onClick={() => fetchStatus()}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30 transition-all disabled:opacity-50"
           >
@@ -1124,12 +1093,6 @@ function SystemTab() {
           </button>
         </div>
       </div>
-
-      {error && (
-        <div className="premium-neon-card p-4 border-red-500/30 text-red-400 text-sm flex items-center gap-2">
-          <FaCircleXmark /> {error}
-        </div>
-      )}
 
       {loading && !data && (
         <div className="text-center py-16 text-brand-muted">
@@ -1273,19 +1236,14 @@ function SystemTab() {
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('Dashboard');
-  const [stats, setStats] = useState<Stats | null>(null);
+  const { data: stats, isLoading: loading, error } = useSWRFetch('/api/v1/admin/stats');
   const [accessDenied, setAccessDenied] = useState(false);
-  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    apiFetch('/api/v1/admin/stats').then(async res => {
-      if (res.status === 403) {
-        setAccessDenied(true);
-      } else if (res.ok) {
-        setStats(await res.json());
-      }
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+    if (error && error.status === 403) {
+      setAccessDenied(true);
+    }
+  }, [error]);
 
   if (accessDenied) return <AccessDenied />;
 
