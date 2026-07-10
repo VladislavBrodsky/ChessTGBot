@@ -282,7 +282,7 @@ async def start_solvency_alert_loop():
                     "<i>Note: counts USDT only; the custody wallet may hold other assets. "
                     "Verify reserves and top up the payout wallet if withdrawals are at risk.</i>"
                 )
-                await send_alert_with_redis_rate_limit("solvency_deficit", alert_text)
+                await send_alert_with_redis_rate_limit("solvency_deficit", alert_text, system="treasury")
         except Exception as e:
             logger.error(f"Error in solvency alert loop: {e}", exc_info=True)
 
@@ -325,7 +325,7 @@ async def start_gas_float_alert_loop():
                     "<i>USDT payouts spend ~0.05 TON gas each. Top up the master wallet "
                     "with TON or withdrawals will start failing.</i>"
                 )
-                await send_alert_with_redis_rate_limit("gas_float_low", alert_text)
+                await send_alert_with_redis_rate_limit("gas_float_low", alert_text, system="treasury")
         except Exception as e:
             logger.error(f"Error in gas-float alert loop: {e}", exc_info=True)
 

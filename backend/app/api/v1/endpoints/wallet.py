@@ -408,7 +408,8 @@ async def withdraw_funds(
                 f"• <b>User:</b> {updated_user.first_name} (<code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
                 f"• <b>Destination:</b> <code>{request.address}</code>\n\n"
-                "<i>Approve or reject via /admin/withdrawals. Funds are held (already debited).</i>"
+                "<i>Approve or reject via /admin/withdrawals. Funds are held (already debited).</i>",
+                system="treasury",
             )
         except Exception as alert_err:
             logger.warning(f"Failed to send withdrawal review alert: {alert_err}")

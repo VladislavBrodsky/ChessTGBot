@@ -15,6 +15,45 @@ ADMIN_IDS = settings.admin_telegram_ids
 _sent_alerts_cache = {}
 RATE_LIMIT_SECONDS = 600  # 10 minutes
 
+# ── Named alert systems ──────────────────────────────────────────────────────
+# Every admin alert is attributed to exactly one of these subsystems so the
+# recipient can tell at a glance WHERE the failure lives. Keys are stable
+# identifiers used by callers; values are (emoji, display name, description).
+ALERT_SYSTEMS = {
+    "game_client": ("🎮", "GAME CLIENT", "Next.js Mini App running on the user's device (reported via backend relay)"),
+    "core_api":    ("⚙️", "CORE API",    "FastAPI backend service"),
+    "treasury":    ("💰", "TREASURY",    "Money flows: deposits, withdrawals, ledger, solvency, gas float"),
+    "realtime":    ("🔌", "REALTIME",    "Socket.IO game/matchmaking transport"),
+    "security":    ("🛡️", "SECURITY",   "Auth, rate limiting, anti-abuse"),
+}
+DEFAULT_SYSTEM = "core_api"
+
+# Logger-name prefix → system key. First match wins; anything unmatched is
+# attributed to the Core API. Extend this list when a new subsystem gets its
+# own logger namespace.
+_LOGGER_SYSTEM_PREFIXES = [
+    ("app.client", "game_client"),
+    ("app.services.deposit_crawler", "treasury"),
+    ("app.services.withdrawal_crawler", "treasury"),
+    ("app.services.solvency_service", "treasury"),
+    ("app.services.ledger_audit", "treasury"),
+    ("app.services.payout_service", "treasury"),
+    ("app.services.settlement", "treasury"),
+    ("app.services.withdrawal_policy", "treasury"),
+    ("app.api.v1.endpoints.wallet", "treasury"),
+    ("app.core.security", "security"),
+    ("app.api.v1.endpoints.game", "realtime"),
+    ("app.services.game_service", "realtime"),
+    ("app.services.matchmaker", "realtime"),
+]
+
+def system_for_logger(logger_name: str) -> str:
+    """Maps a python logger name to the named alert system it belongs to."""
+    for prefix, system in _LOGGER_SYSTEM_PREFIXES:
+        if logger_name.startswith(prefix):
+            return system
+    return DEFAULT_SYSTEM
+
 def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
     global _sent_alerts_cache
@@ -92,7 +131,9 @@ def get_alert_metadata() -> str:
     except Exception:
         pass
         
-    # 2. Database connection details (derived from DB URL safely)
+    # 2. Database connection details (host/name only — NEVER credentials.
+    # A previous version leaked password length + prefix/suffix here, which
+    # put 8 chars of the production DB password in every Telegram alert.)
     try:
         from app.core.config import get_settings
         settings = get_settings()
@@ -101,12 +142,6 @@ def get_alert_metadata() -> str:
             url = make_url(settings.DATABASE_URL)
             metadata_lines.append(f"• <b>DB Host:</b> <code>{url.host}</code>")
             metadata_lines.append(f"• <b>DB Name:</b> <code>{url.database}</code>")
-            
-            pw = url.password or ""
-            pw_info = f"len={len(pw)}"
-            if len(pw) >= 5:
-                pw_info += f", start={pw[:5]}, end={pw[-3:] if len(pw) >= 3 else ''}"
-            metadata_lines.append(f"• <b>DB PW Info:</b> <code>{pw_info}</code>")
     except Exception as e:
         metadata_lines.append(f"• <b>DB Config Parse Error:</b> <code>{e}</code>")
 
@@ -133,25 +168,38 @@ def get_alert_metadata() -> str:
             metadata_lines.append(f"• <b>System {key}:</b> <code>{val}</code>")
             
     if metadata_lines:
-        return "\n<b>🔍 Debugging Metadata:</b>\n" + "\n".join(metadata_lines)
+        # The metadata always describes the backend container that SENT the
+        # alert. For Game Client errors the failure originated on a user's
+        # device, so label this section accordingly to avoid the past
+        # confusion of client crashes appearing to come from the backend.
+        return "\n<b>🔍 Alert relay (backend service that sent this):</b>\n" + "\n".join(metadata_lines)
     return ""
 
-async def send_admin_alert(text: str, timestamp: float = None):
-    """Sends a system alert message to all configured administrators."""
+async def send_admin_alert(text: str, timestamp: float = None, system: str = None):
+    """Sends a system alert message to all configured administrators.
+
+    `system` is a key of ALERT_SYSTEMS attributing the alert to a named
+    subsystem; unattributed alerts default to the Core API.
+    """
     from app.services.telegram_bot import TelegramService
     time_display = format_alert_time(timestamp)
+    emoji, sys_name, sys_desc = ALERT_SYSTEMS.get(system or DEFAULT_SYSTEM, ALERT_SYSTEMS[DEFAULT_SYSTEM])
     for admin_id in ADMIN_IDS:
         if admin_id > 0:
             try:
                 # Wrap text with header and append debugging metadata
                 metadata = get_alert_metadata()
-                alert_msg = f"🚨 <b>[SYSTEM ALERT]</b>\n<b>Time:</b> {time_display}\n\n{text}\n{metadata}"
+                alert_msg = (
+                    f"🚨 <b>[SYSTEM ALERT]</b> — {emoji} <b>{sys_name}</b>\n"
+                    f"<b>System:</b> {sys_desc}\n"
+                    f"<b>Time:</b> {time_display}\n\n{text}\n{metadata}"
+                )
                 await TelegramService.send_notification(admin_id, alert_msg)
             except Exception as e:
                 # Print directly to stdout/stderr to avoid circular logging loops
                 print(f"[Alerts] Failed to send system alert to {admin_id}: {e}")
 
-async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, timestamp: float = None):
+async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, timestamp: float = None, system: str = None):
     """Checks the rate limit in Redis (or in-memory fallback) and sends alert if permitted."""
     from app.services.session_manager import SessionManager
     session_mgr = SessionManager()
@@ -191,7 +239,7 @@ async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, times
         _sent_alerts_cache[fingerprint] = now
 
     # 2. Not throttled, proceed to send Telegram notification
-    await send_admin_alert(message, timestamp)
+    await send_admin_alert(message, timestamp, system=system)
 
 class TelegramAlertHandler(logging.Handler):
     """Logging handler that routes ERROR and CRITICAL logs to Telegram admins with rate-limiting."""
@@ -226,16 +274,17 @@ class TelegramAlertHandler(logging.Handler):
             if record.exc_info:
                 exc_text = logging.Formatter().formatException(record.exc_info)
                 message += f"\n\n<b>Traceback:</b>\n<pre>{exc_text[:1000]}</pre>"
-                
+
+            system = system_for_logger(record.name)
             try:
                 loop = asyncio.get_running_loop()
                 if loop.is_running():
-                    loop.create_task(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
+                    loop.create_task(send_alert_with_redis_rate_limit(fingerprint, message, record.created, system=system))
                 else:
-                    asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
+                    asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created, system=system))
             except RuntimeError:
                 # No running event loop
-                asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created))
+                asyncio.run(send_alert_with_redis_rate_limit(fingerprint, message, record.created, system=system))
         except Exception as e:
             # Fail silently to avoid breaking the application execution flow
             print(f"[Alerts] Exception in TelegramAlertHandler emit: {e}")

@@ -8,6 +8,7 @@ import app.socket_events # Register events
 import os
 import asyncio
 import logging
+import re
 from app.services.telegram_bot import TelegramService
 from app.core.logger import setup_logging, LoggingMiddleware
 from app.middleware.head_middleware import HeadMiddleware
@@ -311,6 +312,16 @@ def create_application() -> FastAPI:
     # log nobody reads" into an actual notification.
     client_logger = logging.getLogger("app.client")
 
+    # The frontend prefixes crash reports with their capture point (see
+    # reportClientError callers in frontend/src). Translate those raw tags
+    # into named failure categories so alerts say what actually broke.
+    CLIENT_ERROR_SOURCES = {
+        "render": "Render Crash (React page error boundary)",
+        "global": "App-Shell Crash (global error boundary)",
+        "window.onerror": "Uncaught Exception (event handler / timer)",
+        "unhandledrejection": "Unhandled Promise Rejection (async)",
+    }
+
     def _handle_client_log_item(item: dict):
         lvl = str(item.get("level", "INFO")).upper()
         msg = str(item.get("message", ""))[:2000]
@@ -318,8 +329,18 @@ def create_application() -> FastAPI:
         url = str(item.get("url", ""))[:500]
         context = f" | page={url}" if url else ""
 
+        # Attribute the error to its capture point when the frontend tagged it.
+        # NOTE: keep the label on the same line as the error message — alert
+        # fingerprinting dedupes on the first line, so a label-only first line
+        # would throttle DIFFERENT errors of the same category as duplicates.
+        source_match = re.match(r"^\[([\w.]+)\]\s*(.*)", msg, re.DOTALL)
+        if source_match and source_match.group(1) in CLIENT_ERROR_SOURCES:
+            label = CLIENT_ERROR_SOURCES[source_match.group(1)]
+            msg = f"{label} — {source_match.group(2)}"
+
         if lvl in ("ERROR", "CRITICAL"):
-            # Routes to admins via TelegramAlertHandler (rate-limited + deduped).
+            # Routes to admins via TelegramAlertHandler (rate-limited + deduped);
+            # the "app.client" logger name attributes it to the Game Client system.
             client_logger.error(f"[CLIENT ERROR] {msg}{context}")
         else:
             print(f"[CLIENT {lvl}] {msg}{context}")

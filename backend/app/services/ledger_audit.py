@@ -76,7 +76,7 @@ async def start_ledger_audit_loop():
                         "The following users have mismatched database profile balances vs. transaction ledger totals:\n\n" +
                         "\n\n".join(mismatch_lines)
                     )
-                    await send_admin_alert(alert_text)
+                    await send_admin_alert(alert_text, system="treasury")
                 else:
                     logger.info("✅ Ledger reconciliation audit run: 0 anomalies detected.")
         except Exception as e:

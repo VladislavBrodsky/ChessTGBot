@@ -95,3 +95,48 @@ async def test_telegram_alert_handler_rate_limiting():
 async def asyncio_sleep_helper():
     # Helper to allow async loop tasks to execute
     await pytest.importorskip("asyncio").sleep(0.05)
+
+def test_system_for_logger_attribution():
+    """Logger names map to the named alert systems; unknown loggers fall back to Core API."""
+    from app.core.alerts import system_for_logger
+    assert system_for_logger("app.client") == "game_client"
+    assert system_for_logger("app.services.solvency_service") == "treasury"
+    assert system_for_logger("app.services.deposit_crawler") == "treasury"
+    assert system_for_logger("app.api.v1.endpoints.wallet") == "treasury"
+    assert system_for_logger("app.services.matchmaker") == "realtime"
+    assert system_for_logger("app.api.v1.endpoints.users") == "core_api"
+
+@pytest.mark.asyncio
+async def test_send_admin_alert_names_the_system():
+    """The alert header names the subsystem the error is attributed to."""
+    with patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_send:
+        await send_admin_alert("Frontend crash report", system="game_client")
+        expected_admins = [admin_id for admin_id in ADMIN_IDS if admin_id > 0]
+        assert mock_send.call_count == len(expected_admins)
+        for c in mock_send.call_args_list:
+            assert "GAME CLIENT" in c[0][1]
+            assert "🚨 <b>[SYSTEM ALERT]</b>" in c[0][1]
+
+    with patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_send:
+        await send_admin_alert("Backend error with no explicit system")
+        for c in mock_send.call_args_list:
+            assert "CORE API" in c[0][1]
+
+def test_alert_metadata_never_leaks_db_credentials():
+    """The metadata block must not contain any part of the DB password (a previous
+    version leaked its length and 8 characters into every Telegram alert)."""
+    from unittest.mock import MagicMock
+    from app.core import alerts as alerts_module
+
+    fake_settings = MagicMock()
+    fake_settings.DATABASE_URL = "postgresql://dbuser:xHQEZsupersecretpasswordFIM@dbhost.internal:5432/railway"
+    with patch("app.core.config.get_settings", return_value=fake_settings):
+        metadata = alerts_module.get_alert_metadata()
+
+    assert "xHQEZ" not in metadata
+    assert "FIM" not in metadata
+    assert "supersecret" not in metadata
+    assert "PW" not in metadata
+    # Non-sensitive identification stays
+    assert "dbhost.internal" in metadata
+    assert "railway" in metadata

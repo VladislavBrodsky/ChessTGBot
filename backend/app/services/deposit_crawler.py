@@ -154,6 +154,7 @@ async def start_deposit_crawler():
                                             "<i>Under USDT-only settlement the platform does not credit this. "
                                             "Convert or refund it manually.</i>"
                                         ),
+                                        system="treasury",
                                     )
                                 except Exception as alert_err:
                                     logger.warning(f"Failed to send non-USDT deposit alert: {alert_err}")
