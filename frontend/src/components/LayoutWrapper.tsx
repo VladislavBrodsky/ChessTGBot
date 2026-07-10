@@ -16,6 +16,8 @@ interface LayoutWrapperProps {
 }
 let globalActiveGameChecked = false;
 let globalActiveGameId: string | null = null;
+let globalIsTelegramWeb: boolean | null = null;
+let globalIsDesktopBrowser: boolean | null = null;
 
 export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
     const locale = useLocale();
@@ -32,23 +34,31 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
     const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
-    const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(false);
+    const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
+        if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
+        return false;
+    });
     // true when running in a real desktop browser (not inside Telegram)
-    const [isDesktopBrowser, setIsDesktopBrowser] = useState<boolean>(false);
+    const [isDesktopBrowser, setIsDesktopBrowser] = useState<boolean>(() => {
+        if (globalIsDesktopBrowser !== null) return globalIsDesktopBrowser;
+        return false;
+    });
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const isIframe = window.self !== window.top;
             const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
             const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-            if (isIframe || isWebPlatform) {
-                setIsTelegramWeb(true);
-            }
-            // Desktop browser: has web auth token but no real TMA initData
+            
+            const isTgWeb = !!(isIframe || isWebPlatform);
             const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
-            if (!isTMA && hasWebAuth && window.innerWidth >= 768) {
-                setIsDesktopBrowser(true);
-            }
+            const isDesktop = !isTMA && hasWebAuth && window.innerWidth >= 768;
+
+            globalIsTelegramWeb = isTgWeb;
+            globalIsDesktopBrowser = isDesktop;
+
+            setIsTelegramWeb(isTgWeb);
+            setIsDesktopBrowser(isDesktop);
         }
     }, []);
 

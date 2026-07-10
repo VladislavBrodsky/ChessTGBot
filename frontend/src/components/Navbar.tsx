@@ -17,25 +17,37 @@ const NAV_ITEMS = [
     { name: 'Settings', icon: <FaCog />,             href: '/settings' },
 ];
 
+let globalIsTelegramWeb: boolean | null = null;
+let globalIsDesktopBrowser: boolean | null = null;
+
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
     const locale = useLocale();
     const { stats } = useUser();
-    const [isTelegramWeb, setIsTelegramWeb] = React.useState(false);
-    const [isDesktopBrowser, setIsDesktopBrowser] = React.useState(false);
+    const [isTelegramWeb, setIsTelegramWeb] = React.useState(() => {
+        if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
+        return false;
+    });
+    const [isDesktopBrowser, setIsDesktopBrowser] = React.useState(() => {
+        if (globalIsDesktopBrowser !== null) return globalIsDesktopBrowser;
+        return false;
+    });
 
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
             const isIframe = window.self !== window.top;
             const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
             const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-            if (isIframe || isWebPlatform) {
-                setIsTelegramWeb(true);
-            }
+            
+            const isTgWeb = !!(isIframe || isWebPlatform);
             const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
-            if (!isTMA && hasWebAuth && window.innerWidth >= 768) {
-                setIsDesktopBrowser(true);
-            }
+            const isDesktop = !isTMA && hasWebAuth && window.innerWidth >= 768;
+
+            globalIsTelegramWeb = isTgWeb;
+            globalIsDesktopBrowser = isDesktop;
+
+            setIsTelegramWeb(isTgWeb);
+            setIsDesktopBrowser(isDesktop);
         }
     }, []);
 
