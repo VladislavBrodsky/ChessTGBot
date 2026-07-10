@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[597,["6711","static/chunks/8e1d74a4-1d3917bec09421ff.js","4059","static/chunks/4059-e05e5de01675577e.js","1004","static/chunks/1004-e4fce58de606291e.js","2762","static/chunks/2762-cdbd3930b576c3b8.js","8500","static/chunks/8500-f62a38ff68ab7f42.js","4798","static/chunks/4798-ad13ee3665d46f35.js","5020","static/chunks/5020-9106f6e188a15aa8.js","6707","static/chunks/app/%5Blocale%5D/game/review/%5BgameId%5D/page-ec9b8521796a9c1e.js"],"default"]
+3:I[90484,[],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"gameId":"placeholder"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"mBO0h8hS6dpNXpEQJ__gh"}
+5:null

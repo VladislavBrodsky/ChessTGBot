@@ -93,33 +93,41 @@ export default function ReferralNotification() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="w-full max-w-[325px] bg-[#FFFFFF]/90 dark:bg-[#0A0A0A]/80 border border-zinc-200/50 dark:border-zinc-800/20 rounded-[20px] py-2 px-3 flex items-center gap-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl pointer-events-auto transition-colors duration-300"
+            className="w-full max-w-[340px] bg-[var(--cyber-card-bg)] backdrop-blur-xl border border-[var(--border-muted)] rounded-2xl py-2.5 px-3.5 flex items-center gap-3 shadow-[var(--shadow-premium)] pointer-events-auto transition-all duration-300 relative overflow-hidden"
           >
+            {/* Soft background glow for premium feel */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none opacity-50" />
+
             {/* Left Icon (Soft Glowing Coins Container) */}
-            <div className="w-7 h-7 rounded-[10px] bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
-              <FaCoins className="text-amber-500 text-[11px]" />
+            <div className="w-8 h-8 rounded-xl bg-[var(--color-amber-opacity-10)] border border-[var(--color-border-opacity-10)] flex items-center justify-center shrink-0 shadow-[var(--shadow-inner-glow)] relative z-10">
+              <FaCoins className="text-[var(--text-gold)] text-[13px]" />
             </div>
 
             {/* Notification content */}
-            <div className="flex-1 min-w-0 flex items-center gap-2 text-[10.5px] font-medium text-zinc-700 dark:text-zinc-300 tracking-wide">
-              {/* Viral Live Pulsing Dot */}
-              <div className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10">
+              <div className="flex items-center gap-1.5 mb-[1px]">
+                {/* Viral Live Pulsing Dot */}
+                <div className="relative flex h-1.5 w-1.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </div>
+                <span className="text-[9.5px] uppercase tracking-wider font-bold text-[var(--text-muted)]">
+                  Live Payout
+                </span>
               </div>
-              <span className="truncate">
+              <div className="text-[11.5px] leading-tight font-medium text-[var(--text-primary)] truncate">
                 {t.rich('referral_toast_rich', {
                   username: notification.username,
                   amount: notification.amount,
-                  gold: (chunks) => <span className="text-amber-500 dark:text-amber-400 font-semibold">{chunks}</span>,
-                  green: (chunks) => <span className="text-emerald-500 dark:text-emerald-400 font-semibold">{chunks}</span>
+                  gold: (chunks) => <span className="text-[var(--text-gold)] font-bold">{chunks}</span>,
+                  green: (chunks) => <span className="text-emerald-500 font-bold">{chunks}</span>
                 })}
-              </span>
+              </div>
             </div>
 
             {/* Check badge */}
-            <div className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(16,185,129,0.08)]">
-              <FaCheck className="text-emerald-500 dark:text-emerald-400 text-[8px]" />
+            <div className="w-6 h-6 rounded-full bg-[var(--color-emerald-opacity-10)] border border-[var(--color-border-opacity-10)] flex items-center justify-center shrink-0 shadow-[var(--shadow-inner-glow)] relative z-10">
+              <FaCheck className="text-emerald-500 text-[9px]" />
             </div>
           </motion.div>
         )}
