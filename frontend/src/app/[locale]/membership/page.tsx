@@ -12,7 +12,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
-import { useNavbar } from '@/context/NavbarContext';
+import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
 
 /* ── Ultra-premium SVG icon set ─────────────────────────────────────── */
 const IconBoost = () => (
@@ -66,13 +66,9 @@ export default function MembershipPage() {
  const locale = useLocale();
  const tm = useTranslations('Membership');
  const t = useTranslations('Index');
- const { hide, show } = useNavbar();
  
   // Hide bottom menu explicitly on this page
-  useEffect(() => {
-    hide();
-    return () => show();
-  }, [hide, show]);
+  useNavbarHideWhileMounted();
  
   const PREMIUM_INFO = {
     id: 'premium',
