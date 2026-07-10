@@ -12,10 +12,12 @@ if settings.REDIS_URL:
     except Exception as e:
         print(f"[Socket] WARNING: Failed to initialize AsyncRedisManager (falling back to in-memory): {e}")
 
+from app.core.security import is_allowed_cors_origin
+
 # Create a Socket.IO server
 sio = socketio.AsyncServer(
     async_mode='asgi',
-    cors_allowed_origins='*',
+    cors_allowed_origins=is_allowed_cors_origin,
     client_manager=client_mgr
 )
 

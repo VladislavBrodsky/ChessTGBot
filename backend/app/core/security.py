@@ -206,3 +206,40 @@ def parse_init_data_unverified(init_data: str) -> dict:
     except Exception:
         return {}
 
+
+def is_allowed_cors_origin(origin: str | None) -> bool:
+    """
+    Checks if a given origin is allowed under the application CORS policy.
+    Matches allowed hardcoded origins, dynamic Railway preview/production subdomains,
+    localhost for development, and the URLs specified in app configuration settings.
+    """
+    if not origin:
+        return False
+        
+    allowed_origins = {
+        "https://chesstgbot-frontend-production.up.railway.app",
+        "https://chesstgbot-backend-production.up.railway.app",
+        "https://web.telegram.org",
+        "https://telegram.org",
+    }
+    
+    if origin in allowed_origins:
+        return True
+        
+    # Allow localhost origins for local development
+    if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+        return True
+        
+    # Dynamically allow any Railway chesstgbot subdomain (preview deploys etc.)
+    if origin.endswith(".up.railway.app") and "chesstgbot" in origin:
+        return True
+        
+    # Allow origins matching configured settings URLs
+    if settings.WEBAPP_URL and origin == settings.WEBAPP_URL.rstrip("/"):
+        return True
+    if settings.BACKEND_URL and origin == settings.BACKEND_URL.rstrip("/"):
+        return True
+        
+    return False
+
+

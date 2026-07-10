@@ -47,20 +47,8 @@ class RawCORSMiddleware:
 
     def _is_allowed(self, origin):
         """Allow designated origins, dynamic Railway subdomains, and localhost."""
-        if origin in self.ALLOWED_ORIGINS:
-            return True
-        # Allow localhost origins for local development
-        if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
-            return True
-        # Dynamically allow any Railway chesstgbot subdomain (preview deploys etc.)
-        if origin.endswith(".up.railway.app") and "chesstgbot" in origin:
-            return True
-        # Allow origins matching configured settings URLs
-        if settings.WEBAPP_URL and origin == settings.WEBAPP_URL.rstrip("/"):
-            return True
-        if settings.BACKEND_URL and origin == settings.BACKEND_URL.rstrip("/"):
-            return True
-        return False
+        from app.core.security import is_allowed_cors_origin
+        return is_allowed_cors_origin(origin)
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
