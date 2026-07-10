@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum as SQLEnum, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import datetime, timezone
@@ -54,6 +54,7 @@ class UnlockedLesson(Base):
 
 class SolvedPuzzle(Base):
     __tablename__ = "solved_puzzles"
+    __table_args__ = (UniqueConstraint('user_id', 'puzzle_id', name='uq_solved_puzzles_user_puzzle'),)
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
@@ -63,6 +64,7 @@ class SolvedPuzzle(Base):
 
 class UnlockedPuzzle(Base):
     __tablename__ = "unlocked_puzzles"
+    __table_args__ = (UniqueConstraint('user_id', 'puzzle_id', name='uq_unlocked_puzzles_user_puzzle'),)
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
