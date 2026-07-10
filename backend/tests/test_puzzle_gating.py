@@ -81,7 +81,7 @@ async def test_puzzle_gating_and_progression(client, db_session):
     response = await client.post(
         "/api/v1/gamification/academy/puzzles/1/verify",
         headers={"X-Telegram-Init-Data": init_data},
-        json={"solution": ["g5f7"]}
+        json={"move": "g5f7"}
     )
     assert response.status_code == 200
 

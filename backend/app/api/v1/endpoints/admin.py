@@ -1187,7 +1187,7 @@ async def trigger_benchmark(
             redis_p95 = round(statistics.quantiles(redis_latencies, n=20)[18], 2)
         except Exception as redis_err:
             logger.warning(f"Redis benchmark failed: {redis_err}")
-            session_mgr._use_memory = True
+            SessionManager._use_memory = True
 
     return {
         "status": "success",

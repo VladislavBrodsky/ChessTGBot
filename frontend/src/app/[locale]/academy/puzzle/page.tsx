@@ -56,23 +56,8 @@ function PuzzleContent() {
       });
   }, [puzzleId]);
 
-  const handleSolve = async () => {
-    try {
-      const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${puzzleId}/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ solution: puzzle.solution })
-      });
-      if (res.ok) {
-        setSolved(true);
-      } else {
-        const data = await res.json();
-        telegramAlert(data.detail || "Verification failed");
-      }
-    } catch (e) {
-      console.error(e);
-      telegramAlert("Error verifying puzzle");
-    }
+  const handleSolve = () => {
+    setSolved(true);
   };
 
   return (
@@ -126,7 +111,7 @@ function PuzzleContent() {
             <PuzzleBoard
               key={puzzle.id}
               initialFen={puzzle.fen}
-              solution={puzzle.solution}
+              puzzleId={puzzle.id}
               onSolve={handleSolve}
               onFail={() => console.log('Wrong move')}
               hintsEnabled={puzzle.id <= 10}

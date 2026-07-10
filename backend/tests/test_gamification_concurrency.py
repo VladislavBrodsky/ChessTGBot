@@ -151,7 +151,7 @@ async def test_concurrency_puzzle_solve(client, test_engine, db_session):
 
         # Solve puzzle 1 concurrently
         async def call_verify():
-            return await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"solution": ["g5f7"]}, headers=headers)
+            return await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"move": "g5f7"}, headers=headers)
 
         responses = await asyncio.gather(
             call_verify(),

@@ -247,7 +247,7 @@ async def complete_academy_task(
     }
 
 class PuzzleVerifyRequest(BaseModel):
-    solution: List[str]
+    move: str
 
 @router.get("/academy/puzzles")
 async def get_puzzles(
@@ -364,7 +364,26 @@ async def get_puzzle_by_id(
                 "description": p["description"],
                 "fen": p["fen"],
                 "xp_reward": p["xp_reward"],
-                "solution": p["solution"]
+                "move_count": len(p["solution"])
+            }
+            
+@router.get("/academy/puzzles/{puzzle_id}/hint")
+async def get_puzzle_hint(
+    puzzle_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Retrieve hint for a puzzle. Only returns the starting square of the correct move to maintain challenge."""
+    from app.core.puzzles import CHESS_PUZZLES
+    
+    if puzzle_id > 10:
+        raise HTTPException(status_code=403, detail="Hints are only available for levels 1-10.")
+        
+    for p in CHESS_PUZZLES:
+        if p["id"] == puzzle_id:
+            solution_move = p["solution"][0].strip().lower()
+            return {
+                "from": solution_move[:2]
             }
             
     raise HTTPException(status_code=404, detail="Puzzle not found")
@@ -448,11 +467,11 @@ async def verify_puzzle_solution(
         raise HTTPException(status_code=404, detail="Puzzle not found")
 
     # Match solution moves (case-insensitive and whitespace-stripped comparison)
-    user_sol = [move.strip().lower() for move in req.solution]
-    correct_sol = [move.strip().lower() for move in target_puzzle["solution"]]
+    user_move = req.move.strip().lower()
+    correct_move = target_puzzle["solution"][0].strip().lower()
     
-    if user_sol != correct_sol:
-        raise HTTPException(status_code=400, detail="Incorrect move sequence. Try again!")
+    if user_move != correct_move and user_move[:4] != correct_move[:4]:
+        raise HTTPException(status_code=400, detail="Incorrect move. Try again!")
         
     # Deduplicate to prevent puzzle ELO/XP farming
     from app.services.session_manager import SessionManager

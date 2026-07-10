@@ -394,8 +394,21 @@ async def test_chess_puzzles_endpoints(client, db_session):
         assert data[0]["is_premium_locked"] is False
         assert data[29]["is_premium_locked"] is True
 
+        # 3b. Test get puzzle detail (verify solution hidden, move_count present)
+        res_detail = await client.get("/api/v1/gamification/academy/puzzles/1", headers=headers)
+        assert res_detail.status_code == 200
+        detail_data = res_detail.json()
+        assert "solution" not in detail_data
+        assert detail_data["move_count"] == 1
+
+        # 3c. Test get puzzle hint
+        res_hint = await client.get("/api/v1/gamification/academy/puzzles/1/hint", headers=headers)
+        assert res_hint.status_code == 200
+        hint_data = res_hint.json()
+        assert hint_data["from"] == "g5"
+
         # 4. Verify solution for puzzle 1
-        res_verify = await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"solution": ["g5f7"]}, headers=headers)
+        res_verify = await client.post("/api/v1/gamification/academy/puzzles/1/verify", json={"move": "g5f7"}, headers=headers)
         assert res_verify.status_code == 200
         verify_data = res_verify.json()
         assert verify_data["solved"] is True

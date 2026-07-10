@@ -37,6 +37,7 @@ async def auth_ip_is_blocked(ip_hash: Optional[str]) -> bool:
             val = await sm.redis.get(key)
             return bool(val) and int(val) >= AUTH_FAIL_LIMIT
     except Exception:
+        SessionManager._use_memory = True
         pass
     now = time.time()
     hist = [t for t in _auth_fail_memory.get(key, []) if now - t < AUTH_FAIL_WINDOW]
@@ -57,6 +58,7 @@ async def register_auth_failure(ip_hash: Optional[str]) -> None:
                 await sm.redis.expire(key, AUTH_FAIL_WINDOW)
             return
     except Exception:
+        SessionManager._use_memory = True
         pass
     _auth_fail_memory.setdefault(key, []).append(time.time())
 
@@ -287,6 +289,7 @@ def rate_limit(limit: int, window: int):
             except HTTPException:
                 raise
             except Exception:
+                SessionManager._use_memory = True
                 pass
                 
         # In-memory fallback

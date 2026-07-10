@@ -104,6 +104,19 @@ class RawCORSMiddleware:
         await self.app(scope, receive, send_with_cors)
 
 
+async def start_redis_recovery_loop():
+    """Periodically check if Redis is down and try to recover it."""
+    from app.services.session_manager import SessionManager
+    while True:
+        try:
+            await asyncio.sleep(30)
+            await SessionManager.try_recover_redis()
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"Error in Redis recovery loop: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -175,6 +188,9 @@ async def lifespan(app: FastAPI):
     # that never got a first move (backstop for the ephemeral in-process abort timer).
     from app.services.stale_game_sweeper import start_stale_game_sweeper
     asyncio.create_task(start_stale_game_sweeper())
+
+    # Start background Redis recovery loop
+    asyncio.create_task(start_redis_recovery_loop())
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
@@ -287,6 +303,7 @@ def create_application() -> FastAPI:
                     await session_mgr.redis.set(redis_key, "1", ex=60)
                 return True
             except Exception:
+                SessionManager._use_memory = True
                 pass
                 
         # In-memory token bucket fallback

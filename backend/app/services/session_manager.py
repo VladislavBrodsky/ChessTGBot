@@ -74,3 +74,35 @@ class SessionManager:
                 await self.redis.close()
             except Exception:
                 pass
+
+    @classmethod
+    async def try_recover_redis(cls):
+        """Periodically probe Redis if we are currently in memory fallback mode, and recover if online."""
+        if not cls._use_memory:
+            return
+        
+        try:
+            test_client = redis.from_url(
+                settings.REDIS_URL,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_timeout=1.0,
+                socket_connect_timeout=1.0
+            )
+            await test_client.ping()
+            await test_client.close()
+            
+            # Recreate primary client
+            cls._redis_client = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+            cls._use_memory = False
+            logger.info("SessionManager successfully reconnected and recovered Redis client from fallback mode.")
+            
+            # Also notify MatchmakerService to recover
+            try:
+                from app.services.matchmaker import MatchmakerService
+                MatchmakerService._redis_client = cls._redis_client
+                MatchmakerService._use_memory = False
+            except Exception:
+                pass
+        except Exception:
+            pass

@@ -33,7 +33,10 @@ class MatchmakerService:
                 logger.warning(f"Failed to initialize Redis client for Matchmaker: {e}. Falling back to in-memory store.")
                 MatchmakerService._redis_client = None
                 MatchmakerService._use_memory = True
-        self.redis = MatchmakerService._redis_client
+
+    @property
+    def redis(self):
+        return MatchmakerService._redis_client
 
     async def _acquire_distributed_lock(self, key: str, ttl_seconds: int = 5) -> Optional[str]:
         """Acquire a simple distributed lock in Redis with retries."""
@@ -55,7 +58,6 @@ class MatchmakerService:
                 logger.warning(f"Redis system/connection error during lock acquisition: {e}. Switching to in-memory store immediately.")
                 MatchmakerService._redis_client = None
                 MatchmakerService._use_memory = True
-                self.redis = None
                 return None
             await asyncio.sleep(0.1)
             
@@ -381,6 +383,7 @@ class MatchmakerService:
                 data = await self.redis.get(queue_key)
                 queue = json.loads(data) if data else []
             except Exception:
+                MatchmakerService._use_memory = True
                 queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
                 
         return any(item['user_id'] == user_id for item in queue)
