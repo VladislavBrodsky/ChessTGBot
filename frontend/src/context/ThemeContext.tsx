@@ -12,31 +12,26 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-/**
- * Read the theme the inline <script> in layout.tsx already applied to the DOM.
- * This runs synchronously before the first render so useState never has to
- * change the value, eliminating the flash-of-unstyled-content.
- */
 function getInitialTheme(): Theme {
-    if (typeof document !== 'undefined') {
-        const attr = document.documentElement.getAttribute('data-theme');
-        if (attr === 'light' || attr === 'dark') return attr;
+    if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') return saved;
+        
+        // Fallback to system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            return 'light';
+        }
     }
     return 'dark';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>(getInitialTheme);
+    const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
-    // No useEffect needed for the initial read — getInitialTheme handles it.
-    // We still watch for system-preference changes after mount.
-
+    // Apply theme changes to the document element and Telegram WebApp
     useEffect(() => {
-        // Apply theme to document
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
 
-        // Sync background and header color with Telegram WebApp
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
             try {
                 const tg = (window as any).Telegram.WebApp;
@@ -49,8 +44,37 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [theme]);
 
+    // Listen for system preference changes
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return;
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+        
+        const handleChange = (e: MediaQueryListEvent) => {
+            // Only update theme if the user hasn't explicitly set a preference in localStorage
+            if (!localStorage.getItem('theme')) {
+                setThemeState(e.matches ? 'light' : 'dark');
+            }
+        };
+
+        // Modern browsers support addEventListener, fallback to addListener for older clients
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleChange);
+            return () => mediaQuery.removeEventListener('change', handleChange);
+        } else {
+            mediaQuery.addListener(handleChange);
+            return () => mediaQuery.removeListener(handleChange);
+        }
+    }, []);
+
+    const setTheme = (newTheme: Theme) => {
+        setThemeState(newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
+
     const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        const nextTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(nextTheme);
     };
 
     return (
