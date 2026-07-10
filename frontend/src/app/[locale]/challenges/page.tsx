@@ -20,6 +20,7 @@ export default function ChallengesPage() {
 
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [claimingId, setClaimingId] = useState<number | null>(null);
 
   useEffect(() => {
     // Only fetch tasks (page-specific) — user stats come from context
@@ -35,6 +36,8 @@ export default function ChallengesPage() {
   }, []);
 
   const handleClaim = async (taskDefId: number) => {
+    if (claimingId) return;
+    setClaimingId(taskDefId);
     const task = tasks.find(t => t.task_id === taskDefId);
     try {
       const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
@@ -53,6 +56,8 @@ export default function ChallengesPage() {
       }
     } catch (err) {
       console.error("Failed to claim task reward:", err);
+    } finally {
+      setClaimingId(null);
     }
   };
 
@@ -405,11 +410,13 @@ export default function ChallengesPage() {
 
                     {task.completed && !task.claimed ? (
                       <motion.button
+                        whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        disabled={claimingId === task.task_id}
                         onClick={() => handleClaim(task.task_id)}
-                        className="px-3.5 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm cursor-pointer"
+                        className="px-4 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {t('claim')}
+                        {claimingId === task.task_id ? '...' : t('claim')}
                       </motion.button>
                     ) : task.claimed ? (
                       <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>

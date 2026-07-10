@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from app.core.database import get_db, get_read_db
@@ -197,28 +197,53 @@ async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):
     ]
 
 @router.get("/avatar/{telegram_id}")
-async def get_user_avatar(telegram_id: int):
+async def get_user_avatar(telegram_id: int, request: Request):
     """
     Get user profile photo from local cache or fetch and cache it from Telegram Bot API.
     Does not require authentication (public resource).
+    Supports ETag / If-None-Match for 304 Not Modified — eliminates re-downloads entirely.
     """
     import os
     import time
-    from fastapi.responses import FileResponse
+    import hashlib
+    from fastapi.responses import FileResponse, Response
     avatar_dir = "static_avatars"
     os.makedirs(avatar_dir, exist_ok=True)
     file_path = os.path.join(avatar_dir, f"{telegram_id}.jpg")
-    
-    # Serve cached version if exists and is newer than 12 hours (43200 seconds)
+
+    CACHE_SECONDS = 604800  # 7 days — avatars rarely change
+
+    def _build_etag(path: str) -> str:
+        """Generate a stable ETag from file mtime + size."""
+        stat = os.stat(path)
+        raw = f"{stat.st_mtime}-{stat.st_size}"
+        return f'"{hashlib.md5(raw.encode()).hexdigest()}"'
+
+    def _serve_cached(path: str) -> FileResponse | Response:
+        etag = _build_etag(path)
+        # 304 Not Modified — browser already has the latest copy
+        if_none_match = request.headers.get("if-none-match")
+        if if_none_match and if_none_match == etag:
+            return Response(status_code=304, headers={
+                "Cache-Control": f"public, max-age={CACHE_SECONDS}, immutable",
+                "ETag": etag,
+            })
+        return FileResponse(path, media_type="image/jpeg", headers={
+            "Cache-Control": f"public, max-age={CACHE_SECONDS}, immutable",
+            "ETag": etag,
+        })
+
+    # Fast path: serve cached version if it exists (regardless of age — ETag handles freshness)
     if os.path.exists(file_path):
         try:
             mtime = os.path.getmtime(file_path)
-            if time.time() - mtime < 43200:
-                return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=43200"})
+            # Only re-fetch from Telegram if file is older than 24 hours
+            if time.time() - mtime < 86400:
+                return _serve_cached(file_path)
         except Exception:
             pass
-        
-    # Fetch from Telegram Bot API
+
+    # Slow path: fetch from Telegram Bot API and cache locally
     from app.services.telegram_bot import TelegramService
     if TelegramService.application and TelegramService.application.bot:
         bot = TelegramService.application.bot
@@ -233,15 +258,15 @@ async def get_user_avatar(telegram_id: int):
                         with open(file_path, "wb") as f:
                             f.write(res.content)
                         os.utime(file_path, None)
-                        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=43200"})
+                        return _serve_cached(file_path)
         except Exception as e:
             import logging
-            logging.getLogger(__name__).error(f"Failed to fetch/cache avatar in endpoint for {telegram_id}: {e}")
-            
-    # Fallback to older cached file if fetching from Telegram failed
+            logging.getLogger(__name__).error(f"Failed to fetch/cache avatar for {telegram_id}: {e}")
+
+    # Fallback: serve stale cached file rather than returning 404
     if os.path.exists(file_path):
-        return FileResponse(file_path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
-        
+        return _serve_cached(file_path)
+
     raise HTTPException(status_code=404, detail="Avatar not found")
 
 @router.get("/{telegram_id}", response_model=UserStats)

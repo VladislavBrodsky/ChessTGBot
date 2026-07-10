@@ -29,6 +29,7 @@ export default function DailyTasks() {
     const t = useTranslations('Gamification');
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [claimingId, setClaimingId] = useState<number | null>(null);
 
     const fetchTasks = async () => {
         try {
@@ -51,7 +52,9 @@ export default function DailyTasks() {
     }, []);
 
     const handleClaim = async (taskDefId: number) => {
+        if (claimingId) return;
         const task = tasks.find(t => t.task_id === taskDefId);
+        setClaimingId(taskDefId);
         try {
             // Optimistic update
             setTasks(prev => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
@@ -71,6 +74,8 @@ export default function DailyTasks() {
         } catch (err) {
             console.error("Failed to claim task reward:", err);
             fetchTasks();
+        } finally {
+            setClaimingId(null);
         }
     };
 
@@ -155,9 +160,10 @@ export default function DailyTasks() {
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={() => handleClaim(task.task_id)}
-                                                className="px-3 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse cursor-pointer"
+                                                disabled={claimingId === task.task_id}
+                                                className="px-3 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {t('claim')}
+                                                {claimingId === task.task_id ? '...' : t('claim')}
                                             </motion.button>
                                         )}
 

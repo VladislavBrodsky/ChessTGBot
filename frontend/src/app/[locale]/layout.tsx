@@ -61,6 +61,9 @@ export default async function LocaleLayout({
     return (
         <html lang={locale} dir={dir} suppressHydrationWarning>
             <head>
+                {/* Preconnect to backend to eliminate TCP handshake latency on first avatar load */}
+                <link rel="preconnect" href="https://chesstgbot-backend-production.up.railway.app" crossOrigin="anonymous" />
+                <link rel="dns-prefetch" href="https://chesstgbot-backend-production.up.railway.app" />
                 <script src="https://telegram.org/js/telegram-web-app.js" />
                 <script
                     dangerouslySetInnerHTML={{

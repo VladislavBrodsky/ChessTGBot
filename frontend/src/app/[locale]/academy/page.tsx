@@ -22,6 +22,28 @@ export default function AcademyPage() {
   const [puzzles, setPuzzles] = useState<any[]>([]);
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
+  const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
+
+  // Descriptions grouped by difficulty band for all 100 tactical levels
+  const LEVEL_THEMES = [
+    { range: [1, 5],   theme: 'Basic Tactics',      emoji: '🎯', desc: 'Simple forks, captures, and one-move patterns. Perfect for building tactical instincts from the ground up.' },
+    { range: [6, 10],  theme: 'Pawn Power',          emoji: '♟️', desc: 'Master pawn structure, passed pawns, and promotion tactics. Hint support available on these levels.' },
+    { range: [11, 15], theme: 'Pins & Skewers',      emoji: '⚔️', desc: 'Exploit pinned pieces and use skewers to win material on open diagonals and files.' },
+    { range: [16, 20], theme: 'Fork Mastery',        emoji: '🔱', desc: 'Attack two pieces simultaneously with knights, bishops, and queens to gain decisive material.' },
+    { range: [21, 25], theme: 'Discovered Attacks',  emoji: '💣', desc: 'Unleash hidden firepower by moving a piece to expose a devastating attack from behind.' },
+    { range: [26, 30], theme: 'Defensive Tactics',   emoji: '🛡️', desc: 'Learn to defend accurately — counter-attacks, interpositions, and fortress construction.' },
+    { range: [31, 40], theme: 'Rook Endgames',       emoji: '🏰', desc: 'Convert rook-and-pawn endgames with technique: Lucena, Philidor, and active rook play.' },
+    { range: [41, 50], theme: 'Queen Tactics',       emoji: '👑', desc: 'Harness the queen power — back-rank threats, queen sacrifices, and perpetual checks.' },
+    { range: [51, 60], theme: 'Combinations',        emoji: '🌀', desc: 'Multi-move combinations involving sacrifices, deflections, and piece coordination.' },
+    { range: [61, 70], theme: 'Positional Chess',    emoji: '🎲', desc: 'Outpost control, piece activity, and prophylaxis at an intermediate-advanced level.' },
+    { range: [71, 80], theme: 'Time Pressure',       emoji: '⚡', desc: 'Rapid-fire puzzles designed to improve calculation speed and tactical vision under pressure.' },
+    { range: [81, 90], theme: 'Complex Sacrifices',  emoji: '🧩', desc: 'Find the hidden move — deep sacrifices that flip the position decisively in your favour.' },
+    { range: [91, 100], theme: 'Grandmaster Level',  emoji: '🏆', desc: 'Elite-level puzzles used by titled players. Pure calculation and long-range precision required.' },
+  ];
+  const getLevelInfo = (id: number) => {
+    const band = LEVEL_THEMES.find(b => id >= b.range[0] && id <= b.range[1]);
+    return band || { theme: `Level ${id}`, emoji: '♟️', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
+  };
   const nextPuzzle = puzzles.find(p => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
   const allSolved = puzzles.length > 0 && !nextPuzzle;
@@ -417,7 +439,7 @@ export default function AcademyPage() {
                   return (
                     <button
                       key={id}
-                      onClick={() => handlePuzzleClick(id, puzzleInfo)}
+                      onClick={() => setSelectedLevel({ id, info: puzzleInfo })}
                       className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
                     >
                       <span>{id}</span>
@@ -588,6 +610,136 @@ export default function AcademyPage() {
       </motion.div>
       </div>
       )}
+      </AnimatePresence>
+
+      {/* Level Info Drawer — tap any grid tile to see description + CTA */}
+      <AnimatePresence>
+      {selectedLevel && (() => {
+        const { id, info } = selectedLevel;
+        const band = getLevelInfo(id);
+        const isCompleted = completedPuzzles.includes(id);
+        const isSeqLocked = info ? info.is_sequential_locked : id > 1;
+        const isPremLocked = info ? info.is_premium_locked : id > 30;
+        const isXpLocked  = info ? info.is_xp_locked : (id >= 11 && id <= 29);
+        const isPlayable  = !isSeqLocked && !isPremLocked && !isXpLocked;
+        const hintsEnabled = id <= 10;
+
+        return (
+        <div className="bottom-drawer-backdrop z-[110]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedLevel(null)}
+            className="absolute inset-0 bg-[rgba(0,0,0,0.55)] backdrop-blur-sm"
+            style={{ touchAction: 'none' }}
+          />
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+            className="bottom-drawer-sheet relative z-20"
+          >
+            {/* Glow */}
+            <div className={`absolute top-0 left-1/2 w-64 h-64 rounded-full blur-3xl -translate-x-1/2 pointer-events-none opacity-20 ${isCompleted ? 'bg-emerald-500' : isPremLocked ? 'bg-amber-500' : 'bg-brand-primary'}`} />
+
+            <div className="bottom-drawer-handle relative z-10" />
+
+            <div className="relative z-10 space-y-4 px-1">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{band.emoji}</span>
+                  <div>
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-primary/40">
+                      {isCompleted ? '✅ Solved' : isPremLocked ? '👑 Premium Required' : isXpLocked ? '🔒 XP Required' : isSeqLocked ? '🔒 Sequential Lock' : '▶ Available'}
+                    </p>
+                    <h3 className="text-lg font-black tracking-tight text-brand-primary uppercase leading-none">
+                      Level {id} — {band.theme}
+                    </h3>
+                  </div>
+                </div>
+                <span className={`text-[9px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-primary/60' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-primary/30'}`}>
+                  #{id} / 100
+                </span>
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-brand-primary/70 leading-relaxed font-medium">
+                {band.desc}
+              </p>
+
+              {/* Hint badge — only levels 1-10 */}
+              {hintsEnabled && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
+                  <span className="text-emerald-400 text-lg">💡</span>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Hint Available</p>
+                    <p className="text-[10px] text-emerald-400/70 font-medium">Use the hint button inside the puzzle to reveal the best next move.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* XP reward */}
+              {info?.xp_reward && (
+                <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/70">Reward for solving</span>
+                  <span className="text-sm font-black text-amber-400">+{info.xp_reward} XP</span>
+                </div>
+              )}
+
+              {/* CTAs */}
+              <div className="space-y-2 pt-1">
+                {isSeqLocked && (
+                  <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-[10px] font-black uppercase tracking-widest text-brand-primary/30">
+                    🔒 Complete Level {id - 1} first
+                  </div>
+                )}
+                {isPremLocked && !isSeqLocked && (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-900 font-black uppercase tracking-widest text-[11px] shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                  >
+                    👑 Unlock with Premium
+                  </motion.button>
+                )}
+                {isXpLocked && !isSeqLocked && !isPremLocked && (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { setSelectedLevel(null); handlePuzzleClick(id, info); }}
+                    className="w-full py-3 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-black uppercase tracking-widest text-[11px]"
+                  >
+                    🔓 Spend {info?.xp_cost ?? '—'} XP to Unlock
+                  </motion.button>
+                )}
+                {isPlayable && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { setSelectedLevel(null); router.push(`/${locale}/academy/puzzle?id=${id}`); }}
+                    className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] shadow-neon relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" />
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <FaPlay className="text-[9px]" />
+                      {isCompleted ? 'Replay Level' : 'Start Level'}
+                    </span>
+                  </motion.button>
+                )}
+                <button
+                  onClick={() => setSelectedLevel(null)}
+                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-primary/40 hover:text-brand-primary/70 transition-colors"
+                >
+                  {t('cancel')}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        );
+      })()}
       </AnimatePresence>
     </LayoutWrapper>
   );

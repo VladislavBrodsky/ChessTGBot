@@ -102,15 +102,16 @@ interface LeaderboardItem {
                     {getRankIcon(item.rank)}
                   </div>
                   <div className="relative">
-                    {item.photo_url && !brokenAvatars[item.telegram_id] ? (
-                      <img 
-                        src={getFullPhotoUrl(item.photo_url)} 
-                        alt="" 
-                        loading="lazy"
-                        decoding="async"
-                        onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
-                        className="w-8 h-8 rounded-full border border-brand-border-opacity-10 object-cover" 
-                      />
+                      {item.photo_url && !brokenAvatars[item.telegram_id] ? (
+                        <img 
+                          src={getFullPhotoUrl(item.photo_url)} 
+                          alt="" 
+                          loading={idx < 5 ? 'eager' : 'lazy'}
+                          decoding={idx < 5 ? 'sync' : 'async'}
+                          fetchPriority={idx < 3 ? 'high' : 'auto'}
+                          onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
+                          className="w-8 h-8 rounded-full border border-brand-border-opacity-10 object-cover" 
+                        />
                     ) : (
                       <FaUserCircle className="w-8 h-8 text-brand-primary opacity-20" />
                     )}
@@ -210,8 +211,9 @@ interface LeaderboardItem {
                           <img 
                             src={getFullPhotoUrl(item.photo_url)} 
                             alt="" 
-                            loading="lazy"
-                            decoding="async"
+                            loading={idx < 10 ? 'eager' : 'lazy'}
+                            decoding={idx < 5 ? 'sync' : 'async'}
+                            fetchPriority={idx < 5 ? 'high' : 'auto'}
                             onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
                             className="w-10 h-10 rounded-full border border-brand-border-opacity-10 object-cover shadow-lg" 
                           />
