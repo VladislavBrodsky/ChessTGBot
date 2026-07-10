@@ -238,8 +238,8 @@ async def start_solvency_alert_loop():
     from app.core.database import AsyncSessionLocal
 
     settings = get_settings()
-    if not settings.SOLVENCY_ALERTS_ENABLED:
-        logger.info("Solvency alert loop disabled (SOLVENCY_ALERTS_ENABLED=false). Skipping.")
+    if settings.TESTING or not settings.SOLVENCY_ALERTS_ENABLED:
+        logger.info("Solvency alert loop disabled. Skipping.")
         return
 
     # Let startup settle (mirrors the ledger audit loop).
@@ -300,8 +300,8 @@ async def start_gas_float_alert_loop():
     an unknown reading (TonAPI failure) is skipped, never treated as zero.
     """
     settings = get_settings()
-    if not settings.GAS_FLOAT_ALERTS_ENABLED:
-        logger.info("Gas-float alert loop disabled (GAS_FLOAT_ALERTS_ENABLED=false). Skipping.")
+    if settings.TESTING or not settings.GAS_FLOAT_ALERTS_ENABLED:
+        logger.info("Gas-float alert loop disabled. Skipping.")
         return
 
     await asyncio.sleep(35)  # let startup settle

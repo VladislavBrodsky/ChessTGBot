@@ -83,7 +83,7 @@ class Settings(BaseSettings):
     # reality before enabling autonomous alerts. When enabled, an alert fires
     # only after the USDT deficit exceeds the buffer for several consecutive
     # checks (sustained), so a transient dip or a TonAPI hiccup never triggers it.
-    SOLVENCY_ALERTS_ENABLED: bool = False
+    SOLVENCY_ALERTS_ENABLED: bool = True
     SOLVENCY_DEFICIT_BUFFER_CENTS: int = 5000          # $50 tolerance before a deficit counts
     SOLVENCY_CHECK_INTERVAL_SECONDS: int = 3600        # check hourly
     SOLVENCY_SUSTAINED_CHECKS: int = 3                 # consecutive deficits required to alert
@@ -93,7 +93,7 @@ class Settings(BaseSettings):
     # withdrawals start failing (each failure already alerts + refunds the user).
     # This is a PROACTIVE early warning so the float can be topped up first.
     # Opt-in for consistency; strongly recommended once MASTER_WALLET is verified.
-    GAS_FLOAT_ALERTS_ENABLED: bool = False
+    GAS_FLOAT_ALERTS_ENABLED: bool = True
     GAS_FLOAT_MIN_TON: float = 2.0                     # warn when master TON balance drops below this
     GAS_FLOAT_CHECK_INTERVAL_SECONDS: int = 3600       # check hourly
 
@@ -126,8 +126,12 @@ class Settings(BaseSettings):
 def get_settings():
     settings = Settings()
     import sys
+    # Automatically detect pytest execution and set TESTING flag
+    if "pytest" in sys.modules:
+        settings.TESTING = True
+        
     # If not running in development or testing mode, enforce production security checks
-    is_testing = settings.TESTING or "pytest" in sys.modules
+    is_testing = settings.TESTING
     is_dev = settings.ENV == "development"
     is_sqlite = settings.DATABASE_URL.startswith("sqlite")
     

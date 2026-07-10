@@ -174,5 +174,13 @@ async def test_master_ton_balance_unconfigured_returns_error(monkeypatch):
 async def test_gas_float_loop_dormant_by_default():
     import asyncio
     from app.services.solvency_service import start_gas_float_alert_loop
-    # Disabled by default -> returns immediately (no 35s sleep, no loop, no network).
+    # Disabled by default/testing -> returns immediately (no 35s sleep, no loop, no network).
     await asyncio.wait_for(start_gas_float_alert_loop(), timeout=5)
+
+
+async def test_solvency_loop_dormant_by_default():
+    import asyncio
+    from app.services.solvency_service import start_solvency_alert_loop
+    # Disabled by default/testing -> returns immediately.
+    await asyncio.wait_for(start_solvency_alert_loop(), timeout=5)
+
