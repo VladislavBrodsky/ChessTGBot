@@ -84,7 +84,7 @@ export default function DailyTasks() {
             </div>
 
             <motion.div layout className="space-y-3 w-full">
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="popLayout">
                     {loading ? (
                         <motion.div
                             key="skeleton"

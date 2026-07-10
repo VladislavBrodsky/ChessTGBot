@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaUserPlus, FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine, FaQrcode } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
+import { useUser } from '@/context/UserContext';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
 
 const UsdtLogo = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 200 200" fill="currentColor" className={className} width="1em" height="1em">
@@ -116,41 +118,22 @@ function EarningsChart({ data }: { data: EarningPoint[] }) {
 
 export default function ReferralDashboard({ referralCode, botUsername = 'FinChess_bot' }: ReferralDashboardProps) {
   const t = useTranslations('Referral');
-  const [stats, setStats] = useState<ReferralStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { stats: userStats } = useUser();
+  const { data: statsData, isLoading: loading, error: statsError } = useSWRFetch('/api/v1/users/referrals/stats');
+
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
-  const [code, setCode] = useState(referralCode || '');
-  const [bot, setBot] = useState(botUsername);
+  
+  const code = userStats?.referral_code || referralCode || '';
+  const bot = userStats?.bot_username || botUsername;
 
-  useEffect(() => {
-    // Fetch user sync for code + bot username
-    apiFetch('/api/v1/users/sync', { method: 'POST' })
-      .then(r => r.json())
-      .then(data => {
-        if (data?.referral_code) setCode(data.referral_code);
-        if (data?.bot_username) setBot(data.bot_username);
-      })
-      .catch(() => {});
-
-    // Fetch referral stats
-    apiFetch('/api/v1/users/referrals/stats')
-      .then(r => r.json())
-      .then((data: ReferralStats) => {
-        setStats(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // Use mock data in dev
-        setStats({
-          total_referrals: 0,
-          active_referrals: 0,
-          total_earnings_usdt: 0,
-          earnings_chart: []
-        });
-        setLoading(false);
-      });
-  }, []);
+  // Use mock data if error or loading fails (matching previous fallback logic)
+  const stats = statsData || {
+    total_referrals: 0,
+    active_referrals: 0,
+    total_earnings_usdt: 0,
+    earnings_chart: []
+  };
 
   const inviteLink = `https://t.me/chess_matbot?start=ref_${code}`;
 
@@ -178,7 +161,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       id: 'total' as const,
       label: t('total_label'),
       icon: <FaUsers />,
-      value: loading ? '—' : totalCount.toString(),
+      value: loading ? <div className="h-4 w-10 bg-current/20 animate-pulse rounded" /> : totalCount.toString(),
       colorClass: 'text-purple-500 dark:text-purple-400',
       borderClass: 'border-purple-500/20 dark:border-purple-500/30',
       bgClass: 'bg-gradient-to-br from-purple-500/10 to-brand-surface/30',
@@ -189,7 +172,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       id: 'active' as const,
       label: t('active_label'),
       icon: <FaBolt />,
-      value: loading ? '—' : activeCount.toString(),
+      value: loading ? <div className="h-4 w-8 bg-current/20 animate-pulse rounded" /> : activeCount.toString(),
       colorClass: 'text-cyan-500 dark:text-cyan-400',
       borderClass: 'border-cyan-500/20 dark:border-cyan-500/30',
       bgClass: 'bg-gradient-to-br from-cyan-500/10 to-brand-surface/30',
@@ -211,7 +194,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       id: 'earnings' as const,
       label: 'EARNED',
       icon: <UsdtLogo className="text-[16px]" />,
-      value: loading ? '—' : `${totalEarnings.toFixed(2)}`,
+      value: loading ? <div className="h-4 w-12 bg-current/20 animate-pulse rounded" /> : `${totalEarnings.toFixed(2)}`,
 
       colorClass: 'text-emerald-500 dark:text-emerald-400',
       borderClass: 'border-emerald-500/20 dark:border-emerald-500/30',

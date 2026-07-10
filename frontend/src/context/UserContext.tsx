@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '@/lib/api';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
 
 interface UserContextType {
     walletBalance: number;
@@ -34,14 +35,6 @@ const UserContext = createContext<UserContextType>({
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-    const [walletBalance, setWalletBalance] = useState<number>(0);
-    const [walletAddress, setWalletAddress] = useState<string>("");
-    const [stats, setStats] = useState<any>(null);
-    const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
-    const [loadingStats, setLoadingStats] = useState<boolean>(true);
-    const [balanceError, setBalanceError] = useState<boolean>(false);
-    const [statsError, setStatsError] = useState<boolean>(false);
-
     const isAuthenticated = useCallback((): boolean => {
         if (typeof window === 'undefined') return false;
         const isTMA = !!(window as any).Telegram?.WebApp?.initData;
@@ -49,67 +42,48 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         return isTMA || hasWebAuth;
     }, []);
 
-    const syncBalance = useCallback(async () => {
-        if (!isAuthenticated()) return null;
-        setLoadingBalance(true);
-        try {
-            const res = await apiFetch("/api/v1/wallet/balance");
-            if (res.ok) {
-                const data = await res.json();
-                setWalletBalance(data.balance);
-                setWalletAddress(data.wallet_address || "");
-                setBalanceError(false);
-                return data;
-            }
-            setBalanceError(true);
-        } catch (err) {
-            console.error("Failed to sync wallet balance", err);
-            setBalanceError(true);
-        } finally {
-            setLoadingBalance(false);
+    const { data: balanceData, error: balanceSWR_Error, isLoading: loadingBalance, mutate: syncBalance } = useSWRFetch(
+        isAuthenticated() ? '/api/v1/wallet/balance' : null,
+        {
+            revalidateOnFocus: true,
+            dedupingInterval: 5000, // 5 seconds
         }
-        return null;
-    }, [isAuthenticated]);
+    );
 
-    const syncStats = useCallback(async () => {
-        if (!isAuthenticated()) return null;
-        setLoadingStats(true);
-        try {
-            const res = await apiFetch("/api/v1/users/sync", { method: "POST" });
-            if (res.ok) {
-                const data = await res.json();
-                setStats(data);
-                setStatsError(false);
-                return data;
-            }
-            setStatsError(true);
-        } catch (err) {
-            console.error("Failed to fetch Stats", err);
-            setStatsError(true);
-        } finally {
-            setLoadingStats(false);
+    const { data: statsData, error: statsSWR_Error, isLoading: loadingStats, mutate: syncStats } = useSWRFetch(
+        isAuthenticated() ? ['/api/v1/users/sync', {}] : null,
+        {
+            revalidateOnFocus: true,
+            dedupingInterval: 10000, // 10 seconds
         }
-        return null;
-    }, [isAuthenticated]);
+    );
 
-    useEffect(() => {
-        // Only fetch data if user is authenticated
-        if (!isAuthenticated()) {
-            setLoadingBalance(false);
-            setLoadingStats(false);
-            return;
-        }
-        syncBalance();
-        syncStats();
-    }, [syncBalance, syncStats, isAuthenticated]);
+    const walletBalance = balanceData?.balance || 0;
+    const walletAddress = balanceData?.wallet_address || "";
+    const balanceError = !!balanceSWR_Error;
+
+    const stats = statsData || null;
+    const statsError = !!statsSWR_Error;
+
+    // Optional: Keep the sync methods returning a promise for backward compatibility if needed,
+    // though SWR's mutate returns a promise too.
+    const syncBalanceWrapper = useCallback(async () => {
+        const data = await syncBalance();
+        return data || null;
+    }, [syncBalance]);
+
+    const syncStatsWrapper = useCallback(async () => {
+        const data = await syncStats();
+        return data || null;
+    }, [syncStats]);
 
     return (
         <UserContext.Provider value={{
             walletBalance,
             walletAddress,
             stats,
-            syncBalance,
-            syncStats,
+            syncBalance: syncBalanceWrapper,
+            syncStats: syncStatsWrapper,
             loadingBalance,
             loadingStats,
             balanceError,

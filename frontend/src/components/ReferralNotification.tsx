@@ -85,7 +85,7 @@ export default function ReferralNotification() {
 
   return (
     <div className="fixed bottom-[calc(100px+var(--app-safe-bottom))] left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {notification && (
           <motion.div
             key={notification.id}
@@ -93,10 +93,10 @@ export default function ReferralNotification() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="w-full max-w-[325px] bg-[#FFFFFF]/90 dark:bg-[#0A0A0A]/80 border border-zinc-200/50 dark:border-zinc-800/40 rounded-2xl py-2 px-3 flex items-center gap-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl pointer-events-auto transition-colors duration-300"
+            className="w-full max-w-[325px] bg-[#FFFFFF]/90 dark:bg-[#0A0A0A]/80 border border-zinc-200/50 dark:border-zinc-800/20 rounded-[20px] py-2 px-3 flex items-center gap-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl pointer-events-auto transition-colors duration-300"
           >
             {/* Left Icon (Soft Glowing Coins Container) */}
-            <div className="w-7 h-7 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
+            <div className="w-7 h-7 rounded-[10px] bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
               <FaCoins className="text-amber-500 text-[11px]" />
             </div>
 

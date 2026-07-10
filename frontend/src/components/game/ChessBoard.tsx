@@ -39,9 +39,10 @@ interface ChessBoardProps {
     orientation?: "white" | "black";
     showConfetti?: boolean;
     autoPromoteToQueen?: boolean;
+    customSquareStyles?: { [square: string]: any };
 }
 
-export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false }: ChessBoardProps) {
+export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false, customSquareStyles = {} }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
@@ -319,14 +320,16 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                             animationDurationInMs: 250,
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {
-                                const styles: { [square: string]: any } = {};
+                                const styles: { [square: string]: any } = { ...customSquareStyles };
                                 for (const sq of lastMoveSquares) {
                                     styles[sq] = {
+                                        ...styles[sq],
                                         backgroundColor: "rgba(255, 255, 51, 0.45)"
                                     };
                                 }
                                 if (selectedSquare) {
                                     styles[selectedSquare] = {
+                                        ...styles[selectedSquare],
                                         backgroundColor: "rgba(255, 215, 0, 0.4)",
                                         boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.7)"
                                     };

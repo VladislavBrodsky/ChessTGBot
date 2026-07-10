@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
-import { apiFetch, getFullPhotoUrl } from '@/lib/api';
+import { getFullPhotoUrl } from '@/lib/api';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
 
 interface LeaderboardItem {
@@ -16,11 +17,11 @@ interface LeaderboardItem {
  rank: number;
 }
 
-export default function Leaderboard() {
+ export default function Leaderboard() {
  const t = useTranslations('Index');
- const [players, setPlayers] = useState<LeaderboardItem[]>([]);
+ const { data: playersData, isLoading: loading } = useSWRFetch('/api/v1/users/leaderboard');
+ const players: LeaderboardItem[] = Array.isArray(playersData) ? playersData : [];
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
- const [loading, setLoading] = useState(true);
  const [showModal, setShowModal] = useState(false);
 
  // Lock background scroll while the full ranking modal is open — otherwise
@@ -38,18 +39,7 @@ export default function Leaderboard() {
    };
  }, [showModal]);
 
- useEffect(() => {
- apiFetch('/api/v1/users/leaderboard')
- .then(res => res.json())
- .then(data => {
- setPlayers(Array.isArray(data) ? data : []);
- setLoading(false);
- })
- .catch(err => {
- console.error("Failed to fetch leaderboard", err);
- setLoading(false);
- });
- }, []);
+
 
  const getRankIcon = (rank: number) => {
  if (rank === 1) return <FaTrophy className="text-yellow-400 drop-shadow-glow" />;
@@ -116,6 +106,8 @@ export default function Leaderboard() {
                       <img 
                         src={getFullPhotoUrl(item.photo_url)} 
                         alt="" 
+                        loading="lazy"
+                        decoding="async"
                         onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
                         className="w-8 h-8 rounded-full border border-brand-border-opacity-10 object-cover" 
                       />
@@ -218,8 +210,10 @@ export default function Leaderboard() {
                           <img 
                             src={getFullPhotoUrl(item.photo_url)} 
                             alt="" 
+                            loading="lazy"
+                            decoding="async"
                             onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
-                            className="w-8 h-8 rounded-full border border-brand-border-opacity-10 object-cover" 
+                            className="w-10 h-10 rounded-full border border-brand-border-opacity-10 object-cover shadow-lg" 
                           />
                         ) : (
                           <FaUserCircle className="w-8 h-8 text-brand-primary opacity-20" />

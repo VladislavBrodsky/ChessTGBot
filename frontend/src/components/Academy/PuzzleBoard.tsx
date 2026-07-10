@@ -12,12 +12,14 @@ interface PuzzleBoardProps {
  onSolve: () => void;
  onFail: () => void;
  orientation?: 'white' | 'black';
+ hintsEnabled?: boolean;
 }
 
-export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, orientation = 'white' }: PuzzleBoardProps) {
+export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, orientation = 'white', hintsEnabled = false }: PuzzleBoardProps) {
  const [game, setGame] = useState(new Chess(initialFen, { skipValidation: true }));
  const [moveIndex, setMoveIndex] = useState(0);
  const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
+ const [hintMove, setHintMove] = useState<{from: string, to: string} | null>(null);
 
  function safeGameMutate(modify: (g: Chess) => void) {
  setGame((g) => {
@@ -29,6 +31,7 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
 
  function onMove(moveData: { from: string; to: string; promotion?: string }) {
  if (status !== 'playing') return false;
+ setHintMove(null);
 
  const move = {
  from: moveData.from,
@@ -51,11 +54,6 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
 
  // Convert move to UCI for comparison
  const uciMove = moveResult.from + moveResult.to + (moveResult.promotion && moveResult.promotion !== 'q' ? moveResult.promotion : '');
- // Simple comparison: solution should preferably be in UCI format or handled via chess.js to enable flexible comparison
- // For this MVP, we assume solution is UCI or we relax check. 
- // Let's rely on standard uci check. 
- // Actually, let's just use from+to for simplicity if promotion matches default.
-
  const isCorrect = uciMove === expectedMove || (moveResult.from + moveResult.to) === expectedMove;
 
  if (isCorrect) {
@@ -70,13 +68,6 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
  setStatus('correct');
  onSolve();
  } else {
- // If there's an opponent response in the solution (which there usually is for puzzles)
- // We should play it automatically after a delay
- // BUT, usually 'solution' array implies: [UserMove, OpponentResponse, UserMove] handling??
- // Standard puzzle formats usually have moves list.
- // Let's assume the solution array contains ALL moves including opponent's.
- // So if I played index 0, opponent plays index 1 immediately.
-
  setTimeout(() => {
  playOpponentMove(nextIndex);
  }, 500);
@@ -109,6 +100,24 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
  setGame(new Chess(initialFen, { skipValidation: true }));
  setMoveIndex(0);
  setStatus('playing');
+ setHintMove(null);
+ }
+
+ const handleHint = () => {
+    if (!hintsEnabled || status !== 'playing') return;
+    const expectedMove = solution[moveIndex];
+    if (expectedMove && expectedMove.length >= 4) {
+        setHintMove({
+            from: expectedMove.substring(0, 2),
+            to: expectedMove.substring(2, 4)
+        });
+    }
+ };
+
+ const customSquareStyles: { [square: string]: any } = {};
+ if (hintMove) {
+    customSquareStyles[hintMove.from] = { backgroundColor: 'rgba(16, 185, 129, 0.4)' };
+    customSquareStyles[hintMove.to] = { backgroundColor: 'rgba(16, 185, 129, 0.7)' };
  }
 
  return (
@@ -118,16 +127,32 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
  fen={game.fen()}
  onMove={onMove}
  orientation={orientation}
+ customSquareStyles={customSquareStyles}
  />
  </div>
 
- <div className="flex gap-4">
- <button onClick={reset} className="p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
- <FaUndo />
- </button>
- <button className="p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
- <FaLightbulb />
- </button>
+ <div className="flex flex-col items-center">
+    <div className="flex gap-4">
+        <button onClick={reset} className="p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
+        <FaUndo />
+        </button>
+        <button 
+            onClick={handleHint} 
+            disabled={!hintsEnabled || status !== 'playing'}
+            className={`p-4 rounded-xl transition-all ${
+                hintsEnabled && status === 'playing'
+                    ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.15)] cursor-pointer' 
+                    : 'bg-brand-primary/5 text-brand-primary/30 cursor-not-allowed'
+            }`}
+        >
+        <FaLightbulb />
+        </button>
+    </div>
+    {hintsEnabled && (
+        <span className="text-[9px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">
+            Hints available (Levels 1-10)
+        </span>
+    )}
  </div>
 
  {status === 'correct' && (

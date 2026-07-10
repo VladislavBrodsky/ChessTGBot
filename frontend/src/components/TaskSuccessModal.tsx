@@ -60,15 +60,21 @@ export default function TaskSuccessModal() {
 
       <AnimatePresence>
         {success && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">
+          <motion.div 
+            key="task-success-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center px-6 pointer-events-auto modal-backdrop"
+          >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" style={{ touchAction: 'none' }} onClick={handleClose} />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: 30 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 380 }}
-              className="relative w-full max-w-[300px] bg-gradient-to-b from-[#1C1917]/95 to-[#0C0A09]/98 border border-amber-500/30 rounded-3xl p-6 text-center space-y-6 shadow-[0_24px_60px_rgba(245,158,11,0.2)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.8)] backdrop-blur-xl flex flex-col items-center overflow-hidden"
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="relative w-full max-w-[300px] bg-gradient-to-b from-[#1C1917]/95 to-[#0C0A09]/98 border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-[0_24px_60px_rgba(245,158,11,0.2)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.8)] backdrop-blur-xl flex flex-col items-center overflow-hidden"
             >
               {/* Gold Top Light Highlight */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
@@ -84,7 +90,7 @@ export default function TaskSuccessModal() {
                   duration: 4, 
                   ease: "easeInOut" 
                 }}
-                className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shadow-[0_8px_24px_rgba(245,158,11,0.15)] mt-2"
+                className="w-16 h-16 rounded-[16px] bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shadow-[0_8px_24px_rgba(245,158,11,0.15)] mt-2"
               >
                 <FaTrophy className="text-amber-400 text-3xl filter drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)]" />
               </motion.div>
@@ -121,7 +127,7 @@ export default function TaskSuccessModal() {
                 AWESOME!
               </button>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

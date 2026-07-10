@@ -63,7 +63,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
  {/* Content Area */}
  <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
- <AnimatePresence mode="wait">
+ <AnimatePresence mode="popLayout">
  <motion.div
  key={currentStep.id}
  initial={{ opacity: 0, x: 20 }}

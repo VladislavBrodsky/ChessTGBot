@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useRouter } from 'next/navigation';
 import { 
   FaUsers, FaStar, FaBolt, FaCalendarWeek, FaCalendarDays, 
@@ -380,29 +381,18 @@ function DashboardTab({ stats }: { stats: Stats }) {
 
 
 function UsersTab() {
-  const [users, setUsers] = useState<UserSummary[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserSummary | null>(null);
   const [userDetail, setUserDetail] = useState<{ referral_count: number; transactions: Transaction[] } | null>(null);
 
-  const loadUsers = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: '20' });
-    if (search) params.set('search', search);
-    const res = await apiFetch(`/api/v1/admin/users?${params}`);
-    if (res.ok) {
-      const data = await res.json();
-      setUsers(data.users);
-      setTotal(data.total);
-    }
-    setLoading(false);
-  }, [page, search]);
+  const params = new URLSearchParams({ page: String(page), limit: '20' });
+  if (search) params.set('search', search);
 
-  useEffect(() => { loadUsers(); }, [loadUsers]);
+  const { data, isLoading: loading } = useSWRFetch(`/api/v1/admin/users?${params}`);
+  const users: UserSummary[] = data?.users || [];
+  const total = data?.total || 0;
 
   const openUser = async (u: UserSummary) => {
     setSelectedUser(u);
@@ -620,28 +610,17 @@ function UsersTab() {
 // ─── Transactions Tab ─────────────────────────────────────────────────────────
 
 function TransactionsTab() {
-  const [txs, setTxs] = useState<Transaction[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const loadTxs = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: '25' });
-    if (typeFilter) params.set('type', typeFilter);
-    if (statusFilter) params.set('status', statusFilter);
-    const res = await apiFetch(`/api/v1/admin/transactions?${params}`);
-    if (res.ok) {
-      const data = await res.json();
-      setTxs(data.transactions);
-      setTotal(data.total);
-    }
-    setLoading(false);
-  }, [page, typeFilter, statusFilter]);
+  const params = new URLSearchParams({ page: String(page), limit: '25' });
+  if (typeFilter) params.set('type', typeFilter);
+  if (statusFilter) params.set('status', statusFilter);
 
-  useEffect(() => { loadTxs(); }, [loadTxs]);
+  const { data, isLoading: loading } = useSWRFetch(`/api/v1/admin/transactions?${params}`);
+  const txs: Transaction[] = data?.transactions || [];
+  const total = data?.total || 0;
 
   const pages = Math.max(1, Math.ceil(total / 25));
   const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
@@ -755,23 +734,10 @@ function TransactionsTab() {
 // ─── Games Tab ────────────────────────────────────────────────────────────────
 
 function GamesTab() {
-  const [games, setGames] = useState<Game[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const loadGames = useCallback(async () => {
-    setLoading(true);
-    const res = await apiFetch(`/api/v1/admin/games?page=${page}&limit=20`);
-    if (res.ok) {
-      const data = await res.json();
-      setGames(data.games);
-      setTotal(data.total);
-    }
-    setLoading(false);
-  }, [page]);
-
-  useEffect(() => { loadGames(); }, [loadGames]);
+  const { data, isLoading: loading } = useSWRFetch(`/api/v1/admin/games?page=${page}&limit=20`);
+  const games: Game[] = data?.games || [];
+  const total = data?.total || 0;
 
   const pages = Math.max(1, Math.ceil(total / 20));
 

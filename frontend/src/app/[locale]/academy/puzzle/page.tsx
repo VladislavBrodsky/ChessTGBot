@@ -129,6 +129,7 @@ function PuzzleContent() {
               solution={puzzle.solution}
               onSolve={handleSolve}
               onFail={() => console.log('Wrong move')}
+              hintsEnabled={puzzle.id <= 10}
             />
           ) : null}
         </div>
