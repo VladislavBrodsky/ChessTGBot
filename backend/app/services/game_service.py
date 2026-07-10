@@ -735,6 +735,17 @@ class GameService:
 
             # If the opponent never joined (friendly game with wager that was cancelled/resigned/aborted before opponent joined)
             if not black_id:
+                # Idempotency guard: check if a refund transaction for this game_id already exists
+                tx_check = await session.execute(
+                    select(Transaction).where(
+                        Transaction.reference_id == game_id,
+                        Transaction.type == "refund"
+                    )
+                )
+                if tx_check.scalars().first():
+                    print(f"[GameService] Friendly lobby {game_id} already refunded. Skipping.")
+                    return
+
                 print(f"[GameService] Processing friendly game lobby cancellation refund for {game_id}")
                 bid_amount = getattr(state, "bid_amount", 0)
                 if bid_amount > 0 and white_user:

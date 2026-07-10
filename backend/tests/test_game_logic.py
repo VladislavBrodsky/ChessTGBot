@@ -274,3 +274,82 @@ async def test_heal_zombie_wagers(db_session):
     assert refund_tx is not None
     assert refund_tx.amount == 200
 
+
+@pytest.mark.asyncio
+async def test_game_service_lobby_cancellation_idempotency(db_session):
+    from app.models.user import User
+    from app.models.transaction import Transaction
+    from app.crud import user as user_crud
+    from sqlalchemy import select
+
+    # 1. Setup a test user
+    telegram_id = 99999456
+    if hasattr(db_session, "users"):
+        # Mock session pathway
+        user = User(
+            id=12345,
+            telegram_id=telegram_id,
+            first_name="LobbyTester",
+            balance=1000  # $10.00
+        )
+        db_session.add(user)
+    else:
+        # Real db pathway
+        user = await user_crud.create_user(db_session, telegram_id, "LobbyTester")
+        user.balance = 1000
+        db_session.add(user)
+        await db_session.commit()
+        await db_session.refresh(user)
+
+    # 2. Create game with wager
+    service = GameService()
+    game_id = "test_cancel_wager_game"
+    await service.create_game(game_id, is_bot_game=False, time_control_seconds=600)
+    
+    # Set game wager amount in Redis
+    state = await service.session_manager.get_game(game_id)
+    state.bid_amount = 500  # $5.00 wager
+    state.white_player_id = telegram_id
+    state.black_player_id = None
+    await service.session_manager.save_game(game_id, state)
+
+    # First call: cancel lobby
+    await service.resign_game(game_id, telegram_id)
+
+    # Verify user was refunded once
+    if not hasattr(db_session, "users"):
+        await db_session.refresh(user)
+    assert user.balance == 1500  # 1000 + 500 refund
+
+    # Verify a refund transaction was logged in the DB
+    res_refund = await db_session.execute(
+        select(Transaction).where(
+            Transaction.user_id == telegram_id,
+            Transaction.type == "refund",
+            Transaction.reference_id == game_id
+        )
+    )
+    txs = res_refund.scalars().all()
+    assert len(txs) == 1
+    assert txs[0].amount == 500
+
+    # Second call: attempt lobby cancellation again (simulating duplicate trigger)
+    await service.end_game(game_id, state)
+
+    # Verify user balance remains the same (no double refund!)
+    if not hasattr(db_session, "users"):
+        await db_session.refresh(user)
+    assert user.balance == 1500
+
+    # Verify no additional refund transaction was written
+    res_refund2 = await db_session.execute(
+        select(Transaction).where(
+            Transaction.user_id == telegram_id,
+            Transaction.type == "refund",
+            Transaction.reference_id == game_id
+        )
+    )
+    txs2 = res_refund2.scalars().all()
+    assert len(txs2) == 1
+
+
