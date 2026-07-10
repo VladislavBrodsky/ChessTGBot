@@ -10,8 +10,8 @@ import { telegramHaptic } from "@/lib/telegram";
 
 function getChangedSquares(fen1: string, fen2: string): string[] {
     try {
-        const c1 = new Chess(fen1);
-        const c2 = new Chess(fen2);
+        const c1 = new Chess(fen1, { skipValidation: true });
+        const c2 = new Chess(fen2, { skipValidation: true });
         const changed: string[] = [];
         const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -66,7 +66,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
     }, [fen]);
 
     const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    const gameForTurn = new Chess(fen === "start" ? START_FEN : fen);
+    const gameForTurn = new Chess(fen === "start" ? START_FEN : fen, { skipValidation: true });
     const isMyTurn = gameForTurn.turn() === (orientation === "white" ? "w" : "b");
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
 
     function handleSquareClick({ square }: { piece: any; square: string }) {
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        const game = new Chess(fen === "start" ? START_FEN : fen);
+        const game = new Chess(fen === "start" ? START_FEN : fen, { skipValidation: true });
         
         const playerColor = orientation === "white" ? "w" : "b";
         if (game.turn() !== playerColor) {
@@ -156,7 +156,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
         if (sourceSquare === targetSquare) return false;
 
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        const game = new Chess(fen === "start" ? START_FEN : fen);
+        const game = new Chess(fen === "start" ? START_FEN : fen, { skipValidation: true });
         
         const playerColor = orientation === "white" ? "w" : "b";
         

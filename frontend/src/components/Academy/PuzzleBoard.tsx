@@ -15,13 +15,13 @@ interface PuzzleBoardProps {
 }
 
 export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, orientation = 'white' }: PuzzleBoardProps) {
- const [game, setGame] = useState(new Chess(initialFen));
+ const [game, setGame] = useState(new Chess(initialFen, { skipValidation: true }));
  const [moveIndex, setMoveIndex] = useState(0);
  const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
 
  function safeGameMutate(modify: (g: Chess) => void) {
  setGame((g) => {
- const update = new Chess(g.fen());
+ const update = new Chess(g.fen(), { skipValidation: true });
  modify(update);
  return update;
  });
@@ -38,7 +38,7 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
 
  let moveResult = null;
  try {
- const tempGame = new Chess(game.fen());
+ const tempGame = new Chess(game.fen(), { skipValidation: true });
  moveResult = tempGame.move(move);
  } catch (e) {
  return false;
@@ -106,7 +106,7 @@ export default function PuzzleBoard({ initialFen, solution, onSolve, onFail, ori
  }
 
  function reset() {
- setGame(new Chess(initialFen));
+ setGame(new Chess(initialFen, { skipValidation: true }));
  setMoveIndex(0);
  setStatus('playing');
  }

@@ -124,6 +124,7 @@ function PuzzleContent() {
             </div>
           ) : puzzle ? (
             <PuzzleBoard
+              key={puzzle.id}
               initialFen={puzzle.fen}
               solution={puzzle.solution}
               onSolve={handleSolve}

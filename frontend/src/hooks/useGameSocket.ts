@@ -34,11 +34,11 @@ export const useGameSocket = (gameId: string) => {
             setGameState(data);
             setFen(data.fen);
             try {
-                chess.load(data.fen);
+                chess.load(data.fen, { skipValidation: true });
             } catch (e: any) {
                 console.error("Invalid FEN:", data.fen);
                 logClientMessage(
-                    "ERROR",
+                    "WARNING",
                     `chess.load failed for FEN: ${data.fen} | error: ${e?.message || e?.toString()}`
                 );
             }
@@ -67,7 +67,7 @@ export const useGameSocket = (gameId: string) => {
                         }
                     } catch (err: any) {
                         console.error("Stockfish/Minimax execution failed entirely:", err);
-                        logClientMessage("ERROR", `Stockfish/Minimax failed entirely: ${err?.message || err}`);
+                        logClientMessage("WARNING", `Stockfish/Minimax failed entirely: ${err?.message || err}`);
                     }
                 }, 800); // 800ms natural delay
             }
@@ -77,7 +77,7 @@ export const useGameSocket = (gameId: string) => {
             setError(data.message);
             setTimeout(() => setError(null), 3000);
             logClientMessage(
-                "ERROR",
+                "WARNING",
                 `Game socket error event: ${data.message}`
             );
         };
@@ -161,7 +161,7 @@ export const useGameSocket = (gameId: string) => {
         } catch (e: any) {
             console.error("Client move error:", e);
             logClientMessage(
-                "ERROR",
+                "WARNING",
                 `Client move exception for cleanMove on game ${gameId}: ${e?.message || e?.toString()} | move details: from=${move.from}, to=${move.to}`
             );
             return false;
