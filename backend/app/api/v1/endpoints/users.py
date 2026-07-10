@@ -5,7 +5,7 @@ from app.core.database import get_db, get_read_db
 from app.crud import user as user_crud
 from pydantic import BaseModel
 from app.models.user import User
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import get_current_user, ip_rate_limit
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -313,7 +313,7 @@ async def get_user_stats(
         bot_username=settings.TELEGRAM_BOT_USERNAME
     )
 
-@router.post("/sync", response_model=UserStats)
+@router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
 async def sync_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)

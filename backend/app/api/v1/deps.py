@@ -303,3 +303,50 @@ def rate_limit(limit: int, window: int):
         _rate_limits[user_key] = history
         
     return check_rate_limit
+
+
+def ip_rate_limit(limit: int, window: int):
+    """
+    FastAPI dependency for rate limiting by hashed client IP.
+    """
+    async def check_ip_rate_limit(request: Request):
+        ip = extract_client_ip_from_request(request)
+        if not ip:
+            return
+        
+        ip_h = hash_ip(ip)
+        key = f"rl:ip:{ip_h}:{request.url.path}"
+        now = time.time()
+        
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        use_redis = session_mgr.redis and not session_mgr._use_memory
+
+        if use_redis:
+            try:
+                current_count_str = await session_mgr.redis.get(key)
+                if current_count_str:
+                    current_count = int(current_count_str)
+                    if current_count >= limit:
+                        raise HTTPException(status_code=429, detail="Too many requests from this IP. Please try again later.")
+                    await session_mgr.redis.incr(key)
+                else:
+                    await session_mgr.redis.set(key, "1", ex=window)
+                return
+            except HTTPException:
+                raise
+            except Exception:
+                SessionManager._use_memory = True
+                pass
+
+        # In-memory fallback
+        history = _rate_limits.get(key, [])
+        history = [t for t in history if now - t < window]
+        
+        if len(history) >= limit:
+            raise HTTPException(status_code=429, detail="Too many requests from this IP. Please try again later.")
+            
+        history.append(now)
+        _rate_limits[key] = history
+
+    return check_ip_rate_limit
