@@ -53,7 +53,7 @@ const IconWager = () => (
   </svg>
 );
 const IconCrown = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-amber-400">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
     <path d="M3 20h18v2H3z"/>
   </svg>
@@ -141,11 +141,11 @@ export default function MembershipPage() {
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative overflow-hidden bg-gradient-to-b from-[#140e08] via-brand-void to-brand-void">
-      {/* Background Ambient Radial Glow */}
+    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative overflow-hidden bg-gradient-to-b from-brand-gold/5 via-brand-void to-brand-void">
+      {/* Background Ambient Radial Glow matching user theme */}
       <div 
         className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[350px] h-[350px] rounded-full pointer-events-none opacity-20 filter blur-[120px]"
-        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.6) 0%, rgba(0,0,0,0) 80%)' }}
+        style={{ background: 'radial-gradient(circle, var(--text-gold) 0%, rgba(0,0,0,0) 80%)' }}
       />
 
       <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
@@ -170,17 +170,17 @@ export default function MembershipPage() {
             <motion.div 
               animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-[22px] bg-amber-500/20 blur-xl pointer-events-none"
+              className="absolute inset-0 rounded-[22px] bg-brand-gold/20 blur-xl pointer-events-none"
             />
-            <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-[0_8px_32px_rgba(245,158,11,0.25)] border border-amber-300/30">
+            <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-brand-gold to-brand-gold/70 text-brand-void flex items-center justify-center shadow-[0_8px_32px_rgba(var(--color-brand-gold),0.25)] border border-brand-gold/30">
               <IconCrown />
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent leading-none drop-shadow-sm">
+            <h1 className="text-2xl font-black tracking-tighter uppercase bg-gradient-to-r from-brand-primary via-brand-gold to-brand-primary bg-clip-text text-transparent leading-none">
               {stripEmojis(tm('title'))}
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500/70 mt-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold opacity-80 mt-2">
               {tm('subtitle')}
             </p>
           </div>
@@ -191,11 +191,11 @@ export default function MembershipPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full bg-brand-surface/40 backdrop-blur-md border border-amber-500/20 rounded-[20px] p-4 flex items-center gap-3 shadow-md"
+            className="w-full bg-brand-surface/40 backdrop-blur-md border border-brand-gold/20 rounded-[20px] p-4 flex items-center gap-3 shadow-md"
           >
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse shrink-0" />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400/80">Active Membership</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">Active Membership</span>
               <span className="text-xs font-bold text-brand-primary">
                 Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
@@ -210,7 +210,7 @@ export default function MembershipPage() {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('monthly'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'monthly'
-                ? "bg-brand-surface/80 border-amber-500 shadow-[0_4px_20px_rgba(245,158,11,0.1)] text-brand-primary"
+                ? "bg-brand-surface/80 border-brand-gold shadow-[0_4px_20px_rgba(var(--color-brand-gold),0.1)] text-brand-primary"
                 : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
             }`}
           >
@@ -218,7 +218,7 @@ export default function MembershipPage() {
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-black tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
-                <span className="text-xs font-black opacity-40 mb-0.5">.00</span>
+                <span className="text-xs font-black opacity-45 mb-0.5">.00</span>
               </div>
               <span className="text-[8px] font-bold block mt-1 uppercase opacity-40">{tm('per_month')}</span>
             </div>
@@ -229,24 +229,24 @@ export default function MembershipPage() {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('annual'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'annual'
-                ? "bg-[#20150b]/80 border-amber-500 shadow-[0_4px_20px_rgba(245,158,11,0.15)] text-brand-primary"
+                ? "bg-brand-surface/80 border-brand-gold shadow-[0_4px_20px_rgba(var(--color-brand-gold),0.15)] text-brand-primary"
                 : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
             }`}
           >
             {/* Savings Badge */}
             <div className="absolute top-0 right-0">
-              <div className="px-2 py-1 text-[7px] font-black uppercase tracking-wider rounded-bl-xl bg-amber-500 text-brand-void">
+              <div className="px-2 py-1 text-[7px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
                 15% OFF
               </div>
             </div>
 
-            <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">{tm('annual')}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold">{tm('annual')}</span>
             <div>
               <div className="flex items-end leading-none">
-                <span className="text-2xl font-black tracking-tighter text-amber-400">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-xs font-black text-amber-500/50 mb-0.5">/mo</span>
+                <span className="text-2xl font-black tracking-tighter text-brand-gold">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
+                <span className="text-xs font-black text-brand-gold opacity-50 mb-0.5">/mo</span>
               </div>
-              <span className="text-[8px] font-bold block mt-1 uppercase opacity-50 text-amber-500/80">
+              <span className="text-[8px] font-bold block mt-1 uppercase opacity-50 text-brand-gold">
                 ${(ANNUAL_CENTS / 100).toFixed(0)} billed yearly
               </span>
             </div>
@@ -261,9 +261,9 @@ export default function MembershipPage() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="flex items-center gap-3 px-4 py-3 bg-brand-surface/50 backdrop-blur-sm border border-brand-border-opacity-10 rounded-[18px] hover:border-amber-500/20 transition-all duration-300 group"
+              className="flex items-center gap-3 px-4 py-3 bg-brand-surface/50 backdrop-blur-sm border border-brand-border-opacity-10 rounded-[18px] hover:border-brand-gold/20 transition-all duration-300 group"
             >
-              <div className="w-9 h-9 rounded-[12px] bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-9 h-9 rounded-[12px] bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center text-brand-gold shrink-0 group-hover:scale-105 transition-transform duration-300">
                 {f.icon}
               </div>
               <div className="flex flex-col flex-1 min-w-0">
@@ -274,7 +274,7 @@ export default function MembershipPage() {
                   {stripEmojis(f.desc)}
                 </span>
               </div>
-              <FaCheck className="text-amber-500/80 shrink-0" fontSize={10} />
+              <FaCheck className="text-brand-gold shrink-0" fontSize={10} />
             </motion.div>
           ))}
         </div>
@@ -286,10 +286,10 @@ export default function MembershipPage() {
             whileTap={submitting ? {} : { scale: 0.985 }}
             onClick={handleSubscribe}
             disabled={submitting}
-            className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(245,158,11,0.15)] relative overflow-hidden ${
+            className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
               submitting 
-                ? 'opacity-60 cursor-not-allowed bg-amber-500 text-brand-void' 
-                : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-brand-void hover:opacity-95'
+                ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
+                : 'bg-brand-gold text-brand-void hover:opacity-95'
             }`}
           >
             {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
@@ -321,7 +321,7 @@ export default function MembershipPage() {
         {/* ── XP Upgrade (Free Path) ───────────────────────────── */}
         {stats && !stats.is_premium && (
           <div className="w-full bg-brand-surface/40 backdrop-blur-sm border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 opacity-70 block">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold opacity-80 block">
               {tm('xp_upgrade_badge')}
             </span>
             <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
@@ -330,12 +330,12 @@ export default function MembershipPage() {
             <p className="text-[10px] text-brand-primary opacity-50 leading-relaxed">
               {tm('xp_upgrade_desc')}
             </p>
-            <div className="bg-amber-500/10 rounded-xl py-2 border border-amber-500/25 text-[10px] font-black uppercase text-amber-400 tracking-widest max-w-[220px] mx-auto">
+            <div className="bg-brand-gold/10 rounded-xl py-2 border border-brand-gold/25 text-[10px] font-black uppercase text-brand-gold tracking-widest max-w-[220px] mx-auto">
               {tm('xp_upgrade_cost', { xp: stats.xp })}
             </div>
             <button
               onClick={handleXpUpgrade}
-              className="w-full py-3 rounded-2xl border border-amber-500/30 bg-transparent text-amber-400 text-[11px] font-black uppercase tracking-widest hover:bg-amber-500/5 transition-all active:scale-[0.98]"
+              className="w-full py-3 rounded-2xl border border-brand-gold/30 bg-transparent text-brand-gold text-[11px] font-black uppercase tracking-widest hover:bg-brand-gold/5 transition-all active:scale-[0.98]"
             >
               {tm('xp_upgrade_btn')}
             </button>
@@ -367,17 +367,17 @@ export default function MembershipPage() {
               exit={{ scale: 0.92, y: 20, opacity: 0 }}
               className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-brand-void shadow-lg border border-amber-300/20">
+              <div className="w-20 h-20 rounded-[24px] bg-brand-gold text-brand-void flex items-center justify-center shadow-lg border border-brand-gold/20">
                 <IconCrown />
               </div>
               <div className="space-y-1.5">
                 <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('success_title'))}</h2>
-                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
+                <p className="text-[10px] font-bold text-brand-gold uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
               </div>
               <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
               <button
                 onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-brand-void font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                className="w-full py-4 rounded-2xl bg-brand-gold text-brand-void font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
               >
                 {stripEmojis(tm('success_btn'))}
               </button>
@@ -399,7 +399,7 @@ export default function MembershipPage() {
               exit={{ scale: 0.92, y: 20, opacity: 0 }}
               className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
             >
-              <div className="w-20 h-20 rounded-[24px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center text-amber-500">
+              <div className="w-20 h-20 rounded-[24px] bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center text-brand-gold">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
                   <path d="M6 3h12l4 6-10 12L2 9z"/>
                   <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
@@ -417,7 +417,7 @@ export default function MembershipPage() {
               <div className="w-full flex flex-col space-y-2.5">
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); setShowDepositModal(true); }}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-brand-void text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
+                  className="w-full py-4 rounded-2xl bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_topup_btn')}
                 </button>
