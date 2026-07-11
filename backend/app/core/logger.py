@@ -44,6 +44,13 @@ def setup_logging():
         
     logging.basicConfig(level=logging.INFO, handlers=handlers, force=True)
 
+    # httpx logs every request URL at INFO — for Telegram Bot API calls the URL
+    # contains the bot token (api.telegram.org/bot<TOKEN>/...), which would put
+    # the token in plaintext in production logs on every call. WARNING and above
+    # only; httpcore silenced likewise since it can echo the same URLs.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 class LoggingMiddleware:
     """Pure ASGI middleware for request logging and Request-ID propagation.
     
