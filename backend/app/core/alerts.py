@@ -288,8 +288,17 @@ class TelegramAlertHandler(logging.Handler):
                         _sent_alerts_cache.pop(k, None)
             
             if record.exc_info:
+                import html as html_mod
                 exc_text = logging.Formatter().formatException(record.exc_info)
-                message += f"\n\n<b>Traceback:</b>\n<pre>{exc_text[:1000]}</pre>"
+                # Keep the TAIL: the exception type and message sit at the
+                # bottom of a traceback. Head-truncation used to produce
+                # alerts that never said what actually failed. HTML-escape it,
+                # or a traceback containing < > (e.g. "Can't parse entities"
+                # errors quoting user input) breaks the alert's own HTML and
+                # the alert silently fails to send.
+                if len(exc_text) > 1000:
+                    exc_text = "…" + exc_text[-1000:]
+                message += f"\n\n<b>Traceback:</b>\n<pre>{html_mod.escape(exc_text)}</pre>"
 
             system = system_for_logger(record.name)
             try:

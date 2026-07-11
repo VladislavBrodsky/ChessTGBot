@@ -401,11 +401,12 @@ async def withdraw_funds(
 
         # Alert admins to review (reuses the rate-limited alert infra).
         try:
+            import html as html_mod
             from app.core.alerts import send_admin_alert
             await send_admin_alert(
                 "🔎 <b>Withdrawal held for review (large amount)</b>\n\n"
                 f"• <b>Transaction ID:</b> #{tx_review.id}\n"
-                f"• <b>User:</b> {updated_user.first_name} (<code>{updated_user.telegram_id}</code>)\n"
+                f"• <b>User:</b> {html_mod.escape(updated_user.first_name or '')} (<code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
                 f"• <b>Destination:</b> <code>{request.address}</code>\n\n"
                 "<i>Approve or reject via /admin/withdrawals. Funds are held (already debited).</i>",
@@ -523,6 +524,7 @@ async def withdraw_funds(
 
     # Send automated Telegram Bot notifications
     try:
+        import html as html_mod
         from app.services.telegram_bot import TelegramService
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
         
@@ -561,7 +563,7 @@ async def withdraw_funds(
             admin_text = (
                 f"<b>📤 Withdrawal Processed ({'Pending On-Chain' if is_real else 'Auto-Completed'})</b>\n\n"
                 f"• <b>Transaction ID:</b> #{tx_withdraw.id}\n"
-                f"• <b>User:</b> {updated_user.first_name} (ID: <code>{updated_user.telegram_id}</code>)\n"
+                f"• <b>User:</b> {html_mod.escape(updated_user.first_name or '')} (ID: <code>{updated_user.telegram_id}</code>)\n"
                 f"• <b>Requested Amount:</b> ${request.amount / 100:.2f} USDT\n"
                 f"• <b>Fee Deducted:</b> ${fee / 100:.2f} USDT\n"
                 f"• <b>Net Payout:</b> ${transfer_amount_cents / 100:.2f} USDT\n"

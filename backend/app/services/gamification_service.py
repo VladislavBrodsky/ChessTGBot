@@ -315,8 +315,9 @@ class GamificationService:
 
                 referrer_bonus_preview = 20 if referrer.is_premium_active else 10
                 referrer_xp_preview = 100 if referrer.is_premium_active else 50
+                import html as html_mod
                 username_display = f" (@{new_user.username})" if new_user.username else ""
-                full_name = f"{new_user.first_name} {new_user.last_name or ''}".strip()
+                full_name = html_mod.escape(f"{new_user.first_name} {new_user.last_name or ''}".strip())
                 msg = (
                     f"🎉 <b>New Recruit Joined!</b>\n\n"
                     f"👤 <b>{full_name}</b>{username_display} just joined via your referral link!\n\n"
@@ -338,7 +339,7 @@ class GamificationService:
             # Notify the new user that their signup bonus is pending 3 games
             try:
                 from app.services.telegram_bot import TelegramService
-                referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+                referrer_display = f"@{referrer.username}" if referrer.username else html_mod.escape(referrer.first_name or "")
                 new_user_bonus_preview = 10 if new_user.is_premium_active else 5
                 new_user_xp_preview = 50 if new_user.is_premium_active else 20
                 new_user_msg = (
@@ -565,8 +566,9 @@ class GamificationService:
         # 9. Notify referrer — bonus unlocked!
         try:
             from app.services.telegram_bot import TelegramService
+            import html as html_mod
             username_display = f" (@{new_user.username})" if new_user.username else ""
-            full_name = f"{new_user.first_name} {new_user.last_name or ''}".strip()
+            full_name = html_mod.escape(f"{new_user.first_name} {new_user.last_name or ''}".strip())
             referrer_msg = (
                 f"🏆 <b>Referral Bonus Unlocked!</b>\n\n"
                 f"🎮 <b>{full_name}</b>{username_display} just completed their 3rd chess game!\n\n"
@@ -583,7 +585,7 @@ class GamificationService:
         # 10. Notify the recruit — bonus unlocked!
         try:
             from app.services.telegram_bot import TelegramService
-            referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+            referrer_display = f"@{referrer.username}" if referrer.username else html_mod.escape(referrer.first_name or "")
             recruit_msg = (
                 f"🎉 <b>Signup Bonus Unlocked!</b>\n\n"
                 f"You completed 3 games — your signup reward is now yours! 🏆\n\n"
@@ -602,8 +604,8 @@ class GamificationService:
             grand_chain = await ReferralCommissionService.get_referrer_chain(db, referrer.id, levels=2)
             for idx, grand_referrer in enumerate(grand_chain):
                 g_depth = idx + 2
-                ref_user_display = f"@{new_user.username}" if new_user.username else new_user.first_name
-                referrer_display = f"@{referrer.username}" if referrer.username else referrer.first_name
+                ref_user_display = f"@{new_user.username}" if new_user.username else html_mod.escape(new_user.first_name or "")
+                referrer_display = f"@{referrer.username}" if referrer.username else html_mod.escape(referrer.first_name or "")
                 grand_msg = (
                     f"🔗 <b>Network Expansion: Level {g_depth} Recruit Active!</b>\n\n"
                     f"🟢 {ref_user_display} just completed 3 games under {referrer_display} (L1)!\n"

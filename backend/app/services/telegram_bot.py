@@ -7,6 +7,14 @@ import logging
 settings = get_settings()
 logger = logging.getLogger(__name__)
 
+# Bot HANDLER failures log here instead of __name__: the module logger
+# ("app.services.telegram_bot") is deliberately excluded from admin alerts to
+# prevent notification loops, which made handler crashes invisible (or worse,
+# surfaced only as PTB's useless "No error handlers are registered" message).
+# Alert-loop safety holds because failed alert sends still log under the
+# excluded module logger.
+bot_errors_logger = logging.getLogger("app.bot.errors")
+
 class TelegramService:
     application: Application = None
     is_currently_leader = False
@@ -304,10 +312,13 @@ class TelegramService:
             # Resolve localised strings (fallback to English)
             msgs = TelegramService.WELCOME_MESSAGES.get(lang, TelegramService.WELCOME_MESSAGES["en"])
 
-            # Personalise name
-            name = user.first_name
+            # Personalise name. MUST be HTML-escaped: Telegram display names are
+            # user-controlled and a name containing < > & makes the API reject
+            # the whole message with "Can't parse entities" (parse_mode=HTML).
+            import html as html_mod
+            name = html_mod.escape(user.first_name or "")
             if user.last_name:
-                name += f" {user.last_name}"
+                name += f" {html_mod.escape(user.last_name)}"
 
             # ── XP progress bar (8 blocks, 200 XP per level) ──────────────
             xp_per_level = TelegramService.XP_PER_LEVEL
@@ -367,14 +378,47 @@ class TelegramService:
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
         except Exception as e:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(f"Error in start command: {e}", exc_info=True)
-            err_msg = f"❌ <b>Error in start command:</b>\n<code>{e}</code>\n\n<b>Traceback:</b>\n<code>{tb[:3500]}</code>"
+            # Log for admins (routed to alerts); the user gets a friendly
+            # PLAIN-TEXT apology. Never echo the exception or a traceback back
+            # to the user: it leaks internals, and worse — if the original
+            # failure was an HTML-parse error, the exception text contains the
+            # offending markup, so an HTML-formatted error reply fails too and
+            # the exception escapes the handler entirely (the "No error
+            # handlers are registered" alert loop this replaced).
+            bot_errors_logger.error(f"Error in start command: {e}", exc_info=True)
             try:
-                await update.message.reply_text(err_msg, parse_mode="HTML")
+                await update.message.reply_text(
+                    "⚠️ Something went wrong opening the arena. Please try /start again in a moment."
+                )
             except Exception:
-                await update.message.reply_text(f"Error: {e}\nTraceback: {tb[:300]}")
+                pass
+
+    @staticmethod
+    async def on_error(update: object, context: "ContextTypes.DEFAULT_TYPE"):
+        """PTB application error handler. Without one, any exception escaping a
+        bot handler is logged as PTB's bare "No error handlers are registered"
+        ERROR — which paged admins with a truncated, typeless traceback.
+        Transient Telegram/network blips become warnings; real bugs page
+        admins with the actual exception attached.
+        """
+        err = context.error
+        try:
+            from app.core.alerts import is_transient_telegram_error
+            if err is not None and is_transient_telegram_error(err):
+                logger.warning(f"Transient Telegram error in bot handler: {err}")
+                return
+        except Exception:
+            pass
+        update_desc = ""
+        try:
+            if isinstance(update, Update) and update.effective_user:
+                update_desc = f" (update from user {update.effective_user.id})"
+        except Exception:
+            pass
+        bot_errors_logger.error(
+            f"Unhandled error in bot handler{update_desc}: {err}",
+            exc_info=err,
+        )
 
     @staticmethod
     async def language_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -487,6 +531,7 @@ class TelegramService:
             cls.application.add_handler(CommandHandler("language", cls.language_command))
             cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
             cls.application.add_handler(CallbackQueryHandler(cls.withdrawal_callback, pattern="^wd[cx]:"))
+            cls.application.add_error_handler(cls.on_error)
             
             await cls.application.initialize()
             await cls.application.start()
