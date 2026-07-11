@@ -123,6 +123,9 @@ export default function SettingsPage() {
  </div>
  </div>
  <button
+ role="switch"
+ aria-checked={theme === 'dark'}
+ aria-label={t('luminance_mode')}
  onClick={handleThemeToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  theme === 'dark' ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
@@ -152,6 +155,9 @@ export default function SettingsPage() {
  </div>
  </div>
  <button
+ role="switch"
+ aria-checked={soundEnabled}
+ aria-label={t('audio_protocol')}
  onClick={handleSoundToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  soundEnabled ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
