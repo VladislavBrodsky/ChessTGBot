@@ -287,6 +287,21 @@ class GamificationService:
             if any(u.id == new_user.id for u in referrer_chain):
                 return False
 
+            # Sybil guard: both accounts were created from the same IP — treat
+            # as self-referral from one device and record no attribution at
+            # all (no signup bonus, no commission chain).
+            if (
+                referrer.signup_ip_hash
+                and new_user.signup_ip_hash
+                and referrer.signup_ip_hash == new_user.signup_ip_hash
+            ):
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Referral attribution refused: referrer {referrer.telegram_id} and new user "
+                    f"{new_user.telegram_id} share signup IP (hash {new_user.signup_ip_hash[:12]}...)"
+                )
+                return False
+
             # Record the referral relationship — rewards are NOT granted yet.
             # They unlock once the recruit plays 3 games (see check_referral_game_milestone).
             referral = Referral(referrer_id=referrer.id, referred_user_id=new_user.id)
@@ -380,6 +395,47 @@ class GamificationService:
 
         # 3. Check if the referred user has played at least 3 games
         if new_user.games_played < 3:
+            return False
+
+        # 3b. Sybil guard: the 3 games must be REAL games. An instant resign
+        # (create account -> resign 3 bot games -> collect bonus) doesn't
+        # qualify; only games with enough moves count.
+        from app.core.config import get_settings
+        from app.models.game_history import GameHistory
+        from sqlalchemy import or_
+        settings = get_settings()
+        qualifying_res = await db.execute(
+            select(func.count(GameHistory.id)).where(
+                or_(
+                    GameHistory.white_player_id == new_user.telegram_id,
+                    GameHistory.black_player_id == new_user.telegram_id,
+                ),
+                GameHistory.total_moves >= settings.REFERRAL_MILESTONE_MIN_MOVES,
+            )
+        )
+        if int(qualifying_res.scalar() or 0) < 3:
+            return False
+
+        # 3c. Sybil guard: a referrer banks at most N signup bonuses per
+        # rolling 24h. Returning False here DEFERS the bonus (this check
+        # re-runs on the recruit's next completed game), it is not forfeited.
+        since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=24)
+        cap_res = await db.execute(
+            select(func.count(Transaction.id)).where(
+                and_(
+                    Transaction.user_id == referrer.telegram_id,
+                    Transaction.type == "referral_commission",
+                    Transaction.reference_id.like("ref_signup_bonus_%"),
+                    Transaction.created_at >= since,
+                )
+            )
+        )
+        if int(cap_res.scalar() or 0) >= settings.REFERRAL_SIGNUP_BONUS_DAILY_CAP:
+            import logging
+            logging.getLogger(__name__).warning(
+                f"Referral signup bonus deferred: referrer {referrer.telegram_id} hit the "
+                f"{settings.REFERRAL_SIGNUP_BONUS_DAILY_CAP}/24h cap"
+            )
             return False
 
         # 4. Idempotency: check if the signup bonus has already been awarded

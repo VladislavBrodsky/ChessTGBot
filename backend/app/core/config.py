@@ -117,6 +117,19 @@ class Settings(BaseSettings):
     WITHDRAWAL_CONFIRMATION_ENABLED: bool = (os.getenv("WITHDRAWAL_CONFIRMATION_ENABLED", "true").lower() != "false")
     WITHDRAWAL_CONFIRMATION_TTL_SECONDS: int = int(os.getenv("WITHDRAWAL_CONFIRMATION_TTL_SECONDS", "1800"))
 
+    # Sybil / account-farming resistance. Referral signup bonuses mint real
+    # USDT balance, so they are the farmable surface:
+    # - a referrer banks at most N signup bonuses per rolling 24h (excess
+    #   unlocks later, it is deferred rather than forfeited);
+    # - the recruit's 3 milestone games only count when they had enough moves
+    #   to be real games (instant resigns don't qualify);
+    # - accounts created from the same IP as their referrer get no referral
+    #   attribution at all;
+    # - N+ signups from one IP within 24h alert the Security system.
+    REFERRAL_SIGNUP_BONUS_DAILY_CAP: int = int(os.getenv("REFERRAL_SIGNUP_BONUS_DAILY_CAP", "5"))
+    REFERRAL_MILESTONE_MIN_MOVES: int = int(os.getenv("REFERRAL_MILESTONE_MIN_MOVES", "10"))
+    SIGNUP_IP_CLUSTER_ALERT_THRESHOLD: int = int(os.getenv("SIGNUP_IP_CLUSTER_ALERT_THRESHOLD", "5"))
+
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection

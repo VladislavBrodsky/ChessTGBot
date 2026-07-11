@@ -8,6 +8,22 @@ from app.models.gamification import Referral
 from app.services.gamification_service import GamificationService
 from app.core.config import get_settings
 
+async def _add_qualifying_games(db, telegram_id: int, n: int = 3, moves: int = 30):
+    """The signup-bonus milestone now requires 3 REAL games (total_moves >=
+    REFERRAL_MILESTONE_MIN_MOVES), not just games_played >= 3 — instant
+    resigns no longer qualify. Tests create qualifying GameHistory rows."""
+    import uuid
+    from app.models.game_history import GameHistory
+    for _ in range(n):
+        db.add(GameHistory(
+            game_id=f"qual_{uuid.uuid4().hex[:12]}",
+            white_player_id=telegram_id,
+            black_player_id=-1,
+            total_moves=moves,
+        ))
+    await db.commit()
+
+
 settings = get_settings()
 
 @pytest.mark.asyncio
@@ -64,6 +80,7 @@ async def test_process_referral_success(db_session: AsyncSession):
     db_session.add(referred)
     await db_session.commit()
     await db_session.refresh(referred)
+    await _add_qualifying_games(db_session, referred.telegram_id)
 
     milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
     assert milestone_triggered is True
@@ -119,6 +136,7 @@ async def test_process_referral_with_prefix(db_session: AsyncSession):
     db_session.add(referred)
     await db_session.commit()
     await db_session.refresh(referred)
+    await _add_qualifying_games(db_session, referred.telegram_id)
 
     milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
     assert milestone_triggered is True
@@ -177,6 +195,7 @@ async def test_process_referral_duplicate_prevented(db_session: AsyncSession):
     db_session.add(referred)
     await db_session.commit()
     await db_session.refresh(referred)
+    await _add_qualifying_games(db_session, referred.telegram_id)
 
     milestone_triggered = await GamificationService.check_referral_game_milestone(db_session, referred.id)
     assert milestone_triggered is True
@@ -424,6 +443,7 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     db_session.add(u_prem)
     await db_session.commit()
     await db_session.refresh(u_prem)
+    await _add_qualifying_games(db_session, u_prem.telegram_id)
 
     await GamificationService.check_referral_game_milestone(db_session, u_prem.id)
     await db_session.refresh(r_prem)
@@ -455,6 +475,7 @@ async def test_premium_referral_signup_boost(db_session: AsyncSession):
     db_session.add(u_norm)
     await db_session.commit()
     await db_session.refresh(u_norm)
+    await _add_qualifying_games(db_session, u_norm.telegram_id)
 
     await GamificationService.check_referral_game_milestone(db_session, u_norm.id)
     await db_session.refresh(r_norm)
@@ -1054,6 +1075,7 @@ async def test_referral_ach_self_healing(db_session: AsyncSession):
         db_session.add(rec)
         await db_session.commit()
         await db_session.refresh(rec)
+        await _add_qualifying_games(db_session, rec.telegram_id)
 
         await GamificationService.check_referral_game_milestone(db_session, rec.id)
 

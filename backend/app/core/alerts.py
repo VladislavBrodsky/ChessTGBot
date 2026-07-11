@@ -42,6 +42,7 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.services.withdrawal_policy", "treasury"),
     ("app.api.v1.endpoints.wallet", "treasury"),
     ("app.core.security", "security"),
+    ("app.services.sybil_guard", "security"),
     ("app.api.v1.endpoints.game", "realtime"),
     ("app.services.game_service", "realtime"),
     ("app.services.matchmaker", "realtime"),

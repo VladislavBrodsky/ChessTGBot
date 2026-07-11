@@ -128,16 +128,21 @@ async def get_current_user(
     local_photo_url = f"/api/v1/users/avatar/{user_id}"
 
     if not user:
-        # Auto-register
+        # Auto-register. The hashed signup IP powers the Sybil guards:
+        # same-IP referral attribution is refused, and signup clusters alert.
         user = await user_crud.create_user(
-            db, 
-            user_id, 
+            db,
+            user_id,
             telegram_user.get("first_name", f"User_{user_id}"),
             last_name=telegram_user.get("last_name"),
             username=telegram_user.get("username"),
-            photo_url=local_photo_url
+            photo_url=local_photo_url,
+            signup_ip_hash=ip_hash
         )
-        
+
+        from app.services.sybil_guard import note_signup
+        await note_signup(db, ip_hash)
+
         start_param = telegram_user.get("start_param")
         if start_param:
             code = start_param
