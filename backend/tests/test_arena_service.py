@@ -161,3 +161,38 @@ def test_leave_and_update_sid():
     service.leave(7)
     assert 7 not in service.pool
     service.update_sid(7, 'x')  # no-op, must not raise
+
+
+def test_multiple_arenas_scheduling():
+    from unittest.mock import patch
+    from app.core.config import Settings
+    
+    # Mock settings with multiple start times
+    mock_settings = Settings()
+    mock_settings.ARENA_START_UTC = "03:00, 09:00, 15:00, 21:00"
+    mock_settings.ARENA_DURATION_MINUTES = 30
+    
+    with patch("app.services.arena_service.settings", mock_settings):
+        # 1. 02:00 -> should return 03:00 today
+        now = datetime(2026, 7, 11, 2, 0, 0)
+        starts, ends = ArenaService.window_for(now)
+        assert starts == datetime(2026, 7, 11, 3, 0, 0)
+        assert ends == datetime(2026, 7, 11, 3, 30, 0)
+        
+        # 2. 03:15 (during the first window) -> should return 03:00 today
+        now = datetime(2026, 7, 11, 3, 15, 0)
+        starts, ends = ArenaService.window_for(now)
+        assert starts == datetime(2026, 7, 11, 3, 0, 0)
+        assert ends == datetime(2026, 7, 11, 3, 30, 0)
+        
+        # 3. 03:45 (after first window) -> should return 09:00 today
+        now = datetime(2026, 7, 11, 3, 45, 0)
+        starts, ends = ArenaService.window_for(now)
+        assert starts == datetime(2026, 7, 11, 9, 0, 0)
+        assert ends == datetime(2026, 7, 11, 9, 30, 0)
+        
+        # 4. 22:00 (after all today's windows) -> should return 03:00 tomorrow
+        now = datetime(2026, 7, 11, 22, 0, 0)
+        starts, ends = ArenaService.window_for(now)
+        assert starts == datetime(2026, 7, 12, 3, 0, 0)
+        assert ends == datetime(2026, 7, 12, 3, 30, 0)

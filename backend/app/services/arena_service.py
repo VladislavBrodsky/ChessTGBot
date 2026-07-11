@@ -68,13 +68,24 @@ class ArenaService:
 
     @staticmethod
     def start_time_utc() -> tuple:
-        """(hour, minute) of the daily start, from ARENA_START_UTC 'HH:MM'."""
+        """(hour, minute) of the first daily start configured in settings."""
+        times = ArenaService.start_times_utc()
+        return times[0]
+
+    @staticmethod
+    def start_times_utc() -> list:
+        """List of (hour, minute) tuples of daily starts, from ARENA_START_UTC 'HH:MM, HH:MM'."""
         raw = getattr(settings, "ARENA_START_UTC", "19:00") or "19:00"
-        try:
-            hh, mm = raw.strip().split(":")
-            return max(0, min(23, int(hh))), max(0, min(59, int(mm)))
-        except Exception:
-            return 19, 0
+        times = []
+        for part in raw.split(","):
+            try:
+                hh, mm = part.strip().split(":")
+                times.append((max(0, min(23, int(hh))), max(0, min(59, int(mm)))))
+            except Exception:
+                pass
+        if not times:
+            times = [(19, 0)]
+        return sorted(times)
 
     @staticmethod
     def duration_minutes() -> int:
@@ -85,15 +96,32 @@ class ArenaService:
 
     @classmethod
     def window_for(cls, now: datetime) -> tuple:
-        """(starts_at, ends_at) of today's arena relative to naive-UTC `now`.
-        If today's window is already fully over, returns tomorrow's."""
-        hh, mm = cls.start_time_utc()
-        starts = now.replace(hour=hh, minute=mm, second=0, microsecond=0)
-        ends = starts + timedelta(minutes=cls.duration_minutes())
-        if now >= ends:
-            starts += timedelta(days=1)
-            ends += timedelta(days=1)
-        return starts, ends
+        """(starts_at, ends_at) of the next (or current) scheduled arena window relative to naive-UTC `now`."""
+        start_configs = cls.start_times_utc()
+        duration = cls.duration_minutes()
+        
+        candidates = []
+        # Today's windows
+        for hh, mm in start_configs:
+            starts = now.replace(hour=hh, minute=mm, second=0, microsecond=0)
+            ends = starts + timedelta(minutes=duration)
+            candidates.append((starts, ends))
+            
+        # Tomorrow's windows
+        for hh, mm in start_configs:
+            starts = now.replace(hour=hh, minute=mm, second=0, microsecond=0) + timedelta(days=1)
+            ends = starts + timedelta(minutes=duration)
+            candidates.append((starts, ends))
+            
+        # Sort chronologically
+        candidates.sort(key=lambda w: w[0])
+        
+        # Return first window that has not fully ended yet
+        for starts, ends in candidates:
+            if now < ends:
+                return starts, ends
+                
+        return candidates[0]
 
     # ── DB helpers ───────────────────────────────────────────────────────────
 
@@ -306,7 +334,8 @@ async def _broadcast_arena_soon(db, arena) -> None:
     from app.models.user import User
     from app.services.telegram_bot import TelegramService
 
-    hh, mm = ArenaService.start_time_utc()
+    hh = arena.starts_at.hour
+    mm = arena.starts_at.minute
     res = await db.execute(select(User.telegram_id))
     tids = [t for (t,) in res.all() if t and t > 0]
     msg = (
