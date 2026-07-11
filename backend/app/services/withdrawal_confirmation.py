@@ -213,6 +213,65 @@ async def cancel_withdrawal(tx_id: int, from_user_id: int, nonce: str) -> str:
         )
 
 
+# Ids seen in 'processing_payout' on the previous sweep. A payout executes in
+# seconds, so anything still processing on the NEXT sweep (~5 min later) is
+# stuck — the classic case being a crash/redeploy mid-payout after the owner
+# tapped Confirm, which leaves funds debited with no payout and no hash.
+_seen_processing: set[int] = set()
+
+
+async def alert_stuck_payouts() -> int:
+    """Pages Treasury for withdrawals stuck in 'processing_payout' across two
+    consecutive sweeps. Alert-only by design: whether the on-chain transfer
+    actually happened needs a human check before refunding or re-paying.
+    Returns how many stuck payouts were alerted this pass.
+    """
+    global _seen_processing
+    from app.core.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as db:
+        res = await db.execute(
+            select(Transaction).where(
+                Transaction.type == "withdrawal",
+                Transaction.status == "processing_payout",
+            )
+        )
+        rows = res.scalars().all()
+        current_ids = {t.id for t in rows}
+        stuck = [t for t in rows if t.id in _seen_processing]
+        _seen_processing = current_ids
+
+        alerted = 0
+        for tx in stuck:
+            amount = -tx.amount
+            address = ""
+            if tx.reference_id and tx.reference_id.startswith(REF_PREFIX):
+                address = tx.reference_id.split(":", 1)[1]
+            age_min = int((_now_naive_utc() - tx.created_at).total_seconds() // 60) if tx.created_at else -1
+            try:
+                from app.core.alerts import send_alert_with_redis_rate_limit
+                await send_alert_with_redis_rate_limit(
+                    f"stuck_payout:{tx.id}",
+                    "🧊 <b>Withdrawal stuck in processing_payout</b>\n\n"
+                    f"• <b>Transaction ID:</b> #{tx.id}\n"
+                    f"• <b>User:</b> <code>{tx.user_id}</code>\n"
+                    f"• <b>Amount held:</b> ${amount / 100:.2f} USDT\n"
+                    f"• <b>Destination:</b> <code>{address or 'unknown'}</code>\n"
+                    f"• <b>Requested:</b> ~{age_min} min ago\n\n"
+                    "<i>The process likely died mid-payout after the owner confirmed. "
+                    "Check the master wallet on tonviewer for an outgoing transfer to this "
+                    "destination: if NONE was sent, reset the transaction status to "
+                    "pending_confirmation (user can re-confirm) or refund; if it WAS sent, "
+                    "set status=pending with the tx hash so the crawler can verify it. "
+                    "Do NOT blind-refund — the transfer may have broadcast.</i>",
+                    system="treasury",
+                )
+                alerted += 1
+            except Exception as alert_err:
+                logger.warning(f"Failed to alert stuck payout tx {tx.id}: {alert_err}")
+        return alerted
+
+
 async def expire_stale_confirmations() -> int:
     """Refunds pending_confirmation withdrawals older than the TTL.
     Runs periodically from the app lifespan. Returns how many were refunded.

@@ -298,3 +298,49 @@ async def test_expired_confirmations_are_refunded(db_session: AsyncSession, monk
     message, done = await wc.confirm_withdrawal(tx_id, telegram_id, wc.confirmation_nonce(tx_id, telegram_id))
     assert done is True
     assert "already" in message
+
+
+@pytest.mark.asyncio
+async def test_stuck_payout_alerts_on_second_sweep(db_session: AsyncSession, monkeypatch, test_engine):
+    """A withdrawal left in processing_payout (crash mid-payout) must page
+    Treasury — but only once it survives two consecutive sweeps, so a payout
+    merely in flight during a sweep doesn't false-alarm."""
+    if test_engine is None:
+        return
+    _enable_confirmation(monkeypatch)
+    wc._seen_processing = set()          # isolate from other tests
+
+    telegram_id = 778009
+    await _make_user(db_session, telegram_id, 2000)
+    tx = await _make_held_tx(db_session, telegram_id, 1000)
+    tx_id = tx.id
+    # Simulate the crash window: claimed for payout, never finished.
+    tx.status = "processing_payout"
+    db_session.add(tx)
+    await db_session.commit()
+
+    with patch("app.core.alerts.send_alert_with_redis_rate_limit", new_callable=AsyncMock) as mock_alert:
+        # First sweep: observed, not yet alerted.
+        assert await wc.alert_stuck_payouts() == 0
+        mock_alert.assert_not_awaited()
+
+        # Second sweep: still processing -> page Treasury.
+        assert await wc.alert_stuck_payouts() == 1
+        mock_alert.assert_awaited_once()
+        args, kwargs = mock_alert.await_args
+        assert args[0] == f"stuck_payout:{tx_id}"
+        assert "processing_payout" in args[1]
+        assert DEST_ADDRESS in args[1]
+        assert kwargs.get("system") == "treasury"
+
+    # Resolved (e.g. admin set it to pending) -> no further alerts, and the
+    # id ages out of the seen-set.
+    tx = await _get_tx(db_session, tx_id)
+    tx.status = "pending"
+    db_session.add(tx)
+    await db_session.commit()
+
+    with patch("app.core.alerts.send_alert_with_redis_rate_limit", new_callable=AsyncMock) as mock_alert:
+        assert await wc.alert_stuck_payouts() == 0
+        mock_alert.assert_not_awaited()
+    assert tx_id not in wc._seen_processing

@@ -118,15 +118,19 @@ async def start_redis_recovery_loop():
 
 
 async def start_withdrawal_confirmation_sweeper():
-    """Refunds withdrawals whose owner-confirmation TTL elapsed, so held
-    funds are never stranded when the user ignores the Confirm DM."""
-    from app.services.withdrawal_confirmation import expire_stale_confirmations
+    """Refunds withdrawals whose owner-confirmation TTL elapsed (held funds
+    are never stranded when the user ignores the Confirm DM), and pages
+    Treasury for payouts stuck mid-execution after a crash/redeploy."""
+    from app.services.withdrawal_confirmation import expire_stale_confirmations, alert_stuck_payouts
     while True:
         try:
             await asyncio.sleep(300)
             refunded = await expire_stale_confirmations()
             if refunded:
                 logger.info(f"Withdrawal-confirmation sweeper refunded {refunded} expired request(s).")
+            stuck = await alert_stuck_payouts()
+            if stuck:
+                logger.warning(f"Withdrawal-confirmation sweeper flagged {stuck} stuck payout(s).")
         except asyncio.CancelledError:
             break
         except Exception as e:
