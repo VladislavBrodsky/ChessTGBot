@@ -29,13 +29,22 @@ then commit the result. A stale committed export has caused confusion during deb
 - **backend**: `pip install` → import check (`python -c "import app.main"`) → `python -m pytest`.
 - **static-export-fresh**: the staleness guard above (PRs only).
 
-Run locally: `cd frontend && npm test` and `cd backend && python -m pytest`. Backend tests live in `backend/app/tests/test_security.py` (pure-unit, no DB/network); `test_head_requests.py` and `verify_fix.py` there are manual live-server scripts, excluded from collection via `backend/pytest.ini`.
+Run locally: `cd frontend && npm test` and `cd backend && python -m pytest` (on Windows use the project venv: `./venv/Scripts/python -m pytest`). The main suite is `backend/tests/` (~260 tests, needs the docker-compose Postgres for the `_test` database); `backend/app/tests/` holds a few pure-unit tests plus manual live-server scripts excluded via `backend/pytest.ini`.
 
 ## iOS Telegram gotchas (hard-won)
 
 - The app calls `tg.requestFullscreen()` (Bot API 8.0+) — on iOS the WebView covers the whole screen and Telegram defines `--tg-content-safe-area-inset-bottom: 0px`. A `var()` fallback chain therefore short-circuits at 0px and never reaches `env(safe-area-inset-bottom)`. Bottom insets MUST be combined with `max()`, not `var()` fallbacks — see `--app-safe-bottom` in `frontend/src/app/globals.css`. Every fixed bottom element must use `--app-safe-bottom`.
 - `viewport-fit=cover` is required (`frontend/src/app/[locale]/layout.tsx`) so iOS exposes non-zero `env(safe-area-inset-*)`.
 - The bottom navbar is NEVER hidden on main dashboard pages (`shouldHideNavbar` in `frontend/src/components/LayoutWrapper.tsx`). Do not add conditional hides there — overlays cover it with z-index >= 100 instead. Past conditional hides (CSS `:has()` rules, stale `activeGameId`, context hides) repeatedly stranded users with no menu.
+
+## Money & bot conventions (hard-won)
+
+- **HTML-escape every user-controlled string** (Telegram display names above all) before it enters a `parse_mode="HTML"` message — bot replies, referral notifications, admin alerts. A name containing `<` crashed `/start` for weeks (`BadRequest: Can't parse entities`), and the HTML error-reply-with-exception pattern made it unreportable. Alert tracebacks are tail-truncated and escaped for the same reason.
+- **Bot handler errors** must log via the `app.bot.errors` logger, not the module logger — `app.services.telegram_bot` is excluded from admin alerts to prevent notification loops, so errors logged there are invisible.
+- **Admin alerts** are attributed to named systems (GAME CLIENT / CORE API / TREASURY / REALTIME / SECURITY) via the logger-prefix map in `backend/app/core/alerts.py`; new money/security modules should be added to that map. Alert fingerprinting dedupes on the message's FIRST line — keep distinguishing detail there.
+- **Withdrawals** below the review threshold are held as `pending_confirmation` until the owner taps Confirm in the bot chat (HMAC nonce in callback_data; `backend/app/services/withdrawal_confirmation.py`). Never blind-refund a withdrawal in `processing_payout` or with a broadcast-timeout — the transfer may have hit the chain; check tonviewer first.
+- **The platform's only money entry** is the USDT deposit transfer to the master wallet with a `ref_` comment. The in-app swap (STON.fi) and Transak both deliver to the USER's wallet; keep it that way — don't add credit paths without dedup keys.
+- **Debugging production client alerts**: match the alert's `/_next/static/chunks/*` hashes and timestamp against the deploy timeline before reading code — with several sessions pushing to `main`, the crash is often in an already-replaced build. Commits carry mixed timezones (-04:00/-06:00); compare in UTC.
 
 ## Structure
 
