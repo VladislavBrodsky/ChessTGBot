@@ -774,7 +774,9 @@ body {
   height: 90%;
   background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, transparent 70%);
   filter: blur(80px);
-  animation: liquid-mesh-movement-1 20s infinite alternate ease-in-out;
+  /* Slowed 2× (20s→40s) — halves GPU compositing frequency */
+  animation: liquid-mesh-movement-1 40s infinite alternate ease-in-out;
+  will-change: transform;
   pointer-events: none;
   z-index: -1;
 }
@@ -787,7 +789,9 @@ body {
   height: 90%;
   background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
   filter: blur(80px);
-  animation: liquid-mesh-movement-2 25s infinite alternate ease-in-out;
+  /* Slowed ~2.4× (25s→60s) */
+  animation: liquid-mesh-movement-2 60s infinite alternate ease-in-out;
+  will-change: transform;
   pointer-events: none;
   z-index: -1;
 }
@@ -800,7 +804,9 @@ body {
   height: 80%;
   background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
   filter: blur(100px);
-  animation: liquid-mesh-movement-3 30s infinite alternate ease-in-out;
+  /* Slowed 3× (30s→90s) */
+  animation: liquid-mesh-movement-3 90s infinite alternate ease-in-out;
+  will-change: transform;
   pointer-events: none;
   z-index: -1;
 }
@@ -1030,6 +1036,45 @@ body {
   .premium-liquid-mesh-blob2,
   .premium-liquid-mesh-blob3 {
     animation: none !important;
+    will-change: auto;
+  }
+
+  /* Freeze the spinning conic-gradient border on the premium card. */
+  .premium-liquid-border::before,
+  .premium-liquid-border::after {
+    animation: none !important;
+  }
+
+  /* Freeze the pulsing box-shadow on the premium card wrapper. */
+  .premium-liquid-border {
+    animation: none !important;
+  }
+
+  /* Freeze the shimmer sweep on loading skeletons / progress bars. */
+  .animate-shimmer {
+    animation: none !important;
+  }
+
+  /* Freeze the radar sonar sweep in matchmaking. */
+  .animate-radar-sweep {
+    animation: none !important;
+  }
+
+  /* Freeze the portal-pulse glow on locked academy cells. */
+  .animate-active-portal {
+    animation: none !important;
+  }
+
+  /* Freeze the shifting gradient on play-chess premium card pseudo-elements. */
+  .play-chess-card-premium::before,
+  .play-chess-card-premium::after {
+    animation: none !important;
+  }
+
+  /* Freeze the liquid gradient button shift. */
+  .premium-liquid-button {
+    animation: none !important;
+    background-position: 0% 50% !important;
   }
 }
 
