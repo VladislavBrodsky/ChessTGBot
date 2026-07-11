@@ -5,3 +5,4 @@ from app.models.transaction import Transaction
 from app.models.xp_transaction import XpTransaction
 
 from app.models.arena import Arena, ArenaPlayer
+from app.models.telemetry import TelemetryLog

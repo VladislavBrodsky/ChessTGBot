@@ -473,5 +473,30 @@
     "waiting_hint": "Vous y êtes ! Appariement automatique — victoire 3 pts, nulle 1. Jouez jusqu'à la fin du chrono.",
     "pts": "pts",
     "you": "Vous"
+  },
+  "Onboarding": {
+    "skip": "Passer",
+    "back": "Retour",
+    "next": "Suivant",
+    "get_started": "Commencer",
+    "slide1_title": "FinChess Matrix Arena",
+    "slide1_subtitle": "Échecs Web3 Play-to-Earn",
+    "slide1_desc": "Bienvenue sur FinChess, la ligue d'échecs décentralisée ultime intégrée directement dans Telegram. Affrontez des joueurs mondiaux en temps réel, perfectionnez vos compétences contre des moteurs d'échecs avancés et rivalisez pour gagner de vrais enjeux en USDT.",
+    "slide2_title": "Matchmaking ELO Équitable",
+    "slide2_subtitle": "Associer, Miser & Encaisser",
+    "slide2_desc": "Notre algorithme de matchmaking dynamique garantit que vous jouez toujours contre des adversaires d'un niveau ELO comparable. Sélectionnez votre niveau de mise, sécurisez vos enjeux et réclamez 95% de la cagnotte lorsque vous obtenez un échec et mat.",
+    "slide3_title": "Réseau de Parrainage à 3 Niveaux",
+    "slide3_subtitle": "Favorisez la Viralité & Gagnez des Commissions Passives",
+    "slide3_desc": "Recrutez d'autres joueurs en utilisant votre code de parrainage unique. En tant que membre Premium, vous gagnerez des commissions USDT dynamiques jusqu'à 3 niveaux de profondeur pour chaque match en argent réel joué par vos invités.",
+    "slide4_title": "Progression XP & Premium",
+    "slide4_subtitle": "Réclamez des Privilèges d'Élite",
+    "slide4_desc": "Gagnez des points d'expérience (XP) en accomplissant des tâches quotidiennes et en jouant des matchs. Économisez vos XP pour passer à Premium gratuitement — débloquant des multiplicateurs de récompenses 2x, un matchmaking prioritaire, des thèmes 3D personnalisés et des analyses de jeu par IA."
+  },
+  "AlertModal": {
+    "confirmation": "Confirmation",
+    "system_notice": "Avis du Système",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer"
   }
 }

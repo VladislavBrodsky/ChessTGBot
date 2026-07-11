@@ -473,5 +473,30 @@
     "waiting_hint": "Du bist dabei! Wir paaren dich automatisch — Sieg 3 Punkte, Remis 1. Spiele bis die Zeit abläuft.",
     "pts": "Pkt",
     "you": "Du"
+  },
+  "Onboarding": {
+    "skip": "Überspringen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "get_started": "Starten",
+    "slide1_title": "FinChess Matrix Arena",
+    "slide1_subtitle": "Play-to-Earn Web3 Schach",
+    "slide1_desc": "Willkommen bei FinChess, der ultimativen dezentralen Schachliga direkt in Telegram. Treten Sie in Echtzeit gegen globale Spieler an, verbessern Sie Ihre Fähigkeiten gegen fortschrittliche Schach-Engines und spielen Sie um echte USDT-Einsätze.",
+    "slide2_title": "Faires ELO-Matchmaking",
+    "slide2_subtitle": "Paarung, Einsatz & Auszahlung",
+    "slide2_desc": "Unser dynamischer Matchmaking-Algorithmus stellt sicher, dass Sie immer gegen Gegner mit einer vergleichbaren ELO-Bewertung spielen. Wählen Sie Ihre Einsatzstufe, sperren Sie Ihre Einsätze sicher und fordern Sie 95% des Preispools ein, wenn Sie ein Schachmatt erzielen.",
+    "slide3_title": "Dreistufiges Empfehlungsnetzwerk",
+    "slide3_subtitle": "Virale Verbreitung & Passive Provisionen",
+    "slide3_desc": "Werben Sie andere Spieler mit Ihrem einzigartigen Empfehlungscode an. Als Premium-Mitglied erhalten Sie dynamische USDT-Provisionen bis zu 3 Stufen tief für jedes einzelne Cash-Match, das von Ihren Geworbenen gespielt wird.",
+    "slide4_title": "XP-Fortschritt & Premium",
+    "slide4_subtitle": "Sichern Sie sich Elite-Privilegien",
+    "slide4_desc": "Verdienen Sie Erfahrungspunkte (XP), indem Sie tägliche Aufgaben erledigen und Spiele bestreiten. Sparen Sie Ihre XP, um kostenlos auf Premium aufzusteigen — und schalten Sie 2x Belohnungsmultiplikatoren, prioritäres Matchmaking, benutzerdefinierte 3D-Themes und KI-gestützte Spielanalysen frei."
+  },
+  "AlertModal": {
+    "confirmation": "Bestätigung",
+    "system_notice": "Systemhinweis",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen"
   }
 }

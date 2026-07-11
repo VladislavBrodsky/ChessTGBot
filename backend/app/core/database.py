@@ -67,6 +67,7 @@ async def init_db():
     from app.models.transaction import Transaction
     from app.models.xp_transaction import XpTransaction
     from app.models.broadcast import Broadcast  # noqa: F401 — registers table with Base
+    from app.models.telemetry import TelemetryLog  # noqa: F401
     
     is_sqlite = engine.url.drivername.startswith("sqlite")
     if is_sqlite:

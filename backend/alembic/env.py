@@ -52,6 +52,8 @@ from app.models.user import User
 from app.models.game_history import GameHistory
 from app.models.gamification import Task, UserTask, Referral
 from app.models.broadcast import Broadcast
+from app.models.arena import Arena, ArenaPlayer
+from app.models.telemetry import TelemetryLog
 
 target_metadata = Base.metadata
 

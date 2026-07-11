@@ -14,13 +14,15 @@ import { useUser } from "@/context/UserContext";
 interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
-  walletAddress: string;
+  walletAddress?: string;
   tgUser: any;
   tw: any;
+  chosenWager?: number;
+  walletBalance?: number;
 }
 
 // Transak fiat on-ramp config. Card tab is only shown when an API key is provided.
-// Funds are delivered to the user's OWN connected wallet as USDT; the platform
+// Funds are delivered to the user's OWN wallet as USDT; the platform
 // balance is then credited via the on-chain deposit flow (ref_ comment + 5% fee).
 const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
 const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
@@ -41,6 +43,8 @@ export default function DepositModal({
   walletAddress,
   tgUser,
   tw,
+  chosenWager,
+  walletBalance,
 }: DepositModalProps) {
   useNavbarHideWhileMounted();
   const [tonConnectUI] = useTonConnectUI();
@@ -48,9 +52,14 @@ export default function DepositModal({
   const { stats } = useUser();
 
   const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
-  const cardEnabled = !!TRANSAK_API_KEY;
+  const cardEnabled = !!TRANSAK_API_KEY && chosenWager === undefined;
 
-  const [depositAmount, setDepositAmount] = useState<string>("10");
+  const [depositAmount, setDepositAmount] = useState<string>(() => {
+    if (chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance) {
+      return ((chosenWager - walletBalance) / 100).toFixed(2);
+    }
+    return "10";
+  });
   const [currency, setCurrency] = useState<'GRAM' | 'USDT' | 'USDC' | 'BTC' | 'ETH'>('USDT');
   const [tokenAmount, setTokenAmount] = useState<string>("10.00");
   const [prices, setPrices] = useState<{ [key: string]: number }>({
@@ -387,7 +396,32 @@ export default function DepositModal({
         </button>
 
         <div className="space-y-4">
-          <h3 className="text-base font-black uppercase tracking-widest text-brand-primary">{tw('deposit_invoice')}</h3>
+          <div className="flex flex-col">
+            <h3 className="text-base font-black uppercase tracking-widest text-brand-primary leading-tight">{tw('deposit_invoice')}</h3>
+            {chosenWager !== undefined && walletBalance !== undefined && (
+              <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-[0.2em] mt-0.5">
+                Quick Top Up & Play
+              </p>
+            )}
+          </div>
+
+          {chosenWager !== undefined && walletBalance !== undefined && (
+            <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-xs font-bold text-brand-primary/80 leading-relaxed space-y-2.5 shadow-inner">
+              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+                <div className="text-left opacity-50">Wager Stake</div>
+                <div className="text-right text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+                <div className="text-left opacity-50">Your Balance</div>
+                <div className="text-right text-brand-primary/70 font-black">${(walletBalance / 100).toFixed(2)} USDT</div>
+              </div>
+              <div className="h-px bg-brand-border-opacity-5 my-0.5" />
+              <div className="grid grid-cols-2 gap-2 text-[11px] uppercase tracking-widest font-black">
+                <div className="text-left text-brand-primary opacity-60">Deficit Needed</div>
+                <div className="text-right text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
+              </div>
+            </div>
+          )}
 
           {cardEnabled && (
             <div className="flex p-1 rounded-xl bg-brand-void border border-brand-border-opacity-10 gap-1">
@@ -695,6 +729,16 @@ export default function DepositModal({
           <div className="w-full pt-1">
             {successMessage && successMessage.trim() && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
             {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
+            
+            {chosenWager !== undefined && (
+              <button
+                onClick={onClose}
+                disabled={processing}
+                className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
+              >
+                Back
+              </button>
+            )}
           </div>
         </div>
       </motion.div>

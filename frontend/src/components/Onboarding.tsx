@@ -3,44 +3,46 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChessKnight, FaWallet, FaShareAlt, FaCrown, FaArrowRight, FaArrowLeft, FaTimes } from 'react-icons/fa';
+import { useTranslations } from 'next-intl';
 
 interface OnboardingProps {
   onClose: () => void;
 }
 
 export default function Onboarding({ onClose }: OnboardingProps) {
+  const t = useTranslations('Onboarding');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0); // -1 for back, 1 for next
 
   const slides = [
     {
-      title: "FinChess Matrix Arena",
-      subtitle: "Play-to-Earn Web3 Chess",
-      description: "Welcome to FinChess, the ultimate decentralized chess league built directly inside Telegram. Match against global players in real-time, hone your skills against advanced chess engines, and compete to win real USDT stakes.",
+      title: t('slide1_title'),
+      subtitle: t('slide1_subtitle'),
+      description: t('slide1_desc'),
       icon: <FaChessKnight className="text-brand-primary text-6xl animate-pulse drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />,
       gradient: "from-blue-600/25 to-cyan-500/10",
       accentColor: "text-blue-400"
     },
     {
-      title: "Fair ELO Matchmaking",
-      subtitle: "Match, Wager & Payout",
-      description: "Our dynamic matchmaking algorithm ensures you always play against opponents of a comparable ELO rating. Select your wager tier, lock your stakes securely, and claim 97% of the prize pool when you secure checkmate.",
+      title: t('slide2_title'),
+      subtitle: t('slide2_subtitle'),
+      description: t('slide2_desc'),
       icon: <FaWallet className="text-emerald-400 text-6xl drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />,
       gradient: "from-emerald-600/25 to-teal-500/10",
       accentColor: "text-emerald-400"
     },
     {
-      title: "Three-Tier Referral Network",
-      subtitle: "Drive Virality & Earn Passive Commissions",
-      description: "Recruit other players using your unique referral code. As a Premium member, you will earn dynamic USDT rake commissions up to 3 tiers deep from every single cash match played by your invitees.",
+      title: t('slide3_title'),
+      subtitle: t('slide3_subtitle'),
+      description: t('slide3_desc'),
       icon: <FaShareAlt className="text-amber-400 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />,
       gradient: "from-amber-600/25 to-orange-500/10",
       accentColor: "text-amber-400"
     },
     {
-      title: "XP Progression & Premium",
-      subtitle: "Claim Elite Privileges",
-      description: "Earn Experience Points (XP) by completing daily tasks and playing matches. Save your XP to upgrade to Premium for free—unlocking 2x rewards multipliers, priority matching, custom 3D themes, and AI-powered game reviews.",
+      title: t('slide4_title'),
+      subtitle: t('slide4_subtitle'),
+      description: t('slide4_desc'),
       icon: <FaCrown className="text-brand-gold text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />,
       gradient: "from-brand-gold/15 to-brand-gold/5",
       accentColor: "text-brand-gold"
@@ -135,8 +137,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         <button
           onClick={handleComplete}
           className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
-          title="Skip onboarding"
-          aria-label="Skip onboarding"
+          title={t('skip')}
+          aria-label={t('skip')}
         >
           <FaTimes className="text-lg" />
         </button>
@@ -203,17 +205,17 @@ export default function Onboarding({ onClose }: OnboardingProps) {
             <button
               onClick={handleBack}
               disabled={currentSlide === 0}
-              aria-label="Previous slide"
+              aria-label={t('back')}
               className={`glass-button flex items-center gap-2 px-5 py-3.5 font-bold text-xs tracking-wider uppercase transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 currentSlide === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'
               }`}
             >
-              <FaArrowLeft className="text-[10px]" /> Back
+              <FaArrowLeft className="text-[10px]" /> {t('back')}
             </button>
 
             <button
               onClick={handleNext}
-              aria-label={currentSlide === slides.length - 1 ? "Get Started" : "Next slide"}
+              aria-label={currentSlide === slides.length - 1 ? t('get_started') : t('next')}
               className={`flex flex-1 items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-xs tracking-wider uppercase shadow-lg transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 currentSlide === slides.length - 1
                   ? 'action-button bg-purple-600 text-white'
@@ -221,10 +223,10 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               }`}
             >
               {currentSlide === slides.length - 1 ? (
-                "Get Started"
+                t('get_started')
               ) : (
                 <>
-                  Next <FaArrowRight className="text-[10px]" />
+                  {t('next')} <FaArrowRight className="text-[10px]" />
                 </>
               )}
             </button>

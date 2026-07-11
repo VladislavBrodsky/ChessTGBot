@@ -33,12 +33,7 @@ export default function PuzzleBoard({
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
       const update = new Chess(g.fen(), { skipValidation: true });
-      try {
-        modify(update);
-      } catch (e) {
-        console.warn('PuzzleBoard: safeGameMutate move failed', e);
-        return g;
-      }
+      modify(update);
       return update;
     });
   }
@@ -139,11 +134,7 @@ export default function PuzzleBoard({
     const promotion = uci.length > 4 ? uci.substring(4, 5) : undefined;
 
     safeGameMutate((g) => {
-      try {
-        g.move({ from, to, promotion });
-      } catch (e) {
-        console.warn('PuzzleBoard: opponent move failed', e);
-      }
+      g.move({ from, to, promotion });
     });
 
     setMoveIndex(currentIndex + 1);

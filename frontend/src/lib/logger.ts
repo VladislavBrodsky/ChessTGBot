@@ -111,8 +111,16 @@ export const reportClientError = (error: unknown, context?: string) => {
     }
 
     const err = error as { message?: string; stack?: string } | undefined;
-    const name = context ? `[${context}] ` : "";
     const message = err?.message || String(error);
+
+    // Filter out anonymous cross-origin script errors (e.g. adblockers blocking Telegram widget)
+    // to prevent developer alert spam. Browsers strip all stack/details from these anyway.
+    if (message.toLowerCase().includes("script error")) {
+      console.warn(`[Client Ignored] Script error from external resource/adblocker:`, error);
+      return;
+    }
+
+    const name = context ? `[${context}] ` : "";
     // Include a trimmed stack so the alert is actionable, not just "Error".
     const stack = err?.stack ? `\n${err.stack.split("\n").slice(0, 6).join("\n")}` : "";
     logClientMessage("ERROR", `${name}${message}${stack}`.slice(0, 1800));

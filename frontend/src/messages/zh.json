@@ -473,5 +473,30 @@
     "waiting_hint": "已加入！系统自动配对——胜3分，和1分。坚持到时间结束吧。",
     "pts": "分",
     "you": "你"
+  },
+  "Onboarding": {
+    "skip": "跳过",
+    "back": "返回",
+    "next": "下一步",
+    "get_started": "开始体验",
+    "slide1_title": "FinChess 矩阵竞技场",
+    "slide1_subtitle": "Play-to-Earn Web3 国际象棋",
+    "slide1_desc": "欢迎来到 FinChess，这是直接构建在 Telegram 内部的终极去中心化国际象棋联赛。实时与全球玩家匹配，对抗先进的国际象棋引擎磨练棋艺，并竞逐真实的 USDT 奖金。",
+    "slide2_title": "公平的 ELO 匹配机制",
+    "slide2_subtitle": "匹配、下注与结算",
+    "slide2_desc": "我们的动态匹配算法确保您始终与 ELO 评分相当的对手对局。选择您的下注档次，安全锁定资金，并在获得将死胜利时赢取 95% 的奖金池。",
+    "slide3_title": "三级推荐网络",
+    "slide3_subtitle": "助力病毒式传播，赚取被动佣金",
+    "slide3_desc": "使用您的专属推荐码招募其他玩家。作为黄金/Premium 会员，您将从受邀者进行的每一场现金对局中赚取多达 3 级深度的动态 USDT 抽水佣金。",
+    "slide4_title": "XP 经验值与 Premium 特权",
+    "slide4_subtitle": "获取精英专属特权",
+    "slide4_desc": "通过完成每日任务和对局赚取经验值 (XP)。积攒 XP 即可免费升级至 Premium —— 解锁 2 倍奖励乘数、优先匹配权、自定义 3D 主题以及人工智能支持的对局回顾分析。"
+  },
+  "AlertModal": {
+    "confirmation": "确认",
+    "system_notice": "系统提示",
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭"
   }
 }

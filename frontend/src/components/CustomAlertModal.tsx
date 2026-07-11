@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
+import { useTranslations } from 'next-intl';
 
 interface ModalState {
   type: 'alert' | 'confirm';
@@ -12,6 +13,7 @@ interface ModalState {
 }
 
 export default function CustomAlertModal() {
+  const t = useTranslations('AlertModal');
   const [modal, setModal] = useState<ModalState | null>(null);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function CustomAlertModal() {
 
             <div className="space-y-1.5 w-full">
               <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
-                {modal.type === 'confirm' ? 'Confirmation' : 'System Notice'}
+                {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
               <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed break-words px-1">
                 {modal.message}
@@ -103,13 +105,13 @@ export default function CustomAlertModal() {
                     onClick={() => handleClose(false)}
                     className="flex-1 py-3 rounded-[12px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                   <button
                     onClick={() => handleClose(true)}
                     className="flex-1 py-3 rounded-[12px] bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
                   >
-                    Confirm
+                    {t('confirm')}
                   </button>
                 </>
               ) : (
@@ -117,7 +119,7 @@ export default function CustomAlertModal() {
                   onClick={() => handleClose(true)}
                   className="w-full py-3 rounded-[12px] bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
                 >
-                  Close
+                  {t('close')}
                 </button>
               )}
             </div>

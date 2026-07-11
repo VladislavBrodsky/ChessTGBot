@@ -14,9 +14,8 @@ import { copyToClipboard } from '@/lib/clipboard';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
-import ArenaBanner from './ArenaBanner';
 
-import LobbyDepositDrawer from './LobbyDepositDrawer';
+import DepositModal from '../Wallet/DepositModal';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { useUser } from '@/context/UserContext';
@@ -26,6 +25,7 @@ import { useAudio } from '@/hooks/useAudio';
 export default function PlayLobby() {
   const t = useTranslations('Index');
   const tg = useTranslations('Game');
+  const tw = useTranslations('Wallet');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -352,27 +352,12 @@ export default function PlayLobby() {
         if (data.message) {
           setMatchmakingError(data.message);
         }
-      } else if (data.status === 'searching') {
-        // Free searches persist server-side across app closes — restore the
-        // searching UI (and the queued wager/time control) when the server
-        // says we're still queued.
-        if (typeof data.bid_amount === 'number') {
-          setSelectedWager(data.bid_amount);
-          setIsCustomWager(false);
-        }
-        if (typeof data.time_control === 'number') {
-          setTimeControl(data.time_control);
-        }
-        setMatchmakingState('searching');
       }
     };
 
     socket.on('match_found', onMatchFound);
     socket.on('matchmaking_error', onMatchmakingError);
     socket.on('matchmaking_status', onMatchmakingStatus);
-
-    // Ask the server whether a persisted search is already running
-    socket.emit('check_matchmaking', {});
 
     return () => {
       socket.off('match_found', onMatchFound);
@@ -493,9 +478,6 @@ export default function PlayLobby() {
           </div>
         </div>
 
-        {/* Daily Arena banner: countdown / live join + standings */}
-        {matchmakingState === 'idle' && <ArenaBanner />}
-
         {/* Cyber Radar Search Interface */}
         <AnimatePresence mode="wait" initial={false}>
           {matchmakingState === 'matched' ? (
@@ -611,11 +593,6 @@ export default function PlayLobby() {
                 <span className="text-[8px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
                   {locale === 'ru' ? 'Ср. ожидание: ~15с' : 'Est. Wait: ~15s'}
                 </span>
-                {chosenWager === 0 && (
-                  <span className="text-[9px] font-bold text-brand-primary/50 max-w-[230px] leading-relaxed mt-2 normal-case tracking-normal mx-auto">
-                    {tg('searching_close_hint')}
-                  </span>
-                )}
               </div>
 
               {/* Win Up To Pill (Viral/FOMO) */}
@@ -937,13 +914,15 @@ export default function PlayLobby() {
         {/* Lobby Quick Deposit Drawer */}
         <AnimatePresence>
           {showDepositDrawer && (
-            <LobbyDepositDrawer
+            <DepositModal
               chosenWager={chosenWager}
               walletBalance={walletBalance}
               tgUser={tgUser}
               onClose={() => setShowDepositDrawer(false)}
-              syncBalance={async () => { await syncBalance(); }}
-              onDepositSuccess={(newBalance) => { syncBalance(); }}
+              onSuccess={async () => {
+                await syncBalance();
+              }}
+              tw={tw}
             />
           )}
         </AnimatePresence>

@@ -473,5 +473,30 @@
     "waiting_hint": "¡Dentro! Te emparejamos automáticamente: victoria 3 pts, tablas 1. Juega hasta que acabe el tiempo.",
     "pts": "pts",
     "you": "Tú"
+  },
+  "Onboarding": {
+    "skip": "Omitir",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "get_started": "Comenzar",
+    "slide1_title": "FinChess Matrix Arena",
+    "slide1_subtitle": "Ajedrez Web3 Play-to-Earn",
+    "slide1_desc": "Bienvenido a FinChess, la liga de ajedrez descentralizada definitiva integrada directamente en Telegram. Enfréntate a jugadores globales en tiempo real, perfecciona tus habilidades contra motores de ajedrez avanzados y compite por premios reales en USDT.",
+    "slide2_title": "Emparejamiento ELO Justo",
+    "slide2_subtitle": "Emparejar, Apostar y Cobrar",
+    "slide2_desc": "Nuestro algoritmo de emparejamiento dinámico asegura que siempre juegues contra oponentes de un nivel de ELO similar. Selecciona tu nivel de apuesta, asegura tus fondos y reclama el 95% del pozo acumulado al ganar por jaque mate.",
+    "slide3_title": "Red de Referidos de Tres Niveles",
+    "slide3_subtitle": "Impulsa la Viralidad y Gana Comisiones Pasivas",
+    "slide3_desc": "Recluta a otros jugadores con tu código de invitación único. Como miembro Premium, ganarás comisiones dinámicas de USDT de hasta 3 niveles de profundidad por cada partida con dinero real jugada por tus invitados.",
+    "slide4_title": "Progresión de XP y Premium",
+    "slide4_subtitle": "Reclama Privilegios de Élite",
+    "slide4_desc": "Gana Puntos de Experiencia (XP) al completar tareas diarias y jugar partidas. Ahorra tus XP para actualizar a Premium gratis, desbloqueando multiplicadores de recompensa 2x, emparejamiento prioritario, temas 3D personalizados y revisiones de partidas por IA."
+  },
+  "AlertModal": {
+    "confirmation": "Confirmación",
+    "system_notice": "Aviso del Sistema",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar"
   }
 }

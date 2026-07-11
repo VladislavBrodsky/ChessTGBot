@@ -409,6 +409,21 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
         state.black_username = black.first_name if black else f"User_{state.black_player_id}"
         state.black_elo = black.elo if black else 1000
         
+        # Log queue_matched telemetry for both players
+        from app.services.telemetry_service import log_backend_telemetry
+        await log_backend_telemetry(db, user_id, "queue_matched", {
+            "bid_amount": bid_amount,
+            "time_control": time_control,
+            "game_id": game_id,
+            "opponent_id": opponent_id
+        })
+        await log_backend_telemetry(db, opponent_id, "queue_matched", {
+            "bid_amount": bid_amount,
+            "time_control": time_control,
+            "game_id": game_id,
+            "opponent_id": user_id
+        })
+        
         await db.commit()
         if bid_amount > 0:
             logger.info(f"[TRANSACTION] user_id={state.white_player_id} | type=game_wager | amount=-{bid_amount} cents (-${bid_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id={game_id} | status=completed")
@@ -653,10 +668,19 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
 
     if not matched:
         logger.info(f"Matchmaking timed out for user {user_id} after {int(ttl)}s.")
+        
+        async with AsyncSessionLocal() as db:
+            from app.services.telemetry_service import log_backend_telemetry
+            await log_backend_telemetry(db, user_id, "queue_timeout", {
+                "bid_amount": bid_amount,
+                "time_control": time_control,
+                "duration_waited": ttl
+            })
+            if bid_amount > 0:
+                await refund_pending_matchmaking_wager(db, user_id)
+                
         await matchmaker.remove_from_queue(user_id)
         if bid_amount > 0:
-            async with AsyncSessionLocal() as db:
-                await refund_pending_matchmaking_wager(db, user_id)
             message = 'No opponent found within the time limit. Your wager has been fully refunded.'
         else:
             message = 'No opponent found this time. Tap Play to search again.'
@@ -761,6 +785,16 @@ async def join_matchmaking(sid, data):
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
         await matchmaker.add_to_queue(user_id, bid_amount, sid, elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
+        
+        # Log queue_join telemetry
+        from app.services.telemetry_service import log_backend_telemetry
+        async with AsyncSessionLocal() as db:
+            await log_backend_telemetry(db, user_id, "queue_join", {
+                "bid_amount": bid_amount,
+                "time_control": time_control,
+                "elo": user_elo
+            })
+
         await sio.emit('matchmaking_status', {
             'status': 'searching',
             'bid_amount': bid_amount
@@ -821,12 +855,33 @@ async def leave_matchmaking(sid, data):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         if user_id:
+            import time
+            matchmaker = MatchmakerService()
+            entry_info = await matchmaker.find_user_entry(user_id)
+            duration_waited = None
+            bid_amount = 0
+            time_control = 600
+            if entry_info:
+                bid_amount = entry_info.get('bid_amount', 0)
+                time_control = entry_info.get('time_control', 600)
+                joined_at = entry_info['entry'].get('joined_at')
+                if joined_at:
+                    duration_waited = time.time() - joined_at
+
             task = _active_matchmaking_pollers.pop(user_id, None)
             if task and not task.done():
                 task.cancel()
+            
             async with AsyncSessionLocal() as db:
+                from app.services.telemetry_service import log_backend_telemetry
+                await log_backend_telemetry(db, user_id, "queue_abandon", {
+                    "bid_amount": bid_amount,
+                    "time_control": time_control,
+                    "duration_waited": duration_waited
+                })
                 await refund_pending_matchmaking_wager(db, user_id)
-            await MatchmakerService().remove_from_queue(user_id)
+            
+            await matchmaker.remove_from_queue(user_id)
             await sio.emit('matchmaking_status', {'status': 'idle'}, room=sid)
             print(f"Socket {sid} (User {user_id}) manually left matchmaking queue.")
     except Exception as e:

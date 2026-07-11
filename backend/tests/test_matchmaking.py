@@ -66,14 +66,14 @@ async def test_matchmaker_purges_zombies(db_session: AsyncSession):
     # Add zombie to queue
     await matchmaker.add_to_queue(user_zombie.telegram_id, 0, "sid_zombie", elo=1000, time_control=600)
     
-    # Manually backdate the zombie's joined_at time to 150 seconds ago
+    # Manually backdate the zombie's joined_at time to 2000 seconds ago
     import time
     queue_key_mem = (0, 600)
     if MatchmakerService._use_memory or not matchmaker.redis:
         queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
         for item in queue:
             if item["user_id"] == user_zombie.telegram_id:
-                item["joined_at"] = time.time() - 150.0
+                item["joined_at"] = time.time() - 2000.0
     else:
         import json
         queue_key = "matchmaker:queue:0:600"
@@ -81,7 +81,7 @@ async def test_matchmaker_purges_zombies(db_session: AsyncSession):
         queue = json.loads(data) if data else []
         for item in queue:
             if item["user_id"] == user_zombie.telegram_id:
-                item["joined_at"] = time.time() - 150.0
+                item["joined_at"] = time.time() - 2000.0
         await matchmaker.redis.set(queue_key, json.dumps(queue))
 
     # Active user tries to match

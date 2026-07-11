@@ -8,6 +8,7 @@ import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
 import ClientErrorReporter from './ClientErrorReporter';
+import TelemetryReporter from './TelemetryReporter';
 
 // Lazy-load the TON Connect provider so its JS chunk (the TON SDK) and its
 // network cost (wallets-v2.json + ~35 wallet icon PNGs from config.ton.org) are
@@ -32,6 +33,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         // continuous compositing work without changing the default experience.
         <MotionConfig reducedMotion="user">
             <ClientErrorReporter />
+            <TelemetryReporter />
             <Suspense fallback={null}>
                 <ReferralNotification />
             </Suspense>
