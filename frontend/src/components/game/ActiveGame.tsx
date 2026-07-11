@@ -636,7 +636,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   }, [gameState, userId]);
 
   const botUsername = userStats?.bot_username || "FinChess_bot";
-  const inviteLink = `https://t.me/${botUsername}/chess?startapp=${gameId}`;
+  const inviteLink = `https://t.me/${botUsername}/app?startapp=${gameId}`;
 
   const handleShareInvite = () => {
     const shareText = `Play a game of wager chess with me! ♟️ Stake: $${((gameState?.bid_amount || 0) / 100).toFixed(2)} USDT. Click to join:`;

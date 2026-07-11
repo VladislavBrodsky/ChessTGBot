@@ -76,7 +76,7 @@ async def create_game(
             # Fallback if bot request fails (e.g. network)
             print(f"Failed to generate link: {e}")
             bot_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
-            invite_link = f"https://t.me/{bot_username}/chess?startapp={game_id}"
+            invite_link = f"https://t.me/{bot_username}/app?startapp={game_id}"
 
     return CreateGameResponse(game_id=game_id, invite_link=invite_link)
 

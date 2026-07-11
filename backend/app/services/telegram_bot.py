@@ -635,7 +635,7 @@ class TelegramService:
         except Exception as e:
             logger.warning(f"Could not fetch bot username: {e}")
 
-        return f"https://t.me/{bot_username}/chess?startapp={game_id}"
+        return f"https://t.me/{bot_username}/app?startapp={game_id}"
 
     PREMIUM_WELCOME_MESSAGES = {
         "en": {
