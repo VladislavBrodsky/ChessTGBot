@@ -53,7 +53,14 @@
     "initiate_combat": "Initiate combat to update history",
     "opponent_elo": "Opponent ELO",
     "load_failed": "Не удалось загрузить данные",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "nav_home": "Главная",
+    "nav_play": "Играть",
+    "nav_learn": "Обучение",
+    "nav_quests": "Квесты",
+    "nav_settings": "Настройки",
+    "nav_profile": "Профиль",
+    "nav_logout": "Выйти"
   },
   "Settings": {
     "return": "Назад",

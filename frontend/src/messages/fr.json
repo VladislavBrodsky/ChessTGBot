@@ -53,7 +53,14 @@
     "opponent_elo": "Opponent ELO",
     "load_failed": "Impossible de charger vos données",
     "retry": "Réessayer",
-    "show_top_50": "Voir le Top 50"
+    "show_top_50": "Voir le Top 50",
+    "nav_home": "Accueil",
+    "nav_play": "Jouer",
+    "nav_learn": "Apprendre",
+    "nav_quests": "Quêtes",
+    "nav_settings": "Paramètres",
+    "nav_profile": "Profil",
+    "nav_logout": "Déconnexion"
   },
   "Settings": {
     "return": "Retour",

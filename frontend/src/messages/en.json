@@ -53,7 +53,14 @@
     "claim": "Claim",
     "cyber_knight": "Cyber Knight",
     "load_failed": "Couldn't load your data",
-    "retry": "Retry"
+    "retry": "Retry",
+    "nav_home": "Home",
+    "nav_play": "Play",
+    "nav_learn": "Learn",
+    "nav_quests": "Quests",
+    "nav_settings": "Settings",
+    "nav_profile": "Profile",
+    "nav_logout": "Logout"
   },
   "Settings": {
     "return": "Back",

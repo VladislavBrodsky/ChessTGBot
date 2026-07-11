@@ -53,7 +53,14 @@
     "opponent_elo": "Opponent ELO",
     "load_failed": "データを読み込めませんでした",
     "retry": "再試行",
-    "show_top_50": "トップ50を表示"
+    "show_top_50": "トップ50を表示",
+    "nav_home": "ホーム",
+    "nav_play": "プレイ",
+    "nav_learn": "学ぶ",
+    "nav_quests": "クエスト",
+    "nav_settings": "設定",
+    "nav_profile": "プロフィール",
+    "nav_logout": "ログアウト"
   },
   "Settings": {
     "return": "戻る",

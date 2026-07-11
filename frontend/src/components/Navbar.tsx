@@ -4,17 +4,17 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home',     icon: <FaChessPawn />,      href: '/home' },
-    { name: 'Play',     icon: <FaGamepad />,         href: '/game' },
-    { name: 'Learn',    icon: <FaGraduationCap />,   href: '/academy' },
-    { name: 'Quests',   icon: <FaTrophy />,          href: '/challenges' },
-    { name: 'Settings', icon: <FaCog />,             href: '/settings' },
+    { name: 'Home',     icon: <FaChessPawn />,      href: '/home',       key: 'nav_home' },
+    { name: 'Play',     icon: <FaGamepad />,         href: '/game',       key: 'nav_play' },
+    { name: 'Learn',    icon: <FaGraduationCap />,   href: '/academy',    key: 'nav_learn' },
+    { name: 'Quests',   icon: <FaTrophy />,          href: '/challenges', key: 'nav_quests' },
+    { name: 'Settings', icon: <FaCog />,             href: '/settings',   key: 'nav_settings' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
@@ -23,6 +23,7 @@ let globalIsDesktopBrowser: boolean | null = null;
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
     const locale = useLocale();
+    const t = useTranslations('Index');
     const { stats } = useUser();
     const [isTelegramWeb, setIsTelegramWeb] = React.useState(() => {
         if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
@@ -60,7 +61,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
 
     const localizedItems = NAV_ITEMS.map(item => ({
         ...item,
-        href: `/${locale}${item.href}`
+        href: `/${locale}${item.href}`,
+        label: t(item.key)
     }));
 
     // ── DESKTOP SIDEBAR ──────────────────────────────────────────────────
@@ -93,7 +95,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                         return (
                             <li key={item.href}>
-                                <Link href={item.href} title={item.name}>
+                                <Link href={item.href} title={item.label} aria-label={item.label}>
                                     <motion.div
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
@@ -117,7 +119,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                         {/* Tooltip */}
                                         <div className="absolute left-full ml-3 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
                                              style={{ background: 'rgba(0,0,0,0.9)', color: 'rgba(168,85,247,1)', border: '1px solid rgba(168,85,247,0.2)' }}>
-                                            {item.name}
+                                            {item.label}
                                         </div>
                                     </motion.div>
                                 </Link>
@@ -129,7 +131,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 {/* Bottom: Avatar + Logout */}
                 <div className="flex flex-col items-center gap-3">
                     {stats && (
-                        <Link href={`/${locale}/profile`} title="Profile">
+                        <Link href={`/${locale}/profile`} title={t('nav_profile')} aria-label={t('nav_profile')}>
                             <motion.div
                                 whileHover={{ scale: 1.08 }}
                                 className="w-10 h-10 rounded-xl overflow-hidden border-2 cursor-pointer"
@@ -151,7 +153,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={handleLogout}
-                        title="Logout"
+                        title={t('nav_logout')}
+                        aria-label={t('nav_logout')}
                         className="w-10 h-10 rounded-xl flex items-center justify-center transition-all group"
                         style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.15)' }}
                     >
@@ -182,12 +185,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-full" />
 
-            <ul className="flex items-center relative z-10 w-full justify-around space-x-1">
+            <ul className="flex items-center relative z-10 w-full justify-around space-x-1" role="tablist" aria-label="Primary Navigation">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
-                        <li key={item.href} className="flex-1 max-w-[60px] min-w-[48px]">
-                            <Link href={item.href}>
+                        <li key={item.href} className="flex-1 max-w-[60px] min-w-[48px]" role="presentation">
+                            <Link href={item.href} aria-label={item.label} title={item.label} role="tab" aria-selected={isActive}>
                                 <div className="relative h-11 flex items-center justify-center transition-all duration-300">
                                     {isActive && (
                                         <div className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-5 shadow-inner-glow" />

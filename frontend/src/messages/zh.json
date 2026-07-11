@@ -53,7 +53,14 @@
     "opponent_elo": "Opponent ELO",
     "load_failed": "无法加载数据",
     "retry": "重试",
-    "show_top_50": "查看前 50 名"
+    "show_top_50": "查看前 50 名",
+    "nav_home": "首页",
+    "nav_play": "开始游戏",
+    "nav_learn": "学习",
+    "nav_quests": "任务",
+    "nav_settings": "设置",
+    "nav_profile": "个人资料",
+    "nav_logout": "退出登录"
   },
   "Settings": {
     "return": "返回",

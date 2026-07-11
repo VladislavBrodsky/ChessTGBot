@@ -53,7 +53,14 @@
     "opponent_elo": "Opponent ELO",
     "load_failed": "डेटा लोड नहीं हो सका",
     "retry": "पुनः प्रयास करें",
-    "show_top_50": "शीर्ष 50 देखें"
+    "show_top_50": "शीर्ष 50 देखें",
+    "nav_home": "मुख्यपृष्ठ",
+    "nav_play": "खेलें",
+    "nav_learn": "सीखें",
+    "nav_quests": "अन्वेषण",
+    "nav_settings": "सेटिंग्स",
+    "nav_profile": "प्रोफ़ाइल",
+    "nav_logout": "लॉग आउट"
   },
   "Settings": {
     "return": "वापस",

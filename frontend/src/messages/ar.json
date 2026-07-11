@@ -53,7 +53,14 @@
     "opponent_elo": "Opponent ELO",
     "load_failed": "تعذّر تحميل بياناتك",
     "retry": "إعادة المحاولة",
-    "show_top_50": "عرض أفضل 50"
+    "show_top_50": "عرض أفضل 50",
+    "nav_home": "الرئيسية",
+    "nav_play": "اللعب",
+    "nav_learn": "التعلم",
+    "nav_quests": "المهام",
+    "nav_settings": "الإعدادات",
+    "nav_profile": "الملف الشخصي",
+    "nav_logout": "تسجيل الخروج"
   },
   "Settings": {
     "return": "عودة",
