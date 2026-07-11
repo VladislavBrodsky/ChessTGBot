@@ -261,7 +261,13 @@ async def get_user_avatar(telegram_id: int, request: Request):
                         return _serve_cached(file_path)
         except Exception as e:
             import logging
-            logging.getLogger(__name__).error(f"Failed to fetch/cache avatar for {telegram_id}: {e}")
+            from app.core.alerts import is_transient_telegram_error
+            if is_transient_telegram_error(e):
+                # Momentary Telegram API outage (timeout / 502) — the stale
+                # cache fallback below covers the user; no admin alert.
+                logging.getLogger(__name__).warning(f"Transient Telegram API error fetching avatar for {telegram_id}: {e}")
+            else:
+                logging.getLogger(__name__).error(f"Failed to fetch/cache avatar for {telegram_id}: {e}")
 
     # Fallback: serve stale cached file rather than returning 404
     if os.path.exists(file_path):

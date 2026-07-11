@@ -151,11 +151,20 @@ async def verify_task(
         raise
     except Exception as e:
         from telegram.error import BadRequest
+        from app.core.alerts import is_transient_telegram_error
         if isinstance(e, BadRequest) or "chat not found" in str(e).lower() or "user not found" in str(e).lower():
             logger.warning(f"Telegram subscription check failed for {chat_username} (User not joined): {e}")
             raise HTTPException(
                 status_code=400,
                 detail=f"Verification failed: Please make sure you have joined {chat_username}."
+            )
+        if is_transient_telegram_error(e):
+            # Momentary Telegram API outage (timeout / 502) — retryable, not
+            # an actionable backend fault, so WARNING (no admin alert).
+            logger.warning(f"Telegram subscription verification for {chat_username} hit a transient Telegram API error: {e}")
+            raise HTTPException(
+                status_code=503,
+                detail="Verification service temporarily unavailable. Please try again."
             )
         logger.error(f"Telegram subscription verification failed for {chat_username}: {e}", exc_info=True)
         raise HTTPException(

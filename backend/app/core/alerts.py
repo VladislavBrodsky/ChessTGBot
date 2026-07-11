@@ -54,6 +54,20 @@ def system_for_logger(logger_name: str) -> str:
             return system
     return DEFAULT_SYSTEM
 
+def is_transient_telegram_error(exc: BaseException) -> bool:
+    """True for momentary Telegram Bot API / network failures (timeouts, 502
+    Bad Gateway, flood limits, dropped connections) that resolve on retry.
+    Callers should log these at WARNING so they don't page admins.
+
+    BadRequest subclasses NetworkError in python-telegram-bot but signals a
+    real problem with the request itself, so it is never transient.
+    """
+    from telegram import error as tg_error
+    import httpx
+    if isinstance(exc, tg_error.BadRequest):
+        return False
+    return isinstance(exc, (tg_error.NetworkError, tg_error.RetryAfter, httpx.TransportError))
+
 def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
     global _sent_alerts_cache
