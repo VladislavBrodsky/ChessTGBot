@@ -14,6 +14,43 @@ import {
   FaFastBackward, FaFastForward, FaRegClock, FaGamepad, FaRobot, FaUser 
 } from "react-icons/fa";
 
+function formatUci(uci: string): string {
+  if (!uci || uci.length < 4) return uci;
+  return `${uci.substring(0, 2)} → ${uci.substring(2, 4)}${uci.substring(4) ? ` (${uci.substring(4)})` : ""}`;
+}
+
+function getClassificationLabel(cat: string, lang: string): string {
+  const labels: { [key: string]: { [lang: string]: string } } = {
+    book: { en: "Book 📖", ru: "Книга 📖" },
+    excellent: { en: "Excellent 🟢", ru: "Отлично 🟢" },
+    good: { en: "Good 🔵", ru: "Хорошо 🔵" },
+    inaccuracy: { en: "Inaccuracy 🟡", ru: "Неточность 🟡" },
+    mistake: { en: "Mistake 🟠", ru: "Ошибка 🟠" },
+    blunder: { en: "Blunder 🔴", ru: "Зевок 🔴" }
+  };
+  return labels[cat]?.[lang === 'ru' ? 'ru' : 'en'] || cat;
+}
+
+function getClassificationColorClass(cat: string): string {
+  switch (cat) {
+    case 'book': return 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
+    case 'excellent': return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+    case 'good': return 'bg-blue-500/10 border-blue-500/20 text-blue-400';
+    case 'inaccuracy': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400';
+    case 'mistake': return 'bg-orange-500/10 border-orange-500/20 text-orange-400';
+    case 'blunder': return 'bg-red-500/10 border-red-500/20 text-red-400';
+    default: return 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
+  }
+}
+
+function formatEval(val: number): string {
+  if (Math.abs(val) > 50) {
+    const mateMoves = 100 - Math.abs(val);
+    return val > 0 ? `M${mateMoves}` : `-M${mateMoves}`;
+  }
+  return val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2);
+}
+
 interface GameHistoryDetails {
   game_id: string;
   white_player_id: number;
@@ -78,6 +115,124 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // AI Analysis states
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  const [analysis, setAnalysis] = useState<{
+    evaluations: number[];
+    bestMoves: string[];
+    classifications: ('book' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder')[];
+  } | null>(null);
+
+  const runAnalysis = async () => {
+    if (isAnalyzing || fens.length === 0) return;
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+
+    try {
+      const workerCode = `importScripts("https://cdn.jsdelivr.net/npm/stockfish@10.0.2/src/stockfish.js");`;
+      const blob = new Blob([workerCode], { type: "application/javascript" });
+      const workerUrl = URL.createObjectURL(blob);
+      const worker = new Worker(workerUrl);
+
+      worker.postMessage("uci");
+      worker.postMessage("isready");
+
+      const newEvaluations: number[] = [];
+      const newBestMoves: string[] = [];
+
+      for (let i = 0; i < fens.length; i++) {
+        const fen = fens[i];
+
+        const { evaluation, bestMove } = await new Promise<{ evaluation: number; bestMove: string }>((resolve) => {
+          let currentEval = 0;
+          let solved = false;
+
+          const onMessage = (e: MessageEvent) => {
+            const line = e.data;
+            if (typeof line === 'string') {
+              if (line.includes("score cp")) {
+                const parts = line.split(" ");
+                const cpIdx = parts.indexOf("cp");
+                if (cpIdx !== -1 && parts[cpIdx + 1]) {
+                  const cp = parseInt(parts[cpIdx + 1]);
+                  const side = fen.split(" ")[1];
+                  currentEval = side === 'w' ? cp / 100 : -cp / 100;
+                }
+              } else if (line.includes("score mate")) {
+                const parts = line.split(" ");
+                const mateIdx = parts.indexOf("mate");
+                if (mateIdx !== -1 && parts[mateIdx + 1]) {
+                  const mate = parseInt(parts[mateIdx + 1]);
+                  const side = fen.split(" ")[1];
+                  const score = mate > 0 ? 100 - mate : -100 - mate;
+                  currentEval = side === 'w' ? score : -score;
+                }
+              }
+
+              if (line.startsWith("bestmove")) {
+                solved = true;
+                const best = line.split(" ")[1];
+                worker.removeEventListener("message", onMessage);
+                resolve({ evaluation: currentEval, bestMove: best });
+              }
+            }
+          };
+
+          worker.addEventListener("message", onMessage);
+          worker.postMessage(`position fen ${fen}`);
+          worker.postMessage("go depth 6");
+        });
+
+        newEvaluations.push(evaluation);
+        newBestMoves.push(bestMove);
+        setAnalysisProgress(Math.round(((i + 1) / fens.length) * 100));
+      }
+
+      worker.terminate();
+
+      // Now compute classifications
+      const classifications: ('book' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder')[] = [];
+      for (let i = 0; i < fens.length; i++) {
+        if (i === 0) {
+          classifications.push('excellent');
+          continue;
+        }
+
+        const evalBefore = newEvaluations[i - 1];
+        const evalAfter = newEvaluations[i];
+        const fenBefore = fens[i - 1];
+        const sideToMove = fenBefore.split(" ")[1];
+
+        const delta = sideToMove === 'w' ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
+
+        if (i <= 8 && delta >= -0.3) {
+          classifications.push('book');
+        } else if (delta >= -0.2) {
+          classifications.push('excellent');
+        } else if (delta >= -0.5) {
+          classifications.push('good');
+        } else if (delta >= -1.0) {
+          classifications.push('inaccuracy');
+        } else if (delta >= -2.0) {
+          classifications.push('mistake');
+        } else {
+          classifications.push('blunder');
+        }
+      }
+
+      setAnalysis({
+        evaluations: newEvaluations,
+        bestMoves: newBestMoves,
+        classifications
+      });
+    } catch (err) {
+      console.error("Analysis execution failed:", err);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   useEffect(() => {
     if (!gameId) return;
@@ -372,6 +527,131 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <div className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40">
           Move {Math.floor((currentStep + 1) / 2)} / {Math.floor(sanMoves.length / 2)} ({currentStep} / {sanMoves.length} half-moves)
         </div>
+
+        {/* A.I. Analysis Panel */}
+        {!analysis && !isAnalyzing && (
+          <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3">
+            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+              A.I. Engine Review
+            </span>
+            <p className="text-[10px] text-brand-primary opacity-60 uppercase tracking-wide">
+              Run engine analysis to evaluate move accuracy and discover blunders.
+            </p>
+            <button
+              onClick={runAnalysis}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-premium hover:opacity-90 transition-all border-0"
+            >
+              ⚡ Run A.I. Game Analysis
+            </button>
+          </div>
+        )}
+
+        {isAnalyzing && (
+          <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3 animate-pulse">
+            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+              Analyzing game moves...
+            </span>
+            <div className="w-full bg-brand-void rounded-full h-2 overflow-hidden border border-brand-border-opacity-5">
+              <div 
+                className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 h-full transition-all duration-300"
+                style={{ width: `${analysisProgress}%` }}
+              />
+            </div>
+            <span className="text-[10px] font-black text-brand-primary opacity-60 uppercase tracking-widest">
+              {analysisProgress}% Complete
+            </span>
+          </div>
+        )}
+
+        {analysis && (
+          <div className="w-full glass-panel border border-brand-border-opacity-10 bg-brand-surface p-4 rounded-2xl flex flex-col space-y-4">
+            {/* Current Move Evaluation */}
+            {currentStep > 0 && (
+              <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+                    Move Analysis
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-brand-primary">
+                    Eval: {formatEval(analysis.evaluations[currentStep])}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
+                    {getClassificationLabel(analysis.classifications[currentStep], locale)}
+                  </span>
+                  {(analysis.classifications[currentStep] === 'blunder' || analysis.classifications[currentStep] === 'mistake') && analysis.bestMoves[currentStep - 1] && (
+                    <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">
+                      💡 Best was: {formatUci(analysis.bestMoves[currentStep - 1])}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Accuracy Standings Summary */}
+            <div className="space-y-3">
+              <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+                Move Accuracy Summary
+              </span>
+              <div className="grid grid-cols-2 gap-4">
+                {/* White stats */}
+                <div className="space-y-1.5 text-left">
+                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wider block border-b border-brand-border-opacity-5 pb-1">
+                    {gameData.white_name} (White)
+                  </span>
+                  {(() => {
+                    const whiteStats = { book: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0 };
+                    for (let i = 1; i < analysis.classifications.length; i += 2) {
+                      whiteStats[analysis.classifications[i]]++;
+                    }
+                    return (
+                      <div className="grid grid-cols-2 gap-y-1 text-[9px] font-bold font-mono">
+                        <span className="text-emerald-400">Excellent:</span>
+                        <span className="text-right text-brand-primary">{whiteStats.excellent + whiteStats.book}</span>
+                        <span className="text-blue-400">Good:</span>
+                        <span className="text-right text-brand-primary">{whiteStats.good}</span>
+                        <span className="text-yellow-400">Inaccuracy:</span>
+                        <span className="text-right text-brand-primary">{whiteStats.inaccuracy}</span>
+                        <span className="text-orange-400">Mistake:</span>
+                        <span className="text-right text-brand-primary">{whiteStats.mistake}</span>
+                        <span className="text-red-400">Blunder:</span>
+                        <span className="text-right text-brand-primary">{whiteStats.blunder}</span>
+                      </div>
+                    );
+                  })()}
+                </div>
+                
+                {/* Black stats */}
+                <div className="space-y-1.5 text-left border-l border-brand-border-opacity-10 pl-4">
+                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wider block border-b border-brand-border-opacity-5 pb-1">
+                    {gameData.black_name} (Black)
+                  </span>
+                  {(() => {
+                    const blackStats = { book: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0 };
+                    for (let i = 2; i < analysis.classifications.length; i += 2) {
+                      blackStats[analysis.classifications[i]]++;
+                    }
+                    return (
+                      <div className="grid grid-cols-2 gap-y-1 text-[9px] font-bold font-mono">
+                        <span className="text-emerald-400">Excellent:</span>
+                        <span className="text-right text-brand-primary">{blackStats.excellent + blackStats.book}</span>
+                        <span className="text-blue-400">Good:</span>
+                        <span className="text-right text-brand-primary">{blackStats.good}</span>
+                        <span className="text-yellow-400">Inaccuracy:</span>
+                        <span className="text-right text-brand-primary">{blackStats.inaccuracy}</span>
+                        <span className="text-orange-400">Mistake:</span>
+                        <span className="text-right text-brand-primary">{blackStats.mistake}</span>
+                        <span className="text-red-400">Blunder:</span>
+                        <span className="text-right text-brand-primary">{blackStats.blunder}</span>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Move History Log Panel */}
         <div className="w-full glass-panel border border-brand-border-opacity-10 bg-brand-surface p-4 rounded-2xl flex flex-col space-y-3">
