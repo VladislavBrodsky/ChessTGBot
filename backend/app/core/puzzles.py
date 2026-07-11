@@ -1,4 +1,11 @@
 # 100 Gamified Chess Puzzles Dataset
+#
+# IMPORTANT: every solution MUST stay a single move. The verify endpoint
+# validates only solution[0] server-side (the full solution is deliberately
+# never sent to the client — see the puzzle-leak fix). Adding a multi-move
+# puzzle here would silently break: the reward would fire after the first
+# move. If multi-move puzzles are ever wanted, build server-side incremental
+# move validation first. A test (test_puzzle_gating.py) enforces this.
 
 CHESS_PUZZLES = [
     {

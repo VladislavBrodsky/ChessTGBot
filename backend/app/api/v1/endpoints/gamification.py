@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.v1.deps import get_current_user
+from app.api.v1.deps import get_current_user, rate_limit
 from app.core.database import get_db
 from app.services.gamification_service import GamificationService
 from app.models.user import User
@@ -413,7 +413,7 @@ async def unlock_puzzle_endpoint(
         "puzzle_id": puzzle_id
     }
 
-@router.post("/academy/puzzles/{puzzle_id}/verify")
+@router.post("/academy/puzzles/{puzzle_id}/verify", dependencies=[Depends(rate_limit(limit=12, window=60))])
 async def verify_puzzle_solution(
     puzzle_id: int,
     req: PuzzleVerifyRequest,

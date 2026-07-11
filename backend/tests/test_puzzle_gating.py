@@ -180,3 +180,18 @@ async def test_puzzle_gating_and_progression(client, db_session):
     # Level 30 has sequential lock but no premium lock!
     assert not puzzles[29]["is_premium_locked"]
     assert puzzles[29]["is_sequential_locked"]
+
+
+def test_all_puzzle_solutions_are_single_move():
+    """TRIPWIRE: the verify endpoint validates only solution[0] server-side
+    (the full solution is never sent to the client — puzzle-leak fix). A
+    multi-move puzzle would silently award XP after the first move. If this
+    test fails because you added one, build server-side incremental move
+    validation first — do NOT just delete this test."""
+    from app.core.puzzles import CHESS_PUZZLES
+    multi = [(p["id"], len(p["solution"])) for p in CHESS_PUZZLES if len(p["solution"]) != 1]
+    assert multi == [], f"Multi-move puzzles need incremental validation: {multi}"
+    # And every solution move is UCI-shaped (what the client submits).
+    import re
+    bad = [p["id"] for p in CHESS_PUZZLES if not re.fullmatch(r"[a-h][1-8][a-h][1-8][qrbn]?", p["solution"][0].strip().lower())]
+    assert bad == [], f"Non-UCI solution moves: {bad}"
