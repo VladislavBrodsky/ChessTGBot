@@ -459,5 +459,19 @@
     "play_on_mobile": "Jogar no Celular",
     "scan_qr": "Escaneie este código QR com a câmera do seu telefone para abrir instantaneamente o Mini App do Telegram.",
     "open_in_telegram": "Abrir no Telegram →"
+  },
+  "Arena": {
+    "title": "Arena Diária",
+    "live_now": "Ao vivo",
+    "starts_in": "Começa em",
+    "ends_in": "termina em",
+    "next_in": "próxima em",
+    "join": "Entrar",
+    "leave": "Sair",
+    "players": "jogadores",
+    "finished": "Encerrada",
+    "waiting_hint": "Você está dentro! Pareamento automático — vitória 3 pts, empate 1. Jogue até o fim do tempo.",
+    "pts": "pts",
+    "you": "Você"
   }
 }

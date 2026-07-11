@@ -204,6 +204,13 @@ async def connect(sid, environ, auth):
                 await MatchmakerService().update_sid(user_id, sid)
             except Exception as e:
                 logger.warning(f"Failed to refresh matchmaking sid for user {user_id}: {e}")
+
+            # Same for a live arena pool entry
+            try:
+                from app.services.arena_service import ArenaService
+                ArenaService().update_sid(user_id, sid)
+            except Exception as e:
+                logger.warning(f"Failed to refresh arena sid for user {user_id}: {e}")
         
     except Exception as e:
         print(f"Socket connection rejected: {e}")
@@ -228,6 +235,14 @@ async def disconnect(sid):
                 await refund_pending_matchmaking_wager(db, user_id)
             await MatchmakerService().remove_from_queue(user_id, only_wagered=True)
             print(f"Socket {sid} (User {user_id}) disconnected; wagered matchmaking entries removed (free entries persist).")
+
+            # Arena pool requires presence — pairing an away player just burns
+            # the abort timer, so drop them (their score keeps; they can rejoin).
+            try:
+                from app.services.arena_service import ArenaService
+                ArenaService().leave(user_id)
+            except Exception:
+                pass
             
             # Auto-abort friendly game lobby if creator disconnects before opponent joins
             if game_id:
@@ -478,6 +493,111 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
         time_limit=state.first_move_grace_seconds or 30.0,
         player_color='w'
     )
+
+async def establish_arena_game(user_id: int, user_sid: str, opponent_id: int, opponent_sid: str, time_control: int, arena_id: int):
+    """Create a free arena game between two pooled players.
+
+    Lean sibling of establish_match: no wagers, no collusion checks (arena
+    pairing is server-driven), game id prefixed with the arena id so
+    GameService.end_game can route the result to ArenaService.record_result.
+    Returns the game_id, or None on failure.
+    """
+    # Arena play requires both players present: a dead socket here means the
+    # player dropped between join and pairing — evict them instead of creating
+    # a game that can only abort (and would re-pair them in a loop).
+    from app.services.arena_service import ArenaService
+    arena_service = ArenaService()
+    dropped = [
+        (pid, psid) for pid, psid in ((user_id, user_sid), (opponent_id, opponent_sid))
+        if not await _sid_connected(psid)
+    ]
+    if dropped:
+        for pid, _ in dropped:
+            arena_service.leave(pid)
+            logger.info(f"Arena {arena_id}: evicted disconnected user {pid} at pairing time")
+        return None
+
+    game_id = f"arena{arena_id}_{min(user_id, opponent_id)}_{max(user_id, opponent_id)}_{int(time.time())}"
+
+    service = GameService()
+    state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=0)
+
+    if random.random() < 0.5:
+        state.white_player_id, state.black_player_id = user_id, opponent_id
+    else:
+        state.white_player_id, state.black_player_id = opponent_id, user_id
+
+    async with AsyncSessionLocal() as db:
+        white = await user_crud.get_user_by_telegram_id(db, state.white_player_id)
+        black = await user_crud.get_user_by_telegram_id(db, state.black_player_id)
+        state.white_username = white.first_name if white else f"User_{state.white_player_id}"
+        state.white_elo = white.elo if white else 1000
+        state.black_username = black.first_name if black else f"User_{state.black_player_id}"
+        state.black_elo = black.elo if black else 1000
+
+    await service.session_manager.save_game(game_id, state)
+
+    await sio.enter_room(user_sid, game_id)
+    await sio.enter_room(opponent_sid, game_id)
+    await sio.emit('match_found', {
+        'game_id': game_id,
+        'color': 'w' if state.white_player_id == user_id else 'b',
+        'opponent_id': opponent_id,
+        'bid_amount': 0,
+        'arena': True
+    }, room=user_sid)
+    await sio.emit('match_found', {
+        'game_id': game_id,
+        'color': 'w' if state.white_player_id == opponent_id else 'b',
+        'opponent_id': user_id,
+        'bid_amount': 0,
+        'arena': True
+    }, room=opponent_sid)
+    await sio.emit('game_state', state.model_dump(), room=game_id)
+
+    service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
+    return game_id
+
+@sio.event
+@ws_correlation('join_arena')
+async def join_arena(sid, data):
+    """Join the currently LIVE daily arena; pairing is server-driven."""
+    from app.services.arena_service import ArenaService
+    try:
+        session = await sio.get_session(sid)
+        user_id = session.get('user_id')
+        if not user_id:
+            await sio.emit('arena_error', {'message': 'Unauthorized connection'}, room=sid)
+            return
+        arena_service = ArenaService()
+        if arena_service.current_arena_id is None:
+            await sio.emit('arena_error', {'message': 'No arena is live right now.'}, room=sid)
+            return
+        async with AsyncSessionLocal() as db:
+            user = await user_crud.get_user_by_telegram_id(db, user_id)
+            elo = getattr(user, 'elo', 1000) if user else 1000
+            joined = await arena_service.join(db, arena_service.current_arena_id, user_id, sid, elo=elo)
+        if joined:
+            await sio.emit('arena_status', {'status': 'joined', 'arena_id': arena_service.current_arena_id}, room=sid)
+        else:
+            await sio.emit('arena_error', {'message': 'No arena is live right now.'}, room=sid)
+    except Exception as e:
+        print(f"Error joining arena: {e}")
+        await sio.emit('arena_error', {'message': 'Server arena error.'}, room=sid)
+
+@sio.event
+@ws_correlation('leave_arena')
+async def leave_arena(sid, data):
+    """Leave the arena waiting pool (a game in progress still finishes)."""
+    from app.services.arena_service import ArenaService
+    try:
+        session = await sio.get_session(sid)
+        user_id = session.get('user_id')
+        if user_id:
+            ArenaService().leave(user_id)
+            await sio.emit('arena_status', {'status': 'left'}, room=sid)
+    except Exception as e:
+        print(f"Error leaving arena: {e}")
 
 async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int, ip_hash: str = None, referrer_id: int = None):
     """
@@ -1016,3 +1136,10 @@ async def accept_rematch(sid, data):
                     await service.session_manager.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
                     await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
 
+
+
+# Wire the arena pairing loop to the socket layer's game-creation helper.
+# Done at import time so ArenaService (a plain service module) never has to
+# import socket.io itself.
+from app.services.arena_service import ArenaService as _ArenaService
+_ArenaService().create_game_callback = establish_arena_game

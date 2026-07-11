@@ -23,6 +23,10 @@ class Settings(BaseSettings):
         "https://telegram.org",
     ]
 
+    # Daily Arena: start time (UTC "HH:MM") and window length in minutes
+    ARENA_START_UTC: str = "19:00"
+    ARENA_DURATION_MINUTES: int = 30
+
     # Database
     # Default to localhost for dev, but in production (Railways) this MUST be set via env vars.
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"

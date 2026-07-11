@@ -459,5 +459,19 @@
     "play_on_mobile": "Jouer sur Mobile",
     "scan_qr": "Scannez ce code QR avec l'appareil photo de votre téléphone pour ouvrir instantanément la Mini App Telegram.",
     "open_in_telegram": "Ouvrir dans Telegram →"
+  },
+  "Arena": {
+    "title": "Arène Quotidienne",
+    "live_now": "En direct",
+    "starts_in": "Débute dans",
+    "ends_in": "se termine dans",
+    "next_in": "prochaine dans",
+    "join": "Rejoindre",
+    "leave": "Quitter",
+    "players": "joueurs",
+    "finished": "Terminée",
+    "waiting_hint": "Vous y êtes ! Appariement automatique — victoire 3 pts, nulle 1. Jouez jusqu'à la fin du chrono.",
+    "pts": "pts",
+    "you": "Vous"
   }
 }

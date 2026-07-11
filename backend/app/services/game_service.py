@@ -641,6 +641,24 @@ class GameService:
         return streak
 
     async def end_game(self, game_id: str, state: GameState):
+        """Process game result and update ELO.
+
+        Thin wrapper so arena bookkeeping runs no matter which of the many
+        early-return paths (abort, refund, duplicate) the settle takes —
+        without it, an aborted arena game would leave both players flagged
+        as in-game and never re-paired.
+        """
+        try:
+            return await self._end_game_impl(game_id, state)
+        finally:
+            if game_id.startswith("arena"):
+                try:
+                    from app.services.arena_service import ArenaService
+                    await ArenaService().record_result(game_id, state)
+                except Exception as arena_err:
+                    logger.error(f"Arena result recording failed for {game_id}: {arena_err}", exc_info=True)
+
+    async def _end_game_impl(self, game_id: str, state: GameState):
         """Process game result and update ELO."""
         from app.models.game_history import GameHistory
         from sqlalchemy.future import select
@@ -1385,7 +1403,7 @@ class GameService:
             
             # Save the updated state to Redis
             await self.session_manager.save_game(game_id, state)
-            
+
             # Broadcast the final state to the socket room
             await sio.emit('game_state', state.model_dump(), room=game_id)
 

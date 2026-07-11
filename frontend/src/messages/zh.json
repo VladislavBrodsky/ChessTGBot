@@ -459,5 +459,19 @@
     "play_on_mobile": "在手机上玩",
     "scan_qr": "用手机相机扫描此二维码，立即打开Telegram小程序。",
     "open_in_telegram": "在Telegram中打开 →"
+  },
+  "Arena": {
+    "title": "每日竞技场",
+    "live_now": "正在进行",
+    "starts_in": "开始倒计时",
+    "ends_in": "剩余",
+    "next_in": "下一场",
+    "join": "加入竞技场",
+    "leave": "退出",
+    "players": "名玩家",
+    "finished": "已结束",
+    "waiting_hint": "已加入！系统自动配对——胜3分，和1分。坚持到时间结束吧。",
+    "pts": "分",
+    "you": "你"
   }
 }

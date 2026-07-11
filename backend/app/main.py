@@ -189,6 +189,10 @@ async def lifespan(app: FastAPI):
     from app.services.stale_game_sweeper import start_stale_game_sweeper
     asyncio.create_task(start_stale_game_sweeper())
 
+    # Start the daily-arena scheduler (announce -> live pairing -> prizes)
+    from app.services.arena_service import start_arena_loop
+    asyncio.create_task(start_arena_loop())
+
     # Start background Redis recovery loop
     asyncio.create_task(start_redis_recovery_loop())
 
@@ -271,7 +275,8 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game, users, webhook, gamification, wallet, admin
+    from app.api.v1.endpoints import game, users, webhook, gamification, wallet, admin, arena
+    application.include_router(arena.router, prefix="/api/v1/arena", tags=["arena"])
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
     application.include_router(webhook.router, prefix="/api/v1/webhook", tags=["webhook"])

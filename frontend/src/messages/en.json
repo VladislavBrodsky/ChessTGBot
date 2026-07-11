@@ -461,5 +461,19 @@
     "play_on_mobile": "Play on Mobile",
     "scan_qr": "Scan this QR code with your phone camera to instantly open the Telegram Mini App.",
     "open_in_telegram": "Open in Telegram →"
+  },
+  "Arena": {
+    "title": "Daily Arena",
+    "live_now": "Live now",
+    "starts_in": "Starts in",
+    "ends_in": "ends in",
+    "next_in": "next in",
+    "join": "Join Arena",
+    "leave": "Leave",
+    "players": "players",
+    "finished": "Finished",
+    "waiting_hint": "You're in! We'll pair you automatically — each game earns points: win 3, draw 1. Keep playing until the clock runs out.",
+    "pts": "pts",
+    "you": "You"
   }
 }

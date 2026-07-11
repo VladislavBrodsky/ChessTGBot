@@ -459,5 +459,19 @@
     "play_on_mobile": "Auf dem Handy spielen",
     "scan_qr": "Scannen Sie diesen QR-Code mit Ihrer Handykamera, um die Telegram Mini-App sofort zu öffnen.",
     "open_in_telegram": "In Telegram öffnen →"
+  },
+  "Arena": {
+    "title": "Tägliche Arena",
+    "live_now": "Jetzt live",
+    "starts_in": "Beginnt in",
+    "ends_in": "endet in",
+    "next_in": "nächste in",
+    "join": "Beitreten",
+    "leave": "Verlassen",
+    "players": "Spieler",
+    "finished": "Beendet",
+    "waiting_hint": "Du bist dabei! Wir paaren dich automatisch — Sieg 3 Punkte, Remis 1. Spiele bis die Zeit abläuft.",
+    "pts": "Pkt",
+    "you": "Du"
   }
 }

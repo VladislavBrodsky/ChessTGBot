@@ -459,5 +459,19 @@
     "play_on_mobile": "モバイルでプレイ",
     "scan_qr": "スマートフォンのカメラでこのQRコードをスキャンして、Telegramミニアプリをすぐに開きます。",
     "open_in_telegram": "Telegramで開く →"
+  },
+  "Arena": {
+    "title": "デイリーアリーナ",
+    "live_now": "開催中",
+    "starts_in": "開始まで",
+    "ends_in": "終了まで",
+    "next_in": "次回まで",
+    "join": "参加する",
+    "leave": "退出",
+    "players": "人参加",
+    "finished": "終了",
+    "waiting_hint": "参加完了！自動でマッチングします——勝ち3点、引き分け1点。時間切れまで戦い続けよう。",
+    "pts": "点",
+    "you": "あなた"
   }
 }
