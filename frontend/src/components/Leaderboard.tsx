@@ -83,7 +83,7 @@ interface LeaderboardItem {
       <div className="flex flex-col items-center space-y-2 mb-4">
         <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
         <div className="h-px w-8 bg-brand-border-opacity-20" />
-        <span className="text-[8px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase">{t('global_node_sync')}</span>
+        <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase">{t('global_node_sync')}</span>
       </div>
 
       <div className="glass-panel rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5">
@@ -123,14 +123,14 @@ interface LeaderboardItem {
                     <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[120px]">
                       {item.first_name} {item.last_name}
                     </span>
-                    <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
+                    <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
                       {t('active_protocol')}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                    {item.elo} <span className="text-[8px] opacity-40 not-italic">EL</span>
+                    {item.elo} <span className="text-[10px] opacity-40 not-italic">EL</span>
                   </div>
                   <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden">
                     <motion.div
@@ -182,7 +182,7 @@ interface LeaderboardItem {
               <div className="flex items-center justify-between p-6 border-b border-brand-border-opacity-10 bg-brand-void/20">
                 <div className="flex flex-col">
                   <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
-                  <span className="text-[8px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase mt-1.5">{t('global_node_sync')}</span>
+                  <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase mt-1.5">{t('global_node_sync')}</span>
                 </div>
                 <button 
                   onClick={() => setShowModal(false)}
@@ -228,14 +228,14 @@ interface LeaderboardItem {
                         <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[140px]">
                           {item.first_name} {item.last_name}
                         </span>
-                        <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
+                        <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
                           {t('active_protocol')}
                         </span>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                        {item.elo} <span className="text-[8px] opacity-40 not-italic">EL</span>
+                        {item.elo} <span className="text-[10px] opacity-40 not-italic">EL</span>
                       </div>
                       <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden ml-auto">
                         <motion.div

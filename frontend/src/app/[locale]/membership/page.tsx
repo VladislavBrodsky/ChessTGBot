@@ -215,13 +215,13 @@ export default function MembershipPage() {
                 : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
             }`}
           >
-            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">{tm('monthly')}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{tm('monthly')}</span>
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-black tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
                 <span className="text-xs font-black opacity-45 mb-0.5">.00</span>
               </div>
-              <span className="text-[8px] font-bold block mt-1 uppercase opacity-40">{tm('per_month')}</span>
+              <span className="text-[10px] font-bold block mt-1 uppercase opacity-40">{tm('per_month')}</span>
             </div>
           </button>
 
@@ -236,18 +236,18 @@ export default function MembershipPage() {
           >
             {/* Savings Badge */}
             <div className="absolute top-0 right-0">
-              <div className="px-2 py-1 text-[7px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
+              <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
                 {tm('discount')}
               </div>
             </div>
 
-            <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold">{tm('annual')}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">{tm('annual')}</span>
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-black tracking-tighter text-brand-gold">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
                 <span className="text-xs font-black text-brand-gold opacity-50 mb-0.5">/mo</span>
               </div>
-              <span className="text-[8px] font-bold block mt-1 uppercase opacity-50 text-brand-gold">
+              <span className="text-[10px] font-bold block mt-1 uppercase opacity-50 text-brand-gold">
                 {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
               </span>
             </div>
@@ -322,7 +322,7 @@ export default function MembershipPage() {
         {/* ── XP Upgrade (Free Path) ───────────────────────────── */}
         {stats && !stats.is_premium && (
           <div className="w-full bg-brand-surface/40 backdrop-blur-sm border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold opacity-80 block">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold opacity-80 block">
               {tm('xp_upgrade_badge')}
             </span>
             <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
@@ -343,7 +343,7 @@ export default function MembershipPage() {
           </div>
         )}
 
-        <p className="w-full text-[9px] text-brand-primary opacity-25 text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
+        <p className="w-full text-[10px] text-brand-primary opacity-25 text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
           {tm('legal')}
         </p>
       </div>

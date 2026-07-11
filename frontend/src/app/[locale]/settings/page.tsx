@@ -87,22 +87,22 @@ export default function SettingsPage() {
  <div className="flex flex-col text-left">
  <span className="text-xs font-black text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
  {t('premium_membership')}
- <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wide">PRO</span>
+ <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wide">PRO</span>
  </span>
- <span className="text-[9px] font-bold text-brand-gold uppercase tracking-widest leading-none opacity-80">
+ <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest leading-none opacity-80">
  {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
  </span>
  </div>
  </div>
  <div className="w-7 h-7 rounded-full border border-brand-gold/25 bg-brand-gold/10 flex items-center justify-center shrink-0">
- <FaArrowLeft className="rotate-180 text-[8px] text-brand-gold" />
+ <FaArrowLeft className="rotate-180 text-[10px] text-brand-gold" />
  </div>
  </div>
  </Link>
 
  {/* Section: General */}
  <div className="w-full space-y-2.5 mb-6">
- <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+ <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
  {t('visual_matrix')}
  </h3>
  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface divide-y divide-brand-border-opacity-10 shadow-sm overflow-hidden">
@@ -117,7 +117,7 @@ export default function SettingsPage() {
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('luminance_mode')}
  </span>
- <span className="text-[9px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
  {theme === 'dark' ? t('deep_void') : t('solar_flare')}
  </span>
  </div>
@@ -149,7 +149,7 @@ export default function SettingsPage() {
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('audio_protocol')}
  </span>
- <span className="text-[9px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
  {soundEnabled ? t('active_sync') : t('muted')}
  </span>
  </div>
@@ -175,7 +175,7 @@ export default function SettingsPage() {
 
  {/* Section: Language */}
  <div className="w-full space-y-2.5 mb-6">
- <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+ <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
  {t('language_matrix')}
  </h3>
  <LanguageSwitcher />
@@ -183,7 +183,7 @@ export default function SettingsPage() {
 
   {/* Section: Account & Web3 */}
   <div className="w-full space-y-3 mb-6">
-  <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+  <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
   {t('account_section')}
   </h3>
   
@@ -199,13 +199,13 @@ export default function SettingsPage() {
   <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1 flex items-center">
   {t('ton_wallet')}
   </span>
-  <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+  <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
   {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
   </span>
   </div>
   </div>
   <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-  <FaArrowLeft className="rotate-180 text-[8px] text-brand-primary" />
+  <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
   </div>
   </div>
   </Link>
@@ -223,15 +223,15 @@ export default function SettingsPage() {
             <div className="flex flex-col text-left">
               <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
                 Command Center
-                <span className="text-[7.5px] font-black px-1.5 py-0.5 rounded-full bg-red-500 text-white tracking-wide">ADMIN</span>
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-red-500 text-white tracking-wide">ADMIN</span>
               </span>
-              <span className="text-[9.5px] font-bold text-red-400 uppercase tracking-wider leading-none">
+              <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider leading-none">
                 Manage users, payouts & broadcasts
               </span>
             </div>
           </div>
           <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-            <FaArrowLeft className="rotate-180 text-[8px] text-brand-primary" />
+            <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
           </div>
         </div>
       </Link>
@@ -241,7 +241,7 @@ export default function SettingsPage() {
 
  {/* versioning */}
  <div className="w-full mt-12 flex flex-col items-center opacity-20 select-none pointer-events-none text-center">
- <span className="text-[8px] font-bold tracking-[0.2em] uppercase">{t('footer')}</span>
+ <span className="text-[10px] font-bold tracking-[0.2em] uppercase">{t('footer')}</span>
  </div>
  </div>
  </LayoutWrapper>

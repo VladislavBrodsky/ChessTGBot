@@ -153,7 +153,7 @@ export default function LoginPage() {
 
                             {/* Title */}
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500"
+                                <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500"
                                    style={{ color: isDark ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.8)' }}>
                                     {t('secure_web_portal')}
                                 </p>
@@ -206,7 +206,7 @@ export default function LoginPage() {
 
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-px" style={{ background: isDark ? 'linear-gradient(to right, transparent, rgba(168,85,247,0.4))' : 'linear-gradient(to right, transparent, rgba(15,23,42,0.15))' }} />
-                                <p className="text-[9px] font-black uppercase tracking-[0.4em] transition-colors duration-500"
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500"
                                    style={{ color: isDark ? 'rgba(168,85,247,0.5)' : 'rgba(15,23,42,0.4)' }}>
                                     {t('play_on_mobile')}
                                 </p>
@@ -267,7 +267,7 @@ export default function LoginPage() {
                                               style={{ color: isDark ? 'rgba(168,85,247,0.9)' : 'rgba(15,23,42,0.8)' }}>
                                             {value}
                                         </span>
-                                        <span className="text-[8px] uppercase tracking-widest font-semibold transition-colors duration-500" 
+                                        <span className="text-[10px] uppercase tracking-widest font-semibold transition-colors duration-500" 
                                               style={{ color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(15,23,42,0.4)' }}>
                                             {label}
                                         </span>
@@ -279,7 +279,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer note */}
-                <p className="text-center text-[9px] mt-5 uppercase tracking-widest font-semibold transition-colors duration-500"
+                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-semibold transition-colors duration-500"
                    style={{ color: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(15,23,42,0.4)' }}>
                     Chess Mat Bot · Powered by Telegram · Web3 Decentralized
                 </p>

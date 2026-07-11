@@ -253,7 +253,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♛</span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Queen</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Queen</span>
                             </motion.button>
                             
                             <motion.button
@@ -263,7 +263,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♞</span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Knight</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Knight</span>
                             </motion.button>
                             
                             <motion.button
@@ -273,7 +273,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♜</span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Rook</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Rook</span>
                             </motion.button>
                             
                             <motion.button
@@ -283,13 +283,13 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♝</span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Bishop</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Bishop</span>
                             </motion.button>
                         </div>
                         
                         <button
                             onClick={() => { setPromotionMove(null); telegramHaptic('light'); }}
-                            className="w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-brand-rose-opacity-20"
+                            className="w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-brand-rose-opacity-20"
                         >
                             Cancel
                         </button>

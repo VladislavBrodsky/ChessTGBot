@@ -50,10 +50,10 @@ export default function NewsSection() {
                             className={`glass-panel p-4 group hover:bg-brand-bg-opacity-10 transition-all cursor-pointer overflow-hidden ${isExpanded ? 'bg-brand-bg-opacity-10 ring-1 ring-brand-border-opacity-20' : ''}`}
                         >
                             <div className="flex items-start justify-between mb-2">
-                                <span className="px-2 py-0.5 rounded-md bg-brand-bg-opacity-10 text-[8px] font-black text-brand-primary tracking-widest">
+                                <span className="px-2 py-0.5 rounded-md bg-brand-bg-opacity-10 text-[10px] font-black text-brand-primary tracking-widest">
                                     {item.tag}
                                 </span>
-                                <div className="flex items-center gap-1.5 text-[8px] font-bold text-brand-primary opacity-35 uppercase">
+                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-primary opacity-35 uppercase">
                                     <FaClock />
                                     {item.date}
                                 </div>

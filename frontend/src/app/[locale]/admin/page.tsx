@@ -189,7 +189,7 @@ function BarChart({
           );
         })}
       </div>
-      <div className="flex justify-between mt-1.5 text-[9px] text-brand-muted">
+      <div className="flex justify-between mt-1.5 text-[10px] text-brand-muted">
         <span>{data[0]?.date?.slice(5)}</span>
         <span className="opacity-50">14 days</span>
         <span>{data[data.length - 1]?.date?.slice(5)}</span>
@@ -252,10 +252,10 @@ function KpiCard({
         <p className="text-lg sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
           {value}
         </p>
-        <p className="text-[9px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
+        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
           {label}
         </p>
-        {sub && <p className="text-[9px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
+        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
       </div>
     </motion.div>
   );
@@ -796,7 +796,7 @@ function GamesTab() {
                   }`}>
                     {!g.winner ? '🤝 Draw' : g.winner === 'w' ? '⬜ White' : '⬛ Black'}
                   </span>
-                  {g.result_type && <div className="text-[9px] text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
+                  {g.result_type && <div className="text-[10px] text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
                 </td>
                 <td className="px-4 py-2.5 tabular-nums">{g.total_moves}</td>
                 <td className="px-4 py-2.5 text-brand-muted tabular-nums">

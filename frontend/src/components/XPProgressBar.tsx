@@ -25,7 +25,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest">
                     {levelLabel} {level}
                 </span>
-                <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
                     {currentLevelProgress} / {xpPerLevel} XP
                 </span>
             </div>

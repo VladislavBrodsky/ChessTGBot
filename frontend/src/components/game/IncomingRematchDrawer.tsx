@@ -61,20 +61,20 @@ export default function IncomingRematchDrawer({
         {/* Proposed Wager & Settings Detail Box */}
         <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl py-3.5 px-4 border border-zinc-200/50 dark:border-zinc-800/50 text-center shadow-inner-glow space-y-3">
           <div>
-            <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
+            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
               {tg('proposed_wager')}
             </span>
             <span className="text-lg font-black text-zinc-800 dark:text-zinc-200">
               ${((incomingRematch.wager) / 100).toFixed(2)} USDT
             </span>
             {incomingRematch.double_stakes && (
-              <span className="text-[8px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
+              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
                 {tg('double_stakes_active')}
               </span>
             )}
           </div>
           <div className="border-t border-zinc-200/40 dark:border-zinc-800/40 pt-2.5 flex items-center justify-between px-2">
-            <div className="flex items-center gap-1 text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
               <FaRegClock className="text-[10px]" />
               <span>Time Control</span>
             </div>

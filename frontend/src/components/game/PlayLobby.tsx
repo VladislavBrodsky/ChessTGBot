@@ -468,7 +468,7 @@ export default function PlayLobby() {
           </div>
           
           {/* Sleek 2026-style Metadata Stats */}
-          <div className="flex items-center gap-3 text-[8px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
+          <div className="flex items-center gap-3 text-[10px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
             <div className="flex items-center gap-1">
               <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
               <span className="text-emerald-400">{playersOnline} {tg('online')}</span>
@@ -509,7 +509,7 @@ export default function PlayLobby() {
                   <span className="text-[10px] font-black text-brand-primary truncate max-w-[80px]">
                     {tgUser?.first_name || 'You'}
                   </span>
-                  <span className="text-[8px] font-bold text-brand-primary/50">
+                  <span className="text-[10px] font-bold text-brand-primary/50">
                     {stats?.elo || 1000} ELO
                   </span>
                 </div>
@@ -535,7 +535,7 @@ export default function PlayLobby() {
                   <span className="text-[10px] font-black text-emerald-400 truncate max-w-[80px]">
                     {locale === 'ru' ? 'Соперник' : locale === 'es' ? 'Rival' : locale === 'fr' ? 'Adversaire' : 'Opponent'}
                   </span>
-                  <span className="text-[8px] font-bold text-emerald-400/50">
+                  <span className="text-[10px] font-bold text-emerald-400/50">
                     {stats?.elo ? Math.min(Math.max(stats.elo + (Math.random() > 0.5 ? 20 : -20), 800), 2200) : 1000} ELO
                   </span>
                 </div>
@@ -543,13 +543,13 @@ export default function PlayLobby() {
 
               {/* Stake & loading */}
               <div className="w-full p-3 rounded-2xl bg-brand-void border border-brand-border-opacity-10 text-center">
-                <span className="text-[7.5px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">Stakes locked</span>
+                <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">Stakes locked</span>
                 <span className="text-xs font-black text-emerald-400">
                   ${((matchFoundData?.bid_amount || 0) / 100).toFixed(2)} USDT
                 </span>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-[8px] font-bold text-emerald-400/60 uppercase tracking-widest animate-pulse">
+              <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-emerald-400/60 uppercase tracking-widest animate-pulse">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>Entering arena...</span>
               </div>
@@ -567,7 +567,7 @@ export default function PlayLobby() {
               <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary),1)]" />
               
               {/* Active Contenders Badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/10 text-purple-400 animate-pulse text-[8px] font-black uppercase tracking-widest relative z-10">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/10 text-purple-400 animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
                 <span className="w-1 h-1 rounded-full bg-purple-400 animate-ping" />
                 <span>{locale === 'ru' ? `Сканирование: ${contendersCount} соперников` : `Scanning: ${contendersCount} contenders`}</span>
               </div>
@@ -585,12 +585,12 @@ export default function PlayLobby() {
               </div>
 
               <div className="flex flex-col space-y-1">
-                <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('searching_matchmaker')}</span>
+                <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('searching_matchmaker')}</span>
                 <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
                 <span className="text-2xl font-black text-brand-primary opacity-80 tracking-tighter">
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
-                <span className="text-[8px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
+                <span className="text-[10px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
                   {locale === 'ru' ? 'Ср. ожидание: ~15с' : 'Est. Wait: ~15s'}
                 </span>
               </div>
@@ -598,8 +598,8 @@ export default function PlayLobby() {
               {/* Win Up To Pill (Viral/FOMO) */}
               {chosenWager > 0 && (
                 <div className="px-6 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/35 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse shrink-0">
-                  <span className="text-[8.5px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
-                    <FaFire className="text-emerald-500 text-[9.5px]" /> {tg('win_up_to')}
+                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
+                    <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')}
                   </span>
                   <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none">
                     ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
@@ -608,7 +608,7 @@ export default function PlayLobby() {
               )}
 
               <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
-                <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
+                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
                 <span className="text-sm font-black text-brand-primary">
                   ${(chosenWager / 100).toFixed(2)} USDT
                 </span>
@@ -645,7 +645,7 @@ export default function PlayLobby() {
                       <FaWallet size={11} className="text-brand-primary opacity-50 group-hover:opacity-80 transition-all" />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-[7.5px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
                       <span className={`text-[11px] font-black tracking-wide leading-none truncate ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
                         {/* Never present a failed balance fetch as "$0.00" */}
                         {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
@@ -688,8 +688,8 @@ export default function PlayLobby() {
                         onClick={scrollToWager}
                         className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
-                          <FaWallet className="text-brand-primary/45 text-[7px]" /> {tg('stake')}
+                        <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
+                          <FaWallet className="text-brand-primary/45 text-[10px]" /> {tg('stake')}
                         </span>
                         <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                       </button>
@@ -703,8 +703,8 @@ export default function PlayLobby() {
                         }}
                         className="flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[7.5px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                          <FaFire className="text-emerald-400 text-[8px] animate-pulse" /> {tg('win_up_to')}
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
+                          <FaFire className="text-emerald-400 text-[10px] animate-pulse" /> {tg('win_up_to')}
                         </span>
                         <span className="text-[11px] font-black text-emerald-400 tracking-tight leading-none">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
@@ -717,8 +717,8 @@ export default function PlayLobby() {
                         onClick={scrollToTimeControl}
                         className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[7.5px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
-                          <FaClock className="text-brand-primary/45 text-[7px]" /> {tg('time')}
+                        <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
+                          <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
                         </span>
                         <span className="text-[11px] font-black text-amber-400 uppercase">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
@@ -750,8 +750,8 @@ export default function PlayLobby() {
                       </span>
                     </div>
                     {hasSufficient && chosenWager > 0 && (
-                      <span className="text-[8.5px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75 relative z-10">
-                        <FaFire className="text-emerald-500 text-[9.5px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                      <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75 relative z-10">
+                        <FaFire className="text-emerald-500 text-[10px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                       </span>
                     )}
                   </motion.button>
@@ -784,7 +784,7 @@ export default function PlayLobby() {
                     <span className="text-sm font-black leading-none text-emerald-600 dark:text-emerald-400 tracking-wide uppercase">
                       TRAIN
                     </span>
-                    <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
                       AGAINST A.I.
                     </span>
                   </div>
@@ -808,7 +808,7 @@ export default function PlayLobby() {
                     <span className="text-sm font-black leading-none text-purple-600 dark:text-purple-400 tracking-wide uppercase">
                       PLAY
                     </span>
-                    <span className="text-[7.5px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
                       WITH FRIEND
                     </span>
                   </div>
@@ -820,7 +820,7 @@ export default function PlayLobby() {
                 <div className="w-full space-y-3 pt-2">
                   <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
                     <FaChessPawn className="text-brand-primary opacity-40 text-[10px]" />
-                    <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-45">{t('recent_activity')}</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-45">{t('recent_activity')}</h3>
                   </div>
                   <div className="space-y-2.5">
                     {stats.recent_games.slice(0, 3).map((game: any, idx: number) => {
@@ -863,7 +863,7 @@ export default function PlayLobby() {
                                   {t('vs')} {getOpponentName(game.opponent.name)}
                                 </span>
                               </div>
-                              <span className="text-[9px] font-black text-brand-primary opacity-30 uppercase tracking-widest leading-none">
+                              <span className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest leading-none">
                                 {game.opponent.elo} {t('elo')}
                               </span>
                             </div>
@@ -872,15 +872,15 @@ export default function PlayLobby() {
                           <div className="flex items-center gap-3.5 relative z-10">
                             {/* ELO Change Pill */}
                             {game.elo_change > 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] uppercase tracking-wider">
                                 + {game.elo_change} ELO
                               </div>
                             ) : game.elo_change < 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-red-500/10 border border-red-500/20 text-red-400/90 uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-red-500/10 border border-red-500/20 text-red-400/90 uppercase tracking-wider">
                                 - {Math.abs(game.elo_change)} ELO
                               </div>
                             ) : (
-                              <div className="px-3 py-1.5 rounded-full text-[9px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-primary opacity-40 uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-primary opacity-40 uppercase tracking-wider">
                                 0 ELO
                               </div>
                             )}

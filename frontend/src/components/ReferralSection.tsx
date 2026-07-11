@@ -72,7 +72,7 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
  <div className="relative z-10 space-y-4">
  <div className="flex flex-col">
  <span className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-1">Referral Protocol</span>
- <p className="text-[9px] text-brand-primary opacity-40 font-bold uppercase leading-relaxed max-w-[80%]">
+ <p className="text-[10px] text-brand-primary opacity-40 font-bold uppercase leading-relaxed max-w-[80%]">
  Expand the FinChess network. Earn 50 XP and 10% Boost for every node synchronized via your code.
  </p>
  </div>
@@ -103,11 +103,11 @@ export default function ReferralSection({ referralCode }: ReferralSectionProps) 
  {/* Bottom Stats */}
  <div className="mt-4 pt-4 border-t border-brand-border-opacity-5 flex justify-between items-center">
  <div className="flex flex-col">
- <span className="text-[8px] font-black text-brand-primary opacity-20 uppercase tracking-widest">Nodes Recruited</span>
+ <span className="text-[10px] font-black text-brand-primary opacity-20 uppercase tracking-widest">Nodes Recruited</span>
  <span className="text-[12px] font-black text-brand-primary ">0.00</span>
  </div>
  <div className="text-right flex flex-col">
- <span className="text-[8px] font-black text-brand-primary opacity-20 uppercase tracking-widest">Active Multiplier</span>
+ <span className="text-[10px] font-black text-brand-primary opacity-20 uppercase tracking-widest">Active Multiplier</span>
  <span className="text-[10px] font-black text-brand-primary tracking-tighter">1.0X ALPHA</span>
  </div>
  </div>

@@ -21,15 +21,15 @@ export default function TierComparison() {
    <div className="flex flex-col items-center space-y-2 mb-8">
    <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{tc('title')}</h3>
    <div className="h-px w-8 bg-brand-border-opacity-20" />
-   <span className="text-[8px] font-bold text-brand-primary opacity-35 tracking-[0.4em] uppercase">{tc('subtitle')}</span>
+   <span className="text-[10px] font-bold text-brand-primary opacity-35 tracking-[0.4em] uppercase">{tc('subtitle')}</span>
    </div>
 
    <div className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] overflow-hidden shadow-sm">
    {/* Table Header */}
    <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-10 bg-amber-500/5">
-   <div className="col-span-4 text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
-   <div className="col-span-1 text-center text-[9px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
-   <div className="col-span-1 text-center text-[9px] font-black uppercase text-amber-500 tracking-widest">{tc('elite')}</div>
+   <div className="col-span-4 text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
+   <div className="col-span-1 text-center text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
+   <div className="col-span-1 text-center text-[10px] font-black uppercase text-amber-500 tracking-widest">{tc('elite')}</div>
    </div>
 
    {/* Table Rows */}
@@ -71,7 +71,7 @@ export default function TierComparison() {
 
    {/* Bottom Insight */}
    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
-   <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">
+   <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">
    {tc('bottom_insight')}
    </p>
    </div>

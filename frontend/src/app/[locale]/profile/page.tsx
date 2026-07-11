@@ -94,7 +94,7 @@ export default function ProfilePage() {
  )}
  </div>
  {/* Premium overlay badge */}
- <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
+ <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
  👑 {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
  </div>
  </div>
@@ -117,9 +117,9 @@ export default function ProfilePage() {
       </div>
     ) : (
       <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
-        <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
+        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
-        <div className="flex items-center gap-1.5 mt-1.5 text-[8.5px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
           <span>{labels.global_rank} #{stats.global_rank || 1}</span>
           <span>•</span>
           <span>{stats.percentile?.toFixed(0) || 100}%</span>
@@ -136,9 +136,9 @@ export default function ProfilePage() {
       </div>
     ) : (
       <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
-        <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
+        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
-        <div className="flex items-center gap-1 mt-1.5 text-[8.5px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
           <span>{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} PTS</span>
         </div>
       </div>
@@ -162,8 +162,8 @@ export default function ProfilePage() {
   ) : (
     <div className="w-full glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
-        <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{labels.breakdown}</span>
-        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
+        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{labels.breakdown}</span>
+        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
       </div>
 
       {/* Segmented Progress Bar */}
@@ -182,19 +182,19 @@ export default function ProfilePage() {
       {/* Metric readouts */}
       <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
         <div className="flex flex-col">
-          <span className="text-[8px] font-black uppercase text-emerald-500 tracking-widest">{labels.wins}</span>
+          <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">{labels.wins}</span>
           <span className="text-xs font-black text-brand-primary mt-0.5">{stats.wins || 0}</span>
-          <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats.win_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-[10px] font-bold text-brand-primary opacity-40">({stats.win_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col border-x border-brand-border-opacity-10">
-          <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{labels.draws}</span>
+          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{labels.draws}</span>
           <span className="text-xs font-black text-brand-primary mt-0.5">{stats.draws || 0}</span>
-          <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats.draw_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-[10px] font-bold text-brand-primary opacity-40">({stats.draw_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[8px] font-black uppercase text-rose-500 tracking-widest">{labels.losses}</span>
+          <span className="text-[10px] font-black uppercase text-rose-500 tracking-widest">{labels.losses}</span>
           <span className="text-xs font-black text-brand-primary mt-0.5">{stats.losses || 0}</span>
-          <span className="text-[7.5px] font-bold text-brand-primary opacity-40">({stats.loss_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-[10px] font-bold text-brand-primary opacity-40">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
       </div>
     </div>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                  <span className="text-xs font-black text-brand-primary uppercase tracking-tight">
                    vs {game.opponent?.name || "AI Engine"}
                  </span>
-                 <span className="text-[9px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                 <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em]">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
                  </span>
                </div>
@@ -271,10 +271,10 @@ export default function ProfilePage() {
              
              <div className="flex items-center gap-4 relative z-10">
                <div className="flex flex-col items-end">
-                 <span className={`px-2 py-0.5 rounded border text-[8px] font-black uppercase tracking-widest ${badgeColor}`}>
+                 <span className={`px-2 py-0.5 rounded border text-[10px] font-black uppercase tracking-widest ${badgeColor}`}>
                    {game.result}
                  </span>
-                 <span className="text-[9px] font-black text-brand-primary mt-1.5 drop-shadow-sm">
+                 <span className="text-[10px] font-black text-brand-primary mt-1.5 drop-shadow-sm">
                    {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                  </span>
                </div>

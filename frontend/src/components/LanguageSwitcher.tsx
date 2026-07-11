@@ -79,7 +79,7 @@ export default function LanguageSwitcher() {
                         <FaGlobe size={18} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none mb-1.5">{t('select') || 'Select Language'}</span>
+                        <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none mb-1.5">{t('select') || 'Select Language'}</span>
                         <span className="text-xs font-bold text-brand-primary">
                             {currentLang.flag} {currentLang.name}
                         </span>

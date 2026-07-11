@@ -108,7 +108,7 @@ export default function TaskSuccessModal() {
               {/* Big Reward Glow Box */}
               <div className="w-full py-4 px-3 rounded-2xl bg-amber-500/[0.04] border border-amber-500/10 flex flex-col items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.1),transparent_70%)]" />
-                <span className="text-[9px] font-black text-amber-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
+                <span className="text-[10px] font-black text-amber-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
                 <div className="flex items-center gap-1.5 z-10">
                   <FaCoins className="text-amber-400 text-base" />
                   <span className="text-2xl font-black text-white tracking-tight leading-none">

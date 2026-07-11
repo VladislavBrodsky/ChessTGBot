@@ -175,7 +175,7 @@ export default function WalletSelectorModal({
           <div className="text-center pt-1">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <span
-                className="text-[8px] font-black uppercase tracking-[0.3em] opacity-40 text-brand-primary"
+                className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 text-brand-primary"
               >
                 Web3 · TON Connect
               </span>
@@ -219,7 +219,7 @@ export default function WalletSelectorModal({
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="text-[8px] font-black uppercase tracking-[0.25em] opacity-40 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 text-brand-primary">
                       Connected · GRAM Network
                     </span>
                     <span className="text-[13px] font-black font-mono truncate text-brand-primary">
@@ -263,7 +263,7 @@ export default function WalletSelectorModal({
             /* ── WALLET PICKER ── */
             <div className="space-y-3">
               {/* Subtitle */}
-              <p className="text-[9px] font-bold uppercase tracking-widest opacity-35 text-center text-brand-primary">
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-35 text-center text-brand-primary">
                 {tw("connect_desc")}
               </p>
 
@@ -311,7 +311,7 @@ export default function WalletSelectorModal({
                       </span>
                       {w.badge && (
                         <span
-                          className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full"
+                          className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full"
                           style={{
                             background: `${w.color}20`,
                             color: w.color,
@@ -322,7 +322,7 @@ export default function WalletSelectorModal({
                         </span>
                       )}
                     </div>
-                    <span className="text-[9px] font-bold opacity-35 text-brand-primary truncate w-full text-left">
+                    <span className="text-[10px] font-bold opacity-35 text-brand-primary truncate w-full text-left">
                       {w.subtitle}
                     </span>
                   </div>
@@ -386,7 +386,7 @@ export default function WalletSelectorModal({
                     fill="white"
                   />
                 </svg>
-                <span className="text-[8px] font-bold uppercase tracking-widest opacity-25 text-brand-primary">
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-25 text-brand-primary">
                   Powered by TON Connect · GRAM Blockchain
                 </span>
               </div>

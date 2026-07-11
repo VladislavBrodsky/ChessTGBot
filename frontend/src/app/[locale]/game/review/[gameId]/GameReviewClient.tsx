@@ -368,7 +368,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </motion.button>
         <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
           <FaGamepad className="text-[10px] text-brand-primary opacity-45" />
-          <span className="text-[9px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
             {gameData.game_type === 'computer' ? "A.I. Training" : "Duel Ledger"}
           </span>
         </div>
@@ -393,13 +393,13 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
                 {gameData.black_name}
               </span>
-              <span className="text-[9px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
                 {gameData.black_elo_before} → {gameData.black_elo_after} ELO
               </span>
             </div>
           </div>
           {isBlackWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[8px] font-black uppercase tracking-widest">
+            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
               Winner
             </span>
           )}
@@ -457,13 +457,13 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
                 {gameData.white_name}
               </span>
-              <span className="text-[9px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
                 {gameData.white_elo_before} → {gameData.white_elo_after} ELO
               </span>
             </div>
           </div>
           {isWhiteWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[8px] font-black uppercase tracking-widest">
+            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
               Winner
             </span>
           )}
@@ -531,7 +531,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* A.I. Analysis Panel */}
         {!analysis && !isAnalyzing && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3">
-            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
               A.I. Engine Review
             </span>
             <p className="text-[10px] text-brand-primary opacity-60 uppercase tracking-wide">
@@ -548,7 +548,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         {isAnalyzing && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3 animate-pulse">
-            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
               Analyzing game moves...
             </span>
             <div className="w-full bg-brand-void rounded-full h-2 overflow-hidden border border-brand-border-opacity-5">
@@ -569,7 +569,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             {currentStep > 0 && (
               <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+                  <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
                     Move Analysis
                   </span>
                   <span className="text-[10px] font-mono font-bold text-brand-primary">
@@ -577,11 +577,11 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
+                  <span className={`px-2.5 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
                     {getClassificationLabel(analysis.classifications[currentStep], locale)}
                   </span>
                   {(analysis.classifications[currentStep] === 'blunder' || analysis.classifications[currentStep] === 'mistake') && analysis.bestMoves[currentStep - 1] && (
-                    <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
                       💡 Best was: {formatUci(analysis.bestMoves[currentStep - 1])}
                     </span>
                   )}
@@ -591,7 +591,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
             {/* Accuracy Standings Summary */}
             <div className="space-y-3">
-              <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+              <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
                 Move Accuracy Summary
               </span>
               <div className="grid grid-cols-2 gap-4">
@@ -606,7 +606,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                       whiteStats[analysis.classifications[i]]++;
                     }
                     return (
-                      <div className="grid grid-cols-2 gap-y-1 text-[9px] font-bold font-mono">
+                      <div className="grid grid-cols-2 gap-y-1 text-[10px] font-bold font-mono">
                         <span className="text-emerald-400">Excellent:</span>
                         <span className="text-right text-brand-primary">{whiteStats.excellent + whiteStats.book}</span>
                         <span className="text-blue-400">Good:</span>
@@ -633,7 +633,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                       blackStats[analysis.classifications[i]]++;
                     }
                     return (
-                      <div className="grid grid-cols-2 gap-y-1 text-[9px] font-bold font-mono">
+                      <div className="grid grid-cols-2 gap-y-1 text-[10px] font-bold font-mono">
                         <span className="text-emerald-400">Excellent:</span>
                         <span className="text-right text-brand-primary">{blackStats.excellent + blackStats.book}</span>
                         <span className="text-blue-400">Good:</span>
@@ -659,7 +659,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40">
               Move Ledger
             </span>
-            <div className="flex items-center gap-1.5 text-[9px] font-bold text-brand-primary opacity-30">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-primary opacity-30">
               <FaRegClock />
               <span>{new Date(gameData.ended_at).toLocaleDateString()}</span>
             </div>

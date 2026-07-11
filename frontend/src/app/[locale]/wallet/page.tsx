@@ -99,7 +99,7 @@ export default function WalletPage() {
             <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
               <FaWallet className="text-xs" />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
           </motion.button>
           
           <motion.button 
@@ -111,7 +111,7 @@ export default function WalletPage() {
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
               <FaArrowDown className="text-xs" />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
           </motion.button>
           
           <motion.button 
@@ -123,12 +123,12 @@ export default function WalletPage() {
             <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
               <FaArrowUp className="text-xs" />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
           </motion.button>
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full py-2.5 px-4 rounded-xl border border-brand-border-opacity-5 bg-brand-surface/40 flex items-center justify-between text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest shadow-inner">
+        <div className="w-full py-2.5 px-4 rounded-xl border border-brand-border-opacity-5 bg-brand-surface/40 flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest shadow-inner">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
             {tw('deposit_fee')} <strong className="text-emerald-500 dark:text-emerald-400 font-black">5%</strong>

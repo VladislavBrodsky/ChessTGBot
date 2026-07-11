@@ -808,7 +808,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                   : 'bg-brand-surface border-brand-border-opacity-10 text-brand-primary opacity-60'
               }`}
             >
-              <span className="text-[8px] font-black uppercase tracking-wider">
+              <span className="text-[10px] font-black uppercase tracking-wider">
                 {locale === 'ru' ? 'Авто-Ферзь' : 'Auto-Queen'}
               </span>
               <div className={`w-2 h-2 rounded-full ${autoPromote ? 'bg-brand-primary animate-pulse' : 'bg-brand-primary/30'}`} />
@@ -818,7 +818,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
         <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
           <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
-          <span className="text-[9px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
             {isConnected ? tg('active_sync') : tg('isolated')}
           </span>
         </div>
@@ -840,7 +840,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 ? 'border-amber-500/30 text-amber-400'
                 : 'border-brand-primary/20 text-brand-primary'
             }`}>
-              <span className="text-[8.5px] font-black uppercase tracking-[0.2em] block mb-1 opacity-60">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] block mb-1 opacity-60">
                 {gameNotice.type === 'error' 
                   ? (locale === 'ru' ? 'ВНИМАНИЕ' : 'ATTENTION') 
                   : gameNotice.type === 'warning'
@@ -864,7 +864,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90vw] max-w-[280px]"
         >
           <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface/95 backdrop-blur-xl shadow-premium text-center pointer-events-auto">
-            <span className="text-[8px] font-black text-red-500 uppercase tracking-widest block mb-0.5">System Warning</span>
+            <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-0.5">System Warning</span>
             <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wide leading-tight">{error}</span>
           </div>
         </motion.div>
@@ -888,7 +888,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             </div>
 
             <div className="flex flex-col space-y-1.5 mb-6">
-              <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
+              <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
                 {locale === 'ru' ? 'Ожидание оппонента' : 'Waiting for Opponent'}
               </span>
               <span className="text-sm font-bold text-brand-primary uppercase tracking-wide">
@@ -899,7 +899,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             {/* Match details card */}
             <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
               <div className="flex flex-col items-start text-left">
-                <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
                   {locale === 'ru' ? 'Ставка' : 'Wager Tier'}
                 </span>
                 <span className="text-xs font-black text-emerald-400">
@@ -909,7 +909,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 </span>
               </div>
               <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
-                <span className="text-[8px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
                   {locale === 'ru' ? 'Контроль времени' : 'Time Control'}
                 </span>
                 <span className="text-xs font-black text-amber-400 uppercase">
@@ -951,7 +951,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                       const socket = getSocket();
                       socket.emit('abort_game', { game_id: gameId });
                     }}
-                    className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[9px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
+                    className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
                   >
                     <span>{locale === 'ru' ? 'Отменить и вернуть средства' : 'Cancel & Refund Match'}</span>
                   </motion.button>
@@ -962,7 +962,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           </div>
           
           <div className="w-full text-center px-4">
-            <p className="text-[9px] font-semibold text-brand-primary opacity-30 uppercase tracking-wider leading-relaxed">
+            <p className="text-[10px] font-semibold text-brand-primary opacity-30 uppercase tracking-wider leading-relaxed">
               {locale === 'ru' 
                 ? 'Не закрывайте эту вкладку. Партия начнется автоматически, как только ваш оппонент подключится к дуэли.' 
                 : 'Do not close this page. The match will automatically begin as soon as your opponent joins the lobby.'}
@@ -1037,7 +1037,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         {/* Move History log */}
         {gameState?.move_history && gameState.move_history.length > 0 && (
           <div className="w-full overflow-hidden px-1">
-            <div className="flex items-center space-x-2 text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
+            <div className="flex items-center space-x-2 text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
               <span>{tg('move_history')}</span>
             </div>
             <div 

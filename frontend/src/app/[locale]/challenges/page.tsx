@@ -212,7 +212,7 @@ export default function ChallengesPage() {
                 <div
                   className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
                 >
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-50 text-brand-primary">LEVEL</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 text-brand-primary">LEVEL</span>
                   <motion.span
                     key={userLevel}
                     initial={{ scale: 0.6, opacity: 0 }}
@@ -239,7 +239,7 @@ export default function ChallengesPage() {
             <h1 className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
               {t('grandmaster_rising')}
             </h1>
-            <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-6 opacity-40 text-brand-primary">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-6 opacity-40 text-brand-primary">
               {t('next_level', { xp: nextLevelXp })}
             </p>
  
@@ -263,10 +263,10 @@ export default function ChallengesPage() {
                 />
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-brand-primary">
+                <span className="text-[10px] font-black uppercase tracking-widest opacity-50 text-brand-primary">
                   {userXp} XP
                 </span>
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-30 text-brand-primary">
+                <span className="text-[10px] font-black uppercase tracking-widest opacity-30 text-brand-primary">
                   {nextLevelXp} XP
                 </span>
               </div>
@@ -274,7 +274,7 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10"
+              className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10"
             >
               {Math.round(progressPercentage)}% to next level
             </div>
@@ -311,7 +311,7 @@ export default function ChallengesPage() {
               >
                 {stats?.games_played ?? 0}
               </motion.span>
-              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
                 {t('battles')}
               </span>
             </div>
@@ -345,7 +345,7 @@ export default function ChallengesPage() {
               >
                 {stats?.elo ?? 1000}
               </motion.span>
-              <span className="text-[8px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
                 {t('elo_rating')}
               </span>
             </div>
@@ -359,7 +359,7 @@ export default function ChallengesPage() {
 
         {/* Tasks Section */}
         <div className="w-full mb-8">
-          <h3 className="text-[9px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
+          <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
           <div className="space-y-3 w-full">
             {loading ? (
               <div className="w-full flex flex-col space-y-3">
@@ -400,7 +400,7 @@ export default function ChallengesPage() {
                           <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">
                             <div className="h-full bg-brand-primary transition-all duration-500" style={{ width: `${(task.progress / task.target_count) * 100}%` }} />
                           </div>
-                          <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-wider">{task.progress}/{task.target_count}</span>
+                          <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider">{task.progress}/{task.target_count}</span>
                         </div>
                       </div>
                     </div>
@@ -416,7 +416,7 @@ export default function ChallengesPage() {
                         {claimingId === task.task_id ? '...' : t('claim')}
                       </motion.button>
                     ) : task.claimed ? (
-                      <span className="text-[9px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>
+                      <span className="text-[10px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>
                     ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
                       <motion.button
                         whileTap={{ scale: 0.95 }}
@@ -428,7 +428,7 @@ export default function ChallengesPage() {
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
-                        <span className="text-[9px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">{t('reward')}</span>
+                        <span className="text-[10px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">{t('reward')}</span>
                       </div>
                     )}
                   </div>

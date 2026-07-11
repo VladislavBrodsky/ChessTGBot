@@ -140,7 +140,7 @@ export default function MatchOverModal({
           <h2 className={`text-xl ${theme.titleClass}`}>
             {matchResultLabel}
           </h2>
-          <p className="text-[9px] font-black text-brand-primary opacity-30 uppercase tracking-[0.25em]">
+          <p className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-[0.25em]">
             {tg('verification_complete')}
           </p>
         </div>
@@ -148,10 +148,10 @@ export default function MatchOverModal({
         {/* Metrics Grid */}
         <div className="w-full bg-brand-void/40 rounded-2xl p-4.5 border border-brand-border-opacity-10 space-y-3.5 shadow-inner-glow relative z-10">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('global_elo')}</span>
+            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('global_elo')}</span>
             <div className="flex items-center gap-1.5 font-mono">
               <span className="text-xs font-black text-brand-primary tracking-wider">{animatedElo} ELO</span>
-              <span className={`text-[8.5px] font-black tracking-widest ${changeVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <span className={`text-[10px] font-black tracking-widest ${changeVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {changeVal >= 0 ? `+${changeVal}` : changeVal}
               </span>
             </div>
@@ -160,13 +160,13 @@ export default function MatchOverModal({
           <div className="h-px w-full bg-brand-border-opacity-5" />
           
           <div className="flex justify-between items-center">
-            <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('net_payout')}</span>
+            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('net_payout')}</span>
             <div className="flex flex-col items-end">
               <span className={`text-xs font-black tracking-wider font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-primary opacity-60'}`}>
                 {netPayout > 0 ? `+$${animatedPayout.toFixed(2)}` : '$0.00'} USDT
               </span>
               {wagerAmount > 0 && isWin && (
-                <span className="text-[7.5px] text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">
+                <span className="text-[10px] text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">
                   {tg('platform_rake')} (3%)
                 </span>
               )}
@@ -177,7 +177,7 @@ export default function MatchOverModal({
             <>
               <div className="h-px w-full bg-brand-border-opacity-5" />
               <div className="flex justify-between items-center animate-fade-in">
-                <span className="text-[9px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+                <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
                   {locale === 'ru' ? 'Опыт' : 'XP Reward'}
                 </span>
                 <span className="text-xs font-black text-amber-400 tracking-wider font-mono flex items-center gap-1">
@@ -191,7 +191,7 @@ export default function MatchOverModal({
         {/* Buttons / Actions */}
         <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
-            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[9px] uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
+            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
               <span>{isBotGame ? (locale === 'ru' ? 'Создание дуэли...' : 'Creating Match...') : 'Pending Opponent...'}</span>
             </div>
           ) : (
@@ -199,7 +199,7 @@ export default function MatchOverModal({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onShowRematchChoice}
-              className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[9px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-300"
+              className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-300"
             >
               <span>{tg('revenge_match')}</span>
             </motion.button>
@@ -210,7 +210,7 @@ export default function MatchOverModal({
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
+                className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
               >
                 <FaRedo size={10} className="text-brand-primary opacity-60" />
                 <span>{locale === 'ru' ? 'В лобби' : 'To Lobby'}</span>
@@ -221,7 +221,7 @@ export default function MatchOverModal({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onShareGame}
-              className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
+              className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
             >
               <FaShareAlt size={10} className="text-brand-primary opacity-60" />
               <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>

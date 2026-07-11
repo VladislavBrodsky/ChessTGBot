@@ -217,7 +217,7 @@ export default function PuzzleBoard({
           </button>
         </div>
         {hintsEnabled && (
-          <span className="text-[9px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">
+          <span className="text-[10px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">
             Hints available (Levels 1-10)
           </span>
         )}

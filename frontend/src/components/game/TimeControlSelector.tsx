@@ -19,7 +19,7 @@ export default function TimeControlSelector({
   return (
     <div className="px-4 pt-3 pb-4">
       <div className="flex justify-center items-center mb-2.5">
-        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
+        <span className="text-[10px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
           <FaChessPawn className="opacity-60" size={8} />
           {tg('time_control')}
         </span>

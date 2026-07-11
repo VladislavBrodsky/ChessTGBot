@@ -61,7 +61,7 @@ export default function RematchChoiceDrawer({
             className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm"
           >
             <span className="text-xs uppercase font-black tracking-[0.2em]">{tg('same_stakes')}</span>
-            <span className="text-[9px] font-bold opacity-80">${((wagerAmount || 0) / 100).toFixed(2)} USDT</span>
+            <span className="text-[10px] font-bold opacity-80">${((wagerAmount || 0) / 100).toFixed(2)} USDT</span>
           </motion.button>
           
           <motion.button
@@ -73,7 +73,7 @@ export default function RematchChoiceDrawer({
             <span className="text-xs uppercase font-black tracking-[0.2em] flex items-center gap-1">
               {tg('double_stakes_choice')}
             </span>
-            <span className="text-[9px] font-bold opacity-90">${(((wagerAmount || 0) * 2) / 100).toFixed(2)} USDT</span>
+            <span className="text-[10px] font-bold opacity-90">${(((wagerAmount || 0) * 2) / 100).toFixed(2)} USDT</span>
           </motion.button>
 
           <motion.button

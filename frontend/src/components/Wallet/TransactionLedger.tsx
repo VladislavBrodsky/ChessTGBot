@@ -67,10 +67,10 @@ function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Tran
       <div className="absolute -bottom-12 -right-12 w-28 h-28 rounded-full bg-cyan-500/[0.03] blur-2xl pointer-events-none" />
       
       <div className="flex justify-between items-center px-1">
-        <span className="text-[7.5px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
           Balance History (USDT)
         </span>
-        <span className="text-[7.5px] font-mono text-emerald-400 font-black uppercase tracking-wider">
+        <span className="text-[10px] font-mono text-emerald-400 font-black uppercase tracking-wider">
           Range: ${minAmt.toFixed(2)} - ${maxAmt.toFixed(2)}
         </span>
       </div>
@@ -122,7 +122,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0 }
           <FaHistory className="text-xs" />
           <h3 className="text-xs font-black uppercase tracking-widest">{tw('ledger')}</h3>
         </div>
-        <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
+        <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
       </div>
 
       {!loading && transactions.length > 0 && (
@@ -177,7 +177,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0 }
                       tx.type === 'game_rake' ? tw('tx_rake') : 
                       tx.type}
                     </span>
-                    <span className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-widest mt-0.5">
+                    <span className="text-[10px] font-bold text-brand-primary opacity-45 uppercase tracking-widest mt-0.5">
                       {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0 }
                     {isZero ? '' : isPositive ? '+' : '-'}{formattedAmt}
                   </span>
                   {tx.fee > 0 && (
-                    <span className="text-[7.5px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
+                    <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
                       {formattedFee}
                     </span>
                   )}

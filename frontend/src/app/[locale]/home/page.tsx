@@ -64,7 +64,7 @@ export default function Home() {
  <h1 className="text-xl font-black tracking-tighter text-brand-primary leading-none uppercase animate-float">
  {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
  </h1>
- <p className="text-[8px] font-black text-brand-muted uppercase tracking-[0.4em] mt-2">
+ <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.4em] mt-2">
  {t('subtitle')}
  </p>
  </div>
@@ -186,7 +186,7 @@ export default function Home() {
         );
       })()}
       {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] border border-brand-primary/40 bg-gradient-to-br from-amber-400/20 to-amber-600/20 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)] backdrop-blur-md">
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-primary/40 bg-gradient-to-br from-amber-400/20 to-amber-600/20 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)] backdrop-blur-md">
       <FaStar />
       </div>
       )}
@@ -208,8 +208,8 @@ export default function Home() {
       whileTap={{ scale: 0.96 }}
       className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
       >
-      <FaWallet className="text-[9px] text-brand-primary opacity-60" />
-      <span className={`text-[9px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
+      <FaWallet className="text-[10px] text-brand-primary opacity-60" />
+      <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
       {/* Never present a failed balance fetch as "$0.00" */}
       {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
       </span>
@@ -227,20 +227,20 @@ export default function Home() {
       {/* Compact Stats Row */}
       <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
-      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
       <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || 0}%</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
       <div className="flex items-center gap-1 justify-center">
       <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
-      <span className={`text-[8px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
+      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
       {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
       </span>
       </div>
       </div>
       <div className="flex flex-col items-center">
-      <span className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">
       {t('wins')?.[0] || 'W'}/{t('losses')?.[0] || 'L'}/{locale === 'ru' ? 'Н' : 'D'}
       </span>
       <span className="text-xs font-black text-brand-primary">
@@ -264,7 +264,7 @@ export default function Home() {
  <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
  <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
  <FaGraduationCap className="text-lg text-brand-primary opacity-80" />
- <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">{t('academy')}</span>
+ <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary">{t('academy')}</span>
  </motion.div>
  </Link>
 
@@ -275,7 +275,7 @@ export default function Home() {
   className="play-chess-card-premium w-full py-5 flex flex-col items-center justify-center gap-2 cursor-pointer text-center"
   >
   <FaGamepad className="text-lg text-brand-primary opacity-70 relative z-10 drop-shadow-[0_2px_8px_rgba(168,85,247,0.4)]" />
-  <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary relative z-10">{t('play')}</span>
+  <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary relative z-10">{t('play')}</span>
   </motion.div>
   </Link>
 
@@ -288,7 +288,7 @@ export default function Home() {
  <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
  <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3.5, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
  <FaTrophy className="text-lg text-brand-primary opacity-80" />
- <span className="text-[9px] font-black uppercase tracking-wider text-brand-primary">{t('daily_tasks')}</span>
+ <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary">{t('daily_tasks')}</span>
  </motion.div>
  </Link>
  </div>
@@ -297,7 +297,7 @@ export default function Home() {
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
  <FaListOl className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('leaderboard')}</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('leaderboard')}</h3>
  </div>
  <Leaderboard />
  </div>
@@ -306,7 +306,7 @@ export default function Home() {
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
  <FaNewspaper className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('latest_updates')}</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('latest_updates')}</h3>
  </div>
  <NewsSection />
  </div>
@@ -315,7 +315,7 @@ export default function Home() {
  <footer className="flex flex-col items-center py-6 select-none pointer-events-none opacity-5 w-full">
  <div className="flex items-center gap-4 w-full px-8">
  <div className="h-px flex-1 bg-linear-to-r from-transparent to-brand-border-opacity-20" />
- <span className="text-[7px] font-black tracking-[1.5em] uppercase text-brand-primary opacity-30 shrink-0">ANTIGRAVITY</span>
+ <span className="text-[10px] font-black tracking-[1.5em] uppercase text-brand-primary opacity-30 shrink-0">ANTIGRAVITY</span>
  <div className="h-px flex-1 bg-linear-to-l from-transparent to-brand-border-opacity-20" />
  </div>
  </footer>

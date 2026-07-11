@@ -114,7 +114,7 @@ export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreati
           <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
             {trans.select_difficulty}
           </h2>
-          <p className="text-[9px] font-bold text-brand-primary/45 uppercase tracking-[0.2em] mb-5">
+          <p className="text-[10px] font-bold text-brand-primary/45 uppercase tracking-[0.2em] mb-5">
             TRAINING ARENA
           </p>
         </div>

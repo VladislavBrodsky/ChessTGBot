@@ -30,7 +30,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
         <div className="flex flex-col">
           {/* Status must reflect the ACTUAL connection state — this card previously
               always said "TON Wallet Connected" while the footer said the opposite. */}
-          <span className="text-[8px] font-black text-brand-primary opacity-45 uppercase tracking-[0.25em] mb-1.5">
+          <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-[0.25em] mb-1.5">
             {walletAddress ? tw('connected_status') : tw('no_wallet')}
           </span>
           <div className="flex items-center space-x-2">
@@ -60,8 +60,8 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
               <span className="text-4xl font-black text-brand-primary opacity-30 tracking-tighter leading-none">— .—</span>
               <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">USDT</span>
             </div>
-            <span className="flex items-center gap-1.5 text-[9px] font-black text-amber-500 uppercase tracking-widest">
-              <FaRedoAlt className="text-[8px]" />
+            <span className="flex items-center gap-1.5 text-[10px] font-black text-amber-500 uppercase tracking-widest">
+              <FaRedoAlt className="text-[10px]" />
               {tw('balance_unavailable')}
             </span>
           </button>
@@ -80,11 +80,11 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
       <div className="flex justify-between items-center z-10 pt-3 border-t border-brand-border-opacity-5">
         <div className="flex items-center space-x-2">
           <span className={`w-1.5 h-1.5 rounded-full ${walletAddress ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0`} />
-          <span className="text-[8.5px] font-black text-brand-primary opacity-60 uppercase tracking-widest font-mono">
+          <span className="text-[10px] font-black text-brand-primary opacity-60 uppercase tracking-widest font-mono">
             {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : tw('link_wallet_hint')}
           </span>
         </div>
-        <span className="text-[8px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
+        <span className="text-[10px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
       </div>
     </motion.div>
   );

@@ -188,7 +188,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                 {isCorePage && isCheckingActiveGame ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.25em] mt-3.5 opacity-40 animate-pulse text-brand-primary">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] mt-3.5 opacity-40 animate-pulse text-brand-primary">
                             INITIALIZING ARENA...
                         </span>
                     </div>

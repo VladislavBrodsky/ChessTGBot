@@ -286,13 +286,13 @@ export default function AcademyPage() {
             {t('title')}
           </motion.div>
           <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
-          <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30">{t('subtitle')}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30">{t('subtitle')}</span>
 
           {stats && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`flex items-center gap-3 text-[9.5px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 ${
+              className={`flex items-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 ${
                 stats.is_premium
                   ? 'bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] animate-pulse'
                   : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-80'
@@ -328,12 +328,12 @@ export default function AcademyPage() {
 
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-4">
-              <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-70 bg-brand-void/60 px-3 py-1.5 rounded-full border border-brand-border-opacity-10">
+              <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-70 bg-brand-void/60 px-3 py-1.5 rounded-full border border-brand-border-opacity-10">
                 <FaFire className="text-amber-500 animate-pulse text-[10px]" /> {t('daily_challenge')}
               </span>
               {!allSolved && (
                 <span className="flex items-center gap-1 text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.15)]">
-                  <FaTrophy className="text-[9px]" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
+                  <FaTrophy className="text-[10px]" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
                 </span>
               )}
             </div>
@@ -362,7 +362,7 @@ export default function AcademyPage() {
             >
               <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
               <span className="relative z-10 flex items-center justify-center gap-2">
-                <FaPlay className="text-[9px]" /> {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
+                <FaPlay className="text-[10px]" /> {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
               </span>
             </motion.button>
           </div>
@@ -383,7 +383,7 @@ export default function AcademyPage() {
             {/* Progress Header */}
             <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary/60 flex items-center gap-1.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/60 flex items-center gap-1.5">
                   <FaBrain className="text-brand-primary/50 text-[10px]" /> {t('tactics_grid')}
                 </span>
                 <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
@@ -451,7 +451,7 @@ export default function AcademyPage() {
             </div>
 
             {/* Legend */}
-            <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
+            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
               <span className="tc-legend-unlocked flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border">
                 <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
                 {t('unlocked')}
@@ -571,8 +571,8 @@ export default function AcademyPage() {
           </ul>
           <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
           <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-widest bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
-            <span className="flex items-center gap-1"><FaTrophy className="text-amber-500 text-[8px]" /> {stats?.xp || 0} XP</span>
-            <span className="flex items-center gap-1"><FaWallet className="text-brand-primary/40 text-[8px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
+            <span className="flex items-center gap-1"><FaTrophy className="text-amber-500 text-[10px]" /> {stats?.xp || 0} XP</span>
+            <span className="flex items-center gap-1"><FaWallet className="text-brand-primary/40 text-[10px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
           </div>
         </div>
       
@@ -584,7 +584,7 @@ export default function AcademyPage() {
             className="w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
           >
             <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
-            <span className="text-[8px] font-bold text-brand-primary/50">{t('free_unlock_path')}</span>
+            <span className="text-[10px] font-bold text-brand-primary/50">{t('free_unlock_path')}</span>
           </motion.button>
           
           <motion.button
@@ -595,7 +595,7 @@ export default function AcademyPage() {
           >
             <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
             <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
-            <span className="text-[8px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
           </motion.button>
     
           <motion.button
@@ -652,7 +652,7 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{band.emoji}</span>
                   <div>
-                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-primary/40">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">
                       {isCompleted ? '✅ Solved' : isPremLocked ? '👑 Premium Required' : isXpLocked ? '🔒 XP Required' : isSeqLocked ? '🔒 Sequential Lock' : '▶ Available'}
                     </p>
                     <h3 className="text-lg font-black tracking-tight text-brand-primary uppercase leading-none">
@@ -660,7 +660,7 @@ export default function AcademyPage() {
                     </h3>
                   </div>
                 </div>
-                <span className={`text-[9px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-primary/60' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-primary/30'}`}>
+                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-primary/60' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-primary/30'}`}>
                   #{id} / 100
                 </span>
               </div>
@@ -675,7 +675,7 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
                   <span className="text-emerald-400 text-lg">💡</span>
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Hint Available</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Hint Available</p>
                     <p className="text-[10px] text-emerald-400/70 font-medium">Use the hint button inside the puzzle to reveal the best next move.</p>
                   </div>
                 </div>
@@ -684,7 +684,7 @@ export default function AcademyPage() {
               {/* XP reward */}
               {info?.xp_reward && (
                 <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/70">Reward for solving</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400/70">Reward for solving</span>
                   <span className="text-sm font-black text-amber-400">+{info.xp_reward} XP</span>
                 </div>
               )}
@@ -723,7 +723,7 @@ export default function AcademyPage() {
                   >
                     <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" />
                     <span className="relative z-10 flex items-center justify-center gap-2">
-                      <FaPlay className="text-[9px]" />
+                      <FaPlay className="text-[10px]" />
                       {isCompleted ? 'Replay Level' : 'Start Level'}
                     </span>
                   </motion.button>

@@ -406,7 +406,7 @@ body {
   color: var(--bg-primary) !important;
   font-family: var(--font-inter) !important;
   font-weight: 850 !important;
-  font-size: 9px !important;
+  font-size: 10px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
   border-radius: 10px !important;

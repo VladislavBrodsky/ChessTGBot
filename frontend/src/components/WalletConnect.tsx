@@ -82,7 +82,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                     <>
                         <button
                             onClick={handleTopUpClick}
-                            className="flex-1 py-2 px-2.5 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md min-w-0"
+                            className="flex-1 py-2 px-2.5 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md min-w-0"
                             title={`Connected: ${getShortAddress(wallet.account.address)}`}
                         >
                             <FaWallet size={10} className="shrink-0" />
@@ -100,7 +100,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 ) : (
                     <button
                         onClick={handleTopUpClick}
-                        className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[9.5px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                        className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                     >
                         <FaWallet size={10} />
                         <span>{tw('top_up')}</span>
@@ -123,10 +123,10 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                             <FaWallet size={10} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[7.5px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
                                 {wallet ? tw('active') : tw('wallet')}
                             </span>
-                            <span className="text-[9.5px] font-black uppercase tracking-wide text-brand-primary/80 truncate">
+                            <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary/80 truncate">
                                 {wallet ? getShortAddress(wallet.account.address) : tw('unlinked')}
                             </span>
                         </div>
@@ -136,7 +136,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                         onClick={wallet ? handleDisconnect : handleTopUpClick}
                         className={wallet 
                           ? "w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                          : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[8.5px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                          : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
                         {wallet ? <FaTimes size={9} /> : tw('top_up')}

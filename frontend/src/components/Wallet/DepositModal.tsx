@@ -448,7 +448,7 @@ export default function DepositModal({
 
             {/* Currency Selector Dropdown */}
             <div className="flex flex-col space-y-1.5 relative">
-              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Asset</label>
+              <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Asset</label>
               <button
                 type="button"
                 // Only interactive when more than one asset is offered. Under
@@ -458,7 +458,7 @@ export default function DepositModal({
                 className={`w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
+                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
                     <FaCoins />
                   </div>
                   <span>{selectedCurrencyObj?.name} ({currency})</span>
@@ -487,7 +487,7 @@ export default function DepositModal({
                         className={`w-full py-2.5 px-3.5 text-left text-xs font-bold hover:bg-brand-bg-opacity-5 flex items-center justify-between cursor-pointer ${currency === c.symbol ? 'text-brand-primary bg-brand-bg-opacity-10' : 'text-brand-primary/60'}`}
                       >
                         <div className="flex items-center space-x-2.5">
-                          <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px]" style={{ backgroundColor: c.color + '20', color: c.color }}>
+                          <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px]" style={{ backgroundColor: c.color + '20', color: c.color }}>
                             <FaCoins />
                           </div>
                           <span>{c.name}</span>
@@ -503,7 +503,7 @@ export default function DepositModal({
             {/* Deposit Amount in USD */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
+                <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[10px] font-black font-mono">$</span>
                   <input
@@ -520,10 +520,10 @@ export default function DepositModal({
 
               {/* Converted Token Amount */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Equivalent ({currency})</label>
+                <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Equivalent ({currency})</label>
                 <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center space-x-1 shadow-inner h-[40px]">
                   <span className="truncate">{tokenAmount}</span>
-                  <span className="text-[9px] opacity-40 shrink-0">{currency}</span>
+                  <span className="text-[10px] opacity-40 shrink-0">{currency}</span>
                 </div>
               </div>
             </div>
@@ -593,14 +593,14 @@ export default function DepositModal({
                         YOU MUST INCLUDE THE MEMO COMMENT BELOW IN YOUR TRANSFER.
                       </p>
                     </div>
-                    <p className="text-[9px] font-bold text-rose-300/70 leading-snug pl-6">
+                    <p className="text-[10px] font-bold text-rose-300/70 leading-snug pl-6">
                       Transfers sent WITHOUT the exact comment <span className="font-black text-rose-300">({memoComment})</span> cannot be attributed to your account and will be permanently lost. No refunds are possible.
                     </p>
                   </div>
 
                   {/* ── Step 1: Copy destination address ── */}
                   <div className="flex flex-col space-y-1">
-                    <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
+                    <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
                       Step 1 — {tw('destination')}
                     </label>
                     <div
@@ -627,7 +627,7 @@ export default function DepositModal({
 
                   {/* ── Step 2: Copy memo comment — highlighted ── */}
                   <div className="flex flex-col space-y-1">
-                    <label className="text-[8px] font-black text-rose-400 uppercase tracking-widest">
+                    <label className="text-[10px] font-black text-rose-400 uppercase tracking-widest">
                       Step 2 — {tw('comment_memo')} &nbsp;<span className="text-rose-500">★ REQUIRED ★</span>
                     </label>
                     <div
@@ -645,9 +645,9 @@ export default function DepositModal({
                       <span className="tracking-widest">{memoComment}</span>
                       <div className="flex items-center gap-1.5 shrink-0 ml-2">
                         {copiedMemo ? (
-                          <><FaCheck className="text-emerald-400 animate-pulse" /><span className="text-[8px] font-black text-emerald-400 uppercase tracking-wider">Copied!</span></>
+                          <><FaCheck className="text-emerald-400 animate-pulse" /><span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">Copied!</span></>
                         ) : (
-                          <><FaCopy className="text-rose-400 opacity-70" /><span className="text-[8px] font-black text-rose-400/70 uppercase tracking-wider">Tap to copy</span></>
+                          <><FaCopy className="text-rose-400 opacity-70" /><span className="text-[10px] font-black text-rose-400/70 uppercase tracking-wider">Tap to copy</span></>
                         )}
                       </div>
                     </div>
@@ -668,7 +668,7 @@ export default function DepositModal({
 
                   {/* ── Step 4: Verify hash — only enabled after checkbox ── */}
                   <div className={`flex flex-col space-y-1.5 pt-2 border-t border-brand-border-opacity-10 mt-1 transition-opacity ${memoConfirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                    <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
+                    <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
                       Step 3 — Already paid? Paste transaction hash / event ID to verify:
                     </label>
                     <div className="flex gap-2">
@@ -684,7 +684,7 @@ export default function DepositModal({
                         type="button"
                         disabled={processing || !manualTxHash.trim() || !memoConfirmed}
                         onClick={handleManualVerify}
-                        className="px-3 rounded-lg bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-[9px] font-black text-brand-primary hover:bg-brand-bg-opacity-20 transition-all uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-[34px]"
+                        className="px-3 rounded-lg bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-[10px] font-black text-brand-primary hover:bg-brand-bg-opacity-20 transition-all uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-[34px]"
                       >
                         {processing ? "Checking..." : "Verify"}
                       </button>
@@ -710,7 +710,7 @@ export default function DepositModal({
 
             {/* Amount (USD) */}
             <div className="flex flex-col space-y-1.5">
-              <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
+              <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Amount (USD)</label>
               <div className="relative">
                 <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[10px] font-black font-mono">$</span>
                 <input
@@ -723,7 +723,7 @@ export default function DepositModal({
                   min={TRANSAK_MIN_USD}
                 />
               </div>
-              <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-wider">{tw('card_min_notice', { min: TRANSAK_MIN_USD })}</span>
+              <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-wider">{tw('card_min_notice', { min: TRANSAK_MIN_USD })}</span>
             </div>
 
             {/* Destination + CTA */}
@@ -739,7 +739,7 @@ export default function DepositModal({
             ) : (
               <>
                 <div className="flex flex-col space-y-1">
-                  <label className="text-[8px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('card_destination_label')}</label>
+                  <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('card_destination_label')}</label>
                   <div className="w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate">
                     {wallet.account.address.slice(0, 6)}...{wallet.account.address.slice(-4)}
                   </div>
@@ -755,7 +755,7 @@ export default function DepositModal({
               </>
             )}
 
-            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[9px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
+            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[10px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
               {tw('card_await_funds_notice')}
             </div>
           </div>

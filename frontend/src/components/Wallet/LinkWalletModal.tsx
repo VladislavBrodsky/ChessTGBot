@@ -92,7 +92,7 @@ export default function LinkWalletModal({
           </p>
 
           <div className="flex flex-col space-y-1">
-            <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('ton_address')}</label>
+            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('ton_address')}</label>
             <input
               type="text"
               value={connectAddressInput}

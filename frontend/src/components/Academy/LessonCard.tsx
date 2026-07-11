@@ -41,7 +41,7 @@ export default function LessonCard({
  <div className="relative z-10 flex flex-col h-full justify-between">
  <div>
  <div className="flex justify-between items-start mb-3">
- <span className="text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md bg-brand-primary/5 border border-brand-border-opacity-10 text-brand-primary opacity-80">
+ <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md bg-brand-primary/5 border border-brand-border-opacity-10 text-brand-primary opacity-80">
  {difficulty}
  </span>
  {locked ? (
@@ -70,7 +70,7 @@ export default function LessonCard({
         }`}
       />
     </div>
-    <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider">
       <span className={progress >= 100 ? 'text-emerald-400' : 'text-brand-primary/55'}>
         {progress}% Completed
       </span>

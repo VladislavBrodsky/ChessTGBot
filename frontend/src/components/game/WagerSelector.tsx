@@ -27,7 +27,7 @@ export default function WagerSelector({
   return (
     <div className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-5">
       <div className="flex justify-center items-center mb-2.5">
-        <span className="text-[9px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
+        <span className="text-[10px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
           <FaCoins className="opacity-60" size={8} />
           {tg('select_wager')}
         </span>
@@ -74,7 +74,7 @@ export default function WagerSelector({
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
                 }`}
               >
-                {opt.val === 100000 && <FaCrown className="text-[9px] text-yellow-400 mr-0.5 animate-pulse" />}
+                {opt.val === 100000 && <FaCrown className="text-[10px] text-yellow-400 mr-0.5 animate-pulse" />}
                 <span className={isSelected ? "mb-1.5" : ""}>{opt.label}</span>
                 {isSelected && (
                   <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />

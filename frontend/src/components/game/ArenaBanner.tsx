@@ -128,16 +128,16 @@ export default function ArenaBanner() {
               {t('title')}
             </span>
             {isLive ? (
-              <span className="text-[9px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1">
+              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                 {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)} · {arena.participants} {t('players')}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
-              <span className="text-[9px] font-bold text-brand-primary/50 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider">
                 {t('finished')} · {t('next_in')} {fmtCountdown(startsIn)}
               </span>
             ) : (
-              <span className="text-[9px] font-bold text-brand-primary/50 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider">
                 {t('starts_in')} {fmtCountdown(startsIn)} · 🏆 {prizes} XP
               </span>
             )}
@@ -171,7 +171,7 @@ export default function ArenaBanner() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <p className="text-[9px] font-bold text-brand-primary/60 mt-2.5 leading-relaxed">
+            <p className="text-[10px] font-bold text-brand-primary/60 mt-2.5 leading-relaxed">
               {t('waiting_hint')}
             </p>
           </motion.div>

@@ -132,7 +132,7 @@ export default function WithdrawModal({
 
           {/* Input amount */}
           <div className="flex flex-col space-y-1">
-            <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('withdraw_amount')}</label>
+            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('withdraw_amount')}</label>
             <input
               type="number"
               value={withdrawAmount}
@@ -144,7 +144,7 @@ export default function WithdrawModal({
 
           {/* Input Target Wallet */}
           <div className="flex flex-col space-y-1">
-            <label className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('target_address')}</label>
+            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('target_address')}</label>
             <input
               type="text"
               value={withdrawAddress}
@@ -156,7 +156,7 @@ export default function WithdrawModal({
 
           {/* Safety Checklist */}
           <div className="flex flex-col space-y-2 pt-2">
-            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
               <input 
                 type="checkbox" 
                 className="accent-brand-primary w-3 h-3" 
@@ -165,7 +165,7 @@ export default function WithdrawModal({
               />
               <span>{tw('check1')}</span>
             </label>
-            <label className="flex items-center space-x-2 text-[9px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
               <input 
                 type="checkbox" 
                 className="accent-brand-primary w-3 h-3" 
@@ -178,7 +178,7 @@ export default function WithdrawModal({
 
           {/* Insufficient Funds Trigger */}
           {parseFloat(withdrawAmount) * 100 > balance && (
-            <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[9px] font-black uppercase tracking-wider text-center animate-bounce">
+            <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-black uppercase tracking-wider text-center animate-bounce">
               {tw('insufficient_balance')}
             </div>
           )}

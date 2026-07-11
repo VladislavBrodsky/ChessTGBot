@@ -111,7 +111,7 @@ export default function ReferralNotification() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                 </div>
-                <span className="text-[9.5px] uppercase tracking-wider font-bold text-[var(--text-muted)]">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-[var(--text-muted)]">
                   Live Payout
                 </span>
               </div>
@@ -127,7 +127,7 @@ export default function ReferralNotification() {
 
             {/* Check badge */}
             <div className="w-6 h-6 rounded-full bg-[var(--color-emerald-opacity-10)] border border-[var(--color-border-opacity-10)] flex items-center justify-center shrink-0 shadow-[var(--shadow-inner-glow)] relative z-10">
-              <FaCheck className="text-emerald-500 text-[9px]" />
+              <FaCheck className="text-emerald-500 text-[10px]" />
             </div>
           </motion.div>
         )}

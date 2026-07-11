@@ -211,7 +211,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
     <div className="w-full space-y-4">
       {/* Header - Pill format */}
       <div className="flex justify-center mb-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10">
           <FaChartLine className="text-[10px] opacity-60" />
           {t('dashboard_title')}
         </div>
@@ -256,7 +256,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                 <span className="text-xl font-black leading-none text-brand-primary">
                   {tab.value}
                 </span>
-                <span className={`text-[9px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isActive ? tab.colorClass : 'text-brand-primary opacity-50'}`}>
                   {tab.label}
                 </span>
               </div>
@@ -279,15 +279,15 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('total_desc_label')}</p>
+                  <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('total_desc_label')}</p>
                   <p className="text-xl font-black text-brand-gold leading-none mt-1">{loading ? '…' : totalCount}</p>
-                  <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('total_sublabel')}</p>
+                  <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('total_sublabel')}</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center">
                   <FaUsers className="text-brand-gold text-lg" />
                 </div>
               </div>
-              <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
+              <p className="text-[10px] text-brand-primary opacity-40 font-medium leading-relaxed">
                 {t('total_detail')}
               </p>
             </div>
@@ -297,9 +297,9 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('active_desc_label')}</p>
+                  <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('active_desc_label')}</p>
                   <p className="text-xl font-black text-cyan-500 dark:text-cyan-400 leading-none mt-1">{loading ? '…' : activeCount}</p>
-                  <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('active_sublabel')}</p>
+                  <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">{t('active_sublabel')}</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                   <FaBolt className="text-cyan-500 dark:text-cyan-400 text-lg" />
@@ -308,7 +308,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               {/* Active ratio bar */}
               {(stats?.total_referrals ?? 0) > 0 && (
                 <div>
-                  <div className="flex justify-between text-[8px] font-black text-brand-primary opacity-30 uppercase tracking-widest mb-1">
+                  <div className="flex justify-between text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest mb-1">
                     <span>{t('activity_rate')}</span>
                     <span>{Math.round(((stats?.active_referrals ?? 0) / (stats?.total_referrals ?? 1)) * 100)}%</span>
                   </div>
@@ -322,7 +322,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                   </div>
                 </div>
               )}
-              <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
+              <p className="text-[10px] text-brand-primary opacity-40 font-medium leading-relaxed">
                 {t('active_detail')}
               </p>
             </div>
@@ -332,15 +332,15 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Share Commission Rate</p>
+                  <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">Share Commission Rate</p>
                   <p className="text-xl font-black text-amber-500 dark:text-amber-400 leading-none mt-1">15% Lifetime</p>
-                  <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">Of Platform Rake Fee</p>
+                  <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">Of Platform Rake Fee</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                   <span className="text-amber-500 dark:text-amber-400 text-lg font-black">%</span>
                 </div>
               </div>
-              <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
+              <p className="text-[10px] text-brand-primary opacity-40 font-medium leading-relaxed">
                 Earn 15% of the 3% platform rake fee collected from all games played by your referrals, instantly credited to your wallet in USDT.
               </p>
             </div>
@@ -350,11 +350,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('earnings_desc_label')}</p>
+                  <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{t('earnings_desc_label')}</p>
                   <p className="text-xl font-black text-emerald-500 dark:text-emerald-400 leading-none mt-1">
                     ${loading ? '0.00' : (stats?.total_earnings_usdt ?? 0).toFixed(2)}
                   </p>
-                  <p className="text-[8px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">USDT {t('total_earned')}</p>
+                  <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">USDT {t('total_earned')}</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                   <FaDollarSign className="text-emerald-500 dark:text-emerald-400 text-lg" />
@@ -363,13 +363,13 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               {/* SVG Chart */}
               <div className="rounded-xl overflow-hidden border border-brand-border-opacity-5 bg-brand-void/30">
                 <div className="px-3 pt-2 pb-1">
-                  <p className="text-[7px] font-black text-brand-primary opacity-30 uppercase tracking-widest">{t('chart_label')}</p>
+                  <p className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest">{t('chart_label')}</p>
                 </div>
                 <div className="px-2 pb-2">
                   <EarningsChart data={stats?.earnings_chart ?? []} />
                 </div>
               </div>
-              <p className="text-[9px] text-brand-primary opacity-40 font-medium leading-relaxed">
+              <p className="text-[10px] text-brand-primary opacity-40 font-medium leading-relaxed">
                 {t('earnings_detail')}
               </p>
             </div>
@@ -385,11 +385,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             <div className="flex flex-col">
               <p className="text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
                 {t('your_link')}
-                <span className="text-[7.5px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wider shadow-[0_0_10px_rgba(251,191,36,0.3)]">VIP</span>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wider shadow-[0_0_10px_rgba(251,191,36,0.3)]">VIP</span>
               </p>
-              <p className="text-[8px] font-bold text-brand-primary/50 uppercase tracking-widest">Share to earn 15%</p>
+              <p className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-widest">Share to earn 15%</p>
             </div>
-            <span className="text-[9px] font-black text-brand-gold/60 uppercase tracking-widest bg-brand-gold/10 px-2 py-1 rounded-full border border-brand-gold/20 shadow-inner">
+            <span className="text-[10px] font-black text-brand-gold/60 uppercase tracking-widest bg-brand-gold/10 px-2 py-1 rounded-full border border-brand-gold/20 shadow-inner">
               +50 XP
             </span>
           </div>
@@ -423,7 +423,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           
           <button 
             onClick={() => setShowQr(!showQr)}
-            className="w-full mt-2 py-2.5 rounded-xl border border-brand-gold/20 bg-brand-gold/5 text-[9px] font-bold text-brand-gold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-gold/10 transition-colors"
+            className="w-full mt-2 py-2.5 rounded-xl border border-brand-gold/20 bg-brand-gold/5 text-[10px] font-bold text-brand-gold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-gold/10 transition-colors"
           >
             <FaQrcode size={12} />
             {showQr ? "Hide QR Code" : "Show QR Code"}
@@ -447,7 +447,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
               <div className="space-y-1 relative z-10">
                 <h4 className="text-[12px] font-black text-brand-gold uppercase tracking-tight drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">FinChess Invite Matrix</h4>
-                <p className="text-[8px] font-bold text-brand-primary opacity-45 uppercase tracking-widest">Wager • Play • Earn</p>
+                <p className="text-[10px] font-bold text-brand-primary opacity-45 uppercase tracking-widest">Wager • Play • Earn</p>
               </div>
 
               {/* Styled QR Image Wrapper */}
@@ -467,7 +467,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               </div>
 
               <div className="space-y-1 relative z-10">
-                <p className="text-[8.5px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2 max-w-[240px] mx-auto">
+                <p className="text-[10px] font-bold text-brand-primary opacity-45 uppercase leading-normal px-2 max-w-[240px] mx-auto">
                   Show this code to your friend in person. They can scan it with their phone camera to join your network.
                 </p>
               </div>
