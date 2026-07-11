@@ -130,6 +130,18 @@ class Settings(BaseSettings):
     REFERRAL_MILESTONE_MIN_MOVES: int = int(os.getenv("REFERRAL_MILESTONE_MIN_MOVES", "10"))
     SIGNUP_IP_CLUSTER_ALERT_THRESHOLD: int = int(os.getenv("SIGNUP_IP_CLUSTER_ALERT_THRESHOLD", "5"))
 
+    # Gas grants (deposit "gas wall" fix): a user whose wallet holds USDT but
+    # no native TON cannot pay jetton-transfer gas to deposit. On request the
+    # platform sends a small TON splash from the master wallet, gated by
+    # on-chain proof (wallet actually holds USDT and actually lacks TON),
+    # a per-user/per-wallet cooldown, and a global daily cap on grants.
+    GAS_GRANT_ENABLED: bool = (os.getenv("GAS_GRANT_ENABLED", "true").lower() != "false")
+    GAS_GRANT_AMOUNT_NANOTON: int = int(os.getenv("GAS_GRANT_AMOUNT_NANOTON", "60000000"))        # 0.06 TON
+    GAS_GRANT_MIN_USDT_UNITS: int = int(os.getenv("GAS_GRANT_MIN_USDT_UNITS", "5000000"))         # >= 5 USDT on-chain (6 decimals)
+    GAS_GRANT_MAX_TON_BALANCE_NANO: int = int(os.getenv("GAS_GRANT_MAX_TON_BALANCE_NANO", "30000000"))  # < 0.03 TON = "no gas"
+    GAS_GRANT_COOLDOWN_DAYS: int = int(os.getenv("GAS_GRANT_COOLDOWN_DAYS", "30"))
+    GAS_GRANT_DAILY_GLOBAL_CAP: int = int(os.getenv("GAS_GRANT_DAILY_GLOBAL_CAP", "25"))
+
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection

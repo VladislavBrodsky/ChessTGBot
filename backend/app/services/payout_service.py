@@ -125,3 +125,78 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
 
     logger.info(f"USDT payout transaction successfully broadcasted. Message Hash: {msg_hash}")
     return msg_hash
+
+
+async def execute_ton_transfer(destination_address: str, amount_nanoton: int, comment: str = "Gas grant") -> str:
+    """
+    Sends plain native TON from the master wallet (used for gas grants that
+    unblock USDT holders who can't pay jetton-transfer gas). Mirrors
+    execute_usdt_payout's derivation/seqno/broadcast flow.
+
+    Returns the message hash of the broadcasted transaction.
+    """
+    settings = get_settings()
+
+    if not settings.PAYOUT_MNEMONIC:
+        raise ValueError("PAYOUT_MNEMONIC is not configured on the server.")
+    if amount_nanoton <= 0:
+        raise ValueError("TON transfer amount must be positive")
+
+    mnemonic_words = [w.strip() for w in settings.PAYOUT_MNEMONIC.strip().split() if w.strip()]
+    if len(mnemonic_words) not in (12, 24):
+        raise ValueError(f"Invalid PAYOUT_MNEMONIC length: {len(mnemonic_words)} words. Must be 12 or 24 words.")
+
+    try:
+        _mnemonics, pub_k, priv_k, wallet = Wallets.from_mnemonics(
+            mnemonics=mnemonic_words,
+            version=WalletVersionEnum.v4r2,
+            workchain=0
+        )
+    except Exception as e:
+        logger.error(f"Failed to derive wallet from mnemonic: {e}")
+        raise ValueError(f"Failed to derive wallet: {e}")
+
+    headers = {}
+    if settings.TON_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
+
+    try:
+        url_seqno = f"https://tonapi.io/v2/blockchain/accounts/{settings.MASTER_WALLET_ADDRESS}/methods/seqno"
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res_seqno = await client.get(url_seqno, headers=headers)
+            if res_seqno.status_code != 200:
+                raise ValueError(f"TonAPI returned status {res_seqno.status_code}: {res_seqno.text}")
+            seqno_data = res_seqno.json()
+            if not seqno_data.get("success"):
+                raise ValueError(f"TonAPI seqno execution failed: {seqno_data}")
+            seqno = int(seqno_data["decoded"]["state"])
+    except Exception as seq_err:
+        logger.error(f"Failed to fetch seqno: {seq_err}")
+        raise ValueError(f"Blockchain connection failure (failed to fetch seqno): {seq_err}")
+
+    try:
+        query = wallet.create_transfer_message(
+            to_addr=Address(destination_address).to_string(True, True, False),
+            amount=amount_nanoton,
+            seqno=seqno,
+            payload=comment
+        )
+        boc = query["message"].to_boc(False)
+        boc_b64 = base64.b64encode(boc).decode('utf-8')
+        msg_hash = query["message"].bytes_hash().hex()
+    except Exception as sign_err:
+        logger.error(f"Failed to sign TON transfer: {sign_err}")
+        raise ValueError(f"Failed to sign TON transfer: {sign_err}")
+
+    try:
+        url_send = "https://tonapi.io/v2/blockchain/message"
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            res_send = await client.post(url_send, headers=headers, json={"boc": boc_b64})
+            if res_send.status_code != 200:
+                raise ValueError(f"TonAPI returned status {res_send.status_code}: {res_send.text}")
+    except Exception as send_err:
+        logger.error(f"Failed to broadcast TON transfer: {send_err}")
+        raise BlockchainBroadcastError(f"Blockchain broadcast failure: {send_err}", msg_hash)
+
+    logger.info(f"TON transfer broadcasted ({amount_nanoton} nanoTON to {destination_address}). Message Hash: {msg_hash}")
+    return msg_hash

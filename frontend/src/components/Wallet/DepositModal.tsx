@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
@@ -36,6 +37,17 @@ const TRANSAK_MIN_USD = 15;
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
 ];
+
+// Lazy: the STON.fi SDK + @ton/ton are only pulled in when the user opens
+// the swap section, keeping them off the deposit modal's critical path.
+const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
+  ssr: false,
+  loading: () => (
+    <div className="p-3 text-center text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider">
+      Loading swap…
+    </div>
+  ),
+});
 
 export default function DepositModal({
   onClose,
@@ -81,6 +93,15 @@ export default function DepositModal({
   const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
   const [manualTxHash, setManualTxHash] = useState<string>("");
   const [canClose, setCanClose] = useState<boolean>(false);
+
+  // TON→USDT swap section + arrival watcher (swap / Transak funds land in the
+  // user's OWN wallet; we poll until the USDT shows up, then prefill the deposit).
+  const [showSwap, setShowSwap] = useState<boolean>(false);
+  const [arrivalStatus, setArrivalStatus] = useState<'idle' | 'watching' | 'arrived' | 'timeout'>('idle');
+  const arrivalBaselineRef = useRef<bigint | null>(null);
+  const [arrivedUsdt, setArrivedUsdt] = useState<number>(0);
+  const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
+  const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
 
   const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
@@ -133,6 +154,75 @@ export default function DepositModal({
       setTokenAmount(tokens.toFixed(4));
     }
   }, [depositAmount, currency, prices]);
+
+  const fetchUsdtUnits = async (): Promise<bigint | null> => {
+    if (!wallet) return null;
+    try {
+      const res = await apiFetch(`/api/v1/wallet/onchain-balances?user_address=${encodeURIComponent(wallet.account.address)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return BigInt(data.usdt_units ?? 0);
+    } catch {
+      return null;
+    }
+  };
+
+  // Snapshot the current on-chain USDT, then poll until more arrives
+  // (post-swap or post-Transak). On arrival, prefill the deposit amount.
+  const startArrivalWatch = async () => {
+    arrivalBaselineRef.current = await fetchUsdtUnits();
+    setArrivedUsdt(0);
+    setArrivalStatus('watching');
+  };
+
+  useEffect(() => {
+    if (arrivalStatus !== 'watching') return;
+    let polls = 0;
+    const interval = setInterval(async () => {
+      polls += 1;
+      if (polls > 30) {        // ~5 minutes
+        setArrivalStatus('timeout');
+        clearInterval(interval);
+        return;
+      }
+      const units = await fetchUsdtUnits();
+      if (units === null) return;
+      const baseline = arrivalBaselineRef.current ?? BigInt(0);
+      if (units > baseline) {
+        const deltaUsdt = Number(units - baseline) / 1e6;
+        setArrivedUsdt(deltaUsdt);
+        // Prefill so "Top Up" deposits what just arrived (5% fee on top).
+        setDepositAmount(Math.max(1, deltaUsdt / 1.05).toFixed(2));
+        setArrivalStatus('arrived');
+        telegramHaptic('success');
+        clearInterval(interval);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalStatus]);
+
+  // Gas wall escape hatch: the platform sends a TON splash to wallets that
+  // hold USDT but can't pay jetton-transfer gas (server-side gated).
+  const handleGasGrant = async () => {
+    if (gasGrantBusy) return;
+    setGasGrantBusy(true);
+    setGasGrantMsg("");
+    try {
+      const res = await apiFetch("/api/v1/wallet/gas-grant", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        telegramHaptic('success');
+        setGasGrantMsg("⛽ Gas sent! It arrives within a minute — then retry your deposit.");
+      } else {
+        setGasGrantMsg(data.detail || "Gas grant unavailable right now.");
+      }
+    } catch {
+      setGasGrantMsg("Network error — please try again.");
+    } finally {
+      setGasGrantBusy(false);
+    }
+  };
 
   const handleWeb3Deposit = async () => {
     const amt = parseFloat(depositAmount);
@@ -366,6 +456,11 @@ export default function DepositModal({
     } catch {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
+
+    // Watch for the purchased USDT landing in the user's wallet so the
+    // second (on-chain deposit) step starts itself instead of relying on
+    // the user to come back and figure it out.
+    startArrivalWatch();
   };
 
   const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
@@ -569,6 +664,63 @@ export default function DepositModal({
                 )}
                 <span>{processing ? "Waiting..." : `Top Up via Connected Wallet`}</span>
               </button>
+            )}
+
+            {/* Swap / on-ramp arrival status */}
+            {arrivalStatus === 'watching' && (
+              <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/70 uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                Watching your wallet for incoming USDT…
+              </div>
+            )}
+            {arrivalStatus === 'arrived' && (
+              <div className="p-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-[10px] font-black text-emerald-400 uppercase tracking-wider text-center">
+                ✅ {arrivedUsdt.toFixed(2)} USDT arrived in your wallet — amount prefilled, tap Top Up above!
+              </div>
+            )}
+            {arrivalStatus === 'timeout' && (
+              <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/60 leading-relaxed text-center">
+                Still no USDT detected. Swaps and card purchases can take a few minutes — reopen this window later to deposit.
+              </div>
+            )}
+
+            {/* TON → USDT in-app swap (STON.fi) */}
+            {wallet && (
+              <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => { telegramHaptic('light'); setShowSwap(v => !v); }}
+                  className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  <span>Have TON but no USDT? Swap in-app</span>
+                  <FaAngleDown className={`transition-transform ${showSwap ? 'rotate-180' : ''}`} />
+                </button>
+                {showSwap && (
+                  <div className="pt-3">
+                    <SwapToUsdt
+                      walletRawAddress={wallet.account.address}
+                      onSwapSent={startArrivalWatch}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gas wall escape hatch */}
+            {wallet && (
+              <div className="flex flex-col items-center space-y-1.5">
+                <button
+                  type="button"
+                  onClick={handleGasGrant}
+                  disabled={gasGrantBusy}
+                  className="text-[10px] font-black text-brand-primary/45 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {gasGrantBusy ? "Requesting gas…" : "⛽ Have USDT but no TON for gas? Get a free splash"}
+                </button>
+                {gasGrantMsg && (
+                  <p className="text-[10px] font-bold text-brand-primary/60 leading-relaxed text-center px-2">{gasGrantMsg}</p>
+                )}
+              </div>
             )}
 
             {/* Direct manual transfer fallback */}

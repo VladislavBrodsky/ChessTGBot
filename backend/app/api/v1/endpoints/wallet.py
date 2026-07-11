@@ -926,6 +926,52 @@ async def get_jetton_wallet(
     raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
 
 
+@router.get("/onchain-balances", dependencies=[Depends(rate_limit(limit=20, window=60))])
+async def get_onchain_balances(
+    user_address: str,
+    current_user: User = Depends(get_current_user),
+):
+    """Native TON + USDT balances of a wallet address (public chain data,
+    proxied through TonAPI so the client needs no RPC key). Powers the
+    deposit flow: swap/on-ramp arrival detection and the gas-wall hint.
+    """
+    from app.services.gas_grant import fetch_onchain_balances
+    try:
+        ton_nano, usdt_units = await fetch_onchain_balances(user_address)
+    except Exception:
+        raise HTTPException(status_code=502, detail="Could not read wallet balances from the blockchain.")
+    return {"ton_nanoton": ton_nano, "usdt_units": usdt_units}
+
+
+@router.post("/gas-grant", dependencies=[Depends(rate_limit(limit=3, window=300))])
+async def request_gas_grant(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Sends a small TON splash to the user's connected wallet so they can pay
+    the jetton-transfer gas for a USDT deposit. Heavily gated — see
+    app/services/gas_grant.py for the eligibility rules.
+    """
+    from app.services.gas_grant import grant_gas, GasGrantDenied
+    try:
+        result = await grant_gas(db, current_user.telegram_id, current_user.wallet_address)
+    except GasGrantDenied as denied:
+        raise HTTPException(status_code=denied.status_code, detail=denied.detail)
+
+    try:
+        from app.services.telegram_bot import TelegramService
+        await TelegramService.send_notification(
+            current_user.telegram_id,
+            "⛽ <b>Gas Grant Sent</b>\n\n"
+            f"We sent {result['amount_nanoton'] / 1e9:.3f} TON to your wallet to cover the "
+            "deposit network fee. It should arrive within a minute — then just retry your deposit.",
+        )
+    except Exception:
+        pass
+
+    return result
+
+
 @router.post("/deposit/verify", dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def verify_deposit(
     request: DepositVerifyRequest,
