@@ -1,151 +1,157 @@
-# ChessTGBot — Session Handover
+# ChessTGBot — Session Handover (updated 2026-07-12)
 
-Concise handover for a fresh conversation. Part 1 = what's been built/hardened.
-Part 2 = every issue raised this session that is **still unaddressed**.
+Handover for a fresh session. Contains **only what is still left to do** — the
+original audit's A-group (Sybil, puzzle leak, Redis fail-fast, withdrawal 2FA),
+B-group (swap, gas grants, arrival detection), D-group (RTL, i18n, a11y,
+typography, animations), E3 (modal portals), the notification-system overhaul,
+and all of this week's production crash fixes are DONE and pushed to `main`
+(HEAD at time of writing: `6304472d7`).
 
 **Project:** Telegram Mini App chess with real-money USDT wagering. Next.js
-static-export frontend + FastAPI/Socket.IO backend, Postgres + Redis, TON chain
-for deposits/payouts. Production = two Railway services (frontend `next start`,
-backend FastAPI); `backend/static_frontend` is the committed export for the
-monolith path — rebuild it after any `frontend/src` change (`cd frontend &&
-npm run build:static`) and commit it (CI enforces on PRs).
+frontend + FastAPI/Socket.IO backend, Postgres + Redis, TON chain for
+deposits/payouts. Production = two Railway services auto-deployed on push to
+`main` (frontend runs `next start`; backend FastAPI). `backend/static_frontend`
+is a committed export for the monolith path — **rebuild after any
+`frontend/src` change** (`cd frontend && npm run build:static`) and commit it
+(CI enforces freshness on PRs).
+
+**Test commands:** `cd backend && ./venv/Scripts/python -m pytest`
+(262 passed / 2 skipped at handover) · `cd frontend && npm run test:ci` ·
+frontend build doubles as the typecheck.
 
 ---
 
-## Part 1 — What was built / hardened (all shipped to `main`)
+## 1. Code work remaining
 
-**Settlement / money model**
-- **USDT-only settlement** end-to-end: backend credits only USDT (all deposit
-  paths gated on `_is_usdt_master`), deposit UIs restricted to USDT, price-oracle
-  removed from the money path. Closes the FX/insolvency risk of holding a
-  volatile basket against USD liabilities.
-- **Withdrawal velocity controls**: rolling-24h per-user cap + review threshold
-  (large withdrawals held as `pending_review`, admins alerted); admin
-  approve/reject endpoints. Rate limits on withdraw/deposit-verify/game-create.
-- **Settlement math** extracted to a pure, tested function (95% payout / 3% rake
-  / 2% referral; value-conservation invariant).
-- **Double-credit fix** (another session): `/deposit/verify` and the crawler now
-  share a dedup key; broadcast-timeout withdrawals held pending vs unsafe refund.
-- **Referral commission minting fixed** (another session): winner-only payout +
-  split uses the *direct referrer's* tier matrix (≤2%, no minting).
-- Truth-in-advertising: "WIN UP TO" now shows real 95% payout; referral "10%"
-  → "up to 2%".
+### C2 — Remove fabricated data (recommended next; owner has deferred twice)
+Real-money app showing invented numbers = trust + regulatory liability.
+- `frontend/src/components/game/PlayLobby.tsx:130` — `activeUsers` seeded at
+  `3768` and drifted with `Math.random()` every few seconds (~line 268);
+  `playersOnline` similarly fake; opponent card shows randomized ELO
+  (`stats.elo ± 20`, ~line 539).
+- `frontend/src/components/ReferralNotification.tsx` — fake "X just won $Y via
+  referral" toasts from a hardcoded name list.
+- Fix: replace with real counts (backend has a matchmaking queue + telemetry
+  now — a cheap `GET /api/v1/game/online-count` from socket/session data is
+  feasible) or remove the widgets entirely. Removing is the fast safe option.
 
-**Security**
-- Deposit fail-open path gated to dev; `auth_date` replay protection on initData;
-  `/game/history` auth-gated; CORS wildcard dead-code removed.
-- **Web/desktop auth** (another session): Telegram Login-Widget payloads verified
-  with the correct `SHA256(bot_token)` HMAC + `auth_date` freshness; dev-only
-  unverified fallback gated to `TESTING`/`ENV=development` (prod-safe defaults).
-- **Anti-collusion matchmaking** + IP-keyed failed-auth throttle (another
-  session): no self / referral-linked / same-IP auto-match.
-- **XP faucet capped**: 250 XP/day from AI games (was unlimited → free premium).
+### C3 — Negative stat framing (owner previously chose to skip; small)
+`frontend/src/app/[locale]/home/page.tsx:~230` leads with win-rate % and a
+loss-streak badge. If ever picked up: lead with XP/level/games played, tuck
+W/L% behind a details view.
 
-**Game integrity** — audited, found clean (server-authoritative clock, moves,
-results; double-payout prevented by unique constraint + atomic settlement).
+### B3 full fix — Transak webhook direct credit (BLOCKED on owner config)
+Today: card buys USDT to the user's own wallet; the deposit modal then watches
+for arrival and prefills the deposit (shipped). The real fix removes the second
+on-chain step entirely:
+- Set Transak `walletAddress` = master wallet, `partnerOrderId` = `ref_<tgId>`.
+- New backend endpoint: Transak webhook (signed; verify with their
+  access token / webhook secret) → on `ORDER_COMPLETED`, credit the user
+  keyed by `partnerOrderId`, dedup on Transak order id (same pattern as
+  `deposit/verify` + crawler dedup keys).
+- **Blocked until owner sets up webhook secret + production API key in the
+  Transak dashboard** (`NEXT_PUBLIC_TRANSAK_API_KEY` currently drives the
+  card tab; STAGING default).
 
-**Observability & solvency**
-- Frontend crash capture → admin Telegram alerts; error boundaries
-  (`error.tsx`, `global-error.tsx`, `ClientErrorReporter`); Sentry FE crash
-  reporting (another session).
-- Solvency reconciliation service + `GET /admin/solvency` + sustained-deficit
-  alert loop + gas-float alert (enabled by default in prod by another session).
+### Decision-gated (do NOT start without an explicit owner call)
+- **A5 hot wallet** — `PAYOUT_MNEMONIC` is a plaintext env var; leak = total
+  drain. Cheapest real mitigation: dedicated payout wallet holding only a
+  small float, topped up manually from cold storage (code change: none —
+  just move funds + swap env vars). Bigger: signing service / multisig.
+- **Cross-chain deposits** — swap covers TON→USDT only. BTC/ETH holders need
+  an aggregator integration (swap.coffee / LetsExchange) or stay on the card
+  flow. Product decision first.
+- **Device fingerprinting (A1 residual)** — IP-based Sybil guards stop lazy
+  farms; a determined IP-rotator needs client fingerprinting. Privacy/infra
+  decision first.
+- **Multi-move puzzles** — all 100 puzzles are single-move; a tripwire test
+  (`backend/tests/test_puzzle_gating.py::test_all_puzzle_solutions_are_single_move`)
+  fails the suite if a multi-move puzzle is added before server-side
+  incremental validation exists. Only relevant if content expands.
 
-**Performance / UX / infra**
-- TonConnect provider scoped to wallet routes (killed the 36-request burst on
-  Home); `ActiveGame` lazy-loaded (board off the lobby's critical path);
-  `prefers-reduced-motion` honored; React strict mode on.
-- iOS navbar fix (`max()` safe-area insets, `viewport-fit=cover`, never-hide on
-  main pages); leaderboard "Show Top 50" modal portal fix; honest wallet/stats
-  error states; TonConnect "Play Game" crash fix **+ regression test**.
-- CI: import-check secrets fix; now runs **all** `backend/tests` (~177 tests);
-  static-export staleness guard made test-aware; auth-throttle tests made
-  deterministic.
-
----
-
-## Part 2 — Unaddressed issues (raised this session, NOT fixed)
-
-### A. Money / fraud / security (highest value)
-1. **Sybil / account-farming** — no hard limit on how many accounts one person
-   creates and chains for referrals. Partly blunted by anti-collusion
-   matchmaking, but no account-level cap. (Audit item 1d.)
-2. **Puzzle solution leak** — `get_puzzle_by_id` (gamification.py) returns
-   `"solution"` to the client, so XP can be farmed by echoing it to
-   `verify_puzzle_solution`. Bounded (one-time puzzles via `SolvedPuzzle`) but
-   the server-side check is defeated. Proper fix = server-side incremental move
-   validation (frontend `PuzzleBoard` currently needs the solution for UX).
-   (Audit item 3.)
-3. **Auth throttle Redis-down latency** — when Redis is genuinely down in prod,
-   `register_auth_failure`/`auth_ip_is_blocked` retry Redis on *every* auth
-   (multi-second timeout each) instead of flipping to the memory path. Should set
-   `SessionManager._use_memory=True` on first error (like the game-state ops do).
-4. **No per-withdrawal confirmation / 2FA** — velocity controls exist, but a
-   large withdrawal within the cap still auto-pays; no secondary confirmation.
-5. **Hot-wallet single point of failure** — `PAYOUT_MNEMONIC` is a plaintext env
-   var; leak = total drain. Consider a signing service / withdrawal limits /
-   multisig. (Owner/architecture.)
-
-### B. Product goal: "deposit whatever currency, seamlessly"
-6. **No in-app swap to USDT** — a TON/BTC holder must leave the app to swap, then
-   return. The actual unlock is a TON DEX-aggregator swap widget (STON.fi /
-   DeDust).
-7. **Gas wall** — a USDT-holder with **no native TON** cannot deposit (jetton
-   transfers need TON gas), and there's no in-app way to get gas. Needs gas
-   abstraction / gasless relay.
-8. **Two-step Transak card flow** — buys USDT to the user's *own* wallet, then
-   they must return and do a second on-chain deposit (pay gas again).
-9. **Manual-transfer memo footgun** — a deposit without the exact `ref_` comment
-   is unattributable and lost; the warning is easy to miss.
-10. **Two duplicated deposit components** (`DepositModal` + `LobbyDepositDrawer`)
-    — both USDT-only now, but they drift; should be consolidated.
-
-### C. Trust / legality (can dwarf the code)
-11. **Regulatory** — real-money wagering with **no KYC, age, geo, or licensing**.
-    The biggest non-code risk. (Owner.)
-12. **Fabricated data** — fake "online" / "active users" counts (`PlayLobby`) and
-    fake referral-winner toasts (`ReferralNotification`). Trust + regulatory
-    liability. (User chose to skip earlier.)
-13. **Negative stat framing** — Home leads with win-rate / loss-streak /
-    W-L-D; demoralizing for struggling players. (User chose to skip.)
-
-### D. Localization / accessibility / polish
-14. **RTL for Arabic** — not implemented; the whole locale renders
-    mirrored-wrong. Plus 2 membership keys still untranslated (`compare_tiers`,
-    `hide_comparison`).
-15. **Onboarding & CustomAlertModal hardcoded English** — first-touch surfaces
-    not localized despite 10 locales; onboarding is 4 dense slides.
-16. **Accessibility** — icon-only navbar with no `aria-label`; settings toggles
-    expose no on/off state; rank medals color-only; empty states are dead-ends
-    ("No transactions found" can't distinguish empty vs failed-to-load).
-17. **Micro-typography** — pervasive 7.5–9px ALL-CAPS with heavy tracking is
-    below the iOS legibility floor and truncates long locales.
-18. **Triple-labeling** — e.g. LEADERBOARD → GLOBAL RANKING → GLOBAL LEADERBOARD
-    stacked; one heading + one eyebrow would do.
-19. **Render/animation cost** — always-on starfield + scanlines + blurred mesh
-    blobs + infinite framer pulses caused repeated preview render stalls; a real
-    concern on low-end devices even with reduced-motion.
-
-### E. Infra / process (owner-side)
-20. **No branch protection** — CI doesn't block merges; pushes go straight to
-    `main`, and multiple sessions edit the same money code concurrently (a
-    regression time-bomb; the double-credit incident already happened once).
-21. **No staging environment, no rollback story, no stated backup strategy** —
-    money/auth changes ship straight to a live real-money app.
-22. **Stacking-context audit for other modals** — a background task was spun off
-    to check `MatchOverModal` and the membership-page modals for the same
-    portal/z-index trap the leaderboard modal had; verify it was done.
-
-### F. Verification debt
-23. **Full pytest suite not re-run to 100% confirm green** after the
-    auth-throttle test fix (high confidence — isolated fixture, other 175 passed
-    — but not re-verified end to end).
-24. **RTL / accessibility / desktop-sidebar** UX from recent merges only
-    spot-checked, not exercised end to end in a real client.
+### Minor polish leftovers (batch when convenient)
+- Admin page `frontend/src/app/[locale]/admin/page.tsx:~686` — "No
+  transactions" empty state is a dead-end (no error/retry distinction).
+  The user-facing ledger already has the pattern to copy
+  (`TransactionLedger.tsx` `error`/`onRetry` props).
+- Onboarding is 4 dense slides (copy condensation, D2 residual).
+- ~280 locale strings (deposit/swap/gas flows) in ar/hi/ja/zh were
+  machine-authored this week — worth a native-speaker skim.
 
 ---
 
-*Recommended next: A3 (throttle fail-fast, quick), then A2 (puzzle leak) or A1
-(Sybil). The B-group (swap + gas) is the real feature work for the deposit goal.
-The C-group (regulatory, fake data) is the highest business risk and is the
-owner's call.*
+## 2. Verification debt (needs a human with a device — F2)
+
+Everything below is tested in CI but **unproven in the live Telegram app**.
+~20 minutes with a real wallet holding ~2 TON:
+1. **Swap**: deposit modal → "Have TON but no USDT? Swap in-app" → swap ~1 TON.
+   Expect quote, STON.fi router as tx destination, then "USDT arrived —
+   prefilled" within ~1 min, then complete the deposit. Worst-case failure is
+   contained to the user's own wallet (router refunds failed swaps).
+2. **Gas grant**: from a wallet with USDT but no TON, tap "⛽ … free splash".
+   Expect bot DM + ~0.06 TON; a second tap must be refused (30-day cooldown).
+3. **Withdrawal confirmation**: request a sub-$500 withdrawal. Expect bot DM
+   with Confirm/Cancel; funds stay held until Confirm; Cancel refunds; an
+   ignored request auto-refunds after 30 min.
+4. **/start with a hostile display name** (symbols like `<`, `&` in the
+   Telegram name) — must reply normally (was crashing until `996c2102b`).
+5. Spot-check Arabic RTL, the deposit modal on a low-end phone (lite-fx), and
+   desktop sidebar UX.
+
+---
+
+## 3. Owner / ops items (not code)
+
+- **Branch protection on `main`** — CI exists but doesn't gate merges; multiple
+  concurrent sessions push straight to a live money app (a crash shipped and
+  was fixed mid-stream this week; a double-credit incident happened before).
+  ~10 min in GitHub settings.
+- **Rotate the Postgres password** — alerts leaked `len + first5/last3` chars
+  of it into Telegram for weeks before the fix. Treat as compromised.
+- **Staging environment / rollback story / backup strategy** — still none.
+- **Watch the new alerts for a few days**:
+  - 🛡️ signup-cluster alerts may be noisy on carrier-NAT IPs → raise
+    `SIGNUP_IP_CLUSTER_ALERT_THRESHOLD` (env) if so.
+  - 🧊 "Withdrawal stuck in processing_payout" = crash mid-payout; follow the
+    triage instructions IN the alert (check chain before refunding — never
+    blind-refund).
+- **Transak dashboard** — webhook secret + production key (unblocks B3 above).
+- **KYC / age / geo / licensing** — the biggest non-code risk; unchanged.
+
+---
+
+## 4. Context a fresh session should know (don't re-derive)
+
+- **Alert systems**: every admin alert is attributed to a named system
+  (🎮 GAME CLIENT / ⚙️ CORE API / 💰 TREASURY / 🔌 REALTIME / 🛡️ SECURITY) via
+  logger-prefix mapping in `backend/app/core/alerts.py`. Client crash reports
+  are labeled by capture point. `app.services.telegram_bot` logger is
+  excluded from alerts (loop prevention) — bot-handler errors must log via
+  `app.bot.errors` instead.
+- **Withdrawal flow**: `/wallet/withdraw` → velocity caps → (≥$500 →
+  `pending_review`, admin approve/reject) or (below → `pending_confirmation`,
+  bot Confirm/Cancel with HMAC nonce in callback_data;
+  `backend/app/services/withdrawal_confirmation.py`). Sweeper in `main.py`
+  refunds expired confirmations and pages stuck payouts. Without a bot token
+  (dev/tests) the legacy auto-pay path applies.
+- **Sybil guards**: `users.signup_ip_hash`/`created_at` (migration
+  `a7f2e9c31b04`); same-IP referral attribution refused; signup bonuses capped
+  5/24h per referrer (deferred, not forfeited); milestone needs 3 games with
+  ≥10 moves. Knobs are env vars (see `config.py` "Sybil" block).
+- **Gas grants**: `backend/app/services/gas_grant.py`; on-chain-proof gated,
+  once per user+wallet per 30d, global 25/day. `GET /wallet/onchain-balances`
+  proxies TonAPI for the client.
+- **Swap**: `frontend/src/components/Wallet/SwapToUsdt.tsx`; STON.fi
+  simulation API for quotes, SDK for tx build, proceeds go to the USER's
+  wallet — platform money entry remains the USDT deposit path only.
+- **Debugging production alerts**: first match the alert's chunk hashes /
+  timestamps against the deploy timeline — the crash may be in an
+  already-replaced build. Beware mixed commit timezones (sessions commit in
+  -04:00 and -06:00). Curl the prod frontend HTML to see the live build.
+  Alert tracebacks keep the TAIL (exception at bottom) and are HTML-escaped.
+- **HTML notifications**: any user-controlled string (display names!) entering
+  a `parse_mode="HTML"` message MUST be `html.escape()`d — a name with `<`
+  crashed `/start` for weeks.
+- **iOS/Telegram gotchas + prod topology**: see `CLAUDE.md` (two Railway
+  services; monolith URL dead; `--app-safe-bottom` for bottom insets; navbar
+  never hidden on main pages).
