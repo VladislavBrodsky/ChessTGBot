@@ -77,12 +77,23 @@ export default function WithdrawModal({
       });
 
       if (res.ok) {
-        setSuccessMessage(tw('withdraw_success_sim', { amount: `$${amt.toFixed(2)}` }));
-        onSuccess();
-        setTimeout(() => {
-          onClose();
-          setSuccessMessage("");
-        }, 3000);
+        const data = await res.json();
+        if (data.status === 'pending_confirmation') {
+          // Funds are held until the user taps Confirm in the bot chat.
+          setSuccessMessage(tw('withdraw_pending_confirmation'));
+          onSuccess();
+          setTimeout(() => {
+            onClose();
+            setSuccessMessage("");
+          }, 6000);
+        } else {
+          setSuccessMessage(tw('withdraw_success_sim', { amount: `$${amt.toFixed(2)}` }));
+          onSuccess();
+          setTimeout(() => {
+            onClose();
+            setSuccessMessage("");
+          }, 3000);
+        }
       } else {
         const errData = await res.json();
         setErrorMessage(errData.detail || tw('withdraw_failed'));

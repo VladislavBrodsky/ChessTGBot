@@ -313,6 +313,7 @@
     "link_failed": "Error al vincular la billetera.",
     "link_network_error": "Error de red al vincular la billetera.",
     "withdraw_success_sim": "Retiro simulado de {amount} enviado con éxito a la red TON.",
+    "withdraw_pending_confirmation": "Confirma este retiro en tu chat de Telegram con el bot. Pulsa Confirmar en el mensaje que te acabamos de enviar.",
     "withdraw_failed": "Retiro fallido.",
     "withdraw_network_error": "Error de red durante el procesamiento del retiro.",
     "deposit_success_sim": "¡Depósito simulado de {amount} exitoso! Plataforma acreditada {credited} después del 5% de tarifa de plataforma.",

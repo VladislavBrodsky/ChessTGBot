@@ -430,6 +430,59 @@ async def withdraw_funds(
 
         return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=updated_user.balance)
 
+    # Second factor: hold the (already debited) withdrawal until the OWNER
+    # confirms it from their own Telegram account via an inline keyboard. A
+    # stolen initData session can reach this endpoint but cannot tap a button
+    # in the victim's private bot chat. Without a bot token (dev/tests) the
+    # legacy auto-pay path below still applies.
+    if settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN:
+        from app.services.withdrawal_confirmation import PENDING_STATUS, REF_PREFIX, confirmation_nonce
+        from app.services.telegram_bot import TelegramService
+
+        tx_hold = Transaction(
+            user_id=updated_user.telegram_id,
+            type="withdrawal",
+            amount=-request.amount,
+            fee=fee,
+            status=PENDING_STATUS,
+            reference_id=f"{REF_PREFIX}{request.address}",
+        )
+        db.add(tx_hold)
+        await db.commit()
+        await db.refresh(tx_hold)
+        logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | status={PENDING_STATUS}")
+
+        dest_display = f"{request.address[:6]}...{request.address[-4:]}"
+        ttl_minutes = settings.WITHDRAWAL_CONFIRMATION_TTL_SECONDS // 60
+        delivered = await TelegramService.send_withdrawal_confirmation_request(
+            updated_user.telegram_id,
+            "<b>🔐 Confirm Your Withdrawal</b>\n\n"
+            f"• <b>Amount:</b> ${request.amount / 100:.2f} USDT\n"
+            f"• <b>Fee:</b> -${fee / 100:.2f} USDT\n"
+            f"• <b>You receive:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
+            f"• <b>Destination:</b> <code>{dest_display}</code>\n\n"
+            f"<i>Tap Confirm to send it on-chain, or Cancel to refund. "
+            f"Unconfirmed requests are refunded automatically after {ttl_minutes} minutes.\n\n"
+            f"⚠️ If you did NOT request this, tap Cancel — someone may have "
+            f"access to your session.</i>",
+            tx_id=tx_hold.id,
+            nonce=confirmation_nonce(tx_hold.id, updated_user.telegram_id),
+        )
+        if not delivered:
+            # The second factor can't reach the user; refund immediately
+            # instead of stranding the held funds until expiry.
+            updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
+            tx_hold.status = "failed"
+            tx_hold.reference_id = "confirmation_undeliverable"
+            db.add(tx_hold)
+            await db.commit()
+            raise HTTPException(
+                status_code=503,
+                detail="Could not deliver the withdrawal confirmation to your Telegram chat. Open the bot chat and try again.",
+            )
+
+        return WithdrawResponse(status=PENDING_STATUS, amount=request.amount, new_balance=updated_user.balance)
+
     tx_hash = None
     is_real = False
 

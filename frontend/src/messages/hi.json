@@ -313,6 +313,7 @@
     "link_failed": "Failed to link wallet.",
     "link_network_error": "Network error linking wallet.",
     "withdraw_success_sim": "Simulated withdrawal of {amount} successfully sent to TON Network.",
+    "withdraw_pending_confirmation": "बॉट के साथ अपनी टेलीग्राम चैट में इस निकासी की पुष्टि करें। अभी भेजे गए संदेश में पुष्टि करें पर टैप करें।",
     "withdraw_failed": "Withdrawal failed.",
     "withdraw_network_error": "Network error during withdrawal processing.",
     "deposit_success_sim": "Simulated deposit of {amount} successful! Platform credited {credited} after 5% platform fee.",

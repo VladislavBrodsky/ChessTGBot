@@ -486,6 +486,7 @@ class TelegramService:
             cls.application.add_handler(CommandHandler("start", cls.start_command))
             cls.application.add_handler(CommandHandler("language", cls.language_command))
             cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
+            cls.application.add_handler(CallbackQueryHandler(cls.withdrawal_callback, pattern="^wd[cx]:"))
             
             await cls.application.initialize()
             await cls.application.start()
@@ -751,6 +752,67 @@ class TelegramService:
         tpl = cls.PREMIUM_WELCOME_MESSAGES.get(lang, cls.PREMIUM_WELCOME_MESSAGES["en"])
         text = f"{tpl['title']}\n\n{tpl['body'].format(expires_at=expires_str)}"
         await cls.send_notification(user_id, text)
+
+    @classmethod
+    async def send_withdrawal_confirmation_request(
+        cls, telegram_id: int, text: str, tx_id: int, nonce: str
+    ) -> bool:
+        """Sends the Confirm/Cancel keyboard for a held withdrawal and reports
+        delivery success SYNCHRONOUSLY — unlike send_notification, the caller
+        must know whether the second factor actually reached the user (an
+        undeliverable confirmation would strand the held funds until expiry).
+        """
+        if not settings.TELEGRAM_BOT_TOKEN:
+            return False
+        try:
+            bot = cls.application.bot if (cls.application and cls.application.bot) else None
+            if not bot:
+                from telegram import Bot
+                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+            keyboard = InlineKeyboardMarkup([[
+                InlineKeyboardButton("✅ Confirm", callback_data=f"wdc:{tx_id}:{nonce}"),
+                InlineKeyboardButton("❌ Cancel", callback_data=f"wdx:{tx_id}:{nonce}"),
+            ]])
+            await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML", reply_markup=keyboard)
+            return True
+        except Exception as e:
+            logger.error(f"❌ Failed to deliver withdrawal confirmation to {telegram_id}: {e}")
+            return False
+
+    @staticmethod
+    async def withdrawal_callback(update: Update, context):
+        """Handles Confirm/Cancel taps on a held withdrawal. Identity and the
+        HMAC nonce are verified in the withdrawal_confirmation service."""
+        from app.services import withdrawal_confirmation as wc
+
+        query = update.callback_query
+        try:
+            action, tx_id_str, nonce = (query.data or "").split(":", 2)
+            tx_id = int(tx_id_str)
+        except (ValueError, AttributeError):
+            await query.answer("Invalid request.")
+            return
+
+        if action == wc.CONFIRM_ACTION:
+            message, done = await wc.confirm_withdrawal(tx_id, query.from_user.id, nonce)
+        elif action == wc.CANCEL_ACTION:
+            message = await wc.cancel_withdrawal(tx_id, query.from_user.id, nonce)
+            done = True
+        else:
+            await query.answer("Invalid request.")
+            return
+
+        await query.answer()
+        try:
+            if done:
+                await query.edit_message_text(message, parse_mode="HTML")
+            else:
+                # Retryable payout failure — keep the Confirm/Cancel keyboard.
+                await query.edit_message_text(message, parse_mode="HTML", reply_markup=query.message.reply_markup)
+        except Exception as edit_err:
+            # Editing can fail (message too old / unchanged); the outcome is
+            # already committed, so just log it.
+            logger.warning(f"Could not edit withdrawal confirmation message for tx {tx_id}: {edit_err}")
 
     @classmethod
     async def send_notification(cls, telegram_id: int, text: str):

@@ -313,6 +313,7 @@
     "link_failed": "Échec de la liaison du portefeuille.",
     "link_network_error": "Erreur réseau lors de la liaison du portefeuille.",
     "withdraw_success_sim": "Retrait simulé de {amount} envoyé avec succès sur le réseau TON.",
+    "withdraw_pending_confirmation": "Confirmez ce retrait dans votre discussion Telegram avec le bot. Appuyez sur Confirmer dans le message que nous venons de vous envoyer.",
     "withdraw_failed": "Échec du retrait.",
     "withdraw_network_error": "Erreur réseau lors du traitement du retrait.",
     "deposit_success_sim": "Dépôt simulé de {amount} réussi ! Plateforme créditée de {credited} après 5% de frais.",

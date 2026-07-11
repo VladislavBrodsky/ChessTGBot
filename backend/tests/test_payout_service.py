@@ -17,6 +17,7 @@ async def test_withdraw_simulated_fallback(client: AsyncClient, db_session: Asyn
 
     # 1. Ensure PAYOUT_MNEMONIC is empty
     monkeypatch.setitem(settings.__dict__, "PAYOUT_MNEMONIC", "")
+    monkeypatch.setitem(settings.__dict__, "WITHDRAWAL_CONFIRMATION_ENABLED", False)
 
     # 2. Create user
     telegram_id = 777001
@@ -61,6 +62,7 @@ async def test_withdraw_real_onchain_success(mock_execute, client: AsyncClient, 
         return
 
     # 1. Enable PAYOUT_MNEMONIC
+    monkeypatch.setitem(settings.__dict__, "WITHDRAWAL_CONFIRMATION_ENABLED", False)
     monkeypatch.setitem(settings.__dict__, "PAYOUT_MNEMONIC", "wood sphere valve heavy machine annual horn burden swift opinion mind motion wear layer reduce that arctic worth dry forward reward seek gather luxury")
     mock_execute.return_value = "c6becda5805dcee9e000a32be92d35af2c14b02d446ff8f5231e908261a78de3"
     
@@ -141,6 +143,7 @@ async def test_withdraw_real_onchain_broadcast_timeout(mock_execute, client: Asy
     from app.services.payout_service import BlockchainBroadcastError
 
     # 1. Enable PAYOUT_MNEMONIC and mock broadcast timeout exception
+    monkeypatch.setitem(settings.__dict__, "WITHDRAWAL_CONFIRMATION_ENABLED", False)
     monkeypatch.setitem(settings.__dict__, "PAYOUT_MNEMONIC", "wood sphere valve heavy machine annual horn burden swift opinion mind motion wear layer reduce that arctic worth dry forward reward seek gather luxury")
     mock_execute.side_effect = BlockchainBroadcastError(
         "Blockchain broadcast failure: timeout", "mocked_broadcast_timeout_msg_hash"

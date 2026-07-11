@@ -313,6 +313,7 @@
     "link_failed": "Failed to link wallet.",
     "link_network_error": "Network error linking wallet.",
     "withdraw_success_sim": "Simulated withdrawal of {amount} successfully sent to TON Network.",
+    "withdraw_pending_confirmation": "请在与机器人的 Telegram 聊天中确认此次提现。点击我们刚发送消息中的“确认”按钮。",
     "withdraw_failed": "Withdrawal failed.",
     "withdraw_network_error": "Network error during withdrawal processing.",
     "deposit_success_sim": "Simulated deposit of {amount} successful! Platform credited {credited} after 5% platform fee.",

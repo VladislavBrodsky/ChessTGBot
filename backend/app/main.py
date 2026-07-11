@@ -117,6 +117,22 @@ async def start_redis_recovery_loop():
             logger.warning(f"Error in Redis recovery loop: {e}")
 
 
+async def start_withdrawal_confirmation_sweeper():
+    """Refunds withdrawals whose owner-confirmation TTL elapsed, so held
+    funds are never stranded when the user ignores the Confirm DM."""
+    from app.services.withdrawal_confirmation import expire_stale_confirmations
+    while True:
+        try:
+            await asyncio.sleep(300)
+            refunded = await expire_stale_confirmations()
+            if refunded:
+                logger.info(f"Withdrawal-confirmation sweeper refunded {refunded} expired request(s).")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"Error in withdrawal-confirmation sweeper: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -195,6 +211,9 @@ async def lifespan(app: FastAPI):
 
     # Start background Redis recovery loop
     asyncio.create_task(start_redis_recovery_loop())
+
+    # Refund withdrawal-confirmation requests that expired unanswered
+    asyncio.create_task(start_withdrawal_confirmation_sweeper())
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due

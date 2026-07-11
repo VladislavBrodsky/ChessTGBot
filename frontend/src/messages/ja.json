@@ -313,6 +313,7 @@
     "link_failed": "Failed to link wallet.",
     "link_network_error": "Network error linking wallet.",
     "withdraw_success_sim": "Simulated withdrawal of {amount} successfully sent to TON Network.",
+    "withdraw_pending_confirmation": "ボットとのTelegramチャットでこの出金を確認してください。先ほど送信したメッセージで「確認」をタップしてください。",
     "withdraw_failed": "Withdrawal failed.",
     "withdraw_network_error": "Network error during withdrawal processing.",
     "deposit_success_sim": "Simulated deposit of {amount} successful! Platform credited {credited} after 5% platform fee.",

@@ -108,6 +108,15 @@ class Settings(BaseSettings):
     WITHDRAWAL_DAILY_CAP_CENTS: int = 100000            # $1,000 per user per rolling 24h
     WITHDRAWAL_REVIEW_THRESHOLD_CENTS: int = 50000      # hold withdrawals >= $500 for admin review
 
+    # Per-withdrawal owner confirmation (second factor). Below-review-threshold
+    # withdrawals are debited and HELD until the owner taps Confirm on a bot DM
+    # (a stolen initData session can call the API, but cannot press an inline
+    # button in the victim's private bot chat). Unconfirmed requests refund
+    # after the TTL. Requires TELEGRAM_BOT_TOKEN — without a bot configured
+    # (dev/tests) the legacy auto-pay path is used.
+    WITHDRAWAL_CONFIRMATION_ENABLED: bool = (os.getenv("WITHDRAWAL_CONFIRMATION_ENABLED", "true").lower() != "false")
+    WITHDRAWAL_CONFIRMATION_TTL_SECONDS: int = int(os.getenv("WITHDRAWAL_CONFIRMATION_TTL_SECONDS", "1800"))
+
     # Web3 Wallets Configuration
     MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
     COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
