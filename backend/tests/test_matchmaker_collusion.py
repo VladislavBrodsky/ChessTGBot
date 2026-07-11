@@ -1,5 +1,19 @@
-import pytest
+"""Matchmaker anti-collusion scoping tests.
+
+The collusion guard (same IP / referral edge / recent opponents) applies to
+WAGERED games only: with no money at stake there is no rake or commission to
+farm, and friend-invite games bypass the guard entirely anyway.
+
+Regression for: two legitimate players (a referrer and the friend they
+invited, or two players on the same WiFi/CGNAT IP, or a recent-opponent pair)
+picking a FREE game and silently never matching — both sat in the queue until
+the 120s timeout refunded them. Self-match (the same account matching its own
+other connection) stays blocked everywhere.
+"""
 import time
+
+import pytest
+
 from app.services.matchmaker import MatchmakerService
 from app.crud.game_history import create_game_history
 from app.crud import user as user_crud
@@ -7,16 +21,97 @@ from sqlalchemy import delete
 from app.models.game_history import GameHistory
 from app.models.user import User
 
+
+@pytest.fixture(autouse=True)
+def _in_memory_matchmaker():
+    """Force in-memory queues and reset singleton state around each test."""
+    prev_use_memory = MatchmakerService._use_memory
+    prev_queues = MatchmakerService._memory_queues
+    MatchmakerService._use_memory = True
+    MatchmakerService._memory_queues = {}
+    yield
+    MatchmakerService._use_memory = prev_use_memory
+    MatchmakerService._memory_queues = prev_queues
+
+
+async def _enqueue(mm: MatchmakerService, user_id: int, bid_amount: int, *, elo: int = 1000,
+                   time_control: int = 300, ip_hash: str = None, referrer_id: int = None):
+    await mm.add_to_queue(user_id, bid_amount, f"sid-{user_id}", elo=elo,
+                          time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id)
+
+
+# ── Pure in-memory unit tests (no DB) ────────────────────────────────────────
+
+async def test_free_game_matches_referrer_with_referee():
+    """The reported bug: user invites a friend, both queue 5-min free, no match."""
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 0, referrer_id=111)  # new player, invited by 111
+
+    opponent = await mm.try_match_and_pop(0, 111, user_elo=1000, time_control=300, ip_hash="hash-a")
+    assert opponent is not None and opponent['user_id'] == 222
+
+
+async def test_free_game_matches_same_ip_pair():
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 0, ip_hash="same-wifi")
+
+    opponent = await mm.try_match_and_pop(0, 111, user_elo=1000, time_control=300, ip_hash="same-wifi")
+    assert opponent is not None and opponent['user_id'] == 222
+
+
+async def test_free_game_never_matches_own_account():
+    mm = MatchmakerService()
+    await _enqueue(mm, 111, 0)
+
+    opponent = await mm.try_match_and_pop(0, 111, user_elo=1000, time_control=300)
+    assert opponent is None
+
+
+async def test_wagered_game_still_blocks_referral_pair():
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 500, referrer_id=111)
+
+    opponent = await mm.try_match_and_pop(500, 111, user_elo=1000, time_control=300, ip_hash="hash-a")
+    assert opponent is None
+
+
+async def test_wagered_game_still_blocks_same_ip_pair():
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 500, ip_hash="same-wifi")
+
+    opponent = await mm.try_match_and_pop(500, 111, user_elo=1000, time_control=300, ip_hash="same-wifi")
+    assert opponent is None
+
+
+async def test_wagered_game_matches_unrelated_players():
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 500, ip_hash="hash-b")
+
+    opponent = await mm.try_match_and_pop(500, 111, user_elo=1000, time_control=300, ip_hash="hash-a")
+    assert opponent is not None and opponent['user_id'] == 222
+
+
+def test_would_collude_rules_unchanged():
+    """The guard itself keeps all four rules for the wagered path."""
+    would = MatchmakerService._would_collude
+    assert would(1, "ip-a", None, {'user_id': 1}) is True                                  # self
+    assert would(1, "ip-a", None, {'user_id': 2, 'ip_hash': "ip-a"}) is True               # same IP
+    assert would(1, None, 2, {'user_id': 2}) is True                                       # candidate is requester's referrer
+    assert would(1, None, None, {'user_id': 2, 'referrer_id': 1}) is True                  # requester referred candidate
+    assert would(1, None, None, {'user_id': 2}, recent_opponents={2}) is True              # recent opponent
+    assert would(1, "ip-a", None, {'user_id': 2, 'ip_hash': "ip-b"}) is False              # unrelated
+
+
+# ── DB-backed test: recent-opponent history guard (wagered only) ─────────────
+
 @pytest.mark.asyncio
 async def test_matchmaker_history_collusion_guard(db_session):
     if hasattr(db_session, "users"):
         # Skip if using mock db session in unit tests
         return
 
-    # Clean up any existing queues
-    MatchmakerService._memory_queues.clear()
     mm = MatchmakerService()
-    
+
     # 1. Create three users in DB
     user_a = await user_crud.create_user(db_session, 999001, "User A")
     user_b = await user_crud.create_user(db_session, 999002, "User B")
@@ -39,52 +134,35 @@ async def test_matchmaker_history_collusion_guard(db_session):
             commit=True
         )
 
-        # 3. Add User B to the matchmaking queue
-        # (forcing in-memory queue to be clean/isolated)
-        MatchmakerService._use_memory = True
-        await mm.add_to_queue(
-            user_id=999002,
-            bid_amount=0,
-            sid="sid_b",
-            elo=1000,
-            time_control=600,
-            ip_hash="ip_different_1"
-        )
-
-        # 4. Attempt to match User A (should be BLOCKED because of recent history with B)
+        # 3. WAGERED: A must NOT match B (recent game history)
+        await _enqueue(mm, 999002, 500, time_control=600, ip_hash="ip_different_1")
         opponent = await mm.try_match_and_pop(
-            bid_amount=0,
-            user_id=999001,
-            user_elo=1000,
-            time_control=600,
-            ip_hash="ip_different_2"
+            bid_amount=500, user_id=999001, user_elo=1000,
+            time_control=600, ip_hash="ip_different_2"
         )
-        assert opponent is None, "User A should not match User B due to recent game history"
+        assert opponent is None, "User A should not wager-match User B due to recent game history"
 
-        # 5. Add User C (no history with A) to the queue
-        await mm.add_to_queue(
-            user_id=999003,
-            bid_amount=0,
-            sid="sid_c",
-            elo=1000,
-            time_control=600,
-            ip_hash="ip_different_3"
-        )
-
-        # 6. Attempt to match User A again (should match C successfully)
+        # 4. WAGERED: A matches C (no history)
+        await _enqueue(mm, 999003, 500, time_control=600, ip_hash="ip_different_3")
         opponent_c = await mm.try_match_and_pop(
-            bid_amount=0,
-            user_id=999001,
-            user_elo=1000,
-            time_control=600,
-            ip_hash="ip_different_2"
+            bid_amount=500, user_id=999001, user_elo=1000,
+            time_control=600, ip_hash="ip_different_2"
         )
         assert opponent_c is not None
-        assert opponent_c["user_id"] == 999003, "User A should match User C"
+        assert opponent_c["user_id"] == 999003, "User A should wager-match User C"
+
+        # 5. FREE: A and B can rematch despite recent history (friends playing casually)
+        MatchmakerService._memory_queues.clear()
+        await _enqueue(mm, 999002, 0, time_control=600, ip_hash="ip_different_1")
+        opponent_free = await mm.try_match_and_pop(
+            bid_amount=0, user_id=999001, user_elo=1000,
+            time_control=600, ip_hash="ip_different_2"
+        )
+        assert opponent_free is not None
+        assert opponent_free["user_id"] == 999002, "Free games must not be blocked by recent history"
 
     finally:
         # Clean up database
         await db_session.execute(delete(GameHistory).where(GameHistory.game_id == "match_999001_999002_12345"))
         await db_session.execute(delete(User).where(User.telegram_id.in_([999001, 999002, 999003])))
         await db_session.commit()
-        MatchmakerService._memory_queues.clear()

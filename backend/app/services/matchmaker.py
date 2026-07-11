@@ -86,9 +86,12 @@ class MatchmakerService:
     def _would_collude(user_id: int, ip_hash: Optional[str], referrer_id: Optional[int], candidate: dict, recent_opponents: Optional[set] = None) -> bool:
         """
         True if `candidate` must NOT be auto-matched with the requesting user because
-        they look like the same person / a colluding pair. This is the ranked-
-        matchmaking anti-self-match guard (friend-invite games are intentionally
-        exempt — you choose a known opponent there). Skips a candidate when:
+        they look like the same person / a colluding pair. This guard applies to
+        WAGERED games only — with no money at stake there is no rake/commission to
+        farm, and blocking free games strands legitimate pairs (a referrer and the
+        friend they invited, or two players on the same household WiFi/CGNAT) in a
+        queue that silently never matches. Friend-invite games are also exempt —
+        you choose a known opponent there. Skips a candidate when:
           - it is the same account,
           - it connected from the same IP (same device/network — the classic
             "two accounts, one person" self-match), or
@@ -168,17 +171,18 @@ class MatchmakerService:
         This ensures that no other worker thread or container can match the same opponent.
         """
         recent_opponents = set()
-        try:
-            from app.core.database import AsyncSessionLocal
-            from app.crud.game_history import get_user_recent_games
-            async with AsyncSessionLocal() as db:
-                games = await get_user_recent_games(db, telegram_id=user_id, limit=5)
-                for g in games:
-                    opp_id = g.black_player_id if g.white_player_id == user_id else g.white_player_id
-                    if opp_id:
-                        recent_opponents.add(opp_id)
-        except Exception as e:
-            logger.warning(f"Matchmaker: failed to fetch recent games for user {user_id}: {e}")
+        if bid_amount > 0:
+            try:
+                from app.core.database import AsyncSessionLocal
+                from app.crud.game_history import get_user_recent_games
+                async with AsyncSessionLocal() as db:
+                    games = await get_user_recent_games(db, telegram_id=user_id, limit=5)
+                    for g in games:
+                        opp_id = g.black_player_id if g.white_player_id == user_id else g.white_player_id
+                        if opp_id:
+                            recent_opponents.add(opp_id)
+            except Exception as e:
+                logger.warning(f"Matchmaker: failed to fetch recent games for user {user_id}: {e}")
 
         lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
@@ -222,11 +226,17 @@ class MatchmakerService:
 
                 best_opponent = None
                 best_diff = float('inf')
-                
+                collusion_skipped = 0
+
                 for item in queue:
-                    # Anti-collusion: never auto-match the same person / a directly
-                    # referral-linked pair (self-match, same IP, referrer<->referee, or recent opponent).
-                    if self._would_collude(user_id, ip_hash, referrer_id, item, recent_opponents):
+                    # Never match a user against their own other connection.
+                    if item.get('user_id') == user_id:
+                        continue
+                    # Anti-collusion (wagered games only): never auto-match a
+                    # colluding-looking pair (same IP, referrer<->referee, or
+                    # recent opponent). Free games are exempt — see _would_collude.
+                    if bid_amount > 0 and self._would_collude(user_id, ip_hash, referrer_id, item, recent_opponents):
+                        collusion_skipped += 1
                         continue
 
                     # ELO threshold expands by 10 points per second of wait time, starting at 100
@@ -256,7 +266,14 @@ class MatchmakerService:
                             MatchmakerService._memory_queues[queue_key_mem] = new_queue
                             
                     logger.info(f"Matchmaker: Matched User {user_id} with User {best_opponent['user_id']} and popped both.")
-                
+                elif collusion_skipped:
+                    # Make the silent skip diagnosable: a pair stuck "searching"
+                    # while both are queued is otherwise invisible in logs.
+                    logger.info(
+                        f"Matchmaker: no opponent for User {user_id} (bid {bid_amount}, tc {time_control}); "
+                        f"{collusion_skipped} queued candidate(s) skipped by anti-collusion guard"
+                    )
+
                 return best_opponent
             finally:
                 if lock_token:
@@ -267,17 +284,18 @@ class MatchmakerService:
         Deprecated: Use try_match_and_pop instead for atomic matching.
         """
         recent_opponents = set()
-        try:
-            from app.core.database import AsyncSessionLocal
-            from app.crud.game_history import get_user_recent_games
-            async with AsyncSessionLocal() as db:
-                games = await get_user_recent_games(db, telegram_id=exclude_user_id, limit=5)
-                for g in games:
-                    opp_id = g.black_player_id if g.white_player_id == exclude_user_id else g.white_player_id
-                    if opp_id:
-                        recent_opponents.add(opp_id)
-        except Exception as e:
-            logger.warning(f"Matchmaker: failed to fetch recent games for user {exclude_user_id}: {e}")
+        if bid_amount > 0:
+            try:
+                from app.core.database import AsyncSessionLocal
+                from app.crud.game_history import get_user_recent_games
+                async with AsyncSessionLocal() as db:
+                    games = await get_user_recent_games(db, telegram_id=exclude_user_id, limit=5)
+                    for g in games:
+                        opp_id = g.black_player_id if g.white_player_id == exclude_user_id else g.white_player_id
+                        if opp_id:
+                            recent_opponents.add(opp_id)
+            except Exception as e:
+                logger.warning(f"Matchmaker: failed to fetch recent games for user {exclude_user_id}: {e}")
 
         async with self._lock:
             current_time = time.time()
@@ -299,7 +317,9 @@ class MatchmakerService:
             best_diff = float('inf')
             
             for item in queue:
-                if self._would_collude(exclude_user_id, ip_hash, referrer_id, item, recent_opponents):
+                if item.get('user_id') == exclude_user_id:
+                    continue
+                if bid_amount > 0 and self._would_collude(exclude_user_id, ip_hash, referrer_id, item, recent_opponents):
                     continue
 
                 # ELO threshold expands by 10 points per second of wait time, starting at 100
