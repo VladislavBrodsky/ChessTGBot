@@ -35,6 +35,8 @@ export default function WalletPage() {
   const { play: playAudio } = useAudio();
   const prevBalanceRef = useRef<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // Distinguishes "you have no transactions" from "the list failed to load".
+  const [txError, setTxError] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -58,15 +60,19 @@ export default function WalletPage() {
   const fetchWalletData = async () => {
     try {
       setLoading(true);
+      setTxError(false);
       await syncBalance();
 
       const txRes = await apiFetch("/api/v1/wallet/transactions");
       if (txRes.ok) {
         const txData = await txRes.json();
         setTransactions(txData);
+      } else {
+        setTxError(true);
       }
     } catch (err) {
       console.error("Failed to fetch wallet data", err);
+      setTxError(true);
     } finally {
       setLoading(false);
     }
@@ -141,7 +147,7 @@ export default function WalletPage() {
         </div>
 
         {/* TRANSACTION LEDGER SECTION */}
-        <TransactionLedger loading={loading} transactions={transactions} balance={balance} />
+        <TransactionLedger loading={loading} transactions={transactions} balance={balance} error={txError} onRetry={fetchWalletData} />
 
         <AnimatePresence>
           {activeModal === 'deposit' && (

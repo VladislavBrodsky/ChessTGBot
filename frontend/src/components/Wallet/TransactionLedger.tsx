@@ -18,6 +18,10 @@ interface TransactionLedgerProps {
   loading: boolean;
   transactions: Transaction[];
   balance?: number;
+  /** True when the fetch failed — renders a retry state instead of the
+   *  misleading "no entries" empty state. */
+  error?: boolean;
+  onRetry?: () => void;
 }
 
 function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Transaction[]; balance: number }) {
@@ -131,6 +135,18 @@ export default function TransactionLedger({ loading, transactions, balance = 0 }
 
       {loading ? (
         <TransactionSkeleton />
+      ) : error ? (
+        <div className="w-full glass-panel rounded-xl p-8 text-center space-y-3">
+          <p className="text-xs font-bold text-brand-primary opacity-50 uppercase tracking-widest">{tw('tx_load_failed')}</p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="px-5 py-2 rounded-xl bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black uppercase tracking-widest text-brand-primary/80 hover:text-brand-primary active:scale-95 transition-all cursor-pointer"
+            >
+              {tw('retry_btn')}
+            </button>
+          )}
+        </div>
       ) : transactions.length === 0 ? (
         <div className="w-full glass-panel rounded-xl p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
           {tw('no_entries')}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
@@ -43,8 +44,8 @@ const currenciesList = [
 const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
   ssr: false,
   loading: () => (
-    <div className="p-3 text-center text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider">
-      Loading swap…
+    <div className="p-3 flex justify-center">
+      <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin opacity-40" />
     </div>
   ),
 });
@@ -213,12 +214,12 @@ export default function DepositModal({
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         telegramHaptic('success');
-        setGasGrantMsg("⛽ Gas sent! It arrives within a minute — then retry your deposit.");
+        setGasGrantMsg(tw('gas_sent'));
       } else {
-        setGasGrantMsg(data.detail || "Gas grant unavailable right now.");
+        setGasGrantMsg(data.detail || tw('gas_unavailable'));
       }
     } catch {
-      setGasGrantMsg("Network error — please try again.");
+      setGasGrantMsg(tw('gas_network_error'));
     } finally {
       setGasGrantBusy(false);
     }
@@ -465,7 +466,10 @@ export default function DepositModal({
 
   const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
 
-  return (
+  // Portaled to document.body so a transformed/filtered ancestor can never
+  // scope this fixed overlay (the leaderboard-modal stacking trap).
+  if (typeof document === 'undefined') return null;
+  return createPortal(
     <div className="bottom-drawer-backdrop z-[100]">
        <motion.div
         initial={{ opacity: 0 }}
@@ -670,17 +674,17 @@ export default function DepositModal({
             {arrivalStatus === 'watching' && (
               <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/70 uppercase tracking-wider text-center flex items-center justify-center gap-2">
                 <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                Watching your wallet for incoming USDT…
+                {tw('arrival_watching')}
               </div>
             )}
             {arrivalStatus === 'arrived' && (
               <div className="p-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-[10px] font-black text-emerald-400 uppercase tracking-wider text-center">
-                ✅ {arrivedUsdt.toFixed(2)} USDT arrived in your wallet — amount prefilled, tap Top Up above!
+                {tw('arrival_arrived', { amount: arrivedUsdt.toFixed(2) })}
               </div>
             )}
             {arrivalStatus === 'timeout' && (
               <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/60 leading-relaxed text-center">
-                Still no USDT detected. Swaps and card purchases can take a few minutes — reopen this window later to deposit.
+                {tw('arrival_timeout')}
               </div>
             )}
 
@@ -692,7 +696,7 @@ export default function DepositModal({
                   onClick={() => { telegramHaptic('light'); setShowSwap(v => !v); }}
                   className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  <span>Have TON but no USDT? Swap in-app</span>
+                  <span>{tw('swap_toggle')}</span>
                   <FaAngleDown className={`transition-transform ${showSwap ? 'rotate-180' : ''}`} />
                 </button>
                 {showSwap && (
@@ -715,7 +719,7 @@ export default function DepositModal({
                   disabled={gasGrantBusy}
                   className="text-[10px] font-black text-brand-primary/45 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {gasGrantBusy ? "Requesting gas…" : "⛽ Have USDT but no TON for gas? Get a free splash"}
+                  {gasGrantBusy ? tw('gas_requesting') : tw('gas_link')}
                 </button>
                 {gasGrantMsg && (
                   <p className="text-[10px] font-bold text-brand-primary/60 leading-relaxed text-center px-2">{gasGrantMsg}</p>
@@ -930,7 +934,8 @@ export default function DepositModal({
           </div>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

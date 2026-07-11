@@ -1078,6 +1078,38 @@ body {
   }
 }
 
+/*
+ * Low-end device mode. Providers.tsx stamps `lite-fx` on <html> when the
+ * hardware looks weak (few cores / low RAM), applying the heaviest freezes
+ * from the reduced-motion block above WITHOUT requiring the user to find an
+ * OS accessibility setting. The giant blurred mesh blobs are hidden outright:
+ * a 100px+ blur repainted every frame is the single most expensive effect on
+ * exactly these devices, and it is purely decorative.
+ */
+:root.lite-fx *,
+:root.lite-fx *::before,
+:root.lite-fx *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+:root.lite-fx .premium-liquid-mesh-blob1,
+:root.lite-fx .premium-liquid-mesh-blob2,
+:root.lite-fx .premium-liquid-mesh-blob3 {
+  display: none !important;
+}
+
+:root.lite-fx .premium-liquid-border::before,
+:root.lite-fx .premium-liquid-border::after,
+:root.lite-fx .animate-shimmer,
+:root.lite-fx .animate-radar-sweep,
+:root.lite-fx .animate-active-portal,
+:root.lite-fx .play-chess-card-premium::before,
+:root.lite-fx .play-chess-card-premium::after,
+:root.lite-fx .premium-liquid-button {
+  animation: none !important;
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    RTL (Right-to-Left) Layout Engine Overrides (Arabic Locale Support)
    ────────────────────────────────────────────────────────────────────────── */

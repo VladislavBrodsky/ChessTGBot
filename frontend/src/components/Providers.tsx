@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, Suspense } from 'react';
+import { ReactNode, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'framer-motion';
@@ -25,6 +25,21 @@ const TON_ROUTE_PATTERN = /\/(game|wallet|membership)(\/|$)/;
 export default function Providers({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     const needsTonConnect = TON_ROUTE_PATTERN.test(pathname || '');
+
+    // Low-end device detection: weak hardware gets the same effect freezes as
+    // "reduce motion" (see :root.lite-fx in globals.css) WITHOUT requiring the
+    // user to find an OS accessibility setting. hardwareConcurrency <= 4 marks
+    // older phones; deviceMemory (Chrome/Android only) catches low-RAM devices.
+    useEffect(() => {
+        try {
+            const nav = navigator as any;
+            const lowCpu = (nav.hardwareConcurrency || 8) <= 4;
+            const lowMem = typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4;
+            if (lowCpu || lowMem) {
+                document.documentElement.classList.add('lite-fx');
+            }
+        } catch { /* detection is best-effort */ }
+    }, []);
 
     const inner = (
         // reducedMotion="user" makes every framer-motion animation respect the

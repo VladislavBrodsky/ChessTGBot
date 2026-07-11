@@ -1,6 +1,7 @@
 'use client';
  
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaCheck, FaArrowLeft } from "react-icons/fa";
@@ -348,7 +349,9 @@ export default function MembershipPage() {
         </p>
       </div>
 
-      {/* ── Success modal ────────────────────────────────────────── */}
+      {/* ── Success modal (portaled: fixed overlays must not scope to a
+             transformed ancestor — the leaderboard-modal stacking trap) ── */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
         {showSuccess && (
           <motion.div
@@ -385,9 +388,10 @@ export default function MembershipPage() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
 
-      {/* ── Insufficient balance modal ───────────────────────────── */}
+      {/* ── Insufficient balance modal (portaled, same reason) ───── */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
         {showInsufficient && (
           <motion.div
@@ -432,9 +436,9 @@ export default function MembershipPage() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
 
-      {/* ── Deposit modal ────────────────────────────────────────── */}
+      {/* ── Deposit modal (portals itself internally) ────────────── */}
       <AnimatePresence>
         {showDepositModal && (
           <DepositModal

@@ -41,10 +41,13 @@ interface LeaderboardItem {
 
 
 
+ // Top-3 medals pair the icon with the rank NUMBER: silver vs bronze were
+ // previously distinguishable only by color (inaccessible, and ambiguous in
+ // some themes).
  const getRankIcon = (rank: number) => {
- if (rank === 1) return <FaTrophy className="text-yellow-400 drop-shadow-glow" />;
- if (rank === 2) return <FaMedal className="text-slate-300" />;
- if (rank === 3) return <FaMedal className="text-amber-600" />;
+ if (rank === 1) return <span className="flex items-center gap-1" aria-label="Rank 1"><FaTrophy className="text-yellow-400 drop-shadow-glow" /><span className="text-[10px] font-black">1</span></span>;
+ if (rank === 2) return <span className="flex items-center gap-1" aria-label="Rank 2"><FaMedal className="text-slate-300" /><span className="text-[10px] font-black">2</span></span>;
+ if (rank === 3) return <span className="flex items-center gap-1" aria-label="Rank 3"><FaMedal className="text-amber-600" /><span className="text-[10px] font-black">3</span></span>;
  return <span className="text-[10px] font-black opacity-30">#{rank}</span>;
  };
 

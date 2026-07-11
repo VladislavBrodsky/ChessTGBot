@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaRedo, FaShareAlt, FaTrophy, FaShieldAlt, FaBalanceScale } from "react-icons/fa";
@@ -110,8 +111,13 @@ export default function MatchOverModal({
           icon: <FaBalanceScale className="text-5xl text-cyan-400/80 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-1" />
         };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-md">
+  // Rendered through a portal to document.body: a `fixed` overlay inside the
+  // page tree silently scopes to any transformed/filtered ancestor (the trap
+  // that once broke the leaderboard modal). Presence context crosses portals,
+  // so AnimatePresence exit animations still work.
+  if (typeof document === 'undefined') return null;
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-md">
       {/* Backdrop fading in */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -229,6 +235,7 @@ export default function MatchOverModal({
           </div>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

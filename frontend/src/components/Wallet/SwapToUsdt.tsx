@@ -5,6 +5,7 @@ import { toNano, Address } from "@ton/core";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
+import { useTranslations } from "next-intl";
 
 /**
  * In-app TON → USDT swap (STON.fi), the "deposit whatever currency" unlock
@@ -42,6 +43,7 @@ interface SwapToUsdtProps {
 }
 
 export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtProps) {
+  const t = useTranslations("Wallet");
   const [tonConnectUI] = useTonConnectUI();
   const [tonBalanceNano, setTonBalanceNano] = useState<bigint | null>(null);
   const [amount, setAmount] = useState<string>("1");
@@ -98,7 +100,7 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
         });
       } catch (err: any) {
         console.error("Swap quote failed", err);
-        setError("Could not fetch a swap quote. Please try again.");
+        setError(t("swap_quote_failed"));
       } finally {
         setQuoting(false);
       }
@@ -111,13 +113,13 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
     if (!quote || swapping) return;
     if (Date.now() - quote.fetchedAt > QUOTE_TTL_MS) {
       setQuote(null);
-      setError("Quote expired — fetching a fresh one…");
+      setError(t("swap_quote_expired"));
       setQuoteNonce(n => n + 1);   // re-runs the quote effect
       return;
     }
     const amt = parseFloat(amount);
     if (tonBalanceNano !== null && toNano((amt + GAS_HEADROOM_TON).toFixed(4)) > tonBalanceNano) {
-      setError(`Leave at least ${GAS_HEADROOM_TON} TON for network fees. Try a smaller amount.`);
+      setError(t("swap_gas_headroom", { amount: GAS_HEADROOM_TON }));
       return;
     }
 
@@ -160,8 +162,8 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
       console.error("Swap failed", err);
       telegramHaptic('error');
       setError(err?.message?.includes("Reject") || err?.message?.includes("cancel")
-        ? "Swap cancelled."
-        : "Swap failed or was cancelled. No funds moved — you can try again.");
+        ? t("swap_cancelled")
+        : t("swap_failed"));
     } finally {
       setSwapping(false);
     }
@@ -175,7 +177,7 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
   if (sent) {
     return (
       <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-bold text-emerald-400 leading-relaxed text-center uppercase tracking-wider">
-        ✅ Swap sent! Your USDT will arrive in your wallet within ~1 minute — we&apos;ll detect it and you can deposit right away.
+        {t("swap_sent")}
       </div>
     );
   }
@@ -184,10 +186,10 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
     <div className="space-y-3 p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-void/40">
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-70">
-          Swap TON → USDT
+          {t("swap_title")}
         </span>
         <span className="text-[10px] font-bold text-brand-primary opacity-40">
-          {tonBalanceNano !== null ? `Balance: ${(Number(tonBalanceNano) / 1e9).toFixed(2)} TON` : ""}
+          {tonBalanceNano !== null ? t("swap_balance", { amount: (Number(tonBalanceNano) / 1e9).toFixed(2) }) : ""}
         </span>
       </div>
 
@@ -202,25 +204,24 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
           onChange={(e) => setAmount(e.target.value)}
           disabled={swapping}
           className="cyber-input flex-1 p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-xs font-black font-mono"
-          placeholder={`Min ${MIN_SWAP_TON} TON`}
+          placeholder={t("swap_min_placeholder", { min: MIN_SWAP_TON })}
         />
         <span className="text-[10px] font-black uppercase text-brand-primary opacity-60 shrink-0">TON</span>
       </div>
 
       <div className="text-[10px] font-bold text-brand-primary opacity-60 leading-relaxed min-h-[1.5em]">
-        {quoting && "Fetching quote…"}
+        {quoting && t("swap_quoting")}
         {!quoting && quote && (
           <>
             ≈ <span className="text-emerald-400 font-black">{estUsdt} USDT</span>
-            {"  "}(min {minUsdt} after {Number(SLIPPAGE_TOLERANCE) * 100}% slippage
-            {impactPct && Number(impactPct) > 0.05 ? `, ${impactPct}% price impact` : ""})
+            {"  "}({t("swap_quote_min", { min: minUsdt ?? "", pct: Number(SLIPPAGE_TOLERANCE) * 100 })})
           </>
         )}
       </div>
 
       {highImpact && (
         <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
-          ⚠️ High price impact ({impactPct}%) — consider a smaller amount.
+          ⚠️ {t("swap_high_impact", { pct: impactPct ?? "" })}
         </div>
       )}
 
@@ -237,11 +238,11 @@ export default function SwapToUsdt({ walletRawAddress, onSwapSent }: SwapToUsdtP
             : 'bg-emerald-500 text-brand-void hover:opacity-90 active:scale-[0.98] cursor-pointer'
         }`}
       >
-        {swapping ? "Confirm in your wallet…" : "Swap via STON.fi"}
+        {swapping ? t("swap_btn_confirming") : t("swap_btn")}
       </button>
 
       <p className="text-[9px] font-bold text-brand-primary opacity-35 leading-relaxed text-center">
-        Swaps run on STON.fi, a public TON DEX. USDT is delivered to YOUR wallet — you deposit it afterwards. Keep ~{GAS_HEADROOM_TON} TON for network fees.
+        {t("swap_footer", { amount: GAS_HEADROOM_TON })}
       </p>
     </div>
   );
