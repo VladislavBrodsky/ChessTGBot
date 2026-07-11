@@ -305,10 +305,13 @@ class GamificationService:
                 msg = (
                     f"🎉 <b>New Recruit Joined!</b>\n\n"
                     f"👤 <b>{full_name}</b>{username_display} just joined via your referral link!\n\n"
+                    f"⚔️ <b>Challenge them to a match right now!</b> Open the app, tap "
+                    f"<b>Play → Invite a Friend</b> and send them your game link — playing a "
+                    f"human match also completes your daily PvP task for bonus XP.\n\n"
                     f"🎁 <b>Your Pending Signup Bonus:</b>\n"
                     f"💰 <b>+${referrer_bonus_preview / 100:.2f} USDT</b>\n"
                     f"🏅 <b>+{referrer_xp_preview} XP</b>\n\n"
-                    f"⏳ <b>Unlocks when they complete 3 chess games!</b>\n\n"
+                    f"⏳ <b>Unlocks when they complete 3 chess games</b> — playing against you counts!\n\n"
                     f"⚡ From game 1, you're already earning <b>up to 2% commission</b> on all their wagers!\n\n"
                     f"<i>The more players you recruit, the bigger your passive network payout! ♟️💸</i>"
                 )
@@ -326,10 +329,14 @@ class GamificationService:
                 new_user_msg = (
                     f"♟️ <b>Welcome to the Chess Arena!</b>\n\n"
                     f"You joined via {referrer_display}'s invitation. 🤝\n\n"
+                    f"⚔️ <b>Best first move: challenge {referrer_display} to a match!</b> "
+                    f"Open the app and tap <b>Play → Play Online</b> for a free ranked game, or ask "
+                    f"them for a friend-game link. Your first human match earns bonus XP from the "
+                    f"daily PvP task.\n\n"
                     f"🎁 <b>Your Signup Bonus (Pending):</b>\n"
                     f"💰 <b>+${new_user_bonus_preview / 100:.2f} USDT</b>\n"
                     f"🏅 <b>+{new_user_xp_preview} XP</b>\n\n"
-                    f"⏳ <b>Play 3 games to unlock your reward!</b>\n\n"
+                    f"⏳ <b>Play 3 games to unlock your reward</b> — games against {referrer_display} count!\n\n"
                     f"<i>Open the arena, play your first moves and claim your bonus! ⚡</i>"
                 )
                 await TelegramService.send_notification(new_user.telegram_id, new_user_msg)

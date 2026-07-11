@@ -86,6 +86,10 @@ async def init_db():
             Task(id=1, title_key="daily_win", description_key="Win a chess match today", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=True, icon="trophy"),
             Task(id=2, title_key="daily_play", description_key="Play 3 chess matches", xp_reward=30, task_type=TaskType.PLAY, target_count=3, is_daily=True, icon="gamepad"),
             Task(id=3, title_key="daily_login", description_key="Login to the app", xp_reward=10, task_type=TaskType.LOGIN, target_count=1, is_daily=True, icon="sync"),
+            # Rewards choosing a human opponent over the AI — deliberately the
+            # richest daily task, since PvP liquidity is the platform's scarcest
+            # resource. Progress ticks in game_service settle for PvP games only.
+            Task(id=4, title_key="daily_play_human", description_key="Play a match against a human opponent", xp_reward=60, task_type=TaskType.PLAY_HUMAN, target_count=1, is_daily=True, icon="users"),
             Task(id=101, title_key="ach_first_win", description_key="First Blood: Win your first chess match", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=False, icon="award"),
             Task(id=102, title_key="ach_win_10", description_key="Novice Victor: Win 10 chess matches", xp_reward=150, task_type=TaskType.WIN, target_count=10, is_daily=False, icon="shield"),
             Task(id=103, title_key="ach_play_25", description_key="Chess Enthusiast: Play 25 chess matches", xp_reward=250, task_type=TaskType.PLAY, target_count=25, is_daily=False, icon="book"),

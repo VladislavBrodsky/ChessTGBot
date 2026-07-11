@@ -17,6 +17,17 @@ class MatchmakerService:
     _use_memory = False
     _memory_queues = {}  # Dict[int, List[dict]]
 
+    # Cross-time-control matching: an exact time-control match is always
+    # preferred and possible immediately. Once BOTH players have waited
+    # CROSS_TC_WAIT_SECONDS, nearby pools merge — a candidate whose time
+    # control is within CROSS_TC_MAX_RATIO (e.g. 3m<->5m, 5m<->10m, but never
+    # 1m<->10m) becomes eligible. At low player counts, per-time-control
+    # queues fragment an already tiny pool into buckets that almost never
+    # overlap; merging them after a short wait trades a little preference
+    # accuracy for an actual game.
+    CROSS_TC_WAIT_SECONDS = 20.0
+    CROSS_TC_MAX_RATIO = 2.0
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(MatchmakerService, cls).__new__(cls)
@@ -118,6 +129,65 @@ class MatchmakerService:
             return True  # requester is the candidate's direct referrer
         return False
 
+    @classmethod
+    def _tc_compatible(cls, tc_a: int, tc_b: int, shared_wait: float) -> bool:
+        """Whether two queued time controls may be matched together given how
+        long BOTH players have been waiting (the shorter of the two waits)."""
+        if tc_a == tc_b:
+            return True
+        if shared_wait < cls.CROSS_TC_WAIT_SECONDS:
+            return False
+        lo, hi = sorted((tc_a, tc_b))
+        return lo > 0 and hi / lo <= cls.CROSS_TC_MAX_RATIO
+
+    async def _load_bid_queues(self, bid_amount: int) -> Dict[int, list]:
+        """Load every time-control queue for a bid tier as {time_control: queue}.
+        Assumes the caller holds the matchmaker lock."""
+        if MatchmakerService._use_memory or not self.redis:
+            return {
+                tc: list(queue)
+                for (bid, tc), queue in MatchmakerService._memory_queues.items()
+                if bid == bid_amount
+            }
+        queues = {}
+        try:
+            prefix = f"matchmaker:queue:{bid_amount}:"
+            cursor = 0
+            keys = []
+            while True:
+                cursor, scan_keys = await self.redis.scan(cursor, match=f"{prefix}*", count=100)
+                keys.extend(scan_keys)
+                if cursor == 0:
+                    break
+            for key in keys:
+                try:
+                    tc = int(str(key).rsplit(":", 1)[-1])
+                except ValueError:
+                    continue
+                data = await self.redis.get(key)
+                queues[tc] = json.loads(data) if data else []
+        except Exception as e:
+            logger.warning(f"Redis _load_bid_queues failed ({e}). Falling back to memory.")
+            MatchmakerService._use_memory = True
+            return {
+                tc: list(queue)
+                for (bid, tc), queue in MatchmakerService._memory_queues.items()
+                if bid == bid_amount
+            }
+        return queues
+
+    async def _store_queue(self, bid_amount: int, time_control: int, queue: list) -> None:
+        """Write one queue back. Assumes the caller holds the matchmaker lock."""
+        if MatchmakerService._use_memory or not self.redis:
+            MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
+            return
+        try:
+            await self.redis.set(f"matchmaker:queue:{bid_amount}:{time_control}", json.dumps(queue))
+        except Exception as e:
+            logger.warning(f"Redis _store_queue failed ({e}). Falling back to memory.")
+            MatchmakerService._use_memory = True
+            MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
+
     async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> None:
         """
         Add a user's connection to the matchmaking queue for a specific bid tier and time control.
@@ -188,84 +258,87 @@ class MatchmakerService:
         async with self._lock:
             try:
                 current_time = time.time()
-                queue_key_mem = (bid_amount, time_control)
-                queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
-                
-                if MatchmakerService._use_memory or not self.redis:
-                    queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
-                else:
-                    try:
-                        data = await self.redis.get(queue_key)
-                        queue = json.loads(data) if data else []
-                    except Exception as e:
-                        logger.warning(f"Redis try_match_and_pop failed ({e}). Falling back to memory.")
-                        MatchmakerService._use_memory = True
-                        queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
+
+                # Load every time-control queue for this bid tier: nearby time
+                # controls become eligible after both players have waited.
+                queues = await self._load_bid_queues(bid_amount)
 
                 # Clean up expired zombie entries (older than 130 seconds)
-                active_queue = []
-                zombies_found = False
-                for item in queue:
-                    wait_time = current_time - item.get('joined_at', current_time)
-                    if wait_time > 130.0:
-                        logger.info(f"Matchmaker: Purging expired zombie user {item['user_id']} from queue")
-                        zombies_found = True
-                    else:
-                        active_queue.append(item)
+                for tc, queue in list(queues.items()):
+                    active_queue = [
+                        item for item in queue
+                        if current_time - item.get('joined_at', current_time) <= 130.0
+                    ]
+                    if len(active_queue) < len(queue):
+                        for item in queue:
+                            if current_time - item.get('joined_at', current_time) > 130.0:
+                                logger.info(f"Matchmaker: Purging expired zombie user {item['user_id']} from queue")
+                        queues[tc] = active_queue
+                        await self._store_queue(bid_amount, tc, active_queue)
 
-                if zombies_found:
-                    queue = active_queue
-                    # Update queue in Redis/memory immediately
-                    if MatchmakerService._use_memory or not self.redis:
-                        MatchmakerService._memory_queues[queue_key_mem] = queue
-                    else:
-                        try:
-                            await self.redis.set(queue_key, json.dumps(queue))
-                        except Exception as e:
-                            logger.warning(f"Redis update failed during zombie purge ({e}).")
+                # The requester's own wait time gates cross-time-control
+                # eligibility (both sides must have waited, so a fresh joiner
+                # is never pulled into a time control they didn't pick).
+                requester_wait = 0.0
+                for item in queues.get(time_control, []):
+                    if item.get('user_id') == user_id:
+                        requester_wait = current_time - item.get('joined_at', current_time)
+                        break
 
                 best_opponent = None
-                best_diff = float('inf')
+                best_opponent_tc = None
+                best_key = None  # (tc_mismatch, elo_diff): exact time control wins ties
                 collusion_skipped = 0
 
-                for item in queue:
-                    # Never match a user against their own other connection.
-                    if item.get('user_id') == user_id:
-                        continue
-                    # Anti-collusion (wagered games only): never auto-match a
-                    # colluding-looking pair (same IP, referrer<->referee, or
-                    # recent opponent). Free games are exempt — see _would_collude.
-                    if bid_amount > 0 and self._would_collude(user_id, ip_hash, referrer_id, item, recent_opponents):
-                        collusion_skipped += 1
-                        continue
+                for tc, queue in queues.items():
+                    for item in queue:
+                        # Never match a user against their own other connection.
+                        if item.get('user_id') == user_id:
+                            continue
+                        # Anti-collusion (wagered games only): never auto-match a
+                        # colluding-looking pair (same IP, referrer<->referee, or
+                        # recent opponent). Free games are exempt — see _would_collude.
+                        if bid_amount > 0 and self._would_collude(user_id, ip_hash, referrer_id, item, recent_opponents):
+                            collusion_skipped += 1
+                            continue
 
-                    # ELO threshold expands by 10 points per second of wait time, starting at 100
-                    wait_time = current_time - item.get('joined_at', current_time)
-                    elo_threshold = 100 + 10 * wait_time
+                        wait_time = current_time - item.get('joined_at', current_time)
 
-                    opponent_elo = item.get('elo', 1000)
-                    elo_diff = abs(user_elo - opponent_elo)
+                        if not self._tc_compatible(time_control, tc, min(requester_wait, wait_time)):
+                            continue
 
-                    if elo_diff <= elo_threshold:
-                        if elo_diff < best_diff:
-                            best_diff = elo_diff
-                            best_opponent = item
+                        # ELO threshold expands by 10 points per second of wait time, starting at 100
+                        elo_threshold = 100 + 10 * wait_time
+                        opponent_elo = item.get('elo', 1000)
+                        elo_diff = abs(user_elo - opponent_elo)
+
+                        if elo_diff <= elo_threshold:
+                            key = (0 if tc == time_control else 1, elo_diff)
+                            if best_key is None or key < best_key:
+                                best_key = key
+                                best_opponent = item
+                                best_opponent_tc = tc
 
                 if best_opponent:
-                    # Pop both players from the queue atomically
-                    new_queue = [item for item in queue if item['user_id'] not in (user_id, best_opponent['user_id'])]
-                    
-                    if MatchmakerService._use_memory or not self.redis:
-                        MatchmakerService._memory_queues[queue_key_mem] = new_queue
+                    # Pop both players from every queue atomically
+                    for tc, queue in queues.items():
+                        new_queue = [item for item in queue if item['user_id'] not in (user_id, best_opponent['user_id'])]
+                        if len(new_queue) < len(queue):
+                            await self._store_queue(bid_amount, tc, new_queue)
+
+                    # On a cross-time-control match, the game uses the time
+                    # control of whichever player has waited longer.
+                    if best_opponent_tc == time_control:
+                        matched_tc = time_control
                     else:
-                        try:
-                            await self.redis.set(queue_key, json.dumps(new_queue))
-                        except Exception as e:
-                            logger.warning(f"Redis update failed in try_match_and_pop ({e}). Falling back to memory.")
-                            MatchmakerService._use_memory = True
-                            MatchmakerService._memory_queues[queue_key_mem] = new_queue
-                            
-                    logger.info(f"Matchmaker: Matched User {user_id} with User {best_opponent['user_id']} and popped both.")
+                        opp_wait = current_time - best_opponent.get('joined_at', current_time)
+                        matched_tc = best_opponent_tc if opp_wait >= requester_wait else time_control
+                    best_opponent['matched_time_control'] = matched_tc
+
+                    logger.info(
+                        f"Matchmaker: Matched User {user_id} (tc {time_control}) with "
+                        f"User {best_opponent['user_id']} (tc {best_opponent_tc}) at tc {matched_tc} and popped both."
+                    )
                 elif collusion_skipped:
                     # Make the silent skip diagnosable: a pair stuck "searching"
                     # while both are queued is otherwise invisible in logs.

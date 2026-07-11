@@ -431,7 +431,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
         if opponent:
             logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
             try:
-                await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
+                await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
                 matched = True
             except Exception as e:
                 logger.error(f"Error establishing background match: {e}")
@@ -545,7 +545,7 @@ async def join_matchmaking(sid, data):
         # 3. Find and pop matching opponent atomically
         opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
         if opponent:
-            await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, time_control)
+            await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
         else:
             # Spawn the background polling task to allow ELO thresholds to expand and match dynamically
             asyncio.create_task(run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo, ip_hash=ip_hash, referrer_id=referrer_tid))

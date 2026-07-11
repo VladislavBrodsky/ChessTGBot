@@ -945,6 +945,9 @@ class GameService:
             # Update Daily Tasks Progress for online games
             await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
             await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY, commit=False)
+            # Human-vs-human games additionally tick the PvP daily task
+            await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY_HUMAN, commit=False)
+            await GamificationService.update_task_progress(session, black_user.id, TaskType.PLAY_HUMAN, commit=False)
             
             # Calculate win streaks (retrieve streak before this game ends)
             white_streak = await self.get_user_win_streak(session, white_user.telegram_id)

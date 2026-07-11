@@ -9,6 +9,7 @@ class TaskType(str, enum.Enum):
     PLAY = "play"
     REFER = "refer"
     LOGIN = "login"
+    PLAY_HUMAN = "play_human"  # played a PvP game (matchmade or friend invite)
 
 class Task(Base):
     __tablename__ = "tasks"
