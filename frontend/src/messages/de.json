@@ -162,6 +162,7 @@
   "Game": {
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Gegnersuche",
+    "searching_close_hint": "Du kannst die App schließen — wir benachrichtigen dich per Telegram, sobald ein Gegner gefunden ist.",
     "searching_opponent": "Gegner wird gesucht...",
     "wager_tier": "Wager Tier",
     "disconnect_search": "Suche abbrechen",

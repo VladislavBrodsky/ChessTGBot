@@ -28,6 +28,20 @@ class MatchmakerService:
     CROSS_TC_WAIT_SECONDS = 20.0
     CROSS_TC_MAX_RATIO = 2.0
 
+    # Queue persistence. FREE entries survive socket disconnects and long
+    # waits: the player can close the app and gets a Telegram notification
+    # when an opponent turns up (see run_background_matchmaker_polling and
+    # establish_match in socket_events). WAGERED entries stay short-lived —
+    # the wager is locked while queued, and the disconnect/reconnect money
+    # paths (refund on disconnect, heal_zombie_wagers on connect) assume the
+    # entry dies with the socket.
+    FREE_QUEUE_TTL_SECONDS = 1800.0
+    WAGERED_QUEUE_TTL_SECONDS = 130.0
+
+    @classmethod
+    def queue_ttl(cls, bid_amount: int) -> float:
+        return cls.FREE_QUEUE_TTL_SECONDS if bid_amount == 0 else cls.WAGERED_QUEUE_TTL_SECONDS
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(MatchmakerService, cls).__new__(cls)
@@ -263,15 +277,17 @@ class MatchmakerService:
                 # controls become eligible after both players have waited.
                 queues = await self._load_bid_queues(bid_amount)
 
-                # Clean up expired zombie entries (older than 130 seconds)
+                # Clean up expired zombie entries (free entries persist much
+                # longer than wagered ones — see queue_ttl)
+                ttl = self.queue_ttl(bid_amount)
                 for tc, queue in list(queues.items()):
                     active_queue = [
                         item for item in queue
-                        if current_time - item.get('joined_at', current_time) <= 130.0
+                        if current_time - item.get('joined_at', current_time) <= ttl
                     ]
                     if len(active_queue) < len(queue):
                         for item in queue:
-                            if current_time - item.get('joined_at', current_time) > 130.0:
+                            if current_time - item.get('joined_at', current_time) > ttl:
                                 logger.info(f"Matchmaker: Purging expired zombie user {item['user_id']} from queue")
                         queues[tc] = active_queue
                         await self._store_queue(bid_amount, tc, active_queue)
@@ -409,17 +425,97 @@ class MatchmakerService:
 
             return best_opponent
 
-    async def remove_from_queue(self, user_id: int) -> None:
+    async def remove_from_queue(self, user_id: int, only_wagered: bool = False) -> None:
         """
         Public method to safely remove a user from all matchmaking queues.
+        With only_wagered=True, free-game entries are kept (they persist
+        across socket disconnects so the player can be matched while away).
         """
         lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
             try:
-                await self._remove_from_queue_unsafe(user_id)
+                await self._remove_from_queue_unsafe(user_id, only_wagered=only_wagered)
             finally:
                 if lock_token:
                     await self._release_distributed_lock("global", lock_token)
+
+    async def update_sid(self, user_id: int, new_sid: str) -> None:
+        """Point any persisted queue entries for this user at a fresh socket id.
+        Called on socket (re)connect so a free-game entry that survived a
+        disconnect emits match_found to the live connection."""
+        lock_token = await self._acquire_distributed_lock("global")
+        async with self._lock:
+            try:
+                if MatchmakerService._use_memory or not self.redis:
+                    for queue in MatchmakerService._memory_queues.values():
+                        for item in queue:
+                            if item.get('user_id') == user_id:
+                                item['sid'] = new_sid
+                    return
+                try:
+                    keys = []
+                    cursor = 0
+                    while True:
+                        cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
+                        keys.extend(scan_keys)
+                        if cursor == 0:
+                            break
+                    for queue_key in keys:
+                        data = await self.redis.get(queue_key)
+                        if not data:
+                            continue
+                        queue = json.loads(data)
+                        changed = False
+                        for item in queue:
+                            if item.get('user_id') == user_id and item.get('sid') != new_sid:
+                                item['sid'] = new_sid
+                                changed = True
+                        if changed:
+                            await self.redis.set(queue_key, json.dumps(queue))
+                except Exception as e:
+                    logger.warning(f"Redis update_sid failed ({e}). Falling back to memory.")
+                    MatchmakerService._use_memory = True
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
+
+    async def find_user_entry(self, user_id: int) -> Optional[dict]:
+        """Locate the user's queue entry across all queues.
+        Returns {'bid_amount', 'time_control', 'entry'} or None."""
+        if MatchmakerService._use_memory or not self.redis:
+            for (bid, tc), queue in MatchmakerService._memory_queues.items():
+                for item in queue:
+                    if item.get('user_id') == user_id:
+                        return {'bid_amount': bid, 'time_control': tc, 'entry': item}
+            return None
+        try:
+            keys = []
+            cursor = 0
+            while True:
+                cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
+                keys.extend(scan_keys)
+                if cursor == 0:
+                    break
+            for queue_key in keys:
+                data = await self.redis.get(queue_key)
+                if not data:
+                    continue
+                for item in json.loads(data):
+                    if item.get('user_id') == user_id:
+                        parts = str(queue_key).split(":")
+                        try:
+                            bid, tc = int(parts[-2]), int(parts[-1])
+                        except (ValueError, IndexError):
+                            continue
+                        return {'bid_amount': bid, 'time_control': tc, 'entry': item}
+        except Exception as e:
+            logger.warning(f"Redis find_user_entry failed ({e}). Falling back to memory.")
+            MatchmakerService._use_memory = True
+            for (bid, tc), queue in MatchmakerService._memory_queues.items():
+                for item in queue:
+                    if item.get('user_id') == user_id:
+                        return {'bid_amount': bid, 'time_control': tc, 'entry': item}
+        return None
 
     async def remove_match_pair(self, bid_amount: int, player1_id: int, player2_id: int, time_control: int = 600) -> None:
         """
@@ -458,12 +554,15 @@ class MatchmakerService:
                 if lock_token:
                     await self._release_distributed_lock("global", lock_token)
 
-    async def _remove_from_queue_unsafe(self, user_id: int) -> None:
+    async def _remove_from_queue_unsafe(self, user_id: int, only_wagered: bool = False) -> None:
         """
         Unsafe internal helper; assumes self._lock is already acquired.
+        With only_wagered=True, entries in free (bid 0) queues are kept.
         """
         if MatchmakerService._use_memory or not self.redis:
             for key in list(MatchmakerService._memory_queues.keys()):
+                if only_wagered and key[0] == 0:
+                    continue
                 original_len = len(MatchmakerService._memory_queues[key])
                 MatchmakerService._memory_queues[key] = [item for item in MatchmakerService._memory_queues[key] if item['user_id'] != user_id]
                 if len(MatchmakerService._memory_queues[key]) < original_len:
@@ -481,6 +580,13 @@ class MatchmakerService:
                     break
 
             for queue_key in keys:
+                if only_wagered:
+                    parts = str(queue_key).split(":")
+                    try:
+                        if int(parts[-2]) == 0:
+                            continue
+                    except (ValueError, IndexError):
+                        pass
                 data = await self.redis.get(queue_key)
                 if data:
                     queue = json.loads(data)

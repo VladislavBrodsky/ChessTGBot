@@ -26,6 +26,10 @@ class GameState(BaseModel):
     move_history: List[str] = []
     result_type: Optional[str] = None
     difficulty: Optional[str] = "medium"
+    # Extended first-move abort window (seconds) for matches established while
+    # a player was offline — they were notified via Telegram and need time to
+    # open the app. None = the default 30s window.
+    first_move_grace_seconds: Optional[float] = None
 
     # Cached Player info (to avoid db calls on moves/fetches)
     white_username: Optional[str] = None

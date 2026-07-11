@@ -162,6 +162,7 @@
   "Game": {
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "対戦相手を探す",
+    "searching_close_hint": "アプリを閉じてもOK — 対戦相手が見つかったらTelegramでお知らせします。",
     "searching_opponent": "対戦相手を検索中...",
     "wager_tier": "Wager Tier",
     "disconnect_search": "検索をキャンセル",

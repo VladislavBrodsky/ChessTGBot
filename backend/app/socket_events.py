@@ -1,8 +1,27 @@
 import asyncio
 import random
+import time
 import logging
 
 logger = logging.getLogger(__name__)
+
+# How long an offline-notified player gets to make their first move before the
+# game aborts (vs. the standard 30s when both players are at the board).
+OFFLINE_FIRST_MOVE_GRACE_SECONDS = 180.0
+
+# One background matchmaking poller per user; a re-join replaces the old one.
+_active_matchmaking_pollers: dict = {}
+
+
+async def _sid_connected(sid: str) -> bool:
+    """Whether a socket id belongs to a currently connected session."""
+    if not sid:
+        return False
+    try:
+        await sio.get_session(sid)
+        return True
+    except Exception:
+        return False
 
 def ws_correlation(event_name: str):
     def decorator(func):
@@ -178,6 +197,13 @@ async def connect(sid, environ, auth):
         if user_id:
             async with AsyncSessionLocal() as db:
                 await GameService().heal_zombie_wagers(db, user_id)
+
+            # Point any persisted (free-game) matchmaking entry at this fresh
+            # socket so a match found while the app was closed reaches us.
+            try:
+                await MatchmakerService().update_sid(user_id, sid)
+            except Exception as e:
+                logger.warning(f"Failed to refresh matchmaking sid for user {user_id}: {e}")
         
     except Exception as e:
         print(f"Socket connection rejected: {e}")
@@ -194,10 +220,14 @@ async def disconnect(sid):
         user_id = session.get('user_id')
         game_id = session.get('game_id')
         if user_id:
+            # Wagered queues die with the socket (the wager is refunded and the
+            # money paths assume no lingering entry). FREE queue entries persist:
+            # the player can close the app and gets a Telegram notification when
+            # an opponent is found (see establish_match).
             async with AsyncSessionLocal() as db:
                 await refund_pending_matchmaking_wager(db, user_id)
-            await MatchmakerService().remove_from_queue(user_id)
-            print(f"Socket {sid} (User {user_id}) disconnected and removed from matchmaking queue.")
+            await MatchmakerService().remove_from_queue(user_id, only_wagered=True)
+            print(f"Socket {sid} (User {user_id}) disconnected; wagered matchmaking entries removed (free entries persist).")
             
             # Auto-abort friendly game lobby if creator disconnects before opponent joins
             if game_id:
@@ -280,15 +310,31 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     
     service = GameService()
     state = await service.create_game(game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=bid_amount)
-    
-    # Randomly assign white and black players
-    if random.random() < 0.5:
+
+    # Free-game queue entries persist across disconnects, so a matched player
+    # may be away from the app. Detect that up front: an offline player is
+    # assigned Black (so the online player's game starts immediately), gets a
+    # Telegram notification with a deep link, and both first moves get an
+    # extended abort window.
+    user_online = await _sid_connected(user_sid)
+    opponent_online = await _sid_connected(opponent_sid)
+    offline_player_ids = [
+        pid for pid, online in ((user_id, user_online), (opponent_id, opponent_online)) if not online
+    ]
+
+    if user_online != opponent_online:
+        state.white_player_id = user_id if user_online else opponent_id
+        state.black_player_id = opponent_id if user_online else user_id
+    elif random.random() < 0.5:
         state.white_player_id = user_id
         state.black_player_id = opponent_id
     else:
         state.white_player_id = opponent_id
         state.black_player_id = user_id
-    
+
+    if offline_player_ids:
+        state.first_move_grace_seconds = OFFLINE_FIRST_MOVE_GRACE_SECONDS
+
     state.bid_amount = bid_amount
     
     # Resolve pending wagers if stakes are greater than 0
@@ -379,6 +425,28 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     except Exception as e:
         pass
 
+    # Players matched while away from the app get an urgent Telegram call-back
+    # with a deep link into the game — this is what makes the persistent free
+    # queue usable: queue up, close the app, get pinged when someone appears.
+    if offline_player_ids:
+        try:
+            from app.services.telegram_bot import TelegramService
+            deep_link = await TelegramService.create_invite_link(game_id)
+            grace_minutes = int(OFFLINE_FIRST_MOVE_GRACE_SECONDS // 60)
+            for pid in offline_player_ids:
+                opp_name = state.white_username if pid == state.black_player_id else state.black_username
+                opp_elo = state.white_elo if pid == state.black_player_id else state.black_elo
+                msg = (
+                    f"⚔️ <b>Opponent Found — You're Up!</b>\n\n"
+                    f"👤 <b>{opp_name or 'Opponent'}</b> (ELO {opp_elo or 1000}) is at the board waiting for you.\n\n"
+                    f"⏳ You have <b>{grace_minutes} minutes</b> to return and make your move, "
+                    f"or the game will be cancelled.\n\n"
+                    f"<a href=\"{deep_link}\">▶️ Open the board now</a>"
+                )
+                await TelegramService.send_notification(pid, msg)
+        except Exception as e:
+            logger.warning(f"Failed to send offline match notification for game {game_id}: {e}")
+
     # Move both sockets into game room
     await sio.enter_room(user_sid, game_id)
     await sio.enter_room(opponent_sid, game_id)
@@ -403,52 +471,88 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     await sio.emit('game_state', state.model_dump(), room=game_id)
     print(f"Matchmaker: Created wager game {game_id} for User {user_id} and {opponent_id} with bid {bid_amount}")
 
-    # Start White's first-move abort timer
-    service.start_abort_monitor(game_id, expected_move_count=0, time_limit=30.0, player_color='w')
+    # Start White's first-move abort timer (extended when a player was offline)
+    service.start_abort_monitor(
+        game_id,
+        expected_move_count=0,
+        time_limit=state.first_move_grace_seconds or 30.0,
+        player_color='w'
+    )
 
 async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int, ip_hash: str = None, referrer_id: int = None):
     """
-    Background loop that runs for a matchmaking player when they are not matched immediately.
-    Allows ELO thresholds to expand dynamically over time.
+    Background loop that runs for a matchmaking player when they are not matched
+    immediately. Allows ELO thresholds and time-control pools to expand over time.
+
+    FREE searches are persistent: the entry survives socket disconnects, this
+    poller keeps working for up to FREE_QUEUE_TTL_SECONDS, and a match found
+    while the player is away triggers a Telegram call-back (establish_match).
+    WAGERED searches keep the short window — the wager is locked while queued.
     """
     matchmaker = MatchmakerService()
-    logger.info(f"Starting background matchmaking polling for user {user_id}")
-    
+    ttl = MatchmakerService.queue_ttl(bid_amount)
+    logger.info(f"Starting background matchmaking polling for user {user_id} (bid {bid_amount}, up to {int(ttl)}s)")
+
     matched = False
-    # Run for up to 60 iterations (120 seconds total)
-    for attempt in range(60):
-        await asyncio.sleep(2.0)
-        
-        # Verify if the user is still in the queue
-        in_queue = await matchmaker.is_in_queue(bid_amount, time_control, user_id)
-        if not in_queue:
-            logger.info(f"User {user_id} is no longer in matchmaking queue. Exiting background loop.")
-            matched = True
-            break
-            
-        # Try to match
-        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id)
-        if opponent:
-            logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
-            try:
-                await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
+    last_known_sid = sid
+    started = time.time()
+    try:
+        while True:
+            elapsed = time.time() - started
+            if elapsed >= ttl - 5:
+                break
+            # Poll fast while a live match is most likely, then back off
+            await asyncio.sleep(2.0 if elapsed < 120 else 10.0)
+
+            # Verify the user is still queued (they may have been matched by the
+            # other side's poller, cancelled, or expired)
+            entry_info = await matchmaker.find_user_entry(user_id)
+            if not entry_info:
+                logger.info(f"User {user_id} is no longer in matchmaking queue. Exiting background loop.")
                 matched = True
-            except Exception as e:
-                logger.error(f"Error establishing background match: {e}")
-            break
+                break
+            # The entry's sid is refreshed on reconnect — always use the latest
+            last_known_sid = entry_info['entry'].get('sid', last_known_sid)
+
+            opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id)
+            if opponent:
+                logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
+                try:
+                    await establish_match(user_id, last_known_sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
+                    matched = True
+                except Exception as e:
+                    logger.error(f"Error establishing background match: {e}")
+                break
+    except asyncio.CancelledError:
+        # Replaced by a newer poller for the same user (re-join) — the queue
+        # entry itself is managed by join/leave/disconnect handlers.
+        return
+    finally:
+        if _active_matchmaking_pollers.get(user_id) is asyncio.current_task():
+            _active_matchmaking_pollers.pop(user_id, None)
 
     if not matched:
-        logger.info(f"Matchmaking timed out for user {user_id} after 120 seconds. Refunding wager.")
-        # Remove from queue
+        logger.info(f"Matchmaking timed out for user {user_id} after {int(ttl)}s.")
         await matchmaker.remove_from_queue(user_id)
-        # Refund wager
-        async with AsyncSessionLocal() as db:
-            await refund_pending_matchmaking_wager(db, user_id)
-        # Notify user
-        await sio.emit('matchmaking_status', {
-            'status': 'idle',
-            'message': 'No opponent found within the time limit. Your wager has been fully refunded.'
-        }, room=sid)
+        if bid_amount > 0:
+            async with AsyncSessionLocal() as db:
+                await refund_pending_matchmaking_wager(db, user_id)
+            message = 'No opponent found within the time limit. Your wager has been fully refunded.'
+        else:
+            message = 'No opponent found this time. Tap Play to search again.'
+        await sio.emit('matchmaking_status', {'status': 'idle', 'message': message}, room=last_known_sid)
+        # If the player closed the app while a free search was running, tell
+        # them the search ended so the silence isn't mistaken for still-queued.
+        if bid_amount == 0 and not await _sid_connected(last_known_sid):
+            try:
+                from app.services.telegram_bot import TelegramService
+                await TelegramService.send_notification(
+                    user_id,
+                    "⏳ <b>Search ended</b> — no opponent turned up this time.\n\n"
+                    "Open the app and tap <b>Play</b> to search again. ♟️"
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send matchmaking timeout notification to {user_id}: {e}")
 
 @sio.event
 @ws_correlation('join_matchmaking')
@@ -547,12 +651,45 @@ async def join_matchmaking(sid, data):
         if opponent:
             await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
         else:
-            # Spawn the background polling task to allow ELO thresholds to expand and match dynamically
-            asyncio.create_task(run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo, ip_hash=ip_hash, referrer_id=referrer_tid))
+            # Spawn the background polling task to allow ELO thresholds to expand
+            # and match dynamically. One poller per user: a re-join (e.g. after
+            # reopening the app with a persisted free search) replaces the old one.
+            previous = _active_matchmaking_pollers.get(user_id)
+            if previous and not previous.done():
+                previous.cancel()
+            _active_matchmaking_pollers[user_id] = asyncio.create_task(
+                run_background_matchmaker_polling(user_id, sid, bid_amount, time_control, user_elo, ip_hash=ip_hash, referrer_id=referrer_tid)
+            )
 
     except Exception as e:
         print(f"Error joining matchmaking: {e}")
         await sio.emit('matchmaking_error', {'message': 'Server matchmaking error.'}, room=sid)
+
+@sio.event
+@ws_correlation('check_matchmaking')
+async def check_matchmaking(sid, data):
+    """
+    Report whether the user has a live matchmaking search (used by the client
+    on mount to restore the searching UI after the app was closed/reopened,
+    since free searches persist server-side).
+    """
+    try:
+        session = await sio.get_session(sid)
+        user_id = session.get('user_id')
+        if not user_id:
+            return
+        found = await MatchmakerService().find_user_entry(user_id)
+        logger.info(f"check_matchmaking: user {user_id} -> {'searching ' + str((found['bid_amount'], found['time_control'])) if found else 'idle'}")
+        if found:
+            await sio.emit('matchmaking_status', {
+                'status': 'searching',
+                'bid_amount': found['bid_amount'],
+                'time_control': found['time_control']
+            }, room=sid)
+        else:
+            await sio.emit('matchmaking_status', {'status': 'idle'}, room=sid)
+    except Exception as e:
+        print(f"Error checking matchmaking state: {e}")
 
 @sio.event
 @ws_correlation('leave_matchmaking')
@@ -564,6 +701,9 @@ async def leave_matchmaking(sid, data):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         if user_id:
+            task = _active_matchmaking_pollers.pop(user_id, None)
+            if task and not task.done():
+                task.cancel()
             async with AsyncSessionLocal() as db:
                 await refund_pending_matchmaking_wager(db, user_id)
             await MatchmakerService().remove_from_queue(user_id)
@@ -633,8 +773,9 @@ async def make_move(sid, data):
                 service.start_timeout_monitor(game_id, len(new_state.move_history), time_left, active_turn)
                 
                 # If White just moved (move history length is 1), Black has 30 seconds to make their first move
+                # (extended when the match was established while Black was offline)
                 if len(new_state.move_history) == 1 and new_state.black_player_id != -1:
-                    service.start_abort_monitor(game_id, expected_move_count=1, time_limit=30.0, player_color='b')
+                    service.start_abort_monitor(game_id, expected_move_count=1, time_limit=new_state.first_move_grace_seconds or 30.0, player_color='b')
             
         else:
             await sio.emit('error', {'message': 'Illegal move'}, room=sid)

@@ -162,6 +162,7 @@
   "Game": {
     "battle_arena": "БАТТЛ АРЕНА",
     "searching_matchmaker": "Поиск соперника",
+    "searching_close_hint": "Можно закрыть приложение — мы пришлём сообщение в Telegram, когда найдём соперника.",
     "searching_opponent": "Поиск соперника...",
     "wager_tier": "Разряд ставки",
     "disconnect_search": "Отменить поиск",

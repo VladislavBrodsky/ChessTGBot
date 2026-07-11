@@ -162,6 +162,7 @@
   "Game": {
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "البحث عن منافس",
+    "searching_close_hint": "يمكنك إغلاق التطبيق — سنرسل لك رسالة على تيليجرام عند العثور على خصم.",
     "searching_opponent": "جاري البحث عن منافس...",
     "wager_tier": "Wager Tier",
     "disconnect_search": "إلغاء البحث",

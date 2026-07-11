@@ -162,6 +162,7 @@
   "Game": {
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "寻找对手",
+    "searching_close_hint": "可以关闭应用——找到对手后我们会通过 Telegram 通知你。",
     "searching_opponent": "正在寻找对手...",
     "wager_tier": "Wager Tier",
     "disconnect_search": "取消寻找",
