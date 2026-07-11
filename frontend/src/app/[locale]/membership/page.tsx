@@ -442,6 +442,8 @@ export default function MembershipPage() {
             walletAddress={walletAddress}
             tgUser={tgUser}
             tw={tw}
+            chosenWager={cost}
+            walletBalance={walletBalance}
           />
         )}
       </AnimatePresence>
