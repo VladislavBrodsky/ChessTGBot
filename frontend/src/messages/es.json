@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "¿Actualizar a Premium gastando 5,000 XP? (Tienes {xp} XP)",
     "upgrade_failed": "Actualización fallida",
     "failed_xp_upgrade": "Error al actualizar con XP",
-    "subscription_failed": "Suscripción fallida"
+    "subscription_failed": "Suscripción fallida",
+    "compare_tiers": "Comparar niveles y características",
+    "hide_comparison": "Ocultar detalles de comparación",
+    "active_membership": "Membresía activa",
+    "billed_yearly": "${amount} facturados anualmente",
+    "wager_title": "Apuestas más altas",
+    "wager_desc": "Desbloquea límites máximos premium y mesas de apuestas altas."
   },
   "TierComparison": {
     "title": "Comparativa de funciones",

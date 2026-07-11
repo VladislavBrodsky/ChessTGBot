@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "هل ترغب في الترقية إلى بريميوم باستخدام 5,000 XP؟ (لديك {xp} XP)",
     "upgrade_failed": "فشلت الترقية",
     "failed_xp_upgrade": "فشلت الترقية باستخدام XP",
-    "subscription_failed": "فشل الاشتراك"
+    "subscription_failed": "فشل الاشتراك",
+    "compare_tiers": "مقارنة الفئات والميزات",
+    "hide_comparison": "إخفاء تفاصيل المقارنة",
+    "active_membership": "عضوية نشطة",
+    "billed_yearly": "يتم تحصيل ${amount} سنوياً",
+    "wager_title": "رهانات أعلى",
+    "wager_desc": "فتح رهانات الحد الأقصى للمميزين وطاولات الرهان العالي."
   },
   "TierComparison": {
     "title": "مقارنة الميزات",

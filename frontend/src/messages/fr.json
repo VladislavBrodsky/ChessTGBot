@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "Passer à Premium en dépensant 5 000 XP ? (Vous avez {xp} XP)",
     "upgrade_failed": "Échec de la mise à niveau",
     "failed_xp_upgrade": "Échec de la mise à niveau avec les XP",
-    "subscription_failed": "Échec de l'abonnement"
+    "subscription_failed": "Échec de l'abonnement",
+    "compare_tiers": "Comparer les abonnements et fonctionnalités",
+    "hide_comparison": "Masquer les détails de la comparaison",
+    "active_membership": "Abonnement actif",
+    "billed_yearly": "${amount} facturés annuellement",
+    "wager_title": "Mises plus élevées",
+    "wager_desc": "Débloquez les limites maximales premium et les tables de haut niveau."
   },
   "TierComparison": {
     "title": "Comparatif des fonctionnalités",

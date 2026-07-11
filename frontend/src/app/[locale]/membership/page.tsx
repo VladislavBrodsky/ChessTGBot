@@ -61,6 +61,7 @@ const IconCrown = () => (
 
 export default function MembershipPage() {
   const locale = useLocale();
+  const t = useTranslations('Index');
   const tm = useTranslations('Membership');
   const tw = useTranslations('Wallet');
 
@@ -69,7 +70,7 @@ export default function MembershipPage() {
   const FEATURES = [
     { icon: <IconBoost />,    title: tm('premium_boost'),   desc: tm('premium_boost_desc')   },
     { icon: <IconReferral />, title: tm('priority_match'),  desc: tm('priority_match_desc')  },
-    { icon: <IconWager />,    title: "Higher Wagers",        desc: "Unlock premium max-stakes and high-roller tables."        },
+    { icon: <IconWager />,    title: tm('wager_title'),      desc: tm('wager_desc')           },
     { icon: <IconThemes />,   title: tm('elite_skins'),     desc: tm('elite_skins_desc')     },
     { icon: <IconAcademy />,  title: tm('engine_analysis'), desc: tm('engine_analysis_desc') },
   ];
@@ -154,7 +155,7 @@ export default function MembershipPage() {
         <div className="w-full flex items-center justify-between pt-1">
           <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-primary opacity-40 hover:opacity-85 transition-opacity">
             <FaArrowLeft className="text-[10px]" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">{t('back')}</span>
           </Link>
           <span className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-primary opacity-30">Membership</span>
         </div>
@@ -195,7 +196,7 @@ export default function MembershipPage() {
           >
             <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse shrink-0" />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">Active Membership</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">{tm('active_membership')}</span>
               <span className="text-xs font-bold text-brand-primary">
                 Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
@@ -236,7 +237,7 @@ export default function MembershipPage() {
             {/* Savings Badge */}
             <div className="absolute top-0 right-0">
               <div className="px-2 py-1 text-[7px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
-                15% OFF
+                {tm('discount')}
               </div>
             </div>
 
@@ -247,7 +248,7 @@ export default function MembershipPage() {
                 <span className="text-xs font-black text-brand-gold opacity-50 mb-0.5">/mo</span>
               </div>
               <span className="text-[8px] font-bold block mt-1 uppercase opacity-50 text-brand-gold">
-                ${(ANNUAL_CENTS / 100).toFixed(0)} billed yearly
+                {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
               </span>
             </div>
           </button>
@@ -302,7 +303,7 @@ export default function MembershipPage() {
           onClick={() => { telegramHaptic('light'); setShowComparison(v => !v); }}
           className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40 hover:opacity-75 transition-opacity py-1 mt-1"
         >
-          {showComparison ? '▴ Hide Comparison' : '▾ Compare Free vs Pro'}
+          {showComparison ? `▴ ${tm('hide_comparison')}` : `▾ ${tm('compare_tiers')}`}
         </button>
 
         <AnimatePresence>

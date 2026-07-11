@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "5,000 XPを消費してプレミアムにアップグレードしますか？（現在{xp} XP所有）",
     "upgrade_failed": "アップグレードに失敗しました",
     "failed_xp_upgrade": "XPによるアップグレードに失敗しました",
-    "subscription_failed": "サブスクリプションの購入に失敗しました"
+    "subscription_failed": "サブスクリプションの購入に失敗しました",
+    "compare_tiers": "プランと機能の比較",
+    "hide_comparison": "比較詳細を非表示",
+    "active_membership": "有効なメンバーシップ",
+    "billed_yearly": "年額 ${amount} 請求",
+    "wager_title": "より高い賭け金",
+    "wager_desc": "プレミアム最大賭け金とハイローラーテーブルをアンロックします。"
   },
   "TierComparison": {
     "title": "機能比較",

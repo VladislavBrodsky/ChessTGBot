@@ -393,7 +393,11 @@
     "failed_xp_upgrade": "Failed to upgrade with XP",
     "subscription_failed": "Subscription failed",
     "compare_tiers": "Compare Tiers & Features",
-    "hide_comparison": "Hide Comparison Details"
+    "hide_comparison": "Hide Comparison Details",
+    "active_membership": "Active Membership",
+    "billed_yearly": "${amount} billed yearly",
+    "wager_title": "Higher Wagers",
+    "wager_desc": "Unlock premium max-stakes and high-roller tables."
   },
   "TierComparison": {
     "title": "Features Comparison",

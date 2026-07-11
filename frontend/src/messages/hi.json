@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "5,000 XP खर्च करके प्रीमियम में अपग्रेड करें? (आपके पास {xp} XP है)",
     "upgrade_failed": "अपग्रेड विफल रहा",
     "failed_xp_upgrade": "XP के साथ अपग्रेड करने में विफल",
-    "subscription_failed": "सदस्यता विफल रही"
+    "subscription_failed": "सदस्यता विफल रही",
+    "compare_tiers": "स्तरों और सुविधाओं की तुलना करें",
+    "hide_comparison": "तुलना विवरण छिपाएं",
+    "active_membership": "सक्रिय सदस्यता",
+    "billed_yearly": "सालाना ${amount} बिल किया गया",
+    "wager_title": "उच्च दांव",
+    "wager_desc": "प्रीमियम अधिकतम दांव और उच्च रोलर टेबल अनलॉक करें।"
   },
   "TierComparison": {
     "title": "फीचर्स की तुलना",

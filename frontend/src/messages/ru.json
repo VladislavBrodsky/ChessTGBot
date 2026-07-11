@@ -393,7 +393,11 @@
     "failed_xp_upgrade": "Не удалось активировать за XP",
     "subscription_failed": "Ошибка подписки",
     "compare_tiers": "Сравнить тарифы и функции",
-    "hide_comparison": "Скрыть детали сравнения"
+    "hide_comparison": "Скрыть детали сравнения",
+    "active_membership": "Активная подписка",
+    "billed_yearly": "списание ${amount} в год",
+    "wager_title": "Высокие ставки",
+    "wager_desc": "Разблокируйте максимальные лимиты ставок и столы для крупных игроков."
   },
   "TierComparison": {
     "title": "Сравнение возможностей",

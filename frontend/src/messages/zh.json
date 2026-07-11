@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "确定花费 5,000 XP 升级黄金会员吗？（您拥有 {xp} XP）",
     "upgrade_failed": "升级失败",
     "failed_xp_upgrade": "使用 XP 升级失败",
-    "subscription_failed": "订阅购买失败"
+    "subscription_failed": "订阅购买失败",
+    "compare_tiers": "比较会员级别和功能",
+    "hide_comparison": "隐藏比较详情",
+    "active_membership": "有效会员",
+    "billed_yearly": "按年计费 ${amount}",
+    "wager_title": "更高的赌注",
+    "wager_desc": "解锁高级最大赌注和高风险桌子。"
   },
   "TierComparison": {
     "title": "功能权益对比",

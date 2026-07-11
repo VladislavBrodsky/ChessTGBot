@@ -391,7 +391,13 @@
     "xp_upgrade_confirm": "Premium durch Ausgeben von 5.000 XP freischalten? (Sie haben {xp} XP)",
     "upgrade_failed": "Upgrade fehlgeschlagen",
     "failed_xp_upgrade": "Upgrade mit XP fehlgeschlagen",
-    "subscription_failed": "Abonnement fehlgeschlagen"
+    "subscription_failed": "Abonnement fehlgeschlagen",
+    "compare_tiers": "Tarife & Funktionen vergleichen",
+    "hide_comparison": "Vergleichsdetails ausblenden",
+    "active_membership": "Aktive Mitgliedschaft",
+    "billed_yearly": "${amount} jährlich abgerechnet",
+    "wager_title": "Höhere Einsätze",
+    "wager_desc": "Schalte maximale Premium-Einsätze und High-Roller-Tische frei."
   },
   "TierComparison": {
     "title": "Feature-Vergleich",
