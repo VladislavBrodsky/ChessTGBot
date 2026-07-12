@@ -112,32 +112,32 @@ export default function ArenaBanner() {
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`w-full mb-4 p-4 rounded-3xl border relative overflow-hidden ${
+      className={`w-full mb-4 p-4 rounded-3xl border relative overflow-hidden backdrop-blur-md transition-all duration-500 ${
         isLive
-          ? 'border-amber-400/40 bg-gradient-to-br from-amber-500/10 to-brand-surface shadow-[0_0_24px_rgba(245,158,11,0.15)]'
+          ? 'border-amber-500/30 bg-gradient-to-br from-amber-500/15 via-brand-surface/90 to-brand-surface shadow-[0_8px_32px_-4px_rgba(245,158,11,0.25)]'
           : 'border-brand-primary/15 bg-brand-surface/60'
       }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className={`w-9 h-9 shrink-0 rounded-2xl flex items-center justify-center ${isLive ? 'bg-amber-500/20 text-amber-400' : 'bg-brand-primary/10 text-brand-primary'}`}>
-            <FaTrophy size={15} />
+        <div className="flex items-center gap-3 min-w-0">
+          <div className={`w-10 h-10 shrink-0 rounded-[14px] flex items-center justify-center transition-all duration-300 ${isLive ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-[0_0_16px_rgba(245,158,11,0.5)]' : 'bg-brand-primary/10 text-brand-primary'}`}>
+            <FaTrophy size={16} />
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-[11px] font-black uppercase tracking-widest text-brand-primary truncate">
+          <div className="flex flex-col min-w-0 justify-center">
+            <span className="text-[12px] font-black uppercase tracking-widest text-brand-primary truncate leading-tight">
               {t('title')}
             </span>
             {isLive ? (
-              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]" />
                 {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)} · {arena.participants} {t('players')}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
-              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider mt-0.5">
                 {t('finished')} · {t('next_in')} {fmtCountdown(startsIn)}
               </span>
             ) : (
-              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider mt-0.5">
                 {t('starts_in')} {fmtCountdown(startsIn)} · 🏆 {prizes} XP
               </span>
             )}
@@ -148,14 +148,14 @@ export default function ArenaBanner() {
           joined ? (
             <button
               onClick={handleLeave}
-              className="shrink-0 px-3.5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border border-red-400/30 text-red-400 bg-red-500/10"
+              className="shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider border border-red-500/30 text-red-400 bg-red-500/10 active:scale-95 hover:bg-red-500/20 transition-all duration-200"
             >
               {t('leave')}
             </button>
           ) : (
             <button
               onClick={handleJoin}
-              className="shrink-0 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-[0_0_16px_rgba(245,158,11,0.4)] animate-pulse flex items-center gap-1.5"
+              className="shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
             >
               <FaBolt size={10} /> {t('join')}
             </button>
@@ -166,36 +166,55 @@ export default function ArenaBanner() {
       <AnimatePresence>
         {isLive && joined && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
             className="overflow-hidden"
           >
-            <p className="text-[10px] font-bold text-brand-primary/60 mt-2.5 leading-relaxed">
-              {t('waiting_hint')}
-            </p>
+            <div className="p-3 rounded-2xl bg-brand-primary/5 border border-brand-primary/10 flex items-start gap-2.5">
+              <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-brand-primary/40" />
+              <p className="text-[11px] font-medium text-brand-primary/70 leading-relaxed">
+                {t('waiting_hint')}
+              </p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {isLive && arena.standings.length > 0 && (
-        <div className="mt-3 space-y-1">
+        <div className="mt-4 flex flex-col gap-1.5">
           {arena.standings.slice(0, 3).map((row) => (
-            <div key={row.user_id} className="flex items-center justify-between text-[10px] font-bold">
-              <span className="truncate text-brand-primary/70">
-                {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : '🥉'} {row.name}
-              </span>
-              <span className="text-brand-primary tabular-nums">
-                {row.score} {t('pts')} · {row.wins}W {row.draws}D {row.losses}L
-              </span>
+            <div key={row.user_id} className={`flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-amber-500/15 border border-amber-500/30 text-amber-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-primary/70'}`}>
+              <div className="flex items-center gap-2 truncate">
+                <span className="w-5 text-center text-[13px]">
+                  {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `${row.rank}.`}
+                </span>
+                <span className="truncate">{row.name} {row.user_id === arena.me?.user_id && <span className="opacity-60 font-medium">({t('you')})</span>}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="opacity-60 text-[10px] font-medium tracking-wide">
+                  {row.wins}W {row.draws}D {row.losses}L
+                </span>
+                <span className="tabular-nums font-black bg-brand-surface/80 px-2 py-0.5 rounded-md text-[10px] shadow-sm">
+                  {row.score} {t('pts')}
+                </span>
+              </div>
             </div>
           ))}
           {arena.me && arena.me.rank > 3 && (
-            <div className="flex items-center justify-between text-[10px] font-black pt-1 border-t border-brand-primary/10">
-              <span className="truncate text-amber-500 dark:text-amber-400">#{arena.me.rank} {t('you')}</span>
-              <span className="text-amber-500 dark:text-amber-400 tabular-nums">
-                {arena.me.score} {t('pts')} · {arena.me.wins}W {arena.me.draws}D {arena.me.losses}L
-              </span>
+            <div className="flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 mt-0.5">
+              <div className="flex items-center gap-2 truncate">
+                <span className="w-5 text-center opacity-70 text-[11px]">{arena.me.rank}.</span>
+                <span className="truncate">{arena.me.name} <span className="opacity-60 font-medium">({t('you')})</span></span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="opacity-60 text-[10px] font-medium tracking-wide">
+                  {arena.me.wins}W {arena.me.draws}D {arena.me.losses}L
+                </span>
+                <span className="tabular-nums font-black bg-brand-surface/80 px-2 py-0.5 rounded-md text-[10px] shadow-sm">
+                  {arena.me.score} {t('pts')}
+                </span>
+              </div>
             </div>
           )}
         </div>

@@ -98,7 +98,12 @@ interface LeaderboardItem {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="flex items-center justify-between p-4 group hover:bg-brand-bg-opacity-10 transition-colors"
+                className={`flex items-center justify-between p-4 group transition-all duration-300 ${
+                  item.rank === 1 ? 'bg-gradient-to-r from-yellow-500/10 via-transparent to-transparent hover:from-yellow-500/20' :
+                  item.rank === 2 ? 'bg-gradient-to-r from-slate-400/10 via-transparent to-transparent hover:from-slate-400/20' :
+                  item.rank === 3 ? 'bg-gradient-to-r from-amber-700/10 via-transparent to-transparent hover:from-amber-700/20' :
+                  'hover:bg-brand-bg-opacity-10'
+                }`}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-6 flex justify-center">
@@ -203,7 +208,12 @@ interface LeaderboardItem {
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(20, idx) * 0.02 }}
-                    className="flex items-center justify-between p-4 bg-brand-bg-opacity-5 hover:bg-brand-bg-opacity-10 border border-brand-border-opacity-5 rounded-2xl transition-colors"
+                    className={`flex items-center justify-between p-4 border rounded-2xl transition-all duration-300 ${
+                        item.rank === 1 ? 'bg-gradient-to-r from-yellow-500/10 to-yellow-500/5 border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.15)] hover:border-yellow-500/50 hover:shadow-[0_0_20px_rgba(234,179,8,0.25)]' :
+                        item.rank === 2 ? 'bg-gradient-to-r from-slate-400/10 to-slate-400/5 border-slate-400/30 shadow-[0_0_15px_rgba(148,163,184,0.15)] hover:border-slate-400/50 hover:shadow-[0_0_20px_rgba(148,163,184,0.25)]' :
+                        item.rank === 3 ? 'bg-gradient-to-r from-amber-700/10 to-amber-700/5 border-amber-700/30 shadow-[0_0_15px_rgba(180,83,9,0.15)] hover:border-amber-700/50 hover:shadow-[0_0_20px_rgba(180,83,9,0.25)]' :
+                        'bg-brand-bg-opacity-5 hover:bg-brand-bg-opacity-10 border-brand-border-opacity-5'
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-6 flex justify-center">

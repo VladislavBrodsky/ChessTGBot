@@ -703,20 +703,33 @@ export default function PlayLobby() {
                       
                       <div className="w-px h-7 bg-brand-border-opacity-10 self-center" />
                       
-                      <button
+                      <motion.button
                         onClick={() => {
                           telegramHaptic('light');
                           setShowRakeInfo(true);
                         }}
-                        className="flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
+                        animate={!hasSufficient ? { 
+                           boxShadow: ["0 0 15px rgba(16,185,129,0.15)", "0 0 30px rgba(16,185,129,0.3)", "0 0 15px rgba(16,185,129,0.15)"],
+                           borderColor: ["rgba(16,185,129,0.2)", "rgba(16,185,129,0.5)", "rgba(16,185,129,0.2)"]
+                        } : {}}
+                        transition={!hasSufficient ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
+                        className="relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
+                        {!hasSufficient && (
+                          <motion.div
+                            initial={{ x: '-150%' }}
+                            animate={{ x: '150%' }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
+                            className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent skew-x-12"
+                          />
+                        )}
+                        <span className="relative z-10 text-[10px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
                           <FaFire className="text-emerald-400 text-[10px] animate-pulse" /> {tg('win_up_to')}
                         </span>
-                        <span className="text-[11px] font-black text-emerald-400 tracking-tight leading-none">
+                        <span className="relative z-10 text-[11px] font-black text-emerald-400 tracking-tight leading-none">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
-                      </button>
+                      </motion.button>
                       
                       <div className="w-px h-7 bg-brand-border-opacity-10 self-center" />
                       
@@ -742,17 +755,30 @@ export default function PlayLobby() {
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
                     disabled={isCreating}
+                    animate={!hasSufficient && !isCreating ? {
+                      boxShadow: ["0 4px 15px rgba(16,185,129,0.05)", "0 4px 25px rgba(16,185,129,0.2)", "0 4px 15px rgba(16,185,129,0.05)"],
+                      borderColor: ["rgba(255,255,255,0.05)", "rgba(16,185,129,0.3)", "rgba(255,255,255,0.05)"]
+                    } : {}}
+                    transition={!hasSufficient && !isCreating ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
                     className={`w-full py-5 flex flex-col items-center justify-center gap-0.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary/80 hover:border-brand-primary/30 rounded-2xl shadow-lg'
+                        : 'bg-gradient-to-b from-brand-surface to-emerald-950/20 border border-brand-border-opacity-10 text-brand-primary/90 hover:border-emerald-500/30 rounded-2xl shadow-lg'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
+                    {!hasSufficient && !isCreating && (
+                      <motion.div
+                        initial={{ x: '-150%', opacity: 0 }}
+                        animate={{ x: '150%', opacity: [0, 1, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5, delay: 0.3 }}
+                        className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-emerald-400/15 to-transparent skew-x-12"
+                      />
+                    )}
                     <div className="flex items-center gap-2 relative z-10">
-                      <FaChessKnight size={13} className="text-current" />
-                      <span className="text-[11px] font-black tracking-[0.2em] text-current uppercase">
+                      <FaChessKnight size={13} className={!hasSufficient && !isCreating ? "text-emerald-500" : "text-current"} />
+                      <span className={`text-[11px] font-black tracking-[0.2em] uppercase ${!hasSufficient && !isCreating ? 'text-brand-primary drop-shadow-md' : 'text-current'}`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
                     </div>

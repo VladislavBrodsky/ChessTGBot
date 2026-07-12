@@ -28,9 +28,11 @@ export default function LessonCard({
  whileTap={{ scale: 0.98 }}
  onClick={!locked ? onClick : undefined}
  className={`
- relative overflow-hidden rounded-2xl p-5 border transition-all shadow-sm
+ relative overflow-hidden rounded-2xl p-5 border transition-all duration-300 shadow-sm
  ${locked
  ? "bg-brand-surface border-brand-border-opacity-5 opacity-60 cursor-not-allowed"
+ : progress >= 100
+ ? "bg-gradient-to-br from-emerald-900/10 to-brand-surface border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/20 cursor-pointer hover:border-emerald-500/50 hover:shadow-[0_0_25px_rgba(16,185,129,0.25)]"
  : "glass-panel border-brand-border-opacity-10 bg-brand-surface cursor-pointer hover:bg-brand-bg-opacity-5"
  }
  `}
@@ -41,13 +43,13 @@ export default function LessonCard({
  <div className="relative z-10 flex flex-col h-full justify-between">
  <div>
  <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md bg-brand-primary/5 border border-brand-border-opacity-10 text-brand-primary opacity-80">
+ <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border ${progress >= 100 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-brand-primary/5 border-brand-border-opacity-10 text-brand-primary opacity-80'}`}>
  {difficulty}
  </span>
  {locked ? (
  <FaLock className="text-brand-primary opacity-30" />
  ) : progress >= 100 ? (
- <FaCheckCircle className="text-brand-primary opacity-80" />
+ <FaCheckCircle className="text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded-full animate-pulse" />
  ) : (
  <div className="text-[10px] font-bold text-brand-primary opacity-40">{duration}</div>
  )}
