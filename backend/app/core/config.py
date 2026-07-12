@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     # Default to localhost for dev, but in production (Railways) this MUST be set via env vars.
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"
     DATABASE_READ_URL: str | None = None
+    
+    # DB Pooling
+    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE") or "20")
+    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW") or "50")
 
     # Redis
     # Default to localhost for dev. In production, use REDIS_URL environment variable.

@@ -192,11 +192,19 @@ async def connect(sid, environ, auth):
         # Save user_id to session
         await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data, 'ip_hash': ip_hash})
         print(f"Socket {sid} connected as User {user_id}")
-        
-        # Run self-healing zombie wager routine on socket connect
+        # Run self-healing zombie wager routine on socket connect (in background with jitter to prevent mass-reconnect DDOS)
         if user_id:
-            async with AsyncSessionLocal() as db:
-                await GameService().heal_zombie_wagers(db, user_id)
+            async def _heal_wagers():
+                import random
+                import asyncio
+                await asyncio.sleep(random.uniform(0.1, 3.0))
+                try:
+                    async with AsyncSessionLocal() as db:
+                        await GameService().heal_zombie_wagers(db, user_id)
+                except Exception as e:
+                    logger.error(f"Error healing wagers for {user_id}: {e}")
+            
+            asyncio.create_task(_heal_wagers())
 
             # Point any persisted (free-game) matchmaking entry at this fresh
             # socket so a match found while the app was closed reaches us.

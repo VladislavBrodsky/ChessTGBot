@@ -18,10 +18,11 @@ else:
     engine = create_async_engine(
         DATABASE_URL,
         echo=False,
-        pool_size=20,
-        max_overflow=50,
+        pool_size=settings.DB_POOL_SIZE,
+        max_overflow=settings.DB_MAX_OVERFLOW,
         pool_timeout=30,
-        pool_recycle=1800
+        pool_recycle=1800,
+        pool_pre_ping=True
     )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
@@ -41,10 +42,11 @@ else:
         read_engine = create_async_engine(
             DATABASE_READ_URL,
             echo=False,
-            pool_size=20,
-            max_overflow=50,
+            pool_size=settings.DB_POOL_SIZE,
+            max_overflow=settings.DB_MAX_OVERFLOW,
             pool_timeout=30,
-            pool_recycle=1800
+            pool_recycle=1800,
+            pool_pre_ping=True
         )
     AsyncReadSessionLocal = async_sessionmaker(read_engine, class_=AsyncSession, expire_on_commit=False)
 
