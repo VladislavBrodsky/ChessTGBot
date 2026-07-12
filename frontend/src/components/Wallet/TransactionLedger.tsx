@@ -116,7 +116,7 @@ const TransactionSkeleton = () => (
   </div>
 );
 
-export default function TransactionLedger({ loading, transactions, balance = 0 }: TransactionLedgerProps) {
+export default function TransactionLedger({ loading, transactions, balance = 0, error, onRetry }: TransactionLedgerProps) {
   const tw = useTranslations('Wallet');
 
   return (
