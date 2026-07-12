@@ -165,8 +165,8 @@ export default function AcademyPage() {
   };
 
   const getNextMilestoneXP = (xp: number) => {
-    const currentLevel = Math.floor(xp / 200) + 1;
-    return currentLevel * 200;
+    const currentLevel = Math.floor(xp / 350) + 1;
+    return currentLevel * 350;
   };
 
   const handleLessonClick = async (lessonId: string, isLocked: boolean) => {

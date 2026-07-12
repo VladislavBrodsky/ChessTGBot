@@ -162,13 +162,13 @@ export default function ChallengesPage() {
     }
   };
 
-  // Every level requires 200 XP
+  // Every level requires 350 XP
   const userLevel = stats?.level ?? 1;
   const userXp = stats?.xp ?? 0;
-  const currentLevelMinXp = (userLevel - 1) * 200;
-  const nextLevelXp = userLevel * 200;
-  const levelProgressXp = userXp - currentLevelMinXp;
-  const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 200) * 100));
+  const currentLevelMinXp = (userLevel - 1) * 350;
+  const nextLevelXp = userLevel * 350;
+  const levelProgressXp = Math.max(0, userXp - currentLevelMinXp);
+  const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 350) * 100));
 
   return (
     <LayoutWrapper className="justify-start pt-8 pb-32">

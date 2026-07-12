@@ -8,8 +8,8 @@ import string
 
 
 def _xp_to_level(xp: int) -> int:
-    """Canonical formula: 1 level per 200 XP, minimum level 1."""
-    return max(1, int(xp // 200) + 1)
+    """Canonical formula: 1 level per 350 XP, minimum level 1."""
+    return max(1, int(xp // 350) + 1)
 
 
 class GamificationService:
