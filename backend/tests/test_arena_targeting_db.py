@@ -34,7 +34,9 @@ async def _add_games(db, tid: int, hour: int, n: int, days_ago: int = 1):
 
 
 @pytest.mark.asyncio
-async def test_targeting_buckets_and_filters(db_session: AsyncSession):
+async def test_targeting_buckets_and_filters(test_engine, db_session: AsyncSession):
+    if test_engine is None:
+        pytest.skip("needs a real Postgres engine (targeting mines SQL aggregates)")
     db = db_session
     now = _utcnow()
     weekday = now.weekday()
@@ -90,7 +92,9 @@ async def test_targeting_buckets_and_filters(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_targeting_empty_db_is_safe(db_session: AsyncSession):
+async def test_targeting_empty_db_is_safe(test_engine, db_session: AsyncSession):
+    if test_engine is None:
+        pytest.skip("needs a real Postgres engine (targeting mines SQL aggregates)")
     _reset_cache()
     ids = await targeted_telegram_ids(db_session, 20, 0, SLOTS)
     assert ids == []

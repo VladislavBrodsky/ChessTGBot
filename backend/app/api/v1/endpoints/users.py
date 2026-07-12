@@ -349,7 +349,10 @@ async def get_user_stats(
         level=current_user.level,
         bot_username=settings.TELEGRAM_BOT_USERNAME,
         region=current_user.region,
-        arena_notifications=current_user.arena_notifications,
+        # Coerce None (unrefreshed / pre-migration rows) to the opt-in default.
+        arena_notifications=(
+            current_user.arena_notifications if current_user.arena_notifications is not None else True
+        ),
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -405,7 +408,10 @@ async def sync_user(
         level=current_user.level,
         bot_username=settings.TELEGRAM_BOT_USERNAME,
         region=current_user.region,
-        arena_notifications=current_user.arena_notifications,
+        # Coerce None (unrefreshed / pre-migration rows) to the opt-in default.
+        arena_notifications=(
+            current_user.arena_notifications if current_user.arena_notifications is not None else True
+        ),
     )
 
 
