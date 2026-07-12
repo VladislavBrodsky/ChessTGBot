@@ -154,6 +154,27 @@ class MatchmakerService:
         lo, hi = sorted((tc_a, tc_b))
         return lo > 0 and hi / lo <= cls.CROSS_TC_MAX_RATIO
 
+    async def _add_active_queue_link(self, bid_amount: int, time_control: int):
+        if MatchmakerService._use_memory or not self.redis:
+            return
+        try:
+            await self.redis.sadd("matchmaker:active_bids", bid_amount)
+            await self.redis.sadd(f"matchmaker:active_queues:{bid_amount}", time_control)
+        except Exception:
+            pass
+
+    async def _remove_active_queue_link_if_empty(self, bid_amount: int, time_control: int, queue_len: int):
+        if MatchmakerService._use_memory or not self.redis:
+            return
+        try:
+            if queue_len == 0:
+                await self.redis.srem(f"matchmaker:active_queues:{bid_amount}", time_control)
+                rem = await self.redis.scard(f"matchmaker:active_queues:{bid_amount}")
+                if rem == 0:
+                    await self.redis.srem("matchmaker:active_bids", bid_amount)
+        except Exception:
+            pass
+
     async def _load_bid_queues(self, bid_amount: int) -> Dict[int, list]:
         """Load every time-control queue for a bid tier as {time_control: queue}.
         Assumes the caller holds the matchmaker lock."""
@@ -165,19 +186,13 @@ class MatchmakerService:
             }
         queues = {}
         try:
-            prefix = f"matchmaker:queue:{bid_amount}:"
-            cursor = 0
-            keys = []
-            while True:
-                cursor, scan_keys = await self.redis.scan(cursor, match=f"{prefix}*", count=100)
-                keys.extend(scan_keys)
-                if cursor == 0:
-                    break
-            for key in keys:
+            tcs = await self.redis.smembers(f"matchmaker:active_queues:{bid_amount}")
+            for tc_str in tcs:
                 try:
-                    tc = int(str(key).rsplit(":", 1)[-1])
+                    tc = int(tc_str)
                 except ValueError:
                     continue
+                key = f"matchmaker:queue:{bid_amount}:{tc}"
                 data = await self.redis.get(key)
                 queues[tc] = json.loads(data) if data else []
         except Exception as e:
@@ -196,7 +211,12 @@ class MatchmakerService:
             MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
             return
         try:
-            await self.redis.set(f"matchmaker:queue:{bid_amount}:{time_control}", json.dumps(queue))
+            if len(queue) == 0:
+                await self.redis.delete(f"matchmaker:queue:{bid_amount}:{time_control}")
+                await self._remove_active_queue_link_if_empty(bid_amount, time_control, 0)
+            else:
+                await self.redis.set(f"matchmaker:queue:{bid_amount}:{time_control}", json.dumps(queue))
+                await self._add_active_queue_link(bid_amount, time_control)
         except Exception as e:
             logger.warning(f"Redis _store_queue failed ({e}). Falling back to memory.")
             MatchmakerService._use_memory = True
@@ -238,6 +258,7 @@ class MatchmakerService:
                     queue = json.loads(data) if data else []
                     queue.append(player_data)
                     await self.redis.set(queue_key, json.dumps(queue))
+                    await self._add_active_queue_link(bid_amount, time_control)
                     logger.info(f"Matchmaker (Redis): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
                 except Exception as e:
                     logger.warning(f"Redis add_to_queue failed ({e}). Falling back to memory.")
@@ -453,25 +474,30 @@ class MatchmakerService:
                                 item['sid'] = new_sid
                     return
                 try:
-                    keys = []
-                    cursor = 0
-                    while True:
-                        cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
-                        keys.extend(scan_keys)
-                        if cursor == 0:
-                            break
-                    for queue_key in keys:
-                        data = await self.redis.get(queue_key)
-                        if not data:
+                    active_bids = await self.redis.smembers("matchmaker:active_bids")
+                    for bid_str in active_bids:
+                        try:
+                            bid = int(bid_str)
+                        except ValueError:
                             continue
-                        queue = json.loads(data)
-                        changed = False
-                        for item in queue:
-                            if item.get('user_id') == user_id and item.get('sid') != new_sid:
-                                item['sid'] = new_sid
-                                changed = True
-                        if changed:
-                            await self.redis.set(queue_key, json.dumps(queue))
+                        active_tcs = await self.redis.smembers(f"matchmaker:active_queues:{bid}")
+                        for tc_str in active_tcs:
+                            try:
+                                tc = int(tc_str)
+                            except ValueError:
+                                continue
+                            queue_key = f"matchmaker:queue:{bid}:{tc}"
+                            data = await self.redis.get(queue_key)
+                            if not data:
+                                continue
+                            queue = json.loads(data)
+                            changed = False
+                            for item in queue:
+                                if item.get('user_id') == user_id and item.get('sid') != new_sid:
+                                    item['sid'] = new_sid
+                                    changed = True
+                            if changed:
+                                await self.redis.set(queue_key, json.dumps(queue))
                 except Exception as e:
                     logger.warning(f"Redis update_sid failed ({e}). Falling back to memory.")
                     MatchmakerService._use_memory = True
@@ -489,25 +515,25 @@ class MatchmakerService:
                         return {'bid_amount': bid, 'time_control': tc, 'entry': item}
             return None
         try:
-            keys = []
-            cursor = 0
-            while True:
-                cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
-                keys.extend(scan_keys)
-                if cursor == 0:
-                    break
-            for queue_key in keys:
-                data = await self.redis.get(queue_key)
-                if not data:
+            active_bids = await self.redis.smembers("matchmaker:active_bids")
+            for bid_str in active_bids:
+                try:
+                    bid = int(bid_str)
+                except ValueError:
                     continue
-                for item in json.loads(data):
-                    if item.get('user_id') == user_id:
-                        parts = str(queue_key).split(":")
-                        try:
-                            bid, tc = int(parts[-2]), int(parts[-1])
-                        except (ValueError, IndexError):
-                            continue
-                        return {'bid_amount': bid, 'time_control': tc, 'entry': item}
+                active_tcs = await self.redis.smembers(f"matchmaker:active_queues:{bid}")
+                for tc_str in active_tcs:
+                    try:
+                        tc = int(tc_str)
+                    except ValueError:
+                        continue
+                    queue_key = f"matchmaker:queue:{bid}:{tc}"
+                    data = await self.redis.get(queue_key)
+                    if not data:
+                        continue
+                    for item in json.loads(data):
+                        if item.get('user_id') == user_id:
+                            return {'bid_amount': bid, 'time_control': tc, 'entry': item}
         except Exception as e:
             logger.warning(f"Redis find_user_entry failed ({e}). Falling back to memory.")
             MatchmakerService._use_memory = True
@@ -540,7 +566,11 @@ class MatchmakerService:
                     if data:
                         queue = json.loads(data)
                         new_queue = [item for item in queue if item['user_id'] not in (player1_id, player2_id)]
-                        await self.redis.set(queue_key, json.dumps(new_queue))
+                        if len(new_queue) == 0:
+                            await self.redis.delete(queue_key)
+                            await self._remove_active_queue_link_if_empty(bid_amount, time_control, 0)
+                        else:
+                            await self.redis.set(queue_key, json.dumps(new_queue))
                     logger.info(f"Matchmaker (Redis): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
                 except Exception as e:
                     logger.warning(f"Redis remove_match_pair failed ({e}). Falling back to memory.")
@@ -570,31 +600,33 @@ class MatchmakerService:
             return
 
         try:
-            # Non-blocking scan for keys matching matchmaker:queue:* to prevent blocking Redis
-            keys = []
-            cursor = 0
-            while True:
-                cursor, scan_keys = await self.redis.scan(cursor, match="matchmaker:queue:*", count=100)
-                keys.extend(scan_keys)
-                if cursor == 0:
-                    break
-
-            for queue_key in keys:
-                if only_wagered:
-                    parts = str(queue_key).split(":")
+            active_bids = await self.redis.smembers("matchmaker:active_bids")
+            for bid_str in active_bids:
+                try:
+                    bid = int(bid_str)
+                except ValueError:
+                    continue
+                if only_wagered and bid == 0:
+                    continue
+                active_tcs = await self.redis.smembers(f"matchmaker:active_queues:{bid}")
+                for tc_str in active_tcs:
                     try:
-                        if int(parts[-2]) == 0:
-                            continue
-                    except (ValueError, IndexError):
-                        pass
-                data = await self.redis.get(queue_key)
-                if data:
-                    queue = json.loads(data)
-                    original_len = len(queue)
-                    new_queue = [item for item in queue if item['user_id'] != user_id]
-                    if len(new_queue) < original_len:
-                        await self.redis.set(queue_key, json.dumps(new_queue))
-                        logger.info(f"Matchmaker (Redis): Removed User {user_id} from {queue_key} queue")
+                        tc = int(tc_str)
+                    except ValueError:
+                        continue
+                    queue_key = f"matchmaker:queue:{bid}:{tc}"
+                    data = await self.redis.get(queue_key)
+                    if data:
+                        queue = json.loads(data)
+                        original_len = len(queue)
+                        new_queue = [item for item in queue if item['user_id'] != user_id]
+                        if len(new_queue) < original_len:
+                            if len(new_queue) == 0:
+                                await self.redis.delete(queue_key)
+                                await self._remove_active_queue_link_if_empty(bid, tc, 0)
+                            else:
+                                await self.redis.set(queue_key, json.dumps(new_queue))
+                            logger.info(f"Matchmaker (Redis): Removed User {user_id} from {queue_key} queue")
         except Exception as e:
             logger.warning(f"Redis _remove_from_queue_unsafe failed ({e}). Falling back to memory.")
             MatchmakerService._use_memory = True

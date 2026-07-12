@@ -73,14 +73,19 @@ async def _sweep_once(service: GameService) -> int:
 
     game_ids = []
     if sm._use_memory or not sm.redis:
-        game_ids = [k.split(":", 1)[1] for k in list(sm._memory_store.keys()) if k.startswith("game:")]
+        active_games = sm._memory_store.get("games:active", set())
+        game_ids = list(active_games)
     else:
-        cursor = 0
-        while True:
-            cursor, keys = await sm.redis.scan(cursor, match="game:*", count=100)
-            game_ids.extend(k.split(":", 1)[1] for k in keys)
-            if cursor == 0:
-                break
+        try:
+            game_ids = [g.decode() if isinstance(g, bytes) else g for g in await sm.redis.smembers("games:active")]
+        except Exception as e:
+            logger.warning(f"[StaleSweeper] Failed to fetch active games set from Redis: {e}. Falling back to scan.")
+            cursor = 0
+            while True:
+                cursor, keys = await sm.redis.scan(cursor, match="game:*", count=100)
+                game_ids.extend(k.split(":", 1)[1] for k in keys)
+                if cursor == 0:
+                    break
 
     swept = 0
     for gid in game_ids:

@@ -23,9 +23,24 @@ class SessionManager:
         self.ttl = 3600 * 24 # 24 hours
 
     async def save_game(self, game_id: str, state: GameState):
-        """Save game state to Redis with fast write, or in-memory fallback."""
+        """Save game state to Redis with fast write, or in-memory fallback.
+        Also updates player active game mappings and the active games set.
+        """
         if SessionManager._use_memory or not self.redis:
             SessionManager._memory_store[f"game:{game_id}"] = state.model_dump_json()
+            if not state.is_game_over:
+                SessionManager._memory_store[f"games:active"] = SessionManager._memory_store.get("games:active", set()) | {game_id}
+                if state.white_player_id and state.white_player_id > 0:
+                    SessionManager._memory_store[f"user:active_game:{state.white_player_id}"] = game_id
+                if state.black_player_id and state.black_player_id > 0:
+                    SessionManager._memory_store[f"user:active_game:{state.black_player_id}"] = game_id
+            else:
+                if "games:active" in SessionManager._memory_store:
+                    SessionManager._memory_store["games:active"].discard(game_id)
+                if state.white_player_id and state.white_player_id > 0:
+                    SessionManager._memory_store.pop(f"user:active_game:{state.white_player_id}", None)
+                if state.black_player_id and state.black_player_id > 0:
+                    SessionManager._memory_store.pop(f"user:active_game:{state.black_player_id}", None)
             return
         try:
             await self.redis.set(
@@ -33,6 +48,18 @@ class SessionManager:
                 state.model_dump_json(),
                 ex=self.ttl
             )
+            if not state.is_game_over:
+                await self.redis.sadd("games:active", game_id)
+                if state.white_player_id and state.white_player_id > 0:
+                    await self.redis.set(f"user:active_game:{state.white_player_id}", game_id, ex=self.ttl)
+                if state.black_player_id and state.black_player_id > 0:
+                    await self.redis.set(f"user:active_game:{state.black_player_id}", game_id, ex=self.ttl)
+            else:
+                await self.redis.srem("games:active", game_id)
+                if state.white_player_id and state.white_player_id > 0:
+                    await self.redis.delete(f"user:active_game:{state.white_player_id}")
+                if state.black_player_id and state.black_player_id > 0:
+                    await self.redis.delete(f"user:active_game:{state.black_player_id}")
         except Exception as e:
             logger.warning(f"Redis save failed ({e}). Falling back to memory.")
             SessionManager._use_memory = True
@@ -55,7 +82,26 @@ class SessionManager:
         return None
 
     async def delete_game(self, game_id: str):
-        """Delete game state."""
+        """Delete game state and associated player active game mappings."""
+        state = await self.get_game(game_id)
+        if state:
+            if SessionManager._use_memory or not self.redis:
+                if "games:active" in SessionManager._memory_store:
+                    SessionManager._memory_store["games:active"].discard(game_id)
+                if state.white_player_id and state.white_player_id > 0:
+                    SessionManager._memory_store.pop(f"user:active_game:{state.white_player_id}", None)
+                if state.black_player_id and state.black_player_id > 0:
+                    SessionManager._memory_store.pop(f"user:active_game:{state.black_player_id}", None)
+            else:
+                try:
+                    await self.redis.srem("games:active", game_id)
+                    if state.white_player_id and state.white_player_id > 0:
+                        await self.redis.delete(f"user:active_game:{state.white_player_id}")
+                    if state.black_player_id and state.black_player_id > 0:
+                        await self.redis.delete(f"user:active_game:{state.black_player_id}")
+                except Exception:
+                    pass
+
         if SessionManager._use_memory or not self.redis:
             SessionManager._memory_store.pop(f"game:{game_id}", None)
             return

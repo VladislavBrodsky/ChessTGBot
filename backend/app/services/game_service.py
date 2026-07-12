@@ -244,9 +244,10 @@ class GameService:
         return state
 
     async def get_active_game_for_user(self, user_id: int) -> Optional[str]:
-        """Find the active game ID for a user, checking for lazy clock timeouts."""
+        """Find the active game ID for a user, using O(1) Redis key lookups."""
         game_ids = []
         if self.session_manager._use_memory or not self.session_manager.redis:
+            # Fallback to scanning memory store keys
             game_ids = [
                 key.split(":", 1)[1]
                 for key in self.session_manager._memory_store.keys()
@@ -254,15 +255,24 @@ class GameService:
             ]
         else:
             try:
-                cursor = 0
-                while True:
-                    cursor, keys = await self.session_manager.redis.scan(cursor, match="game:*", count=100)
-                    for key in keys:
-                        game_ids.append(key.split(":", 1)[1])
-                    if cursor == 0:
-                        break
+                g_id = await self.session_manager.redis.get(f"user:active_game:{user_id}")
+                if g_id:
+                    game_ids = [g_id]
+                else:
+                    game_ids = []
             except Exception as e:
-                print(f"Failed to scan active games in Redis: {e}")
+                logger.warning(f"Failed to fetch active game from Redis for user {user_id}: {e}. Falling back to scan.")
+                game_ids = []
+                try:
+                    cursor = 0
+                    while True:
+                        cursor, keys = await self.session_manager.redis.scan(cursor, match="game:*", count=100)
+                        for key in keys:
+                            game_ids.append(key.split(":", 1)[1])
+                        if cursor == 0:
+                            break
+                except Exception:
+                    pass
 
         # Check each game's actual state (evaluating lazy timeouts)
         for g_id in game_ids:
@@ -272,19 +282,19 @@ class GameService:
                     if state.white_player_id == user_id or state.black_player_id == user_id:
                         is_ai_game = state.black_player_id == -1
                         if is_ai_game:
-                            # A training (AI) game that never had a first move never
-                            # triggers a clock timeout (see get_game_state), so it would
-                            # otherwise linger as "active" for the full 24h TTL and strand
-                            # the user "in a game" (hiding the navbar / forcing a redirect).
-                            # There is no opponent or stake to preserve, so ignore it until
-                            # it has actually started.
                             if state.last_move_at is not None:
                                 return g_id
                         elif state.white_player_id and state.black_player_id:
-                            # PVP: both players joined (a wager may be held) — keep active.
                             return g_id
+                
+                # Cleanup stale active game link if we verified the game is over
+                if (state and state.is_game_over) or not state:
+                    if not self.session_manager._use_memory and self.session_manager.redis:
+                        await self.session_manager.redis.delete(f"user:active_game:{user_id}")
+                    elif self.session_manager._use_memory:
+                        self.session_manager._memory_store.pop(f"user:active_game:{user_id}", None)
             except Exception as e:
-                print(f"Error checking active game state for {g_id}: {e}")
+                logger.error(f"Error checking active game state for {g_id}: {e}")
         return None
 
     async def join_game(self, game_id: str, user_id: int) -> Optional[GameState]:
