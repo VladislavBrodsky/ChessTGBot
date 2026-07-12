@@ -16,6 +16,7 @@ import React from 'react';
  * render (the fix computes manifestUrl synchronously).
  */
 jest.mock('@tonconnect/ui-react', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const React = require('react');
     const Ctx = React.createContext(false);
     return {

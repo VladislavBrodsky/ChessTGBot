@@ -5,6 +5,7 @@ import { NavbarProvider } from "@/context/NavbarContext";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import Script from 'next/script';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
@@ -64,7 +65,7 @@ export default async function LocaleLayout({
                 {/* Preconnect to backend to eliminate TCP handshake latency on first avatar load */}
                 <link rel="preconnect" href="https://chesstgbot-backend-production.up.railway.app" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://chesstgbot-backend-production.up.railway.app" />
-                <script src="https://telegram.org/js/telegram-web-app.js" />
+                <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `

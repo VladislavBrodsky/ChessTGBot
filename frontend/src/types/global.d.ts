@@ -6,8 +6,8 @@ declare global {
             WebApp: {
                 platform?: string;
                 initData?: string;
-                onEvent?: (eventType: string, eventHandler: Function) => void;
-                offEvent?: (eventType: string, eventHandler: Function) => void;
+                onEvent?: (eventType: string, eventHandler: (...args: any[]) => void) => void;
+                offEvent?: (eventType: string, eventHandler: (...args: any[]) => void) => void;
                 openLink?: (url: string) => void;
                 ready: () => void;
                 expand: () => void;
