@@ -89,7 +89,7 @@ export default function DailyHintCard() {
                 className="text-[9px] font-black uppercase tracking-[0.25em] text-brand-gold drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
               >
                 +10 XP <span className="text-brand-primary/40 normal-case font-normal tracking-normal text-[8px]">(Rewarded)</span>
-              </p>
+              </motion.p>
             </div>
           </div>
         </div>
