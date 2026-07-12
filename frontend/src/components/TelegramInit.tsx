@@ -25,7 +25,7 @@ export default function TelegramInit() {
             }
 
             if (isTMA) {
-                const tg = window.Telegram.WebApp as any;
+                const tg = window.Telegram!.WebApp as any;
 
                 // Notify Telegram that the Mini App is ready to be displayed
                 tg.ready();

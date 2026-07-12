@@ -1209,7 +1209,7 @@ function SystemTab() {
                 </tr>
               </thead>
               <tbody>
-                {sys.ledger_audit.mismatches.map((m, i) => {
+                {sys.ledger_audit.mismatches.map((m: any, i: number) => {
                   const diff = m.balance - m.ledger_sum;
                   return (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">

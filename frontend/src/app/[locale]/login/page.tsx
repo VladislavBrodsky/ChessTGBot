@@ -32,7 +32,7 @@ export default function LoginPage() {
         router.replace(`/${locale}/home`);
     };
 
-    const isDark = theme === 'dark' || theme === 'nebula';
+    const isDark = theme === 'dark' || (theme as string) === 'nebula';
 
     if (!mounted || isRedirecting) {
         return (

@@ -47,7 +47,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const isIframe = window.self !== window.top;
-            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
+            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform as string);
             const isTMA = !!(window as any).Telegram?.WebApp?.initData;
             
             const isTgWeb = !!(isIframe || isWebPlatform);
@@ -127,7 +127,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         if (shouldShow) {
             tg.BackButton.show();
             document.documentElement.classList.add('tg-back-button-active');
-            tg.onEvent('backButtonClicked', handleBackClick);
+            tg.onEvent?.('backButtonClicked', handleBackClick);
         } else {
             tg.BackButton.hide();
             document.documentElement.classList.remove('tg-back-button-active');
@@ -135,7 +135,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
 
         return () => {
             try {
-                tg.offEvent('backButtonClicked', handleBackClick);
+                tg.offEvent?.('backButtonClicked', handleBackClick);
                 document.documentElement.classList.remove('tg-back-button-active');
             } catch (err) {
                 console.warn('Telegram BackButton offEvent failed', err);

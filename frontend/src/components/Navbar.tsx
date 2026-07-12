@@ -37,7 +37,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
             const isIframe = window.self !== window.top;
-            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
+            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform as string);
             const isTMA = !!(window as any).Telegram?.WebApp?.initData;
             
             const isTgWeb = !!(isIframe || isWebPlatform);

@@ -35,7 +35,7 @@ function getChangedSquares(fen1: string, fen2: string): string[] {
 
 interface ChessBoardProps {
     fen: string;
-    onMove: (move: { from: string; to: string; promotion?: string }) => boolean;
+    onMove: (move: { from: string; to: string; promotion?: string }) => boolean | Promise<boolean>;
     orientation?: "white" | "black";
     showConfetti?: boolean;
     autoPromoteToQueen?: boolean;
@@ -193,7 +193,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                             telegramHaptic('light');
                         }
                         setSelectedSquare(null);
-                        return moveResult;
+                        return moveResult as boolean;
                     } else {
                         telegramHaptic('medium');
                         // Store details and open custom selection dialog; block immediate move
@@ -215,7 +215,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             telegramHaptic('light');
         }
         setSelectedSquare(null);
-        return moveResult;
+        return moveResult as boolean;
     }
 
     const handleSelectPromotion = (pieceType: "q" | "r" | "b" | "n") => {

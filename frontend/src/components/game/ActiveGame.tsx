@@ -126,7 +126,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const isIframe = window.self !== window.top;
-      const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform);
+      const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform as string);
       if (isIframe || isWebPlatform) {
         setIsTelegramWeb(true);
       }
@@ -220,7 +220,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       } else if (process.env.NODE_ENV === 'development') {
         setUserId(123456789);
       }
-      setIsTelegram(typeof window !== 'undefined' && !!window.Telegram?.WebApp?.initData);
+      setIsTelegram(typeof window !== 'undefined' && !!(window as any).Telegram?.WebApp?.initData);
     }
   }, []);
 

@@ -126,7 +126,7 @@ function minimax(
     for (const move of verboseMoves) {
       const moveObj = { from: move.from, to: move.to, promotion: move.promotion };
       chess.move(moveObj);
-      const [evalVal] = minimax(depth - 1, alpha, beta, false);
+      const [evalVal] = minimax(chess, depth - 1, alpha, beta, false);
       chess.undo();
       
       if (evalVal > maxEval) {
@@ -144,7 +144,7 @@ function minimax(
     for (const move of verboseMoves) {
       const moveObj = { from: move.from, to: move.to, promotion: move.promotion };
       chess.move(moveObj);
-      const [evalVal] = minimax(depth - 1, alpha, beta, true);
+      const [evalVal] = minimax(chess, depth - 1, alpha, beta, true);
       chess.undo();
       
       if (evalVal < minEval) {

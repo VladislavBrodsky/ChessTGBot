@@ -4,6 +4,11 @@ declare global {
     interface Window {
         Telegram?: {
             WebApp: {
+                platform?: string;
+                initData?: string;
+                onEvent?: (eventType: string, eventHandler: Function) => void;
+                offEvent?: (eventType: string, eventHandler: Function) => void;
+                openLink?: (url: string) => void;
                 ready: () => void;
                 expand: () => void;
                 requestFullscreen?: () => void;
