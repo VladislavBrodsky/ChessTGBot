@@ -150,6 +150,76 @@ export default function MembershipPage() {
     }
   };
 
+  // Upgrade Stripe subscription monthly → annual via Stripe.Subscription.modify()
+  const handleUpgradeStripe = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await apiFetch("/api/v1/wallet/stripe/upgrade", {
+        method: "POST",
+        body: JSON.stringify({ billing_period: "annual" })
+      });
+      const data = await res.json();
+      if (res.ok && data.status === "upgraded") {
+        telegramHaptic('success');
+        setShowSuccess(true);
+        setShowConfetti(true);
+        syncStats();
+      } else {
+        telegramHaptic('error');
+        telegramAlert(data.detail || tm('upgrade_failed'));
+      }
+    } catch {
+      telegramHaptic('error');
+      telegramAlert(tm('upgrade_failed'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Upgrade balance subscription monthly → annual (prorated)
+  const handleUpgradeBalance = async () => {
+    if (submitting) return;
+
+    // Calculate prorated upgrade cost
+    const now = Date.now();
+    const expiresAt = stats?.premium_expires_at ? new Date(stats.premium_expires_at).getTime() : now;
+    const remainingDays = Math.max((expiresAt - now) / 86400000, 0);
+    const unusedCredit = Math.floor(remainingDays * (2900 / 30)); // cents
+    const upgradeCost = Math.max(29580 - unusedCredit, 0);
+
+    if (walletBalance < upgradeCost) {
+      telegramHaptic('warning');
+      setShowInsufficient(true);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await apiFetch("/api/v1/users/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ tier: 'premium', billing_period: 'annual' })
+      });
+      const data = await res.json();
+      if (res.ok && data.status === "success") {
+        telegramHaptic('success');
+        setShowSuccess(true);
+        setShowConfetti(true);
+        syncStats();
+        await syncBalance();
+      } else {
+        telegramHaptic('error');
+        if (data.detail?.toLowerCase().includes("insufficient")) setShowInsufficient(true);
+        else telegramAlert(data.detail || tm('upgrade_failed'));
+      }
+    } catch {
+      telegramHaptic('error');
+      telegramAlert(tm('upgrade_failed'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubscribeStripe = async () => {
     if (submitting) return;
     setSubmitting(true);
@@ -188,7 +258,7 @@ export default function MembershipPage() {
         syncStats(); await syncBalance();
       } else {
         telegramHaptic('error');
-        if (data.detail?.toLowerCase().includes("insufficient balance")) setShowInsufficient(true);
+        if (data.detail?.toLowerCase().includes("insufficient")) setShowInsufficient(true);
         else telegramAlert(data.detail || tm('upgrade_failed'));
       }
     } catch { telegramHaptic('error'); telegramAlert(tm('upgrade_failed')); }
@@ -269,6 +339,13 @@ export default function MembershipPage() {
                 : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
             }`}
           >
+            {stats?.is_premium && (stats.premium_billing_period === 'monthly' || !stats.premium_billing_period) && (
+              <div className="absolute top-0 right-0">
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-white/10 text-white/70">
+                  Current Plan
+                </div>
+              </div>
+            )}
             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{tm('monthly')}</span>
             <div>
               <div className="flex items-end leading-none">
@@ -288,11 +365,17 @@ export default function MembershipPage() {
                 : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
             }`}
           >
-            {/* Savings Badge */}
-            <div className="absolute top-0 right-0">
-              <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
-                {tm('discount')}
-              </div>
+            {/* Badges */}
+            <div className="absolute top-0 right-0 flex flex-col items-end">
+              {stats?.is_premium && stats.premium_billing_period === 'annual' ? (
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
+                  Current Plan
+                </div>
+              ) : (
+                <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
+                  {tm('discount')}
+                </div>
+              )}
             </div>
 
             <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">{tm('annual')}</span>
@@ -336,60 +419,110 @@ export default function MembershipPage() {
 
         {/* ── Subscribe CTA (Glowing Gold Button) ───────────────── */}
         <div className="w-full pt-1 flex flex-col gap-2">
-          {stats?.is_premium ? (
-            stats?.has_stripe_subscription ? (
-              /* Stripe subscriber → show portal button */
-              <motion.button
-                whileHover={submitting ? {} : { scale: 1.015 }}
-                whileTap={submitting ? {} : { scale: 0.985 }}
-                onClick={handleManageSubscription}
-                disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
-                  submitting 
-                    ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
-                    : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
-                }`}
-              >
-                {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
-                {submitting ? tm('processing') : "Manage Subscription"}
-              </motion.button>
-            ) : (
-              /* Balance / XP subscriber → informational card, no Stripe portal needed */
-              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
-                <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
-                  Active via In-App Balance
-                </span>
-                <span className="text-[10px] text-brand-primary opacity-50 font-medium">
-                  Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
-                </span>
-              </div>
-            )
-          ) : (
-            <>
-              <motion.button
-                whileHover={submitting ? {} : { scale: 1.015 }}
-                whileTap={submitting ? {} : { scale: 0.985 }}
-                onClick={handleSubscribeStripe}
-                disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
-                  submitting 
-                    ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
-                    : 'bg-brand-gold text-brand-void hover:opacity-95'
-                }`}
-              >
-                {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
-                {submitting ? tm('processing') : "Subscribe with Card"}
-              </motion.button>
+          {(() => {
+            if (stats?.is_premium) {
+              const currentPeriod = stats.premium_billing_period || 'monthly';
+              
+              if (currentPeriod === 'monthly' && billingPeriod === 'annual') {
+                return (
+                  <>
+                    <motion.button
+                      whileHover={submitting ? {} : { scale: 1.015 }}
+                      whileTap={submitting ? {} : { scale: 0.985 }}
+                      onClick={stats.has_stripe_subscription ? handleUpgradeStripe : handleUpgradeBalance}
+                      disabled={submitting}
+                      className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.25)] relative overflow-hidden ${
+                        submitting 
+                          ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
+                          : 'bg-brand-gold text-brand-void hover:opacity-95 bg-gradient-to-r from-[#FFD700] via-[#FDB931] to-[#FFD700] bg-[length:200%_auto] animate-gradient'
+                      }`}
+                    >
+                      {submitting && <div className="w-4 h-4 rounded-full border-2 border-brand-void border-t-transparent animate-spin mr-2.5" />}
+                      {submitting ? tm('processing') : "UPGRADE TO ANNUAL (-15%)"}
+                    </motion.button>
 
-              <button
-                onClick={handleSubscribeBalance}
-                disabled={submitting}
-                className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
-              >
-                Pay with internal balance
-              </button>
-            </>
-          )}
+                    {stats.has_stripe_subscription && (
+                      <button
+                        onClick={handleUpgradeBalance}
+                        disabled={submitting}
+                        className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
+                      >
+                        Upgrade using internal balance
+                      </button>
+                    )}
+                  </>
+                );
+              }
+              
+              if (currentPeriod === 'annual' && billingPeriod === 'monthly') {
+                return (
+                  <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
+                      You're on the best plan!
+                    </span>
+                    <span className="text-[10px] text-brand-primary opacity-50 font-medium">
+                      Your annual subscription is active and gives you the maximum discount.
+                    </span>
+                  </div>
+                );
+              }
+
+              // Otherwise, they are looking at their current plan, so show Manage Subscription
+              return stats?.has_stripe_subscription ? (
+                <motion.button
+                  whileHover={submitting ? {} : { scale: 1.015 }}
+                  whileTap={submitting ? {} : { scale: 0.985 }}
+                  onClick={handleManageSubscription}
+                  disabled={submitting}
+                  className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                    submitting 
+                      ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
+                      : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
+                  }`}
+                >
+                  {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+                  {submitting ? tm('processing') : "Manage Subscription"}
+                </motion.button>
+              ) : (
+                <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
+                    Active via In-App Balance
+                  </span>
+                  <span className="text-[10px] text-brand-primary opacity-50 font-medium">
+                    Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
+                  </span>
+                </div>
+              );
+            } else {
+              // Not premium
+              return (
+                <>
+                  <motion.button
+                    whileHover={submitting ? {} : { scale: 1.015 }}
+                    whileTap={submitting ? {} : { scale: 0.985 }}
+                    onClick={handleSubscribeStripe}
+                    disabled={submitting}
+                    className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                      submitting 
+                        ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
+                        : 'bg-brand-gold text-brand-void hover:opacity-95 bg-gradient-to-r from-[#FFD700] via-[#FDB931] to-[#FFD700] bg-[length:200%_auto] animate-gradient'
+                    }`}
+                  >
+                    {submitting && <div className="w-4 h-4 rounded-full border-2 border-brand-void border-t-transparent animate-spin mr-2.5" />}
+                    {submitting ? tm('processing') : "Subscribe with Card"}
+                  </motion.button>
+
+                  <button
+                    onClick={handleSubscribeBalance}
+                    disabled={submitting}
+                    className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
+                  >
+                    Pay with internal balance
+                  </button>
+                </>
+              );
+            }
+          })()}
         </div>
 
         {/* ── Compare tiers toggle ─────────────────────────────── */}
