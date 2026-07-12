@@ -1006,7 +1006,7 @@ export default function DepositModal({
               <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60 animate-fade-in">
                 <div className="flex justify-between">
                   <span>Credited to Balance:</span>
-                  <span className="text-emerald-400 font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
+                  <span className="text-emerald-400 font-mono">${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Platform Fee (5%):</span>
@@ -1014,7 +1014,7 @@ export default function DepositModal({
                 </div>
                 <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
                   <span>Total Charged:</span>
-                  <span className="font-mono">${(parseFloat(depositAmount) * 1.05).toFixed(2)}</span>
+                  <span className="font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
                 </div>
               </div>
             )}

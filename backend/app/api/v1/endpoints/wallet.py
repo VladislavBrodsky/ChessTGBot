@@ -1246,9 +1246,9 @@ async def stripe_create_session(
     if request.amount < 1.0:
         raise HTTPException(status_code=400, detail="Minimum deposit amount is $1.00 USD.")
         
-    # Calculate charged amount with 5% platform fee
-    charged_amount_cents = int(round(request.amount * 1.05 * 100))
-    credited_amount_cents = int(round(request.amount * 100))
+    # Calculate charged amount (the total entered by user) and subtract 5% platform fee for credit
+    charged_amount_cents = int(round(request.amount * 100))
+    credited_amount_cents = int(round(request.amount * 0.95 * 100))
     fee_cents = charged_amount_cents - credited_amount_cents
     
     # Generate pending transaction in DB
@@ -1278,7 +1278,7 @@ async def stripe_create_session(
                         'currency': 'usd',
                         'product_data': {
                             'name': 'Web3Chess Platform Balance Top-Up',
-                            'description': f'Credited: ${request.amount:.2f} USD | Fee (5%): ${(request.amount * 0.05):.2f} USD',
+                            'description': f'Credited: ${(request.amount * 0.95):.2f} USD | Fee (5%): ${(request.amount * 0.05):.2f} USD',
                         },
                         'unit_amount': charged_amount_cents,
                     },
