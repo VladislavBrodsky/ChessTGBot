@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from app.core.database import get_db, get_read_db
@@ -179,22 +179,50 @@ async def get_referral_stats(
         earnings_chart=earnings_chart
     )
 
-@router.get("/leaderboard", response_model=List[LeaderboardItem])
+@router.get("/leaderboard")
 async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):
+    from app.services.session_manager import SessionManager
+    import json
+    
+    session_mgr = SessionManager()
+    cache_key = "api:cache:leaderboard"
+    
+    # Try cache first if Redis is available
+    if not SessionManager._use_memory and session_mgr.redis:
+        try:
+            cached_data = await session_mgr.redis.get(cache_key)
+            if cached_data:
+                return Response(content=cached_data, media_type="application/json")
+        except Exception as e:
+            print(f"Leaderboard Redis cache error: {e}")
+            
+    # Cache miss: fetch from DB
     top_users = await user_crud.get_top_users(db, limit=50)
     
-    # Return leaderboard data
-    return [
-        LeaderboardItem(
-            telegram_id=user.telegram_id,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            photo_url=f"/api/v1/users/avatar/{user.telegram_id}" if user.photo_url else None,
-            elo=user.elo,
-            rank=idx + 1
-        )
+    # Build data
+    leaderboard_data = [
+        {
+            "telegram_id": user.telegram_id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "photo_url": f"/api/v1/users/avatar/{user.telegram_id}" if user.photo_url else None,
+            "elo": user.elo,
+            "rank": idx + 1
+        }
         for idx, user in enumerate(top_users)
     ]
+    
+    # Serialize once
+    json_data = json.dumps(leaderboard_data)
+    
+    # Store in cache with 5-minute TTL
+    if not SessionManager._use_memory and session_mgr.redis:
+        try:
+            await session_mgr.redis.set(cache_key, json_data, ex=300)
+        except Exception as e:
+            print(f"Leaderboard Redis cache set error: {e}")
+            
+    return Response(content=json_data, media_type="application/json")
 
 @router.get("/avatar/{telegram_id}")
 async def get_user_avatar(telegram_id: int, request: Request):

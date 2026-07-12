@@ -13,6 +13,7 @@ import anyio
 from app.services.telegram_bot import TelegramService
 from app.core.logger import setup_logging, LoggingMiddleware
 from app.middleware.head_middleware import HeadMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -283,6 +284,7 @@ def create_application() -> FastAPI:
 
     application.add_middleware(LoggingMiddleware)
     application.add_middleware(HeadMiddleware)
+    application.add_middleware(GZipMiddleware, minimum_size=1000)
 
     # Raw CORS middleware — added LAST so it wraps everything and executes FIRST.
     # This handles OPTIONS preflights at the ASGI protocol level and injects
