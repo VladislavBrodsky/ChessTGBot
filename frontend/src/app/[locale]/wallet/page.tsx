@@ -64,7 +64,7 @@ export default function WalletPage() {
         setActiveModal('deposit');
       }
     }
-  }, []);
+  }, [fetchWalletData]);
 
   const fetchWalletData = async () => {
     try {

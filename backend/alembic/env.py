@@ -47,7 +47,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
-from app.core.database import Base
+from app.core.database import Base  # noqa: E402
 
 target_metadata = Base.metadata
 

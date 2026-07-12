@@ -316,17 +316,13 @@ async def lifespan(app: FastAPI):
                     logger.info(f"Broadcasting v1.7.0 update to {len(user_ids)} users...")
                     
                     message_text = (
-                        f"👑 <b>FinChess Arena Update — Version 1.7.0 is Live!</b> 🚀\n\n"
-                        f"Hello Grandmasters! We've been working hard behind the scenes to make your chess "
-                        f"battlegrounds smoother, faster, and completely ready for massive action. Here is a breakdown of what's new in <b>v1.7.0</b>:\n\n"
-                        f"• ⚡ <b>Ultra-Stable Matchmaking:</b> We've fortified our database pools and socket connections. "
-                        f"If you temporarily drop connection or transition between Wi-Fi and mobile data, you will reconnect instantly without interrupting your match.\n"
-                        f"• ❓ <b>Built-In Settings FAQ:</b> Got questions about ELO ratings, deposits, withdrawals, or Premium benefits? "
-                        f"We've added a gorgeous, expandable <b>FAQ Accordion</b> directly in your Settings menu to give you instant answers!\n"
-                        f"• 🎯 <b>Clearer Quests & Achievements:</b> We have refined the instructions on achievements and daily tasks "
-                        f"(like adding the app to your home screen or inviting friends) so you know exactly how to claim your XP and rewards.\n"
-                        f"• 🛠️ <b>Under-the-Hood Tuning:</b> Upgraded backend performance routines to handle over 100,000 players concurrently.\n\n"
-                        f"Get ready to test your strategy, climb the leaderboard, and earn rewards!\n\n"
+                        f"👑 <b>FinChess v1.7.0 is Live!</b> 🚀\n\n"
+                        f"Grandmasters, we've upgraded the arena for massive action:\n\n"
+                        f"• ⚡ <b>Stable Matchmaking:</b> Fortified databases and sockets. Reconnect instantly without interrupting your match if you drop connection.\n"
+                        f"• ❓ <b>Settings FAQ:</b> Questions about ELO, deposits, or Premium? We added an expandable FAQ directly in your Settings!\n"
+                        f"• 🎯 <b>Clearer Quests:</b> Refined instructions on achievements and daily tasks (like inviting friends) so you know exactly how to claim XP.\n"
+                        f"• 🛠️ <b>Performance Tuning:</b> Upgraded backend to handle over 100,000 concurrent players.\n\n"
+                        f"Test your strategy and climb the leaderboard!\n\n"
                         f"🔗 <b><a href=\"https://t.me/{bot_username}/play\">Play Web3 Chess</a></b>"
                     )
                     

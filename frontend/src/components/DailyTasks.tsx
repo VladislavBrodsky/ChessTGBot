@@ -67,7 +67,7 @@ export default function DailyTasks() {
                     let title = task.title_key;
                     try {
                         title = t(task.title_key);
-                    } catch (e) {
+                    } catch {
                         // fallback
                     }
                     triggerTaskSuccess(title, task.xp_reward);

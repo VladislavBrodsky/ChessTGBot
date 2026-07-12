@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { apiFetch } from '@/lib/api';
+import React, { createContext, useContext, useCallback } from 'react';
+// apiFetch removed since we useSWRFetch
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 
 interface UserContextType {

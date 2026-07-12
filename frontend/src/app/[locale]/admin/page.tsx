@@ -629,7 +629,7 @@ function TransactionsTab() {
   const total = data?.total || 0;
 
   const pages = Math.max(1, Math.ceil(total / 25));
-  const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee'];
+  const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee', 'chargeback', 'refund'];
   const STATUSES = ['completed', 'pending', 'failed'];
 
   return (

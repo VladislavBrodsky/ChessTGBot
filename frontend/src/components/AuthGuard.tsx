@@ -14,7 +14,6 @@ import { FaChessKnight } from 'react-icons/fa';
  * This prevents ANY flash of protected content for unauthenticated users.
  */
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-    const router = useRouter();
     const pathname = usePathname();
     // 'checking' → still verifying | 'authed' → show children | 'redirecting' → blocking
     const [authState, setAuthState] = useState<'checking' | 'authed' | 'redirecting'>('checking');

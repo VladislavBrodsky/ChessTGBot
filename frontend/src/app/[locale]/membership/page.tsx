@@ -127,7 +127,53 @@ export default function MembershipPage() {
     });
   };
 
-  const handleSubscribe = async () => {
+  const handleManageSubscription = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await apiFetch("/api/v1/wallet/stripe/portal", {
+        method: "POST",
+        body: JSON.stringify({ redirect_path: "/membership" })
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        telegramHaptic('error');
+        telegramAlert(data.detail || tm('upgrade_failed'));
+        setSubmitting(false);
+      }
+    } catch {
+      telegramHaptic('error');
+      telegramAlert(tm('upgrade_failed'));
+      setSubmitting(false);
+    }
+  };
+
+  const handleSubscribeStripe = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await apiFetch("/api/v1/wallet/stripe/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ billing_period: billingPeriod, redirect_path: "/membership" })
+      });
+      const data = await res.json();
+      if (res.ok && data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        telegramHaptic('error');
+        telegramAlert(data.detail || tm('upgrade_failed'));
+        setSubmitting(false);
+      }
+    } catch {
+      telegramHaptic('error');
+      telegramAlert(tm('upgrade_failed'));
+      setSubmitting(false);
+    }
+  };
+
+  const handleSubscribeBalance = async () => {
     if (submitting) return;
     if (walletBalance < cost) { telegramHaptic('warning'); setShowInsufficient(true); return; }
     setSubmitting(true);
@@ -289,21 +335,48 @@ export default function MembershipPage() {
         </div>
 
         {/* ── Subscribe CTA (Glowing Gold Button) ───────────────── */}
-        <div className="w-full pt-1">
-          <motion.button
-            whileHover={submitting ? {} : { scale: 1.015 }}
-            whileTap={submitting ? {} : { scale: 0.985 }}
-            onClick={handleSubscribe}
-            disabled={submitting}
-            className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
-              submitting 
-                ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
-                : 'bg-brand-gold text-brand-void hover:opacity-95'
-            }`}
-          >
-            {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
-            {submitting ? tm('processing') : stats?.is_premium ? tm('extend_subscription') : tm('subscribe')}
-          </motion.button>
+        <div className="w-full pt-1 flex flex-col gap-2">
+          {stats?.is_premium ? (
+            <motion.button
+              whileHover={submitting ? {} : { scale: 1.015 }}
+              whileTap={submitting ? {} : { scale: 0.985 }}
+              onClick={handleManageSubscription}
+              disabled={submitting}
+              className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                submitting 
+                  ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
+                  : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
+              }`}
+            >
+              {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+              {submitting ? tm('processing') : "Manage Subscription"}
+            </motion.button>
+          ) : (
+            <>
+              <motion.button
+                whileHover={submitting ? {} : { scale: 1.015 }}
+                whileTap={submitting ? {} : { scale: 0.985 }}
+                onClick={handleSubscribeStripe}
+                disabled={submitting}
+                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                  submitting 
+                    ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
+                    : 'bg-brand-gold text-brand-void hover:opacity-95'
+                }`}
+              >
+                {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+                {submitting ? tm('processing') : "Subscribe with Card"}
+              </motion.button>
+
+              <button
+                onClick={handleSubscribeBalance}
+                disabled={submitting}
+                className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
+              >
+                Pay with internal balance
+              </button>
+            </>
+          )}
         </div>
 
         {/* ── Compare tiers toggle ─────────────────────────────── */}

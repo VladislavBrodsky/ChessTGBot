@@ -25,7 +25,7 @@ export default function CustomAlertModal() {
       setModal({
         type: 'alert',
         message: customEvent.detail.message,
-        callback: (ok) => {
+        callback: () => {
           if (customEvent.detail.callback) {
             customEvent.detail.callback();
           }

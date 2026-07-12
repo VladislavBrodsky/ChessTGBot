@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUserPlus, FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine, FaQrcode } from 'react-icons/fa';
+import { FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine, FaQrcode } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
-import { apiFetch } from '@/lib/api';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { telegramHaptic } from '@/lib/telegram';
@@ -24,12 +23,7 @@ interface EarningPoint {
   amount: number;
 }
 
-interface ReferralStats {
-  total_referrals: number;
-  active_referrals: number;
-  total_earnings_usdt: number;
-  earnings_chart: EarningPoint[];
-}
+// Interface removed since it was unused
 
 interface ReferralDashboardProps {
   referralCode?: string;
@@ -124,14 +118,14 @@ function EarningsChart({ data }: { data: EarningPoint[] }) {
 export default function ReferralDashboard({ referralCode, botUsername = 'FinChess_bot' }: ReferralDashboardProps) {
   const t = useTranslations('Referral');
   const { stats: userStats } = useUser();
-  const { data: statsData, isLoading: loading, error: statsError } = useSWRFetch('/api/v1/users/referrals/stats');
+  const { data: statsData, isLoading: loading } = useSWRFetch('/api/v1/users/referrals/stats');
 
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'total' | 'active' | 'rate' | 'earnings'>('total');
   const [showQr, setShowQr] = useState(false);
   
   const code = userStats?.referral_code || referralCode || '';
-  const bot = userStats?.bot_username || botUsername;
+  const botUsernameToUse = userStats?.bot_username || botUsername;
 
   // Use mock data if error or loading fails (matching previous fallback logic)
   const stats = statsData || {

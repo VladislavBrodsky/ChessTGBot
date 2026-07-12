@@ -18,6 +18,7 @@ import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import XPProgressBar from "@/components/XPProgressBar";
 
 export default function Home() {
  const t = useTranslations('Index');

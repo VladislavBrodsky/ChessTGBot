@@ -63,7 +63,7 @@ export default function TelegramInit() {
             console.log('Telegram WebApp Initialized: Expanded & Ready');
             }
         }
-    }, []);
+    }, [pathname, router]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {

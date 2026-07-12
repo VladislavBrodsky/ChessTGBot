@@ -4,11 +4,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaShieldAlt, FaChevronDown, FaQuestionCircle } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 

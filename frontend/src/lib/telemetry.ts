@@ -23,7 +23,7 @@ const getTelegramUserId = (): number | undefined => {
       const user = JSON.parse(userStr);
       return user.id;
     }
-  } catch (e) {
+  } catch {
     // Fail silently
   }
   return undefined;

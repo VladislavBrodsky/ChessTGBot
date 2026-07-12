@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
-import { apiFetch, getFullPhotoUrl } from '@/lib/api';
+import { getFullPhotoUrl } from '@/lib/api';
 import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [

@@ -64,7 +64,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
             }
             setPrevFen(currentFen);
         }
-    }, [fen]);
+    }, [fen, prevFen]);
 
     const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const gameForTurn = new Chess(fen === "start" ? START_FEN : fen, { skipValidation: true });

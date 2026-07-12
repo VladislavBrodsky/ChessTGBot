@@ -6,7 +6,7 @@ import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
 import Confetti from "react-confetti";
 import { Chessboard } from "react-chessboard";
-import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaCheck } from 'react-icons/fa';
+import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -549,7 +549,7 @@ export default function AcademyPage() {
 
                   if (isCompleted) {
                     bgClass = "tc-solved font-bold hover:scale-105";
-                    statusMark = <FaCheck className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
+                    statusMark = <FaCheckCircle className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
                   } else if (isSequentialLocked) {
                     bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-primary/20 cursor-not-allowed";
                     statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-brand-primary/10" />;
@@ -727,15 +727,15 @@ export default function AcademyPage() {
           <p className="text-center font-black text-amber-400 text-xs uppercase tracking-widest mb-1">{t('premium_perks')}</p>
           <ul className="space-y-2.5 text-[11px] text-brand-primary/80">
             <li className="flex items-start gap-2.5">
-              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
               <span className="leading-tight">{t('perk_li1')}</span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
               <span className="leading-tight">{t('perk_li2')}</span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheck size={9} /></span>
+              <span className="text-amber-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
               <span className="leading-tight">{t('perk_li3')}</span>
             </li>
           </ul>

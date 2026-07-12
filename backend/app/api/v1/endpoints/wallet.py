@@ -3,20 +3,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 
 logger = logging.getLogger(__name__)
-from sqlalchemy.future import select
-from sqlalchemy import desc, func, or_
-from app.core.database import get_db, get_read_db
-from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit
-from app.models.user import User
-from app.models.transaction import Transaction
-from app.crud import user as user_crud
-from pydantic import BaseModel, ConfigDict
-from typing import List, Optional
-from datetime import datetime, timezone, timedelta
+from sqlalchemy.future import select  # noqa: E402
+from sqlalchemy import desc, func, or_  # noqa: E402
+from app.core.database import get_db, get_read_db  # noqa: E402
+from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit  # noqa: E402
+from app.models.user import User  # noqa: E402
+from app.models.transaction import Transaction  # noqa: E402
+from app.crud import user as user_crud  # noqa: E402
+from pydantic import BaseModel, ConfigDict  # noqa: E402
+from typing import List, Optional  # noqa: E402
+from datetime import datetime, timezone, timedelta  # noqa: E402
 
 router = APIRouter()
 
-import base64
+import base64  # noqa: E402
 
 def crc16(data: bytes) -> int:
     crc = 0x0000
@@ -1214,7 +1214,7 @@ async def verify_deposit(
 
 
 # Stripe direct card deposit endpoints
-import stripe
+import stripe  # noqa: E402
 
 class StripeSessionRequest(BaseModel):
     amount: float  # Amount in USD, e.g., 10.00
@@ -1337,6 +1337,114 @@ async def stripe_verify_session(
     )
 
 
+class StripeSubscribeRequest(BaseModel):
+    billing_period: str = "monthly"  # currently only monthly is passed from frontend, but extensible
+    redirect_path: Optional[str] = None
+
+
+@router.post("/stripe/subscribe", response_model=StripeSessionResponse)
+async def create_stripe_subscription(
+    request: StripeSubscribeRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Creates a Stripe Checkout Session for a recurring Premium subscription.
+    """
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=501, detail="Stripe payments are not configured.")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    redirect_path = request.redirect_path or "/membership"
+    if not redirect_path.startswith("/"):
+        redirect_path = "/" + redirect_path
+
+    # If user already has an active subscription, block them
+    if current_user.stripe_subscription_id and current_user.is_premium_active:
+        raise HTTPException(
+            status_code=400, 
+            detail="You already have an active subscription. Please manage it via the portal."
+        )
+
+    # Use the appropriate price ID based on the billing period
+    if request.billing_period == "annual":
+        price_id = settings.STRIPE_ANNUAL_PRICE_ID
+    else:
+        price_id = settings.STRIPE_MONTHLY_PRICE_ID
+
+    try:
+        session_kwargs = {
+            'mode': 'subscription',
+            'payment_method_types': ['card'],
+            'line_items': [{'price': price_id, 'quantity': 1}],
+            'client_reference_id': str(current_user.telegram_id),
+            'subscription_data': {
+                'metadata': {
+                    'user_id': str(current_user.telegram_id),
+                    'tier': 'premium'
+                }
+            },
+            'success_url': f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
+            'cancel_url': f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
+        }
+        
+        # Avoid creating duplicate Stripe customers
+        if current_user.stripe_customer_id:
+            session_kwargs['customer'] = current_user.stripe_customer_id
+        else:
+            session_kwargs['customer_email'] = f"{current_user.telegram_id}@telegram.local" # Fallback if they have no email
+
+        checkout_session = stripe.checkout.Session.create(**session_kwargs)
+        
+        return StripeSessionResponse(
+            session_id=checkout_session.id,
+            checkout_url=checkout_session.url
+        )
+    except Exception as e:
+        logger.error(f"Failed to create Stripe subscription session: {e}")
+        raise HTTPException(status_code=500, detail="Stripe subscription creation failed.")
+
+
+class StripePortalRequest(BaseModel):
+    redirect_path: Optional[str] = None
+
+@router.post("/stripe/portal")
+async def create_stripe_portal(
+    request: StripePortalRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Creates a Stripe Customer Portal Session for managing subscriptions.
+    """
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=501, detail="Stripe payments are not configured.")
+
+    if not current_user.stripe_customer_id:
+        raise HTTPException(status_code=400, detail="You do not have an active Stripe customer profile.")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    redirect_path = request.redirect_path or "/membership"
+    if not redirect_path.startswith("/"):
+        redirect_path = "/" + redirect_path
+
+    try:
+        portal_session = stripe.billing_portal.Session.create(
+            customer=current_user.stripe_customer_id,
+            return_url=f"{settings.WEBAPP_URL}{redirect_path}"
+        )
+        return {"url": portal_session.url}
+    except Exception as e:
+        logger.error(f"Failed to create Stripe portal session: {e}")
+        raise HTTPException(status_code=500, detail="Could not generate portal link.")
+
+
+
 @router.post("/stripe/webhook")
 async def stripe_webhook(
     request: Request,
@@ -1363,6 +1471,25 @@ async def stripe_webhook(
         
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
+        
+        # Handle Subscriptions
+        if session.get('mode') == 'subscription':
+            client_reference_id = session.get('client_reference_id')
+            customer_id = session.get('customer')
+            subscription_id = session.get('subscription')
+            
+            if client_reference_id and customer_id and subscription_id:
+                user_id = int(client_reference_id)
+                user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                user = user_result.scalars().first()
+                if user:
+                    user.stripe_customer_id = customer_id
+                    user.stripe_subscription_id = subscription_id
+                    db.add(user)
+                    await db.commit()
+            return {"status": "success", "message": "Subscription mapped to user."}
+
+        # Handle One-Time Wallet Top-ups
         tx_id_str = session.get('metadata', {}).get('tx_id')
         user_id_str = session.get('metadata', {}).get('user_id')
         
@@ -1467,6 +1594,18 @@ async def stripe_webhook(
                     db.add(refund_tx)
                     db.add(user)
                     await db.commit()
+                    
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        await TelegramService.send_notification(
+                            user_id,
+                            "<b>↩️ Refund Processed</b>\n\n"
+                            f"A refund of <b>${amount_refunded / 100:.2f} USD</b> has been processed for your Stripe payment.\n"
+                            f"Your platform balance has been adjusted accordingly."
+                        )
+                    except Exception:
+                        pass
+                    
                     return {"status": "success", "message": "Refund processed."}
 
     elif event['type'] == 'charge.dispute.created':
@@ -1501,10 +1640,131 @@ async def stripe_webhook(
                         db.add(user)
                         await db.commit()
                         logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {dispute.get('id')})")
+                        
+                        try:
+                            from app.services.telegram_bot import TelegramService
+                            await TelegramService.send_notification(
+                                user_id,
+                                "<b>🚫 Account Frozen (Chargeback)</b>\n\n"
+                                "A Stripe chargeback (dispute) was opened against a recent payment.\n"
+                                "For security reasons, your account has been temporarily frozen. Please contact support."
+                            )
+                        except Exception:
+                            pass
+                            
                         return {"status": "success", "message": "Account frozen due to dispute."}
             except Exception as e:
                 logger.error(f"Failed to process dispute: {e}")
                 pass
+
+    elif event['type'] == 'invoice.payment_succeeded':
+        invoice = event['data']['object']
+        subscription_id = invoice.get('subscription')
+        
+        if subscription_id:
+            try:
+                subscription = stripe.Subscription.retrieve(subscription_id)
+                user_id_str = subscription.get('metadata', {}).get('user_id')
+                if user_id_str:
+                    user_id = int(user_id_str)
+                    
+                    # Update User to Premium for 30 days
+                    user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                    user = user_result.scalars().first()
+                    
+                    if user:
+                        user.is_premium = True
+                        user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
+                        
+                        from datetime import datetime, timezone, timedelta
+                        now = datetime.now(timezone.utc).replace(tzinfo=None)
+                        user.premium_expires_at = now + timedelta(days=30)
+                        
+                        db.add(user)
+                        
+                        # Add transaction ledger entry for subscription payment
+                        amount_paid = invoice.get('amount_paid', 0)
+                        if amount_paid > 0:
+                            sub_tx = Transaction(
+                                user_id=user_id,
+                                type="subscription",
+                                amount=amount_paid,
+                                fee=0,  # Stripe fees handled differently, but we log gross
+                                status="completed",
+                                reference_id=f"sub_{invoice.get('id', '')}"
+                            )
+                            db.add(sub_tx)
+                        
+                        await db.commit()
+                        
+                        try:
+                            from app.services.telegram_bot import TelegramService
+                            await TelegramService.send_notification(
+                                user_id,
+                                "<b>🌟 Premium Subscription Active!</b>\n\n"
+                                "Your Stripe payment was successful. You now have access to Premium features for 30 days!\n"
+                                "Enjoy your enhanced Chess experience."
+                            )
+                        except Exception:
+                            pass
+                        
+                        return {"status": "success", "message": "Subscription activated."}
+            except Exception as e:
+                logger.error(f"Failed to process subscription payment: {e}")
+
+    elif event['type'] == 'invoice.payment_failed':
+        invoice = event['data']['object']
+        subscription_id = invoice.get('subscription')
+        
+        if subscription_id:
+            try:
+                subscription = stripe.Subscription.retrieve(subscription_id)
+                user_id_str = subscription.get('metadata', {}).get('user_id')
+                if user_id_str:
+                    user_id = int(user_id_str)
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        await TelegramService.send_notification(
+                            user_id,
+                            "<b>⚠️ Subscription Payment Failed</b>\n\n"
+                            "We were unable to process your recent Premium subscription payment. "
+                            "Please update your payment method via the 'Manage Subscription' button to avoid losing access to Premium features."
+                        )
+                    except Exception:
+                        pass
+            except Exception as e:
+                logger.error(f"Failed to process payment_failed event: {e}")
+
+    elif event['type'] == 'customer.subscription.deleted':
+        subscription = event['data']['object']
+        user_id_str = subscription.get('metadata', {}).get('user_id')
+        
+        if user_id_str:
+            try:
+                user_id = int(user_id_str)
+                user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                user = user_result.scalars().first()
+                
+                if user:
+                    user.is_premium = False
+                    user.premium_expires_at = None
+                    user.stripe_subscription_id = None
+                    db.add(user)
+                    await db.commit()
+                    
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        await TelegramService.send_notification(
+                            user_id,
+                            "<b>ℹ️ Subscription Cancelled</b>\n\n"
+                            "Your Premium subscription has been cancelled or expired. You have been moved to the free tier."
+                        )
+                    except Exception:
+                        pass
+                    
+                    return {"status": "success", "message": "Subscription cancelled."}
+            except Exception as e:
+                logger.error(f"Failed to process subscription deletion: {e}")
 
     return {"status": "success", "message": "Event received."}
 

@@ -371,7 +371,7 @@ export default function PlayLobby() {
       socket.off('matchmaking_error', onMatchmakingError);
       socket.off('matchmaking_status', onMatchmakingStatus);
     };
-  }, [locale, router]);
+  }, [locale, router, playAudio]);
 
   const handleLauncherClick = () => {
     if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;

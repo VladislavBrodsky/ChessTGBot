@@ -95,7 +95,7 @@ class GameHistoryDetails(BaseModel):
     ended_at: str
     difficulty: Optional[str] = None
 
-from typing import List, Optional
+from typing import List, Optional  # noqa: E402
 
 @router.get("/history/{game_id}", response_model=GameHistoryDetails)
 async def get_game_history(

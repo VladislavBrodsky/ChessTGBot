@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
@@ -95,7 +95,7 @@ export default function WalletSelectorModal({
       setConnecting(null);
       if (onConnected) onConnected();
     }
-  }, [wallet]);
+  }, [wallet, onConnected]);
 
   const handleSelectWallet = async (appName: string) => {
     setConnecting(appName);

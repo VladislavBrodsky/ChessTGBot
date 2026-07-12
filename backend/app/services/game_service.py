@@ -5,9 +5,9 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
-from typing import Optional, Dict
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional, Dict  # noqa: E402
+from sqlalchemy.future import select  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 from app.core.database import AsyncSessionLocal  # noqa: E402
 from app.services.game_engine import GameEngine  # noqa: E402
 from app.services.session_manager import SessionManager  # noqa: E402

@@ -52,8 +52,7 @@ async def run_refund():
         # Execute refund atomically
         print(f"Crediting user balance by {refund_amount_cents} cents and marking transaction as failed...")
         # Re-query user with write lock
-        user_lock_res = await db.execute(select(User).where(User.telegram_id == telegram_id).with_for_update())
-        user_lock = user_lock_res.scalars().first()
+        await db.execute(select(User).where(User.telegram_id == telegram_id).with_for_update())
         
         # Re-query tx with write lock
         tx_lock_res = await db.execute(select(Transaction).where(Transaction.id == tx.id).with_for_update())

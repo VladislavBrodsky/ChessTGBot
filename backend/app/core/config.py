@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     # Payments
     STRIPE_SECRET_KEY: str | None = os.getenv("STRIPE_SECRET_KEY")
     STRIPE_WEBHOOK_SECRET: str | None = os.getenv("STRIPE_WEBHOOK_SECRET")
+    STRIPE_MONTHLY_PRICE_ID: str = os.getenv("STRIPE_MONTHLY_PRICE_ID") or "price_1TsCQ1CE6UUeabcxHwGAPE2t"
+    STRIPE_ANNUAL_PRICE_ID: str = os.getenv("STRIPE_ANNUAL_PRICE_ID") or "price_1TsGpMCE6UUeabcxh0AT9DMR"
     TON_API_KEY: str | None = os.getenv("TON_API_KEY")
     TON_CONSOLE_TOKEN: str | None = os.getenv("TON_CONSOLE_TOKEN")
 

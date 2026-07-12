@@ -89,7 +89,7 @@ async def get_stats(
     total_users: int = total_users_res.scalar_one() or 0
 
     premium_res = await db.execute(
-        select(func.count(User.id)).where(User.is_premium == True)
+        select(func.count(User.id)).where(User.is_premium)
     )
     premium_users: int = premium_res.scalar_one() or 0
 
@@ -820,9 +820,9 @@ async def _resolve_audience(db: AsyncSession, audience: str) -> list[int]:
     # all | premium | standard
     q = select(User.telegram_id)
     if audience == "premium":
-        q = q.where(User.is_premium == True)
+        q = q.where(User.is_premium)
     elif audience == "standard":
-        q = q.where(User.is_premium == False)
+        q = q.where(~User.is_premium)
 
     res = await db.execute(q)
     return [_extract_id(v) for v in res.scalars().all() if _extract_id(v) is not None]

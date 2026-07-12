@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
+import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import Confetti from "react-confetti";
 import { telegramHaptic } from "@/lib/telegram";
@@ -66,12 +66,11 @@ export default function DepositModal({
   const { stats } = useUser();
 
   const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
-  const cardEnabled = true; // Always enable bank card tab since we use Stripe
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
-  const [verifyingSession, setVerifyingSession] = useState<boolean>(false);
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
-
+  const cardEnabled = true; // Always enable bank card tab since we use Stripe
+  
   const [depositAmount, setDepositAmount] = useState<string>(() => {
     if (chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance) {
       return ((chosenWager - walletBalance) / 100).toFixed(2);
@@ -428,11 +427,10 @@ export default function DepositModal({
         verifyStripeSession(sessionId);
       }
     }
-  }, []);
+  }, [verifyStripeSession]);
 
   // Poll server to verify Stripe Checkout completion
-  const verifyStripeSession = async (sessionId: string) => {
-    setVerifyingSession(true);
+  const verifyStripeSession = useCallback(async (sessionId: string) => {
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -487,10 +485,9 @@ export default function DepositModal({
       console.error(err);
       setErrorMessage("Verification error.");
     } finally {
-      setVerifyingSession(false);
       setProcessing(false);
     }
-  };
+  }, [onSuccess]);
 
   // Launch the Stripe Checkout redirection
   const handleCardTopUp = async () => {

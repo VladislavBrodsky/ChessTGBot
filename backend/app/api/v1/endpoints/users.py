@@ -12,8 +12,8 @@ settings = get_settings()
 
 router = APIRouter()
 
-from typing import Optional, List
-from datetime import datetime, timezone, timedelta
+from typing import Optional, List  # noqa: E402
+from datetime import datetime, timezone, timedelta  # noqa: E402
 
 class LeaderboardItem(BaseModel):
     telegram_id: int

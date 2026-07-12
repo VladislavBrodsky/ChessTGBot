@@ -582,7 +582,7 @@ async def verify_puzzle_solution(
     }
 
 
-from datetime import datetime
+from datetime import datetime  # noqa: E402
 
 class XpTransactionItem(BaseModel):
     id: int

@@ -401,27 +401,27 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     }
   }, [gameNotice]);
 
-  const getNoticeMessage = (key: 'check' | 'illegal' | 'illegal_check') => {
-    const dictionary: { [lang: string]: { check: string; illegal: string; illegal_check: string } } = {
+  const getNoticeMessage = useCallback((key: keyof typeof dictionary.en) => {
+    const dictionary = {
       en: {
-        check: '⚠️ YOU ARE IN CHECK!',
+        check: '⚠️ You are in Check!',
         illegal: '❌ Illegal move!',
-        illegal_check: '❌ Illegal move! Escape check.'
+        illegal_check: '❌ Illegal move! You must escape check.'
       },
       ru: {
-        check: '⚠️ ВАМ ШАХ!',
+        check: '⚠️ Вам шах!',
         illegal: '❌ Недопустимый ход!',
-        illegal_check: '❌ Недопустимый ход! Защитите короля от шаха.'
+        illegal_check: '❌ Недопустимый ход! Уйдите от шаха.'
       },
       es: {
-        check: '⚠️ ¡ESTÁS EN JAQUE!',
+        check: '⚠️ ¡Estás en Jaque!',
         illegal: '❌ ¡Movimiento ilegal!',
-        illegal_check: '❌ ¡Movimiento ilegal! Escapa del jaque.'
+        illegal_check: '❌ ¡Movimiento ilegal! Debes escapar del jaque.'
       },
       fr: {
-        check: '⚠️ VOUS ÊTES EN ÉCHEC !',
+        check: '⚠️ Vous êtes en Échec !',
         illegal: '❌ Mouvement illégal !',
-        illegal_check: '❌ Mouvement illégal ! Échappez à l\'échec.'
+        illegal_check: "❌ Mouvement illégal ! Échappez à l'échec."
       },
       de: {
         check: '⚠️ SIE SIND IM SCHACH!',
@@ -455,9 +455,9 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       }
     };
     const lang = locale || 'en';
-    const dict = dictionary[lang] || dictionary.en;
+    const dict = dictionary[lang as keyof typeof dictionary] || dictionary.en;
     return dict[key];
-  };
+  }, [locale]);
 
   // Trigger check notification on turn start
   useEffect(() => {
@@ -474,7 +474,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     } else if (!isMyTurn || !gameState.is_check) {
       lastCheckedFenRef.current = currentFen;
     }
-  }, [gameState, isMyTurn, isGameOver, locale]);
+  }, [gameState, isMyTurn, isGameOver, locale, getNoticeMessage]);
 
   const handleBoardMove = (move: { from: string; to: string; promotion?: string }): boolean => {
     const success = makeMove(move);
@@ -509,8 +509,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       if (!res.ok) throw new Error("Backend error");
       const data = await res.json();
       router.push(`/${locale}/game?id=${data.game_id}`);
-    } catch (e) {
-      console.error("Failed to create computer game", e);
+    } catch {
+      console.error("Failed to create computer game");
       setRematchStatus('idle');
     }
   };
@@ -634,7 +634,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
     prevFenRef.current = currentFen;
     prevStatusRef.current = currentStatus;
-  }, [gameState, userId]);
+  }, [gameState, userId, playAudio]);
 
   const botUsername = userStats?.bot_username || "FinChess_bot";
   const inviteLink = `https://t.me/${botUsername}/app?startapp=${gameId}`;
@@ -646,7 +646,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     if (window.Telegram?.WebApp) {
       try {
         window.Telegram.WebApp.openTelegramLink(shareUrl);
-      } catch (err) {
+      } catch {
         window.open(shareUrl, '_blank');
       }
     } else {
@@ -673,7 +673,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     if (window.Telegram?.WebApp) {
       try {
         window.Telegram.WebApp.openTelegramLink(shareUrl);
-        success = true;
       } catch (err) {
         console.warn("Telegram openTelegramLink failed", err);
       }

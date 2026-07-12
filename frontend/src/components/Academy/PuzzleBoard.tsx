@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Chess } from "chess.js";
 import ChessBoardComponent from "@/components/game/ChessBoard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -60,7 +60,7 @@ export default function PuzzleBoard({
     try {
       const tempGame = new Chess(game.fen(), { skipValidation: true });
       moveResult = tempGame.move(move);
-    } catch (e) {
+    } catch {
       return false;
     }
 

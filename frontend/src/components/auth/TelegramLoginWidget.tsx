@@ -23,7 +23,6 @@ export default function TelegramLoginWidget({
   redirectUrl
 }: TelegramLoginWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
     // Make callback globally available for the widget

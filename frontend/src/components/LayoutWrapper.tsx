@@ -1,9 +1,9 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Onboarding from './Onboarding';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
 import { useNavbar } from '@/context/NavbarContext';
@@ -65,8 +65,8 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
     // Use context-driven navbar hide state (reliable, no DOM polling)
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
 
-    // Check active game status and redirect if needed
-    const checkActiveGame = async () => {
+  // Check active game status and redirect if needed
+  const checkActiveGame = useCallback(async () => {
         try {
             const res = await apiFetch('/api/v1/game/active');
             if (res.ok) {
@@ -88,7 +88,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         } finally {
             setIsCheckingActiveGame(false);
         }
-    };
+  }, [pathname, locale, urlGameId, router]);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -103,7 +103,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         if (typeof window !== 'undefined') {
             checkActiveGame();
         }
-    }, [pathname, locale, urlGameId]);
+  }, [checkActiveGame]);
 
     useEffect(() => {
         if (typeof window === 'undefined' || !window.Telegram?.WebApp) return;
@@ -143,7 +143,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         };
     }, [pathname, locale, router, activeGameId, urlGameId]);
 
-    const { theme, toggleTheme } = useTheme();
+
 
     const isCorePage = pathname.endsWith('/game') || pathname.endsWith('/home') || pathname === '/' || pathname === `/${locale}`;
 

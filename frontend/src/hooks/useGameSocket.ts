@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { getSocket } from "@/lib/socket";
-import { apiFetch } from "@/lib/api";
-import { Chess, Move } from "chess.js";
+import { Chess } from "chess.js";
 import { logClientMessage } from "@/lib/logger";
 import { computeStockfishMove } from "@/lib/stockfishEngine";
 
@@ -65,9 +64,9 @@ export const useGameSocket = (gameId: string) => {
                                 uci: botUci
                             });
                         }
-                    } catch (err: any) {
-                        console.error("Stockfish/Minimax execution failed entirely:", err);
-                        logClientMessage("WARNING", `Stockfish/Minimax failed entirely: ${err?.message || err}`);
+                    } catch {
+                        console.error("Stockfish/Minimax execution failed entirely");
+                        logClientMessage("WARNING", `Stockfish/Minimax failed entirely`);
                     }
                 }, 800); // 800ms natural delay
             }
