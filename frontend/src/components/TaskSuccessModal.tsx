@@ -123,7 +123,7 @@ export default function TaskSuccessModal() {
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-black text-[11px] font-black uppercase tracking-widest shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
               >
                 {/* Continuous visual shimmer */}
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
                 AWESOME!
               </button>
             </motion.div>

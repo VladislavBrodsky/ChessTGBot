@@ -69,7 +69,7 @@ export default function RematchChoiceDrawer({
             onClick={() => onSendRematchOffer(true)}
             className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" />
             <span className="text-xs uppercase font-black tracking-[0.2em] flex items-center gap-1">
               {tg('double_stakes_choice')}
             </span>

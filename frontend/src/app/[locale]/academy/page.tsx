@@ -490,10 +490,10 @@ export default function AcademyPage() {
 
             <Button
               variant="action"
-              className="w-full shadow-neon overflow-hidden"
+              className="w-full shadow-neon relative overflow-hidden"
               leftIcon={<FaPlay className="text-[10px]" />}
             >
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
               <span className="relative z-10">
                 {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
               </span>
@@ -763,7 +763,7 @@ export default function AcademyPage() {
             onClick={handleUpgradeWithBalance}
             className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 border border-yellow-400/30 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-full animate-shimmer" />
             <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
             <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
           </motion.button>
