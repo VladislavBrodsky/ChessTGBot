@@ -52,8 +52,16 @@ export default function WalletPage() {
 
   useEffect(() => {
     fetchWalletData();
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
+    if (typeof window !== 'undefined') {
+      if (window.Telegram?.WebApp) {
+        setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
+      }
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const sessionId = params.get('session_id');
+      if (status === 'success' && sessionId) {
+        setActiveModal('deposit');
+      }
     }
   }, []);
 

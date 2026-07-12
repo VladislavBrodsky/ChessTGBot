@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins, FaCreditCard } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
+import Confetti from "react-confetti";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
@@ -65,7 +66,11 @@ export default function DepositModal({
   const { stats } = useUser();
 
   const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
-  const cardEnabled = !!TRANSAK_API_KEY && chosenWager === undefined;
+  const cardEnabled = true; // Always enable bank card tab since we use Stripe
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
+  const [verifyingSession, setVerifyingSession] = useState<boolean>(false);
+  const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
 
   const [depositAmount, setDepositAmount] = useState<string>(() => {
     if (chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance) {
@@ -406,62 +411,124 @@ export default function DepositModal({
     }
   };
 
-  // Launch the Transak on-ramp to buy USDT-on-TON into the user's OWN connected wallet.
-  // No platform balance is credited here; the user later deposits via the Crypto tab.
-  const handleCardTopUp = () => {
-    const amt = parseFloat(depositAmount);
-    if (isNaN(amt) || amt < TRANSAK_MIN_USD) {
-      setErrorMessage(tw('card_min_notice', { min: TRANSAK_MIN_USD }));
-      return;
+  // Handle window resizing for full-screen confetti
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     }
-    if (!wallet) {
-      setErrorMessage(tw('connect_wallet_cta'));
-      return;
-    }
-    if (!TRANSAK_API_KEY) {
-      setErrorMessage("Card payments are not configured.");
-      return;
-    }
+  }, []);
 
-    // Transak expects a user-friendly (non-bounceable) TON address as destination.
-    let destAddress = wallet.account.address;
-    try {
-      destAddress = Address.parse(wallet.account.address).toString({ urlSafe: true, bounceable: false });
-    } catch { /* fall back to raw address */ }
-
-    const base = TRANSAK_ENVIRONMENT === "PRODUCTION"
-      ? "https://global.transak.com"
-      : "https://global-stg.transak.com";
-    const params = new URLSearchParams({
-      apiKey: TRANSAK_API_KEY,
-      environment: TRANSAK_ENVIRONMENT,
-      productsAvailed: "BUY",
-      cryptoCurrencyList: "USDT",
-      defaultCryptoCurrency: "USDT",
-      network: "ton",
-      walletAddress: destAddress,
-      disableWalletAddressForm: "true",
-      defaultFiatAmount: String(Math.floor(amt)),
-      fiatCurrency: "USD",
-    });
-    const url = `${base}/?${params.toString()}`;
-
-    setErrorMessage("");
-    telegramHaptic('medium');
-    try {
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
-        window.Telegram.WebApp.openLink(url);
-      } else {
-        window.open(url, '_blank', 'noopener,noreferrer');
+  // Check URL parameters for Stripe checkout redirections on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const sessionId = params.get('session_id');
+      if (status === 'success' && sessionId) {
+        verifyStripeSession(sessionId);
       }
-    } catch {
-      window.open(url, '_blank', 'noopener,noreferrer');
     }
+  }, []);
 
-    // Watch for the purchased USDT landing in the user's wallet so the
-    // second (on-chain deposit) step starts itself instead of relying on
-    // the user to come back and figure it out.
-    startArrivalWatch();
+  // Poll server to verify Stripe Checkout completion
+  const verifyStripeSession = async (sessionId: string) => {
+    setVerifyingSession(true);
+    setProcessing(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+    try {
+      const res = await apiFetch(`/api/v1/wallet/stripe/verify-session?session_id=${sessionId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "completed") {
+          setVerificationSuccess(true);
+          setSuccessMessage(`Top-Up of $${(data.credited_amount / 100).toFixed(2)} completed!`);
+          setShowConfetti(true);
+          telegramHaptic('success');
+          onSuccess(); // updates user balance on parent
+          
+          // Clear query params from URL safely without page reload
+          const url = new URL(window.location.href);
+          url.searchParams.delete('status');
+          url.searchParams.delete('session_id');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        } else {
+          // Poll for completed state since webhook can have transient latency
+          let verified = false;
+          for (let i = 0; i < 5; i++) {
+            await new Promise(r => setTimeout(r, 2000));
+            const retryRes = await apiFetch(`/api/v1/wallet/stripe/verify-session?session_id=${sessionId}`);
+            if (retryRes.ok) {
+              const retryData = await retryRes.json();
+              if (retryData.status === "completed") {
+                setVerificationSuccess(true);
+                setSuccessMessage(`Top-Up of $${(retryData.credited_amount / 100).toFixed(2)} completed!`);
+                setShowConfetti(true);
+                telegramHaptic('success');
+                onSuccess();
+                verified = true;
+                
+                const url = new URL(window.location.href);
+                url.searchParams.delete('status');
+                url.searchParams.delete('session_id');
+                window.history.replaceState({}, '', url.pathname + url.search);
+                break;
+              }
+            }
+          }
+          if (!verified) {
+            setErrorMessage("Payment verification is taking longer than expected. Balance will update shortly.");
+          }
+        }
+      } else {
+        setErrorMessage("Could not verify session with server.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage("Verification error.");
+    } finally {
+      setVerifyingSession(false);
+      setProcessing(false);
+    }
+  };
+
+  // Launch the Stripe Checkout redirection
+  const handleCardTopUp = async () => {
+    const amt = parseFloat(depositAmount);
+    if (isNaN(amt) || amt < 1.0) {
+      setErrorMessage("Minimum deposit amount is $1.00 USD");
+      return;
+    }
+    setProcessing(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+    telegramHaptic('medium');
+
+    try {
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : "/wallet";
+      const res = await apiFetch("/api/v1/wallet/stripe/create-session", {
+        method: "POST",
+        body: JSON.stringify({ amount: amt, redirect_path: currentPath })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "Failed to create checkout session.");
+      }
+      const data = await res.json();
+      
+      // Redirect using Telegram WebApp openLink if available
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
+        window.Telegram.WebApp.openLink(data.checkout_url);
+      } else {
+        window.open(data.checkout_url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || "Stripe top up failed. Please retry.");
+      telegramHaptic('error');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
@@ -469,6 +536,39 @@ export default function DepositModal({
   // Portaled to document.body so a transformed/filtered ancestor can never
   // scope this fixed overlay (the leaderboard-modal stacking trap).
   if (typeof document === 'undefined') return null;
+
+  if (verificationSuccess) {
+    return createPortal(
+      <div className="bottom-drawer-backdrop z-[100] flex items-center justify-center p-4">
+        {showConfetti && <Confetti width={windowDimensions.width} height={windowDimensions.height} recycle={false} numberOfPieces={200} />}
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-brand-gold/30 bg-brand-void/95 backdrop-blur-xl shadow-2xl space-y-4"
+        >
+          <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-black animate-pulse">
+            ✓
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-lg font-black text-brand-gold uppercase tracking-wider animate-pulse-slow">Top-Up Successful!</h2>
+            <p className="text-xs text-brand-primary/60 font-bold uppercase tracking-widest">{successMessage}</p>
+          </div>
+          <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45">Updated Balance</span>
+            <div className="text-2xl font-black text-emerald-400 mt-1">${(walletBalance ? walletBalance / 100 : 0).toFixed(2)} USDT</div>
+          </div>
+          <button
+            onClick={() => { setVerificationSuccess(false); setSuccessMessage(""); onClose(); }}
+            className="w-full py-3 rounded-xl bg-brand-gold text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+          >
+            Acknowledge & Close
+          </button>
+        </motion.div>
+      </div>,
+      document.body
+    );
+  }
+
   return createPortal(
     <div className="bottom-drawer-backdrop z-[100]">
        <motion.div
@@ -861,8 +961,21 @@ export default function DepositModal({
           {activeTab === 'card' && (
           <div className="space-y-4">
             <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-              {tw('card_desc')}
+              Top up your platform balance instantly using a Credit/Debit Card.
             </p>
+
+            {/* Visa / MasterCard Logos display */}
+            <div className="flex items-center justify-center gap-4 py-2.5 bg-brand-void/35 rounded-xl border border-brand-border-opacity-5">
+              <svg className="w-10 h-6" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.158 12.877L11.83 2.062h2.678l-1.672 10.815H10.158zm7.986-10.518c-.524-.202-1.344-.42-2.368-.42-2.616 0-4.457 1.393-4.471 3.39-.016 1.472 1.317 2.294 2.32 2.785 1.03.504 1.378.825 1.373 1.274-.008.687-.826.998-1.587.998-.98 0-1.666-.226-2.549-.613l-.36-.169-.382 2.476c.666.307 1.895.572 3.16.58 2.783 0 4.59-1.379 4.614-3.51.01-1.17-.696-2.065-2.222-2.799-.908-.46-1.465-.767-1.46-1.235.006-.419.467-.855 1.474-.855.836-.016 1.444.178 1.916.379l.228.1.396-2.535l-.082-.008zm4.496.223h-2.072c-.642 0-1.12.186-1.398.855l-3.953 9.44H22.92l.534-1.484h3.272l.309 1.484h2.883L27.322 2.89l.006-.008zm.979 6.22c.245-1.196.476-2.316.59-2.871l.169.815c.08.387.436 2.056.436 2.056h-1.195zM4.148 2.062L1.24 10.02c-.31.815-.558.984-1.24 1.13v.58H5.09c.642 0 1.144-.443 1.28-1.13l2.254-10.36H4.148z" fill="#FFFFFF"/>
+              </svg>
+              <div className="w-px h-6 bg-brand-border-opacity-10" />
+              <svg className="w-10 h-6" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="7.5" cy="7.5" r="7.5" fill="#EB001B"/>
+                <circle cx="16.5" cy="7.5" r="7.5" fill="#F79E1B"/>
+                <path d="M12 11.5A7.478 7.478 0 0113.882 7.5 7.478 7.478 0 0112 3.5a7.478 7.478 0 01-1.882 4A7.478 7.478 0 0112 11.5z" fill="#FF5F00"/>
+              </svg>
+            </div>
 
             {/* Amount (USD) */}
             <div className="flex flex-col space-y-1.5">
@@ -875,44 +988,47 @@ export default function DepositModal({
                   disabled={processing}
                   onChange={(e) => setDepositAmount(e.target.value)}
                   className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
-                  placeholder={`${TRANSAK_MIN_USD}.00`}
-                  min={TRANSAK_MIN_USD}
+                  placeholder="10.00"
+                  min="1"
                 />
               </div>
-              <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-wider">{tw('card_min_notice', { min: TRANSAK_MIN_USD })}</span>
+              <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-wider">Minimum top-up is $1.00 USD</span>
             </div>
 
-            {/* Destination + CTA */}
-            {!wallet ? (
-              <button
-                type="button"
-                onClick={() => tonConnectUI.openModal()}
-                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <FaWallet size={11} />
-                <span>{tw('connect_wallet_cta')}</span>
-              </button>
-            ) : (
-              <>
-                <div className="flex flex-col space-y-1">
-                  <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('card_destination_label')}</label>
-                  <div className="w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate">
-                    {wallet.account.address.slice(0, 6)}...{wallet.account.address.slice(-4)}
-                  </div>
+            {/* Fee Breakdown Display */}
+            {!isNaN(parseFloat(depositAmount)) && parseFloat(depositAmount) > 0 && (
+              <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60 animate-fade-in">
+                <div className="flex justify-between">
+                  <span>Credited to Balance:</span>
+                  <span className="text-emerald-400 font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCardTopUp}
-                  className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <FaCreditCard size={11} />
-                  <span>{tw('buy_with_card_cta')}</span>
-                </button>
-              </>
+                <div className="flex justify-between">
+                  <span>Platform Fee (5%):</span>
+                  <span className="text-rose-400 font-mono">${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
+                  <span>Total Charged:</span>
+                  <span className="font-mono">${(parseFloat(depositAmount) * 1.05).toFixed(2)}</span>
+                </div>
+              </div>
             )}
 
-            <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-[10px] font-bold text-amber-300/80 leading-normal uppercase tracking-wider text-center">
-              {tw('card_await_funds_notice')}
+            <button
+              type="button"
+              onClick={handleCardTopUp}
+              disabled={processing || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) < 1.0}
+              className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-98"
+            >
+              {processing ? (
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />
+              ) : (
+                <FaCreditCard size={11} />
+              )}
+              <span>{processing ? "Preparing..." : "Top Up via Credit Card"}</span>
+            </button>
+
+            <div className="p-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-bg-opacity-5 text-[9px] font-bold text-brand-primary/50 leading-relaxed uppercase tracking-wider text-center">
+              Payments are secured by Stripe. Funds are instantly credited to your platform balance upon completion.
             </div>
           </div>
           )}

@@ -76,8 +76,8 @@ class Settings(BaseSettings):
     BACKEND_URL: str = ""
 
     # Payments
-    STRIPE_SECRET_KEY: str | None = None
-    STRIPE_WEBHOOK_SECRET: str | None = None
+    STRIPE_SECRET_KEY: str | None = os.getenv("STRIPE_SECRET_KEY")
+    STRIPE_WEBHOOK_SECRET: str | None = os.getenv("STRIPE_WEBHOOK_SECRET")
     TON_API_KEY: str | None = os.getenv("TON_API_KEY")
     TON_CONSOLE_TOKEN: str | None = os.getenv("TON_CONSOLE_TOKEN")
 

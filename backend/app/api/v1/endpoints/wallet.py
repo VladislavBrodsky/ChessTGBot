@@ -1213,3 +1213,212 @@ async def verify_deposit(
     }
 
 
+# Stripe direct card deposit endpoints
+import stripe
+
+class StripeSessionRequest(BaseModel):
+    amount: float  # Amount in USD, e.g., 10.00
+    redirect_path: Optional[str] = "/wallet"
+
+class StripeSessionResponse(BaseModel):
+    session_id: str
+    checkout_url: str
+
+class StripeVerifyResponse(BaseModel):
+    status: str
+    credited_amount: int
+    new_balance: int
+
+@router.post("/stripe/create-session", response_model=StripeSessionResponse, dependencies=[Depends(rate_limit(limit=5, window=60))])
+async def stripe_create_session(
+    request: StripeSessionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.core.config import get_settings
+    settings = get_settings()
+    
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=501, detail="Stripe configuration is missing on server.")
+        
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
+    if request.amount < 1.0:
+        raise HTTPException(status_code=400, detail="Minimum deposit amount is $1.00 USD.")
+        
+    # Calculate charged amount with 5% platform fee
+    charged_amount_cents = int(round(request.amount * 1.05 * 100))
+    credited_amount_cents = int(round(request.amount * 100))
+    fee_cents = charged_amount_cents - credited_amount_cents
+    
+    # Generate pending transaction in DB
+    pending_tx = Transaction(
+        user_id=current_user.telegram_id,
+        type="deposit",
+        amount=credited_amount_cents,
+        fee=fee_cents,
+        status="pending",
+        reference_id=None  # will be set to session ID shortly
+    )
+    db.add(pending_tx)
+    await db.flush() # get ID
+    
+    # Sanitize redirect path
+    redirect_path = request.redirect_path or "/wallet"
+    if not redirect_path.startswith("/"):
+        redirect_path = "/" + redirect_path
+
+    try:
+        # Create Stripe Checkout Session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': 'Web3Chess Platform Balance Top-Up',
+                            'description': f'Credited: ${request.amount:.2f} USD | Fee (5%): ${(request.amount * 0.05):.2f} USD',
+                        },
+                        'unit_amount': charged_amount_cents,
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            metadata={
+                'user_id': str(current_user.telegram_id),
+                'tx_id': str(pending_tx.id)
+            },
+            success_url=f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
+        )
+        
+        pending_tx.reference_id = checkout_session.id
+        await db.commit()
+        
+        return StripeSessionResponse(
+            session_id=checkout_session.id,
+            checkout_url=checkout_session.url
+        )
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Failed to create Stripe checkout session: {e}")
+        raise HTTPException(status_code=500, detail="Stripe session creation failed.")
+
+
+@router.get("/stripe/verify-session", response_model=StripeVerifyResponse)
+async def stripe_verify_session(
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    # Retrieve the transaction
+    tx_result = await db.execute(
+        select(Transaction).filter(
+            Transaction.reference_id == session_id,
+            Transaction.user_id == current_user.telegram_id
+        )
+    )
+    tx = tx_result.scalars().first()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found.")
+        
+    return StripeVerifyResponse(
+        status=tx.status,
+        credited_amount=tx.amount,
+        new_balance=current_user.balance
+    )
+
+
+@router.post("/stripe/webhook")
+async def stripe_webhook(
+    request: Request,
+    stripe_signature: str = Header(None, alias="Stripe-Signature"),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.core.config import get_settings
+    settings = get_settings()
+    
+    if not settings.STRIPE_SECRET_KEY or not settings.STRIPE_WEBHOOK_SECRET:
+        raise HTTPException(status_code=501, detail="Stripe webhook keys not configured on server.")
+        
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    payload = await request.body()
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, stripe_signature, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid payload.")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature.")
+        
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        tx_id_str = session.get('metadata', {}).get('tx_id')
+        user_id_str = session.get('metadata', {}).get('user_id')
+        
+        if tx_id_str and user_id_str:
+            tx_id = int(tx_id_str)
+            user_id = int(user_id_str)
+            
+            # Lock the user and transaction to avoid race conditions
+            tx_result = await db.execute(
+                select(Transaction).filter(
+                    Transaction.id == tx_id,
+                    Transaction.user_id == user_id
+                ).with_for_update()
+            )
+            tx = tx_result.scalars().first()
+            
+            if tx and tx.status == "pending":
+                # Get the user
+                user_result = await db.execute(
+                    select(User).filter(User.telegram_id == user_id).with_for_update()
+                )
+                user = user_result.scalars().first()
+                
+                if user:
+                    # Update status
+                    tx.status = "completed"
+                    user.balance += tx.amount
+                    
+                    # Also log the fee transaction separately for ledger clarity
+                    fee_tx = Transaction(
+                        user_id=user_id,
+                        type="deposit_fee",
+                        amount=-tx.fee,
+                        fee=0,
+                        status="completed",
+                        reference_id=f"fee_{session.get('id', '')[:16]}"
+                    )
+                    db.add(fee_tx)
+                    
+                    db.add(user)
+                    db.add(tx)
+                    await db.commit()
+                    
+                    # Send telegram notification
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        notification_text = (
+                            f"<b>💳 Card Top-Up Confirmed!</b>\n\n"
+                            f"• <b>Payment Method:</b> Credit/Debit Card\n"
+                            f"• <b>Amount Credited:</b> +${tx.amount / 100:.2f} USD\n"
+                            f"• <b>Platform Top-Up Fee (5%):</b> -${tx.fee / 100:.2f} USD\n"
+                            f"• <b>Stripe Session:</b> <code>{session.get('id', '')[:20]}...</code>\n\n"
+                            f"<i>Your balance has been updated. Platform Balance: ${user.balance / 100:.2f} USD. Let's play! ♟️🎮</i>"
+                        )
+                        await TelegramService.send_notification(user_id, notification_text)
+                    except Exception as notify_err:
+                        logger.warning(f"Failed to send telegram notification: {notify_err}")
+                        
+                    return {"status": "success", "message": "Transaction credited successfully."}
+            else:
+                return {"status": "ignored", "message": "Transaction already completed or not found."}
+                
+    return {"status": "success", "message": "Event received."}
+
+
