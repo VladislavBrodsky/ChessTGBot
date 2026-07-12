@@ -10,6 +10,9 @@ import { apiFetch } from "@/lib/api";
 import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { useUser } from "@/context/UserContext";
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function ChallengesPage() {
   const locale = useLocale();
@@ -367,7 +370,7 @@ export default function ChallengesPage() {
             {loading ? (
               <div className="w-full flex flex-col space-y-3">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className="glass-panel p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface animate-pulse flex items-center justify-between">
+                  <Card key={n} variant="glass" className="p-4 border-brand-border-opacity-10 animate-pulse flex items-center justify-between">
                     <div className="flex items-center gap-4 w-2/3">
                       <div className="w-9 h-9 rounded-xl bg-brand-primary opacity-10 shrink-0" />
                       <div className="flex flex-col space-y-1.5 w-full">
@@ -376,7 +379,7 @@ export default function ChallengesPage() {
                       </div>
                     </div>
                     <div className="w-16 h-1.5 bg-brand-primary opacity-5 rounded-full" />
-                  </div>
+                  </Card>
                 ))}
               </div>
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
@@ -388,17 +391,24 @@ export default function ChallengesPage() {
                 <motion.div
                   key={task.id}
                   whileHover={{ scale: 1.01 }}
-                  className={`glass-panel p-4 rounded-2xl border ${task.completed && !task.claimed ? 'border-brand-border-opacity-20 bg-brand-bg-opacity-5' : 'border-brand-border-opacity-10 bg-brand-surface'} transition-all shadow-sm`}
+                  className="w-full"
                 >
-                  <div className="flex justify-between items-center">
+                  <Card 
+                    variant="glass" 
+                    className={`p-4 ${task.completed && !task.claimed ? 'border-brand-border-opacity-20 bg-brand-bg-opacity-5' : 'border-brand-border-opacity-10'} transition-all shadow-sm`}
+                  >
+                    <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${task.completed ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-5 text-brand-primary opacity-40 border border-brand-border-opacity-10'}`}>
                         {task.completed ? <FaCheckCircle /> : <FaStar />}
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-brand-primary mb-1.5 uppercase tracking-wide">
+                        <h4 className="text-xs font-bold text-brand-primary mb-0.5 uppercase tracking-wide">
                           {t(task.title_key)}
                         </h4>
+                        <p className="text-[10px] text-brand-primary opacity-50 mb-2 leading-snug max-w-[180px]">
+                          {t(`${task.title_key}_desc`)}
+                        </p>
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">
                             <div className="h-full bg-brand-primary transition-all duration-500" style={{ width: `${(task.progress / task.target_count) * 100}%` }} />
@@ -409,25 +419,25 @@ export default function ChallengesPage() {
                     </div>
 
                     {task.completed && !task.claimed ? (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <Button
+                        variant="action"
+                        size="sm"
                         disabled={claimingId === task.task_id}
                         onClick={() => handleClaim(task.task_id)}
-                        className="px-4 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="animate-pulse"
                       >
                         {claimingId === task.task_id ? '...' : t('claim')}
-                      </motion.button>
+                      </Button>
                     ) : task.claimed ? (
-                      <span className="text-[10px] font-bold text-brand-primary opacity-20 uppercase tracking-widest">{t('claimed_status')}</span>
+                      <Badge variant="secondary" className="opacity-40">{t('claimed_status')}</Badge>
                     ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
+                      <Button
+                        variant="action"
+                        size="sm"
                         onClick={() => handleVerify(task.task_id, task.title_key)}
-                        className="px-3.5 py-1.5 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-widest shadow-sm cursor-pointer"
                       >
                         {t('verify_btn')}
-                      </motion.button>
+                      </Button>
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
@@ -435,6 +445,7 @@ export default function ChallengesPage() {
                       </div>
                     )}
                   </div>
+                  </Card>
                 </motion.div>
               ))
             )}

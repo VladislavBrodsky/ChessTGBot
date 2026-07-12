@@ -9,6 +9,9 @@ import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { Card } from './ui/Card';
+import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
 
 const UsdtLogo = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 200 200" fill="currentColor" className={className} width="1em" height="1em">
@@ -211,10 +214,10 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
     <div className="w-full space-y-4">
       {/* Header - Pill format */}
       <div className="flex justify-center mb-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10">
+        <Badge variant="primary" className="gap-2 bg-brand-primary/5 dark:bg-brand-primary/10 border-brand-border-opacity-10 opacity-80">
           <FaChartLine className="text-[10px] opacity-60" />
           {t('dashboard_title')}
-        </div>
+        </Badge>
       </div>
 
       {/* 2x2 metric blocks - synced with Battles / ELO style */}
@@ -273,8 +276,9 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.15 }}
-          className="glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface overflow-hidden"
+            className="w-full"
         >
+          <Card variant="glass" className="w-full border-brand-border-opacity-10">
           {activeTab === 'total' && (
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
@@ -374,24 +378,25 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               </p>
             </div>
           )}
+          </Card>
         </motion.div>
       </AnimatePresence>
 
       {/* Invite Link block - Liquid Premium Styling */}
-      <div className="premium-liquid-border w-full">
-        <div className="premium-liquid-content p-4 space-y-4">
+      <Card variant="premium" className="w-full">
+        <div className="p-4 space-y-4">
           
           <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col">
               <p className="text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
                 {t('your_link')}
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wider shadow-[0_0_10px_rgba(251,191,36,0.3)]">VIP</span>
+                <Badge className="bg-brand-gold text-brand-void shadow-[0_0_10px_rgba(251,191,36,0.3)] border-none">VIP</Badge>
               </p>
               <p className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-widest">Share to earn 15%</p>
             </div>
-            <span className="text-[10px] font-black text-brand-gold/60 uppercase tracking-widest bg-brand-gold/10 px-2 py-1 rounded-full border border-brand-gold/20 shadow-inner">
+            <Badge className="text-brand-gold/60 bg-brand-gold/10 border-brand-gold/20 shadow-inner">
               +50 XP
-            </span>
+            </Badge>
           </div>
 
           <div className="flex items-center gap-2">
@@ -421,15 +426,17 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             </motion.button>
           </div>
           
-          <button 
+          <Button 
+            variant="outline"
+            size="sm"
             onClick={() => setShowQr(!showQr)}
-            className="w-full mt-2 py-2.5 rounded-xl border border-brand-gold/20 bg-brand-gold/5 text-[10px] font-bold text-brand-gold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-gold/10 transition-colors"
+            className="w-full mt-2 border-brand-gold/20 bg-brand-gold/5 text-[10px] text-brand-gold uppercase tracking-widest hover:bg-brand-gold/10 transition-colors"
+            leftIcon={<FaQrcode size={12} />}
           >
-            <FaQrcode size={12} />
             {showQr ? "Hide QR Code" : "Show QR Code"}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {/* Styled Inline QR Code Card - Collapsible */}
       <AnimatePresence>

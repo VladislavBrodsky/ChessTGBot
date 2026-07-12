@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
-import { FaBrain, FaChessKnight, FaChessRook, FaChessBishop, FaFire, FaCheck, FaLock, FaPlay, FaTrophy, FaWallet } from "react-icons/fa";
+import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,9 @@ import { createPortal } from 'react-dom';
 import { useNavbar } from '@/context/NavbarContext';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 
 export default function AcademyPage() {
   const locale = useLocale();
@@ -381,12 +384,12 @@ export default function AcademyPage() {
 
               {/* Badges & Streak Row */}
               <div className="flex items-center gap-2 mt-1">
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-full text-brand-primary text-[10px] font-black uppercase tracking-widest">
+                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <FaFire className="text-amber-500" /> {streak} Day Streak
-                </span>
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-full text-brand-primary text-[10px] font-black uppercase tracking-widest">
+                </Badge>
+                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}
-                </span>
+                </Badge>
               </div>
             </div>
           )}
@@ -408,29 +411,34 @@ export default function AcademyPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ y: -4, scale: 1.01 }}
-          onClick={() => {
-            if (!puzzles.length) return;
-            if (nextPuzzle) {
-              handlePuzzleClick(nextPuzzle.id, nextPuzzle);
-            } else if (allSolved) {
-              handlePuzzleClick(1, puzzles[0]);
-            }
-          }}
-          className="w-full glass-panel p-6 rounded-3xl border border-brand-primary/20 bg-brand-surface relative overflow-hidden group transition-all duration-300 cursor-pointer shadow-premium"
+          className="w-full"
         >
+          <Card 
+            variant="glass" 
+            interactive
+            onClick={() => {
+              if (!puzzles.length) return;
+              if (nextPuzzle) {
+                handlePuzzleClick(nextPuzzle.id, nextPuzzle);
+              } else if (allSolved) {
+                handlePuzzleClick(1, puzzles[0]);
+              }
+            }}
+            className="p-6 relative overflow-hidden group shadow-premium border-brand-primary/20 rounded-3xl"
+          >
           {/* Neon Backlight Blurs */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-brand-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-4">
-              <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-70 bg-brand-void/60 px-3 py-1.5 rounded-full border border-brand-border-opacity-10">
+              <Badge variant="secondary" className="gap-1.5 text-brand-primary bg-brand-void/60 border-brand-border-opacity-10 opacity-70">
                 <FaFire className="text-amber-500 animate-pulse text-[10px]" /> {t('daily_challenge')}
-              </span>
+              </Badge>
               {!allSolved && (
-                <span className="flex items-center gap-1 text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.15)]">
+                <Badge variant="amber" className="gap-1 shadow-[0_0_10px_rgba(245,158,11,0.15)]">
                   <FaTrophy className="text-[10px]" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
-                </span>
+                </Badge>
               )}
             </div>
 
@@ -451,17 +459,18 @@ export default function AcademyPage() {
               }
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.15)" }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] cursor-pointer relative overflow-hidden shadow-neon transition-all"
+            <Button
+              variant="action"
+              className="w-full shadow-neon overflow-hidden"
+              leftIcon={<FaPlay className="text-[10px]" />}
             >
               <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <FaPlay className="text-[10px]" /> {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
+              <span className="relative z-10">
+                {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
               </span>
-            </motion.button>
+            </Button>
           </div>
+          </Card>
         </motion.div>
 
 
