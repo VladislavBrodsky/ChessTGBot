@@ -42,10 +42,27 @@ def test_window_during_arena_is_still_today():
     assert starts <= now < ends
 
 
-def test_window_after_end_rolls_to_tomorrow():
-    hh, mm = ArenaService.start_time_utc()
+def test_window_after_a_slot_ends_rolls_to_next_slot():
+    """With several daily slots, ending one window points at the next one."""
+    times = ArenaService.start_times_utc()
+    hh, mm = times[0]
     now = datetime(2026, 7, 11, hh, mm) + timedelta(minutes=ArenaService.duration_minutes() + 1)
     starts, _ = ArenaService.window_for(now)
+    if len(times) > 1:
+        # next window is later the same day
+        assert (starts.hour, starts.minute) == times[1]
+        assert starts.date() == now.date()
+    else:
+        # single daily slot: rolls to tomorrow
+        assert starts.date() == (now + timedelta(days=1)).date()
+
+
+def test_window_after_last_slot_rolls_to_tomorrow():
+    times = ArenaService.start_times_utc()
+    hh, mm = times[-1]
+    now = datetime(2026, 7, 11, hh, mm) + timedelta(minutes=ArenaService.duration_minutes() + 1)
+    starts, _ = ArenaService.window_for(now)
+    assert (starts.hour, starts.minute) == times[0]
     assert starts.date() == (now + timedelta(days=1)).date()
 
 

@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
+import { apiFetch } from "@/lib/api";
 
 export default function SettingsPage() {
  const t = useTranslations('Settings');
@@ -17,8 +18,32 @@ export default function SettingsPage() {
  const { theme, toggleTheme } = useTheme();
  const [soundEnabled, setSoundEnabled] = useState(true);
  // Pull wallet address from global context — no extra API call needed
- const { walletAddress, stats } = useUser();
+ const { walletAddress, stats, syncStats } = useUser();
  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+ // Daily-arena heads-up opt-out. Seed from synced stats; optimistic on toggle.
+ const [arenaAlerts, setArenaAlerts] = useState(true);
+ useEffect(() => {
+   const v = stats?.arena_notifications;
+   if (typeof v === 'boolean') setArenaAlerts(v);
+ }, [stats?.arena_notifications]);
+
+ const handleArenaAlertsToggle = async () => {
+   const next = !arenaAlerts;
+   setArenaAlerts(next); // optimistic
+   telegramHaptic('light');
+   try {
+     const res = await apiFetch('/api/v1/gamification/arena-notifications', {
+       method: 'PUT',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ enabled: next }),
+     });
+     if (!res.ok) throw new Error('failed');
+     syncStats();
+   } catch {
+     setArenaAlerts(!next); // revert on failure
+   }
+ };
 
  const faqItems = [
    { q: 'faq_q1', a: 'faq_a1' },
@@ -168,6 +193,38 @@ export default function SettingsPage() {
  onClick={handleSoundToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  soundEnabled ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ }`}
+ >
+ <motion.div
+ layout
+ transition={{ type: "spring", stiffness: 500, damping: 30 }}
+ className="w-5 h-5 rounded-full bg-white shadow-sm"
+ />
+ </button>
+ </div>
+
+ {/* Arena alerts row */}
+ <div className="p-4 flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <FaTrophy />
+ </div>
+ <div className="flex flex-col text-left">
+ <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
+ {t('arena_alerts')}
+ </span>
+ <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ {arenaAlerts ? t('arena_alerts_on') : t('arena_alerts_off')}
+ </span>
+ </div>
+ </div>
+ <button
+ role="switch"
+ aria-checked={arenaAlerts}
+ aria-label={t('arena_alerts')}
+ onClick={handleArenaAlertsToggle}
+ className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
+ arenaAlerts ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
  <motion.div

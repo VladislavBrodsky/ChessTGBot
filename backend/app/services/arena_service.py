@@ -329,21 +329,27 @@ class ArenaService:
 # ── Scheduler loop ───────────────────────────────────────────────────────────
 
 async def _broadcast_arena_soon(db, arena) -> None:
-    """T-15min heads-up to every registered user (skips silently on failure)."""
-    from app.models.user import User
+    """T-15min heads-up, region-targeted to the users this slot best fits.
+
+    Only users whose best-fit arena is THIS one are notified (see
+    app.services.arena_targeting), so running several arenas a day still means
+    ~1 heads-up per user. Skips silently on per-user failure.
+    """
+    from app.services.arena_targeting import targeted_telegram_ids
     from app.services.telegram_bot import TelegramService
 
     hh = arena.starts_at.hour
     mm = arena.starts_at.minute
-    res = await db.execute(select(User.telegram_id))
-    tids = [t for (t,) in res.all() if t and t > 0]
+    slots = ArenaService.start_times_utc()
+    tids = await targeted_telegram_ids(db, hh, mm, slots)
     msg = (
         f"🏟️ <b>Daily Arena starts in {NOTIFY_BEFORE_MINUTES} minutes!</b>\n\n"
         f"⚡ {ArenaService.duration_minutes()} minutes of rapid-fire 5-minute chess — "
         f"play as many opponents as you can.\n"
         f"🏆 Scoring: win 3 · draw 1. Top finishers earn "
         f"{'/'.join(str(x) for x in PRIZE_XP)} XP, everyone who plays gets +{PARTICIPATION_XP} XP.\n\n"
-        f"Open the app and hit <b>Join Arena</b> when the clock strikes {hh:02d}:{mm:02d} UTC! ♟️"
+        f"Open the app and hit <b>Join Arena</b> when the clock strikes {hh:02d}:{mm:02d} UTC! ♟️\n\n"
+        f"<i>🔕 Mute these in Settings → Arena alerts.</i>"
     )
     sent = 0
     for tid in tids:
@@ -353,7 +359,10 @@ async def _broadcast_arena_soon(db, arena) -> None:
             await asyncio.sleep(0.05)  # stay under Telegram broadcast rate limits
         except Exception:
             pass
-    logger.info(f"Arena {arena.id}: start announcement dispatched to {sent} users")
+    logger.info(
+        f"Arena {arena.id} (slot {hh:02d}:{mm:02d}): heads-up dispatched to "
+        f"{sent}/{len(tids)} targeted users"
+    )
 
 
 async def _notify_results(db, arena, awarded) -> None:

@@ -83,7 +83,10 @@
     "ton_wallet": "TONウォレット",
     "ton_not_connected": "未接続",
     "premium_membership": "プレミアムメンバーシップ",
-    "upgrade_for_access": "上位アクセスをアンロック"
+    "upgrade_for_access": "上位アクセスをアンロック",
+    "arena_alerts": "アリーナ通知",
+    "arena_alerts_on": "オン",
+    "arena_alerts_off": "オフ"
   },
   "Language": {
     "select": "言語を選択"
@@ -538,5 +541,14 @@
     "cancel": "キャンセル",
     "confirm": "確認",
     "close": "閉じる"
+  },
+  "RegionPrompt": {
+    "title": "どこからプレイしていますか？",
+    "subtitle": "あなたの地域に最適な時間にデイリーアリーナをお知らせします — 1日1回だけ。",
+    "skip": "後で",
+    "region_americas": "南北アメリカ",
+    "region_europe_africa": "ヨーロッパ・アフリカ",
+    "region_mena_sasia": "中東・南アジア",
+    "region_apac": "東アジア・太平洋"
   }
 }

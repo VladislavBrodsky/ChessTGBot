@@ -83,7 +83,10 @@
     "ton_wallet": "Portefeuille TON",
     "ton_not_connected": "Non connecté",
     "premium_membership": "Abonnement Premium",
-    "upgrade_for_access": "Débloquez l'accès avancé"
+    "upgrade_for_access": "Débloquez l'accès avancé",
+    "arena_alerts": "Alertes d'Arène",
+    "arena_alerts_on": "Activées",
+    "arena_alerts_off": "Désactivées"
   },
   "Language": {
     "select": "Choisir la Langue"
@@ -538,5 +541,14 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "close": "Fermer"
+  },
+  "RegionPrompt": {
+    "title": "D'où jouez-vous ?",
+    "subtitle": "Nous vous préviendrons de l'Arène Quotidienne à la meilleure heure pour votre région — une fois par jour.",
+    "skip": "Plus tard",
+    "region_americas": "Amériques",
+    "region_europe_africa": "Europe et Afrique",
+    "region_mena_sasia": "Moyen-Orient et Asie du Sud",
+    "region_apac": "Asie de l'Est et Pacifique"
   }
 }

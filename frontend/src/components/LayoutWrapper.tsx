@@ -3,6 +3,7 @@
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Onboarding from './Onboarding';
+import RegionPrompt from './RegionPrompt';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
@@ -204,6 +205,9 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
                     <Onboarding onClose={() => setShowOnboarding(false)} />
                 )}
             </AnimatePresence>
+
+            {/* Region ask for arena-notification timing — never over onboarding */}
+            {!showOnboarding && <RegionPrompt />}
         </div>
     );
 }
