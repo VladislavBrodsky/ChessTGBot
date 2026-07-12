@@ -6,7 +6,7 @@ import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
 import Confetti from "react-confetti";
 import { Chessboard } from "react-chessboard";
-import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen } from 'react-icons/fa';
+import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -840,7 +840,7 @@ export default function AcademyPage() {
 
               {/* Mini Board Preview */}
               <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-border-opacity-10 pointer-events-none opacity-80">
-                <Chessboard position={band.fen} arePiecesDraggable={false} customDarkSquareStyle={{ backgroundColor: "#334155" }} customLightSquareStyle={{ backgroundColor: "#94a3b8" }} />
+                <Chessboard options={{ position: band.fen, allowDragging: false, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} />
               </div>
 
               {/* Description */}

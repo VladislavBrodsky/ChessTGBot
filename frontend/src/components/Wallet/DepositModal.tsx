@@ -417,18 +417,6 @@ export default function DepositModal({
     }
   }, []);
 
-  // Check URL parameters for Stripe checkout redirections on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const status = params.get('status');
-      const sessionId = params.get('session_id');
-      if (status === 'success' && sessionId) {
-        verifyStripeSession(sessionId);
-      }
-    }
-  }, [verifyStripeSession]);
-
   // Poll server to verify Stripe Checkout completion
   const verifyStripeSession = useCallback(async (sessionId: string) => {
     setProcessing(true);
@@ -488,6 +476,18 @@ export default function DepositModal({
       setProcessing(false);
     }
   }, [onSuccess]);
+
+  // Check URL parameters for Stripe checkout redirections on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const sessionId = params.get('session_id');
+      if (status === 'success' && sessionId) {
+        verifyStripeSession(sessionId);
+      }
+    }
+  }, [verifyStripeSession]);
 
   // Launch the Stripe Checkout redirection
   const handleCardTopUp = async () => {

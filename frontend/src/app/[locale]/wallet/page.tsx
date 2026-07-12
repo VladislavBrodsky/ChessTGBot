@@ -4,7 +4,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { useTranslations, useLocale } from 'next-intl';
 import { AnimatePresence, motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { FaArrowUp, FaArrowDown, FaChevronLeft, FaWallet } from "react-icons/fa";
 import Link from "next/link";
 import DepositModal from "@/components/Wallet/DepositModal";
@@ -51,22 +51,7 @@ export default function WalletPage() {
   const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
   const [tgUser, setTgUser] = useState<any>(null);
 
-  useEffect(() => {
-    fetchWalletData();
-    if (typeof window !== 'undefined') {
-      if (window.Telegram?.WebApp) {
-        setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
-      }
-      const params = new URLSearchParams(window.location.search);
-      const status = params.get('status');
-      const sessionId = params.get('session_id');
-      if (status === 'success' && sessionId) {
-        setActiveModal('deposit');
-      }
-    }
-  }, [fetchWalletData]);
-
-  const fetchWalletData = async () => {
+  const fetchWalletData = useCallback(async () => {
     try {
       setLoading(true);
       setTxError(false);
@@ -85,7 +70,22 @@ export default function WalletPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [syncBalance]);
+
+  useEffect(() => {
+    fetchWalletData();
+    if (typeof window !== 'undefined') {
+      if (window.Telegram?.WebApp) {
+        setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
+      }
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const sessionId = params.get('session_id');
+      if (status === 'success' && sessionId) {
+        setActiveModal('deposit');
+      }
+    }
+  }, [fetchWalletData]);
 
   return (
     <LayoutWrapper className="justify-start pt-6 pb-32">
