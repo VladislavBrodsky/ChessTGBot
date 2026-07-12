@@ -7,6 +7,7 @@ const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Ch
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { Card } from "@/components/ui/Card";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { 
@@ -378,7 +379,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
       <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center gap-4 mx-auto">
         
         {/* Opponent Widget (Black) */}
-        <div className={`w-full flex justify-between items-center px-4 py-3 glass-panel border bg-brand-surface transition-all ${
+        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-3 transition-all ${
           isBlackWinner ? 'border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]' : 'border-brand-border-opacity-10 opacity-70'
         }`}>
           <div className="flex items-center gap-3">
@@ -403,7 +404,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               Winner
             </span>
           )}
-        </div>
+        </Card>
 
         {/* Board Container */}
         <div className="w-full relative z-20 flex justify-center px-1">
@@ -442,7 +443,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </div>
 
         {/* Player Widget (White) */}
-        <div className={`w-full flex justify-between items-center px-4 py-3 glass-panel border bg-brand-surface transition-all ${
+        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-3 transition-all ${
           isWhiteWinner ? 'border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]' : 'border-brand-border-opacity-10 opacity-70'
         }`}>
           <div className="flex items-center gap-3">
@@ -467,7 +468,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               Winner
             </span>
           )}
-        </div>
+        </Card>
 
         {/* Control Interface */}
         <div className="w-full flex items-center justify-between px-3 py-2 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl shadow-sm">
@@ -564,7 +565,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         )}
 
         {analysis && (
-          <div className="w-full glass-panel border border-brand-border-opacity-10 bg-brand-surface p-4 rounded-2xl flex flex-col space-y-4">
+          <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-4">
             {/* Current Move Evaluation */}
             {currentStep > 0 && (
               <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
@@ -650,11 +651,11 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Move History Log Panel */}
-        <div className="w-full glass-panel border border-brand-border-opacity-10 bg-brand-surface p-4 rounded-2xl flex flex-col space-y-3">
+        <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-brand-border-opacity-10">
             <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40">
               Move Ledger
@@ -712,7 +713,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
         {/* Game termination banner */}
         <div className="w-full text-center px-4 py-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/40">

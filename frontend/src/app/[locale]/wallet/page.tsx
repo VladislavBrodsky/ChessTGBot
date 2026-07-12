@@ -14,6 +14,7 @@ import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
 import { useUser } from "@/context/UserContext";
 import { useAudio } from "@/hooks/useAudio";
+import { Card } from "@/components/ui/Card";
 
 interface Transaction {
   id: number;
@@ -108,36 +109,42 @@ export default function WalletPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('connect'); }}
-            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-cyan-500/30 transition-all duration-300 group"
+            className="w-full"
           >
-            <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
-              <FaWallet className="text-xs" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-cyan-500/30 group">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
+                <FaWallet className="text-xs" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+            </Card>
           </motion.button>
           
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('deposit'); }}
-            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-emerald-500/30 transition-all duration-300 group"
+            className="w-full"
           >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
-              <FaArrowDown className="text-xs" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-emerald-500/30 group">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
+                <FaArrowDown className="text-xs" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+            </Card>
           </motion.button>
           
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('withdraw'); }}
-            className="glass-panel p-3.5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center justify-center space-y-2 cursor-pointer shadow-sm hover:border-rose-500/30 transition-all duration-300 group"
+            className="w-full"
           >
-            <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
-              <FaArrowUp className="text-xs" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-rose-500/30 group">
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
+                <FaArrowUp className="text-xs" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+            </Card>
           </motion.button>
         </div>
 

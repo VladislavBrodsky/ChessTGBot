@@ -10,6 +10,9 @@ import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa"
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
+import { useUser } from "@/context/UserContext";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 
 export default function ProfilePage() {
  const t = useTranslations('Index');
@@ -110,13 +113,13 @@ export default function ProfilePage() {
   <div className="w-full grid grid-cols-2 gap-3">
     {/* ELO & Rank Card */}
     {!stats ? (
-      <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden animate-pulse h-24 w-full">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden animate-pulse h-24 w-full">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-12 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-16 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-24" />
-      </div>
+      </Card>
     ) : (
-      <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
         <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
@@ -124,30 +127,30 @@ export default function ProfilePage() {
           <span>•</span>
           <span>{stats.percentile?.toFixed(0) || 100}%</span>
         </div>
-      </div>
+      </Card>
     )}
 
     {/* Games Played & Total Score Card */}
     {!stats ? (
-      <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden animate-pulse h-24 w-full">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden animate-pulse h-24 w-full">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-16 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-12 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-20" />
-      </div>
+      </Card>
     ) : (
-      <div className="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
         <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
           <span>{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} PTS</span>
         </div>
-      </div>
+      </Card>
     )}
   </div>
 
   {/* Visual W - D - L Breakdown Bar */}
   {!stats ? (
-    <div className="w-full glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface animate-pulse space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 animate-pulse space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-24" />
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-12" />
@@ -158,9 +161,9 @@ export default function ProfilePage() {
         <div className="flex flex-col items-center border-x border-brand-border-opacity-10"><div className="h-2 bg-brand-primary opacity-10 rounded w-8 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
         <div className="flex flex-col items-center"><div className="h-2 bg-brand-primary opacity-10 rounded w-8 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
       </div>
-    </div>
+    </Card>
   ) : (
-    <div className="w-full glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{labels.breakdown}</span>
         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
@@ -197,7 +200,7 @@ export default function ProfilePage() {
           <span className="text-[10px] font-bold text-brand-primary opacity-40">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
       </div>
-    </div>
+    </Card>
   )}
 
  {/* Gamification Sections */}
@@ -211,7 +214,7 @@ export default function ProfilePage() {
    {!stats ? (
      <div className="flex flex-col gap-3">
        {[1, 2].map((n) => (
-         <div key={n} className="glass-panel p-4 rounded-xl border border-brand-border-opacity-10 bg-brand-surface flex justify-between items-center animate-pulse">
+         <Card key={n} variant="glass" className="p-4 border-brand-border-opacity-10 flex justify-between items-center animate-pulse">
            <div className="flex items-center gap-3 w-2/3">
              <div className="w-9 h-9 rounded-lg bg-brand-primary opacity-10 shrink-0" />
              <div className="flex flex-col space-y-1.5 w-full">
@@ -223,7 +226,7 @@ export default function ProfilePage() {
              <div className="h-3 bg-brand-primary opacity-10 rounded w-10" />
              <div className="h-2 bg-brand-primary opacity-5 rounded w-12" />
            </div>
-         </div>
+         </Card>
        ))}
      </div>
    ) : stats.recent_games && stats.recent_games.length > 0 ? (
@@ -285,14 +288,14 @@ export default function ProfilePage() {
        })}
      </div>
    ) : (
-     <div className="glass-panel p-6 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center">
-       <span className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-1">
-         {t('no_games_logged')}
-       </span>
-       <span className="text-[10px] font-medium text-brand-primary opacity-20 uppercase tracking-widest">
-         {t('initiate_combat')}
-       </span>
-     </div>
+      <Card variant="glass" className="p-6 border-brand-border-opacity-10 text-center">
+        <span className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-1">
+          {t('no_games_logged')}
+        </span>
+        <span className="text-[10px] font-medium text-brand-primary opacity-20 uppercase tracking-widest">
+          {t('initiate_combat')}
+        </span>
+      </Card>
    )}
  </div>
 

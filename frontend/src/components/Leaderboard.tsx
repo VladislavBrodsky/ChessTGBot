@@ -7,6 +7,7 @@ import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
+import { Card } from '@/components/ui/Card';
 
 interface LeaderboardItem {
  telegram_id: number;
@@ -59,8 +60,7 @@ interface LeaderboardItem {
           <div className="h-px w-8 bg-brand-border-opacity-20" />
           <div className="h-2 bg-brand-primary opacity-5 rounded w-24" />
         </div>
-        
-        <div className="glass-panel rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5 p-1 space-y-2">
+        <Card variant="glass" className="rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5 p-1 space-y-2">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="flex items-center justify-between p-4 bg-brand-surface/30 rounded-2xl animate-pulse border border-brand-border-opacity-5">
               <div className="flex items-center gap-4 w-2/3">
@@ -74,7 +74,7 @@ interface LeaderboardItem {
               <div className="h-3 bg-brand-primary opacity-10 rounded w-12" />
             </div>
           ))}
-        </div>
+        </Card>
       </div>
     );
   }
@@ -89,7 +89,7 @@ interface LeaderboardItem {
         <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase">{t('global_node_sync')}</span>
       </div>
 
-      <div className="glass-panel rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5">
+      <Card variant="glass" className="rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5">
         <div className="divide-y divide-brand-border-opacity-10">
           {displayedPlayers.length > 0 ? (
             displayedPlayers.map((item, idx) => (
@@ -163,7 +163,7 @@ interface LeaderboardItem {
             </button>
           </div>
         )}
-      </div>
+      </Card>
 
       {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>

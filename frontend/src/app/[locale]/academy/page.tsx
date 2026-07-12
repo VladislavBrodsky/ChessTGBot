@@ -3,7 +3,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
-import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen } from 'react-icons/fa';
+import DailyHintCard from "@/components/Academy/DailyHintCard";
+import Confetti from "react-confetti";
+import { Chessboard } from "react-chessboard";
+import { FaChessRook, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaCheck } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -29,7 +32,13 @@ export default function AcademyPage() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const { pushHide, popHide } = useNavbar();
+
+  const triggerConfetti = () => {
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 4000);
+  };
 
   // Hide the global navbar when a drawer is open
   useEffect(() => {
@@ -44,23 +53,23 @@ export default function AcademyPage() {
 
   // Descriptions grouped by difficulty band for all 100 tactical levels
   const LEVEL_THEMES = [
-    { range: [1, 5],   theme: 'Basic Tactics',      emoji: '🎯', desc: 'Simple forks, captures, and one-move patterns. Perfect for building tactical instincts from the ground up.' },
-    { range: [6, 10],  theme: 'Pawn Power',          emoji: '♟️', desc: 'Master pawn structure, passed pawns, and promotion tactics. Hint support available on these levels.' },
-    { range: [11, 15], theme: 'Pins & Skewers',      emoji: '⚔️', desc: 'Exploit pinned pieces and use skewers to win material on open diagonals and files.' },
-    { range: [16, 20], theme: 'Fork Mastery',        emoji: '🔱', desc: 'Attack two pieces simultaneously with knights, bishops, and queens to gain decisive material.' },
-    { range: [21, 25], theme: 'Discovered Attacks',  emoji: '💣', desc: 'Unleash hidden firepower by moving a piece to expose a devastating attack from behind.' },
-    { range: [26, 30], theme: 'Defensive Tactics',   emoji: '🛡️', desc: 'Learn to defend accurately — counter-attacks, interpositions, and fortress construction.' },
-    { range: [31, 40], theme: 'Rook Endgames',       emoji: '🏰', desc: 'Convert rook-and-pawn endgames with technique: Lucena, Philidor, and active rook play.' },
-    { range: [41, 50], theme: 'Queen Tactics',       emoji: '👑', desc: 'Harness the queen power — back-rank threats, queen sacrifices, and perpetual checks.' },
-    { range: [51, 60], theme: 'Combinations',        emoji: '🌀', desc: 'Multi-move combinations involving sacrifices, deflections, and piece coordination.' },
-    { range: [61, 70], theme: 'Positional Chess',    emoji: '🎲', desc: 'Outpost control, piece activity, and prophylaxis at an intermediate-advanced level.' },
-    { range: [71, 80], theme: 'Time Pressure',       emoji: '⚡', desc: 'Rapid-fire puzzles designed to improve calculation speed and tactical vision under pressure.' },
-    { range: [81, 90], theme: 'Complex Sacrifices',  emoji: '🧩', desc: 'Find the hidden move — deep sacrifices that flip the position decisively in your favour.' },
-    { range: [91, 100], theme: 'Grandmaster Level',  emoji: '🏆', desc: 'Elite-level puzzles used by titled players. Pure calculation and long-range precision required.' },
+    { range: [1, 5],   theme: 'Basic Tactics',      emoji: '🎯', fen: '8/2k5/8/8/3Q4/8/6K1/8 w - - 0 1', desc: 'Simple forks, captures, and one-move patterns. Perfect for building tactical instincts from the ground up.' },
+    { range: [6, 10],  theme: 'Pawn Power',          emoji: '♟️', fen: '8/p7/1p6/8/8/1P6/P7/8 w - - 0 1', desc: 'Master pawn structure, passed pawns, and promotion tactics. Hint support available on these levels.' },
+    { range: [11, 15], theme: 'Pins & Skewers',      emoji: '⚔️', fen: '8/2k5/8/2r5/2B5/2Q5/6K1/8 w - - 0 1', desc: 'Exploit pinned pieces and use skewers to win material on open diagonals and files.' },
+    { range: [16, 20], theme: 'Fork Mastery',        emoji: '🔱', fen: '8/2k5/8/4N3/8/2q5/6K1/8 w - - 0 1', desc: 'Attack two pieces simultaneously with knights, bishops, and queens to gain decisive material.' },
+    { range: [21, 25], theme: 'Discovered Attacks',  emoji: '💣', fen: '8/2k5/8/2b5/8/2R5/2B5/6K1 w - - 0 1', desc: 'Unleash hidden firepower by moving a piece to expose a devastating attack from behind.' },
+    { range: [26, 30], theme: 'Defensive Tactics',   emoji: '🛡️', fen: '8/2k5/3q4/8/8/3N4/6K1/8 w - - 0 1', desc: 'Learn to defend accurately — counter-attacks, interpositions, and fortress construction.' },
+    { range: [31, 40], theme: 'Rook Endgames',       emoji: '🏰', fen: '8/2k5/8/3R4/3P4/8/8/6K1 w - - 0 1', desc: 'Convert rook-and-pawn endgames with technique: Lucena, Philidor, and active rook play.' },
+    { range: [41, 50], theme: 'Queen Tactics',       emoji: '👑', fen: '8/2k5/3q4/8/8/3Q4/6K1/8 w - - 0 1', desc: 'Harness the queen power — back-rank threats, queen sacrifices, and perpetual checks.' },
+    { range: [51, 60], theme: 'Combinations',        emoji: '🌀', fen: 'r1bq1rk1/ppp2ppp/2n5/3pP3/3Pn3/2b2N2/PP2BPPP/R1BQ1RK1 w - - 0 1', desc: 'Multi-move combinations involving sacrifices, deflections, and piece coordination.' },
+    { range: [61, 70], theme: 'Positional Chess',    emoji: '🎲', fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', desc: 'Outpost control, piece activity, and prophylaxis at an intermediate-advanced level.' },
+    { range: [71, 80], theme: 'Time Pressure',       emoji: '⚡', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Rapid-fire puzzles designed to improve calculation speed and tactical vision under pressure.' },
+    { range: [81, 90], theme: 'Complex Sacrifices',  emoji: '🧩', fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', desc: 'Find the hidden move — deep sacrifices that flip the position decisively in your favour.' },
+    { range: [91, 100], theme: 'Grandmaster Level',  emoji: '🏆', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Elite-level puzzles used by titled players. Pure calculation and long-range precision required.' },
   ];
   const getLevelInfo = (id: number) => {
     const band = LEVEL_THEMES.find(b => id >= b.range[0] && id <= b.range[1]);
-    return band || { theme: `Level ${id}`, emoji: '♟️', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
+    return band || { theme: `Level ${id}`, emoji: '♟️', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
   };
   const nextPuzzle = puzzles.find(p => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
@@ -183,6 +192,7 @@ export default function AcademyPage() {
         });
         const data = await res.json();
         if (res.ok && data.status === "success") {
+          triggerConfetti();
           telegramAlert("Lesson unlocked successfully!");
           fetchData();
         } else {
@@ -224,6 +234,7 @@ export default function AcademyPage() {
           });
           const data = await res.json();
           if (res.ok && data.status === "success") {
+            triggerConfetti();
             telegramAlert(`Level ${id} unlocked successfully!`);
             fetchData();
           } else {
@@ -251,6 +262,7 @@ export default function AcademyPage() {
         method: "POST"
       });
       if (res.ok) {
+        triggerConfetti();
         telegramAlert("Upgrade successful! You are now a Premium member.");
         setShowPremiumPromo(false);
         fetchData();
@@ -272,6 +284,7 @@ export default function AcademyPage() {
         body: JSON.stringify({ tier: "premium", billing_period: "annual" })
       });
       if (res.ok) {
+        triggerConfetti();
         telegramAlert("Subscription successful! You are now a Premium member.");
         setShowPremiumPromo(false);
         fetchData();
@@ -349,6 +362,17 @@ export default function AcademyPage() {
 
   return (
     <LayoutWrapper className="pb-32 pt-6">
+      {showConfetti && typeof window !== 'undefined' && (
+        <div className="fixed inset-0 z-[200] pointer-events-none flex items-center justify-center">
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={400}
+            gravity={0.15}
+          />
+        </div>
+      )}
       <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8">
 
         {/* Header */}
@@ -385,7 +409,9 @@ export default function AcademyPage() {
               {/* Badges & Streak Row */}
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
-                  <FaFire className="text-amber-500" /> {streak} Day Streak
+                  <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                    <FaFire className="text-amber-500" />
+                  </motion.div> {streak} Day Streak
                 </Badge>
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}
@@ -405,6 +431,9 @@ export default function AcademyPage() {
           <p className="text-xs font-semibold text-brand-primary/80 italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">— {CHESS_QUOTES[quoteIdx].author}</p>
         </motion.div>
+
+        {/* Hint of the Day */}
+        <DailyHintCard />
 
         {/* Daily Challenge Section */}
         <motion.div
@@ -807,6 +836,11 @@ export default function AcademyPage() {
                 <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-primary/60' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-primary/30'}`}>
                   #{id} / 100
                 </span>
+              </div>
+
+              {/* Mini Board Preview */}
+              <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-border-opacity-10 pointer-events-none opacity-80">
+                <Chessboard position={band.fen} arePiecesDraggable={false} customDarkSquareStyle={{ backgroundColor: "#334155" }} customLightSquareStyle={{ backgroundColor: "#94a3b8" }} />
               </div>
 
               {/* Description */}

@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { FaHistory, FaArrowDown, FaArrowUp, FaRobot, FaGamepad } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 interface Transaction {
   id: number;
@@ -102,7 +104,7 @@ function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Tran
 const TransactionSkeleton = () => (
   <div className="w-full flex flex-col space-y-2">
     {[1, 2, 3].map((n) => (
-      <div key={n} className="w-full p-3 rounded-xl glass-panel border border-brand-border-opacity-5 flex items-center justify-between bg-brand-surface animate-pulse">
+      <Card key={n} variant="glass" className="w-full p-3 border-brand-border-opacity-5 flex items-center justify-between animate-pulse">
         <div className="flex items-center space-x-3 w-2/3">
           <div className="w-8 h-8 rounded-lg bg-brand-bg-opacity-5 border border-brand-border-opacity-5 shrink-0" />
           <div className="flex flex-col space-y-1.5 w-full">
@@ -111,7 +113,7 @@ const TransactionSkeleton = () => (
           </div>
         </div>
         <div className="h-3 bg-brand-primary opacity-10 rounded w-12" />
-      </div>
+      </Card>
     ))}
   </div>
 );
@@ -136,21 +138,22 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
       {loading ? (
         <TransactionSkeleton />
       ) : error ? (
-        <div className="w-full glass-panel rounded-xl p-8 text-center space-y-3">
+        <Card variant="glass" className="w-full p-8 text-center space-y-3">
           <p className="text-xs font-bold text-brand-primary opacity-50 uppercase tracking-widest">{tw('tx_load_failed')}</p>
           {onRetry && (
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onRetry}
-              className="px-5 py-2 rounded-xl bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black uppercase tracking-widest text-brand-primary/80 hover:text-brand-primary active:scale-95 transition-all cursor-pointer"
             >
               {tw('retry_btn')}
-            </button>
+            </Button>
           )}
-        </div>
+        </Card>
       ) : transactions.length === 0 ? (
-        <div className="w-full glass-panel rounded-xl p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+        <Card variant="glass" className="w-full p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
           {tw('no_entries')}
-        </div>
+        </Card>
       ) : (
         <div className="w-full flex flex-col space-y-2 max-h-72 overflow-y-auto">
           {transactions.map((tx) => {
@@ -162,11 +165,10 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
             return (
               <motion.div 
                 key={tx.id}
-                layout
                 whileHover={{ scale: 1.015, y: -1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="w-full p-3 rounded-2xl glass-panel border border-brand-border-opacity-5 flex items-center justify-between bg-brand-surface shadow-sm hover:shadow-md transition-all select-none"
+                className="w-full"
               >
+                <Card variant="glass" className="w-full p-3 border-brand-border-opacity-5 flex items-center justify-between shadow-sm hover:shadow-md transition-all select-none">
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs shrink-0 border border-brand-border-opacity-5 shadow-inner ${
                     tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
@@ -208,6 +210,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                     </span>
                   )}
                 </div>
+                </Card>
               </motion.div>
             );
           })}

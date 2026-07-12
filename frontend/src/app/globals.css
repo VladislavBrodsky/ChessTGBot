@@ -258,8 +258,7 @@ body {
     background: var(--bg-surface) !important;
     border: 1px solid var(--border-muted) !important;
     border-radius: 12px;
-    box-shadow: inset 0 1px 0 var(--color-border-opacity-5), var(--shadow-premium) !important;
-    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 var(--color-border-opacity-5) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -286,9 +285,7 @@ body {
   }
 
   .action-button {
-    background: linear-gradient(270deg, var(--gradient-color-1), var(--gradient-color-2), var(--gradient-color-3), var(--gradient-color-2), var(--gradient-color-1)) !important;
-    background-size: 400% 400% !important;
-    animation: gradientShift 10s ease infinite !important;
+    background: linear-gradient(270deg, var(--gradient-color-1), var(--gradient-color-2), var(--gradient-color-3)) !important;
     color: var(--color-action-button-text) !important;
     font-weight: 950;
     text-transform: uppercase;
@@ -341,8 +338,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -501,8 +497,6 @@ body {
   pointer-events: none;
   z-index: 10;
   background: linear-gradient(to right, var(--color-brand-surface) 0%, transparent 100%);
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
 }
 .fade-edges::after {
   content: "";
@@ -514,8 +508,6 @@ body {
   pointer-events: none;
   z-index: 10;
   background: linear-gradient(to left, var(--color-brand-surface) 0%, transparent 100%);
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
 }
 
 /* Custom Academy Grid Animations */
@@ -635,14 +627,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: premium-pulse 4s ease-in-out infinite;
 }
 
 .premium-liquid-border:hover {
-  box-shadow: 0 0 45px rgba(168, 85, 247, 0.75);
-  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px) scale(1.01);
 }
 
 .premium-liquid-border::before {
@@ -684,20 +675,18 @@ body {
     #a855f7 80%,
     transparent 100%
   );
-  animation: spin 6s linear infinite reverse; /* counter rotation */
   z-index: 0;
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.3;
 }
 
 .premium-liquid-content {
   position: relative;
   z-index: 1;
-  background: var(--premium-card-bg, rgba(14, 8, 28, 0.95)) !important;
+  background: var(--premium-card-bg, rgba(14, 8, 28, 0.98)) !important;
   border-radius: 19px;
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(10px);
 }
 
 /* Light theme: premium card uses a clean white-ish surface */
@@ -720,8 +709,7 @@ body {
   border: none !important;
   border-radius: 16px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.45) !important;
-  animation: liquid-gradient-shift 4s ease infinite;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2) !important;
 }
 
 .premium-liquid-button:hover {
@@ -774,8 +762,6 @@ body {
   height: 90%;
   background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, transparent 70%);
   filter: blur(80px);
-  /* Slowed 2× (20s→40s) — halves GPU compositing frequency */
-  animation: liquid-mesh-movement-1 40s infinite alternate ease-in-out;
   will-change: transform;
   pointer-events: none;
   z-index: -1;
@@ -789,8 +775,6 @@ body {
   height: 90%;
   background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
   filter: blur(80px);
-  /* Slowed ~2.4× (25s→60s) */
-  animation: liquid-mesh-movement-2 60s infinite alternate ease-in-out;
   will-change: transform;
   pointer-events: none;
   z-index: -1;
@@ -803,9 +787,7 @@ body {
   width: 80%;
   height: 80%;
   background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
-  filter: blur(100px);
-  /* Slowed 3× (30s→90s) */
-  animation: liquid-mesh-movement-3 90s infinite alternate ease-in-out;
+  filter: blur(60px);
   will-change: transform;
   pointer-events: none;
   z-index: -1;

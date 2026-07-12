@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowLeft, FaCopy, FaCheck, FaRobot, FaFlag, FaHandshake, FaShareAlt, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
+import { Card } from '@/components/ui/Card';
 import ChessBoardComponent from '@/components/game/ChessBoard';
 import MatchOverModal from '@/components/game/MatchOverModal';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
@@ -973,7 +974,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
 
         {/* Opponent Widget */}
-        <div className={`w-full flex justify-between items-center px-4 py-4 glass-panel bg-brand-surface border transition-all duration-300 ${
+        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
           isOpponentTurn 
             ? 'border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-gradient-to-r from-purple-500/[0.02] to-transparent opacity-100' 
             : 'border-brand-border-opacity-10 opacity-60'
@@ -1019,7 +1020,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               {formatTime(opponentTime)}
             </span>
           </div>
-        </div>
+        </Card>
       
         {/* Board Container */}
         <div className="w-full relative z-20 flex justify-center px-1">
@@ -1064,7 +1065,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         )}
       
         {/* Player Widget */}
-        <div className={`w-full flex justify-between items-center px-4 py-4 glass-panel border transition-all duration-300 ${
+        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
           isMyTurn 
             ? 'border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-gradient-to-r from-emerald-500/[0.02] to-transparent opacity-100' 
             : 'border-brand-border-opacity-10'
@@ -1102,7 +1103,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               {formatTime(myTime)}
             </span>
           </div>
-        </div>
+        </Card>
 
         {/* Action Bar */}
         {!isBotGame && !isGameOver && (

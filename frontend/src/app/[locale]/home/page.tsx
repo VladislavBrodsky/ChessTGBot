@@ -12,10 +12,12 @@ import {
   FaListOl, FaNewspaper
 } from "react-icons/fa";
 import { useTranslations, useLocale } from 'next-intl';
-import XPProgressBar from "@/components/XPProgressBar";
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
 import { useUser } from "@/context/UserContext";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export default function Home() {
  const t = useTranslations('Index');
@@ -79,66 +81,71 @@ export default function Home() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.15 } }}
-      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium bg-brand-surface flex flex-col items-center text-center space-y-3"
+      className="w-full"
     >
-      <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">
-        {t('load_failed')}
-      </span>
-      <button
-        onClick={() => syncStats()}
-        className="px-6 py-2.5 rounded-xl bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-wider active:scale-95 transition-transform"
-      >
-        {t('retry')}
-      </button>
+      <Card variant="glass" className="w-full p-5 border-brand-border-opacity-10 shadow-premium flex flex-col items-center text-center space-y-3">
+        <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">
+          {t('load_failed')}
+        </span>
+        <Button
+          variant="action"
+          size="sm"
+          onClick={() => syncStats()}
+        >
+          {t('retry')}
+        </Button>
+      </Card>
     </motion.div>
   ) : (!stats || loadingStats) ? (
     <motion.div
       key="skeleton"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.15 } }}
-      className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse bg-brand-surface"
+      className="w-full"
     >
-      {/* Header Row */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3.5 w-2/3">
-          <div className="w-12 h-12 rounded-xl bg-brand-primary opacity-10 shrink-0" />
-          <div className="flex flex-col space-y-1.5 w-full">
-            <div className="h-3.5 bg-brand-primary opacity-10 rounded w-2/3" />
-            <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3" />
+      <Card variant="glass" className="w-full p-5 border-brand-border-opacity-10 shadow-premium relative overflow-hidden animate-pulse">
+        {/* Header Row */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3.5 w-2/3">
+            <div className="w-12 h-12 rounded-xl bg-brand-primary opacity-10 shrink-0" />
+            <div className="flex flex-col space-y-1.5 w-full">
+              <div className="h-3.5 bg-brand-primary opacity-10 rounded w-2/3" />
+              <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3" />
+            </div>
+          </div>
+          <div className="w-16 h-5 rounded-full bg-brand-primary opacity-5" />
+        </div>
+        
+        {/* Simulated XP Progress Section (matching XPProgressBar height) */}
+        <div className="mb-5">
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <div className="h-2 bg-brand-primary opacity-5 rounded w-12" />
+              <div className="h-2 bg-brand-primary opacity-5 rounded w-8" />
+            </div>
+            <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
           </div>
         </div>
-        <div className="w-16 h-5 rounded-full bg-brand-primary opacity-5" />
-      </div>
-      
-      {/* Simulated XP Progress Section (matching XPProgressBar height) */}
-      <div className="mb-5">
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <div className="h-2 bg-brand-primary opacity-5 rounded w-12" />
-            <div className="h-2 bg-brand-primary opacity-5 rounded w-8" />
+
+        {/* Separator Line */}
+        <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
+
+        {/* Bottom Stats Grid */}
+        <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center">
+          <div className="flex flex-col items-center">
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+            <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
           </div>
-          <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
+          <div className="flex flex-col items-center">
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+            <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+            <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+          </div>
         </div>
-      </div>
-
-      {/* Separator Line */}
-      <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
-
-      {/* Bottom Stats Grid */}
-      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center">
-        <div className="flex flex-col items-center">
-          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
-          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
-          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
-          <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
-        </div>
-      </div>
+      </Card>
     </motion.div>
   ) : (
     <motion.div
@@ -146,8 +153,9 @@ export default function Home() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.2 } }}
       onClick={() => router.push(`/${locale}/profile`)}
-      className="w-full relative overflow-hidden rounded-2xl p-5 border border-brand-border-opacity-10 shadow-[0_4px_24px_rgba(0,0,0,0.06)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 group cursor-pointer hover:border-brand-primary/20 hover:shadow-md transition-all duration-300"
+      className="w-full"
     >
+      <Card variant="solid" className="w-full relative overflow-hidden p-5 bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 group cursor-pointer hover:border-brand-primary/20 hover:shadow-md transition-all duration-300">
       {/* Indicator dot */}
       <motion.div
         animate={{ opacity: [0.6, 1, 0.6] }}
@@ -248,6 +256,7 @@ export default function Home() {
       </span>
       </div>
       </div>
+      </Card>
     </motion.div>
   )}
   </AnimatePresence>
