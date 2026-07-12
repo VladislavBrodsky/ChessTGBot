@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
 interface RakeInfoDrawerProps {
   onClose: () => void;
 }
 
 export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
+  useNavbarHideWhileMounted();
   const tg = useTranslations('Game');
   const [canClose, setCanClose] = useState<boolean>(false);
 
