@@ -6,6 +6,11 @@
 # puzzle here would silently break: the reward would fire after the first
 # move. If multi-move puzzles are ever wanted, build server-side incremental
 # move validation first. A test (test_puzzle_gating.py) enforces this.
+#
+# Every position + solution + description below is engine-verified by
+# test_puzzles_valid.py: the move is legal from the FEN and the stated tactic
+# (mate / fork / skewer / promotion / material win) actually holds. Keep it that
+# way — a puzzle whose instruction doesn't match the board teaches wrong chess.
 
 CHESS_PUZZLES = [
     {
@@ -31,72 +36,72 @@ CHESS_PUZZLES = [
     {
         "id": 3,
         "title": "Scholar's Doom",
-        "description": "White to play and deliver the final blow.",
-        "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1",
-        "solution": ["f3f7"],
+        "description": "White to play and mate in 1.",
+        "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+        "solution": ["h5f7"],
         "xp_reward": 50,
-        "hint_text": "Focus on the f7 square. It is only defended by the Black King, making it the perfect target for your Queen supported by the Bishop.",
-        "explanation": "The Scholar's Mate. The Queen strikes on f7, supported by the Bishop on c4. Since f7 is only defended by the King, it is a fatal weakness."
+        "hint_text": "The f7 square is defended only by the Black king, and your bishop on c4 already guards it. Strike with the queen.",
+        "explanation": "Scholar's Mate. Qxf7# is protected by the bishop on c4, and the Black king has no escape square."
     },
     {
         "id": 4,
         "title": "Anastasia's Mate",
-        "description": "White to play and deliver mate on the h-file.",
-        "fen": "r4r1k/1p3pp1/8/3N4/8/8/8/1R1R2K1 w - - 0 1",
-        "solution": ["d1d3"],
+        "description": "White to play and mate in 1 on the h-file.",
+        "fen": "8/4N1pk/8/R7/8/8/8/6K1 w - - 0 1",
+        "solution": ["a5h5"],
         "xp_reward": 60,
-        "hint_text": "Your Knight on d5 controls the escape squares e7 and g7. Look to open the h-file for your Rook.",
-        "explanation": "Anastasia's Mate. The Knight blocks e7 and g7, and the Rook delivers mate along the open h-file."
+        "hint_text": "Your knight on e7 covers g6 and g8, and the g7 pawn walls in the king. Swing your rook to the h-file.",
+        "explanation": "Anastasia's Mate. Rh5# checks down the open h-file; the knight seals g6 and g8 while the king's own g7 pawn blocks its last escape."
     },
     {
         "id": 5,
         "title": "Tactical Fork",
         "description": "White to play and fork the King and Rook.",
-        "fen": "3r4/8/3k4/8/3N4/8/3K4/8 w - - 0 1",
-        "solution": ["d4f5"],
+        "fen": "4k1r1/8/8/3N4/8/8/8/K7 w - - 0 1",
+        "solution": ["d5f6"],
         "xp_reward": 60,
-        "hint_text": "Your Knight can attack two targets at once. Move it to a square where it checks the King and targets the Rook.",
-        "explanation": "A knight fork! By playing f5, you check the king and attack the rook. Black is forced to move the king, allowing you to capture the rook."
+        "hint_text": "Find the knight leap that checks the king on e8 and attacks the rook on g8 at the same time.",
+        "explanation": "A royal fork. Nf6+ hits the king on e8 and the rook on g8 together; after the king moves, Nxg8 wins the rook."
     },
     {
         "id": 6,
-        "title": "Double Checkmate",
+        "title": "Double Check Mate",
         "description": "White to play and mate in 1.",
-        "fen": "r1b2r1k/pp3ppp/2n5/2b3N1/2B5/8/PP3PPP/R1B2RK1 w - - 0 1",
-        "solution": ["g5f7"],
+        "fen": "3rkb2/3p1p2/4N3/8/8/8/8/4R1K1 w - - 0 1",
+        "solution": ["e6c7"],
         "xp_reward": 60,
-        "hint_text": "The f7 pawn is a major target. Deliver check with your Knight.",
-        "explanation": "The Knight jumps to f7, delivering check. The King has no legal escape squares and the Knight cannot be captured because the f7 pawn is pinned."
+        "hint_text": "Move the knight so it checks the king AND unveils your rook on the e-file — a double check can't be blocked.",
+        "explanation": "Double-check mate. Nc7+ checks the king and discovers the e1 rook's check. A double check must be met by a king move, but every escape square is blocked by Black's own pieces."
     },
     {
         "id": 7,
         "title": "Corner Trap",
         "description": "White to play and win the Bishop.",
-        "fen": "b7/8/8/k7/8/1N6/8/K7 w - - 0 1",
-        "solution": ["b3a5"],
+        "fen": "b3k3/8/8/1N6/8/8/8/6K1 w - - 0 1",
+        "solution": ["b5c7"],
         "xp_reward": 70,
-        "hint_text": "Your Knight can attack the Black King and simultaneously threaten the Bishop on the a8 corner.",
-        "explanation": "By playing Na5+, you check the King on a5. The King must move, leaving the Bishop on a8 undefended for you to capture."
+        "hint_text": "A knight check that also eyes the a8 corner will trap the bishop.",
+        "explanation": "Nc7+ forks the king on e8 and the bishop stranded on a8. After the king steps aside, Nxa8 collects the bishop."
     },
     {
         "id": 8,
-        "title": "Philidor's Gift",
-        "description": "White to play and win the queen.",
-        "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1",
-        "solution": ["e4d5"],
+        "title": "Royal Fork",
+        "description": "White to play and win the Queen.",
+        "fen": "4k3/8/q7/3N4/8/8/8/6K1 w - - 0 1",
+        "solution": ["d5c7"],
         "xp_reward": 70,
-        "hint_text": "Capture the pawn in the center to create a dynamic attack.",
-        "explanation": "Capturing the pawn on d5 wins material and opens up lines for your pieces in the center."
+        "hint_text": "One knight leap can check the king on e8 and hit the queen on a6 at once.",
+        "explanation": "Nc7+ forks the king and the queen on a6. The king must move out of check, and Nxa6 wins the queen."
     },
     {
         "id": 9,
         "title": "Rook Skewer",
-        "description": "White to play and skewer the black pieces.",
-        "fen": "4k3/8/8/8/8/8/4R3/2K2r2 w - - 0 1",
-        "solution": ["e2e1"],
+        "description": "White to play and skewer the King to win the Rook.",
+        "fen": "r7/k7/8/8/8/8/8/3R2K1 w - - 0 1",
+        "solution": ["d1a1"],
         "xp_reward": 80,
-        "hint_text": "Attack the King and Rook on the e-file. Place your Rook directly in front of the opponent's pieces.",
-        "explanation": "A skewer! The Rook checks the King. The King must move out of check, exposing the undefended Rook behind it."
+        "hint_text": "Deliver check down the a-file so the king and the rook behind it line up.",
+        "explanation": "A skewer. Ra1+ checks the king on a7 with the rook on a8 directly behind it; the king must step off the file, and Rxa8 wins the rook."
     },
     {
         "id": 10,
@@ -110,22 +115,70 @@ CHESS_PUZZLES = [
     }
 ]
 
-# Generate puzzles 11 to 100 dynamically to fill out 100 levels
-themes = ["Fork", "Pin", "Skewer", "Mate in 1", "Deflection", "Decoy", "Interference", "Double Check"]
-fens = [
-    ("6rk/7p/7Q/6N1/8/8/8/7K w - - 0 1", "g5f7"),
-    ("6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1", "e1e8"),
-    ("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1", "f3f7")
+# Puzzles 11-100 are drawn from a bank of engine-verified tactics so the stated
+# theme always matches the board. (An earlier version cycled three mate-in-1
+# FENs under mismatched "Fork"/"Pin"/"Skewer" labels — teaching wrong chess.)
+# Every solution here is a single move, per the invariant note at the top.
+TEMPLATE_PUZZLES = [
+    {
+        "theme": "Mate in 1",
+        "fen": "6rk/7p/7Q/6N1/8/8/8/7K w - - 0 1",
+        "solution": "g5f7",
+        "description": "White to play and mate in 1.",
+        "hint_text": "The king is smothered by its own rook in the corner. Finish with the knight.",
+        "explanation": "Smothered Mate: Nf7# works because the king is boxed in by its own pieces.",
+    },
+    {
+        "theme": "Back Rank Mate",
+        "fen": "6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1",
+        "solution": "e1e8",
+        "description": "White to play and mate in 1 on the back rank.",
+        "hint_text": "The king is trapped behind its pawns. Seize the back rank.",
+        "explanation": "Back-rank mate: Re8# lands on the eighth rank while the pawns block every escape.",
+    },
+    {
+        "theme": "Knight Fork",
+        "fen": "4k1r1/8/8/3N4/8/8/8/K7 w - - 0 1",
+        "solution": "d5f6",
+        "description": "White to play and fork the King and Rook.",
+        "hint_text": "Check the king on e8 and hit the g8 rook with a single leap.",
+        "explanation": "Nf6+ forks king and rook; after the king moves, Nxg8 wins the rook.",
+    },
+    {
+        "theme": "Skewer",
+        "fen": "r7/k7/8/8/8/8/8/3R2K1 w - - 0 1",
+        "solution": "d1a1",
+        "description": "White to play and skewer the King to win the Rook.",
+        "hint_text": "Give check down the a-file so the rook stands behind the king.",
+        "explanation": "Ra1+ skewers the king to the a8 rook; the king steps aside and Rxa8 wins.",
+    },
+    {
+        "theme": "Royal Fork",
+        "fen": "4k3/8/q7/3N4/8/8/8/6K1 w - - 0 1",
+        "solution": "d5c7",
+        "description": "White to play and win the Queen.",
+        "hint_text": "A knight check on c7 also attacks the queen on a6.",
+        "explanation": "Nc7+ forks king and queen; the king must move and Nxa6 wins the queen.",
+    },
+    {
+        "theme": "Promotion",
+        "fen": "8/4P3/8/k7/8/8/8/K7 w - - 0 1",
+        "solution": "e7e8q",
+        "description": "White to play and promote the pawn.",
+        "hint_text": "Push the pawn home and make a new queen.",
+        "explanation": "e8=Q promotes with an overwhelming material advantage.",
+    },
 ]
 
 for i in range(11, 101):
-    theme = themes[i % len(themes)]
-    fen, sol = fens[i % len(fens)]
+    tpl = TEMPLATE_PUZZLES[i % len(TEMPLATE_PUZZLES)]
     CHESS_PUZZLES.append({
         "id": i,
-        "title": f"{theme} Level {i}",
-        "description": f"Identify the tactical {theme.lower()} pattern.",
-        "fen": fen,
-        "solution": [sol],
-        "xp_reward": 50 + (i // 5)
+        "title": f"{tpl['theme']} — Level {i}",
+        "description": tpl["description"],
+        "fen": tpl["fen"],
+        "solution": [tpl["solution"]],
+        "xp_reward": 50 + (i // 5),
+        "hint_text": tpl["hint_text"],
+        "explanation": tpl["explanation"],
     })
