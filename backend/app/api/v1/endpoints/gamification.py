@@ -186,6 +186,37 @@ async def update_language(
     await db.commit()
     return {"status": "success", "language": language}
 
+
+# Coarse timezone buckets used to time the daily-arena heads-up; must match
+# app.services.arena_targeting.REGION_OFFSETS.
+VALID_REGIONS = {"americas", "europe_africa", "mena_sasia", "apac"}
+
+
+@router.put("/region")
+async def update_region(
+    region: str = Body(..., embed=True),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Set the user's self-declared region (used to time arena heads-up)."""
+    if region not in VALID_REGIONS:
+        raise HTTPException(status_code=400, detail="Invalid region")
+    current_user.region = region
+    await db.commit()
+    return {"status": "success", "region": region}
+
+
+@router.put("/arena-notifications")
+async def update_arena_notifications(
+    enabled: bool = Body(..., embed=True),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Toggle the daily-arena heads-up opt-out for the current user."""
+    current_user.arena_notifications = enabled
+    await db.commit()
+    return {"status": "success", "arena_notifications": enabled}
+
 class LessonUnlockRequest(BaseModel):
     lesson_id: str
 

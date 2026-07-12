@@ -14,6 +14,7 @@ import { copyToClipboard } from '@/lib/clipboard';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
+import ArenaBanner from './ArenaBanner';
 
 import DepositModal from '../Wallet/DepositModal';
 import RakeInfoDrawer from './RakeInfoDrawer';
@@ -484,6 +485,9 @@ export default function PlayLobby() {
             <span>{activeUsers.toLocaleString()} {tg('active_users')}</span>
           </div>
         </div>
+
+        {/* Daily Arena event banner — schedule, live join, standings */}
+        <ArenaBanner />
 
         {/* Cyber Radar Search Interface */}
         <AnimatePresence mode="wait" initial={false}>

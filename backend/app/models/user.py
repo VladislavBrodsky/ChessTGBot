@@ -50,6 +50,17 @@ class User(Base):
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     blocked_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
+    # Arena notification targeting & opt-out.
+    # `region` is a coarse self-declared bucket (americas | europe_africa |
+    # mena_sasia | apac) used to time the daily-arena heads-up for the user's
+    # local prime hours. NULL = not yet asked; targeting falls back to play
+    # behaviour, then preferred_language. `arena_notifications` is the opt-out;
+    # when False the user is never sent an arena heads-up.
+    region: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    arena_notifications: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default="true"
+    )
+
     # Relationships
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
 
