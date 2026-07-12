@@ -13,6 +13,8 @@ import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 import { useUser } from "@/context/UserContext";
+import { SiVisa } from "react-icons/si";
+import { FaStripe } from "react-icons/fa";
 
 interface DepositModalProps {
   onClose: () => void;
@@ -967,9 +969,7 @@ export default function DepositModal({
 
             {/* Visa / MasterCard Logos display */}
             <div className="flex items-center justify-center gap-4 py-2.5 bg-brand-void/35 rounded-xl border border-brand-border-opacity-5">
-              <svg className="w-10 h-6" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.158 12.877L11.83 2.062h2.678l-1.672 10.815H10.158zm7.986-10.518c-.524-.202-1.344-.42-2.368-.42-2.616 0-4.457 1.393-4.471 3.39-.016 1.472 1.317 2.294 2.32 2.785 1.03.504 1.378.825 1.373 1.274-.008.687-.826.998-1.587.998-.98 0-1.666-.226-2.549-.613l-.36-.169-.382 2.476c.666.307 1.895.572 3.16.58 2.783 0 4.59-1.379 4.614-3.51.01-1.17-.696-2.065-2.222-2.799-.908-.46-1.465-.767-1.46-1.235.006-.419.467-.855 1.474-.855.836-.016 1.444.178 1.916.379l.228.1.396-2.535l-.082-.008zm4.496.223h-2.072c-.642 0-1.12.186-1.398.855l-3.953 9.44H22.92l.534-1.484h3.272l.309 1.484h2.883L27.322 2.89l.006-.008zm.979 6.22c.245-1.196.476-2.316.59-2.871l.169.815c.08.387.436 2.056.436 2.056h-1.195zM4.148 2.062L1.24 10.02c-.31.815-.558.984-1.24 1.13v.58H5.09c.642 0 1.144-.443 1.28-1.13l2.254-10.36H4.148z" fill="#FFFFFF"/>
-              </svg>
+              <SiVisa className="w-10 h-8 text-white" />
               <div className="w-px h-6 bg-brand-border-opacity-10" />
               <svg className="w-10 h-6" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="7.5" cy="7.5" r="7.5" fill="#EB001B"/>
@@ -1024,7 +1024,7 @@ export default function DepositModal({
               {processing ? (
                 <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
               ) : (
-                <svg className="w-10 h-4 fill-white shrink-0" viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg"><path d="M59.64 14.28h-6.8c.24-1.4 1.56-2.4 3.4-2.4 1.76 0 3.08.8 3.4 2.4zM52.8 17.6h7.08c-.44 2.12-2.32 3.68-5 3.68-3.4 0-5.84-2.48-5.84-5.88s2.4-5.88 5.76-5.88c3.36 0 5.6 2.32 5.6 5.68v1.08H52.8c.16 1.84 1.52 3.08 3.44 3.08 1.48 0 2.52-.72 2.92-1.76h.04v-.04zM43.08 9.76v11.24h-4.32V9.76h4.32zm-2.16-5.88c1.44 0 2.56 1.12 2.56 2.56s-1.12 2.56-2.56 2.56-2.56-1.12-2.56-2.56 1.12-2.56 2.56-2.56zM37.84 11.2c0-1.04-.84-1.44-2.04-1.44-1.76 0-2.88 1.12-3.12 2.24h-4.24c.48-3.2 3.04-5.52 7.36-5.52 3.44 0 6.32 1.64 6.32 5.04v9.48h-4.28v-1.64h-.08c-.96 1.36-2.68 1.92-4.6 1.92-3.28 0-5.68-1.92-5.68-4.96 0-3.32 2.68-4.72 6.52-4.72 1.4 0 2.84.28 3.84.72v-1.12zM33.6 18c1.36 0 2.76-.72 3.44-1.88v-1.96c-.84-.4-2-.64-3.2-.64-2 0-3.2.72-3.2 1.92 0 1.28 1.28 2.56 2.96 2.56zM22.56 21H18.2V9.76h4.2v1.6h.08c.84-1.2 2.4-1.84 4.36-1.84 3.2 0 5.84 2.44 5.84 5.84s-2.64 5.84-5.84 5.84c-1.96 0-3.52-.64-4.36-1.84h-.08V21zm.68-5.64c0 1.84 1.32 3.12 3.16 3.12 1.88 0 3.2-1.28 3.2-3.12s-1.32-3.12-3.2-3.12c-1.84 0-3.16 1.28-3.16 3.12zM15.4 21h-4.32V3.48h4.32V21zM5.52 20.8C1.84 20.8 0 18.64 0 15.12V10.2c0-1.48.56-2.08 1.6-2.08h1.28v-3.8h4.24v3.8h2.08v3.4H7.12v3.12c0 1.24.64 1.64 1.88 1.64H10v3.52h-.88c-1.2 0-2.48.04-3.6 0z"/></svg>
+                <FaStripe className="w-12 h-6 text-white shrink-0" />
               )}
               <span>{processing ? "Initializing Checkout..." : "Checkout securely"}</span>
             </button>
