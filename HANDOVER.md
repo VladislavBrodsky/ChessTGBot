@@ -19,9 +19,66 @@ is a committed export for the monolith path — **rebuild after any
 (262 passed / 2 skipped at handover) · `cd frontend && npm run test:ci` ·
 frontend build doubles as the typecheck.
 
+> **This session:** shipped the region-targeted Daily Arena overhaul and the
+> Academy puzzle-instruction fixes (both merged to `main`, see below). Two new
+> code items from user feedback remain — see §1 (reduce-motion toggle,
+> game-only display name/avatar).
+
+---
+
+## Shipped this session (merged to `main`) — context + post-deploy watch
+
+- **Academy puzzle-instruction fixes** — a user reported ~50% of the first 10
+  puzzles had wrong instructions; engine-confirmed (mate-in-1s that weren't
+  mate, a "fork" that didn't fork, an illegal position whose solution captured
+  the king, "win the queen" that won a pawn). Corrected #3–#9 in
+  `backend/app/core/puzzles.py` (kept #1/#2/#10 — puzzle 1's `g5f7` is asserted
+  by `test_puzzle_gating`) and rebuilt the 11–100 generator, which had been
+  cycling three mate-in-1 FENs under mismatched "Fork/Pin/Skewer" labels. New
+  `backend/tests/test_puzzles_valid.py` engine-verifies all 100 (legal single
+  move + the stated tactic actually holds).
+- **Region-targeted Daily Arena** — runs 4 arenas/day (`ARENA_START_UTC` =
+  `02:00,08:00,14:00,20:00`); each user is notified for only their best-fit slot
+  — explicit `users.region` > peak play-hour mined from `game_history` >
+  `preferred_language` — so ~1 ping/user/day no matter how many arenas run
+  (`backend/app/services/arena_targeting.py`). Adds opt-out
+  (`users.arena_notifications` + Settings toggle) and a region-ask modal on entry
+  (`frontend/src/components/RegionPrompt.tsx`). Wired the previously-orphaned
+  `ArenaBanner` into the game lobby (`PlayLobby.tsx`) so the arena is joinable.
+  Migration `a1f7c39b52d0` (region + arena_notifications).
+  **Post-deploy watch:** this is the first time the arena runs 4×/day and sends
+  real region-targeted notifications, and the first live `join_arena` round-trip
+  runs in prod (never browser-E2E'd — Telegram-auth-gated). Watch the first few
+  windows' logs; confirm per-user notification volume is ~1/day, not a full-base
+  blast (the whole point of the targeting).
+
 ---
 
 ## 1. Code work remaining
+
+### Accessibility — in-app "Reduce motion" toggle (from user feedback; small–medium)
+An autistic user reported the "excessive movement of notifications is too
+distracting to play." The app already respects OS-level reduced motion
+(`frontend/src/app/globals.css` `@media (prefers-reduced-motion: reduce)`
+~line 1006, plus framer `MotionConfig reducedMotion="user"` in
+`frontend/src/components/Providers.tsx`), but there is no in-app control — many
+Telegram WebView users never set the OS flag. Ambient motion is heavy:
+`ActiveGame.tsx` (~14 always-animating elements), `PlayLobby.tsx` (~12),
+`ArenaBanner` pulses/pings. Fix: add a "Reduce motion" toggle in Settings
+(alongside the new Arena-alerts toggle), persist it, and gate animations via a
+root `data-*` attribute (covering Tailwind `animate-pulse`/`animate-ping` and
+framer variants). Dovetails with the Settings changes already on `main`.
+
+### Privacy — game-only display name + avatar (from user feedback; larger)
+Same user asked to "change username and profile pic just for the game and
+referrals." Identity is currently pulled straight from Telegram
+(`first_name`/`username`/`photo_url`) and shown in games, the leaderboard, arena
+standings, and referral notifications. Add optional override fields on `User`
+(+ migration), a Settings UI, and update every render site. **Needs a
+moderation story** (impersonation + offensive names) and MUST keep the
+`html.escape()` discipline for any name entering a `parse_mode="HTML"` message
+(see §4 / CLAUDE.md — a raw `<` crashed `/start` for weeks). Scope as its own
+feature.
 
 ### C2 — Remove fabricated data (recommended next; owner has deferred twice)
 Real-money app showing invented numbers = trust + regulatory liability.
