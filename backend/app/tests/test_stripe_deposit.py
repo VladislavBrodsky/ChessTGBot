@@ -63,7 +63,7 @@ async def test_stripe_create_session_success(db, monkeypatch):
         tx = tx_result.scalars().first()
         assert tx is not None
         assert tx.user_id == 12345
-        assert tx.amount == 1000  # $10.00 in cents
+        assert tx.amount == 950   # credited amount: $10.00 charged minus 5% fee
         assert tx.fee == 50       # 5% fee in cents
         assert tx.status == "pending"
 

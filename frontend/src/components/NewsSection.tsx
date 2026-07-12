@@ -64,7 +64,7 @@ export default function NewsSection() {
                         >
                             <Card variant="glass" className={`relative p-4 group hover:bg-brand-bg-opacity-10 transition-all cursor-pointer overflow-hidden ${isExpanded ? 'bg-brand-bg-opacity-10 ring-1 ring-brand-border-opacity-20' : ''} ${item.isHighlight ? 'shadow-[0_0_15px_rgba(168,85,247,0.3)] border-purple-500/40 ring-1 ring-purple-500/30 bg-gradient-to-br from-brand-bg/80 via-purple-900/10 to-brand-bg' : ''}`}>
                             <div className="flex items-start justify-between mb-2">
-                                <Badge variant={item.isHighlight ? "default" : "secondary"} className={`opacity-90 ${item.isHighlight ? 'bg-gradient-to-r from-purple-500 to-orange-500 text-white border-none shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'opacity-80'}`}>
+                                <Badge variant={item.isHighlight ? "primary" : "secondary"} className={`opacity-90 ${item.isHighlight ? 'bg-gradient-to-r from-purple-500 to-orange-500 text-white border-none shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'opacity-80'}`}>
                                     {item.tag}
                                 </Badge>
                                 <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${item.isHighlight ? 'text-orange-400 opacity-80' : 'text-brand-primary opacity-35'}`}>
