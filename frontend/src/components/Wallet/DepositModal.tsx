@@ -963,9 +963,14 @@ export default function DepositModal({
 
           {activeTab === 'card' && (
           <div className="space-y-4">
-            <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
-              Top up your platform balance instantly using a Credit/Debit Card.
-            </p>
+            <div className="flex justify-center mb-2">
+              <div className="px-3 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse"></div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold">
+                  Instant Card Top-Up
+                </span>
+              </div>
+            </div>
 
             {/* Visa / MasterCard Logos display */}
             <div className="flex items-center justify-center gap-4 py-2.5 bg-brand-void/35 rounded-xl border border-brand-border-opacity-5">
