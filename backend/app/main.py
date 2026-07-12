@@ -215,6 +215,10 @@ async def lifespan(app: FastAPI):
     from app.services.arena_service import start_arena_loop
     asyncio.create_task(start_arena_loop())
 
+    # Start the marketing scheduler
+    from app.services.marketing_scheduler import start_marketing_loop
+    asyncio.create_task(start_marketing_loop())
+
     # Start background Redis recovery loop
     asyncio.create_task(start_redis_recovery_loop())
 
