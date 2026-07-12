@@ -20,9 +20,9 @@ async def verify_head_requests(base_url):
                 response = await client.head(route)
                 print(f"HEAD {route:25} -> Status: {response.status_code}")
                 if response.status_code == 405:
-                    print(f"  ❌ FAILED: Method Not Allowed")
+                    print("  ❌ FAILED: Method Not Allowed")
                 elif response.status_code == 200 or response.status_code == 404: # 404 is also fine if the entity doesn't exist, as long as it's not 405
-                    print(f"  ✅ PASSED")
+                    print("  ✅ PASSED")
                 else:
                     print(f"  ℹ️ Status: {response.status_code}")
                     

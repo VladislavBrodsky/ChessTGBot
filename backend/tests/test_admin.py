@@ -12,7 +12,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.models.game_history import GameHistory
 
 
 # ---------------------------------------------------------------------------

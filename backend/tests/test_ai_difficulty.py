@@ -2,7 +2,6 @@ import pytest
 import unittest.mock as mock
 import chess
 from app.services.game_service import GameService
-from app.services.game_engine import GameEngine
 from app.services.game_service import compute_best_bot_move
 from app.models.game_history import GameHistory
 from sqlalchemy.future import select
@@ -65,7 +64,6 @@ async def test_bot_move_difficulty_and_blunders():
 @pytest.mark.asyncio
 async def test_game_history_difficulty_logging(db_session):
     from app.crud import user as user_crud
-    from app.models.user import User
 
     # Skip if using mock session to prevent table insert issues
     if hasattr(db_session, "users"):
@@ -75,7 +73,7 @@ async def test_game_history_difficulty_logging(db_session):
     
     # Create test user
     telegram_id = 88888
-    user = await user_crud.create_user(db_session, telegram_id, "DiffTester")
+    await user_crud.create_user(db_session, telegram_id, "DiffTester")
     await db_session.commit()
 
     # Create hard difficulty game
@@ -111,8 +109,8 @@ async def test_make_bot_move_with_process_pool():
     game_id = "test_pool_move"
     
     # Initialize game
-    state = await service.create_game(game_id, is_bot_game=True, difficulty="medium")
-    state = await service.join_game(game_id, 12345)
+    await service.create_game(game_id, is_bot_game=True, difficulty="medium")
+    await service.join_game(game_id, 12345)
     
     # Mock _process_pool to be a dummy object (non-None)
     dummy_executor = mock.MagicMock()

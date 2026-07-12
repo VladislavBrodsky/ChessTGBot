@@ -4,7 +4,7 @@ import logging
 import time
 import uuid
 import redis.asyncio as redis
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from app.core.config import get_settings
 
 settings = get_settings()

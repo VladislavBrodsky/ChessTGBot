@@ -1,16 +1,14 @@
 import chess
-import math
 import time
 import asyncio
 import json
-import uuid
 import logging
 
 logger = logging.getLogger(__name__)
 from typing import Optional, Dict
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db, AsyncSessionLocal
+from app.core.database import AsyncSessionLocal
 from app.services.game_engine import GameEngine
 from app.services.session_manager import SessionManager
 from app.schemas.game_state import GameState
@@ -615,7 +613,6 @@ class GameService:
         return max(100, new_rating)
 
     async def get_user_win_streak(self, db: AsyncSession, telegram_id: int) -> int:
-        from app.models.game_history import GameHistory
         from sqlalchemy import select
         # Select last matches ended, ordered by ended_at desc
         stmt = select(GameHistory).where(
@@ -660,15 +657,8 @@ class GameService:
 
     async def _end_game_impl(self, game_id: str, state: GameState):
         """Process game result and update ELO."""
-        from app.models.game_history import GameHistory
-        from sqlalchemy.future import select
         from app.models.transaction import Transaction
-        from app.crud import game_history as game_history_crud
-        from app.services.telegram_bot import TelegramService
-        from app.services.gamification_service import GamificationService, TaskType
-        from app.services.referral_commission_service import ReferralCommissionService
         from app.core.socket import sio
-        import json
 
         async with AsyncSessionLocal() as session:
             # Check for duplicate processing (idempotency guard)
@@ -1009,20 +999,20 @@ class GameService:
             # 2. David vs Goliath Comeback Bonus
             if state.winner == 'w' and black_elo_before - white_elo_before >= 150:
                 white_comeback_xp = 15
-                white_bonuses.append(f"David vs Goliath Comeback: +15 XP")
+                white_bonuses.append("David vs Goliath Comeback: +15 XP")
             elif state.winner == 'b' and white_elo_before - black_elo_before >= 150:
                 black_comeback_xp = 15
-                black_bonuses.append(f"David vs Goliath Comeback: +15 XP")
+                black_bonuses.append("David vs Goliath Comeback: +15 XP")
 
             # 3. Blitzkrieg Victory Bonus
             total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
             if state.winner and 0 < total_moves <= 24: # <= 12 full moves
                 if state.winner == 'w':
                     white_blitz_xp = 10
-                    white_bonuses.append(f"Blitzkrieg Victory (under 12 moves): +10 XP")
+                    white_bonuses.append("Blitzkrieg Victory (under 12 moves): +10 XP")
                 elif state.winner == 'b':
                     black_blitz_xp = 10
-                    black_bonuses.append(f"Blitzkrieg Victory (under 12 moves): +10 XP")
+                    black_bonuses.append("Blitzkrieg Victory (under 12 moves): +10 XP")
 
             # Award XP for playing PVP match
             white_match_xp = 10  # Draw
@@ -1073,7 +1063,7 @@ class GameService:
             if white_blitz_xp > 0:
                 white_xp_breakdown += f"• Blitzkrieg Bonus: +{white_blitz_xp} XP\n"
             if white_user.is_premium_active:
-                white_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
+                white_xp_breakdown += "• Premium Multiplier: 2x 👑\n"
             white_xp_breakdown += f"• <b>Total Gained:</b> +{white_final_xp} XP\n\n"
 
             black_xp_breakdown = (
@@ -1089,7 +1079,7 @@ class GameService:
             if black_blitz_xp > 0:
                 black_xp_breakdown += f"• Blitzkrieg Bonus: +{black_blitz_xp} XP\n"
             if black_user.is_premium_active:
-                black_xp_breakdown += f"• Premium Multiplier: 2x 👑\n"
+                black_xp_breakdown += "• Premium Multiplier: 2x 👑\n"
             black_xp_breakdown += f"• <b>Total Gained:</b> +{black_final_xp} XP\n\n"
             
             # Settle Web3 Bids / Wagers & Rakes
@@ -1413,7 +1403,6 @@ class GameService:
         dangling friendly PVP game wagers (e.g. from previous sessions where the server crashed
         and clean disconnect/refund events didn't run).
         """
-        from app.models.transaction import Transaction
         from app.models.game_history import GameHistory
         from sqlalchemy import select, and_
         from app.crud import user as user_crud

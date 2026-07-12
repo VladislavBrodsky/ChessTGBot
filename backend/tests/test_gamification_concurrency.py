@@ -2,7 +2,6 @@ import pytest
 import asyncio
 from app.crud import user as user_crud
 from app.models.gamification import Task, UserTask
-from app.services.gamification_service import GamificationService
 from app.models.user import User
 from app.main import app
 
@@ -46,7 +45,10 @@ async def test_concurrency_task_claim(client, test_engine, db_session):
         await session.commit()
     
     # Prepare mock auth
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()
@@ -132,7 +134,10 @@ async def test_concurrency_puzzle_solve(client, test_engine, db_session):
         await session.commit()
     
     # Prepare mock auth
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()

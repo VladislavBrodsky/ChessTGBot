@@ -10,7 +10,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import table, column
-from app.models.gamification import TaskType
 
 # revision identifiers, used by Alembic.
 revision: str = 'f103b3a5e790'

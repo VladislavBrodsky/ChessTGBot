@@ -1,7 +1,7 @@
 import time
 from fastapi import Header, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db, get_read_db
+from app.core.database import get_db
 from app.crud import user as user_crud
 from app.models.user import User
 from app.core.security import validate_init_data, extract_client_ip_from_request, hash_ip

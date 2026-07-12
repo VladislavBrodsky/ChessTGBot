@@ -99,7 +99,6 @@ async def test_subscribe_billing_periods(client, db_session):
     if hasattr(db_session, "users"):
         return
 
-    from app.models.user import User
     from app.crud import user as user_crud
     
     # 1. Create a user with enough balance for annual premium ($295.80 / 29580 cents)
@@ -111,7 +110,10 @@ async def test_subscribe_billing_periods(client, db_session):
     await db_session.refresh(user)
 
     # 2. Mock authentication header
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()
@@ -161,7 +163,6 @@ async def test_referral_parsing_strips_prefix(client, db_session):
     if hasattr(db_session, "users"):
         return
 
-    from app.models.user import User
     from app.crud import user as user_crud
     from app.models.gamification import Referral
     from sqlalchemy.future import select
@@ -174,7 +175,10 @@ async def test_referral_parsing_strips_prefix(client, db_session):
     await db_session.refresh(referrer)
 
     # 2. Mock authentication header for new user with start_param="ref_ABC12345"
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()
@@ -276,7 +280,7 @@ async def test_profile_metrics_calculations(client, db_session):
 
     # global_rank: ELO > 1200 are: 1500, 1400, 1300 (3 users). So rank is 4.
     # percentile: (total_users - global_rank) / total_users * 100
-    from sqlalchemy import select, func
+    from sqlalchemy import select
     total_users_res = await db_session.execute(select(UserModel.id))
     total_users = len(total_users_res.scalars().all())
     expected_percentile = round(((total_users - 4) / total_users * 100), 1)
@@ -290,7 +294,6 @@ async def test_subscription_tasks_verification(client, db_session):
     if hasattr(db_session, "users"):
         return
 
-    from app.models.user import User as UserModel
     from app.models.gamification import Task, UserTask
     from sqlalchemy.future import select
     from app.services.gamification_service import GamificationService
@@ -310,7 +313,10 @@ async def test_subscription_tasks_verification(client, db_session):
     await GamificationService.get_or_create_achievements(db_session, user.id)
 
     # 2. Mock authentication header
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()
@@ -362,13 +368,15 @@ async def test_chess_puzzles_endpoints(client, db_session):
     if hasattr(db_session, "users"):
         return
 
-    from app.models.user import User as UserModel
 
     telegram_id = 666111222
     user = await user_crud.create_user(db_session, telegram_id, "Puzzler")
     
     # 2. Mock authentication header
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()
@@ -454,7 +462,10 @@ async def test_get_active_game_endpoint(client, db_session):
     if hasattr(db_session, "users"):
         return
 
-    import hmac, hashlib, json, time
+    import hmac
+    import hashlib
+    import json
+    import time
     from urllib.parse import quote
     from app.core.config import get_settings
     settings = get_settings()

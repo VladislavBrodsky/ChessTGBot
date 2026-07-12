@@ -1,7 +1,6 @@
 import redis.asyncio as redis
 from app.core.config import get_settings
 from app.schemas.game_state import GameState
-import json
 import logging
 
 settings = get_settings()

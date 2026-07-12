@@ -48,12 +48,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 from app.core.database import Base
-from app.models.user import User
-from app.models.game_history import GameHistory
-from app.models.gamification import Task, UserTask, Referral
-from app.models.broadcast import Broadcast
-from app.models.arena import Arena, ArenaPlayer
-from app.models.telemetry import TelemetryLog
 
 target_metadata = Base.metadata
 

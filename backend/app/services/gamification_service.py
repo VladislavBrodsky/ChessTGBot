@@ -20,7 +20,7 @@ class GamificationService:
         await db.execute(user_stmt)
 
         # 1. Get all daily tasks definitions
-        result = await db.execute(select(Task).where(Task.is_daily == True))
+        result = await db.execute(select(Task).where(Task.is_daily))
         daily_tasks_defs = result.scalars().all()
         
         # Pre-fetch existing user tasks in a single query to eliminate N+1 database lookups
@@ -62,7 +62,7 @@ class GamificationService:
         await db.execute(user_stmt)
 
         # Fetch all permanent tasks definitions
-        result = await db.execute(select(Task).where(Task.is_daily == False))
+        result = await db.execute(select(Task).where(~Task.is_daily))
         achievement_defs = result.scalars().all()
         
         # Pre-fetch existing user achievements in a single query to eliminate N+1 database lookups
@@ -681,7 +681,7 @@ class GamificationService:
             .where(
                 and_(
                     UserTask.user_id == user_id,
-                    UserTask.completed == False,
+                    ~UserTask.completed,
                     Task.task_type == task_type
                 )
             )

@@ -3,13 +3,11 @@ import os
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./chess.db"
 
 import asyncio
-import sys
-from sqlalchemy import select, and_
-from app.core.database import engine, AsyncSessionLocal, init_db, Base
+from sqlalchemy import select
+from app.core.database import AsyncSessionLocal, init_db
 from app.crud import user as user_crud
-from app.models.user import User
 from app.models.transaction import Transaction
-from app.models.gamification import Task, UserTask, Referral, TaskType
+from app.models.gamification import Task, Referral, TaskType
 from app.services.gamification_service import GamificationService
 from app.services.matchmaker import MatchmakerService
 from app.services.game_service import GameService
@@ -103,7 +101,7 @@ async def run_simulation():
         await session.commit()
         
         # Simulating P1 inviting P2
-        print(f"Registered Referrer Chain: Ancestor (77777) -> Grandparent (66666) -> Parent (55555) -> P1_Hacker (11111)")
+        print("Registered Referrer Chain: Ancestor (77777) -> Grandparent (66666) -> Parent (55555) -> P1_Hacker (11111)")
         print(f"Registered Recruit: {p2.first_name} (ID: {p2.telegram_id})")
 
         success = await GamificationService.process_referral(session, p2, p1.referral_code)
@@ -204,8 +202,8 @@ async def run_simulation():
         grandparent = await user_crud.get_user_by_telegram_id(session, 66666)
         ancestor = await user_crud.get_user_by_telegram_id(session, 77777)
         
-        print(f"✓ Battle Result: White (Player 1) wins by Checkmate!")
-        print(f"✓ Rating System ELO Shifts:")
+        print("✓ Battle Result: White (Player 1) wins by Checkmate!")
+        print("✓ Rating System ELO Shifts:")
         print(f"  - Player 1 ELO: 1000 -> {u1.elo} (Gain: +{u1.elo - 1000})")
         print(f"  - Player 2 ELO: 1000 -> {u2.elo} (Loss: {u2.elo - 1000})")
         
@@ -216,10 +214,10 @@ async def run_simulation():
         # Parent gets Level 1 commission from P1's wager = 5000 * 2.0% = 100 cents ($1.00)
         # Grandparent gets Level 2 commission = 0 cents
         # Ancestor gets Level 3 commission = 0 cents
-        print(f"\n✓ Profit & Commission Ledger Verification:")
+        print("\n✓ Profit & Commission Ledger Verification:")
         print(f"  - Total Match Stake Pool: ${(wager_amount * 2) / 100:.2f} USDT")
-        print(f"  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from winner payout)")
-        print(f"  - Net Winner Payout (95%): $95.00 USDT")
+        print("  - Platform Rake Collected (3%): $3.00 USDT (Commissions paid from winner payout)")
+        print("  - Net Winner Payout (95%): $95.00 USDT")
         print(f"  - Player 1 (Winner) Final Wallet Balance: ${u1.balance / 100:.2f} USDT (Expected $146.20 USDT)")
         print(f"  - Player 2 (Loser) Final Wallet Balance: ${u2.balance / 100:.2f} USDT (Expected $50.10 USDT)")
         print(f"  - Parent (Tier 1 Referrer) Balance: ${parent.balance / 100:.2f} USDT (Expected $1.00 USDT)")

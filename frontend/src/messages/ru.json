@@ -64,7 +64,7 @@
   },
   "Settings": {
     "return": "Назад",
-    "config_core": "v1.5",
+    "config_core": "v1.7",
     "title": "Настройки",
     "subtitle": "Управление настройками приложения",
     "visual_matrix": "Тема и звук",
@@ -77,7 +77,7 @@
     "muted": "Выключены",
     "language_matrix": "Выбор языка",
     "enhanced_access": "Премиум-статус: Активен",
-    "footer": "Мини-приложение Шахматы v1.5.0",
+    "footer": "Мини-приложение Шахматы v1.7.0",
     "membership_tier": "Статус подписки",
     "account_section": "Аккаунт и интеграции",
     "ton_wallet": "Кошелек TON",

@@ -6,7 +6,6 @@ disabled), no running server. Locks in the accounting invariants:
  - internal reconciliation = (Σ user-balance-affecting completed txns == liabilities)
  - platform revenue (fees/rake) is excluded from what is owed to users
 """
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker

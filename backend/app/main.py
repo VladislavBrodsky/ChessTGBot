@@ -232,7 +232,7 @@ async def lifespan(app: FastAPI):
     try:
         from app.core.database import AsyncSessionLocal
         from app.models.user import User as UserModel
-        from sqlalchemy import select as sa_select, update as sa_update
+        from sqlalchemy import select as sa_select
 
         if not engine.url.drivername.startswith("sqlite"):
             # Fetch and process users in batches of 100 to prevent loading everything into memory (OOM safety)

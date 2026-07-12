@@ -1,5 +1,4 @@
 import pytest
-import time
 from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import Request, HTTPException
 from app.api.v1.deps import rate_limit

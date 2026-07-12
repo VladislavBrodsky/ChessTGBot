@@ -1,5 +1,4 @@
 import pytest
-import asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.services.matchmaker import MatchmakerService

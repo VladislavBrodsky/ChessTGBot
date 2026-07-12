@@ -12,7 +12,7 @@ settings = get_settings()
 
 router = APIRouter()
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 
 class LeaderboardItem(BaseModel):
@@ -96,7 +96,6 @@ async def get_referral_stats(
     """
     from app.models.gamification import Referral
     from app.models.transaction import Transaction
-    from sqlalchemy import func
 
     # 1. Total referrals
     total_result = await db.execute(

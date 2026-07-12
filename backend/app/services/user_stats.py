@@ -1,8 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.crud import game_history as game_history_crud
-from typing import Dict, List, Optional, Any
-from datetime import datetime
+from typing import Dict, List, Any
 
 async def calculate_user_stats(db: AsyncSession, user: User, telegram_id: int) -> Dict[str, Any]:
     """Calculate comprehensive user statistics."""

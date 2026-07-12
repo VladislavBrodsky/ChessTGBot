@@ -1,6 +1,6 @@
 import pytest
 from app.crud import user as user_crud
-from app.models.gamification import SolvedPuzzle, UnlockedPuzzle
+from app.models.gamification import SolvedPuzzle
 from sqlalchemy import select
 
 @pytest.mark.asyncio
@@ -26,7 +26,7 @@ async def test_puzzle_gating_and_progression(client, db_session):
     db_user_stmt = select(user_crud.User).where(user_crud.User.telegram_id == telegram_id)
     db_user_res = await db_session.execute(db_user_stmt)
     db_user = db_user_res.scalars().first()
-    user_id = db_user.id
+
 
     # 2. Verify levels structure
     response = await client.get(

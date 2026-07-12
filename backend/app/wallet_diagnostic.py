@@ -50,10 +50,10 @@ def run_diagnostic():
             
             config_addr_stripped = settings.MASTER_WALLET_ADDRESS.rstrip("=")
             if friendly_nb_stripped == config_addr_stripped or friendly_b_stripped == config_addr_stripped:
-                print(f"  🟢 MATCHES MASTER_WALLET_ADDRESS!")
+                print("  🟢 MATCHES MASTER_WALLET_ADDRESS!")
                 matched = True
             elif friendly_non_bounceable.replace("_", "/") == settings.MASTER_WALLET_ADDRESS.replace("_", "/") or friendly_non_bounceable.replace("/", "_") == settings.MASTER_WALLET_ADDRESS:
-                print(f"  🟢 MATCHES (url-safe base64 variant)!")
+                print("  🟢 MATCHES (url-safe base64 variant)!")
                 matched = True
         except Exception as e:
             print(f"Error deriving under {version.value}: {e}")

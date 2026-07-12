@@ -5,13 +5,11 @@ import json
 import time
 import httpx
 from urllib.parse import quote
-from app.models.user import User
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
 from app.api.v1.endpoints.wallet import (
     convert_ton_address_to_hex,
-    convert_raw_to_friendly,
-    crc16
+    convert_raw_to_friendly
 )
 from sqlalchemy.future import select
 

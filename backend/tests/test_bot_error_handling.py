@@ -11,7 +11,7 @@ Covers the fix for the "No error handlers are registered" production alerts:
 """
 import logging
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from telegram import error as tg_error
 

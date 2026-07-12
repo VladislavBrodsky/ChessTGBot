@@ -15,7 +15,7 @@ async def arena_status(
     db: AsyncSession = Depends(get_db)
 ):
     """Current/next daily arena: schedule, live standings, and my participation."""
-    from app.models.arena import Arena, ArenaPlayer
+    from app.models.arena import Arena
     from app.services.arena_service import (
         ArenaService, PRIZE_XP, PARTICIPATION_XP, _utcnow
     )

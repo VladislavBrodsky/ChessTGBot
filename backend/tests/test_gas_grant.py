@@ -6,7 +6,7 @@ matters: config gates, per-user/per-wallet cooldown, global daily cap, and
 the on-chain proof (holds USDT, lacks TON).
 """
 import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch
 
 from sqlalchemy import select

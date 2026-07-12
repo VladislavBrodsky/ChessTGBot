@@ -10,7 +10,6 @@ picking a FREE game and silently never matching — both sat in the queue until
 the 120s timeout refunded them. Self-match (the same account matching its own
 other connection) stays blocked everywhere.
 """
-import time
 
 import pytest
 
@@ -113,9 +112,9 @@ async def test_matchmaker_history_collusion_guard(db_session):
     mm = MatchmakerService()
 
     # 1. Create three users in DB
-    user_a = await user_crud.create_user(db_session, 999001, "User A")
-    user_b = await user_crud.create_user(db_session, 999002, "User B")
-    user_c = await user_crud.create_user(db_session, 999003, "User C")
+    await user_crud.create_user(db_session, 999001, "User A")
+    await user_crud.create_user(db_session, 999002, "User B")
+    await user_crud.create_user(db_session, 999003, "User C")
     await db_session.commit()
 
     try:

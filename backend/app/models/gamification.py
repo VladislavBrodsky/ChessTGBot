@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum as SQLEnum, UniqueConstraint
-from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import datetime, timezone
 import enum

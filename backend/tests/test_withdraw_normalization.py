@@ -1,7 +1,6 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
-from app.models.transaction import Transaction
 from app.crud import user as user_crud
 from app.api.v1.endpoints.wallet import convert_raw_to_friendly, convert_ton_address_to_hex
 

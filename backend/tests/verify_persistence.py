@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.getcwd(), 'backend'))
 from app.core.database import AsyncSessionLocal, init_db
 from app.crud import user as user_crud
 from app.services.game_service import GameService
-from app.schemas.game_state import GameState
 
 async def verify_persistence():
     print("1. Initializing DB...")

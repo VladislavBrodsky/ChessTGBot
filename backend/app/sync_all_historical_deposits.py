@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.core.config import get_settings
-from app.core.database import AsyncSessionLocal, engine
+from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.api.v1.endpoints.wallet import fetch_all_prices, convert_ton_address_to_hex

@@ -61,7 +61,6 @@ def ws_correlation(event_name: str):
 
 from app.core.socket import sio
 from app.services.game_service import GameService
-from app.schemas.game_state import GameState
 from app.core.security import validate_init_data, extract_client_ip, hash_ip
 from app.api.v1.deps import auth_ip_is_blocked, register_auth_failure
 from app.services.matchmaker import MatchmakerService
@@ -71,7 +70,7 @@ from app.models.transaction import Transaction
 from app.models.user import User
 from app.models.gamification import Referral
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Pending draw-offer tracking
@@ -460,7 +459,7 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
             f"<i>Your wager has been locked. White is setting up the first move. Keep your eyes on the board! ♟️🛡️</i>"
         )
         await TelegramService.send_notification(state.black_player_id, msg_b)
-    except Exception as e:
+    except Exception:
         pass
 
     # Players matched while away from the app get an urgent Telegram call-back
@@ -1204,5 +1203,5 @@ async def accept_rematch(sid, data):
 # Wire the arena pairing loop to the socket layer's game-creation helper.
 # Done at import time so ArenaService (a plain service module) never has to
 # import socket.io itself.
-from app.services.arena_service import ArenaService as _ArenaService
+from app.services.arena_service import ArenaService as _ArenaService  # noqa: E402
 _ArenaService().create_game_callback = establish_arena_game

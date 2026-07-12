@@ -2,14 +2,12 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import datetime, timezone, timedelta
 import json
 from urllib.parse import quote
 
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.models.xp_transaction import XpTransaction
-from app.models.gamification import Task, UserTask, TaskType
 from app.services.gamification_service import GamificationService
 
 @pytest.mark.asyncio

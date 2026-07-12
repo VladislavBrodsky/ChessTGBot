@@ -32,7 +32,7 @@ async def test_telegram_alert_handler_emits_error_log():
     logger.setLevel(logging.INFO)
     logger.propagate = False
     
-    from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    from app.core.alerts import clear_alerts_cache
     from app.services.session_manager import SessionManager
     SessionManager._use_memory = True
     clear_alerts_cache()
@@ -70,7 +70,7 @@ async def test_telegram_alert_handler_rate_limiting():
     logger.setLevel(logging.INFO)
     logger.propagate = False
     
-    from app.core.alerts import TelegramAlertHandler, clear_alerts_cache
+    from app.core.alerts import clear_alerts_cache
     from app.services.session_manager import SessionManager
     SessionManager._use_memory = True
     clear_alerts_cache()

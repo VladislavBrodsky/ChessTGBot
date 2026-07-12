@@ -1,7 +1,6 @@
 import pytest
 import pytest_asyncio
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from app.services.session_manager import SessionManager
 from app.api.v1 import deps
 from app.services.matchmaker import MatchmakerService

@@ -107,7 +107,7 @@ class SubscriptionService:
         
         # Select all users whose subscription is marked as active in database
         result = await db.execute(
-            select(User).where(User.is_premium == True)
+            select(User).where(User.is_premium)
         )
         active_users = result.scalars().all()
         

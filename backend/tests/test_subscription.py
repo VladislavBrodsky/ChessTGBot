@@ -7,7 +7,6 @@ import json
 from urllib.parse import quote
 
 from app.models.user import User
-from app.services.gamification_service import GamificationService
 
 @pytest.mark.asyncio
 async def test_accumulative_subscription_renewal(client: AsyncClient, db_session: AsyncSession):

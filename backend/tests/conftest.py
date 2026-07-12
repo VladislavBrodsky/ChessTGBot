@@ -179,14 +179,22 @@ class MockAsyncSession:
         if isinstance(obj, User):
             if obj.id is None:
                 obj.id = len(self.users) + 1
-            if obj.games_played is None: obj.games_played = 0
-            if obj.wins is None: obj.wins = 0
-            if obj.losses is None: obj.losses = 0
-            if obj.draws is None: obj.draws = 0
-            if obj.elo is None: obj.elo = 1000
-            if obj.balance is None: obj.balance = 0
-            if obj.level is None: obj.level = 1
-            if obj.xp is None: obj.xp = 0
+            if obj.games_played is None:
+                obj.games_played = 0
+            if obj.wins is None:
+                obj.wins = 0
+            if obj.losses is None:
+                obj.losses = 0
+            if obj.draws is None:
+                obj.draws = 0
+            if obj.elo is None:
+                obj.elo = 1000
+            if obj.balance is None:
+                obj.balance = 0
+            if obj.level is None:
+                obj.level = 1
+            if obj.xp is None:
+                obj.xp = 0
             self.users[obj.telegram_id] = obj
         elif isinstance(obj, Broadcast):
             # Assign a fake id if not set

@@ -880,7 +880,7 @@ async def receive_ton_deposit_webhook(
             f"<i>Your balance has been automatically synchronized. Updated Platform Balance: {updated_user.balance / 100:.2f} USDT. Let's play! ♟️🎮</i>"
         )
         await TelegramService.send_notification(telegram_id, notification_text)
-    except Exception as e:
+    except Exception:
         pass
 
     return {

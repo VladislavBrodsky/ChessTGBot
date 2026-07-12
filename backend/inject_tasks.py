@@ -5,7 +5,7 @@ import sys
 # Add the app directory to sys.path so we can import app modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from app.core.database import AsyncSessionLocal, engine
+from app.core.database import AsyncSessionLocal
 from app.models.gamification import Task, TaskType
 from sqlalchemy import select
 

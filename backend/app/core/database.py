@@ -63,11 +63,7 @@ async def get_read_db():
 
 async def init_db():
     # Import models here to avoid circular import with Base
-    from app.models.user import User
-    from app.models.game_history import GameHistory
-    from app.models.gamification import Task, UserTask, Referral, TaskType, SolvedPuzzle, UnlockedPuzzle
-    from app.models.transaction import Transaction
-    from app.models.xp_transaction import XpTransaction
+    from app.models.gamification import Task, TaskType
     from app.models.broadcast import Broadcast  # noqa: F401 — registers table with Base
     from app.models.telemetry import TelemetryLog  # noqa: F401
     

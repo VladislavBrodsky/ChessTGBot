@@ -194,7 +194,6 @@ async def test_daily_task_reset(db_session):
 @pytest.mark.asyncio
 async def test_heal_zombie_wagers(db_session):
     from app.services.game_service import GameService
-    from app.models.user import User
     from app.models.transaction import Transaction
     from app.crud import user as user_crud
     from sqlalchemy import select
