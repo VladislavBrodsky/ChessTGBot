@@ -239,6 +239,14 @@ async def get_unlocked_lessons(
     unlocks = result.scalars().all()
     return [unlock.lesson_id for unlock in unlocks]
 
+@router.get("/academy/completed-lessons")
+async def get_completed_lessons(
+    current_user: User = Depends(get_current_user)
+):
+    """Retrieve all lesson IDs completed by the current user."""
+    return await GamificationService.get_completed_academy_tasks(current_user, "lesson")
+
+
 @router.post("/academy/complete-task")
 async def complete_academy_task(
     req: AcademyTaskCompleteRequest,
@@ -373,7 +381,8 @@ async def get_puzzle_by_id(
                 "description": p["description"],
                 "fen": p["fen"],
                 "xp_reward": p["xp_reward"],
-                "move_count": len(p["solution"])
+                "move_count": len(p["solution"]),
+                "solution": p["solution"]
             }
             
 @router.get("/academy/puzzles/{puzzle_id}/hint")

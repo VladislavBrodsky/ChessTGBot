@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { useNavbarHide } from "@/context/NavbarContext";
+import Confetti from "react-confetti";
 
 const ORIGINS_LESSON_STEPS: LessonStep[] = [
   {
@@ -139,16 +140,19 @@ interface LessonClientProps {
  lessonId: string;
 }
 
-export default function LessonClient({ lessonId }: LessonClientProps) {
- const router = useRouter();
- const [completed, setCompleted] = useState(false);
- const locale = useLocale();
+ export default function LessonClient({ lessonId }: LessonClientProps) {
+  const router = useRouter();
+  const [completed, setCompleted] = useState(false);
+  const [earnedXP, setEarnedXP] = useState<number | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const locale = useLocale();
 
  const { hideNavbar, showNavbar } = useNavbarHide();
 
- useEffect(() => {
-   hideNavbar();
-   return () => {
+  useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    hideNavbar();
+    return () => {
      showNavbar();
    };
  }, [hideNavbar, showNavbar]);
@@ -186,43 +190,58 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
  const details = getLessonDetails();
 
-  const handleComplete = async () => {
-    try {
-      await apiFetch("/api/v1/gamification/academy/complete-task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
-      });
-    } catch (e) {
-      console.error("Failed to submit lesson completion", e);
-    }
-    setCompleted(true);
-  };
+   const handleComplete = async () => {
+     try {
+       const res = await apiFetch("/api/v1/gamification/academy/complete-task", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
+       });
+       if (res.ok) {
+         setEarnedXP(50); // Lessons give 50 XP
+       }
+     } catch (e) {
+       console.error("Failed to submit lesson completion", e);
+     }
+     setCompleted(true);
+   };
 
- if (completed) {
-  return (
-  <LayoutWrapper className="pt-6">
-  <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto">
- <motion.div
- initial={{ scale: 0.8, opacity: 0 }}
- animate={{ scale: 1, opacity: 1 }}
- className="glass-panel p-8 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm"
- >
- <h1 className="text-3xl font-black text-brand-primary mb-1.5 uppercase leading-none">LESSON COMPLETE!</h1>
- <p className="text-xs font-bold text-brand-primary opacity-60 mb-8 uppercase tracking-wide">You have mastered the basics of {details.title}.</p>
-
- <div className="flex gap-4 justify-center">
- <Link href={`/${locale}/academy`}>
- <button className="px-6 py-3 bg-brand-primary text-brand-void font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-sm text-xs">
- Back to Academy
- </button>
- </Link>
- </div>
- </motion.div>
- </div>
- </LayoutWrapper>
- );
- }
+  if (completed) {
+   return (
+   <LayoutWrapper className="pt-6 relative">
+   <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto z-10">
+  <motion.div
+  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+  animate={{ scale: 1, opacity: 1, y: 0 }}
+  className="glass-panel p-8 rounded-3xl border border-emerald-500/30 bg-brand-surface shadow-[0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden"
+  >
+  <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
+  
+  <h1 className="text-3xl font-black text-emerald-400 mb-2 uppercase leading-none">LESSON COMPLETE!</h1>
+  <p className="text-xs font-bold text-brand-primary opacity-60 mb-6 uppercase tracking-wide">You have mastered the basics of {details.title}.</p>
+ 
+  {earnedXP && (
+    <div className="flex justify-center mb-8">
+      <div className="flex flex-col items-center p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl min-w-[100px]">
+        <span className="text-amber-400 font-black text-2xl">+{earnedXP}</span>
+        <span className="text-[10px] text-amber-400/60 font-black uppercase tracking-widest mt-1">Chess XP</span>
+      </div>
+    </div>
+  )}
+ 
+  <div className="flex gap-4 justify-center">
+  <Link href={`/${locale}/academy`}>
+  <button className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all text-xs">
+  Back to Academy
+  </button>
+  </Link>
+  </div>
+  </motion.div>
+  </div>
+  <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={250} gravity={0.15} colors={['#10B981', '#F59E0B', '#3B82F6', '#FFFFFF']} style={{ zIndex: 0 }} />
+  </LayoutWrapper>
+  );
+  }
 
   return (
   <LayoutWrapper className="pt-6">

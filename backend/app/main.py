@@ -9,6 +9,7 @@ import os
 import asyncio
 import logging
 import re
+import anyio
 from app.services.telegram_bot import TelegramService
 from app.core.logger import setup_logging, LoggingMiddleware
 from app.middleware.head_middleware import HeadMiddleware
@@ -506,20 +507,20 @@ def create_application() -> FastAPI:
 
             # 1. Exact file match
             potential_file = f"{static_dir}/{full_path}"
-            if os.path.isfile(potential_file):
+            if await anyio.Path(potential_file).is_file():
                 headers = HTML_NO_CACHE if potential_file.endswith(".html") else None
                 return FileResponse(potential_file, headers=headers)
 
             # 2. HTML file match (clean URLs)
             # e.g. /en/home -> /en/home.html
             potential_html = f"{static_dir}/{full_path}.html"
-            if os.path.isfile(potential_html):
+            if await anyio.Path(potential_html).is_file():
                 return FileResponse(potential_html, headers=HTML_NO_CACHE)
 
             # 3. Directory index match
             # e.g. /en/home -> /en/home/index.html
             potential_index = f"{static_dir}/{full_path}/index.html"
-            if os.path.isfile(potential_index):
+            if await anyio.Path(potential_index).is_file():
                 return FileResponse(potential_index, headers=HTML_NO_CACHE)
 
             # 4. Fallback to SPA root (for client-side routing if static file not found)

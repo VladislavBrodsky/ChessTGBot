@@ -22,20 +22,21 @@ export default function AcademyPage() {
   const [loading, setLoading] = useState(true);
   const [puzzles, setPuzzles] = useState<any[]>([]);
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
-  const { setIsHidden } = useNavbar();
+  const { pushHide, popHide } = useNavbar();
 
   // Hide the global navbar when a drawer is open
   useEffect(() => {
     if (showPremiumPromo || selectedLevel) {
-      setIsHidden(true);
+      pushHide();
     } else {
-      setIsHidden(false);
+      popHide();
     }
     // Cleanup on unmount or when drawer closes
-    return () => setIsHidden(false);
-  }, [showPremiumPromo, selectedLevel, setIsHidden]);
+    return () => popHide();
+  }, [showPremiumPromo, selectedLevel, pushHide, popHide]);
 
   // Descriptions grouped by difficulty band for all 100 tactical levels
   const LEVEL_THEMES = [
@@ -77,6 +78,14 @@ export default function AcademyPage() {
         }
       }
 
+      const completedLessonsRes = await apiFetch("/api/v1/gamification/academy/completed-lessons");
+      if (completedLessonsRes.ok) {
+        const completedData = await completedLessonsRes.json();
+        if (Array.isArray(completedData)) {
+          setCompletedLessons(completedData);
+        }
+      }
+
       const puzzlesRes = await apiFetch("/api/v1/gamification/academy/puzzles");
       if (puzzlesRes.ok) {
         const puzzlesData = await puzzlesRes.json();
@@ -93,9 +102,59 @@ export default function AcademyPage() {
     }
   };
 
+  const [streak, setStreak] = useState(0);
+  const CHESS_QUOTES = [
+    { quote: "Every chess master was once a beginner.", author: "Irving Chernev" },
+    { quote: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
+    { quote: "Tactics flow from a superior position.", author: "Bobby Fischer" },
+    { quote: "When you see a good move, look for a better one.", author: "Emanuel Lasker" },
+    { quote: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" }
+  ];
+  const [quoteIdx, setQuoteIdx] = useState(0);
+
   useEffect(() => {
     fetchData();
+    
+    // Streak logic (frontend simulation until backend support)
+    try {
+        const lastStudy = localStorage.getItem('last_study_date');
+        const currentStreak = parseInt(localStorage.getItem('study_streak') || '0', 10);
+        const today = new Date().toDateString();
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        
+        if (lastStudy !== today) {
+            if (lastStudy === yesterday) {
+                setStreak(currentStreak + 1);
+                localStorage.setItem('study_streak', (currentStreak + 1).toString());
+            } else {
+                setStreak(1);
+                localStorage.setItem('study_streak', '1');
+            }
+            localStorage.setItem('last_study_date', today);
+        } else {
+            setStreak(currentStreak || 1);
+        }
+    } catch (e) {
+        setStreak(1);
+    }
+
+    setQuoteIdx(Math.floor(Math.random() * CHESS_QUOTES.length));
   }, []);
+
+  const getPlayerTitle = (level: number) => {
+    if (level < 5) return 'Novice';
+    if (level < 15) return 'Club Player';
+    if (level < 30) return 'Expert';
+    if (level < 50) return 'Candidate Master';
+    if (level < 70) return 'FIDE Master';
+    if (level < 90) return 'International Master';
+    return 'Grandmaster';
+  };
+
+  const getNextMilestoneXP = (xp: number) => {
+    const currentLevel = Math.floor(xp / 200) + 1;
+    return currentLevel * 200;
+  };
 
   const handleLessonClick = async (lessonId: string, isLocked: boolean) => {
     if (!isLocked) {
@@ -302,23 +361,46 @@ export default function AcademyPage() {
           <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30">{t('subtitle')}</span>
 
           {stats && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className={`flex items-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 ${
-                stats.is_premium
-                  ? 'bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] animate-pulse'
-                  : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-80'
-              }`}
-            >
-              <span>{stats.is_premium ? '👑 Premium' : 'Regular'}</span>
-              <div className="w-px h-2.5 bg-brand-border-opacity-10" />
-              <span>Level {stats.level}</span>
-              <div className="w-1 h-1 bg-current opacity-40 rounded-full" />
-              <span>{stats.xp} XP</span>
-            </motion.div>
+            <div className="flex flex-col items-center gap-3">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 w-full max-w-sm ${
+                  stats.is_premium
+                    ? 'bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] animate-pulse'
+                    : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-80'
+                }`}
+              >
+                <span>{stats.is_premium ? '👑 Premium' : 'Regular'}</span>
+                <div className="w-px h-2.5 bg-brand-border-opacity-10" />
+                <span>Level {stats.level}</span>
+                <div className="w-1 h-1 bg-current opacity-40 rounded-full" />
+                <span>{stats.xp} XP</span>
+              </motion.div>
+
+              {/* Badges & Streak Row */}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-full text-brand-primary text-[10px] font-black uppercase tracking-widest">
+                  <FaFire className="text-amber-500" /> {streak} Day Streak
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-full text-brand-primary text-[10px] font-black uppercase tracking-widest">
+                  <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}
+                </span>
+              </div>
+            </div>
           )}
         </div>
+
+        {/* Motivational Quote */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
+          className="w-full text-center px-6 py-4 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 cursor-pointer hover:bg-brand-void/50 transition-all group"
+        >
+          <p className="text-xs font-semibold text-brand-primary/80 italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">— {CHESS_QUOTES[quoteIdx].author}</p>
+        </motion.div>
 
         {/* Daily Challenge Section */}
         <motion.div
@@ -492,7 +574,7 @@ export default function AcademyPage() {
             <LessonCard
               title={t('origins_title') || 'Origins & Motivation'}
               description={t('origins_desc') || 'Discover the history of chess and its impact on the mind.'}
-              progress={100}
+              progress={completedLessons.includes('origins-of-chess') ? 100 : 0}
               difficulty={t('introductory') || 'Introductory'}
               duration="5 min"
               onClick={() => handleLessonClick('origins-of-chess', false)}
@@ -500,7 +582,7 @@ export default function AcademyPage() {
             <LessonCard
               title={t('opening_title')}
               description={t('opening_desc')}
-              progress={30}
+              progress={completedLessons.includes('opening-principles') ? 100 : 0}
               difficulty={t('beginner')}
               duration="10 min"
               onClick={() => handleLessonClick('opening-principles', false)}
@@ -508,7 +590,7 @@ export default function AcademyPage() {
             <LessonCard
               title={t('tactics_title')}
               description={t('tactics_desc')}
-              progress={0}
+              progress={completedLessons.includes('tactical-patterns') ? 100 : 0}
               difficulty={t('intermediate')}
               duration="15 min"
               onClick={() => handleLessonClick('tactical-patterns', false)}
@@ -516,7 +598,7 @@ export default function AcademyPage() {
             <LessonCard
               title={t('endgame_title')}
               description={t('endgame_desc')}
-              progress={0}
+              progress={completedLessons.includes('endgame-basics') ? 100 : 0}
               difficulty={t('advanced')}
               duration="20 min"
               locked={!unlockedLessons.includes('endgame-basics')}
@@ -525,16 +607,43 @@ export default function AcademyPage() {
           </div>
         </div>
 
-        {/* Recent Analysis */}
-        <div className="opacity-50 mt-8">
-          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-            <FaChessBishop className="text-brand-primary opacity-40 text-xl" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('recent_analysis')}</h3>
+        {/* Next Milestone */}
+        {stats && (
+          <div className="opacity-90 mt-8">
+            <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
+              <FaTrophy className="text-amber-400 opacity-60 text-xl" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-amber-500 opacity-80 text-center">Next Milestone</h3>
+            </div>
+            
+            <div className="w-full p-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden shadow-sm">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+              
+              <div className="flex justify-between items-end mb-3 relative z-10">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary/50 mb-1">Current Title</p>
+                  <p className="text-sm font-black text-brand-primary">{getPlayerTitle(stats.level)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/70 mb-1">Next Level</p>
+                  <p className="text-sm font-black text-amber-400">Level {stats.level + 1}</p>
+                </div>
+              </div>
+              
+              <div className="w-full h-2 bg-brand-primary/10 rounded-full overflow-hidden relative z-10 mb-2">
+                <div 
+                  className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                  style={{ width: `${(stats.xp / getNextMilestoneXP(stats.xp)) * 100}%` }}
+                />
+              </div>
+              
+              <div className="text-center relative z-10 mt-3">
+                <p className="text-[10px] font-bold text-brand-primary/60">
+                  You need <span className="text-amber-400 font-black">{getNextMilestoneXP(stats.xp) - stats.xp} XP</span> to reach Level {stats.level + 1}. <br/> Solve one more puzzle!
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex items-center justify-center h-24 text-[10px] uppercase tracking-widest text-brand-primary opacity-30 font-bold shadow-sm">
-            {t('no_analysis')}
-          </div>
-        </div>
+        )}
 
       </div>
 

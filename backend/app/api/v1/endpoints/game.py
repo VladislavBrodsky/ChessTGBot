@@ -35,21 +35,18 @@ async def create_game(
     
     # Verify and deduct balance if wager > 0 and type is online
     if not is_bot_game and wager > 0:
-        from sqlalchemy import select
+        from sqlalchemy import text
         from app.models.transaction import Transaction
         
-        # Lock user balance to prevent race conditions
-        stmt = select(User).where(User.telegram_id == current_user.telegram_id).with_for_update()
-        res = await db.execute(stmt)
-        db_user = res.scalars().first()
-        if not db_user:
-            raise HTTPException(status_code=404, detail="User not found")
+        # Lock user balance to prevent race conditions atomically
+        update_stmt = text(
+            "UPDATE users SET balance = balance - :wager WHERE telegram_id = :telegram_id AND balance >= :wager RETURNING id"
+        )
+        res = await db.execute(update_stmt, {"wager": wager, "telegram_id": current_user.telegram_id})
+        updated_id = res.scalar_one_or_none()
         
-        if db_user.balance < wager:
+        if not updated_id:
             raise HTTPException(status_code=400, detail="Insufficient funds. Please top up your Web3 Wallet.")
-        
-        db_user.balance -= wager
-        db.add(db_user)
         
         tx = Transaction(
             user_id=current_user.telegram_id,
@@ -113,7 +110,20 @@ async def get_game_history(
     from app.models.game_history import GameHistory
     from app.models.user import User
     from sqlalchemy.future import select
+    from app.services.session_manager import SessionManager
     import json
+    import asyncio
+
+    session_mgr = SessionManager()
+    cache_key = f"game_history:{game_id}"
+    
+    if session_mgr.redis and not session_mgr._use_memory:
+        try:
+            cached = await session_mgr.redis.get(cache_key)
+            if cached:
+                return GameHistoryDetails.model_validate_json(cached)
+        except Exception as e:
+            pass
 
     stmt = select(GameHistory).where(GameHistory.game_id == game_id)
     res = await db.execute(stmt)
@@ -121,23 +131,30 @@ async def get_game_history(
     if not history:
         raise HTTPException(status_code=404, detail="Game history not found")
 
-    # Fetch Player Names
+    # Fetch Player Names concurrently
     white_name = "White Player"
     black_name = "Black Player"
+    white_coro = None
+    black_coro = None
 
-    if history.white_player_id == -1:
-        white_name = "AI Engine"
-    else:
-        white_res = await db.execute(select(User).where(User.telegram_id == history.white_player_id))
-        white_user = white_res.scalars().first()
+    if history.white_player_id != -1:
+        white_coro = db.execute(select(User).where(User.telegram_id == history.white_player_id))
+    if history.black_player_id != -1:
+        black_coro = db.execute(select(User).where(User.telegram_id == history.black_player_id))
+
+    # We gather the DB requests in parallel, preventing the N+1 waterfall
+    results = await asyncio.gather(
+        white_coro if white_coro else asyncio.sleep(0),
+        black_coro if black_coro else asyncio.sleep(0)
+    )
+
+    if white_coro and results[0]:
+        white_user = results[0].scalars().first()
         if white_user:
             white_name = white_user.first_name
 
-    if history.black_player_id == -1:
-        black_name = "AI Engine"
-    else:
-        black_res = await db.execute(select(User).where(User.telegram_id == history.black_player_id))
-        black_user = black_res.scalars().first()
+    if black_coro and results[1]:
+        black_user = results[1].scalars().first()
         if black_user:
             black_name = black_user.first_name
 
@@ -146,7 +163,7 @@ async def get_game_history(
     except Exception:
         moves_list = []
 
-    return GameHistoryDetails(
+    response_data = GameHistoryDetails(
         game_id=history.game_id,
         white_player_id=history.white_player_id,
         black_player_id=history.black_player_id,
@@ -165,6 +182,15 @@ async def get_game_history(
         ended_at=history.ended_at.isoformat(),
         difficulty=history.difficulty
     )
+    
+    # Cache finished games indefinitely
+    if session_mgr.redis and not session_mgr._use_memory and history.winner:
+        try:
+            await session_mgr.redis.set(cache_key, response_data.model_dump_json(), ex=86400 * 7) # cache for 7 days
+        except Exception:
+            pass
+
+    return response_data
 
 
 @router.get("/active")

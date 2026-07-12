@@ -11,9 +11,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
 import { useNavbarHide } from "@/context/NavbarContext";
+import Confetti from "react-confetti";
 
 function PuzzleContent() {
   const [solved, setSolved] = useState(false);
+  const [earnedXP, setEarnedXP] = useState<number | null>(null);
+  const [earnedELO, setEarnedELO] = useState<number | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const locale = useLocale();
   const t = useTranslations('Academy');
   const searchParams = useSearchParams();
@@ -28,6 +32,7 @@ function PuzzleContent() {
   const { hideNavbar, showNavbar } = useNavbarHide();
 
   useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     hideNavbar();
     return () => {
       showNavbar();
@@ -56,8 +61,25 @@ function PuzzleContent() {
       });
   }, [puzzleId]);
 
-  const handleSolve = () => {
+  const handleSolve = async () => {
     setSolved(true);
+    if (!puzzle || !puzzle.solution) return;
+    try {
+      const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${puzzle.id}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ move: puzzle.solution[0] })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "success" && !data.message?.includes("Already solved")) {
+          setEarnedXP(puzzle.xp_reward);
+          setEarnedELO(5);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to verify puzzle completion", e);
+    }
   };
 
   return (
@@ -111,6 +133,7 @@ function PuzzleContent() {
             <PuzzleBoard
               key={puzzle.id}
               initialFen={puzzle.fen}
+              solution={puzzle.solution}
               puzzleId={puzzle.id}
               onSolve={handleSolve}
               onFail={() => console.log('Wrong move')}
@@ -121,20 +144,38 @@ function PuzzleContent() {
 
         {solved && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-6 bg-brand-surface border border-brand-border-opacity-20 rounded-2xl text-center shadow-sm"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="p-6 bg-brand-surface border border-emerald-500/30 rounded-2xl text-center shadow-[0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden"
           >
-            <h2 className="text-xl font-black text-brand-primary mb-1.5 uppercase">{t('excellent')}</h2>
-            <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-wide mb-5">{t('spotted_pattern')}</p>
+            {/* Glowing background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
+            
+            <h2 className="text-2xl font-black text-emerald-400 mb-2 uppercase tracking-tight">{t('excellent')}</h2>
+            <p className="text-xs font-bold text-brand-primary/60 uppercase tracking-widest mb-4">Level Completed Successfully</p>
+            
+            {earnedXP && (
+              <div className="flex justify-center gap-4 mb-6">
+                <div className="flex flex-col items-center p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[80px]">
+                  <span className="text-amber-400 font-black text-xl">+{earnedXP}</span>
+                  <span className="text-[9px] text-amber-400/60 font-black uppercase tracking-widest">XP</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl min-w-[80px]">
+                  <span className="text-blue-400 font-black text-xl">+{earnedELO}</span>
+                  <span className="text-[9px] text-blue-400/60 font-black uppercase tracking-widest">ELO</span>
+                </div>
+              </div>
+            )}
+            
             <Link href={`/${locale}/academy`}>
-              <button className="w-full py-3 bg-brand-primary text-brand-void font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-sm">
+              <button className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
                 {t('continue')}
               </button>
             </Link>
           </motion.div>
         )}
       </div>
+      {solved && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={200} gravity={0.15} colors={['#10B981', '#F59E0B', '#3B82F6', '#FFFFFF']} />}
     </LayoutWrapper>
   );
 }

@@ -907,3 +907,31 @@ class GamificationService:
 
         updated_user = await GamificationService.add_xp(db, db_user, 50, trigger_kickback=True, apply_booster=True, reason=f"academy_{task_type}", reference_id=item_id)
         return updated_user, "Success"
+
+    @staticmethod
+    async def get_completed_academy_tasks(user: User, task_type: str = "lesson") -> list[str]:
+        """
+        Get a list of completed academy task item IDs for a specific user and task_type.
+        """
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        redis_key = f"user:completed_academy:{user.telegram_id}"
+        
+        completed_ids = []
+        if session_mgr.redis and not session_mgr._use_memory:
+            try:
+                members = await session_mgr.redis.smembers(redis_key)
+                for member in members:
+                    member_str = member.decode('utf-8') if isinstance(member, bytes) else str(member)
+                    if member_str.startswith(f"{task_type}:"):
+                        completed_ids.append(member_str.split(":", 1)[1])
+            except Exception:
+                pass
+        
+        if not session_mgr.redis or session_mgr._use_memory:
+            if hasattr(GamificationService, "_completed_academy"):
+                for mem_key in GamificationService._completed_academy:
+                    if mem_key.startswith(f"{user.telegram_id}:{task_type}:"):
+                        completed_ids.append(mem_key.split(":", 2)[2])
+                        
+        return completed_ids

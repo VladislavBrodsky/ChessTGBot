@@ -26,6 +26,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         // Login page itself is always public
         if (pathname?.includes('/login')) {
             setAuthState('authed');
+            const isTMA = !!(window as any).Telegram?.WebApp?.initData;
+            if (isTMA) {
+                (window as any).Telegram?.WebApp?.ready();
+            }
             return;
         }
 
@@ -34,6 +38,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
         if (isTMA || hasWebAuth) {
             setAuthState('authed');
+            if (isTMA) {
+                // tg.ready() is delayed until AuthGuard completes verification
+                (window as any).Telegram?.WebApp?.ready();
+            }
             return;
         }
 

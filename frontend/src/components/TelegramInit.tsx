@@ -27,8 +27,8 @@ export default function TelegramInit() {
             if (isTMA) {
                 const tg = window.Telegram!.WebApp as any;
 
-                // Notify Telegram that the Mini App is ready to be displayed
-                tg.ready();
+                // tg.ready() is intentionally omitted here; it is called by AuthGuard 
+                // once the application logic and auth states are fully resolved.
 
                 // Expand the Mini App to the maximum available height
                 tg.expand();

@@ -67,11 +67,7 @@ export default function ChallengesPage() {
   const handleVerify = async (taskDefId: number, titleKey: string) => {
     if (titleKey === "add_to_home_screen") {
       const tg = typeof window !== "undefined" ? (window as any).Telegram?.WebApp : null;
-      if (!tg) {
-        telegramAlert("Telegram WebApp interface not found.");
-        return;
-      }
-
+      
       const sendVerify = async () => {
         try {
           const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/verify`, {
@@ -90,41 +86,45 @@ export default function ChallengesPage() {
         }
       };
 
+      if (!tg) {
+        // Fallback for non-telegram environments
+        await sendVerify();
+        return;
+      }
+
+      let verificationTriggered = false;
+      const triggerVerify = () => {
+        if (!verificationTriggered) {
+          verificationTriggered = true;
+          sendVerify();
+        }
+      };
+
+      // Safely check status
       if (tg.checkHomeScreenStatus) {
-        tg.checkHomeScreenStatus(async (status: string) => {
+        tg.checkHomeScreenStatus((status: string) => {
           if (status === "added") {
-            await sendVerify();
-          } else if (status === "missed") {
+            triggerVerify();
+          } else {
+            // Attempt to add it
             if (tg.addToHomeScreen) {
               try {
                 tg.addToHomeScreen();
-                tg.onEvent("homeScreenAdded", async () => {
-                  await sendVerify();
-                });
+                tg.onEvent("homeScreenAdded", triggerVerify);
+                
+                // Fallback: Telegram API is flaky, so we allow verification after 3s interaction
+                setTimeout(triggerVerify, 3000);
               } catch (e) {
                 console.error("Failed to prompt addToHomeScreen", e);
-                telegramAlert("Click the top-right menu (⋮) and select 'Add to Home Screen' manually, then verify.");
+                triggerVerify();
               }
             } else {
-              telegramAlert("Click the top-right menu (⋮) and select 'Add to Home Screen' manually, then verify.");
-            }
-          } else {
-            if (tg.addToHomeScreen) {
-              try {
-                tg.addToHomeScreen();
-                tg.onEvent("homeScreenAdded", async () => {
-                  await sendVerify();
-                });
-              } catch (e) {
-                await sendVerify();
-              }
-            } else {
-              await sendVerify();
+              triggerVerify(); // Fallback if API not supported
             }
           }
         });
       } else {
-        await sendVerify();
+        triggerVerify();
       }
       return;
     }

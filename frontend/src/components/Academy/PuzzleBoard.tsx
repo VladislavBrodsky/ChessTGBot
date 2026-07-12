@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Chess } from "chess.js";
 import ChessBoardComponent from "@/components/game/ChessBoard";
-import { motion } from "framer-motion";
-import { FaLightbulb, FaUndo } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaLightbulb, FaUndo, FaFlag } from "react-icons/fa";
 
 interface PuzzleBoardProps {
   initialFen: string;
@@ -190,6 +190,33 @@ export default function PuzzleBoard({
     }
   };
 
+  const handleGiveUp = () => {
+    if (status !== 'playing' || !solution || solution.length === 0) return;
+    
+    // Auto-play the solution
+    let currentIndex = moveIndex;
+    const playNextMove = () => {
+      if (currentIndex >= solution.length) {
+        setStatus('wrong'); // Mark as wrong since they gave up, but they can see it
+        onFail();
+        return;
+      }
+      const uci = solution[currentIndex];
+      const from = uci.substring(0, 2);
+      const to = uci.substring(2, 4);
+      const promotion = uci.length > 4 ? uci.substring(4, 5) : undefined;
+      
+      safeGameMutate((g) => {
+        g.move({ from, to, promotion });
+      });
+      currentIndex++;
+      setMoveIndex(currentIndex);
+      setTimeout(playNextMove, 800);
+    };
+    
+    playNextMove();
+  };
+
   const customSquareStyles: { [square: string]: any } = {};
   if (hintMove) {
     customSquareStyles[hintMove.from] = { backgroundColor: 'rgba(16, 185, 129, 0.4)' };
@@ -220,9 +247,21 @@ export default function PuzzleBoard({
                 ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.15)] cursor-pointer' 
                 : 'bg-brand-primary/5 text-brand-primary/30 cursor-not-allowed'
             }`}
+            title="Hint"
           >
             <FaLightbulb />
           </button>
+          
+          {solution && solution.length > 0 && (
+            <button 
+              onClick={handleGiveUp} 
+              disabled={status !== 'playing'}
+              className="p-4 rounded-xl transition-all bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 cursor-pointer shadow-[0_0_15px_rgba(243,24,24,0.1)]"
+              title="Give Up / Show Solution"
+            >
+              <FaFlag />
+            </button>
+          )}
         </div>
         {hintsEnabled && !showHintText && status === 'playing' && (
           <span className="text-[10px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">

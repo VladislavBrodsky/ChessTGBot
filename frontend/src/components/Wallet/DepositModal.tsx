@@ -584,7 +584,7 @@ export default function DepositModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
+        className="bottom-drawer-sheet relative z-10 pb-8 sm:pb-4"
       >
         <div className="bottom-drawer-handle" />
         <button
@@ -624,14 +624,18 @@ export default function DepositModal({
           )}
 
           {cardEnabled && (
-            <div className="flex p-1 rounded-xl bg-brand-void border border-brand-border-opacity-10 gap-1">
+            <div className="relative flex p-1 rounded-xl bg-brand-void/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-inner overflow-hidden">
+              <div 
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-brand-primary shadow-[0_0_12px_rgba(255,215,0,0.15)] transition-all duration-300 ease-out"
+                style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
+              />
               {(['crypto', 'card'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   disabled={processing}
-                  onClick={() => { setActiveTab(tab); setErrorMessage(""); }}
-                  className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${activeTab === tab ? 'bg-brand-primary text-brand-void shadow-lg' : 'text-brand-primary/50 hover:text-brand-primary'}`}
+                  onClick={() => { telegramHaptic('light'); setActiveTab(tab); setErrorMessage(""); }}
+                  className={`relative z-10 flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-primary/60 hover:text-brand-primary'}`}
                 >
                   {tab === 'crypto' ? tw('tab_crypto') : tw('tab_card')}
                 </button>
@@ -987,7 +991,7 @@ export default function DepositModal({
                   value={depositAmount}
                   disabled={processing}
                   onChange={(e) => setDepositAmount(e.target.value)}
-                  className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
+                  className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-3 pl-8 pr-4 text-sm text-brand-primary font-black focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:shadow-[0_0_15px_rgba(255,215,0,0.1)] transition-all"
                   placeholder="10.00"
                   min="1"
                 />
@@ -1017,18 +1021,19 @@ export default function DepositModal({
               type="button"
               onClick={handleCardTopUp}
               disabled={processing || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) < 1.0}
-              className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-98"
+              className="group relative overflow-hidden w-full py-3.5 rounded-xl border border-white/10 bg-gradient-to-r from-[#635BFF] to-[#4338CA] text-white text-[11px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(99,91,255,0.25)] hover:shadow-[0_0_25px_rgba(99,91,255,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
+              <div className="absolute inset-0 bg-white/20 translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-700 ease-in-out" />
               {processing ? (
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />
+                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
               ) : (
-                <FaCreditCard size={11} />
+                <svg className="w-10 h-4 fill-white shrink-0" viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg"><path d="M59.64 14.28h-6.8c.24-1.4 1.56-2.4 3.4-2.4 1.76 0 3.08.8 3.4 2.4zM52.8 17.6h7.08c-.44 2.12-2.32 3.68-5 3.68-3.4 0-5.84-2.48-5.84-5.88s2.4-5.88 5.76-5.88c3.36 0 5.6 2.32 5.6 5.68v1.08H52.8c.16 1.84 1.52 3.08 3.44 3.08 1.48 0 2.52-.72 2.92-1.76h.04v-.04zM43.08 9.76v11.24h-4.32V9.76h4.32zm-2.16-5.88c1.44 0 2.56 1.12 2.56 2.56s-1.12 2.56-2.56 2.56-2.56-1.12-2.56-2.56 1.12-2.56 2.56-2.56zM37.84 11.2c0-1.04-.84-1.44-2.04-1.44-1.76 0-2.88 1.12-3.12 2.24h-4.24c.48-3.2 3.04-5.52 7.36-5.52 3.44 0 6.32 1.64 6.32 5.04v9.48h-4.28v-1.64h-.08c-.96 1.36-2.68 1.92-4.6 1.92-3.28 0-5.68-1.92-5.68-4.96 0-3.32 2.68-4.72 6.52-4.72 1.4 0 2.84.28 3.84.72v-1.12zM33.6 18c1.36 0 2.76-.72 3.44-1.88v-1.96c-.84-.4-2-.64-3.2-.64-2 0-3.2.72-3.2 1.92 0 1.28 1.28 2.56 2.96 2.56zM22.56 21H18.2V9.76h4.2v1.6h.08c.84-1.2 2.4-1.84 4.36-1.84 3.2 0 5.84 2.44 5.84 5.84s-2.64 5.84-5.84 5.84c-1.96 0-3.52-.64-4.36-1.84h-.08V21zm.68-5.64c0 1.84 1.32 3.12 3.16 3.12 1.88 0 3.2-1.28 3.2-3.12s-1.32-3.12-3.2-3.12c-1.84 0-3.16 1.28-3.16 3.12zM15.4 21h-4.32V3.48h4.32V21zM5.52 20.8C1.84 20.8 0 18.64 0 15.12V10.2c0-1.48.56-2.08 1.6-2.08h1.28v-3.8h4.24v3.8h2.08v3.4H7.12v3.12c0 1.24.64 1.64 1.88 1.64H10v3.52h-.88c-1.2 0-2.48.04-3.6 0z"/></svg>
               )}
-              <span>{processing ? "Preparing..." : "Top Up via Credit Card"}</span>
+              <span>{processing ? "Initializing Checkout..." : "Checkout securely"}</span>
             </button>
-
-            <div className="p-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-bg-opacity-5 text-[9px] font-bold text-brand-primary/50 leading-relaxed uppercase tracking-wider text-center">
-              Payments are secured by Stripe. Funds are instantly credited to your platform balance upon completion.
+            <div className="flex items-center justify-center gap-2 opacity-50 mt-1">
+               <svg className="w-2.5 h-2.5 fill-brand-primary" viewBox="0 0 448 512"><path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"/></svg>
+               <span className="text-[9px] font-bold text-brand-primary uppercase tracking-widest">Guaranteed safe & secure</span>
             </div>
           </div>
           )}
