@@ -1290,6 +1290,12 @@ async def stripe_create_session(
                 'user_id': str(current_user.telegram_id),
                 'tx_id': str(pending_tx.id)
             },
+            payment_intent_data={
+                'metadata': {
+                    'user_id': str(current_user.telegram_id),
+                    'tx_id': str(pending_tx.id)
+                }
+            },
             success_url=f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
         )
@@ -1419,6 +1425,87 @@ async def stripe_webhook(
             else:
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
+    elif event['type'] == 'checkout.session.expired':
+        session = event['data']['object']
+        tx_id_str = session.get('metadata', {}).get('tx_id')
+        user_id_str = session.get('metadata', {}).get('user_id')
+        if tx_id_str and user_id_str:
+            tx_id = int(tx_id_str)
+            tx_result = await db.execute(select(Transaction).filter(Transaction.id == tx_id).with_for_update())
+            tx = tx_result.scalars().first()
+            if tx and tx.status == "pending":
+                tx.status = "failed"
+                db.add(tx)
+                await db.commit()
+                return {"status": "success", "message": "Transaction marked as failed."}
+
+    elif event['type'] == 'charge.refunded':
+        charge = event['data']['object']
+        tx_id_str = charge.get('metadata', {}).get('tx_id')
+        user_id_str = charge.get('metadata', {}).get('user_id')
+        
+        if tx_id_str and user_id_str:
+            tx_id = int(tx_id_str)
+            user_id = int(user_id_str)
+            
+            # Identify the refunded amount (charge.amount_refunded is in cents)
+            amount_refunded = charge.get('amount_refunded', 0)
+            if amount_refunded > 0:
+                user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                user = user_result.scalars().first()
+                if user:
+                    user.balance -= amount_refunded
+                    
+                    refund_tx = Transaction(
+                        user_id=user_id,
+                        type="refund",
+                        amount=-amount_refunded,
+                        fee=0,
+                        status="completed",
+                        reference_id=f"refund_{charge.get('id', '')}"
+                    )
+                    db.add(refund_tx)
+                    db.add(user)
+                    await db.commit()
+                    return {"status": "success", "message": "Refund processed."}
+
+    elif event['type'] == 'charge.dispute.created':
+        dispute = event['data']['object']
+        charge_id = dispute.get('charge')
+        if charge_id:
+            # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
+            try:
+                charge = stripe.Charge.retrieve(charge_id)
+                user_id_str = charge.get('metadata', {}).get('user_id')
+                if user_id_str:
+                    user_id = int(user_id_str)
+                    user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                    user = user_result.scalars().first()
+                    if user:
+                        # Freeze account completely due to dispute / chargeback
+                        user.is_active = False
+                        
+                        # Deduct the disputed amount
+                        dispute_amount = dispute.get('amount', 0)
+                        user.balance -= dispute_amount
+                        
+                        penalty_tx = Transaction(
+                            user_id=user_id,
+                            type="chargeback",
+                            amount=-dispute_amount,
+                            fee=0,
+                            status="completed",
+                            reference_id=f"dispute_{dispute.get('id', '')}"
+                        )
+                        db.add(penalty_tx)
+                        db.add(user)
+                        await db.commit()
+                        logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {dispute.get('id')})")
+                        return {"status": "success", "message": "Account frozen due to dispute."}
+            except Exception as e:
+                logger.error(f"Failed to process dispute: {e}")
+                pass
+
     return {"status": "success", "message": "Event received."}
 
 
