@@ -3,11 +3,11 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Copy lockfiles first — cheap layer that rarely changes
-COPY package.json package-lock.json ./
+# Copy package.json (and package-lock.json if it exists)
+COPY package.json package-lock.json* ./
 
-# Clean install (reproducible, uses lockfile)
-RUN npm ci --prefer-offline
+# Use npm install to resolve dependencies dynamically for the target OS
+RUN npm install
 
 # ─── Stage 2: Build the Next.js app ─────────────────────────────────────────
 FROM node:20-alpine AS builder
