@@ -83,7 +83,10 @@
     "ton_wallet": "टॉन वॉलेट",
     "ton_not_connected": "कनेक्ट नहीं है",
     "premium_membership": "प्रीमियम सदस्यता",
-    "upgrade_for_access": "उन्नत एक्सेस अनलॉक करें"
+    "upgrade_for_access": "उन्नत एक्सेस अनलॉक करें",
+    "arena_alerts": "एरिना अलर्ट",
+    "arena_alerts_on": "चालू",
+    "arena_alerts_off": "बंद"
   },
   "Language": {
     "select": "भाषा चुनें"
@@ -543,5 +546,14 @@
     "cancel": "रद्द करें",
     "confirm": "पुष्टि करें",
     "close": "बंद करें"
+  },
+  "RegionPrompt": {
+    "title": "आप कहाँ से खेलते हैं?",
+    "subtitle": "हम आपके क्षेत्र के सबसे अच्छे समय पर डेली एरिना की याद दिलाएँगे — दिन में केवल एक बार।",
+    "skip": "बाद में",
+    "region_americas": "अमेरिका",
+    "region_europe_africa": "यूरोप और अफ्रीका",
+    "region_mena_sasia": "मध्य पूर्व और दक्षिण एशिया",
+    "region_apac": "पूर्वी एशिया और प्रशांत"
   }
 }

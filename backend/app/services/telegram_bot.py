@@ -1,5 +1,6 @@
 import asyncio
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
+from telegram.error import Forbidden
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
 import logging
@@ -263,6 +264,7 @@ class TelegramService:
 
                 if not db_user:
                     from app.services.gamification_service import GamificationService
+                    from sqlalchemy.exc import IntegrityError
                     ref_code = await GamificationService.generate_referral_code(db)
                     db_user = User(
                         telegram_id=user.id,
@@ -274,10 +276,22 @@ class TelegramService:
                         referral_code=ref_code
                     )
                     db.add(db_user)
-                    await db.commit()
+                    created_here = True
+                    try:
+                        await db.commit()
+                    except IntegrityError:
+                        # Unique telegram_id conflict: the Mini App auth path (or a
+                        # duplicate /start update) created this user concurrently.
+                        # Use the winner's row instead of paging admins.
+                        await db.rollback()
+                        result = await db.execute(select(User).where(User.telegram_id == user.id))
+                        db_user = result.scalars().first()
+                        created_here = False
+                        if db_user is None:
+                            raise
 
-                    # Process referral if start_param is present and starts with ref_
-                    if start_param and start_param.startswith("ref_"):
+                    # Process referral only for the user we actually created here
+                    if created_here and start_param and start_param.startswith("ref_"):
                         try:
                             await GamificationService.process_referral(db, db_user, start_param)
                         except Exception as ref_err:
@@ -377,6 +391,23 @@ class TelegramService:
 
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
+        except Forbidden:
+            # The user blocked the bot before our reply landed (e.g. /start then
+            # an immediate block, or PTB replaying a backlog update after a
+            # restart). Routine churn, not a bug: mark them blocked the same way
+            # on_my_chat_member does and skip the admin alert.
+            logger.info(f"/start reply skipped: user {user.id} has blocked the bot")
+            try:
+                from datetime import datetime, timezone
+                async with AsyncSessionLocal() as db:
+                    result = await db.execute(select(User).where(User.telegram_id == user.id))
+                    db_user = result.scalars().first()
+                    if db_user and not db_user.is_blocked:
+                        db_user.is_blocked = True
+                        db_user.blocked_at = datetime.now(timezone.utc).replace(tzinfo=None)
+                        await db.commit()
+            except Exception as mark_err:
+                logger.warning(f"Could not mark user {user.id} as blocked: {mark_err}")
         except Exception as e:
             # Log for admins (routed to alerts); the user gets a friendly
             # PLAIN-TEXT apology. Never echo the exception or a traceback back

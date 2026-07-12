@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[22952,["6711","static/chunks/8e1d74a4-93d876f98d707f42.js","1795","static/chunks/1795-dbbebd865b28428a.js","2491","static/chunks/2491-80058a34350d6a72.js","2762","static/chunks/2762-cdbd3930b576c3b8.js","8500","static/chunks/8500-f62a38ff68ab7f42.js","7170","static/chunks/7170-21f7dc13d3faa12a.js","4798","static/chunks/4798-ad13ee3665d46f35.js","5020","static/chunks/5020-adbdb6c58106ede3.js","4785","static/chunks/4785-a90f9503059db4ba.js","7333","static/chunks/app/%5Blocale%5D/academy/lesson/%5BlessonId%5D/page-5fb90edd645d8bcc.js"],"default"]
+2:I[22952,["6711","static/chunks/8e1d74a4-cdbdf1102af05127.js","1795","static/chunks/1795-dbbebd865b28428a.js","2491","static/chunks/2491-80058a34350d6a72.js","2762","static/chunks/2762-cdbd3930b576c3b8.js","8500","static/chunks/8500-f62a38ff68ab7f42.js","7170","static/chunks/7170-21f7dc13d3faa12a.js","4798","static/chunks/4798-ad13ee3665d46f35.js","1353","static/chunks/1353-ae6e020a10d88c21.js","4785","static/chunks/4785-f37e5c8b1361534a.js","7333","static/chunks/app/%5Blocale%5D/academy/lesson/%5BlessonId%5D/page-f337b9b7b7ad780a.js"],"default"]
 3:I[90484,[],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"opening-principles"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"0tZhDgpwNSc6grsP_Clin"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"opening-principles"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"BN5OY4QnQGuqncH0snRj5"}
 5:null

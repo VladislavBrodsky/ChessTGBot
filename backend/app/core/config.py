@@ -24,7 +24,10 @@ class Settings(BaseSettings):
     ]
 
     # Daily Arena: start time (UTC "HH:MM") and window length in minutes
-    ARENA_START_UTC: str = "19:00"
+    # Four daily arena windows, 6h apart, so every region gets one landing in
+    # its local prime hours. Each user is notified for only ONE of them (their
+    # best-fit slot) — see app.services.arena_targeting.
+    ARENA_START_UTC: str = "02:00, 08:00, 14:00, 20:00"
     ARENA_DURATION_MINUTES: int = 30
 
     # Database

@@ -40,7 +40,17 @@ export default function PuzzleBoard({
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
       const update = new Chess(g.fen(), { skipValidation: true });
-      modify(update);
+      // chess.move() THROWS on an illegal move. A throw here happens inside a
+      // React state updater, so it escapes to the page error boundary and
+      // kills the whole puzzle page. It can legitimately happen: the position
+      // may have changed between validating a move and replaying it here
+      // (reset/give-up/second move racing the async server verify).
+      try {
+        modify(update);
+      } catch (e) {
+        console.warn('PuzzleBoard: safeGameMutate move failed', e);
+        return g;
+      }
       return update;
     });
   }

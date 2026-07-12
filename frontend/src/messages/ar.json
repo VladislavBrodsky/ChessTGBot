@@ -83,7 +83,10 @@
     "ton_wallet": "محفظة TON",
     "ton_not_connected": "غير متصل",
     "premium_membership": "العضوية المميزة",
-    "upgrade_for_access": "افتح الوصول المتقدم"
+    "upgrade_for_access": "افتح الوصول المتقدم",
+    "arena_alerts": "تنبيهات الحلبة",
+    "arena_alerts_on": "مفعّل",
+    "arena_alerts_off": "متوقف"
   },
   "Language": {
     "select": "اختر اللغة"
@@ -543,5 +546,14 @@
     "cancel": "إلغاء",
     "confirm": "تأكيد",
     "close": "إغلاق"
+  },
+  "RegionPrompt": {
+    "title": "من أين تلعب؟",
+    "subtitle": "سنذكّرك بحلبة اليوم في أفضل وقت لمنطقتك — مرة واحدة يوميًا فقط.",
+    "skip": "لاحقًا",
+    "region_americas": "الأمريكتان",
+    "region_europe_africa": "أوروبا وأفريقيا",
+    "region_mena_sasia": "الشرق الأوسط وجنوب آسيا",
+    "region_apac": "شرق آسيا والمحيط الهادئ"
   }
 }

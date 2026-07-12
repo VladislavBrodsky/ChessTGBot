@@ -17,6 +17,26 @@ export default function LocaleError({
     reset: () => void;
 }) {
     useEffect(() => {
+        // A ChunkLoadError means this client is running HTML from a build whose
+        // hashed chunks were replaced by a redeploy (each deploy swaps the whole
+        // container, old /_next/static is gone). Reloading fetches the new HTML
+        // and fixes it — do that automatically instead of stranding the user,
+        // but at most once a minute so a genuinely broken build can't reload-loop.
+        const isStaleChunk = /ChunkLoadError|Loading chunk .+ failed|error loading dynamically imported module|Importing a module script failed/i
+            .test(`${error?.name ?? ''} ${error?.message ?? ''}`);
+        if (isStaleChunk && typeof window !== 'undefined') {
+            let lastReload = 0;
+            try {
+                lastReload = Number(sessionStorage.getItem('chunk-error-reload-at') || 0);
+            } catch { /* storage unavailable — fall through to reporting */ }
+            if (Date.now() - lastReload > 60_000) {
+                try {
+                    sessionStorage.setItem('chunk-error-reload-at', String(Date.now()));
+                    window.location.reload();
+                    return; // stale build, not a code bug — no alert
+                } catch { /* storage unavailable — fall through to reporting */ }
+            }
+        }
         reportClientError(error, 'render');
     }, [error]);
 

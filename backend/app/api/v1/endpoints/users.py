@@ -71,6 +71,10 @@ class UserStats(BaseModel):
     xp: int = 0
     level: int = 1
     bot_username: str = "FinChess_bot"
+    # Arena notification targeting. `region` is None until the user answers the
+    # region prompt, which the frontend uses to decide whether to show it.
+    region: Optional[str] = None
+    arena_notifications: bool = True
 
 class ReferralEarningPoint(BaseModel):
     date: str   # ISO date string e.g. "2025-06-10"
@@ -343,7 +347,12 @@ async def get_user_stats(
         referral_code=current_user.referral_code,
         xp=current_user.xp,
         level=current_user.level,
-        bot_username=settings.TELEGRAM_BOT_USERNAME
+        bot_username=settings.TELEGRAM_BOT_USERNAME,
+        region=current_user.region,
+        # Coerce None (unrefreshed / pre-migration rows) to the opt-in default.
+        arena_notifications=(
+            current_user.arena_notifications if current_user.arena_notifications is not None else True
+        ),
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -397,7 +406,12 @@ async def sync_user(
         referral_code=current_user.referral_code,
         xp=current_user.xp,
         level=current_user.level,
-        bot_username=settings.TELEGRAM_BOT_USERNAME
+        bot_username=settings.TELEGRAM_BOT_USERNAME,
+        region=current_user.region,
+        # Coerce None (unrefreshed / pre-migration rows) to the opt-in default.
+        arena_notifications=(
+            current_user.arena_notifications if current_user.arena_notifications is not None else True
+        ),
     )
 
 

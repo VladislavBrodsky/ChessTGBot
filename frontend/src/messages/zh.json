@@ -83,7 +83,10 @@
     "ton_wallet": "TON钱包",
     "ton_not_connected": "未连接",
     "premium_membership": "高级会员",
-    "upgrade_for_access": "解锁高级权限"
+    "upgrade_for_access": "解锁高级权限",
+    "arena_alerts": "竞技场提醒",
+    "arena_alerts_on": "开",
+    "arena_alerts_off": "关"
   },
   "Language": {
     "select": "选择语言"
@@ -543,5 +546,14 @@
     "cancel": "取消",
     "confirm": "确认",
     "close": "关闭"
+  },
+  "RegionPrompt": {
+    "title": "你在哪里游玩？",
+    "subtitle": "我们会在最适合你所在地区的时间提醒每日竞技场——每天仅一次。",
+    "skip": "以后再说",
+    "region_americas": "美洲",
+    "region_europe_africa": "欧洲和非洲",
+    "region_mena_sasia": "中东和南亚",
+    "region_apac": "东亚和太平洋"
   }
 }

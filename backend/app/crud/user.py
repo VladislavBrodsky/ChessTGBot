@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from sqlalchemy import update
 from app.models.user import User
@@ -26,7 +27,16 @@ async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_
         signup_ip_hash=signup_ip_hash
     )
     db.add(db_user)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        # Unique telegram_id conflict: a concurrent request (bot /start vs
+        # Mini App auth) created this user first. Return the winner's row.
+        await db.rollback()
+        existing = await get_user_by_telegram_id(db, telegram_id)
+        if existing is None:
+            raise
+        return existing
     await db.refresh(db_user)
     return db_user
 
