@@ -8,16 +8,16 @@ logger = logging.getLogger(__name__)
 from typing import Optional, Dict
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import AsyncSessionLocal
-from app.services.game_engine import GameEngine
-from app.services.session_manager import SessionManager
-from app.schemas.game_state import GameState
-from app.crud import user as user_crud
-from app.crud import game_history as game_history_crud
-from app.models.game_history import GameHistory
-from app.models.transaction import Transaction
-import contextlib
-import secrets
+from app.core.database import AsyncSessionLocal  # noqa: E402
+from app.services.game_engine import GameEngine  # noqa: E402
+from app.services.session_manager import SessionManager  # noqa: E402
+from app.schemas.game_state import GameState  # noqa: E402
+from app.crud import user as user_crud  # noqa: E402
+from app.crud import game_history as game_history_crud  # noqa: E402
+from app.models.game_history import GameHistory  # noqa: E402
+from app.models.transaction import Transaction  # noqa: E402
+import contextlib  # noqa: E402
+import secrets  # noqa: E402
 
 _local_game_locks = {}
 
@@ -69,10 +69,10 @@ async def game_lock(redis_client, game_id: str, use_memory: bool = False):
                 await redis_client.eval(lua_release, 1, lock_key, token)
             except Exception as e:
                 logger.warning(f"Failed to release Redis lock {game_id}: {e}")
-from app.services.telegram_bot import TelegramService
-from app.services.gamification_service import GamificationService, TaskType
-from app.services.referral_commission_service import ReferralCommissionService
-from app.core.socket import sio
+from app.services.telegram_bot import TelegramService  # noqa: E402
+from app.services.gamification_service import GamificationService, TaskType  # noqa: E402
+from app.services.referral_commission_service import ReferralCommissionService  # noqa: E402
+from app.core.socket import sio  # noqa: E402
 
 _process_pool = None
 

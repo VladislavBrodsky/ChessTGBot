@@ -140,7 +140,6 @@ async def process_withdrawal_success(tx_id: int):
             # Send Telegram Bot notification for successful withdrawal completion
             amount_cents = abs(tx.amount)
             net_amount_cents = amount_cents - tx.fee
-            dest_display = f"{tx.reference_id[:6]}...{tx.reference_id[-4:]}" if tx.reference_id and len(tx.reference_id) > 10 else "Wallet"
             link_display = f"<a href=\"https://tonviewer.com/transaction/{tx.reference_id}\">View Transaction 🔗</a>"
             
             notification_text = (

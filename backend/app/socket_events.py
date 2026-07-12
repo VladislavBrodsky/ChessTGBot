@@ -59,16 +59,16 @@ def ws_correlation(event_name: str):
             return wrapper
     return decorator
 
-from app.core.socket import sio
-from app.services.game_service import GameService
-from app.core.security import validate_init_data, extract_client_ip, hash_ip
-from app.api.v1.deps import auth_ip_is_blocked, register_auth_failure
-from app.services.matchmaker import MatchmakerService
-from app.core.database import AsyncSessionLocal
-from app.crud import user as user_crud
-from app.models.transaction import Transaction
-from app.models.user import User
-from app.models.gamification import Referral
+from app.core.socket import sio  # noqa: E402
+from app.services.game_service import GameService  # noqa: E402
+from app.core.security import validate_init_data, extract_client_ip, hash_ip  # noqa: E402
+from app.api.v1.deps import auth_ip_is_blocked, register_auth_failure  # noqa: E402
+from app.services.matchmaker import MatchmakerService  # noqa: E402
+from app.core.database import AsyncSessionLocal  # noqa: E402
+from app.crud import user as user_crud  # noqa: E402
+from app.models.transaction import Transaction  # noqa: E402
+from app.models.user import User  # noqa: E402
+from app.models.gamification import Referral  # noqa: E402
 
 from sqlalchemy import select, and_  # noqa: E402
 
