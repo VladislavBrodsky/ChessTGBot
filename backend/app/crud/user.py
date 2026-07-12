@@ -40,12 +40,14 @@ async def create_user(db: AsyncSession, telegram_id: int, first_name: str, last_
     await db.refresh(db_user)
     return db_user
 
-async def update_subscription(db: AsyncSession, user: User, tier: str, expires_at: datetime = None):
+async def update_subscription(db: AsyncSession, user: User, tier: str, expires_at: datetime = None, billing_period: str = None):
     user.is_premium = True
     user.premium_tier = tier
     user.premium_expires_at = expires_at
     user.premium_warning_sent = 0
-    
+    if billing_period:
+        user.premium_billing_period = billing_period
+
     db.add(user)
     await db.commit()
     await db.refresh(user)

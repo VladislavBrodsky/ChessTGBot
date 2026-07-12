@@ -1362,12 +1362,19 @@ async def create_stripe_subscription(
     if not redirect_path.startswith("/"):
         redirect_path = "/" + redirect_path
 
-    # If user already has an active subscription, block them
+    # If user already has an active subscription AND wants the same billing period, block them
     if current_user.stripe_subscription_id and current_user.is_premium_active:
-        raise HTTPException(
-            status_code=400, 
-            detail="You already have an active subscription. Please manage it via the portal."
-        )
+        if current_user.premium_billing_period == request.billing_period:
+            raise HTTPException(
+                status_code=400,
+                detail="You already have an active subscription on this plan. Use 'Manage Subscription' to change it."
+            )
+        else:
+            # Different period → redirect to upgrade endpoint logic
+            raise HTTPException(
+                status_code=400,
+                detail="To switch billing periods on an existing Stripe subscription, please use the upgrade flow."
+            )
 
     # Use the appropriate price ID based on the billing period
     if request.billing_period == "annual":
@@ -1398,7 +1405,7 @@ async def create_stripe_subscription(
             session_kwargs['customer_email'] = f"{current_user.telegram_id}@telegram.local" # Fallback if they have no email
 
         checkout_session = stripe.checkout.Session.create(**session_kwargs)
-        
+
         return StripeSessionResponse(
             session_id=checkout_session.id,
             checkout_url=checkout_session.url
@@ -1406,6 +1413,74 @@ async def create_stripe_subscription(
     except Exception as e:
         logger.error(f"Failed to create Stripe subscription session: {e}")
         raise HTTPException(status_code=500, detail="Stripe subscription creation failed.")
+
+
+class StripeUpgradeRequest(BaseModel):
+    billing_period: str  # "monthly" or "annual"
+
+@router.post("/stripe/upgrade")
+async def upgrade_stripe_subscription(
+    request: StripeUpgradeRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Upgrades (or downgrades) an existing Stripe subscription to a different billing period.
+    Uses stripe.Subscription.modify() with proration so Stripe handles fair billing.
+    """
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=501, detail="Stripe payments are not configured.")
+
+    if not current_user.stripe_subscription_id:
+        raise HTTPException(status_code=400, detail="No active Stripe subscription found. Please subscribe first.")
+
+    if not current_user.is_premium_active:
+        raise HTTPException(status_code=400, detail="Your subscription has expired. Please subscribe again.")
+
+    period = request.billing_period.lower()
+    if period not in ("monthly", "annual"):
+        raise HTTPException(status_code=400, detail="billing_period must be 'monthly' or 'annual'.")
+
+    if current_user.premium_billing_period == period:
+        raise HTTPException(status_code=400, detail=f"You are already on the {period} plan.")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    new_price_id = settings.STRIPE_ANNUAL_PRICE_ID if period == "annual" else settings.STRIPE_MONTHLY_PRICE_ID
+
+    try:
+        # Retrieve current subscription to get the current item ID
+        sub = stripe.Subscription.retrieve(current_user.stripe_subscription_id)
+        current_item_id = sub["items"]["data"][0]["id"]
+
+        # Modify the subscription — Stripe automatically creates proration credits/charges
+        stripe.Subscription.modify(
+            current_user.stripe_subscription_id,
+            cancel_at_period_end=False,
+            proration_behavior="create_prorations",
+            items=[{"id": current_item_id, "price": new_price_id}],
+        )
+
+        # Update local record immediately — Stripe will confirm via webhook
+        result = await db.execute(
+            select(User).filter(User.telegram_id == current_user.telegram_id).with_for_update()
+        )
+        db_user = result.scalars().first()
+        if db_user:
+            db_user.premium_billing_period = period
+            db.add(db_user)
+            await db.commit()
+
+        return {"status": "upgraded", "billing_period": period}
+
+    except stripe.error.InvalidRequestError as e:
+        logger.error(f"Stripe upgrade failed for user {current_user.telegram_id}: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Stripe upgrade error: {e}")
+        raise HTTPException(status_code=500, detail="Could not upgrade subscription.")
 
 
 class StripePortalRequest(BaseModel):
@@ -1477,7 +1552,7 @@ async def stripe_webhook(
             client_reference_id = session.get('client_reference_id')
             customer_id = session.get('customer')
             subscription_id = session.get('subscription')
-            
+
             if client_reference_id and customer_id and subscription_id:
                 user_id = int(client_reference_id)
                 user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
@@ -1485,6 +1560,18 @@ async def stripe_webhook(
                 if user:
                     user.stripe_customer_id = customer_id
                     user.stripe_subscription_id = subscription_id
+
+                    # Determine billing period from the price ID in the subscription line items
+                    try:
+                        sub_obj = stripe.Subscription.retrieve(subscription_id)
+                        price_id = sub_obj["items"]["data"][0]["price"]["id"]
+                        if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
+                            user.premium_billing_period = "annual"
+                        else:
+                            user.premium_billing_period = "monthly"
+                    except Exception:
+                        user.premium_billing_period = "monthly"  # safe fallback
+
                     db.add(user)
                     await db.commit()
             return {"status": "success", "message": "Subscription mapped to user."}

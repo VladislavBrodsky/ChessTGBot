@@ -266,12 +266,15 @@ export default function MembershipPage() {
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative overflow-hidden bg-gradient-to-b from-brand-gold/5 via-brand-void to-brand-void">
-      {/* Background Ambient Radial Glow matching user theme */}
-      <div 
-        className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[350px] h-[350px] rounded-full pointer-events-none opacity-20 filter blur-[120px]"
-        style={{ background: 'radial-gradient(circle, var(--text-gold) 0%, rgba(0,0,0,0) 80%)' }}
-      />
+    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative">
+      {/* Fixed Ambient Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-b from-brand-gold/5 via-brand-void to-brand-void">
+        {/* Background Ambient Radial Glow matching user theme */}
+        <div 
+          className="absolute top-[-150px] left-1/2 -translate-x-1/2 w-[350px] h-[350px] rounded-full opacity-20 filter blur-[120px]"
+          style={{ background: 'radial-gradient(circle, var(--text-gold) 0%, rgba(0,0,0,0) 80%)' }}
+        />
+      </div>
 
       <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
 

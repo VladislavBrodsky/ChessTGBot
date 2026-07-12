@@ -56,6 +56,7 @@ class UserStats(BaseModel):
     is_premium: bool
     premium_tier: Optional[str] = None
     premium_expires_at: Optional[datetime] = None
+    premium_billing_period: Optional[str] = None  # "monthly" | "annual"
     
     # Enhanced stats
     win_rate: float
@@ -336,6 +337,7 @@ async def get_user_stats(
         is_premium=current_user.is_premium_active,
         premium_tier=current_user.premium_tier,
         premium_expires_at=current_user.premium_expires_at,
+        premium_billing_period=current_user.premium_billing_period,
         win_rate=enhanced_stats["win_rate"],
         loss_rate=enhanced_stats["loss_rate"],
         draw_rate=enhanced_stats["draw_rate"],
@@ -396,6 +398,7 @@ async def sync_user(
         is_premium=current_user.is_premium_active,
         premium_tier=current_user.premium_tier,
         premium_expires_at=current_user.premium_expires_at,
+        premium_billing_period=current_user.premium_billing_period,
         win_rate=enhanced_stats["win_rate"],
         loss_rate=enhanced_stats["loss_rate"],
         draw_rate=enhanced_stats["draw_rate"],
@@ -449,61 +452,91 @@ async def subscribe_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Purchase subscription using platform balance.
-    Authorized user only.
+    Purchase or upgrade a subscription using platform balance.
+    Handles three scenarios:
+      1. New subscription
+      2. Upgrade: monthly → annual (prorated: unused monthly days credited toward annual price)
+      3. Extension: same plan, adds more days
     """
     from datetime import timedelta
     from app.models.transaction import Transaction
 
-    # Enforce premium tier and calculate price
     tier = request.tier.lower()
     if tier != "premium":
         raise HTTPException(status_code=400, detail="Only 'premium' subscription tier is supported")
-        
-    period = request.billing_period.lower()
-    if period == "annual":
-        price = 29580  # $295.80 USDT (15% discount on 12 months)
-    else:
-        period = "monthly"
-        price = 2900   # $29.00 USDT
 
-    # Re-fetch with a row-level write lock to guard against concurrent subscription requests
+    period = request.billing_period.lower()
+    if period not in ("monthly", "annual"):
+        period = "monthly"
+
+    MONTHLY_PRICE = 2900   # $29.00
+    ANNUAL_PRICE  = 29580  # $295.80
+
+    price = ANNUAL_PRICE if period == "annual" else MONTHLY_PRICE
+
+    # Row-level lock to prevent race conditions
     locked_user = await user_crud.get_user_by_telegram_id(db, current_user.telegram_id, for_update=True)
     if not locked_user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    is_active = locked_user.is_premium_active and locked_user.premium_expires_at
+    current_period = locked_user.premium_billing_period  # "monthly", "annual", or None
+
+    # ── Upgrade: monthly → annual ───────────────────────────────────────────
+    upgrade_credit = 0
+    if is_active and current_period == "monthly" and period == "annual":
+        # Credit unused days from remaining monthly period (fair proration)
+        remaining_seconds = max((locked_user.premium_expires_at - now).total_seconds(), 0)
+        remaining_days = remaining_seconds / 86400
+        daily_rate = MONTHLY_PRICE / 30
+        upgrade_credit = int(remaining_days * daily_rate)  # cents to credit back
+        price = max(ANNUAL_PRICE - upgrade_credit, 0)
+
+    # ── Block same-plan re-purchase (Stripe users should use portal) ───────
+    elif is_active and current_period == period and locked_user.stripe_subscription_id:
+        raise HTTPException(
+            status_code=400,
+            detail="You already have an active Stripe subscription on this plan. Use 'Manage Subscription' to change it."
+        )
+
     if locked_user.balance < price:
         raise HTTPException(
             status_code=400,
-            detail="Insufficient balance for premium subscription"
+            detail=f"Insufficient balance. Required: ${price/100:.2f} USD"
         )
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
     locked_user.balance -= price
     db.add(locked_user)
 
-    # Log Transaction
+    # Log the transaction (include upgrade credit note if applicable)
+    tx_note = f"upgrade_monthly_to_annual_credit_{upgrade_credit}" if upgrade_credit else f"sub_{tier}_{period}"
     tx = Transaction(
         user_id=locked_user.telegram_id,
         type="subscription",
         amount=-price,
         fee=0,
         status="completed",
-        reference_id=f"sub_{tier}_{period}_{int(now.timestamp())}"
+        reference_id=f"{tx_note}_{int(now.timestamp())}"
     )
     db.add(tx)
 
-    # Calculate expiration duration based on billing period (accumulative)
+    # ── Calculate new expiry ────────────────────────────────────────────────
     days = 365 if period == "annual" else 30
-    if locked_user.is_premium_active and locked_user.premium_expires_at:
+    if is_active and current_period == "monthly" and period == "annual":
+        # Upgrade: start annual from NOW (unused monthly already credited via price reduction)
+        expires_at = now + timedelta(days=days)
+    elif is_active and locked_user.premium_expires_at:
+        # Extension / same plan: accumulate days
         expires_at = locked_user.premium_expires_at + timedelta(days=days)
     else:
         expires_at = now + timedelta(days=days)
 
-    updated_user = await user_crud.update_subscription(db, locked_user, "premium", expires_at)
+    updated_user = await user_crud.update_subscription(
+        db, locked_user, "premium", expires_at, billing_period=period
+    )
 
-    
-    # Send Premium welcome notification to the subscriber
+    # Telegram notification
     from app.services.telegram_bot import TelegramService
     await TelegramService.send_premium_welcome(
         user_id=locked_user.telegram_id,
@@ -511,10 +544,20 @@ async def subscribe_user(
         expires_at=expires_at,
         lang=locked_user.preferred_language
     )
-    
-    # Distribute subscription purchase commission across referrers
+
+    # Distribute referral commissions on the net charged price
     from app.services.referral_commission_service import ReferralCommissionService
     await ReferralCommissionService.distribute_subscription_commissions(db, locked_user.id, price)
     await db.commit()
-    
-    return {"status": "success", "tier": updated_user.premium_tier}
+
+    action = "upgraded" if upgrade_credit else "subscribed"
+    return {
+        "status": "success",
+        "tier": updated_user.premium_tier,
+        "billing_period": period,
+        "action": action,
+        "upgrade_credit_cents": upgrade_credit,
+        "charged_cents": price,
+        "expires_at": expires_at.isoformat(),
+    }
+

@@ -22,6 +22,7 @@ class User(Base):
     # Subscription & Payments
     is_premium: Mapped[bool] = mapped_column(Boolean, default=False)
     premium_tier: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # basic, premium, premium_plus
+    premium_billing_period: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # "monthly" | "annual"
     premium_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     balance: Mapped[int] = mapped_column(Integer, default=0)  # Stored in cents/smallest unit to avoid float issues
     wallet_address: Mapped[Optional[str]] = mapped_column(String, unique=True, index=True, nullable=True)  # TON Wallet Address
