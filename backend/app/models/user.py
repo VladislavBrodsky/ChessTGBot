@@ -46,6 +46,10 @@ class User(Base):
         default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
     )
 
+    # Bot engagement tracking
+    is_blocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    blocked_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
     # Relationships
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
 

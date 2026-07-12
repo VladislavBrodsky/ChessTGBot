@@ -10,7 +10,7 @@ import {
   FaChessKnight, FaArrowDown, FaArrowUp, FaChartLine, FaLink,
   FaChartPie, FaCreditCard, FaChess, FaBullhorn, FaServer,
   FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
-  FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate, FaScaleBalanced
+  FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation, FaArrowsRotate, FaScaleBalanced, FaBan
 } from 'react-icons/fa6';
 import LayoutWrapper from '@/components/LayoutWrapper';
 
@@ -18,6 +18,7 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 
 interface Stats {
   total_users: number;
+  total_blocked_users: number;
   premium_users: number;
   premium_conversion_rate: number;
   active_24h: number;
@@ -367,6 +368,7 @@ function DashboardTab({ stats }: { stats: Stats }) {
         <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} color="#a855f7" />
         <KpiCard label="Chargebacks" value={cents(stats.total_chargebacks_cents)} icon={<FaCircleXmark />} color="#ef4444" />
         <KpiCard label="Refunds" value={cents(stats.total_refunds_cents)} icon={<FaArrowsRotate />} color="#f59e0b" />
+        <KpiCard label="Blocked Users" value={fmt(stats.total_blocked_users)} sub={stats.total_users > 0 ? pct(stats.total_blocked_users / stats.total_users * 100) + ' of users' : '0%'} icon={<FaBan />} color="#ef4444" />
       </div>
 
       {/* Charts */}

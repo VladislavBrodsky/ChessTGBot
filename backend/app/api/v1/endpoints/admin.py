@@ -93,6 +93,11 @@ async def get_stats(
     )
     premium_users: int = premium_res.scalar_one() or 0
 
+    blocked_res = await db.execute(
+        select(func.count(User.id)).where(User.is_blocked == True)  # noqa: E712
+    )
+    total_blocked_users: int = blocked_res.scalar_one() or 0
+
     # ── Activity (users who played a game or made a transaction in window) ──
     async def _active_users(since: datetime) -> int:
         q_union = (
@@ -223,6 +228,7 @@ async def get_stats(
 
     stats_payload = {
         "total_users": total_users,
+        "total_blocked_users": total_blocked_users,
         "premium_users": premium_users,
         "premium_conversion_rate": conversion_rate,
         "active_24h": active_24h,

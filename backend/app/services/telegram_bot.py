@@ -1,6 +1,6 @@
 import asyncio
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
 import logging
 
@@ -394,6 +394,43 @@ class TelegramService:
                 pass
 
     @staticmethod
+    async def on_my_chat_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Track when a user blocks or unblocks the bot. Updates is_blocked flag in DB."""
+        from app.models.user import User
+        from sqlalchemy import select
+        from app.core.database import AsyncSessionLocal
+        from datetime import datetime, timezone
+
+        member_update = update.my_chat_member
+        if not member_update:
+            return
+
+        tg_user = member_update.from_user
+        new_status = member_update.new_chat_member.status  # 'kicked', 'member', 'left', etc.
+
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(select(User).where(User.telegram_id == tg_user.id))
+                db_user = result.scalars().first()
+                if not db_user:
+                    return
+
+                if new_status == "kicked":  # User blocked the bot
+                    if not db_user.is_blocked:
+                        db_user.is_blocked = True
+                        db_user.blocked_at = datetime.now(timezone.utc).replace(tzinfo=None)
+                        await db.commit()
+                        logger.info(f"🚫 User {tg_user.id} blocked the bot. Marked as blocked.")
+                elif new_status in ("member", "creator", "administrator"):  # User unblocked
+                    if db_user.is_blocked:
+                        db_user.is_blocked = False
+                        db_user.blocked_at = None
+                        await db.commit()
+                        logger.info(f"✅ User {tg_user.id} unblocked the bot. Marked as active.")
+        except Exception as e:
+            logger.warning(f"Failed to update block status for user {tg_user.id}: {e}")
+
+    @staticmethod
     async def on_error(update: object, context: "ContextTypes.DEFAULT_TYPE"):
         """PTB application error handler. Without one, any exception escaping a
         bot handler is logged as PTB's bare "No error handlers are registered"
@@ -531,6 +568,7 @@ class TelegramService:
             cls.application.add_handler(CommandHandler("language", cls.language_command))
             cls.application.add_handler(CallbackQueryHandler(cls.language_callback, pattern="^lang_"))
             cls.application.add_handler(CallbackQueryHandler(cls.withdrawal_callback, pattern="^wd[cx]:"))
+            cls.application.add_handler(ChatMemberHandler(cls.on_my_chat_member, ChatMemberHandler.MY_CHAT_MEMBER))
             cls.application.add_error_handler(cls.on_error)
             
             await cls.application.initialize()
