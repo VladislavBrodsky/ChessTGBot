@@ -381,8 +381,7 @@ async def get_puzzle_by_id(
                 "description": p["description"],
                 "fen": p["fen"],
                 "xp_reward": p["xp_reward"],
-                "move_count": len(p["solution"]),
-                "solution": p["solution"]
+                "move_count": len(p["solution"])
             }
             
 @router.get("/academy/puzzles/{puzzle_id}/hint")
@@ -391,7 +390,7 @@ async def get_puzzle_hint(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Retrieve hint for a puzzle. Only returns the starting square of the correct move to maintain challenge."""
+    """Retrieve hint for a puzzle. Returns the starting square of the correct move and the coach's textual tip."""
     from app.core.puzzles import CHESS_PUZZLES
     
     if puzzle_id > 10:
@@ -401,7 +400,8 @@ async def get_puzzle_hint(
         if p["id"] == puzzle_id:
             solution_move = p["solution"][0].strip().lower()
             return {
-                "from": solution_move[:2]
+                "from": solution_move[:2],
+                "hint_text": p.get("hint_text", "Focus on creating an unstoppable attack on the target.")
             }
             
     raise HTTPException(status_code=404, detail="Puzzle not found")
@@ -543,7 +543,8 @@ async def verify_puzzle_solution(
             "new_xp": locked_user.xp,
             "new_level": locked_user.level,
             "new_elo": locked_user.elo,
-            "message": "Already solved. No additional XP/ELO rewarded."
+            "message": "Already solved. No additional XP/ELO rewarded.",
+            "explanation": target_puzzle.get("explanation", "Excellent! You found the winning tactical pattern.")
         }
 
     # Save solved puzzle to database
@@ -576,7 +577,8 @@ async def verify_puzzle_solution(
         "solved": True,
         "new_xp": updated_user.xp,
         "new_level": updated_user.level,
-        "new_elo": updated_user.elo
+        "new_elo": updated_user.elo,
+        "explanation": target_puzzle.get("explanation", "Excellent! You found the winning tactical pattern.")
     }
 
 

@@ -90,7 +90,6 @@ export default function ChallengesPage() {
       };
 
       if (!tg) {
-        // Fallback for non-telegram environments
         await sendVerify();
         return;
       }
@@ -103,29 +102,36 @@ export default function ChallengesPage() {
         }
       };
 
-      // Safely check status
+      let callbackFired = false;
       if (tg.checkHomeScreenStatus) {
         tg.checkHomeScreenStatus((status: string) => {
+          callbackFired = true;
           if (status === "added") {
             triggerVerify();
           } else {
-            // Attempt to add it
             if (tg.addToHomeScreen) {
               try {
                 tg.addToHomeScreen();
                 tg.onEvent("homeScreenAdded", triggerVerify);
-                
-                // Fallback: Telegram API is flaky, so we allow verification after 3s interaction
-                setTimeout(triggerVerify, 3000);
+                setTimeout(triggerVerify, 3500);
               } catch (e) {
                 console.error("Failed to prompt addToHomeScreen", e);
                 triggerVerify();
               }
             } else {
-              triggerVerify(); // Fallback if API not supported
+              triggerVerify();
             }
           }
         });
+
+        // Watchdog: If Telegram API silently swallows the callback, bypass it.
+        setTimeout(() => {
+          if (!callbackFired) {
+            console.warn("Telegram checkHomeScreenStatus callback timed out. Bypassing.");
+            triggerVerify();
+          }
+        }, 1500);
+
       } else {
         triggerVerify();
       }
@@ -406,14 +412,19 @@ export default function ChallengesPage() {
                         <h4 className="text-xs font-bold text-brand-primary mb-0.5 uppercase tracking-wide">
                           {t(task.title_key)}
                         </h4>
-                        <p className="text-[10px] text-brand-primary opacity-50 mb-2 leading-snug max-w-[180px]">
+                        <p className="text-[10px] text-brand-primary opacity-50 mb-1 leading-snug max-w-[180px]">
                           {t(`${task.title_key}_desc`)}
                         </p>
+                        {t(`${task.title_key}_inst`) !== `${task.title_key}_inst` && (
+                          <p className="text-[9px] text-amber-500/90 font-bold mb-2 leading-snug max-w-[180px] drop-shadow-glow">
+                            👉 {t(`${task.title_key}_inst`)}
+                          </p>
+                        )}
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">
-                            <div className="h-full bg-brand-primary transition-all duration-500" style={{ width: `${(task.progress / task.target_count) * 100}%` }} />
+                            <div className={`h-full transition-all duration-500 ${task.progress >= task.target_count ? 'bg-emerald-500' : 'bg-brand-primary'}`} style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }} />
                           </div>
-                          <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider">{task.progress}/{task.target_count}</span>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${task.progress >= task.target_count ? 'text-emerald-500 opacity-80' : 'text-brand-primary opacity-40'}`}>{task.progress}/{task.target_count}</span>
                         </div>
                       </div>
                     </div>
@@ -424,9 +435,9 @@ export default function ChallengesPage() {
                         size="sm"
                         disabled={claimingId === task.task_id}
                         onClick={() => handleClaim(task.task_id)}
-                        className="animate-pulse"
+                        className="animate-pulse bg-emerald-500 text-brand-void hover:bg-emerald-400 border-none shadow-[0_0_15px_rgba(16,185,129,0.4)]"
                       >
-                        {claimingId === task.task_id ? '...' : t('claim')}
+                        {claimingId === task.task_id ? '...' : `Claim XP`}
                       </Button>
                     ) : task.claimed ? (
                       <Badge variant="secondary" className="opacity-40">{t('claimed_status')}</Badge>
@@ -438,6 +449,23 @@ export default function ChallengesPage() {
                       >
                         {t('verify_btn')}
                       </Button>
+                    ) : task.title_key.startsWith("ach_refer_") ? (
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="px-3 py-1 h-auto text-[9px] border-brand-primary/20 text-brand-primary hover:bg-brand-primary hover:text-brand-void"
+                          onClick={() => {
+                            const inviteLink = `https://t.me/${stats?.bot_username}?start=ref_${stats?.referral_code}`;
+                            const text = encodeURIComponent(`🏆 Join me on FinChess! Play chess, earn real USDT rewards. ♟️`);
+                            const url = encodeURIComponent(inviteLink);
+                            window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+                          }}
+                        >
+                          Invite Friend
+                        </Button>
+                      </div>
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>

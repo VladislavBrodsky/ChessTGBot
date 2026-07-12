@@ -10,7 +10,7 @@ interface PuzzleBoardProps {
   initialFen: string;
   solution?: string[]; // Optional - used for client-validated lesson mode
   puzzleId?: number;    // Optional - used for server-validated puzzle mode
-  onSolve: () => void;
+  onSolve: (data?: any) => void;
   onFail: () => void;
   orientation?: 'white' | 'black';
   hintsEnabled?: boolean;
@@ -34,6 +34,8 @@ export default function PuzzleBoard({
   const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [hintMove, setHintMove] = useState<{from: string, to: string} | null>(null);
   const [showHintText, setShowHintText] = useState(false);
+  const [dynamicHintText, setDynamicHintText] = useState(hintText || "");
+  const [dynamicSuccessExplanation, setDynamicSuccessExplanation] = useState(successExplanation || "");
 
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
@@ -107,11 +109,15 @@ export default function PuzzleBoard({
           body: JSON.stringify({ move: uciMove })
         });
         if (res.ok) {
+          const data = await res.json();
           safeGameMutate((g) => {
             g.move(move);
           });
+          if (data && data.explanation) {
+            setDynamicSuccessExplanation(data.explanation);
+          }
           setStatus('correct');
-          onSolve();
+          onSolve(data);
           return true;
         } else {
           setStatus('wrong');
@@ -182,6 +188,10 @@ export default function PuzzleBoard({
               from: data.from,
               to: data.from
             });
+            if (data.hint_text) {
+              setDynamicHintText(data.hint_text);
+            }
+            setShowHintText(true);
           }
         }
       } catch (e) {
@@ -271,7 +281,7 @@ export default function PuzzleBoard({
       </div>
 
       <AnimatePresence>
-        {showHintText && hintText && status === 'playing' && (
+        {showHintText && dynamicHintText && status === 'playing' && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -280,7 +290,7 @@ export default function PuzzleBoard({
           >
             <div className="text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 inline-block">
               <span className="font-bold uppercase tracking-wider block mb-1">Coach Hint:</span>
-              {hintText}
+              {dynamicHintText}
             </div>
           </motion.div>
         )}
@@ -293,9 +303,9 @@ export default function PuzzleBoard({
           className="text-center flex flex-col items-center gap-2"
         >
           <h3 className="text-xl font-black text-green-400">PUZZLE SOLVED!</h3>
-          {successExplanation ? (
+          {dynamicSuccessExplanation ? (
             <div className="text-xs font-medium text-green-400/90 bg-green-500/10 border border-green-500/20 rounded-xl p-3 mt-1 mb-2 max-w-[90%] mx-auto">
-              {successExplanation}
+              {dynamicSuccessExplanation}
             </div>
           ) : (
             <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>

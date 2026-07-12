@@ -38,7 +38,11 @@ export default function Home() {
      
      if (startParam) {
        if (!startParam.startsWith('ref_')) {
-         router.push(`/${locale}/game?id=${startParam}`);
+         if (startParam === 'arena') {
+           router.push(`/${locale}/game`);
+         } else {
+           router.push(`/${locale}/game?id=${startParam}`);
+         }
        }
      }
    }

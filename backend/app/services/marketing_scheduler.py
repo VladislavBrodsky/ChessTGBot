@@ -47,39 +47,54 @@ async def broadcast_marketing_messages():
     # Pick a random variation index to send to everyone (consistency across languages)
     variation_index = random.randint(0, 2)
     
-    async with AsyncSessionLocal() as db:
-        # Fetch all users
-        res = await db.execute(select(User.telegram_id, User.preferred_language).where(User.telegram_id.isnot(None)))
-        users = res.all()
-    
     sent_count = 0
-    for tid, lang in users:
-        if not tid or tid <= 0:
-            continue
-            
-        lang = lang or "en"
-        msgs = _get_lang_messages(lang)
-        msg_text = msgs[variation_index]
-        
-        # Build the WebApp URL with deep link to arena
-        web_app_url = f"{settings.WEBAPP_URL}?lang={lang}&startapp=arena"
-        keyboard = [
-            [InlineKeyboardButton("♟️ Join Battle Arena", web_app=WebAppInfo(url=web_app_url))]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        try:
-            await TelegramService.send_notification(
-                user_id=tid,
-                message=msg_text,
-                reply_markup=reply_markup
+    chunk_size = 500
+    offset = 0
+    
+    while True:
+        async with AsyncSessionLocal() as db:
+            # Fetch users in batches to prevent Out-Of-Memory (OOM) errors at scale
+            res = await db.execute(
+                select(User.telegram_id, User.preferred_language)
+                .where(User.telegram_id.isnot(None))
+                .order_by(User.id)
+                .offset(offset)
+                .limit(chunk_size)
             )
-            sent_count += 1
-            await asyncio.sleep(0.05) # Rate limit protection (20 msgs/sec max)
-        except Exception as e:
-            # Silent catch for users who blocked the bot or deleted accounts
-            pass
+            users = res.all()
             
+        if not users:
+            break
+            
+        for tid, lang in users:
+            if not tid or tid <= 0:
+                continue
+                
+            lang = lang or "en"
+            msgs = _get_lang_messages(lang)
+            msg_text = msgs[variation_index]
+            
+            # Build the WebApp URL with deep link to arena
+            web_app_url = f"{settings.WEBAPP_URL}?lang={lang}&startapp=arena"
+            keyboard = [
+                [InlineKeyboardButton("♟️ Join Battle Arena", web_app=WebAppInfo(url=web_app_url))]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            try:
+                await TelegramService.send_notification(
+                    user_id=tid,
+                    message=msg_text,
+                    reply_markup=reply_markup
+                )
+                sent_count += 1
+                await asyncio.sleep(0.05) # Rate limit protection (20 msgs/sec max)
+            except Exception:
+                # Silent catch for users who blocked the bot or deleted accounts
+                pass
+                
+        offset += chunk_size
+
     logger.info(f"Marketing broadcast sent to {sent_count} users (variation {variation_index}).")
 
 async def start_marketing_loop():

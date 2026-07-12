@@ -61,8 +61,16 @@ function PuzzleContent() {
       });
   }, [puzzleId]);
 
-  const handleSolve = async () => {
+  const handleSolve = async (data?: any) => {
     setSolved(true);
+    if (data) {
+      if (data.status === "success" && !data.message?.includes("Already solved")) {
+        setEarnedXP(puzzle?.xp_reward || 50);
+        setEarnedELO(5);
+      }
+      return;
+    }
+
     if (!puzzle || !puzzle.solution) return;
     try {
       const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${puzzle.id}/verify`, {
@@ -71,8 +79,8 @@ function PuzzleContent() {
         body: JSON.stringify({ move: puzzle.solution[0] })
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.status === "success" && !data.message?.includes("Already solved")) {
+        const resData = await res.json();
+        if (resData.status === "success" && !resData.message?.includes("Already solved")) {
           setEarnedXP(puzzle.xp_reward);
           setEarnedELO(5);
         }
