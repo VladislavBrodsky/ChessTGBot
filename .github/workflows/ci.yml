@@ -30,6 +30,14 @@ jobs:
         run: npm run build
         env:
           STATIC_EXPORT: "true"
+      # Blocking: next.config.ts sets ignoreBuildErrors=true so `next build` (SWC)
+      # ships TS errors as-is. A missing import/prop like this becomes a runtime
+      # ReferenceError that crashes the whole page in prod (see the 2026-07-11
+      # wallet-page outage). This step is the only thing that catches that class
+      # of bug before merge. Runs after build so tsconfig's .next/types/**/*.ts
+      # include exists.
+      - name: Typecheck
+        run: npm run typecheck
       - name: Unit tests
         run: npm run test:ci
       # Non-blocking: the codebase carries pre-existing lint warnings and one
