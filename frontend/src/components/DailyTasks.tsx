@@ -64,7 +64,12 @@ export default function DailyTasks() {
             });
             if (res.ok) {
                 if (task) {
-                    const title = t.has(task.title_key) ? t(task.title_key) : task.title_key;
+                    let title = task.title_key;
+                    try {
+                        title = t(task.title_key);
+                    } catch (e) {
+                        // fallback
+                    }
                     triggerTaskSuccess(title, task.xp_reward);
                 }
             } else {
@@ -145,7 +150,7 @@ export default function DailyTasks() {
                                             </div>
                                             <div>
                                                 <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide">
-                                                    {t.has(task.title_key) ? t(task.title_key) : task.title_key}
+                                                    {t(task.title_key)}
                                                 </h4>
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-1">
                                                     <span>+{task.xp_reward} XP</span>

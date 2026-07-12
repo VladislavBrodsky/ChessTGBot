@@ -50,7 +50,10 @@ export default function ChallengesPage() {
         syncStats();
 
         if (task) {
-          const title = t.has(task.title_key) ? t(task.title_key) : task.title_key;
+          let title = task.title_key;
+          try {
+            title = t(task.title_key);
+          } catch (e) {}
           triggerTaskSuccess(title, task.xp_reward);
         }
       }
@@ -394,7 +397,7 @@ export default function ChallengesPage() {
                       </div>
                       <div>
                         <h4 className="text-xs font-bold text-brand-primary mb-1.5 uppercase tracking-wide">
-                          {t.has(task.title_key) ? t(task.title_key) : task.title_key}
+                          {t(task.title_key)}
                         </h4>
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">

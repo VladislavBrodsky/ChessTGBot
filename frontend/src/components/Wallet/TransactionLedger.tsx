@@ -185,9 +185,9 @@ export default function TransactionLedger({ loading, transactions, balance = 0 }
                     <span className="text-[10.5px] font-black uppercase tracking-wide text-brand-primary truncate">
                       {tx.type === 'deposit' ? tw('tx_deposit') :
                       tx.type === 'withdrawal' ? tw('tx_withdrawal') :
-                      tx.type === 'game_against_ai' ? (tw.has('tx_game_against_ai') ? tw('tx_game_against_ai') : 'Game against AI') :
-                      tx.type === 'game_free_pvp' ? (tw.has('tx_game_free_pvp') ? tw('tx_game_free_pvp') : 'Free game against other players') :
-                      (tx.type === 'game_wager' || tx.type === 'game_win' || tx.type === 'game_refund' || tx.type === 'refund') ? (tw.has('tx_game_paid') ? tw('tx_game_paid') : 'Paid game against other players') :
+                      tx.type === 'game_against_ai' ? tw('tx_game_against_ai') :
+                      tx.type === 'game_free_pvp' ? tw('tx_game_free_pvp') :
+                      (tx.type === 'game_wager' || tx.type === 'game_win' || tx.type === 'game_refund' || tx.type === 'refund') ? tw('tx_game_paid') :
                       tx.type === 'referral_commission' ? tw('tx_referral') :
                       tx.type === 'subscription_commission' ? tw('tx_subscription') :
                       tx.type === 'game_rake' ? tw('tx_rake') : 
