@@ -337,20 +337,33 @@ export default function MembershipPage() {
         {/* ── Subscribe CTA (Glowing Gold Button) ───────────────── */}
         <div className="w-full pt-1 flex flex-col gap-2">
           {stats?.is_premium ? (
-            <motion.button
-              whileHover={submitting ? {} : { scale: 1.015 }}
-              whileTap={submitting ? {} : { scale: 0.985 }}
-              onClick={handleManageSubscription}
-              disabled={submitting}
-              className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
-                submitting 
-                  ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
-                  : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
-              }`}
-            >
-              {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
-              {submitting ? tm('processing') : "Manage Subscription"}
-            </motion.button>
+            stats?.has_stripe_subscription ? (
+              /* Stripe subscriber → show portal button */
+              <motion.button
+                whileHover={submitting ? {} : { scale: 1.015 }}
+                whileTap={submitting ? {} : { scale: 0.985 }}
+                onClick={handleManageSubscription}
+                disabled={submitting}
+                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                  submitting 
+                    ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
+                    : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
+                }`}
+              >
+                {submitting && <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin mr-2.5" />}
+                {submitting ? tm('processing') : "Manage Subscription"}
+              </motion.button>
+            ) : (
+              /* Balance / XP subscriber → informational card, no Stripe portal needed */
+              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
+                  Active via In-App Balance
+                </span>
+                <span className="text-[10px] text-brand-primary opacity-50 font-medium">
+                  Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
+                </span>
+              </div>
+            )
           ) : (
             <>
               <motion.button

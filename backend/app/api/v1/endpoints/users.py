@@ -75,6 +75,7 @@ class UserStats(BaseModel):
     # region prompt, which the frontend uses to decide whether to show it.
     region: Optional[str] = None
     arena_notifications: bool = True
+    has_stripe_subscription: bool = False  # True only when subscribed via Stripe card (has stripe_customer_id)
 
 class ReferralEarningPoint(BaseModel):
     date: str   # ISO date string e.g. "2025-06-10"
@@ -353,6 +354,7 @@ async def get_user_stats(
         arena_notifications=(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
+        has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -412,6 +414,7 @@ async def sync_user(
         arena_notifications=(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
+        has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
     )
 
 
