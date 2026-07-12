@@ -37,12 +37,14 @@ export default function ReferralNotification() {
   const searchParams = useSearchParams();
   const gameId = searchParams?.get('id') || '';
   const isGameActive = pathname?.includes('/game') && gameId !== '';
+  const isAcademyActive = pathname?.includes('/academy');
+  const shouldSuppressNotification = isGameActive || isAcademyActive;
 
   const [notification, setNotification] = useState<NotificationData | null>(null);
 
   useEffect(() => {
-    // If currently playing a game, clear any active notification and don't schedule new ones
-    if (isGameActive) {
+    // If currently playing a game or in academy, clear any active notification and don't schedule new ones
+    if (shouldSuppressNotification) {
       setNotification(null);
       return;
     }
@@ -81,7 +83,7 @@ export default function ReferralNotification() {
     timeoutId = setTimeout(triggerNotification, 30000);
 
     return () => clearTimeout(timeoutId);
-  }, [isGameActive]);
+  }, [shouldSuppressNotification]);
 
   return (
     <div className="fixed bottom-[calc(100px+var(--app-safe-bottom))] left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4">

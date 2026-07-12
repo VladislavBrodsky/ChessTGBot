@@ -14,6 +14,8 @@ interface PuzzleBoardProps {
   onFail: () => void;
   orientation?: 'white' | 'black';
   hintsEnabled?: boolean;
+  hintText?: string;
+  successExplanation?: string;
 }
 
 export default function PuzzleBoard({ 
@@ -23,12 +25,15 @@ export default function PuzzleBoard({
   onSolve, 
   onFail, 
   orientation = 'white', 
-  hintsEnabled = false 
+  hintsEnabled = false,
+  hintText,
+  successExplanation
 }: PuzzleBoardProps) {
   const [game, setGame] = useState(new Chess(initialFen, { skipValidation: true }));
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [hintMove, setHintMove] = useState<{from: string, to: string} | null>(null);
+  const [showHintText, setShowHintText] = useState(false);
 
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
@@ -41,6 +46,7 @@ export default function PuzzleBoard({
   async function onMove(moveData: { from: string; to: string; promotion?: string }) {
     if (status !== 'playing') return false;
     setHintMove(null);
+    setShowHintText(false);
 
     const move = {
       from: moveData.from,
@@ -145,6 +151,7 @@ export default function PuzzleBoard({
     setMoveIndex(0);
     setStatus('playing');
     setHintMove(null);
+    setShowHintText(false);
   }
 
   const handleHint = async () => {
@@ -158,6 +165,7 @@ export default function PuzzleBoard({
           from: expectedMove.substring(0, 2),
           to: expectedMove.substring(2, 4)
         });
+        setShowHintText(true);
       }
       return;
     }
@@ -216,21 +224,43 @@ export default function PuzzleBoard({
             <FaLightbulb />
           </button>
         </div>
-        {hintsEnabled && (
+        {hintsEnabled && !showHintText && status === 'playing' && (
           <span className="text-[10px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">
             Hints available (Levels 1-10)
           </span>
         )}
       </div>
 
+      <AnimatePresence>
+        {showHintText && hintText && status === 'playing' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="w-full text-center px-4 -mt-2"
+          >
+            <div className="text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 inline-block">
+              <span className="font-bold uppercase tracking-wider block mb-1">Coach Hint:</span>
+              {hintText}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {status === 'correct' && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="text-center flex flex-col items-center gap-2"
         >
           <h3 className="text-xl font-black text-green-400">PUZZLE SOLVED!</h3>
-          <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
+          {successExplanation ? (
+            <div className="text-xs font-medium text-green-400/90 bg-green-500/10 border border-green-500/20 rounded-xl p-3 mt-1 mb-2 max-w-[90%] mx-auto">
+              {successExplanation}
+            </div>
+          ) : (
+            <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
+          )}
         </motion.div>
       )}
     </div>

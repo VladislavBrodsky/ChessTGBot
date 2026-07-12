@@ -8,14 +8,16 @@ import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 export type LessonStepType = 'text' | 'video' | 'interactive_board';
 
 export interface LessonStep {
- id: string;
- type: LessonStepType;
- title: string;
- content: string; // HTML/Markdown text or Video URL or FEN
- // For interactive board
- fen?: string;
- solution?: string[];
- boardOrientation?: 'white' | 'black';
+  id: string;
+  type: LessonStepType;
+  title: string;
+  content: string; // HTML/Markdown text or Video URL or FEN
+  // For interactive board
+  fen?: string;
+  solution?: string[];
+  boardOrientation?: 'white' | 'black';
+  hintText?: string;
+  successExplanation?: string;
 }
 
 interface LessonViewerProps {
@@ -50,8 +52,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  setStepComplete(true);
  };
 
- return (
- <div className="flex flex-col h-full min-h-[500px] justify-between">
+  return (
+    <div className="flex flex-col flex-1 h-full w-full justify-between pb-4">
  {/* Progress Bar */}
  <div className="w-full h-1 bg-brand-bg-opacity-10 rounded-full mb-6">
  <motion.div
@@ -76,7 +78,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  </h2>
 
  {currentStep.type === 'text' && (
- <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 text-brand-primary opacity-80 leading-relaxed text-sm">
+ <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 text-brand-primary opacity-80 leading-relaxed text-sm w-full max-w-full">
  <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
  {!stepComplete && (
  <button
@@ -108,24 +110,27 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  </div>
  )}
 
- {currentStep.type === 'interactive_board' && (
- <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10">
- <div className="text-sm text-brand-primary opacity-60 mb-4 text-center">{currentStep.content}</div>
- <PuzzleBoard
- initialFen={currentStep.fen || "start"}
- solution={currentStep.solution || []}
- onSolve={markComplete}
- onFail={() => { }}
- orientation={currentStep.boardOrientation || 'white'}
- />
- </div>
- )}
+  {currentStep.type === 'interactive_board' && (
+    <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10 w-full">
+      <div className="text-sm font-medium text-brand-primary opacity-80 mb-4 text-center" dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+      <PuzzleBoard
+        initialFen={currentStep.fen || "start"}
+        solution={currentStep.solution || []}
+        onSolve={markComplete}
+        onFail={() => { }}
+        orientation={currentStep.boardOrientation || 'white'}
+        hintsEnabled={true}
+        hintText={currentStep.hintText}
+        successExplanation={currentStep.successExplanation}
+      />
+    </div>
+  )}
  </motion.div>
  </AnimatePresence>
  </div>
 
  {/* Navigation Controls */}
- <div className="flex justify-between items-center mt-8 px-4">
+ <div className="flex justify-between items-center mt-6 w-full gap-2">
  <button
  onClick={handlePrev}
  disabled={currentStepIndex === 0}

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
+import { useNavbar } from '@/context/NavbarContext';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 
@@ -23,6 +24,18 @@ export default function AcademyPage() {
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
+  const { setIsHidden } = useNavbar();
+
+  // Hide the global navbar when a drawer is open
+  useEffect(() => {
+    if (showPremiumPromo || selectedLevel) {
+      setIsHidden(true);
+    } else {
+      setIsHidden(false);
+    }
+    // Cleanup on unmount or when drawer closes
+    return () => setIsHidden(false);
+  }, [showPremiumPromo, selectedLevel, setIsHidden]);
 
   // Descriptions grouped by difficulty band for all 100 tactical levels
   const LEVEL_THEMES = [
@@ -371,9 +384,9 @@ export default function AcademyPage() {
 
         {/* 100 Levels Tactics Grid */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2 px-1">
-            <FaChessRook className="text-brand-primary opacity-40" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('tactics_grid')}</h3>
+          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
+            <FaChessRook className="text-brand-primary opacity-40 text-xl" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('tactics_grid')}</h3>
           </div>
           <div className="rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
             {/* Backlight Orbs */}
@@ -470,12 +483,20 @@ export default function AcademyPage() {
 
         {/* Mastery Tracks Grid */}
         <div className="space-y-6">
-          <div className="flex items-center gap-2 mb-2 px-1">
-            <FaChessKnight className="text-brand-primary opacity-40" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('mastery_tracks')}</h3>
+          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
+            <FaChessKnight className="text-brand-primary opacity-40 text-xl" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('mastery_tracks')}</h3>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
+            <LessonCard
+              title={t('origins_title') || 'Origins & Motivation'}
+              description={t('origins_desc') || 'Discover the history of chess and its impact on the mind.'}
+              progress={100}
+              difficulty={t('introductory') || 'Introductory'}
+              duration="5 min"
+              onClick={() => handleLessonClick('origins-of-chess', false)}
+            />
             <LessonCard
               title={t('opening_title')}
               description={t('opening_desc')}
@@ -505,10 +526,10 @@ export default function AcademyPage() {
         </div>
 
         {/* Recent Analysis */}
-        <div className="opacity-50">
-          <div className="flex items-center gap-2 mb-2 px-1">
-            <FaChessBishop className="text-brand-primary opacity-40" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60">{t('recent_analysis')}</h3>
+        <div className="opacity-50 mt-8">
+          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
+            <FaChessBishop className="text-brand-primary opacity-40 text-xl" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('recent_analysis')}</h3>
           </div>
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface flex items-center justify-center h-24 text-[10px] uppercase tracking-widest text-brand-primary opacity-30 font-bold shadow-sm">
             {t('no_analysis')}
