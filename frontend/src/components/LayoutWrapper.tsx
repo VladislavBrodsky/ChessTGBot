@@ -14,13 +14,14 @@ import { apiFetch } from '@/lib/api';
 interface LayoutWrapperProps {
     children: React.ReactNode;
     className?: string;
+    bgClass?: string;
 }
 let globalActiveGameChecked = false;
 let globalActiveGameId: string | null = null;
 let globalIsTelegramWeb: boolean | null = null;
 let globalIsDesktopBrowser: boolean | null = null;
 
-export default function LayoutWrapper({ children, className = "" }: LayoutWrapperProps) {
+export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void" }: LayoutWrapperProps) {
     const locale = useLocale();
     const pathname = usePathname();
     const router = useRouter();
@@ -167,7 +168,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
         : (showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || isNavbarHiddenByContext);
 
     return (
-        <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-brand-void text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void">
+        <div className={`relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
             {/* Ambient Starfield */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
@@ -178,7 +179,7 @@ export default function LayoutWrapper({ children, className = "" }: LayoutWrappe
             </div>
 
             {/* Content Container */}
-            <main className={`relative z-10 w-full overflow-x-hidden flex flex-col items-center min-h-[100dvh] ${
+            <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
                     // Desktop: sidebar is 72px wide; top padding only
                     ? 'md:pl-[72px] pt-6 pb-8'
