@@ -144,6 +144,9 @@ async def get_stats(
 
     total_deposits     = await _sum_tx("deposit")
     total_withdrawals  = await _sum_tx("withdrawal")
+    total_chargebacks  = await _sum_tx("chargeback")
+    total_refunds      = await _sum_tx("refund")
+    
     total_fees_res = await db.execute(
         select(func.coalesce(func.sum(Transaction.fee), 0))
     )
@@ -230,6 +233,8 @@ async def get_stats(
         "games_today": games_today,
         "total_deposits_cents": total_deposits,
         "total_withdrawals_cents": total_withdrawals,
+        "total_chargebacks_cents": total_chargebacks,
+        "total_refunds_cents": total_refunds,
         "total_fees_cents": total_fees,
         "platform_rake_cents": platform_rake,
         "net_revenue_cents": net_revenue,

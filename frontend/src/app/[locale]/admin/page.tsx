@@ -28,6 +28,8 @@ interface Stats {
   games_today: number;
   total_deposits_cents: number;
   total_withdrawals_cents: number;
+  total_chargebacks_cents: number;
+  total_refunds_cents: number;
   total_fees_cents: number;
   platform_rake_cents: number;
   net_revenue_cents: number;
@@ -115,6 +117,8 @@ const TX_COLORS: Record<string, string> = {
   referral_commission: '#f59e0b',
   subscription: '#14b8a6',
   deposit_fee: '#6b7280',
+  chargeback: '#ef4444',
+  refund: '#f59e0b',
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -361,6 +365,8 @@ function DashboardTab({ stats }: { stats: Stats }) {
         <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon={<FaArrowUp />} color="#f97316" />
         <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon={<FaChartLine />} color="#8b5cf6" />
         <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} color="#a855f7" />
+        <KpiCard label="Chargebacks" value={cents(stats.total_chargebacks_cents)} icon={<FaCircleXmark />} color="#ef4444" />
+        <KpiCard label="Refunds" value={cents(stats.total_refunds_cents)} icon={<FaArrowsRotate />} color="#f59e0b" />
       </div>
 
       {/* Charts */}
