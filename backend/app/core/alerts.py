@@ -268,10 +268,12 @@ class TelegramAlertHandler(logging.Handler):
                 record.name.startswith("socketio")):
                 return
             
-            message = record.getMessage()
+            
+            import html as html_mod
+            message = html_mod.escape(record.getMessage())
             
             # Generate a unique error fingerprint to identify duplicate alerts.
-            normalized_message = normalize_message(message)
+            normalized_message = normalize_message(record.getMessage())
             
             # Group by file path, line number, level, and normalized message
             fingerprint = f"{record.pathname}:{record.lineno}:{record.levelname}:{normalized_message}"
