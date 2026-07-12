@@ -92,10 +92,17 @@ export default function PlayLobby() {
 
   // Get Telegram WebApp user object on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tgApp = window.Telegram.WebApp;
-      if (tgApp.initDataUnsafe?.user) {
-        setTgUser(tgApp.initDataUnsafe.user);
+    if (typeof window !== 'undefined') {
+      if (window.Telegram?.WebApp) {
+        const tgApp = window.Telegram.WebApp;
+        if (tgApp.initDataUnsafe?.user) {
+          setTgUser(tgApp.initDataUnsafe.user);
+        }
+      }
+      
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('status') === 'success' && params.get('session_id')) {
+        setShowDepositDrawer(true);
       }
     }
   }, []);
