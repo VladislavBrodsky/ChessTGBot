@@ -851,13 +851,13 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
     assert r2.balance == 400
     # L3 (r3) gets Elite L3 = 0.3% of 100000 = 300 cents
     assert r3.balance == 300
-    # L4 (r4) gets Elite L4 = 0.25% of 100000 = 250 cents
-    assert r4.balance == 250
-    # L5 (r5) gets Elite L5 = 0.2% of 100000 = 200 cents
-    assert r5.balance == 200
+    # L4 (r4) is Pawn, so L4 is not supported on Pawn tier (only L1-L2) -> gets 0
+    assert r4.balance == 0
+    # L5 (r5) is Recruit, so L5 is not supported on Recruit tier (only L1) -> gets 0
+    assert r5.balance == 0
     # L6 (r6) is Free, so skipped
     assert r6.balance == 0
-    assert total_dist == 1850
+    assert total_dist == 1400
 
     # 2. Test L4-L6 deep commissions with Premium referrers
     r1_p = User(telegram_id=600001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)

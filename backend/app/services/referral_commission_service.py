@@ -199,11 +199,14 @@ class ReferralCommissionService:
             tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
             rate = rates.get(depth, 0.0)
 
-            # Determine eligibility
+            # Determine eligibility based on referrer's own tier
+            referrer_rates = tier_info["rates"]
+            is_tier_eligible = referrer_rates.get(depth, 0.0) > 0.0
+
             is_premium_eligible = (depth <= 3) or referrer.is_premium_active
             has_tier_rate = rate > 0.0
 
-            if is_premium_eligible and has_tier_rate:
+            if is_premium_eligible and is_tier_eligible and has_tier_rate:
                 # Calculate and award commission
                 commission = int(bid_amount * rate)
                 if commission > 0:
@@ -277,8 +280,8 @@ class ReferralCommissionService:
                     except Exception as e:
                         logger.error(f"Failed to send Premium FOMO to {referrer.telegram_id}: {e}")
 
-            elif is_premium_eligible and not has_tier_rate:
-                # Level Up FOMO: current tier doesn't support depth d, but a higher tier does
+            elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
+                # Level Up FOMO: the pool supports this level, but referrer's own tier does not!
                 if depth in ReferralCommissionService.DEPTH_REQUIREMENTS:
                     req = ReferralCommissionService.DEPTH_REQUIREMENTS[depth]
                     potential_commission = int(bid_amount * req["rate"])
@@ -339,11 +342,15 @@ class ReferralCommissionService:
             # Use subscription rate matrix from direct referrer's tier
             rate = rates.get(depth, 0.0)
 
+            # Determine eligibility based on referrer's own tier
+            referrer_sub_rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[tier_info["name"]]
+            is_tier_eligible = referrer_sub_rates.get(depth, 0.0) > 0.0
+
             # Determine eligibility: Premium referrers get up to 6 levels, Free referrers get up to 3 levels
             is_premium_eligible = (depth <= 3) or referrer.is_premium_active
             has_tier_rate = rate > 0.0
 
-            if is_premium_eligible and has_tier_rate:
+            if is_premium_eligible and is_tier_eligible and has_tier_rate:
                 # Calculate and award commission
                 commission = int(price * rate)
                 if commission > 0:
@@ -404,7 +411,7 @@ class ReferralCommissionService:
                     except Exception as e:
                         logger.error(f"Failed to send Premium subscription FOMO to {referrer.telegram_id}: {e}")
 
-            elif is_premium_eligible and not has_tier_rate:
+            elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
                 # Level Up FOMO: current tier doesn't support depth d, but a higher tier does
                 if depth in ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS:
                     req = ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS[depth]
