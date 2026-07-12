@@ -268,6 +268,99 @@ async def lifespan(app: FastAPI):
                 logger.info(f"✅ Level backfill complete: corrected {total_fixed} user(s) in batches.")
             else:
                 logger.info("✅ Level backfill: all users are already consistent.")
+                
+            # ── Release v1.7.0 Broadcast Hook (exactly once using Redis) ───────────
+            async def run_release_broadcast():
+                from app.services.session_manager import SessionManager
+                from app.services.telegram_bot import TelegramService
+                from telegram import Bot
+                import os
+                
+                # Wait for database backfill to finish and Redis connection to settle
+                await asyncio.sleep(5)
+                
+                session_mgr = SessionManager()
+                redis_client = session_mgr.redis
+                
+                if not redis_client:
+                    logger.warning("Redis client not available, skipping v1.7.0 broadcast")
+                    return
+                    
+                try:
+                    # Check if already processed
+                    already_sent = await redis_client.get("broadcast_sent:v1.7.0")
+                    if already_sent:
+                        logger.info("v1.7.0 release broadcast already sent. Skipping.")
+                        return
+                        
+                    # Set the key immediately to prevent race conditions during scaling
+                    await redis_client.set("broadcast_sent:v1.7.0", "1", ex=3600)
+                    
+                    logger.info("Initializing v1.7.0 release broadcast...")
+                    bot = TelegramService.application.bot if (TelegramService.application and TelegramService.application.bot) else None
+                    if not bot and settings.TELEGRAM_BOT_TOKEN:
+                        bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+                        
+                    if not bot:
+                        logger.error("Failed to fetch bot client for v1.7.0 broadcast")
+                        return
+                        
+                    bot_user = await bot.get_me()
+                    bot_username = bot_user.username
+                    
+                    # Fetch all users
+                    async with AsyncSessionLocal() as session:
+                        res = await session.execute(sa_select(UserModel.telegram_id))
+                        user_ids = [row[0] for row in res.all() if row[0] is not None]
+                        
+                    logger.info(f"Broadcasting v1.7.0 update to {len(user_ids)} users...")
+                    
+                    message_text = (
+                        f"👑 <b>FinChess Arena Update — Version 1.7.0 is Live!</b> 🚀\n\n"
+                        f"Hello Grandmasters! We've been working hard behind the scenes to make your chess "
+                        f"battlegrounds smoother, faster, and completely ready for massive action. Here is a breakdown of what's new in <b>v1.7.0</b>:\n\n"
+                        f"• ⚡ <b>Ultra-Stable Matchmaking:</b> We've fortified our database pools and socket connections. "
+                        f"If you temporarily drop connection or transition between Wi-Fi and mobile data, you will reconnect instantly without interrupting your match.\n"
+                        f"• ❓ <b>Built-In Settings FAQ:</b> Got questions about ELO ratings, deposits, withdrawals, or Premium benefits? "
+                        f"We've added a gorgeous, expandable <b>FAQ Accordion</b> directly in your Settings menu to give you instant answers!\n"
+                        f"• 🎯 <b>Clearer Quests & Achievements:</b> We have refined the instructions on achievements and daily tasks "
+                        f"(like adding the app to your home screen or inviting friends) so you know exactly how to claim your XP and rewards.\n"
+                        f"• 🛠️ <b>Under-the-Hood Tuning:</b> Upgraded backend performance routines to handle over 100,000 players concurrently.\n\n"
+                        f"Get ready to test your strategy, climb the leaderboard, and earn rewards!\n\n"
+                        f"🔗 <b><a href=\"https://t.me/{bot_username}/play\">Play Web3 Chess</a></b>"
+                    )
+                    
+                    image_path = os.path.join(os.path.dirname(__file__), "release_1.7.0.jpg")
+                    if not os.path.exists(image_path):
+                        logger.error(f"Image not found at path: {image_path}")
+                        return
+                        
+                    sent = 0
+                    failed = 0
+                    for telegram_id in user_ids:
+                        try:
+                            with open(image_path, "rb") as photo_file:
+                                await bot.send_photo(
+                                    chat_id=telegram_id,
+                                    photo=photo_file,
+                                    caption=message_text,
+                                    parse_mode="HTML"
+                                )
+                            sent += 1
+                        except Exception as exc:
+                            logger.warning(f"Failed to send startup broadcast to {telegram_id}: {exc}")
+                            failed += 1
+                        await asyncio.sleep(0.04) # ~25 msgs/sec
+                        
+                    # Permanently set the sentinel key
+                    await redis_client.set("broadcast_sent:v1.7.0", "1")
+                    logger.info(f"v1.7.0 broadcast complete. Sent: {sent}, Failed: {failed}")
+                    
+                except Exception as e:
+                    logger.error(f"Error running v1.7.0 broadcast startup task: {e}")
+                    
+            asyncio.create_task(run_release_broadcast())
+
     except Exception as e:
         logger.error(f"⚠️  Level backfill failed (non-fatal): {e}")
     # ────────────────────────────────────────────────────────────────────────
@@ -539,7 +632,7 @@ _fastapi_app = create_application()
 # Wrap FastAPI with Socket.IO ASGI app.
 # socketio.ASGIApp routes /socket.io/* to the Socket.IO server and
 # delegates all other requests to the FastAPI application.
-import socketio as _socketio_module
+import socketio as _socketio_module  # noqa: E402
 app = _socketio_module.ASGIApp(socketio_server=sio, other_asgi_app=_fastapi_app)
 
 # Expose dependency_overrides on the wrapper so that tests can override
