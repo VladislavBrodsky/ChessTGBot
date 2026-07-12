@@ -24,6 +24,7 @@ export default function ChallengesPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [claimingId, setClaimingId] = useState<number | null>(null);
+  const [showArchive, setShowArchive] = useState<boolean>(false);
 
   useEffect(() => {
     // Only fetch tasks (page-specific) — user stats come from context
@@ -479,6 +480,48 @@ export default function ChallengesPage() {
             )}
           </div>
         </div>
+
+        {/* Archive Section */}
+        {!loading && tasks.some(t => t.claimed) && (
+          <div className="w-full mb-12">
+            <button 
+              onClick={() => setShowArchive(!showArchive)}
+              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-primary/60 hover:bg-brand-surface/40 transition-colors"
+            >
+              <span>{t('completed_missions') || 'Archive'}</span>
+              <span className="text-brand-primary/40">{showArchive ? '▲' : '▼'}</span>
+            </button>
+
+            {showArchive && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="mt-3 space-y-3 overflow-hidden"
+              >
+                {tasks.filter(t => t.claimed).map(task => (
+                  <Card key={task.id} variant="glass" className="p-4 border-brand-border-opacity-5 bg-brand-surface/10 opacity-70">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-4">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm bg-brand-primary/10 text-brand-primary/40 border border-brand-border-opacity-5">
+                          <FaCheckCircle />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-brand-primary/70 mb-0.5 uppercase tracking-wide line-through">
+                            {t(task.title_key)}
+                          </h4>
+                          <p className="text-[10px] text-brand-primary/40 mb-1 leading-snug">
+                            {t(`${task.title_key}_desc`)}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="opacity-30">{t('claimed_status')}</Badge>
+                    </div>
+                  </Card>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        )}
       </div>
     </LayoutWrapper>
   );
