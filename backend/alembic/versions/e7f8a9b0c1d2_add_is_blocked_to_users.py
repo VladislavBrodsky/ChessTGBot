@@ -1,7 +1,7 @@
 """add_is_blocked_to_users
 
-Revision ID: a1b2c3d4e5f6
-Revises: f103b3a5e790
+Revision ID: e7f8a9b0c1d2
+Revises: 66991d84a63a
 Create Date: 2026-07-12
 
 """
@@ -10,8 +10,8 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision: str = 'a1b2c3d4e5f6'
-down_revision: Union[str, None] = 'f103b3a5e790'
+revision: str = 'e7f8a9b0c1d2'
+down_revision: Union[str, None] = '66991d84a63a'
 branch_labels: Union[str, None] = None
 depends_on: Union[str, None] = None
 
