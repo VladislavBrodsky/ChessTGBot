@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaShieldAlt } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaShieldAlt, FaChevronDown, FaQuestionCircle } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -19,6 +19,14 @@ export default function SettingsPage() {
  const [soundEnabled, setSoundEnabled] = useState(true);
  // Pull wallet address from global context — no extra API call needed
  const { walletAddress, stats } = useUser();
+ const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+ const faqItems = [
+   { q: 'faq_q1', a: 'faq_a1' },
+   { q: 'faq_q2', a: 'faq_a2' },
+   { q: 'faq_q3', a: 'faq_a3' },
+   { q: 'faq_q4', a: 'faq_a4' },
+ ];
 
  const tgId = stats?.telegram_id || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id : null);
  const isAdmin = tgId === 1016749901 || tgId === 716720099;
@@ -237,6 +245,56 @@ export default function SettingsPage() {
       </Link>
     </div>
   )}
+  </div>
+  
+  {/* Section: FAQ */}
+  <div className="w-full space-y-3 mb-6">
+    <div className="w-full text-center flex flex-col items-center mt-4 mb-1">
+      <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em]">
+        {t('faq_title')}
+      </h3>
+    </div>
+    
+    <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface divide-y divide-brand-border-opacity-10 shadow-sm overflow-hidden">
+      {faqItems.map((item, index) => (
+        <div key={index} className="w-full">
+          <button
+            onClick={() => {
+              setOpenFaq(openFaq === index ? null : index);
+              telegramHaptic('light');
+            }}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-brand-bg-opacity-5 transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-3 pr-2">
+              <div className="w-6 h-6 rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60 shrink-0">
+                <FaQuestionCircle className="text-xs" />
+              </div>
+              <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-tight">
+                {t(item.q)}
+              </span>
+            </div>
+            <motion.div
+              animate={{ rotate: openFaq === index ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-brand-primary opacity-30 shrink-0"
+            >
+              <FaChevronDown className="text-xs" />
+            </motion.div>
+          </button>
+          
+          <motion.div
+            initial={false}
+            animate={{ height: openFaq === index ? "auto" : 0, opacity: openFaq === index ? 1 : 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 pl-[45px] text-[10px] font-medium text-brand-primary opacity-50 leading-relaxed text-left uppercase tracking-wide">
+              {t(item.a)}
+            </div>
+          </motion.div>
+        </div>
+      ))}
+    </div>
   </div>
 
  {/* versioning */}

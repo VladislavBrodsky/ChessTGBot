@@ -83,7 +83,17 @@
     "ton_wallet": "TON Wallet",
     "ton_not_connected": "Not Connected",
     "premium_membership": "Premium Membership",
-    "upgrade_for_access": "Unlock Enhanced Access"
+    "upgrade_for_access": "Unlock Enhanced Access",
+    "faq_title": "Frequently Asked Questions",
+    "faq_subtitle": "Got questions? We have answers",
+    "faq_q1": "How do I deposit/withdraw TON?",
+    "faq_a1": "Go to the Wallet section, connect your TON Wallet, and tap Deposit or Withdraw. Transactions are processed instantly via the TON Blockchain.",
+    "faq_q2": "How is my ELO calculated?",
+    "faq_a2": "ELO ratings update after every PVP match. Winning increases your ELO depending on your opponent's rating, while losing decreases it.",
+    "faq_q3": "What happens if a player disconnects?",
+    "faq_a3": "If a player disconnects, an abort timer starts. If they fail to reconnect before the timer expires, the game is forfeited and the active player wins.",
+    "faq_q4": "What are Premium benefits?",
+    "faq_a4": "Premium grants you access to all Academy lessons, advanced puzzles, exclusive profile badges, custom chessboards, and priority matchmaking."
   },
   "Language": {
     "select": "Choose Language"
