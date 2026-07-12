@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
+import { createPortal } from 'react-dom';
 import { useNavbar } from '@/context/NavbarContext';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
@@ -648,6 +649,7 @@ export default function AcademyPage() {
       </div>
 
       {/* Premium Upgrade Promotion Drawer */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
       {showPremiumPromo && (
       <div className="bottom-drawer-backdrop z-[110]">
@@ -740,9 +742,12 @@ export default function AcademyPage() {
       </motion.div>
       </div>
       )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
 
       {/* Level Info Drawer — tap any grid tile to see description + CTA */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
       {selectedLevel && (() => {
         const { id, info } = selectedLevel;
@@ -870,7 +875,9 @@ export default function AcademyPage() {
         </div>
         );
       })()}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </LayoutWrapper>
   );
 }
