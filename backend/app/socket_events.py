@@ -792,6 +792,11 @@ async def join_matchmaking(sid, data):
         # 2. Add to matchmaking queue
         matchmaker = MatchmakerService()
         await matchmaker.add_to_queue(user_id, bid_amount, sid, elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
+        queue_counts = await matchmaker.get_queue_counts(
+            bid_amount,
+            time_control,
+            exclude_user_id=user_id,
+        )
         
         # Log queue_join telemetry
         from app.services.telemetry_service import log_backend_telemetry
@@ -799,7 +804,8 @@ async def join_matchmaking(sid, data):
             await log_backend_telemetry(db, user_id, "queue_join", {
                 "bid_amount": bid_amount,
                 "time_control": time_control,
-                "elo": user_elo
+                "elo": user_elo,
+                **queue_counts,
             })
 
         await sio.emit('matchmaking_status', {
@@ -808,6 +814,7 @@ async def join_matchmaking(sid, data):
             'time_control': time_control,
             'duration_waited': 0,
             'notify_when_matched': False,
+            **queue_counts,
         }, room=sid)
 
         # 3. Find and pop matching opponent atomically
@@ -889,6 +896,44 @@ async def enable_matchmaking_notifications(sid, data):
 
 
 @sio.event
+@ws_correlation('get_matchmaking_queue_size')
+async def get_matchmaking_queue_size(sid, data):
+    """Return a verified queue snapshot for the selected matchmaking pool."""
+    try:
+        session = await sio.get_session(sid)
+        user_id = session.get('user_id')
+        if not user_id:
+            return
+
+        matchmaker = MatchmakerService()
+        found = await matchmaker.find_user_entry(user_id)
+        if found:
+            bid_amount = found['bid_amount']
+            time_control = found['time_control']
+        else:
+            data = data or {}
+            bid_amount = int(data.get('bid_amount', 0))
+            time_control = int(data.get('time_control', 600))
+            if bid_amount < 0 or time_control <= 0 or time_control > 7200:
+                return
+
+        queue_counts = await matchmaker.get_queue_counts(
+            bid_amount,
+            time_control,
+            exclude_user_id=user_id,
+        )
+        await sio.emit('matchmaking_queue_size', {
+            'bid_amount': bid_amount,
+            'time_control': time_control,
+            **queue_counts,
+        }, room=sid)
+    except (TypeError, ValueError):
+        return
+    except Exception as e:
+        logger.warning(f"Failed to report matchmaking queue size for {sid}: {e}")
+
+
+@sio.event
 @ws_correlation('check_matchmaking')
 async def check_matchmaking(sid, data):
     """
@@ -905,6 +950,11 @@ async def check_matchmaking(sid, data):
         logger.info(f"check_matchmaking: user {user_id} -> {'searching ' + str((found['bid_amount'], found['time_control'])) if found else 'idle'}")
         if found:
             joined_at = found['entry'].get('joined_at', time.time())
+            queue_counts = await MatchmakerService().get_queue_counts(
+                found['bid_amount'],
+                found['time_control'],
+                exclude_user_id=user_id,
+            )
             await sio.emit('matchmaking_status', {
                 'status': 'searching',
                 'bid_amount': found['bid_amount'],
@@ -913,6 +963,7 @@ async def check_matchmaking(sid, data):
                 'notify_when_matched': bool(
                     found['entry'].get('notify_when_matched', False)
                 ),
+                **queue_counts,
             }, room=sid)
         else:
             await sio.emit('matchmaking_status', {'status': 'idle'}, room=sid)

@@ -5,8 +5,9 @@ so a player can close the app and get a Telegram notification when an opponent
 appears. Wagered entries keep the short 130s lifetime — the wager is locked
 while queued and the money paths assume the entry dies with the socket.
 
-Pure unit tests: forced in-memory queues, no DB, no Redis.
+Pure unit tests: no DB or networked Redis dependency.
 """
+import json
 import time
 
 import pytest
@@ -18,11 +19,13 @@ from app.services.matchmaker import MatchmakerService
 def _in_memory_matchmaker():
     prev_use_memory = MatchmakerService._use_memory
     prev_queues = MatchmakerService._memory_queues
+    prev_redis = MatchmakerService._redis_client
     MatchmakerService._use_memory = True
     MatchmakerService._memory_queues = {}
     yield
     MatchmakerService._use_memory = prev_use_memory
     MatchmakerService._memory_queues = prev_queues
+    MatchmakerService._redis_client = prev_redis
 
 
 def _put(user_id: int, bid: int, tc: int, *, waited: float = 0.0, elo: int = 1000, sid: str = None):
@@ -120,3 +123,94 @@ async def test_notification_opt_in_persists_for_free_entry_only():
 
     assert await mm.set_notification_opt_in(222) is None
     assert (await mm.find_user_entry(222))['entry']['notify_when_matched'] is False
+
+
+async def test_queue_counts_are_unique_and_purge_expired_memory_entries():
+    mm = MatchmakerService()
+    _put(111, 0, 300)
+    _put(222, 0, 300)
+    _put(222, 0, 600)
+    _put(333, 500, 300)
+    _put(444, 0, 300, waited=MatchmakerService.FREE_QUEUE_TTL_SECONDS + 1)
+
+    counts = await mm.get_queue_counts(0, 300, exclude_user_id=111)
+
+    assert counts['real_pool_queue_size'] == 2
+    assert counts['real_total_queue_size'] == 3
+    assert counts['real_pool_opponents'] == 1
+    assert counts['real_total_opponents'] == 2
+    assert counts['queue_size_source'] == 'server_shared_queue'
+    assert all(
+        item['user_id'] != 444
+        for item in MatchmakerService._memory_queues[(0, 300)]
+    )
+
+
+class _FakeRedis:
+    def __init__(self):
+        self.sets = {
+            'matchmaker:active_bids': {'0', '500'},
+            'matchmaker:active_queues:0': {'300', '600'},
+            'matchmaker:active_queues:500': {'300'},
+        }
+        self.values = {}
+
+    async def smembers(self, key):
+        return self.sets.get(key, set())
+
+    async def get(self, key):
+        return self.values.get(key)
+
+    async def set(self, key, value, **kwargs):
+        self.values[key] = value
+        return True
+
+    async def delete(self, key):
+        self.values.pop(key, None)
+
+    async def srem(self, key, value):
+        self.sets.setdefault(key, set()).discard(str(value))
+
+    async def scard(self, key):
+        return len(self.sets.get(key, set()))
+
+
+async def _none():
+    return None
+
+
+async def test_queue_counts_use_shared_redis_indexes(monkeypatch):
+    mm = MatchmakerService()
+    fake_redis = _FakeRedis()
+    now = time.time()
+    fake_redis.values = {
+        'matchmaker:queue:0:300': json.dumps([
+            {'user_id': 111, 'joined_at': now, 'time_control': 300},
+            {'user_id': 222, 'joined_at': now, 'time_control': 300},
+            {
+                'user_id': 444,
+                'joined_at': now - MatchmakerService.FREE_QUEUE_TTL_SECONDS - 1,
+                'time_control': 300,
+            },
+        ]),
+        'matchmaker:queue:0:600': json.dumps([
+            {'user_id': 222, 'joined_at': now, 'time_control': 600},
+        ]),
+        'matchmaker:queue:500:300': json.dumps([
+            {'user_id': 333, 'joined_at': now, 'time_control': 300},
+        ]),
+    }
+    MatchmakerService._use_memory = False
+    MatchmakerService._redis_client = fake_redis
+    monkeypatch.setattr(mm, '_acquire_distributed_lock', lambda *args, **kwargs: _none())
+
+    counts = await mm.get_queue_counts(0, 300, exclude_user_id=111)
+
+    assert counts['real_pool_queue_size'] == 2
+    assert counts['real_total_queue_size'] == 3
+    assert counts['real_pool_opponents'] == 1
+    assert counts['real_total_opponents'] == 2
+    assert all(
+        item['user_id'] != 444
+        for item in json.loads(fake_redis.values['matchmaker:queue:0:300'])
+    )
