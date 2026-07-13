@@ -833,7 +833,7 @@ async def receive_ton_deposit_webhook(
         return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": user.balance if user else 0}
 
     # Process automatic 5% platform topup fee
-    credited_amount = int(round(amount_cents / 1.05))
+    credited_amount = int(round(amount_cents * 0.95))
     fee = amount_cents - credited_amount
 
     # Atomically credit user balance
@@ -1156,7 +1156,7 @@ async def verify_deposit(
             }
 
         # Deduct 5% platform fee
-        credited_amount = int(round(amount_cents / 1.05))
+        credited_amount = int(round(amount_cents * 0.95))
         fee = amount_cents - credited_amount
 
         user.balance += credited_amount
@@ -1298,6 +1298,7 @@ async def stripe_create_session(
             },
             success_url=f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
+            idempotency_key=f"session_{pending_tx.id}",
         )
         
         pending_tx.reference_id = checkout_session.id
@@ -1330,10 +1331,14 @@ async def stripe_verify_session(
     if not tx:
         raise HTTPException(status_code=404, detail="Transaction not found.")
         
+    # Re-fetch user to get the latest balance after webhooks processed
+    user_result = await db.execute(select(User).filter(User.telegram_id == current_user.telegram_id))
+    db_user = user_result.scalars().first()
+        
     return StripeVerifyResponse(
         status=tx.status,
         credited_amount=tx.amount,
-        new_balance=current_user.balance
+        new_balance=db_user.balance if db_user else current_user.balance
     )
 
 
@@ -1401,8 +1406,6 @@ async def create_stripe_subscription(
         # Avoid creating duplicate Stripe customers
         if current_user.stripe_customer_id:
             session_kwargs['customer'] = current_user.stripe_customer_id
-        else:
-            session_kwargs['customer_email'] = f"{current_user.telegram_id}@telegram.local" # Fallback if they have no email
 
         checkout_session = stripe.checkout.Session.create(**session_kwargs)
 
@@ -1572,6 +1575,11 @@ async def stripe_webhook(
                     except Exception:
                         user.premium_billing_period = "monthly"  # safe fallback
 
+                    user.is_premium = True
+                    from datetime import datetime, timezone, timedelta
+                    now = datetime.now(timezone.utc).replace(tzinfo=None)
+                    user.premium_expires_at = now + timedelta(days=365 if user.premium_billing_period == "annual" else 30)
+
                     db.add(user)
                     await db.commit()
             return {"status": "success", "message": "Subscription mapped to user."}
@@ -1711,9 +1719,9 @@ async def stripe_webhook(
                         # Freeze account completely due to dispute / chargeback
                         user.is_active = False
                         
-                        # Deduct the disputed amount
+                        # Deduct the disputed amount but prevent negative balances
                         dispute_amount = dispute.get('amount', 0)
-                        user.balance -= dispute_amount
+                        user.balance = max(0, user.balance - dispute_amount)
                         
                         penalty_tx = Transaction(
                             user_id=user_id,
@@ -1751,23 +1759,38 @@ async def stripe_webhook(
         if subscription_id:
             try:
                 subscription = stripe.Subscription.retrieve(subscription_id)
-                user_id_str = subscription.get('metadata', {}).get('user_id')
+                user_id_str = subscription.get('metadata', {}).get('user_id') or invoice.get('metadata', {}).get('user_id')
+                
+                user = None
                 if user_id_str:
                     user_id = int(user_id_str)
-                    
-                    # Update User to Premium for 30 days
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
-                    
+                else:
+                    customer_id = subscription.get('customer')
+                    user_result = await db.execute(select(User).filter(User.stripe_customer_id == customer_id).with_for_update())
+                    user = user_result.scalars().first()
                     if user:
-                        user.is_premium = True
-                        user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
-                        
-                        from datetime import datetime, timezone, timedelta
-                        now = datetime.now(timezone.utc).replace(tzinfo=None)
+                        user_id = user.telegram_id
+                    else:
+                        logger.error(f"Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
+                
+                if user:
+                    user.is_premium = True
+                    user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
+                    
+                    from datetime import datetime, timezone, timedelta
+                    now = datetime.now(timezone.utc).replace(tzinfo=None)
+                    
+                    price_id = subscription["items"]["data"][0]["price"]["id"]
+                    if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
+                        user.premium_expires_at = now + timedelta(days=365)
+                        user.premium_billing_period = "annual"
+                    else:
                         user.premium_expires_at = now + timedelta(days=30)
-                        
-                        db.add(user)
+                        user.premium_billing_period = "monthly"
+                    
+                    db.add(user)
                         
                         # Add transaction ledger entry for subscription payment
                         amount_paid = invoice.get('amount_paid', 0)
