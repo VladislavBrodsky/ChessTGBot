@@ -1792,33 +1792,33 @@ async def stripe_webhook(
                     
                     db.add(user)
                         
-                        # Add transaction ledger entry for subscription payment
-                        amount_paid = invoice.get('amount_paid', 0)
-                        if amount_paid > 0:
-                            sub_tx = Transaction(
-                                user_id=user_id,
-                                type="subscription",
-                                amount=amount_paid,
-                                fee=0,  # Stripe fees handled differently, but we log gross
-                                status="completed",
-                                reference_id=f"sub_{invoice.get('id', '')}"
-                            )
-                            db.add(sub_tx)
-                        
-                        await db.commit()
-                        
-                        try:
-                            from app.services.telegram_bot import TelegramService
-                            await TelegramService.send_notification(
-                                user_id,
-                                "<b>🌟 Premium Subscription Active!</b>\n\n"
-                                "Your Stripe payment was successful. You now have access to Premium features for 30 days!\n"
-                                "Enjoy your enhanced Chess experience."
-                            )
-                        except Exception:
-                            pass
-                        
-                        return {"status": "success", "message": "Subscription activated."}
+                    # Add transaction ledger entry for subscription payment
+                    amount_paid = invoice.get('amount_paid', 0)
+                    if amount_paid > 0:
+                        sub_tx = Transaction(
+                            user_id=user_id,
+                            type="subscription",
+                            amount=amount_paid,
+                            fee=0,  # Stripe fees handled differently, but we log gross
+                            status="completed",
+                            reference_id=f"sub_{invoice.get('id', '')}"
+                        )
+                        db.add(sub_tx)
+                    
+                    await db.commit()
+                    
+                    try:
+                        from app.services.telegram_bot import TelegramService
+                        await TelegramService.send_notification(
+                            user_id,
+                            "<b>🌟 Premium Subscription Active!</b>\n\n"
+                            "Your Stripe payment was successful. You now have access to Premium features!\n"
+                            "Enjoy your enhanced Chess experience."
+                        )
+                    except Exception:
+                        pass
+                    
+                    return {"status": "success", "message": "Subscription activated."}
             except Exception as e:
                 logger.error(f"Failed to process subscription payment: {e}")
 
