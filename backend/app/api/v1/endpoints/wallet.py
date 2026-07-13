@@ -98,6 +98,12 @@ def _is_usdt_master(jetton_master_address: str) -> bool:
         return False
 
 
+def _split_web3_top_up(total_amount_cents: int) -> tuple[int, int]:
+    """Split a Web3 transfer into requested credit and its 5% top-up fee."""
+    credited_amount = int(round(total_amount_cents / 1.05))
+    return credited_amount, total_amount_cents - credited_amount
+
+
 _master_usdt_jetton_wallet_cache = {"hex": None}
 
 async def get_master_usdt_jetton_wallet_hex() -> Optional[str]:
@@ -832,9 +838,8 @@ async def receive_ton_deposit_webhook(
         user = user_result.scalars().first()
         return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": user.balance if user else 0}
 
-    # Process automatic 5% platform topup fee
-    credited_amount = int(round(amount_cents * 0.95))
-    fee = amount_cents - credited_amount
+    # The Web3 UI sends the requested credit plus a 5% top-up fee.
+    credited_amount, fee = _split_web3_top_up(amount_cents)
 
     # Atomically credit user balance
     updated_user = await user_crud.atomic_credit(db, telegram_id, credited_amount)
@@ -1155,9 +1160,8 @@ async def verify_deposit(
                 "message": "Already processed"
             }
 
-        # Deduct 5% platform fee
-        credited_amount = int(round(amount_cents * 0.95))
-        fee = amount_cents - credited_amount
+        # The Web3 UI sends the requested credit plus a 5% top-up fee.
+        credited_amount, fee = _split_web3_top_up(amount_cents)
 
         user.balance += credited_amount
         db.add(user)
