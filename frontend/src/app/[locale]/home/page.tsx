@@ -20,6 +20,14 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import XPProgressBar from "@/components/XPProgressBar";
 
+// Telegram's `start_param` persists for the whole webview session, so the
+// deep-link redirect below re-fired on EVERY Home mount — after finishing a
+// deep-linked game, returning to Home yanked the user straight back into that
+// (now finished) game's MatchOverModal, with no escape. Honor a deep link at
+// most once per session; live-game resume is handled by LayoutWrapper's
+// /game/active check (which correctly excludes finished games).
+let deepLinkHandled = false;
+
 export default function Home() {
  const t = useTranslations('Index');
  const locale = useLocale();
@@ -37,13 +45,12 @@ export default function Home() {
        startParam = params.get('startapp') || params.get('start') || '';
      }
      
-     if (startParam) {
-       if (!startParam.startsWith('ref_')) {
-         if (startParam === 'arena') {
-           router.push(`/${locale}/game`);
-         } else {
-           router.push(`/${locale}/game?id=${startParam}`);
-         }
+     if (startParam && !startParam.startsWith('ref_') && !deepLinkHandled) {
+       deepLinkHandled = true;
+       if (startParam === 'arena') {
+         router.push(`/${locale}/game`);
+       } else {
+         router.push(`/${locale}/game?id=${startParam}`);
        }
      }
    }

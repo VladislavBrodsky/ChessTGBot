@@ -212,7 +212,7 @@ export default function MatchOverModal({
           )}
 
           <div className="grid grid-cols-2 gap-2.5">
-            <Link href={`/${locale}/home`} className="w-full">
+            <Link href={`/${locale}/game`} className="w-full">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
