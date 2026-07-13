@@ -2,5 +2,5 @@
 2:I[22952,["6711","static/chunks/8e1d74a4-78964a70c8fd9071.js","1795","static/chunks/1795-dbbebd865b28428a.js","2491","static/chunks/2491-80058a34350d6a72.js","2762","static/chunks/2762-cdbd3930b576c3b8.js","8500","static/chunks/8500-f62a38ff68ab7f42.js","7170","static/chunks/7170-21f7dc13d3faa12a.js","4798","static/chunks/4798-ad13ee3665d46f35.js","1353","static/chunks/1353-250714ea41402261.js","4785","static/chunks/4785-f37e5c8b1361534a.js","7333","static/chunks/app/%5Blocale%5D/academy/lesson/%5BlessonId%5D/page-8bb860816ffc1e11.js"],"default"]
 3:I[90484,[],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"tactics-101"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"4NhrvFNyEtTmXpFSs6zol"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"lessonId":"tactics-101"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"QZHqMP1yk_VtH-w8pjqgY"}
 5:null

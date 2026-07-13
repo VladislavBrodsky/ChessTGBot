@@ -414,7 +414,8 @@ class GamificationService:
                 GameHistory.total_moves >= settings.REFERRAL_MILESTONE_MIN_MOVES,
             )
         )
-        if int(qualifying_res.scalar() or 0) < 3:
+        qualifying_games = int(qualifying_res.scalar() or 0)
+        if qualifying_games < 3:
             return False
 
         # 3c. Sybil guard: a referrer banks at most N signup bonuses per
@@ -496,6 +497,24 @@ class GamificationService:
             reference_id=f"ref_signup_bonus_recruit_{new_user.telegram_id}"
         )
         db.add(tx_new_user)
+
+        # Activation is durable and emitted in the same transaction as the reward.
+        from app.models.telemetry import TelemetryLog
+        activation_time = datetime.now(timezone.utc).replace(tzinfo=None)
+        referral.activated_at = activation_time
+        db.add(referral)
+        db.add(TelemetryLog(
+            user_id=new_user.telegram_id,
+            event_type="referral_activated",
+            event_data={
+                "referral_id": referral.id,
+                "referrer_user_id": referrer.id,
+                "referrer_telegram_id": referrer.telegram_id,
+                "qualifying_games": qualifying_games,
+                "milestone_min_moves": settings.REFERRAL_MILESTONE_MIN_MOVES,
+            },
+            created_at=activation_time,
+        ))
 
         # 7. Increment referral task progress for the referrer
         await GamificationService.update_task_progress(db, referrer.id, TaskType.REFER, increment=1, commit=False)

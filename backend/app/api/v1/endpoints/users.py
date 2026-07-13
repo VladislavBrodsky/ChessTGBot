@@ -84,6 +84,8 @@ class ReferralEarningPoint(BaseModel):
 
 class ReferralStats(BaseModel):
     total_referrals: int
+    activated_referrals: int  # completed the qualifying referral milestone
+    activation_rate: float
     active_referrals: int   # played >= 1 game in the last 7 days
     total_earnings_usdt: float  # sum of referral_commission transactions in USDT
     earnings_chart: List[ReferralEarningPoint]  # last 30 days daily earnings
@@ -96,6 +98,8 @@ async def get_referral_stats(
     """
     Returns referral program statistics for the current user:
     - total_referrals: total number of people who signed up via this user's link
+    - activated_referrals: referrals who completed the qualifying game milestone
+    - activation_rate: activated referrals as a percentage of total referrals
     - active_referrals: referrals who played at least 1 game in the last 7 days
     - total_earnings_usdt: cumulative referral commission received (USDT)
     - earnings_chart: daily referral earnings for the last 30 days (for SVG chart)
@@ -109,7 +113,21 @@ async def get_referral_stats(
     )
     total_referrals = total_result.scalar() or 0
 
-    # 2. Active referrals: referred users who played >= 1 game in the last 7 days
+    # 2. Activated referrals: durable completion of the qualifying milestone
+    activated_result = await db.execute(
+        select(func.count(Referral.id)).where(
+            Referral.referrer_id == current_user.id,
+            Referral.activated_at.is_not(None),
+        )
+    )
+    activated_referrals = activated_result.scalar() or 0
+    activation_rate = (
+        round(activated_referrals / total_referrals * 100, 1)
+        if total_referrals
+        else 0.0
+    )
+
+    # 3. Active referrals: referred users who played >= 1 game in the last 7 days
     week_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=7)
     
     # Query transactions of referred users directly using JOIN
@@ -143,7 +161,7 @@ async def get_referral_stats(
         )
         active_referrals = fallback_result.scalar() or 0
 
-    # 3. Total earnings from referral commissions
+    # 4. Total earnings from referral commissions
     total_earnings_result = await db.execute(
         select(func.coalesce(func.sum(Transaction.amount), 0)).where(
             and_(
@@ -156,7 +174,7 @@ async def get_referral_stats(
     total_earnings_cents = total_earnings_result.scalar() or 0
     total_earnings_usdt = total_earnings_cents / 100.0
 
-    # 4. Daily earnings for last 30 days (for chart)
+    # 5. Daily earnings for last 30 days (for chart)
     thirty_days_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
     daily_result = await db.execute(
         select(
@@ -179,6 +197,8 @@ async def get_referral_stats(
 
     return ReferralStats(
         total_referrals=total_referrals,
+        activated_referrals=activated_referrals,
+        activation_rate=activation_rate,
         active_referrals=active_referrals,
         total_earnings_usdt=round(total_earnings_usdt, 4),
         earnings_chart=earnings_chart

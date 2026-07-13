@@ -225,6 +225,10 @@ async def lifespan(app: FastAPI):
     # Refund withdrawal-confirmation requests that expired unanswered
     asyncio.create_task(start_withdrawal_confirmation_sweeper())
 
+    # Aggregate complete UTC telemetry days before pruning expired raw events.
+    from app.services.telemetry_maintenance import start_telemetry_maintenance_loop
+    asyncio.create_task(start_telemetry_maintenance_loop())
+
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Fixes any users whose `level` column drifted from their actual XP due
     # to the bug where level was not recalculated after XP deductions.

@@ -230,6 +230,14 @@ export default function PlayLobby() {
     }
 
     if (wagerInCents > walletBalance) {
+      logTelemetryEvent('wager_insufficient_balance', {
+        source: 'matchmaking_guard',
+        selected_wager_cents: wagerInCents,
+        wallet_balance_cents: walletBalance,
+        shortfall_cents: wagerInCents - walletBalance,
+        time_control: timeControl,
+        custom_wager: isCustomWager,
+      });
       setMatchmakingError("Insufficient balance in your Cyber-Wallet.");
       return;
     }
@@ -396,6 +404,14 @@ export default function PlayLobby() {
     if (walletBalance >= wagerInCents) {
       startMatchmaking();
     } else {
+      logTelemetryEvent('wager_insufficient_balance', {
+        source: 'matchmaking_launcher',
+        selected_wager_cents: wagerInCents,
+        wallet_balance_cents: walletBalance,
+        shortfall_cents: wagerInCents - walletBalance,
+        time_control: timeControl,
+        custom_wager: isCustomWager,
+      });
       setShowDepositDrawer(true);
     }
   };
@@ -456,6 +472,14 @@ export default function PlayLobby() {
     
     // Check if creator has sufficient balance for chosenWager
     if (walletBalance < chosenWager) {
+      logTelemetryEvent('wager_insufficient_balance', {
+        source: 'friend_invite',
+        selected_wager_cents: chosenWager,
+        wallet_balance_cents: walletBalance,
+        shortfall_cents: chosenWager - walletBalance,
+        time_control: timeControl,
+        custom_wager: isCustomWager,
+      });
       setShowDepositDrawer(true);
       return;
     }

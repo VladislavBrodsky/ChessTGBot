@@ -4,7 +4,7 @@ from app.models.gamification import Task, UserTask, Referral, UnlockedLesson
 from app.models.transaction import Transaction
 from app.models.xp_transaction import XpTransaction
 from app.models.arena import Arena, ArenaPlayer
-from app.models.telemetry import TelemetryLog
+from app.models.telemetry import TelemetryDailyRollup, TelemetryLog
 
 __all__ = [
     "User",
@@ -17,5 +17,6 @@ __all__ = [
     "XpTransaction",
     "Arena",
     "ArenaPlayer",
-    "TelemetryLog"
+    "TelemetryLog",
+    "TelemetryDailyRollup",
 ]

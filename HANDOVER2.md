@@ -166,15 +166,12 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    matched/abandon/timeout rates to determine whether the 15-second offer is at
    the right point. The simulated lobby counters and referral-payout feed remain
    enabled by owner request and must not be treated as analytics.
-4. **Finish the measurement gaps.** Add `wager_insufficient_balance`, explicit
-   referred-user activation metrics, and a nightly rollup/retention strategy for
-   `telemetry_logs`.
-5. **Re-run the engagement report after at least 48 hours of the corrected
+4. **Re-run the engagement report after at least 48 hours of the corrected
    telemetry.** Compare activation, queue conversion, AI-fallback acceptance,
    deposit-funnel completion, referral quality, arena participation, and bot
    blocks against the baseline in this file. Do not use the 2026-07-12 snapshot
    as current production truth.
-6. **Transak direct credit remains blocked on owner configuration.** Obtain the
+5. **Transak direct credit remains blocked on owner configuration.** Obtain the
    production API key and webhook secret before implementing signed
    `ORDER_COMPLETED` handling and order-id deduplication.
 
@@ -185,9 +182,24 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
   **Added 2026-07-13**, including separate submitted-pending events so an
   on-chain transfer awaiting indexing is not mislabeled as abandoned.
 - `wager_insufficient_balance` — direct measure of deposit demand.
+  **Added 2026-07-13** for matchmaking, its balance safety guard, and friend
+  wagers, with wager, wallet balance, shortfall, time control, custom-wager, and
+  source metadata.
 - Referral-quality: referred-user activation, not just referral count.
+  **Added 2026-07-13.** `referrals.activated_at` is written atomically when the
+  qualifying three-game reward unlocks; the same transaction emits
+  `referral_activated`. User referral stats and admin stats now expose activated
+  counts and activation rate separately from recent active referrals. The
+  migration backfills prior activations from completed signup-bonus transactions.
 - A nightly rollup table (telemetry_logs has no retention/aggregation — fine for
   48h, expensive for trends).
+  **Added 2026-07-13.** At 02:00 UTC by default, complete UTC days are aggregated
+  into `telemetry_daily_rollups` by event type with event and unique-user counts.
+  A two-day overlap is replaced on each run for delayed batches, then raw rows
+  older than 30 days are pruned. Rollups are retained indefinitely. Configure
+  with `TELEMETRY_MAINTENANCE_HOUR_UTC` and
+  `TELEMETRY_RAW_RETENTION_DAYS`; a PostgreSQL advisory lock makes scaled
+  workers safe.
 
 ## Notes / caveats
 - Money columns are cents; `amount/100` = USDT.

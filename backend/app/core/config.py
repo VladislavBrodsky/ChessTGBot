@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE") or "20")
     DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW") or "50")
 
+    # Raw events support debugging; daily aggregates remain available for trends.
+    TELEMETRY_RAW_RETENTION_DAYS: int = int(os.getenv("TELEMETRY_RAW_RETENTION_DAYS", "30"))
+    TELEMETRY_MAINTENANCE_HOUR_UTC: int = int(os.getenv("TELEMETRY_MAINTENANCE_HOUR_UTC", "2"))
+
     # Redis
     # Default to localhost for dev. In production, use REDIS_URL environment variable.
     REDIS_URL: str = "redis://localhost:6379/0"
