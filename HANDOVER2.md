@@ -119,19 +119,71 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    labeled bot game so the 81% who currently leave empty-handed get *a* game.
    Also widen the ELO window as wait grows; show real queue size + "notify me
    when an opponent joins." Recovers the clearest demand in the data.
+
+   > **PARTIALLY IMPLEMENTED 2026-07-13.** The matcher already widened ELO and
+   > time-control pools as wait time grew. The client now offers a clearly
+   > labeled AI game after 15 seconds, records offered/accepted telemetry, keeps
+   > navigation available during the search, and relies on the existing
+   > `leave_matchmaking` refund path before opening AI difficulty selection.
+   > Real queue size remains to add. The existing simulated engagement counts,
+   > wait estimate, opponent ELO, and referral-payout feed remain enabled at the
+   > owner's request (restored 2026-07-13).
 3. **Gate referral rewards on activation, not signup** — pay when the referred
    user deposits or plays N real games; tighten per-referrer velocity. Stops the
    5-account farm from burning commissions on junk and refocuses invites on
    quality. (Complements the region-targeted arena notifications already shipped
    — watch the 37 blocks/48h for fatigue.)
+
+   > **IMPLEMENTED BEFORE 2026-07-13; VERIFIED IN CURRENT CODE.** Referral
+   > attribution is recorded at signup, but rewards unlock only after 3 games
+   > with at least 10 moves, with same-IP rejection and per-referrer velocity
+   > caps. The production data should be re-run to measure whether farms still
+   > clear that activation threshold.
 4. **Fix `session_start` → user attribution** (frontend `lib/telemetry.ts` /
    `TelemetryReporter.tsx` send `user_id`; verify it matches `telegram_id` and
    lands in `telemetry_logs.user_id`). Without it the activation funnel lies.
+
+   > **FIXED 2026-07-13.** The telemetry endpoint now derives `user_id` from
+   > verified Telegram init data and ignores the legacy client-supplied ID. The
+   > frontend no longer parses identity from optional local storage. Regression
+   > coverage proves a spoofed payload ID cannot override the authenticated ID.
+
+## Still to do (prioritized, as of 2026-07-13)
+
+1. **Resolve the two pending Stripe deposits before changing credit logic.**
+   In the Stripe Dashboard, confirm whether each Checkout Session was paid or
+   abandoned, inspect failed webhook deliveries, and verify the live endpoint is
+   `https://chesstgbot-backend-production.up.railway.app/api/v1/wallet/stripe/webhook`.
+   In Railway, verify backend `WEBAPP_URL` points to the live frontend rather
+   than the dead monolith.
+2. **After those production facts and explicit owner approval, harden Stripe
+   crediting.** Extract one idempotent, row-locked credit function shared by the
+   webhook and redirect verification; add a pending-deposit reconciliation
+   sweeper; alert TREASURY when a deposit remains pending past the chosen SLA.
+   Never credit from unverified redirect parameters alone.
+3. **Finish matchmaking recovery.** Add a real queue-size signal and a
+   "notify me" option. Measure `queue_ai_fallback_offered` → `accepted` alongside
+   matched/abandon/timeout rates to determine whether the 15-second offer is at
+   the right point. The simulated lobby counters and referral-payout feed remain
+   enabled by owner request and must not be treated as analytics.
+4. **Finish the measurement gaps.** Add `wager_insufficient_balance`, explicit
+   referred-user activation metrics, and a nightly rollup/retention strategy for
+   `telemetry_logs`.
+5. **Re-run the engagement report after at least 48 hours of the corrected
+   telemetry.** Compare activation, queue conversion, AI-fallback acceptance,
+   deposit-funnel completion, referral quality, arena participation, and bot
+   blocks against the baseline in this file. Do not use the 2026-07-12 snapshot
+   as current production truth.
+6. **Transak direct credit remains blocked on owner configuration.** Obtain the
+   production API key and webhook secret before implementing signed
+   `ORDER_COMPLETED` handling and order-id deduplication.
 
 ## Tracking gaps to add (so the next read is sharper)
 - Deposit-funnel events: `deposit_modal_open → initiated → address_copied →
   completed/abandoned` (today only the final `transactions` row exists — can't
   see where the 2 pending stalled).
+  **Added 2026-07-13**, including separate submitted-pending events so an
+  on-chain transfer awaiting indexing is not mislabeled as abandoned.
 - `wager_insufficient_balance` — direct measure of deposit demand.
 - Referral-quality: referred-user activation, not just referral count.
 - A nightly rollup table (telemetry_logs has no retention/aggregation — fine for

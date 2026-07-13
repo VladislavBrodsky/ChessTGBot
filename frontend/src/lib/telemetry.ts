@@ -1,7 +1,6 @@
 import { apiFetch } from "./api";
 
 interface TelemetryEvent {
-  user_id?: number;
   event_type: string;
   event_data?: any;
 }
@@ -12,26 +11,8 @@ let flushTimeout: any = null;
 const FLUSH_INTERVAL_MS = 10000; // Flush every 10 seconds
 const MAX_BUFFER_SIZE = 10;
 
-const getTelegramUserId = (): number | undefined => {
-  if (typeof window === 'undefined') return undefined;
-  const webAuth = localStorage.getItem('telegram_web_auth');
-  if (!webAuth) return undefined;
-  try {
-    const params = new URLSearchParams(webAuth);
-    const userStr = params.get('user');
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      return user.id;
-    }
-  } catch {
-    // Fail silently
-  }
-  return undefined;
-};
-
 export const logTelemetryEvent = (eventType: string, eventData?: any) => {
   const event: TelemetryEvent = {
-    user_id: getTelegramUserId(),
     event_type: eventType,
     event_data: eventData || {},
   };
