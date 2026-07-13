@@ -804,7 +804,10 @@ async def join_matchmaking(sid, data):
 
         await sio.emit('matchmaking_status', {
             'status': 'searching',
-            'bid_amount': bid_amount
+            'bid_amount': bid_amount,
+            'time_control': time_control,
+            'duration_waited': 0,
+            'notify_when_matched': False,
         }, room=sid)
 
         # 3. Find and pop matching opponent atomically
@@ -827,6 +830,65 @@ async def join_matchmaking(sid, data):
         await sio.emit('matchmaking_error', {'message': 'Server matchmaking error.'}, room=sid)
 
 @sio.event
+@ws_correlation('enable_matchmaking_notifications')
+async def enable_matchmaking_notifications(sid, data):
+    """Keep a free search alive when the player leaves and notify on a match."""
+    try:
+        session = await sio.get_session(sid)
+        user_id = session.get('user_id')
+        if not user_id:
+            await sio.emit(
+                'matchmaking_notifications_status',
+                {'enabled': False, 'error': 'Unauthorized connection'},
+                room=sid,
+            )
+            return
+
+        found = await MatchmakerService().set_notification_opt_in(user_id)
+        if not found:
+            await sio.emit(
+                'matchmaking_notifications_status',
+                {'enabled': False, 'error': 'Notification mode is available for active free searches only.'},
+                room=sid,
+            )
+            return
+
+        joined_at = found['entry'].get('joined_at', time.time())
+        duration_waited = max(0, time.time() - joined_at)
+        expires_in = max(
+            0,
+            int(MatchmakerService.FREE_QUEUE_TTL_SECONDS - duration_waited),
+        )
+        from app.services.telemetry_service import log_backend_telemetry
+        try:
+            async with AsyncSessionLocal() as db:
+                await log_backend_telemetry(db, user_id, "queue_notify_opt_in", {
+                    "bid_amount": 0,
+                    "time_control": found['time_control'],
+                    "duration_waited": duration_waited,
+                    "expires_in_seconds": expires_in,
+                })
+        except Exception as telemetry_error:
+            logger.warning(
+                f"Notification opt-in persisted for {user_id}, but telemetry failed: "
+                f"{telemetry_error}"
+            )
+
+        await sio.emit(
+            'matchmaking_notifications_status',
+            {'enabled': True, 'expires_in_seconds': expires_in},
+            room=sid,
+        )
+    except Exception as e:
+        logger.warning(f"Failed to enable matchmaking notifications for {sid}: {e}")
+        await sio.emit(
+            'matchmaking_notifications_status',
+            {'enabled': False, 'error': 'Could not enable Telegram notifications.'},
+            room=sid,
+        )
+
+
+@sio.event
 @ws_correlation('check_matchmaking')
 async def check_matchmaking(sid, data):
     """
@@ -842,10 +904,15 @@ async def check_matchmaking(sid, data):
         found = await MatchmakerService().find_user_entry(user_id)
         logger.info(f"check_matchmaking: user {user_id} -> {'searching ' + str((found['bid_amount'], found['time_control'])) if found else 'idle'}")
         if found:
+            joined_at = found['entry'].get('joined_at', time.time())
             await sio.emit('matchmaking_status', {
                 'status': 'searching',
                 'bid_amount': found['bid_amount'],
-                'time_control': found['time_control']
+                'time_control': found['time_control'],
+                'duration_waited': max(0, time.time() - joined_at),
+                'notify_when_matched': bool(
+                    found['entry'].get('notify_when_matched', False)
+                ),
             }, room=sid)
         else:
             await sio.emit('matchmaking_status', {'status': 'idle'}, room=sid)

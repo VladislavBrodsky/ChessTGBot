@@ -3,7 +3,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
+import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
@@ -43,6 +43,8 @@ export default function PlayLobby() {
   const [matchFoundData, setMatchFoundData] = useState<any>(null);
   const [searchTimer, setSearchTimer] = useState<number>(0);
   const [matchmakingError, setMatchmakingError] = useState<string>("");
+  const [notifySearchEnabled, setNotifySearchEnabled] = useState(false);
+  const [notifyRequestPending, setNotifyRequestPending] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
 
@@ -58,6 +60,7 @@ export default function PlayLobby() {
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef<boolean>(false);
   const aiFallbackOfferedRef = useRef<boolean>(false);
+  const keepSearchingOnExitRef = useRef<boolean>(false);
 
   const scrollToWager = () => {
     telegramHaptic('light');
@@ -243,6 +246,9 @@ export default function PlayLobby() {
     }
 
     submittingRef.current = true;
+    keepSearchingOnExitRef.current = false;
+    setNotifySearchEnabled(false);
+    setNotifyRequestPending(false);
     setMatchmakingState('searching');
     socket.emit('join_matchmaking', { 
       bid_amount: wagerInCents,
@@ -335,7 +341,10 @@ export default function PlayLobby() {
 
   useEffect(() => {
     return () => {
-      if (matchmakingStateRef.current === 'searching') {
+      if (
+        matchmakingStateRef.current === 'searching' &&
+        !keepSearchingOnExitRef.current
+      ) {
         const socket = getSocket();
         socket.emit('leave_matchmaking', {});
         console.log("Automatically left matchmaking queue on component unmount.");
@@ -349,6 +358,9 @@ export default function PlayLobby() {
 
     const onMatchFound = (data: any) => {
       console.log("Match matched!", data);
+      keepSearchingOnExitRef.current = false;
+      setNotifySearchEnabled(false);
+      setNotifyRequestPending(false);
       setMatchFoundData(data);
       setMatchmakingState('matched');
       playAudio('start');
@@ -363,13 +375,33 @@ export default function PlayLobby() {
     const onMatchmakingError = (data: any) => {
       console.error("Matchmaking error:", data.message);
       setMatchmakingError(data.message);
+      keepSearchingOnExitRef.current = false;
+      setNotifySearchEnabled(false);
+      setNotifyRequestPending(false);
       setMatchmakingState('idle');
       submittingRef.current = false;
     };
 
     const onMatchmakingStatus = (data: any) => {
       console.log("Matchmaking status update:", data);
-      if (data.status === 'idle') {
+      if (data.status === 'searching') {
+        const restoredWager = Number(data.bid_amount ?? 0);
+        setSelectedWager(restoredWager);
+        setIsCustomWager(false);
+        if (data.time_control) {
+          setTimeControl(Number(data.time_control));
+        }
+        setSearchTimer(Math.max(0, Math.floor(Number(data.duration_waited ?? 0))));
+        const notificationsEnabled = Boolean(data.notify_when_matched);
+        keepSearchingOnExitRef.current = notificationsEnabled;
+        setNotifySearchEnabled(notificationsEnabled);
+        setNotifyRequestPending(false);
+        setMatchmakingState('searching');
+        submittingRef.current = true;
+      } else if (data.status === 'idle') {
+        keepSearchingOnExitRef.current = false;
+        setNotifySearchEnabled(false);
+        setNotifyRequestPending(false);
         setMatchmakingState('idle');
         submittingRef.current = false;
         if (data.message) {
@@ -378,14 +410,40 @@ export default function PlayLobby() {
       }
     };
 
+    const onNotificationStatus = (data: any) => {
+      setNotifyRequestPending(false);
+      if (data.enabled) {
+        keepSearchingOnExitRef.current = true;
+        setNotifySearchEnabled(true);
+        telegramHaptic('success');
+      } else {
+        keepSearchingOnExitRef.current = false;
+        setNotifySearchEnabled(false);
+        if (data.error) {
+          setMatchmakingError(data.error);
+        }
+      }
+    };
+
+    const restoreMatchmaking = () => {
+      socket.emit('check_matchmaking', {});
+    };
+
     socket.on('match_found', onMatchFound);
     socket.on('matchmaking_error', onMatchmakingError);
     socket.on('matchmaking_status', onMatchmakingStatus);
+    socket.on('matchmaking_notifications_status', onNotificationStatus);
+    socket.on('connect', restoreMatchmaking);
+    if (socket.connected) {
+      restoreMatchmaking();
+    }
 
     return () => {
       socket.off('match_found', onMatchFound);
       socket.off('matchmaking_error', onMatchmakingError);
       socket.off('matchmaking_status', onMatchmakingStatus);
+      socket.off('matchmaking_notifications_status', onNotificationStatus);
+      socket.off('connect', restoreMatchmaking);
     };
   }, [locale, router, playAudio]);
 
@@ -417,6 +475,9 @@ export default function PlayLobby() {
   };
 
   const cancelMatchmaking = () => {
+    keepSearchingOnExitRef.current = false;
+    setNotifySearchEnabled(false);
+    setNotifyRequestPending(false);
     const socket = getSocket();
     socket.emit('leave_matchmaking', {});
     setMatchmakingState('idle');
@@ -432,12 +493,23 @@ export default function PlayLobby() {
       time_control: timeControl,
       duration_waited: searchTimer,
     });
+    keepSearchingOnExitRef.current = false;
+    setNotifySearchEnabled(false);
+    setNotifyRequestPending(false);
     const socket = getSocket();
     socket.emit('leave_matchmaking', {});
     setMatchmakingState('idle');
     submittingRef.current = false;
     telegramHaptic('light');
     setShowAiDifficultyDrawer(true);
+  };
+
+  const enableMatchNotifications = () => {
+    if (chosenWager !== 0 || notifySearchEnabled || notifyRequestPending) return;
+    keepSearchingOnExitRef.current = true;
+    setNotifyRequestPending(true);
+    setMatchmakingError("");
+    getSocket().emit('enable_matchmaking_notifications', {});
   };
 
   const triggerPlayVsComputer = () => {
@@ -683,6 +755,31 @@ export default function PlayLobby() {
                     {tg('train_ai')}
                   </span>
                 </button>
+              )}
+
+              {searchTimer >= 15 && chosenWager === 0 && (
+                notifySearchEnabled ? (
+                  <div className="w-full p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-500">
+                    <span className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest">
+                      <FaBell />
+                      Telegram alert enabled
+                    </span>
+                    <span className="block mt-1 text-[10px] font-bold opacity-70">
+                      We will keep searching for up to 30 minutes. You can leave this screen.
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={enableMatchNotifications}
+                    disabled={notifyRequestPending}
+                    className="w-full py-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50 text-cyan-500 text-xs font-black uppercase tracking-widest transition-all cursor-pointer disabled:cursor-wait"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <FaBell />
+                      {notifyRequestPending ? 'Enabling Telegram alert...' : 'Notify me when matched'}
+                    </span>
+                  </button>
+                )
               )}
 
               <button

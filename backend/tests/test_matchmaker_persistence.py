@@ -34,6 +34,7 @@ def _put(user_id: int, bid: int, tc: int, *, waited: float = 0.0, elo: int = 100
         'time_control': tc,
         'ip_hash': f"ip-{user_id}",
         'referrer_id': None,
+        'notify_when_matched': False,
     }
     MatchmakerService._memory_queues.setdefault((bid, tc), []).append(entry)
 
@@ -105,3 +106,17 @@ async def test_update_sid_refreshes_persisted_entry():
 async def test_find_user_entry_absent():
     mm = MatchmakerService()
     assert await mm.find_user_entry(999) is None
+
+
+async def test_notification_opt_in_persists_for_free_entry_only():
+    mm = MatchmakerService()
+    _put(111, 0, 300)
+    _put(222, 500, 300)
+
+    updated = await mm.set_notification_opt_in(111)
+    assert updated is not None
+    assert updated['entry']['notify_when_matched'] is True
+    assert (await mm.find_user_entry(111))['entry']['notify_when_matched'] is True
+
+    assert await mm.set_notification_opt_in(222) is None
+    assert (await mm.find_user_entry(222))['entry']['notify_when_matched'] is False

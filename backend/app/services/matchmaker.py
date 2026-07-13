@@ -240,7 +240,8 @@ class MatchmakerService:
                     'joined_at': time.time(),
                     'time_control': time_control,
                     'ip_hash': ip_hash,
-                    'referrer_id': referrer_id
+                    'referrer_id': referrer_id,
+                    'notify_when_matched': False,
                 }
 
                 queue_key_mem = (bid_amount, time_control)
@@ -542,6 +543,48 @@ class MatchmakerService:
                     if item.get('user_id') == user_id:
                         return {'bid_amount': bid, 'time_control': tc, 'entry': item}
         return None
+
+    async def set_notification_opt_in(self, user_id: int, enabled: bool = True) -> Optional[dict]:
+        """Persist notification preference for a free queue entry."""
+        lock_token = await self._acquire_distributed_lock("global")
+        async with self._lock:
+            try:
+                if MatchmakerService._use_memory or not self.redis:
+                    for (bid, tc), queue in MatchmakerService._memory_queues.items():
+                        if bid != 0:
+                            continue
+                        for item in queue:
+                            if item.get('user_id') == user_id:
+                                item['notify_when_matched'] = enabled
+                                return {'bid_amount': bid, 'time_control': tc, 'entry': item}
+                    return None
+
+                try:
+                    active_tcs = await self.redis.smembers("matchmaker:active_queues:0")
+                    for tc_str in active_tcs:
+                        try:
+                            tc = int(tc_str)
+                        except ValueError:
+                            continue
+                        queue_key = f"matchmaker:queue:0:{tc}"
+                        data = await self.redis.get(queue_key)
+                        if not data:
+                            continue
+                        queue = json.loads(data)
+                        for item in queue:
+                            if item.get('user_id') == user_id:
+                                item['notify_when_matched'] = enabled
+                                await self.redis.set(queue_key, json.dumps(queue))
+                                return {'bid_amount': 0, 'time_control': tc, 'entry': item}
+                except Exception as e:
+                    logger.warning(
+                        f"Redis set_notification_opt_in failed ({e}). Falling back to memory."
+                    )
+                    MatchmakerService._use_memory = True
+                return None
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
 
     async def remove_match_pair(self, bid_amount: int, player1_id: int, player2_id: int, time_control: int = 600) -> None:
         """
