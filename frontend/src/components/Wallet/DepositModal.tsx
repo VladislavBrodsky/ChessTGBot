@@ -9,6 +9,7 @@ import { apiFetch } from "@/lib/api";
 import Confetti from "react-confetti";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
+import { logTelemetryEvent } from "@/lib/telemetry";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
@@ -106,12 +107,49 @@ export default function DepositModal({
   const [showSwap, setShowSwap] = useState<boolean>(false);
   const [arrivalStatus, setArrivalStatus] = useState<'idle' | 'watching' | 'arrived' | 'timeout'>('idle');
   const arrivalBaselineRef = useRef<bigint | null>(null);
+  const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
   const [arrivedUsdt, setArrivedUsdt] = useState<number>(0);
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
   const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
 
   const tgId = tgUser?.id || stats?.telegram_id || 1029384;
   const memoComment = `ref_${tgId}`;
+
+  useEffect(() => {
+    logTelemetryEvent('deposit_modal_open', {
+      source: chosenWager !== undefined ? 'wager_top_up' : 'wallet',
+      chosen_wager: chosenWager,
+      wallet_balance: walletBalance,
+    });
+    // Opening the modal is a single lifecycle event. Subsequent prop changes
+    // should not create duplicate funnel entries.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const trackDepositInitiated = (method: string, amount: number) => {
+    funnelStateRef.current = 'initiated';
+    logTelemetryEvent('deposit_initiated', { method, amount_usd: amount });
+  };
+
+  const trackDepositCompleted = (method: string, creditedAmount: number) => {
+    funnelStateRef.current = 'completed';
+    logTelemetryEvent('deposit_completed', {
+      method,
+      credited_amount_cents: creditedAmount,
+    });
+  };
+
+  const closeDeposit = () => {
+    if (funnelStateRef.current === 'submitted') {
+      logTelemetryEvent('deposit_submitted_pending', { method: activeTab });
+    } else if (funnelStateRef.current !== 'completed') {
+      logTelemetryEvent('deposit_abandoned', {
+        stage: funnelStateRef.current,
+        method: activeTab,
+      });
+    }
+    onClose();
+  };
 
   // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
   useEffect(() => {
@@ -243,6 +281,7 @@ export default function DepositModal({
       return;
     }
 
+    trackDepositInitiated('onchain_wallet', amt);
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -311,6 +350,11 @@ export default function DepositModal({
           }
         ]
       });
+      funnelStateRef.current = 'submitted';
+      logTelemetryEvent('deposit_submitted', {
+        method: 'onchain_wallet',
+        amount_usd: amt,
+      });
 
       // Parse signed BOC and calculate hash
       const cell = Cell.fromBase64(result.boc);
@@ -332,6 +376,7 @@ export default function DepositModal({
 
       if (verifyRes.ok) {
         const data = await verifyRes.json();
+        trackDepositCompleted('onchain_wallet', data.credited_amount);
         setSuccessMessage(tw('deposit_success_sim', {
           amount: `$${amt.toFixed(2)}`,
           credited: `$${(data.credited_amount / 100).toFixed(2)}`
@@ -339,7 +384,7 @@ export default function DepositModal({
         onSuccess();
         telegramHaptic('success');
         setTimeout(() => {
-          onClose();
+          closeDeposit();
           setSuccessMessage("");
         }, 3000);
       } else {
@@ -351,7 +396,7 @@ export default function DepositModal({
         setErrorMessage("");
         setSuccessMessage("Deposit sent! ✅ It will be credited automatically within a couple of minutes — you can safely close this window.");
         telegramHaptic('success');
-        setTimeout(() => { onClose(); setSuccessMessage(""); }, 6000);
+        setTimeout(() => { closeDeposit(); setSuccessMessage(""); }, 6000);
       }
 
     } catch (err: any) {
@@ -370,6 +415,12 @@ export default function DepositModal({
 
   const handleManualVerify = async () => {
     if (!manualTxHash.trim()) return;
+    trackDepositInitiated('manual_transfer', parseFloat(depositAmount) || 0);
+    funnelStateRef.current = 'submitted';
+    logTelemetryEvent('deposit_submitted', {
+      method: 'manual_transfer',
+      amount_usd: parseFloat(depositAmount) || 0,
+    });
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -389,12 +440,13 @@ export default function DepositModal({
 
       if (verifyRes.ok) {
         const data = await verifyRes.json();
+        trackDepositCompleted('manual_transfer', data.credited_amount);
         setSuccessMessage(`Top-Up Confirmed! +$${(data.credited_amount / 100).toFixed(2)} USDT credited.`);
         onSuccess();
         telegramHaptic('success');
         setManualTxHash("");
         setTimeout(() => {
-          onClose();
+          closeDeposit();
           setSuccessMessage("");
         }, 3000);
       } else {
@@ -429,6 +481,7 @@ export default function DepositModal({
       if (res.ok) {
         const data = await res.json();
         if (data.status === "completed") {
+          trackDepositCompleted('stripe', data.credited_amount);
           setVerificationSuccess(true);
           setSuccessMessage(`Top-Up of $${(data.credited_amount / 100).toFixed(2)} completed!`);
           setShowConfetti(true);
@@ -449,6 +502,7 @@ export default function DepositModal({
             if (retryRes.ok) {
               const retryData = await retryRes.json();
               if (retryData.status === "completed") {
+                trackDepositCompleted('stripe', retryData.credited_amount);
                 setVerificationSuccess(true);
                 setSuccessMessage(`Top-Up of $${(retryData.credited_amount / 100).toFixed(2)} completed!`);
                 setShowConfetti(true);
@@ -498,6 +552,7 @@ export default function DepositModal({
       setErrorMessage("Minimum deposit amount is $1.00 USD");
       return;
     }
+    trackDepositInitiated('stripe', amt);
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -514,6 +569,12 @@ export default function DepositModal({
         throw new Error(errData.detail || "Failed to create checkout session.");
       }
       const data = await res.json();
+      funnelStateRef.current = 'submitted';
+      logTelemetryEvent('deposit_submitted', {
+        method: 'stripe',
+        amount_usd: amt,
+        session_id: data.session_id,
+      });
       
       // Redirect using Telegram WebApp openLink if available
       if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
@@ -557,7 +618,7 @@ export default function DepositModal({
             <div className="text-2xl font-black text-emerald-400 mt-1">${(walletBalance ? walletBalance / 100 : 0).toFixed(2)} USDT</div>
           </div>
           <button
-            onClick={() => { setVerificationSuccess(false); setSuccessMessage(""); onClose(); }}
+            onClick={() => { setVerificationSuccess(false); setSuccessMessage(""); closeDeposit(); }}
             className="w-full py-3 rounded-xl bg-brand-gold text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
           >
             Acknowledge & Close
@@ -574,7 +635,7 @@ export default function DepositModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={() => { if (!processing && canClose) onClose(); }}
+        onClick={() => { if (!processing && canClose) closeDeposit(); }}
         className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
       />
 
@@ -587,7 +648,7 @@ export default function DepositModal({
       >
         <div className="bottom-drawer-handle" />
         <button
-          onClick={onClose}
+          onClick={closeDeposit}
           disabled={processing}
           className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary cursor-pointer"
         >
@@ -868,6 +929,10 @@ export default function DepositModal({
                         copyToClipboard(masterWallet).then((ok) => {
                           if (!ok) return;
                           setCopiedWallet(true);
+                          logTelemetryEvent('deposit_address_copied', {
+                            field: 'master_wallet',
+                            method: 'manual_transfer',
+                          });
                           telegramHaptic('light');
                           setTimeout(() => setCopiedWallet(false), 2000);
                         });
@@ -896,6 +961,10 @@ export default function DepositModal({
                           if (!ok) return;
                           setCopiedMemo(true);
                           setMemoConfirmed(true);
+                          logTelemetryEvent('deposit_address_copied', {
+                            field: 'memo',
+                            method: 'manual_transfer',
+                          });
                           telegramHaptic('medium');
                           setTimeout(() => setCopiedMemo(false), 2500);
                         });
@@ -1047,7 +1116,7 @@ export default function DepositModal({
             
             {chosenWager !== undefined && (
               <button
-                onClick={onClose}
+                onClick={closeDeposit}
                 disabled={processing}
                 className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-primary/70 text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
               >

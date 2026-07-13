@@ -11,6 +11,7 @@ import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { logTelemetryEvent } from '@/lib/telemetry';
 
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
@@ -20,7 +21,6 @@ import DepositModal from '../Wallet/DepositModal';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { useUser } from '@/context/UserContext';
-import { useNavbarHide } from '@/context/NavbarContext';
 import { useAudio } from '@/hooks/useAudio';
 
 export default function PlayLobby() {
@@ -33,7 +33,6 @@ export default function PlayLobby() {
 
   const [tgUser, setTgUser] = useState<any>(null);
   const { stats, walletBalance, syncBalance, balanceError } = useUser();
-  const { hideNavbar, showNavbar } = useNavbarHide();
   const { play: playAudio } = useAudio();
 
   // Matchmaking configs
@@ -58,6 +57,7 @@ export default function PlayLobby() {
   const wagerScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef<boolean>(false);
+  const aiFallbackOfferedRef = useRef<boolean>(false);
 
   const scrollToWager = () => {
     telegramHaptic('light');
@@ -154,7 +154,7 @@ export default function PlayLobby() {
       const elapsedMs = Math.max(0, now - startEpoch);
       const sixHoursMs = 6 * 60 * 60 * 1000;
       const intervals = Math.floor(elapsedMs / sixHoursMs);
-      
+
       let totalIncrement = 0;
       for (let i = 0; i < intervals; i++) {
         const seed = (i + 7) * 12345;
@@ -281,21 +281,28 @@ export default function PlayLobby() {
     } else {
       setSearchTimer(0);
       setContendersCount(5);
+      aiFallbackOfferedRef.current = false;
     }
     return () => clearInterval(interval);
   }, [matchmakingState]);
 
-  // Hide bottom navigation bar (Navbar) when searching for an opponent
   useEffect(() => {
-    if (matchmakingState === 'searching') {
-      hideNavbar();
-    } else {
-      showNavbar();
+    if (
+      matchmakingState === 'searching' &&
+      searchTimer >= 15 &&
+      !aiFallbackOfferedRef.current
+    ) {
+      const wagerInCents = isCustomWager
+        ? Math.round(parseFloat(customWagerInput) * 100)
+        : selectedWager;
+      aiFallbackOfferedRef.current = true;
+      logTelemetryEvent('queue_ai_fallback_offered', {
+        bid_amount: wagerInCents,
+        time_control: timeControl,
+        duration_waited: searchTimer,
+      });
     }
-    return () => {
-      showNavbar();
-    };
-  }, [matchmakingState, hideNavbar, showNavbar]);
+  }, [matchmakingState, searchTimer, isCustomWager, customWagerInput, selectedWager, timeControl]);
 
   // Manage Telegram WebApp BackButton visibility during active search
   useEffect(() => {
@@ -400,6 +407,23 @@ export default function PlayLobby() {
     submittingRef.current = false;
   };
 
+  const switchSearchToAi = () => {
+    const wagerInCents = isCustomWager
+      ? Math.round(parseFloat(customWagerInput) * 100)
+      : selectedWager;
+    logTelemetryEvent('queue_ai_fallback_accepted', {
+      bid_amount: wagerInCents,
+      time_control: timeControl,
+      duration_waited: searchTimer,
+    });
+    const socket = getSocket();
+    socket.emit('leave_matchmaking', {});
+    setMatchmakingState('idle');
+    submittingRef.current = false;
+    telegramHaptic('light');
+    setShowAiDifficultyDrawer(true);
+  };
+
   const triggerPlayVsComputer = () => {
     if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
     telegramHaptic('light');
@@ -474,7 +498,7 @@ export default function PlayLobby() {
             <FaChessKnight className="text-xl opacity-80" />
             <span>{tg('battle_arena')}</span>
           </div>
-          
+
           {/* Sleek 2026-style Metadata Stats */}
           <div className="flex items-center gap-3 text-[10px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
             <div className="flex items-center gap-1">
@@ -624,6 +648,18 @@ export default function PlayLobby() {
                   ${(chosenWager / 100).toFixed(2)} USDT
                 </span>
               </div>
+
+              {searchTimer >= 15 && (
+                <button
+                  onClick={switchSearchToAi}
+                  className="w-full py-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <FaRobot />
+                    {tg('train_ai')}
+                  </span>
+                </button>
+              )}
 
               <button
                 onClick={cancelMatchmaking}
