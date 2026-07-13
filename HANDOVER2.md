@@ -125,7 +125,12 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    > labeled AI game after 15 seconds, records offered/accepted telemetry, keeps
    > navigation available during the search, and relies on the existing
    > `leave_matchmaking` refund path before opening AI difficulty selection.
-   > Real queue size remains to add. The existing simulated engagement counts,
+   > Free searches now also offer an explicit Telegram "notify me" option after
+   > 15 seconds. Opt-in persists in the shared queue for up to 30 minutes,
+   > survives leaving/reopening the lobby, and records `queue_notify_opt_in`;
+   > Cancel and AI fallback still remove the entry, and wagered searches are
+   > excluded. Real queue size remains to add. The existing simulated engagement
+   > counts,
    > wait estimate, opponent ELO, and referral-payout feed remain enabled at the
    > owner's request (restored 2026-07-13).
 3. **Gate referral rewards on activation, not signup** — pay when the referred
@@ -161,9 +166,10 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    webhook and redirect verification; add a pending-deposit reconciliation
    sweeper; alert TREASURY when a deposit remains pending past the chosen SLA.
    Never credit from unverified redirect parameters alone.
-3. **Finish matchmaking recovery.** Add a real queue-size signal and a
-   "notify me" option. Measure `queue_ai_fallback_offered` → `accepted` alongside
-   matched/abandon/timeout rates to determine whether the 15-second offer is at
+3. **Finish matchmaking recovery.** Add a real queue-size signal. The free-search
+   "notify me" option is implemented; measure `queue_notify_opt_in`,
+   `queue_ai_fallback_offered` to `accepted`, and matched/abandon/timeout rates
+   to determine whether the 15-second offer is at
    the right point. The simulated lobby counters and referral-payout feed remain
    enabled by owner request and must not be treated as analytics.
 4. **Re-run the engagement report after at least 48 hours of the corrected
