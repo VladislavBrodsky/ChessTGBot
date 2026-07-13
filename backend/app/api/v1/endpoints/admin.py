@@ -168,6 +168,15 @@ async def get_stats(
     # ── Referrals ────────────────────────────────────────────────────────────
     total_refs_res = await db.execute(select(func.count(Referral.id)))
     total_referrals: int = total_refs_res.scalar_one() or 0
+    activated_refs_res = await db.execute(
+        select(func.count(Referral.id)).where(Referral.activated_at.is_not(None))
+    )
+    activated_referrals: int = activated_refs_res.scalar_one() or 0
+    referral_activation_rate = (
+        round(activated_referrals / total_referrals * 100, 1)
+        if total_referrals
+        else 0.0
+    )
 
     # Level breakdown — count unique referrers at depth 1,2,3 (simple proxy)
     # Level 1 = direct refs, level 2 = refs of refs, etc.
@@ -245,6 +254,8 @@ async def get_stats(
         "platform_rake_cents": platform_rake,
         "net_revenue_cents": net_revenue,
         "total_referrals": total_referrals,
+        "activated_referrals": activated_referrals,
+        "referral_activation_rate": referral_activation_rate,
         "referral_levels": {"level_1": level_1},
         "daily_activity": daily_signups,
         "daily_revenue": daily_revenue,

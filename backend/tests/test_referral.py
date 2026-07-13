@@ -5,7 +5,9 @@ from sqlalchemy import select
 
 from app.models.user import User
 from app.models.gamification import Referral
+from app.models.telemetry import TelemetryLog
 from app.services.gamification_service import GamificationService
+from app.api.v1.endpoints.users import get_referral_stats
 from app.core.config import get_settings
 
 async def _add_qualifying_games(db, telegram_id: int, n: int = 3, moves: int = 30):
@@ -90,6 +92,26 @@ async def test_process_referral_success(db_session: AsyncSession):
     await db_session.refresh(referred)
     assert referrer.xp == 200   # 100 (initial) + 50 (referral_invite) + 50 (milestone_ref_1)
     assert referred.xp == 20    # 0 + 20 (referral_signup)
+
+    await db_session.flush()
+    await db_session.refresh(ref_record)
+    assert ref_record.activated_at is not None
+
+    activation_event = (
+        await db_session.execute(
+            select(TelemetryLog).where(
+                TelemetryLog.user_id == referred.telegram_id,
+                TelemetryLog.event_type == "referral_activated",
+            )
+        )
+    ).scalars().one()
+    assert activation_event.event_data["referrer_user_id"] == referrer.id
+    assert activation_event.event_data["qualifying_games"] >= 3
+
+    referral_stats = await get_referral_stats(db=db_session, current_user=referrer)
+    assert referral_stats.total_referrals == 1
+    assert referral_stats.activated_referrals == 1
+    assert referral_stats.activation_rate == 100.0
 
 
 @pytest.mark.asyncio

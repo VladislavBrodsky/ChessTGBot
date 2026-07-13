@@ -83,6 +83,7 @@ async def test_admin_stats_returns_expected_keys(
     expected_keys = [
         "total_users", "premium_users", "active_24h", "active_7d", "active_30d",
         "total_games", "net_revenue_cents", "total_referrals",
+        "activated_referrals", "referral_activation_rate",
         "daily_activity", "daily_revenue",
     ]
     for key in expected_keys:
