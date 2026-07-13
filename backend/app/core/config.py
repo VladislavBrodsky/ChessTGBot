@@ -83,8 +83,8 @@ class Settings(BaseSettings):
 
     # Deployment
     # This URL should be the production URL of your app
-    WEBAPP_URL: str = "https://chesstgbot-production.up.railway.app"
-    BACKEND_URL: str = ""
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://web3chess.online")
+    BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments
     STRIPE_SECRET_KEY: str | None = os.getenv("STRIPE_SECRET_KEY")
