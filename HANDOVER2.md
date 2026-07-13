@@ -79,6 +79,42 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    `deposit/verify`). Why does nothing reach `completed`? Then the Transak
    direct-credit unblock (HANDOVER.md B3) removes the second on-chain hop that
    likely kills conversion.
+
+   > **INVESTIGATED 2026-07-12 (code trace; not yet resolved).** Key findings:
+   > - The 2 `pending` rows are **Stripe card sessions, not on-chain** — the
+   >   original on-chain framing was wrong. `Transaction.status` defaults to
+   >   `"completed"`, and the ONLY path that writes a `pending` deposit is
+   >   `stripe_create_session` (`wallet.py`). Every on-chain path
+   >   (`/deposit/verify`, `deposit_crawler`, TON push `/webhook`) writes
+   >   `completed` directly, so an on-chain deposit can never be `pending`.
+   > - **Stripe deposits are credited ONLY by the webhook** (`/stripe/webhook`).
+   >   The redirect handler `/stripe/verify-session` and the frontend
+   >   `DepositModal` poll are **read-only** (they just return `tx.status`) — no
+   >   credit-on-redirect fallback, and there is **no reconciliation sweeper** for
+   >   pending deposits (withdrawals have one). So any webhook miss = card charged,
+   >   user never credited, silently, forever.
+   > - The prod webhook secret **is** set (prod `POST /stripe/webhook` returns
+   >   400, not 501). Prime suspect: `WEBAPP_URL` defaults to the **dead monolith**
+   >   `chesstgbot-production.up.railway.app` (returns 404), and Stripe
+   >   success/cancel URLs are built from it (`wallet.py`); the Stripe Dashboard
+   >   webhook may point at that same dead host → deliveries fail → tx stuck.
+   > - **On-chain "0 completed" is a demand problem, not a bug** — `USDT_MASTER`
+   >   is the official Tether jetton and the path is sound; consistent with the
+   >   $13.97 total balance.
+   >
+   > **NEXT (needs owner — I can't see the Stripe Dashboard / prod env):**
+   > (a) Stripe Dashboard → Webhooks: is the endpoint the LIVE backend
+   > `…backend-production…/api/v1/wallet/stripe/webhook`? Any failed deliveries?
+   > (b) Were the 2 sessions actually **paid** (money stranded) or abandoned
+   > (harmless)? (c) Is `WEBAPP_URL` overridden to the live frontend in the backend
+   > service env?
+   >
+   > **CODE FIXES to apply (money-critical — get owner sign-off first):**
+   > A. credit-on-redirect fallback (`Session.retrieve` → credit idempotently with
+   > the webhook's lock+dedup); B. pending-deposit reconciliation sweeper
+   > (mirror the withdrawal sweeper); C. treasury alert on any deposit `pending`
+   > > N min; E. Transak webhook endpoint for B3 (blocked on owner dashboard
+   > secret + prod API key).
 2. **AI-fallback in the matchmaking queue** — after N seconds unmatched, offer a
    labeled bot game so the 81% who currently leave empty-handed get *a* game.
    Also widen the ELO window as wait grows; show real queue size + "notify me
