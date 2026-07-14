@@ -268,6 +268,8 @@ export default function PuzzleBoard({
           orientation={orientation}
           customSquareStyles={customSquareStyles}
           customArrows={finalArrows.length > 0 ? finalArrows : undefined}
+          customDarkSquareStyle={{ backgroundColor: '#7b9fb6' }}
+          customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
         />
       </div>
 

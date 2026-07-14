@@ -157,6 +157,74 @@ const ENDGAME_LESSON_STEPS: LessonStep[] = [
  }
 ];
 
+const POSITIONAL_LESSON_STEPS: LessonStep[] = [
+  {
+    id: '1',
+    type: 'text',
+    title: 'The Invisible Board',
+    content: '<div class="space-y-6"><p class="text-lg">Positional chess is the art of improving your pieces and creating weaknesses in your opponent\'s camp without relying on immediate tactics.</p><div class="p-5 bg-blue-500/10 rounded-2xl border border-blue-500/20 shadow-sm"><span class="block text-blue-500 font-black mb-2 uppercase tracking-widest text-[10px]">Core Concept</span><p class="text-sm opacity-80">Look for <strong>Outposts</strong>, control <strong>Open Files</strong>, and maintain a healthy <strong>Pawn Structure</strong>.</p></div></div>',
+    fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1'
+  },
+  {
+    id: '2',
+    type: 'interactive_board',
+    title: 'The Knight Outpost',
+    content: 'An outpost is a square protected by a pawn that cannot be attacked by enemy pawns. Plant your Knight on the ultimate d5 outpost!',
+    fen: 'r1bq1rk1/pp2bppp/2n2n2/3p4/8/2N2N2/PPP1BPPP/R1BQ1RK1 w - - 0 1',
+    solution: ['c3d5', 'f3d4', 'c3a4'],
+    hintText: 'Move your c3 Knight into the center of the board to a dominant square.',
+    successExplanation: 'Great! Moving a Knight into the center, supported by your structure, creates immense pressure that is very difficult to dislodge.',
+    highlightSquares: ['d5'],
+    arrows: [['c3', 'd5']]
+  },
+  {
+    id: '3',
+    type: 'interactive_board',
+    title: 'Controlling the Open File',
+    content: 'Rooks belong on open files (files with no pawns). Seize the c-file with your Rook!',
+    fen: '3r2k1/p4ppp/1p2pn2/8/8/1P2PN2/P4PPP/2R3K1 w - - 0 1',
+    solution: ['c1c7'],
+    hintText: 'Move your c1 Rook up the open c-file to invade the 7th rank.',
+    successExplanation: 'Perfect! Placing a Rook on the 7th rank (the "pig on the 7th") paralyzes the opponent and attacks their pawns sideways.',
+    highlightSquares: ['c7'],
+    arrows: [['c1', 'c7']]
+  }
+];
+
+const GM_LESSON_STEPS: LessonStep[] = [
+  {
+    id: '1',
+    type: 'text',
+    title: 'The Art of Sacrifice',
+    content: '<div class="space-y-6"><p class="text-lg">At the Grandmaster level, material is less important than initiative and mating attacks. Sometimes you must give to receive.</p><div class="p-5 bg-amber-500/10 rounded-2xl border border-amber-500/20 shadow-sm"><span class="block text-amber-500 font-black mb-2 uppercase tracking-widest text-[10px]">Calculated Risk</span><p class="text-sm opacity-80">A sacrifice is only sound if it forcibly leads to a decisive advantage, a mate, or a draw in a lost position.</p></div></div>',
+    fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1'
+  },
+  {
+    id: '2',
+    type: 'interactive_board',
+    title: 'The Greek Gift Sacrifice',
+    content: 'One of the most famous attacking motifs. Sacrifice your light-squared Bishop on h7 to rip open the Black King\'s defense!',
+    fen: 'r1bq1rk1/ppp1nppp/2n1p3/3p4/1b1P4/2NBPN2/PPPB1PPP/R2Q1RK1 w - - 0 1',
+    solution: ['d3h7'],
+    hintText: 'Capture the pawn on h7 with your Bishop. It is a sacrifice!',
+    successExplanation: 'Boom! Bxh7+ destroys the pawn shield. The King must take or run, leading to a devastating attack involving Ng5+ and Qh5.',
+    highlightSquares: ['h7'],
+    arrows: [['d3', 'h7']]
+  },
+  {
+    id: '3',
+    type: 'interactive_board',
+    title: 'The Queen Sacrifice',
+    content: 'The ultimate sacrifice. Give up your Queen to deliver a stunning smothered mate with your Knight!',
+    fen: 'r1b2r1k/pp4pp/1q1b4/5p2/2Q1n3/1BP5/P4PPP/R1B2RK1 w - - 0 1',
+    solution: ['c4g8'],
+    hintText: 'Move your Queen to g8, right next to the Black King. It looks crazy, but it forces the Rook to take!',
+    successExplanation: 'Incredible! Qg8+ forces Rxg8. Then your Knight jumps in with Nf7# (Smothered Mate). The Grandmaster finishing blow!',
+    highlightSquares: ['g8'],
+    arrows: [['c4', 'g8']]
+  }
+];
+
 interface LessonClientProps {
  lessonId: string;
 }
@@ -196,8 +264,20 @@ interface LessonClientProps {
  case 'endgame-basics':
  return {
  title: "Endgame Basics",
- track: "Beginner Track",
+ track: "Advanced Track",
  steps: ENDGAME_LESSON_STEPS
+ };
+ case 'positional-understanding':
+ return {
+ title: "Positional Understanding",
+ track: "Master Track",
+ steps: POSITIONAL_LESSON_STEPS
+ };
+ case 'grandmaster-sacrifices':
+ return {
+ title: "Grandmaster Sacrifices",
+ track: "Grandmaster Track",
+ steps: GM_LESSON_STEPS
  };
  case 'opening-principles':
  default:

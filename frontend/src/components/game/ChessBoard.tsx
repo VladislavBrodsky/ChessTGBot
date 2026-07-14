@@ -319,7 +319,8 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 overflow: "hidden",
                             },
                             arrows: customArrows as any,
-                            animationDurationInMs: 250,
+                            customDarkSquareStyle: { backgroundColor: '#7b9fb6' },
+                            customLightSquareStyle: { backgroundColor: '#ebecd0' },
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {
                                 const styles: { [square: string]: any } = { ...customSquareStyles };
