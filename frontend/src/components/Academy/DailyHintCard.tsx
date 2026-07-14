@@ -1,30 +1,57 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaLightbulb, FaCheckCircle, FaStar } from "react-icons/fa";
-
-const DAILY_HINTS = [
-  "Knights on the rim are dim. Keep them centralized!",
-  "Control the center: e4, d4, e5, d5 are the most critical squares.",
-  "Develop all your pieces before launching an attack.",
-  "Don't move your Queen too early in the opening.",
-  "Always look for checks, captures, and threats."
-];
+import { DAILY_HINTS } from "@/data/hints";
 
 export default function DailyHintCard() {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [hint] = useState(() => DAILY_HINTS[Math.floor(Math.random() * DAILY_HINTS.length)]);
+  const [isVisible, setIsVisible] = useState(true);
+  const [hint, setHint] = useState("");
+
+  useEffect(() => {
+    const lastView = localStorage.getItem("lastHintViewTime");
+    if (lastView) {
+      const timeSinceLastView = Date.now() - parseInt(lastView, 10);
+      if (timeSinceLastView < 24 * 60 * 60 * 1000) {
+        setIsVisible(false);
+        return; // Don't even set the hint if we're not showing it
+      }
+    }
+
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const diff = (new Date().getTime() - start.getTime()) + ((start.getTimezoneOffset() - new Date().getTimezoneOffset()) * 60 * 1000);
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    
+    setHint(DAILY_HINTS[dayOfYear % DAILY_HINTS.length]);
+  }, []);
+
+  const handleFlip = () => {
+    if (!isFlipped) {
+      setIsFlipped(true);
+      localStorage.setItem("lastHintViewTime", Date.now().toString());
+    } else {
+      setIsFlipped(false);
+    }
+  };
+
+  if (!isVisible || !hint) return null;
 
   return (
-    <div className="w-full perspective-1000 mb-6 cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
+    <div className="w-full perspective-[1000px] mb-6 cursor-pointer group" onClick={handleFlip}>
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 150, damping: 20 }}
-        className="w-full relative h-32 transform-style-3d shadow-premium rounded-2xl"
+        className="w-full relative h-32 shadow-premium rounded-2xl"
+        style={{ transformStyle: 'preserve-3d' }}
       >
         {/* FRONT - Ultra Premium */}
-        <div className="absolute inset-0 backface-hidden bg-[var(--cyber-card-bg)] border border-brand-border-opacity-10 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-inner-glow transition-all duration-500 group-hover:border-emerald-500/30">
+        <div 
+          className="absolute inset-0 bg-[var(--cyber-card-bg)] border border-brand-border-opacity-10 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-inner-glow transition-all duration-500 group-hover:border-emerald-500/30"
+          style={{ backfaceVisibility: 'hidden' }}
+        >
           
           {/* Animated Background Gradients */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all duration-700 group-hover:bg-emerald-500/20" />
@@ -57,8 +84,8 @@ export default function DailyHintCard() {
 
         {/* BACK - Ultra Premium Reward State */}
         <div 
-          className="absolute inset-0 backface-hidden bg-[var(--cyber-card-bg)] border border-brand-gold/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow"
-          style={{ transform: "rotateY(180deg)" }}
+          className="absolute inset-0 bg-[var(--cyber-card-bg)] border border-brand-gold/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow"
+          style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden' }}
         >
           {/* Golden Glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
