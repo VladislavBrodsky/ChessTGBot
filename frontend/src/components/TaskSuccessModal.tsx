@@ -74,7 +74,7 @@ export default function TaskSuccessModal() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="relative w-full max-w-[300px] bg-gradient-to-b from-[#1C1917]/95 to-[#0C0A09]/98 border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-[0_24px_60px_rgba(245,158,11,0.2)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.8)] backdrop-blur-xl flex flex-col items-center overflow-hidden"
+              className="relative w-full max-w-[300px] bg-gradient-to-b from-brand-surface/95 to-brand-bg/98 border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-premium backdrop-blur-xl flex flex-col items-center overflow-hidden"
             >
               {/* Gold Top Light Highlight */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
@@ -100,7 +100,7 @@ export default function TaskSuccessModal() {
                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
                   Mission Completed
                 </h2>
-                <h3 className="text-sm font-black text-white uppercase tracking-wide px-2 mt-1 line-clamp-2">
+                <h3 className="text-sm font-black text-brand-primary uppercase tracking-wide px-2 mt-1 line-clamp-2">
                   {success.title}
                 </h3>
               </div>
@@ -111,7 +111,7 @@ export default function TaskSuccessModal() {
                 <span className="text-[10px] font-black text-amber-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
                 <div className="flex items-center gap-1.5 z-10">
                   <FaCoins className="text-amber-400 text-base" />
-                  <span className="text-2xl font-black text-white tracking-tight leading-none">
+                  <span className="text-2xl font-black text-brand-primary tracking-tight leading-none">
                     +{success.xpReward} XP
                   </span>
                 </div>
@@ -123,7 +123,7 @@ export default function TaskSuccessModal() {
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-black text-[11px] font-black uppercase tracking-widest shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
               >
                 {/* Continuous visual shimmer */}
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] -translate-x-full animate-shimmer" />
                 AWESOME!
               </button>
             </motion.div>

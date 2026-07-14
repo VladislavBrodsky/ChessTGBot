@@ -493,7 +493,7 @@ export default function AcademyPage() {
               className="w-full shadow-neon relative overflow-hidden"
               leftIcon={<FaPlay className="text-[10px]" />}
             >
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-20),transparent)] -translate-x-full animate-shimmer" />
               <span className="relative z-10">
                 {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
               </span>
@@ -563,7 +563,7 @@ export default function AcademyPage() {
                     bgClass = [
                       "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
                       "text-slate-900 font-black z-10 scale-110",
-                      "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_rgba(255,255,255,0.3)]",
+                      "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_var(--color-brand-border-opacity-20)]",
                       "animate-active-portal",
                     ].join(" ");
                   } else {
@@ -763,7 +763,7 @@ export default function AcademyPage() {
             onClick={handleUpgradeWithBalance}
             className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 border border-yellow-400/30 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-full animate-shimmer" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-20),transparent)] -translate-x-full animate-shimmer" />
             <span className="text-xs uppercase font-black tracking-[0.2em]">{t('buy_premium')}</span>
             <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
           </motion.button>
@@ -839,7 +839,7 @@ export default function AcademyPage() {
               </div>
 
               {/* Mini Board Preview */}
-              <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-border-opacity-10 pointer-events-none opacity-80">
+              <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-inner-glow border border-brand-border-opacity-10 pointer-events-none opacity-80">
                 <Chessboard options={{ position: band.fen, allowDragging: false, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} />
               </div>
 
@@ -899,7 +899,7 @@ export default function AcademyPage() {
                     onClick={() => { setSelectedLevel(null); router.push(`/${locale}/academy/puzzle?id=${id}`); }}
                     className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] shadow-neon relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" />
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-10),transparent)] -translate-x-full animate-shimmer" />
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <FaPlay className="text-[10px]" />
                       {isCompleted ? 'Replay Level' : 'Start Level'}

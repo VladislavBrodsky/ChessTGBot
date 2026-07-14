@@ -41,7 +41,7 @@ export default function IncomingRematchDrawer({
         animate={{ opacity: 1, scale: 1, y: 0 }} 
         exit={{ opacity: 0, scale: 0.9, y: 15 }} 
         transition={{ type: "spring", damping: 25, stiffness: 380 }}
-        className="relative w-full max-w-[290px] bg-[#FFFFFF]/95 dark:bg-[#0A0A0A]/90 border border-zinc-200/50 dark:border-zinc-800/40 rounded-3xl p-5 shadow-[0_24px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl flex flex-col items-center text-center space-y-4"
+        className="relative w-full max-w-[290px] bg-brand-surface/95 border border-brand-border-opacity-10 rounded-3xl p-5 shadow-premium backdrop-blur-xl flex flex-col items-center text-center space-y-4"
       >
         {/* Brand/Chess icon badge */}
         <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
@@ -53,18 +53,18 @@ export default function IncomingRematchDrawer({
           <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
             {tg('rematch_dialog_title')}
           </h3>
-          <p className="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed px-1">
+          <p className="text-[12px] font-bold text-brand-primary leading-relaxed px-1">
             {tg('challenger_offered_rematch', { name: incomingRematch.challenger_name })}
           </p>
         </div>
 
         {/* Proposed Wager & Settings Detail Box */}
-        <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl py-3.5 px-4 border border-zinc-200/50 dark:border-zinc-800/50 text-center shadow-inner-glow space-y-3">
+        <div className="w-full bg-brand-bg-opacity-5 rounded-2xl py-3.5 px-4 border border-brand-border-opacity-10 text-center shadow-inner-glow space-y-3">
           <div>
-            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block mb-0.5">
+            <span className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest block mb-0.5">
               {tg('proposed_wager')}
             </span>
-            <span className="text-lg font-black text-zinc-800 dark:text-zinc-200">
+            <span className="text-lg font-black text-brand-primary">
               ${((incomingRematch.wager) / 100).toFixed(2)} USDT
             </span>
             {incomingRematch.double_stakes && (
@@ -73,12 +73,12 @@ export default function IncomingRematchDrawer({
               </span>
             )}
           </div>
-          <div className="border-t border-zinc-200/40 dark:border-zinc-800/40 pt-2.5 flex items-center justify-between px-2">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+          <div className="border-t border-brand-border-opacity-10 pt-2.5 flex items-center justify-between px-2">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest">
               <FaRegClock className="text-[10px]" />
               <span>Time Control</span>
             </div>
-            <span className="text-[11px] font-black text-zinc-800 dark:text-zinc-200">
+            <span className="text-[11px] font-black text-brand-primary">
               {Math.round(timeControl / 60)} min
             </span>
           </div>

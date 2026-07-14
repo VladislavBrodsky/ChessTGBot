@@ -229,11 +229,7 @@ export default function WalletSelectorModal({
 
                   <button
                     onClick={copyAddress}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all cursor-pointer"
-                    style={{
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                    }}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all cursor-pointer bg-brand-bg-opacity-5 border border-brand-border-opacity-10"
                   >
                     {copied ? (
                       <FaCheck size={11} style={{ color: "#00C49A" }} />
@@ -280,10 +276,10 @@ export default function WalletSelectorModal({
                   style={{
                     background: w.featured
                       ? `linear-gradient(135deg, ${w.color}14, ${w.color}05)`
-                      : "rgba(255,255,255,0.025)",
+                      : "var(--color-brand-bg-opacity-5)",
                     border: w.featured
                       ? `1px solid ${w.color}30`
-                      : "1px solid rgba(255,255,255,0.06)",
+                      : "1px solid var(--color-brand-border-opacity-10)",
                     boxShadow: w.featured
                       ? `0 4px 24px ${w.color}10`
                       : "none",
