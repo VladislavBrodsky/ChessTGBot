@@ -1,11 +1,11 @@
 # ChessTGBot — Session Handover (updated 2026-07-14)
 
-Handover for a fresh session. Contains **only what is still left to do** — the
-original audit's A-group (Sybil, puzzle leak, Redis fail-fast, withdrawal 2FA),
+Handover for a fresh session. Contains the remaining work plus the historical
+production-engagement baseline formerly kept in `HANDOVER2.md`. The original
+audit's A-group (Sybil, puzzle leak, Redis fail-fast, withdrawal 2FA),
 B-group (swap, gas grants, arrival detection), D-group (RTL, i18n, a11y,
 typography, animations), E3 (modal portals), the notification-system overhaul,
-and all of this week's production crash fixes are DONE and pushed to `main`
-(HEAD at time of writing: `6304472d7`).
+and all of this week's production crash fixes are DONE and pushed to `main`.
 
 **Project:** Telegram Mini App chess with real-money USDT wagering. Next.js
 frontend + FastAPI/Socket.IO backend, Postgres + Redis, TON chain for
@@ -21,14 +21,13 @@ frontend build doubles as the typecheck.
 
 > **This session:** shipped the region-targeted Daily Arena overhaul and the
 > Academy puzzle-instruction fixes (both merged to `main`, see below). The
-> reduce-motion preference is implemented; the game-only display name/avatar
-> remains — see §1.
+> reduce-motion preference is implemented.
 >
-> **Cross-chain branch:** `feat/cross-chain-deposits` now uses a self-custodial
+> **Cross-chain deposits:** `main` now uses a self-custodial
 > BTC/ETH → user TON wallet → verified USDT deposit flow. The earlier Changelly
 > API/order implementation was removed. The owner accepted activation without
 > funded mainnet canaries; the UI now defaults ON and retains an explicit
-> build-time emergency kill switch. It has not been merged to `main` or deployed.
+> build-time emergency kill switch.
 
 ---
 
@@ -66,34 +65,6 @@ frontend build doubles as the typecheck.
 
 ## 1. Code work remaining
 
-### Privacy — game-only display name + avatar (from user feedback; larger)
-Same user asked to "change username and profile pic just for the game and
-referrals." Identity is currently pulled straight from Telegram
-(`first_name`/`username`/`photo_url`) and shown in games, the leaderboard, arena
-standings, and referral notifications. Add optional override fields on `User`
-(+ migration), a Settings UI, and update every render site. **Needs a
-moderation story** (impersonation + offensive names) and MUST keep the
-`html.escape()` discipline for any name entering a `parse_mode="HTML"` message
-(see §4 / CLAUDE.md — a raw `<` crashed `/start` for weeks). Scope as its own
-feature.
-
-### C2 — Remove fabricated data (recommended next; owner has deferred twice)
-Real-money app showing invented numbers = trust + regulatory liability.
-- `frontend/src/components/game/PlayLobby.tsx:130` — `activeUsers` seeded at
-  `3768` and drifted with `Math.random()` every few seconds (~line 268);
-  `playersOnline` similarly fake; opponent card shows randomized ELO
-  (`stats.elo ± 20`, ~line 539).
-- `frontend/src/components/ReferralNotification.tsx` — fake "X just won $Y via
-  referral" toasts from a hardcoded name list.
-- Fix: replace with real counts (backend has a matchmaking queue + telemetry
-  now — a cheap `GET /api/v1/game/online-count` from socket/session data is
-  feasible) or remove the widgets entirely. Removing is the fast safe option.
-
-### C3 — Negative stat framing (owner previously chose to skip; small)
-`frontend/src/app/[locale]/home/page.tsx:~230` leads with win-rate % and a
-loss-streak badge. If ever picked up: lead with XP/level/games played, tuck
-W/L% behind a details view.
-
 ### B3 full fix — Transak webhook direct credit (BLOCKED on owner config)
 Today: card buys USDT to the user's own wallet; the deposit modal then watches
 for arrival and prefills the deposit (shipped). The real fix removes the second
@@ -108,7 +79,7 @@ on-chain step entirely:
   card tab; STAGING default).
 
 ### Self-custodial BTC/ETH deposits — implemented, activation-gated
-Branch `feat/cross-chain-deposits` removes the custodial Changelly API, provider
+Current `main` removes the custodial Changelly API, provider
 orders, backend endpoint, tracking table/migration, credentials, and provider
 status polling. `SelfCustodyBridge.tsx` guides users through wallet-owned routes:
 
@@ -169,10 +140,6 @@ contracts, sufficient TON DEX liquidity, and successful wallet canaries.
   incremental validation exists. Only relevant if content expands.
 
 ### Minor polish leftovers (batch when convenient)
-- Admin page `frontend/src/app/[locale]/admin/page.tsx:~686` — "No
-  transactions" empty state is a dead-end (no error/retry distinction).
-  The user-facing ledger already has the pattern to copy
-  (`TransactionLedger.tsx` `error`/`onRetry` props).
 - Onboarding is 4 dense slides (copy condensation, D2 residual).
 - ~280 locale strings (deposit/swap/gas flows) in ar/hi/ja/zh were
   machine-authored this week — worth a native-speaker skim.
@@ -254,3 +221,101 @@ Everything below is tested in CI but **unproven in the live Telegram app**.
 - **iOS/Telegram gotchas + prod topology**: see `CLAUDE.md` (two Railway
   services; monolith URL dead; `--app-safe-bottom` for bottom insets; navbar
   never hidden on main pages).
+
+---
+
+## 5. Production engagement baseline (historical 48h snapshot)
+
+This section consolidates the former `HANDOVER2.md`. It is a dated baseline,
+not current production truth. The read-only source is
+`backend/scripts/engagement_report.py`, run against production Postgres for the
+48-hour window ending around 2026-07-12 20:17 UTC. Re-run with
+`railway run python backend/scripts/engagement_report.py`; the SQL-only variant
+is `backend/scripts/engagement_48h.sql`.
+
+### Baseline numbers
+
+| Metric | Value |
+|---|---|
+| New signups | **465** |
+| Active users (app/games/money) | **83** |
+| App sessions | 1,197 |
+| Bot blocks | 37 |
+| Games: computer / online PvP | **134 / 4** |
+| Matchmaking: join / matched / abandon / timeout | 54 / 6 / 41 / 3 |
+| Match success rate | **11%** |
+| Timed out or abandoned | **81%** |
+| Wagered games / volume / rake | **0 / $0 / $0** |
+| Completed deposits | **0** |
+| Total user balance held | **$13.97** |
+| Referrals: rows / distinct referrers / referred users who played | **823 / 5 / 50** |
+| Funnel: signup → open → play → PvP → wager → deposit | 465 → 0* → 22 → 1 → 0 → 0 |
+
+\* `opened_app = 0` was a measurement bug, not reality. Top screens were
+`/home` 554, `/academy` 337, `/` 323, `/game` 282, `/challenges` 178,
+`/academy/puzzle` 158, and `/settings` 114, followed by Arabic/Russian routes.
+
+### What the snapshot showed
+
+1. **Referral-heavy signup growth had very weak activation.** Five referrers
+   drove 465 signups, but only 22 played anything, one reached PvP, none
+   wagered or deposited, and 37 blocked the bot. The vanity signup count hid a
+   much smaller genuinely active base.
+2. **PvP demand existed but matchmaking conversion was poor.** Only 6 of 54
+   queue joins matched; 81% abandoned or timed out. Almost all games were
+   against the computer. This made demand concentration and a graceful
+   fallback the clearest product lever.
+3. **The money loop was idle.** The window had no completed deposits, wagered
+   games, or rake. Wagering was downstream of both funding and successful PvP
+   matching.
+4. **Activation attribution was broken.** The funnel claimed no new user
+   opened the app even though 22 played, proving `session_start` identity was
+   not being attributed correctly.
+
+### Work completed after the snapshot
+
+- **Matchmaking recovery:** the matcher already widened ELO and time-control
+  pools as waits grew. The client now offers a clearly labeled AI game after
+  15 seconds, records offered/accepted telemetry, keeps navigation available,
+  and uses the existing queue-leave refund path before AI selection. Free
+  searches can opt into a Telegram opponent notification for up to 30 minutes;
+  cancel and AI fallback remove the queue entry, and wagered searches are
+  excluded. A server queue strip reports unique, non-expired users in the
+  selected pool and across all pools.
+- **Referral activation gates:** attribution is recorded at signup, while
+  rewards unlock only after three games with at least ten moves. Same-IP
+  attribution is rejected and per-referrer velocity caps apply.
+- **Authenticated telemetry attribution:** the backend now derives telemetry
+  `user_id` from verified Telegram init data and ignores a client-supplied
+  identity. Regression coverage prevents spoofed IDs from overriding it.
+- **Deposit-funnel events:** tracking now covers modal open, initiation,
+  address copy, completion/abandonment, and a separate submitted-pending state
+  so indexing delays are not mislabeled as abandonment.
+- **Insufficient-wager telemetry:** matchmaking, balance guards, and friend
+  wagers emit balance shortfall, wager, time-control, custom-wager, and source
+  metadata.
+- **Referral-quality telemetry:** `referrals.activated_at` is written
+  atomically when the qualifying reward unlocks; `referral_activated`,
+  activated counts, and activation rate are available separately from raw
+  referrals. The migration backfilled prior qualifying activations.
+- **Nightly telemetry rollups:** complete UTC days are aggregated into
+  `telemetry_daily_rollups` by event type with event and unique-user counts.
+  A two-day overlap is replaced for delayed batches, raw rows older than 30
+  days are pruned, rollups are retained indefinitely, and a PostgreSQL
+  advisory lock makes multiple workers safe. Configure with
+  `TELEMETRY_MAINTENANCE_HOUR_UTC` and `TELEMETRY_RAW_RETENTION_DAYS`.
+
+### Interpretation notes
+
+- Money columns are cents; divide by 100 for USDT.
+- Self-custodial bridge events are operational funnel signals only. They never
+  credit platform balances; the eventual verified canonical TON USDT deposit
+  is the settlement event growth reporting should count.
+- PR #9 fixed the Web3 top-up split: the UI sends requested credit plus a 5%
+  fee, and both on-chain credit paths calculate
+  `credited = round(total / 1.05)` and record the remainder as the fee.
+- At snapshot time the first two arenas had zero participants; the first arena
+  under the four-slot regional schedule was live with two participants and two
+  games. Region targeting had only just deployed.
+- Do not extrapolate from one 48-hour window or treat these numbers as current.
+  Re-run the report when a fresh production read is needed.

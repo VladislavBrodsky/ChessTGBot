@@ -6,6 +6,8 @@
     "rating": "Rating",
     "win_rate": "Win Rate",
     "level": "LVL",
+    "xp": "XP",
+    "games_played": "Games Played",
     "current_streak": "Current Streak",
     "best_streak": "Best Streak",
     "wins": "WINS",

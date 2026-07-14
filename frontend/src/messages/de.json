@@ -5,6 +5,8 @@
     "rating": "Bewertung",
     "win_rate": "Siegesrate",
     "level": "LVL",
+    "xp": "XP",
+    "games_played": "Spiele Gespielt",
     "current_streak": "Aktuelle Serie",
     "best_streak": "Beste Serie",
     "wins": "SIEGE",
