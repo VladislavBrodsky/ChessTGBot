@@ -925,6 +925,23 @@ class GameService:
 
                     # Check and award deferred referral signup bonus (3-game milestone)
                     await GamificationService.check_referral_game_milestone(session, white_user.id)
+                    
+                    # Award XP and update tasks for AI games
+                    await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
+                    if state.winner == 'w':
+                        await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN, commit=False)
+                        ai_xp = 15
+                    elif state.winner == 'b':
+                        ai_xp = 5
+                    else:
+                        ai_xp = 10
+                        
+                    final_ai_xp = ai_xp * 2 if getattr(white_user, "is_premium_active", False) else ai_xp
+                    await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="ai_game_match", reference_id=game_id)
+                    
+                    state.white_xp_gained = final_ai_xp
+                    state.black_xp_gained = 0
+
                     await session.commit()
 
                     print(f"[GameService] Bot game history saved: {game_id} ({result_type}, winner={state.winner})")
