@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { FaChessKnight, FaCheck, FaTimes, FaRegClock } from "react-icons/fa";
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
@@ -25,7 +26,11 @@ export default function IncomingRematchDrawer({
   const tg = useTranslations('Game');
   useNavbarHideWhileMounted();
 
-  return (
+  // The result modal is also a body-level portal. Render the incoming offer in
+  // the same top-level stacking context so it cannot be hidden by that modal.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">
       {/* Backdrop with visual blur & dim */}
       <motion.div 
@@ -109,6 +114,7 @@ export default function IncomingRematchDrawer({
           </motion.button>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 }
