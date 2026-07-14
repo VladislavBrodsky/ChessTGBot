@@ -105,13 +105,15 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
          <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-inner">
            {/* Glass overlay for static feeling */}
            <div className="absolute inset-0 z-10 pointer-events-auto bg-transparent" />
-           <Chessboard 
-             id={`board-${currentStep.id}`}
-             position={currentStep.fen} 
-             boardOrientation={currentStep.boardOrientation || 'white'}
-             arePiecesDraggable={false}
-             customDarkSquareStyle={{ backgroundColor: '#7b9fb6' }}
-             customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
+           <Chessboard
+             options={{
+               id: `board-${currentStep.id}`,
+               position: currentStep.fen,
+               boardOrientation: currentStep.boardOrientation || 'white',
+               allowDragging: false,
+               darkSquareStyle: { backgroundColor: '#7b9fb6' },
+               lightSquareStyle: { backgroundColor: '#ebecd0' },
+             }}
            />
          </div>
        </div>

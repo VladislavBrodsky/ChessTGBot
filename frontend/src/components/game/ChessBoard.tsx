@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
-import { useState, useEffect } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
@@ -41,9 +41,21 @@ interface ChessBoardProps {
     autoPromoteToQueen?: boolean;
     customSquareStyles?: { [square: string]: any };
     customArrows?: string[][];
+    customDarkSquareStyle?: CSSProperties;
+    customLightSquareStyle?: CSSProperties;
 }
 
-export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false, customSquareStyles = {}, customArrows = [] }: ChessBoardProps) {
+export default function ChessBoardComponent({
+    fen,
+    onMove,
+    orientation = "white",
+    showConfetti = false,
+    autoPromoteToQueen = false,
+    customSquareStyles = {},
+    customArrows = [],
+    customDarkSquareStyle = { backgroundColor: '#7b9fb6' },
+    customLightSquareStyle = { backgroundColor: '#ebecd0' },
+}: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
@@ -319,8 +331,8 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 overflow: "hidden",
                             },
                             arrows: customArrows as any,
-                            customDarkSquareStyle: { backgroundColor: '#7b9fb6' },
-                            customLightSquareStyle: { backgroundColor: '#ebecd0' },
+                            darkSquareStyle: customDarkSquareStyle,
+                            lightSquareStyle: customLightSquareStyle,
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {
                                 const styles: { [square: string]: any } = { ...customSquareStyles };
