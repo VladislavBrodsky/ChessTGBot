@@ -33,12 +33,16 @@ interface DepositModalProps {
 const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
 const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
 const TRANSAK_MIN_USD = 15;
+// Keep the external bridge flow hidden until both live routes have delivered
+// the canonical TON USDT jetton in wallet canaries. Build-time opt-in prevents
+// an unverified route from appearing merely because the code is deployed.
+const SELF_CUSTODY_BRIDGE_ENABLED = process.env.NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED === 'true';
 
 // USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
 // The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
-// must only ever settle USDT. Users holding BTC/ETH can use the conversion
-// order flow below, which pays USDTON into this same verified deposit path;
-// volatile assets are never credited directly.
+// must only ever settle USDT. Users holding BTC/ETH can bridge into their OWN
+// TON wallet, then use this same verified deposit path. Volatile assets and
+// third-party bridge status are never credited directly.
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
 ];
@@ -54,7 +58,7 @@ const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
   ),
 });
 
-const CrossChainDeposit = dynamic(() => import("./CrossChainDeposit"), {
+const SelfCustodyBridge = dynamic(() => import("./SelfCustodyBridge"), {
   ssr: false,
   loading: () => null,
 });
@@ -858,7 +862,7 @@ export default function DepositModal({
             )}
 
             {/* TON → USDT in-app swap (STON.fi) */}
-            {wallet && (
+            {wallet && SELF_CUSTODY_BRIDGE_ENABLED && (
               <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
                 <button
                   type="button"
@@ -879,15 +883,15 @@ export default function DepositModal({
               </div>
             )}
 
-            <CrossChainDeposit
-              onCredited={(creditedAmountCents) => {
-                funnelStateRef.current = 'completed';
-                setSuccessMessage(`$${(creditedAmountCents / 100).toFixed(2)} USDT credited from your cross-chain deposit.`);
-                setVerificationSuccess(true);
-                setShowConfetti(true);
-                onSuccess();
-              }}
-            />
+            {wallet && (
+              <SelfCustodyBridge
+                walletRawAddress={wallet.account.address}
+                onBridgeStarted={async () => {
+                  trackDepositInitiated('self_custody_bridge', parseFloat(depositAmount) || 0);
+                  await startArrivalWatch();
+                }}
+              />
+            )}
 
             {/* Gas wall escape hatch */}
             {wallet && (
@@ -1145,4 +1149,3 @@ export default function DepositModal({
     document.body
   );
 }
-

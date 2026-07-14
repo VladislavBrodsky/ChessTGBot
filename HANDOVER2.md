@@ -202,13 +202,12 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
 5. **Transak direct credit remains blocked on owner configuration.** Obtain the
    production API key and webhook secret before implementing signed
    `ORDER_COMPLETED` handling and order-id deduplication.
-6. **Activate cross-chain BTC/ETH deposits only after live canaries.** Branch
-   `feat/cross-chain-deposits` implements Changelly conversion to USDTON but
-   defaults OFF. Apply migration `c4d9a5e7b2f1`, configure the Changelly API/RSA
-   keys, and prove with minimum BTC and ETH orders that the provider's TON USDT
-   payout preserves `ref_<telegram_id>` and is credited exactly once by the
-   existing on-chain verifier. Do not treat provider `finished` status as money
-   received, and do not enable the flag if the payout memo is missing. See
+6. **Activate self-custodial BTC/ETH deposits only after live canaries.** Branch
+   `feat/cross-chain-deposits` removed Changelly and now guides wallet-owned
+   THORSwap/Stargate routes into the user's TON wallet. It defaults OFF via
+   `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false`. Prove each route delivers
+   canonical TON USDT (not a wrapped/OFT representation), the arrival watcher
+   sees it, and the user's subsequent normal deposit credits exactly once. See
    `HANDOVER.md` for the full activation and compliance checklist.
 
 ## Tracking gaps to add (so the next read is sharper)
@@ -239,10 +238,11 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
 
 ## Notes / caveats
 - Money columns are cents; `amount/100` = USDT.
-- Cross-chain order rows are operational tracking only. The provider API never
-  credits balances; verified official USDT received on TON remains the sole
-  settlement authority. This means growth reporting should count the eventual
-  completed `transactions` deposit, not a Changelly order marked `finished`.
+- Self-custodial bridge telemetry is operational funnel data only. It never
+  credits balances; verified canonical USDT sent from the user's TON wallet to
+  the master wallet remains the sole settlement authority. Growth reporting
+  should count the eventual completed `transactions` deposit, not a bridge-open
+  event or external protocol completion.
 - PR #9 also fixed the Web3 top-up fee regression caught by CI. The Web3 UI sends
   requested credit plus a 5% fee, so both on-chain credit paths now split the
   received total with `credited = round(total / 1.05)` and record the remainder

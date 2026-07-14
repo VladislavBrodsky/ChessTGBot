@@ -94,17 +94,6 @@ class Settings(BaseSettings):
     TON_API_KEY: str | None = os.getenv("TON_API_KEY")
     TON_CONSOLE_TOKEN: str | None = os.getenv("TON_CONSOLE_TOKEN")
 
-    # Cross-chain deposits. Changelly converts BTC/ETH to USDT on TON and sends
-    # it to MASTER_WALLET_ADDRESS with ref_<telegram_id>. Balance credit remains
-    # exclusively controlled by the verified on-chain USDT deposit path.
-    CROSS_CHAIN_DEPOSITS_ENABLED: bool = (
-        os.getenv("CROSS_CHAIN_DEPOSITS_ENABLED", "false").lower() == "true"
-    )
-    CHANGELLY_API_URL: str = os.getenv("CHANGELLY_API_URL", "https://api.changelly.com/v2")
-    CHANGELLY_API_KEY: str = os.getenv("CHANGELLY_API_KEY", "")
-    CHANGELLY_PRIVATE_KEY_HEX: str = os.getenv("CHANGELLY_PRIVATE_KEY_HEX", "")
-    CHANGELLY_PAYOUT_CURRENCY: str = os.getenv("CHANGELLY_PAYOUT_CURRENCY", "usdton").lower()
-
     # Solvency alerting (see app/services/solvency_service.py).
     # OFF by default: the on-chain figure counts USDT only while the custody
     # wallet may hold other assets, so validate GET /admin/solvency against

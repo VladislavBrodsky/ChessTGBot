@@ -1,4 +1,4 @@
-# ChessTGBot — Session Handover (updated 2026-07-12)
+# ChessTGBot — Session Handover (updated 2026-07-14)
 
 Handover for a fresh session. Contains **only what is still left to do** — the
 original audit's A-group (Sybil, puzzle leak, Redis fail-fast, withdrawal 2FA),
@@ -24,9 +24,10 @@ frontend build doubles as the typecheck.
 > code items from user feedback remain — see §1 (reduce-motion toggle,
 > game-only display name/avatar).
 >
-> **Cross-chain branch:** `feat/cross-chain-deposits` adds BTC/ETH conversion
-> deposits through Changelly, but is intentionally OFF until the activation
-> checklist below is completed. It has not been merged to `main` or deployed.
+> **Cross-chain branch:** `feat/cross-chain-deposits` now uses a self-custodial
+> BTC/ETH → user TON wallet → verified USDT deposit flow. The earlier Changelly
+> API/order implementation was removed. The UI remains build-time OFF until the
+> live route canaries below pass. It has not been merged to `main` or deployed.
 
 ---
 
@@ -114,45 +115,51 @@ on-chain step entirely:
   Transak dashboard** (`NEXT_PUBLIC_TRANSAK_API_KEY` currently drives the
   card tab; STAGING default).
 
-### Cross-chain BTC/ETH deposits — implemented, activation-gated
-Branch `feat/cross-chain-deposits` adds a backend-only Changelly API client,
-fixed-rate quote/order/status endpoints, `cross_chain_deposits` tracking table
-(migration `c4d9a5e7b2f1`), and a deposit-modal flow for BTC and ETH. Changelly
-converts the source asset to **USDTON** and pays the existing master wallet with
-`ref_<telegram_id>`. The frontend section is hidden unless the feature flag and
-credentials are present.
+### Self-custodial BTC/ETH deposits — implemented, activation-gated
+Branch `feat/cross-chain-deposits` removes the custodial Changelly API, provider
+orders, backend endpoint, tracking table/migration, credentials, and provider
+status polling. `SelfCustodyBridge.tsx` guides users through wallet-owned routes:
 
-**Money invariant:** Changelly status NEVER credits a platform balance. A
-provider order can say `finished`, but credit still happens only after the
-existing TON path independently observes verified official USDT at the master
-wallet with the attribution memo. This preserves the one money-entry path and
-its existing transaction-hash deduplication.
+- **ETH/Ethereum assets:** bridge USDT from Ethereum to the connected TON wallet
+  with Stargate.
+- **Native BTC:** swap BTC to Ethereum USDT in the user's wallets with THORSwap,
+  then bridge that USDT to the connected TON wallet with Stargate.
+- The bridge links are hard-coded and hostname-allowlisted to reduce phishing
+  risk. The connected user's non-bounceable TON address is shown and copyable.
+- Before opening the final bridge, the deposit modal snapshots the user's USDT
+  balance and watches for newly arrived USDT. It then prefills the existing
+  normal deposit; the user still signs the final transfer to the master wallet.
+
+**Money invariant:** external protocol status never credits platform balance.
+BTC, ETH, and bridged representations never enter platform custody. Only the
+existing verifier's canonical TON USDT transfer to the master wallet with
+`ref_<telegram_id>` can credit balance and its transaction-hash dedup remains
+the settlement authority.
+
+**Why TON Teleport is not used:** its official user documentation still labels
+it public testnet-only and warns not to send real funds. Reconsider a direct
+BTC → tgBTC → USDT route only after a documented mainnet launch, audited
+contracts, sufficient TON DEX liquidity, and successful wallet canaries.
 
 **Do not enable in production until all of these are complete:**
-1. Apply Alembic migration `c4d9a5e7b2f1` and obtain a Changelly partner API
-   key plus RSA PKCS#8 private key (hex DER form).
-2. Set `CHANGELLY_API_KEY`, `CHANGELLY_PRIVATE_KEY_HEX`,
-   `CHANGELLY_API_URL=https://api.changelly.com/v2`, and
-   `CHANGELLY_PAYOUT_CURRENCY=usdton`; leave
-   `CROSS_CHAIN_DEPOSITS_ENABLED=false` initially.
-3. Run one minimum-size BTC canary and one ETH canary. Confirm Changelly echoes
-   the master payout address and `ref_<telegram_id>`, then inspect the actual
-   USDTON jetton payout in Tonviewer/TonAPI and prove the memo survives in the
-   transfer notification. If the memo is absent, **do not enable** — users would
-   pay successfully but the deposit could not be attributed.
-4. Prove each canary credits exactly once through the normal crawler/webhook,
-   with the actual received USDT split by the existing 5% Web3 top-up rule.
-   Provider quote/status alone must never move `users.balance`.
-5. Review Changelly KYC/hold/refund behavior, supported countries, terms, and
-   provider disclosures; geo-block or disable the flow wherever required.
-6. Only then set `CROSS_CHAIN_DEPOSITS_ENABLED=true`. Watch provider failures,
-   stuck orders, unattributed master-wallet receipts, and duplicate-credit
-   alerts closely during the first live deposits.
-
-**Follow-up hardening after the canary:** add an admin order viewer and TREASURY
-alerts for paid/sending/finished orders that do not become an on-chain credited
-deposit within the chosen SLA. The current UI polls status; the deposit crawler
-continues independently if the user closes Telegram.
+1. Keep `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false` for normal builds.
+2. On a private/canary build, run a minimum Ethereum route and inspect the TON
+   output jetton master. It MUST be canonical TON USDT
+   `EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs`; an OFT/wrapped USDT
+   representation is not accepted and must not be presented as a deposit.
+3. Run a minimum native-BTC route through THORSwap to Ethereum USDT, then the
+   same Stargate canary. Confirm both swaps honor minimum-received bounds and
+   every destination shown by the wallets belongs to the user.
+4. Confirm the arrival watcher detects only the delta in the connected user's
+   canonical USDT balance and prefills the existing deposit correctly.
+5. Complete a final deposit from each canary and prove exactly-once credit plus
+   the existing 5% Web3 top-up split. Bridge or swap completion alone must not
+   change `users.balance`.
+6. Review THORSwap/Stargate terms, frontend geography restrictions, protocol
+   risks, supported wallets, and disclosures. "No exchange account" does not
+   remove ChessTGBot's own legal/compliance obligations.
+7. Only then set `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=true`, rebuild both
+   Next.js outputs, and watch bridge-open → arrival → deposit telemetry.
 
 ### Decision-gated (do NOT start without an explicit owner call)
 - **A5 hot wallet** — `PAYOUT_MNEMONIC` is a plaintext env var; leak = total
