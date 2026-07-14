@@ -30,7 +30,7 @@ def test_address_converters():
 
 @pytest.mark.parametrize(
     ("received_cents", "credited_cents", "fee_cents"),
-    [(1050, 1000, 50), (1000, 952, 48), (1, 1, 0)],
+    [(1050, 998, 52), (1000, 950, 50), (1, 1, 0)],
 )
 def test_split_web3_top_up(received_cents, credited_cents, fee_cents):
     assert _split_web3_top_up(received_cents) == (credited_cents, fee_cents)
@@ -96,7 +96,14 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
             if "tonapi.io" not in url_str:
                 return await original_get(self, url, **kwargs)
             url_str = str(url)
-            if "jettons" in url_str:
+            if "methods/get_wallet_address" in url_str:
+                return MockResponse(200, {
+                    "success": True,
+                    "decoded": {
+                        "jetton_wallet_address": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83"
+                    }
+                })
+            elif "jettons" in url_str:
                 return MockResponse(200, {
                     "wallet_address": {
                         "address": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83"
@@ -213,10 +220,10 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_usdt.status_code == 200
         v_usdt_data = res_v_usdt.json()
-        # 10 USDT * $1.00 = $10.00 = 1000 cents. Under new top-up fee math: 1000 / 1.05 = 952 cents.
-        assert v_usdt_data["credited_amount"] == 952
-        assert v_usdt_data["fee"] == 48
-        assert v_usdt_data["new_balance"] == 1452 # 500 + 952
+        # 10 USDT * $1.00 = $10.00 = 1000 cents. The inclusive 5% fee is 50 cents.
+        assert v_usdt_data["credited_amount"] == 950
+        assert v_usdt_data["fee"] == 50
+        assert v_usdt_data["new_balance"] == 1450 # 500 + 950
 
         # Verify DB Transactions were written (stored under the resolved event_id/transaction hash msg_usdt_hash)
         tx_res = await db_session.execute(
@@ -224,8 +231,8 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         tx = tx_res.scalars().first()
         assert tx is not None
-        assert tx.amount == 952
-        assert tx.fee == 48
+        assert tx.amount == 950
+        assert tx.fee == 50
         assert tx.type == "deposit"
 
         # 5. Test Replay Protection
@@ -245,9 +252,9 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_low_usdt.status_code == 200
         v_low_usdt_data = res_v_low_usdt.json()
-        # 0.01 USDT = 1 cent. Under new top-up fee math: round(1 / 1.05) = 1 cent.
+        # 0.01 USDT = 1 cent. The rounded fee is zero cents.
         assert v_low_usdt_data["credited_amount"] == 1
-        assert v_low_usdt_data["new_balance"] == 1453 # 1452 + 1
+        assert v_low_usdt_data["new_balance"] == 1451 # 1450 + 1
 
         # 7. Test Verify via Resolvable Message Hash (Resolves to transaction hash then event)
         res_v_resolved = await client.post(
@@ -257,8 +264,8 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         )
         assert res_v_resolved.status_code == 200
         v_resolved_data = res_v_resolved.json()
-        assert v_resolved_data["credited_amount"] == 952
-        assert v_resolved_data["new_balance"] == 2405 # 1453 + 952
+        assert v_resolved_data["credited_amount"] == 950
+        assert v_resolved_data["new_balance"] == 2401 # 1451 + 950
 
     finally:
         settings.TELEGRAM_BOT_TOKEN = original_token
