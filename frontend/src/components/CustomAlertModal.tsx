@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { useTranslations } from 'next-intl';
+import { useNavbar } from '@/context/NavbarContext';
 
 interface ModalState {
   type: 'alert' | 'confirm';
@@ -15,6 +16,14 @@ interface ModalState {
 export default function CustomAlertModal() {
   const t = useTranslations('AlertModal');
   const [modal, setModal] = useState<ModalState | null>(null);
+  const { pushHide, popHide } = useNavbar();
+
+  useEffect(() => {
+    if (modal) {
+      pushHide();
+      return () => popHide();
+    }
+  }, [modal, pushHide, popHide]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -82,7 +91,7 @@ export default function CustomAlertModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 15 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-[290px] bg-[#FFFFFF]/95 dark:bg-[#0A0A0A]/90 border border-zinc-200/50 dark:border-zinc-800/40 rounded-[24px] p-5 shadow-[0_24px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl flex flex-col items-center text-center space-y-4"
+            className="relative w-full max-w-[290px] bg-brand-surface/95 border border-brand-border-opacity-10 rounded-[24px] p-5 shadow-premium backdrop-blur-xl flex flex-col items-center text-center space-y-4"
           >
             {/* Top Brand Circle */}
             <div className="w-12 h-12 rounded-[16px] bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
@@ -93,7 +102,7 @@ export default function CustomAlertModal() {
               <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
                 {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
-              <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed break-words px-1">
+              <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">
                 {modal.message}
               </p>
             </div>
@@ -103,7 +112,7 @@ export default function CustomAlertModal() {
                 <>
                   <button
                     onClick={() => handleClose(false)}
-                    className="flex-1 py-3 rounded-[12px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+                    className="flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-primary/60 hover:bg-brand-primary/5 hover:text-brand-primary/80 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
                   >
                     {t('cancel')}
                   </button>

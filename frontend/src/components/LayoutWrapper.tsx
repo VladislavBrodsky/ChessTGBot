@@ -157,15 +157,12 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         pathname.endsWith('/challenges') || 
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
-    // On main dashboard pages (home, settings, wallet, etc.) the navbar is NEVER
-    // hidden — no exceptions. Every conditional hide here has eventually stranded
-    // users with no menu (stale activeGameId, leftover context hides, states stuck
-    // during the active-game check on iOS Telegram). Overlays that must cover it
-    // (Onboarding, modals) render at z-index >= 100 above the z-50 navbar, so
-    // hiding it for them is redundant anyway.
-    const shouldHideNavbar = isMainNavbarPage
-        ? false
-        : (showOnboarding || !!activeGameId || (isCorePage && isCheckingActiveGame) || isNavbarHiddenByContext);
+    // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not
+    // hidden by game state. However, if a modal/drawer is open (isNavbarHiddenByContext),
+    // we MUST hide it so it doesn't bleed through backdrop blurs.
+    const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
+        !isMainNavbarPage && (!!activeGameId || (isCorePage && isCheckingActiveGame))
+    );
 
     return (
         <div className={`relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>

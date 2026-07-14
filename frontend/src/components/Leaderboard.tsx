@@ -8,6 +8,7 @@ import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
+import { useNavbar } from '@/context/NavbarContext';
 
 interface LeaderboardItem {
  telegram_id: number;
@@ -24,12 +25,14 @@ interface LeaderboardItem {
  const players: LeaderboardItem[] = Array.isArray(playersData) ? playersData : [];
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [showModal, setShowModal] = useState(false);
+ const { pushHide, popHide } = useNavbar();
 
  // Lock background scroll while the full ranking modal is open — otherwise
  // the Home page underneath can still scroll/repaint behind this "fixed"
  // overlay (observed on iOS Telegram: the News section bled through).
  useEffect(() => {
    if (!showModal) return;
+   pushHide();
    const originalOverflow = document.body.style.overflow;
    const originalOverflowX = document.body.style.overflowX;
    document.body.style.overflow = 'hidden';
@@ -37,8 +40,9 @@ interface LeaderboardItem {
    return () => {
      document.body.style.overflow = originalOverflow;
      document.body.style.overflowX = originalOverflowX;
+     popHide();
    };
- }, [showModal]);
+ }, [showModal, pushHide, popHide]);
 
 
 

@@ -30,7 +30,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 </span>
             </div>
 
-            <div className="w-full h-3.5 bg-black/60 rounded-full overflow-hidden border border-white/5 dark:border-zinc-800/80 relative shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">
+            <div className="w-full h-3.5 bg-brand-void/60 rounded-full overflow-hidden border border-brand-border-opacity-10 relative shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)]">
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-amber-500/[0.02] pointer-events-none" />
 

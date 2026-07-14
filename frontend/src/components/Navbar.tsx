@@ -73,13 +73,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 initial={{ x: -72, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="fixed left-0 top-0 h-full w-[72px] z-50 flex flex-col items-center justify-between py-6"
-                style={{
-                    background: 'rgba(0,0,0,0.7)',
-                    backdropFilter: 'blur(20px)',
-                    borderRight: '1px solid rgba(168,85,247,0.1)',
-                    boxShadow: '4px 0 24px rgba(0,0,0,0.3)'
-                }}
+                className="fixed left-0 top-0 h-full w-[72px] z-50 flex flex-col items-center justify-between py-6 bg-brand-void/70 backdrop-blur-[20px] border-r border-purple-500/10 shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center gap-1">
@@ -117,8 +111,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                         </span>
 
                                         {/* Tooltip */}
-                                        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                                             style={{ background: 'rgba(0,0,0,0.9)', color: 'rgba(168,85,247,1)', border: '1px solid rgba(168,85,247,0.2)' }}>
+                                        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-brand-void text-purple-400 border border-purple-500/20 shadow-md">
                                             {item.label}
                                         </div>
                                     </motion.div>
