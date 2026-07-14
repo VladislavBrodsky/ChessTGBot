@@ -5,6 +5,8 @@
     "rating": "Classement",
     "win_rate": "Taux de Victoire",
     "level": "NIV",
+    "xp": "XP",
+    "games_played": "Parties Jouées",
     "current_streak": "Série Actuelle",
     "best_streak": "Meilleure Série",
     "wins": "VICTOIRES",

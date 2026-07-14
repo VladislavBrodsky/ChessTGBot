@@ -5,6 +5,8 @@
     "rating": "Classificação",
     "win_rate": "Taxa de Vitória",
     "level": "NÍVEL",
+    "xp": "XP",
+    "games_played": "Jogos Jogados",
     "current_streak": "Sequência Atual",
     "best_streak": "Melhor Sequência",
     "wins": "VITÓRIAS",

@@ -247,25 +247,16 @@ export default function Home() {
       {/* Compact Stats Row */}
       <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
-      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
-      <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || 0}%</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('xp')}</span>
+      <span className="text-xs font-black text-brand-primary">{(stats.xp ?? 0).toLocaleString(locale)}</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
-      <div className="flex items-center gap-1 justify-center">
-      <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
-      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
-      {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
-      </span>
-      </div>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('level')}</span>
+      <span className="text-xs font-black text-brand-primary">{stats.level ?? 1}</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">
-      {t('wins')?.[0] || 'W'}/{t('losses')?.[0] || 'L'}/{locale === 'ru' ? 'Н' : 'D'}
-      </span>
-      <span className="text-xs font-black text-brand-primary">
-      {stats.wins || 0}/{stats.losses || 0}/{stats.draws || 0}
-      </span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
+      <span className="text-xs font-black text-brand-primary">{(stats.games_played ?? 0).toLocaleString(locale)}</span>
       </div>
       </div>
       </Card>

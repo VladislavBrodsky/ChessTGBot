@@ -25,6 +25,11 @@ jest.mock('next-intl', () => ({
             welcome: `Welcome, ${variables?.name || ''}`,
             subtitle: 'FinChess Matrix Protocol',
             elo: 'ELO',
+            xp: 'XP',
+            level: 'LVL',
+            games_played: 'Games Played',
+            win_rate: 'Win Rate',
+            current_streak: 'Current Streak',
             play: 'Play Chess',
             academy: 'Academy',
             daily_tasks: 'Daily Tasks',
@@ -35,6 +40,31 @@ jest.mock('next-intl', () => ({
         return translations[key] || key;
     },
     useLocale: () => 'en'
+}));
+
+jest.mock('@/context/UserContext', () => ({
+    useUser: () => ({
+        stats: {
+            first_name: 'Ada',
+            last_name: 'Player',
+            photo_url: null,
+            is_premium: false,
+            elo: 1450,
+            xp: 850,
+            level: 5,
+            games_played: 28,
+            win_rate: 57.1,
+            current_streak: { count: 3, type: 'loss' },
+            wins: 16,
+            losses: 10,
+            draws: 2,
+        },
+        walletBalance: 1000,
+        loadingStats: false,
+        balanceError: false,
+        statsError: false,
+        syncStats: jest.fn(),
+    }),
 }));
 
 jest.mock('@/lib/api', () => ({
@@ -69,5 +99,18 @@ describe('Home', () => {
         expect(screen.getByText(/Academy/i)).toBeInTheDocument()
         expect(screen.getByText(/Daily Tasks/i)).toBeInTheDocument()
     })
-})
 
+    it('frames the home summary around progress instead of negative results', () => {
+        render(<Home />)
+
+        expect(screen.getByText('XP')).toBeInTheDocument()
+        expect(screen.getByText('850')).toBeInTheDocument()
+        expect(screen.getByText('LVL')).toBeInTheDocument()
+        expect(screen.getByText('5')).toBeInTheDocument()
+        expect(screen.getByText('Games Played')).toBeInTheDocument()
+        expect(screen.getByText('28')).toBeInTheDocument()
+        expect(screen.queryByText('Win Rate')).not.toBeInTheDocument()
+        expect(screen.queryByText('Current Streak')).not.toBeInTheDocument()
+        expect(screen.queryByText('16/10/2')).not.toBeInTheDocument()
+    })
+})

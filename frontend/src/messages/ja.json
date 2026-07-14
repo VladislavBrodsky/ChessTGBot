@@ -5,6 +5,8 @@
     "rating": "レーティング",
     "win_rate": "勝率",
     "level": "レベル",
+    "xp": "XP",
+    "games_played": "プレイ済みのゲーム",
     "current_streak": "現在の連勝",
     "best_streak": "最高連勝",
     "wins": "勝利",

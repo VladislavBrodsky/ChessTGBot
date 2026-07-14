@@ -5,6 +5,8 @@
     "rating": "Puntuación",
     "win_rate": "Tasa de Victoria",
     "level": "NIVEL",
+    "xp": "XP",
+    "games_played": "Partidas Jugadas",
     "current_streak": "Racha Actual",
     "best_streak": "Mejor Racha",
     "wins": "VICTORIAS",
