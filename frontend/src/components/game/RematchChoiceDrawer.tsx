@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -27,7 +28,12 @@ export default function RematchChoiceDrawer({
     return () => clearTimeout(timer);
   }, []);
 
-  return (
+  // MatchOverModal is portalled to document.body. Keeping this fixed drawer
+  // inside the animated route wrapper traps it in that wrapper's stacking
+  // context, behind the game-over modal, regardless of its local z-index.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className="bottom-drawer-backdrop z-[110]">
       <motion.div 
         initial={{ opacity: 0 }} 
@@ -85,6 +91,7 @@ export default function RematchChoiceDrawer({
           </motion.button>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 }
