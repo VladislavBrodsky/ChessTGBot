@@ -416,7 +416,7 @@ export default function ChallengesPage() {
                         <p className="text-[10px] text-brand-primary opacity-50 mb-1 leading-snug max-w-[180px]">
                           {t(`${task.title_key}_desc`)}
                         </p>
-                        {t(`${task.title_key}_inst`) !== `${task.title_key}_inst` && (
+                        {t.has(`${task.title_key}_inst`) && (
                           <p className="text-[9px] text-amber-500/90 font-bold mb-2 leading-snug max-w-[180px] drop-shadow-glow">
                             👉 {t(`${task.title_key}_inst`)}
                           </p>

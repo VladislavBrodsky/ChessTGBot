@@ -50,7 +50,7 @@ export default function DailyHintCard() {
         {/* FRONT - Ultra Premium */}
         <div 
           className="absolute inset-0 bg-[var(--cyber-card-bg)] border border-brand-border-opacity-10 rounded-2xl p-5 flex items-center justify-between overflow-hidden shadow-inner-glow transition-all duration-500 group-hover:border-emerald-500/30"
-          style={{ backfaceVisibility: 'hidden' }}
+          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
           
           {/* Animated Background Gradients */}
@@ -85,7 +85,7 @@ export default function DailyHintCard() {
         {/* BACK - Ultra Premium Reward State */}
         <div 
           className="absolute inset-0 bg-[var(--cyber-card-bg)] border border-brand-gold/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow"
-          style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden' }}
+          style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
           {/* Golden Glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />

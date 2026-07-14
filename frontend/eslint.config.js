@@ -30,6 +30,13 @@ export default [
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "BinaryExpression[operator=/^[=!]==?$/] > CallExpression[callee.name='t']",
+          "message": "Do not compare translation strings from next-intl `t()` directly. Use `t.has('key')` instead, as `t('key')` will return the namespace string when missing."
+        }
+      ]
     },
   }
 ];
