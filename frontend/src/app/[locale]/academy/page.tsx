@@ -6,7 +6,7 @@ import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
 import Confetti from "react-confetti";
 import { Chessboard } from "react-chessboard";
-import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet } from 'react-icons/fa';
+import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet, FaChevronDown } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -33,7 +33,74 @@ export default function AcademyPage() {
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const { pushHide, popHide } = useNavbar();
+
+  const ALL_TRACKS = [
+    {
+      id: 'origins-of-chess',
+      titleKey: 'origins_title',
+      fallbackTitle: 'Origins & Motivation',
+      descKey: 'origins_desc',
+      fallbackDesc: 'Discover the history of chess and its impact on the mind.',
+      difficultyKey: 'introductory',
+      fallbackDifficulty: 'Introductory',
+      duration: '5 min',
+      alwaysUnlocked: true
+    },
+    {
+      id: 'opening-principles',
+      titleKey: 'opening_title',
+      fallbackTitle: 'Opening Principles',
+      descKey: 'opening_desc',
+      fallbackDesc: 'Master the center and develop your pieces efficiently.',
+      difficultyKey: 'beginner',
+      fallbackDifficulty: 'Beginner',
+      duration: '10 min',
+      alwaysUnlocked: true
+    },
+    {
+      id: 'tactical-patterns',
+      titleKey: 'tactics_title',
+      fallbackTitle: 'Tactical Patterns',
+      descKey: 'tactics_desc',
+      fallbackDesc: 'Learn forks, pins, skewers, and basic combinations.',
+      difficultyKey: 'intermediate',
+      fallbackDifficulty: 'Intermediate',
+      duration: '15 min',
+      alwaysUnlocked: true
+    },
+    {
+      id: 'endgame-basics',
+      titleKey: 'endgame_title',
+      fallbackTitle: 'Endgame Basics',
+      descKey: 'endgame_desc',
+      fallbackDesc: 'Convert winning advantages and save lost positions.',
+      difficultyKey: 'advanced',
+      fallbackDifficulty: 'Advanced',
+      duration: '20 min'
+    },
+    {
+      id: 'positional-understanding',
+      titleKey: 'positional_title',
+      fallbackTitle: 'Positional Understanding',
+      descKey: 'positional_desc',
+      fallbackDesc: 'Evaluate pawn structures, outposts, and piece activity.',
+      difficultyKey: 'master',
+      fallbackDifficulty: 'Master',
+      duration: '25 min'
+    },
+    {
+      id: 'grandmaster-sacrifices',
+      titleKey: 'gm_sacrifices_title',
+      fallbackTitle: 'Grandmaster Sacrifices',
+      descKey: 'gm_sacrifices_desc',
+      fallbackDesc: 'Unleash devastating sacrifices to shatter defenses.',
+      difficultyKey: 'grandmaster',
+      fallbackDifficulty: 'Grandmaster',
+      duration: '30 min'
+    }
+  ];
 
   const triggerConfetti = () => {
     setShowConfetti(true);
@@ -610,40 +677,71 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            <LessonCard
-              title={t('origins_title') || 'Origins & Motivation'}
-              description={t('origins_desc') || 'Discover the history of chess and its impact on the mind.'}
-              progress={completedLessons.includes('origins-of-chess') ? 100 : 0}
-              difficulty={t('introductory') || 'Introductory'}
-              duration="5 min"
-              onClick={() => handleLessonClick('origins-of-chess', false)}
-            />
-            <LessonCard
-              title={t('opening_title')}
-              description={t('opening_desc')}
-              progress={completedLessons.includes('opening-principles') ? 100 : 0}
-              difficulty={t('beginner')}
-              duration="10 min"
-              onClick={() => handleLessonClick('opening-principles', false)}
-            />
-            <LessonCard
-              title={t('tactics_title')}
-              description={t('tactics_desc')}
-              progress={completedLessons.includes('tactical-patterns') ? 100 : 0}
-              difficulty={t('intermediate')}
-              duration="15 min"
-              onClick={() => handleLessonClick('tactical-patterns', false)}
-            />
-            <LessonCard
-              title={t('endgame_title')}
-              description={t('endgame_desc')}
-              progress={completedLessons.includes('endgame-basics') ? 100 : 0}
-              difficulty={t('advanced')}
-              duration="20 min"
-              locked={!unlockedLessons.includes('endgame-basics')}
-              onClick={() => handleLessonClick('endgame-basics', !unlockedLessons.includes('endgame-basics'))}
-            />
+            {ALL_TRACKS.filter(t => !completedLessons.includes(t.id)).map(track => (
+              <LessonCard
+                key={track.id}
+                title={t(track.titleKey) || track.fallbackTitle}
+                description={t(track.descKey) || track.fallbackDesc}
+                progress={0}
+                difficulty={t(track.difficultyKey) || track.fallbackDifficulty}
+                duration={track.duration}
+                locked={!track.alwaysUnlocked && !unlockedLessons.includes(track.id)}
+                onClick={() => handleLessonClick(track.id, !track.alwaysUnlocked && !unlockedLessons.includes(track.id))}
+              />
+            ))}
           </div>
+          
+          {/* Completed Tracks (Archive) */}
+          {ALL_TRACKS.some(t => completedLessons.includes(t.id)) && (
+            <div className="mt-6 border border-brand-border-opacity-10 rounded-2xl bg-brand-surface/30 overflow-hidden transition-all duration-300">
+              <button 
+                onClick={() => setShowArchive(!showArchive)}
+                className="w-full flex items-center justify-between p-4 bg-brand-surface/50 hover:bg-brand-surface cursor-pointer transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <FaCheckCircle className="text-emerald-500 text-sm" />
+                  <span className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-80">Completed Tracks</span>
+                  <span className="ml-2 text-[10px] font-bold bg-brand-primary/10 px-2 py-0.5 rounded-full text-brand-primary/60">
+                    {ALL_TRACKS.filter(t => completedLessons.includes(t.id)).length}
+                  </span>
+                </div>
+                <motion.div
+                  animate={{ rotate: showArchive ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaChevronDown className="text-brand-primary opacity-40 text-xs" />
+                </motion.div>
+              </button>
+              
+              <AnimatePresence>
+                {showArchive && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 pt-2 grid grid-cols-1 gap-4 border-t border-brand-border-opacity-5">
+                      {ALL_TRACKS.filter(t => completedLessons.includes(t.id)).map(track => (
+                        <div key={track.id} className="opacity-75 hover:opacity-100 transition-opacity">
+                          <LessonCard
+                            title={t(track.titleKey) || track.fallbackTitle}
+                            description={t(track.descKey) || track.fallbackDesc}
+                            progress={100}
+                            difficulty={t(track.difficultyKey) || track.fallbackDifficulty}
+                            duration={track.duration}
+                            locked={false}
+                            onClick={() => handleLessonClick(track.id, false)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Next Milestone */}
