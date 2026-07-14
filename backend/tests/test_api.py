@@ -143,15 +143,19 @@ async def test_subscribe_billing_periods(client, db_session):
         assert user.premium_tier == "premium"
         assert user.is_premium is True
         
-        # 4. Test Subscribe Annual (Premium tier, 29580 cents)
+        # 4. Upgrade monthly to annual with unused monthly time prorated.
         res2 = await client.post("/api/v1/users/subscribe", json={"tier": "premium", "billing_period": "annual"}, headers=headers)
         assert res2.status_code == 200
         data2 = res2.json()
         assert data2["tier"] == "premium"
+        assert data2["billing_period"] == "annual"
+        assert data2["action"] == "upgraded"
+        assert 0 < data2["upgrade_credit_cents"] <= 2900
+        assert data2["charged_cents"] == 29580 - data2["upgrade_credit_cents"]
         
         # Verify DB states
         await db_session.refresh(user)
-        assert user.balance == 7520 # Deducted 29580 cents
+        assert user.balance == 37100 - data2["charged_cents"]
         assert user.premium_tier == "premium"
         
     finally:

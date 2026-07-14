@@ -222,6 +222,79 @@ class MatchmakerService:
             MatchmakerService._use_memory = True
             MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
 
+    async def get_queue_counts(
+        self,
+        bid_amount: int,
+        time_control: int,
+        exclude_user_id: Optional[int] = None,
+    ) -> dict:
+        """Return unique, non-expired queue sizes from the shared queue store."""
+        lock_token = await self._acquire_distributed_lock("global")
+        async with self._lock:
+            try:
+                now = time.time()
+                pool_users = set()
+                all_users = set()
+
+                def collect(bid: int, tc: int, queue: list) -> list:
+                    ttl = self.queue_ttl(bid)
+                    active = [
+                        item for item in queue
+                        if now - item.get('joined_at', now) <= ttl
+                    ]
+                    user_ids = {
+                        item.get('user_id')
+                        for item in active
+                        if item.get('user_id') is not None
+                    }
+                    all_users.update(user_ids)
+                    if bid == bid_amount and tc == time_control:
+                        pool_users.update(user_ids)
+                    return active
+
+                if MatchmakerService._use_memory or not self.redis:
+                    for (bid, tc), queue in list(MatchmakerService._memory_queues.items()):
+                        active = collect(bid, tc, queue)
+                        if len(active) != len(queue):
+                            MatchmakerService._memory_queues[(bid, tc)] = active
+                else:
+                    try:
+                        active_bids = await self.redis.smembers("matchmaker:active_bids")
+                        for bid_str in active_bids:
+                            try:
+                                bid = int(bid_str)
+                            except (TypeError, ValueError):
+                                continue
+                            queues = await self._load_bid_queues(bid)
+                            for tc, queue in queues.items():
+                                active = collect(bid, tc, queue)
+                                if len(active) != len(queue):
+                                    await self._store_queue(bid, tc, active)
+                    except Exception as e:
+                        logger.warning(
+                            f"Redis get_queue_counts failed ({e}). Falling back to memory."
+                        )
+                        MatchmakerService._use_memory = True
+                        pool_users.clear()
+                        all_users.clear()
+                        for (bid, tc), queue in list(MatchmakerService._memory_queues.items()):
+                            active = collect(bid, tc, queue)
+                            if len(active) != len(queue):
+                                MatchmakerService._memory_queues[(bid, tc)] = active
+
+                excluded = {exclude_user_id} if exclude_user_id is not None else set()
+                return {
+                    'real_pool_queue_size': len(pool_users),
+                    'real_total_queue_size': len(all_users),
+                    'real_pool_opponents': len(pool_users - excluded),
+                    'real_total_opponents': len(all_users - excluded),
+                    'queue_size_source': 'server_shared_queue',
+                    'queue_size_counted_at': int(now),
+                }
+            finally:
+                if lock_token:
+                    await self._release_distributed_lock("global", lock_token)
+
     async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> None:
         """
         Add a user's connection to the matchmaking queue for a specific bid tier and time control.

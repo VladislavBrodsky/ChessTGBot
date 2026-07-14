@@ -8,6 +8,7 @@ from urllib.parse import quote
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
 from app.api.v1.endpoints.wallet import (
+    _split_web3_top_up,
     convert_ton_address_to_hex,
     convert_raw_to_friendly
 )
@@ -25,6 +26,14 @@ def test_address_converters():
     # Test invalid base64 length or letters
     with pytest.raises(ValueError):
         convert_ton_address_to_hex("invalid_address")
+
+
+@pytest.mark.parametrize(
+    ("received_cents", "credited_cents", "fee_cents"),
+    [(1050, 1000, 50), (1000, 952, 48), (1, 1, 0)],
+)
+def test_split_web3_top_up(received_cents, credited_cents, fee_cents):
+    assert _split_web3_top_up(received_cents) == (credited_cents, fee_cents)
 
 
 @pytest.mark.asyncio
@@ -206,6 +215,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         v_usdt_data = res_v_usdt.json()
         # 10 USDT * $1.00 = $10.00 = 1000 cents. Under new top-up fee math: 1000 / 1.05 = 952 cents.
         assert v_usdt_data["credited_amount"] == 952
+        assert v_usdt_data["fee"] == 48
         assert v_usdt_data["new_balance"] == 1452 # 500 + 952
 
         # Verify DB Transactions were written (stored under the resolved event_id/transaction hash msg_usdt_hash)
@@ -215,6 +225,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         tx = tx_res.scalars().first()
         assert tx is not None
         assert tx.amount == 952
+        assert tx.fee == 48
         assert tx.type == "deposit"
 
         # 5. Test Replay Protection
