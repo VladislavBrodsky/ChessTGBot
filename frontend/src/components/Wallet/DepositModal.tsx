@@ -36,9 +36,9 @@ const TRANSAK_MIN_USD = 15;
 
 // USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
 // The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
-// must only ever let a user deposit USDT. Users holding TON/BTC/etc. use the
-// Card tab's on-ramp to acquire USDT first. Do NOT re-add other assets here
-// without also re-enabling them in the backend credit paths.
+// must only ever settle USDT. Users holding BTC/ETH can use the conversion
+// order flow below, which pays USDTON into this same verified deposit path;
+// volatile assets are never credited directly.
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
 ];
@@ -52,6 +52,11 @@ const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
       <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin opacity-40" />
     </div>
   ),
+});
+
+const CrossChainDeposit = dynamic(() => import("./CrossChainDeposit"), {
+  ssr: false,
+  loading: () => null,
 });
 
 export default function DepositModal({
@@ -873,6 +878,16 @@ export default function DepositModal({
                 )}
               </div>
             )}
+
+            <CrossChainDeposit
+              onCredited={(creditedAmountCents) => {
+                funnelStateRef.current = 'completed';
+                setSuccessMessage(`$${(creditedAmountCents / 100).toFixed(2)} USDT credited from your cross-chain deposit.`);
+                setVerificationSuccess(true);
+                setShowConfetti(true);
+                onSuccess();
+              }}
+            />
 
             {/* Gas wall escape hatch */}
             {wallet && (

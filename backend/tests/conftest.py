@@ -275,6 +275,7 @@ async def db_session(test_engine):
             "user_tasks",
             "tasks",
             "game_history",
+            "cross_chain_deposits",
             "transactions",
             "xp_transactions",
             "broadcasts",

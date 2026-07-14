@@ -23,6 +23,10 @@ frontend build doubles as the typecheck.
 > Academy puzzle-instruction fixes (both merged to `main`, see below). Two new
 > code items from user feedback remain — see §1 (reduce-motion toggle,
 > game-only display name/avatar).
+>
+> **Cross-chain branch:** `feat/cross-chain-deposits` adds BTC/ETH conversion
+> deposits through Changelly, but is intentionally OFF until the activation
+> checklist below is completed. It has not been merged to `main` or deployed.
 
 ---
 
@@ -110,14 +114,51 @@ on-chain step entirely:
   Transak dashboard** (`NEXT_PUBLIC_TRANSAK_API_KEY` currently drives the
   card tab; STAGING default).
 
+### Cross-chain BTC/ETH deposits — implemented, activation-gated
+Branch `feat/cross-chain-deposits` adds a backend-only Changelly API client,
+fixed-rate quote/order/status endpoints, `cross_chain_deposits` tracking table
+(migration `c4d9a5e7b2f1`), and a deposit-modal flow for BTC and ETH. Changelly
+converts the source asset to **USDTON** and pays the existing master wallet with
+`ref_<telegram_id>`. The frontend section is hidden unless the feature flag and
+credentials are present.
+
+**Money invariant:** Changelly status NEVER credits a platform balance. A
+provider order can say `finished`, but credit still happens only after the
+existing TON path independently observes verified official USDT at the master
+wallet with the attribution memo. This preserves the one money-entry path and
+its existing transaction-hash deduplication.
+
+**Do not enable in production until all of these are complete:**
+1. Apply Alembic migration `c4d9a5e7b2f1` and obtain a Changelly partner API
+   key plus RSA PKCS#8 private key (hex DER form).
+2. Set `CHANGELLY_API_KEY`, `CHANGELLY_PRIVATE_KEY_HEX`,
+   `CHANGELLY_API_URL=https://api.changelly.com/v2`, and
+   `CHANGELLY_PAYOUT_CURRENCY=usdton`; leave
+   `CROSS_CHAIN_DEPOSITS_ENABLED=false` initially.
+3. Run one minimum-size BTC canary and one ETH canary. Confirm Changelly echoes
+   the master payout address and `ref_<telegram_id>`, then inspect the actual
+   USDTON jetton payout in Tonviewer/TonAPI and prove the memo survives in the
+   transfer notification. If the memo is absent, **do not enable** — users would
+   pay successfully but the deposit could not be attributed.
+4. Prove each canary credits exactly once through the normal crawler/webhook,
+   with the actual received USDT split by the existing 5% Web3 top-up rule.
+   Provider quote/status alone must never move `users.balance`.
+5. Review Changelly KYC/hold/refund behavior, supported countries, terms, and
+   provider disclosures; geo-block or disable the flow wherever required.
+6. Only then set `CROSS_CHAIN_DEPOSITS_ENABLED=true`. Watch provider failures,
+   stuck orders, unattributed master-wallet receipts, and duplicate-credit
+   alerts closely during the first live deposits.
+
+**Follow-up hardening after the canary:** add an admin order viewer and TREASURY
+alerts for paid/sending/finished orders that do not become an on-chain credited
+deposit within the chosen SLA. The current UI polls status; the deposit crawler
+continues independently if the user closes Telegram.
+
 ### Decision-gated (do NOT start without an explicit owner call)
 - **A5 hot wallet** — `PAYOUT_MNEMONIC` is a plaintext env var; leak = total
   drain. Cheapest real mitigation: dedicated payout wallet holding only a
   small float, topped up manually from cold storage (code change: none —
   just move funds + swap env vars). Bigger: signing service / multisig.
-- **Cross-chain deposits** — swap covers TON→USDT only. BTC/ETH holders need
-  an aggregator integration (swap.coffee / LetsExchange) or stay on the card
-  flow. Product decision first.
 - **Device fingerprinting (A1 residual)** — IP-based Sybil guards stop lazy
   farms; a determined IP-rotator needs client fingerprinting. Privacy/infra
   decision first.

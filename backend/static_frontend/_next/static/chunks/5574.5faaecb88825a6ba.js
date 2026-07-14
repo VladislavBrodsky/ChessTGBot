@@ -1,0 +1,1 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[5574],{8462:(n,e,t)=>{"use strict";t.r(e),t.d(e,{default:()=>s});var i=t(53041),r=t(19524);function s({children:n}){let e=`${window.location.origin}/tonconnect-manifest.json`;return e?(0,i.jsx)(r.Nl,{manifestUrl:e,children:n}):(0,i.jsx)(i.Fragment,{children:n})}},38482:()=>{},98308:()=>{}}]);
