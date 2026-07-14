@@ -107,104 +107,127 @@ export default function SelfCustodyBridge({
       </button>
 
       {open && (
-        <div className="pt-3 space-y-3">
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-[10px] font-bold text-brand-primary/70 leading-relaxed">
+        <div className="pt-4 space-y-4">
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-[10px] font-bold text-emerald-400 leading-relaxed shadow-[0_0_15px_rgba(16,185,129,0.1)]">
             Your assets stay under your wallet control. Bridge into your connected TON wallet first, then deposit the resulting USDT using the normal verified transfer above.
           </div>
 
-          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Source asset">
-            <button
-              type="button"
-              onClick={() => setRoute('eth')}
-              aria-pressed={route === 'eth'}
-              className={`rounded-xl border p-2.5 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 ${
-                route === 'eth'
-                  ? 'border-brand-primary/35 bg-brand-primary/10 text-brand-primary'
-                  : 'border-brand-border-opacity-10 text-brand-primary/45'
-              }`}
-            >
-              <FaEthereum /> Ethereum
-            </button>
-            <button
-              type="button"
-              onClick={() => setRoute('btc')}
-              aria-pressed={route === 'btc'}
-              className={`rounded-xl border p-2.5 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 ${
-                route === 'btc'
-                  ? 'border-brand-primary/35 bg-brand-primary/10 text-brand-primary'
-                  : 'border-brand-border-opacity-10 text-brand-primary/45'
-              }`}
-            >
-              <FaBitcoin /> Bitcoin
-            </button>
-          </div>
-
-          <div className="space-y-1.5">
-            <span className="block text-[9px] font-black uppercase tracking-wider text-brand-primary/45">
-              TON destination — your connected wallet
-            </span>
-            <button
-              type="button"
-              onClick={copyDestination}
-              className="w-full flex items-center justify-between gap-2 rounded-lg border border-brand-border-opacity-20 bg-brand-void p-3 text-left text-[10px] font-mono text-brand-primary"
-            >
-              <span className="break-all">{tonDestination}</span>
-              {copied
-                ? <FaCheck className="shrink-0 text-emerald-400" />
-                : <FaCopy className="shrink-0 opacity-50" />}
-            </button>
-            <p className="text-[9px] font-bold text-brand-primary/45 leading-relaxed">
-              Verify this exact address in every bridge confirmation. Never use the ChessTGBot master wallet as the bridge destination.
-            </p>
-          </div>
-
-          {route === 'eth' ? (
-            <div className="space-y-2">
-              <div className="rounded-xl border border-brand-border-opacity-10 bg-brand-void/40 p-3 text-[10px] font-bold text-brand-primary/65 leading-relaxed">
-                <span className="font-black text-brand-primary">1.</span> Open Stargate, connect your Ethereum wallet, choose USDT as the output asset and TON as the destination network, then paste your TON address above.
-              </div>
-              <button
-                type="button"
-                disabled={openingBridge}
-                onClick={() => launch(STARGATE_BRIDGE_URL, 'ethereum_to_ton_usdt', true)}
-                className="w-full rounded-xl bg-brand-primary py-3 text-[10px] font-black uppercase tracking-widest text-brand-void disabled:opacity-45 flex items-center justify-center gap-2"
-              >
-                Open non-custodial bridge <FaExternalLinkAlt />
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="rounded-xl border border-brand-border-opacity-10 bg-brand-void/40 p-3 text-[10px] font-bold text-brand-primary/65 leading-relaxed space-y-2">
-                <p><span className="font-black text-brand-primary">1.</span> Use THORSwap to exchange native BTC for USDT in your own Ethereum wallet.</p>
+          <div className="space-y-4 relative">
+            {/* Step 1 */}
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-0 w-5 h-5 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center text-[10px] font-black border border-brand-primary/40 shadow-[0_0_10px_rgba(255,215,0,0.2)]">1</div>
+              <div className="absolute left-2.5 top-6 bottom-[-16px] w-px bg-brand-border-opacity-20"></div>
+              
+              <h4 className="text-[10px] font-black uppercase tracking-wider text-brand-primary mb-2">Select Source Asset</h4>
+              <div className="grid grid-cols-2 gap-3" role="group" aria-label="Source asset">
                 <button
                   type="button"
-                  disabled={openingBridge}
-                  onClick={() => launch(THORSWAP_BTC_TO_USDT_URL, 'btc_to_ethereum_usdt', false)}
-                  className="w-full rounded-lg border border-brand-border-opacity-20 py-2.5 text-[9px] font-black uppercase tracking-widest text-brand-primary/75 flex items-center justify-center gap-2"
+                  onClick={() => setRoute('eth')}
+                  aria-pressed={route === 'eth'}
+                  className={`rounded-xl border p-3 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    route === 'eth'
+                      ? 'border-brand-primary bg-brand-primary/10 text-brand-primary shadow-[0_0_12px_rgba(255,215,0,0.15)]'
+                      : 'border-brand-border-opacity-10 text-brand-primary/45 hover:border-brand-primary/50'
+                  }`}
                 >
-                  Open BTC swap <FaExternalLinkAlt />
+                  <FaEthereum className="text-sm" /> Ethereum
                 </button>
-              </div>
-              <div className="rounded-xl border border-brand-border-opacity-10 bg-brand-void/40 p-3 text-[10px] font-bold text-brand-primary/65 leading-relaxed space-y-2">
-                <p><span className="font-black text-brand-primary">2.</span> Use Stargate to bridge that USDT from Ethereum to the TON address above.</p>
                 <button
                   type="button"
-                  disabled={openingBridge}
-                  onClick={() => launch(STARGATE_BRIDGE_URL, 'ethereum_to_ton_usdt', true)}
-                  className="w-full rounded-xl bg-brand-primary py-3 text-[10px] font-black uppercase tracking-widest text-brand-void disabled:opacity-45 flex items-center justify-center gap-2"
+                  onClick={() => setRoute('btc')}
+                  aria-pressed={route === 'btc'}
+                  className={`rounded-xl border p-3 text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    route === 'btc'
+                      ? 'border-brand-primary bg-brand-primary/10 text-brand-primary shadow-[0_0_12px_rgba(255,215,0,0.15)]'
+                      : 'border-brand-border-opacity-10 text-brand-primary/45 hover:border-brand-primary/50'
+                  }`}
                 >
-                  Open TON bridge <FaExternalLinkAlt />
+                  <FaBitcoin className="text-sm" /> Bitcoin
                 </button>
               </div>
             </div>
-          )}
 
-          <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-[9px] font-bold text-amber-300/80 leading-relaxed">
-            Check the route, destination, minimum received and network fees in your wallet before signing. Smart-contract and bridge risks still apply. A provider frontend may restrict access in some regions.
+            {/* Step 2 */}
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-0 w-5 h-5 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center text-[10px] font-black border border-brand-primary/40 shadow-[0_0_10px_rgba(255,215,0,0.2)]">2</div>
+              <div className="absolute left-2.5 top-6 bottom-[-16px] w-px bg-brand-border-opacity-20"></div>
+              
+              <h4 className="text-[10px] font-black uppercase tracking-wider text-brand-primary mb-2">Copy Destination Address</h4>
+              <div className="space-y-2">
+                <span className="block text-[9px] font-black uppercase tracking-wider text-brand-primary/45">
+                  TON destination — your connected wallet
+                </span>
+                <button
+                  type="button"
+                  onClick={copyDestination}
+                  className="w-full flex items-center justify-between gap-3 rounded-xl border border-brand-primary/30 bg-brand-void p-3.5 text-left text-[11px] font-mono text-brand-primary hover:bg-brand-primary/5 transition-colors shadow-inner"
+                >
+                  <span className="break-all">{tonDestination}</span>
+                  {copied
+                    ? <FaCheck className="shrink-0 text-emerald-400 text-sm" />
+                    : <FaCopy className="shrink-0 opacity-50 text-sm" />}
+                </button>
+                <p className="text-[9px] font-bold text-brand-primary/45 leading-relaxed">
+                  Verify this exact address in every bridge confirmation. Never use the ChessTGBot master wallet as the bridge destination.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative pl-8 pb-2">
+              <div className="absolute left-0 top-0 w-5 h-5 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center text-[10px] font-black border border-brand-primary/40 shadow-[0_0_10px_rgba(255,215,0,0.2)]">3</div>
+              
+              <h4 className="text-[10px] font-black uppercase tracking-wider text-brand-primary mb-2">Execute Bridge</h4>
+              
+              {route === 'eth' ? (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-3.5 text-[10px] font-bold text-brand-primary/80 leading-relaxed shadow-inner">
+                    Open Stargate, connect your Ethereum wallet, choose USDT as the output asset and TON as the destination network, then paste your TON address above.
+                  </div>
+                  <button
+                    type="button"
+                    disabled={openingBridge}
+                    onClick={() => launch(STARGATE_BRIDGE_URL, 'ethereum_to_ton_usdt', true)}
+                    className="w-full rounded-xl bg-brand-primary py-3.5 text-[11px] font-black uppercase tracking-widest text-brand-void disabled:opacity-45 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                  >
+                    Open non-custodial bridge <FaExternalLinkAlt />
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-3.5 text-[10px] font-bold text-brand-primary/80 leading-relaxed shadow-inner">
+                    <div className="mb-2"><span className="font-black text-brand-primary mr-1">A.</span> Use THORSwap to exchange native BTC for USDT in your own Ethereum wallet.</div>
+                    <button
+                      type="button"
+                      disabled={openingBridge}
+                      onClick={() => launch(THORSWAP_BTC_TO_USDT_URL, 'btc_to_ethereum_usdt', false)}
+                      className="w-full rounded-lg border border-brand-primary/50 bg-brand-void py-2.5 text-[10px] font-black uppercase tracking-widest text-brand-primary flex items-center justify-center gap-2 hover:bg-brand-primary/10 transition-colors mt-2"
+                    >
+                      Open BTC swap <FaExternalLinkAlt />
+                    </button>
+                  </div>
+                  <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-3.5 text-[10px] font-bold text-brand-primary/80 leading-relaxed shadow-inner">
+                    <div className="mb-2"><span className="font-black text-brand-primary mr-1">B.</span> Use Stargate to bridge that USDT from Ethereum to the TON address above.</div>
+                    <button
+                      type="button"
+                      disabled={openingBridge}
+                      onClick={() => launch(STARGATE_BRIDGE_URL, 'ethereum_to_ton_usdt', true)}
+                      className="w-full rounded-xl bg-brand-primary py-3 text-[11px] font-black uppercase tracking-widest text-brand-void disabled:opacity-45 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] mt-2"
+                    >
+                      Open TON bridge <FaExternalLinkAlt />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[9px] font-bold text-amber-300/80 leading-relaxed text-center mt-4">
+            <FaShieldAlt className="inline mr-1" /> Check the route, destination, minimum received and network fees in your wallet before signing. Smart-contract and bridge risks still apply.
           </div>
 
           {error && (
-            <div className="rounded-lg border border-rose-500/25 bg-rose-500/10 p-2.5 text-center text-[10px] font-bold text-rose-400">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-center text-[10px] font-bold text-rose-400">
               {error}
             </div>
           )}
