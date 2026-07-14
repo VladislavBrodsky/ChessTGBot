@@ -139,34 +139,9 @@ contracts, sufficient TON DEX liquidity, and successful wallet canaries.
   fails the suite if a multi-move puzzle is added before server-side
   incremental validation exists. Only relevant if content expands.
 
-### Minor polish leftovers (batch when convenient)
-- Onboarding is 4 dense slides (copy condensation, D2 residual).
-- ~280 locale strings (deposit/swap/gas flows) in ar/hi/ja/zh were
-  machine-authored this week — worth a native-speaker skim.
-
 ---
 
-## 2. Verification debt (needs a human with a device — F2)
-
-Everything below is tested in CI but **unproven in the live Telegram app**.
-~20 minutes with a real wallet holding ~2 TON:
-1. **Swap**: deposit modal → "Have TON but no USDT? Swap in-app" → swap ~1 TON.
-   Expect quote, STON.fi router as tx destination, then "USDT arrived —
-   prefilled" within ~1 min, then complete the deposit. Worst-case failure is
-   contained to the user's own wallet (router refunds failed swaps).
-2. **Gas grant**: from a wallet with USDT but no TON, tap "⛽ … free splash".
-   Expect bot DM + ~0.06 TON; a second tap must be refused (30-day cooldown).
-3. **Withdrawal confirmation**: request a sub-$500 withdrawal. Expect bot DM
-   with Confirm/Cancel; funds stay held until Confirm; Cancel refunds; an
-   ignored request auto-refunds after 30 min.
-4. **/start with a hostile display name** (symbols like `<`, `&` in the
-   Telegram name) — must reply normally (was crashing until `996c2102b`).
-5. Spot-check Arabic RTL, the deposit modal on a low-end phone (lite-fx), and
-   desktop sidebar UX.
-
----
-
-## 3. Owner / ops items (not code)
+## 2. Owner / ops items (not code)
 
 - **Branch protection on `main`** — CI exists but doesn't gate merges; multiple
   concurrent sessions push straight to a live money app (a crash shipped and
@@ -186,7 +161,7 @@ Everything below is tested in CI but **unproven in the live Telegram app**.
 
 ---
 
-## 4. Context a fresh session should know (don't re-derive)
+## 3. Context a fresh session should know (don't re-derive)
 
 - **Alert systems**: every admin alert is attributed to a named system
   (🎮 GAME CLIENT / ⚙️ CORE API / 💰 TREASURY / 🔌 REALTIME / 🛡️ SECURITY) via
@@ -224,7 +199,7 @@ Everything below is tested in CI but **unproven in the live Telegram app**.
 
 ---
 
-## 5. Production engagement baseline (historical 48h snapshot)
+## 4. Production engagement baseline (historical 48h snapshot)
 
 This section consolidates the former `HANDOVER2.md`. It is a dated baseline,
 not current production truth. The read-only source is
@@ -311,9 +286,9 @@ is `backend/scripts/engagement_48h.sql`.
 - Self-custodial bridge events are operational funnel signals only. They never
   credit platform balances; the eventual verified canonical TON USDT deposit
   is the settlement event growth reporting should count.
-- PR #9 fixed the Web3 top-up split: the UI sends requested credit plus a 5%
-  fee, and both on-chain credit paths calculate
-  `credited = round(total / 1.05)` and record the remainder as the fee.
+- The Web3 top-up split uses an inclusive 5% fee: the UI treats the submitted
+  amount as the total charge, and both on-chain credit paths calculate
+  `fee = round(total * 0.05)` and `credited = total - fee`.
 - At snapshot time the first two arenas had zero participants; the first arena
   under the four-slot regional schedule was live with two participants and two
   games. Region targeting had only just deployed.
