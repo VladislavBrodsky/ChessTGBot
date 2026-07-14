@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, BigInteger, Boolean, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.core.database import Base
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from typing import Optional
 
 class User(Base):
@@ -37,6 +37,8 @@ class User(Base):
     xp: Mapped[int] = mapped_column(BigInteger, default=0)
     referral_code: Mapped[Optional[str]] = mapped_column(String, unique=True, index=True, nullable=True)
     preferred_language: Mapped[str] = mapped_column(String, default='en')
+    study_streak: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_study_date: Mapped[Optional[date]] = mapped_column(DateTime, nullable=True)
 
     # Sybil tracking: hashed IP the account was created from, and when. Used to
     # refuse same-device referral attribution and to alert on one IP minting

@@ -17,19 +17,22 @@ const ORIGINS_LESSON_STEPS: LessonStep[] = [
     id: '1',
     type: 'text',
     title: 'The Royal Game',
-    content: '<div class="space-y-4"><p>Chess originated in India in the 6th century as <strong>Chaturanga</strong>. It evolved through Persia and Europe into the ultimate test of strategy.</p><div class="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10"><span class="block text-brand-primary font-bold mb-2 uppercase tracking-widest text-xs">Fact</span>For centuries, it has tested intellect and willpower.</div></div>'
+    content: '<div class="space-y-6"><p class="text-lg">Chess originated in India in the 6th century as <strong>Chaturanga</strong>. It evolved through Persia and Europe into the ultimate test of strategy.</p><div class="p-5 bg-brand-primary/5 rounded-2xl border border-brand-primary/10 shadow-sm"><span class="block text-brand-primary font-black mb-2 uppercase tracking-widest text-[10px]">Fact</span><p class="text-sm opacity-80">For centuries, it has tested intellect and willpower of kings and commoners alike.</p></div></div>',
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
   },
   {
     id: '2',
     type: 'text',
     title: 'The Ultimate Workout',
-    content: '<div class="space-y-4"><p>Playing chess is a full-brain workout. It activates both hemispheres, boosting memory and problem-solving.</p><div class="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20"><span class="block text-amber-500 font-bold mb-2 uppercase tracking-widest text-xs">Did you know?</span>Grandmasters can burn up to 6,000 calories a day during intense tournaments simply by thinking!</div></div>'
+    content: '<div class="space-y-6"><p class="text-lg">Playing chess is a full-brain workout. It activates both hemispheres, boosting memory and problem-solving.</p><div class="p-5 bg-amber-500/10 rounded-2xl border border-amber-500/20 shadow-sm"><span class="block text-amber-500 font-black mb-2 uppercase tracking-widest text-[10px]">Did you know?</span><p class="text-sm opacity-80">Grandmasters can burn up to 6,000 calories a day during intense tournaments simply by thinking!</p></div></div>',
+    fen: '1k1r3r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQ - 0 1'
   },
   {
     id: '3',
     type: 'text',
     title: 'Web3Chess',
-    content: '<div class="space-y-4"><p>In Web3Chess, your intellectual superiority becomes digital assets. Outsmart opponents, solve puzzles, and earn XP and USDT.</p><p class="font-bold text-green-400 text-lg text-center mt-6 uppercase tracking-wider animate-pulse">Play, Learn, Earn!</p></div>'
+    content: '<div class="space-y-6"><p class="text-lg">In Web3Chess, your intellectual superiority becomes digital assets. Outsmart opponents, solve puzzles, and earn XP and USDT.</p><div class="mt-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex flex-col items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.1)]"><p class="font-black text-emerald-400 text-2xl text-center uppercase tracking-[0.2em] animate-pulse">Play, Learn, Earn!</p></div></div>',
+    fen: 'r1bq1rk1/ppp2ppp/2n5/3pP3/3Pn3/2b2N2/PP2BPPP/R1BQ1RK1 w - - 0 1'
   }
 ];
 
@@ -38,7 +41,8 @@ const OPENING_LESSON_STEPS: LessonStep[] = [
  id: '1',
  type: 'text',
  title: 'The Opening Philosophy',
- content: '<div class="space-y-4"><p>Welcome to the Academy! The secret of the opening is: <strong>Time, Space, and Harmony</strong>.</p><p>The most critical principle is to <strong>control the center</strong>. Whoever controls the center dictates the flow of the game.</p></div>'
+ content: '<div class="space-y-6"><p class="text-lg">Welcome to the Academy! The secret of the opening is: <strong class="text-brand-primary">Time, Space, and Harmony</strong>.</p><p class="text-lg text-brand-primary/70">The most critical principle is to <strong class="text-brand-primary">control the center</strong>. Whoever controls the center dictates the flow of the game.</p></div>',
+ fen: 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
  },
  {
  id: '2',
@@ -68,7 +72,8 @@ const OPENING_LESSON_STEPS: LessonStep[] = [
  id: '4',
  type: 'text',
  title: 'King Safety',
- content: '<div class="space-y-4"><p>Once your center is established and minor pieces are developed, your final opening task is <strong>King Safety</strong>.</p><div class="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10"><span class="block text-brand-primary font-bold mb-2 uppercase tracking-widest text-xs">Rule</span>Always aim to <strong>castle early</strong> (usually within the first 10 moves). A king stuck in the center is a primary target.</div></div>'
+ content: '<div class="space-y-6"><p class="text-lg">Once your center is established and minor pieces are developed, your final opening task is <strong class="text-brand-primary">King Safety</strong>.</p><div class="p-5 bg-brand-primary/5 rounded-2xl border border-brand-primary/10 shadow-sm"><span class="block text-brand-primary font-black mb-2 uppercase tracking-widest text-[10px]">Rule</span><p class="text-sm opacity-80">Always aim to <strong class="text-brand-primary">castle early</strong> (usually within the first 10 moves). A king stuck in the center is a primary target.</p></div></div>',
+ fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 b kq - 5 5'
  }
 ];
 
@@ -77,7 +82,8 @@ const TACTICS_LESSON_STEPS: LessonStep[] = [
  id: '1',
  type: 'text',
  title: 'Forcing Moves',
- content: '<div class="space-y-4"><p>Tactics are short-term plans to win material or deliver checkmate.</p><div class="p-4 bg-rose-500/10 rounded-xl border border-rose-500/20"><span class="block text-rose-500 font-bold mb-2 uppercase tracking-widest text-xs">The Golden Rule</span>Look for <strong>Forcing Moves</strong>: Checks, Captures, and Threats.</div></div>'
+ content: '<div class="space-y-6"><p class="text-lg">Tactics are short-term plans to win material or deliver checkmate.</p><div class="p-5 bg-rose-500/10 rounded-2xl border border-rose-500/20 shadow-sm"><span class="block text-rose-500 font-black mb-2 uppercase tracking-widest text-[10px]">The Golden Rule</span><p class="text-sm opacity-80">Look for <strong class="text-rose-400">Forcing Moves</strong>: Checks, Captures, and Threats.</p></div></div>',
+ fen: 'r1bqk2r/pppp1ppp/2n5/2b1p3/2B1n3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 6'
  },
  {
  id: '2',
@@ -122,7 +128,8 @@ const ENDGAME_LESSON_STEPS: LessonStep[] = [
  id: '1',
  type: 'text',
  title: 'The Endgame Mindset',
- content: '<div class="space-y-4"><p>Welcome to the Endgame. The board is empty, pawns become future queens, and your King transforms into your most powerful attacking piece.</p></div>'
+ content: '<div class="space-y-6"><p class="text-lg leading-relaxed">Welcome to the Endgame. The board is empty, pawns become future queens, and your King transforms into your most powerful attacking piece.</p><p class="text-brand-primary/70">Mastering the endgame is the most reliable way to increase your chess rating.</p></div>',
+ fen: '8/p7/1p6/8/8/1P6/P7/8 w - - 0 1'
  },
  {
  id: '2',

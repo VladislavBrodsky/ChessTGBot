@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronRight, FaChevronLeft, FaCheck } from "react-icons/fa";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
+import { Chessboard } from "react-chessboard";
 
 export type LessonStepType = 'text' | 'video' | 'interactive_board';
 
@@ -73,24 +74,49 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  initial={{ opacity: 0, x: 20 }}
  animate={{ opacity: 1, x: 0 }}
  exit={{ opacity: 0, x: -20 }}
- className="w-full max-w-lg"
+ className="w-full max-w-4xl px-4"
  >
  <h2 className="text-2xl font-black tracking-tight text-brand-primary mb-4 text-center">
  {currentStep.title}
  </h2>
 
  {currentStep.type === 'text' && (
- <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 text-brand-primary opacity-80 leading-relaxed text-sm w-full max-w-full">
- <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
- {!stepComplete && (
- <button
- onClick={markComplete}
- className="mt-6 w-full py-3 bg-brand-bg-opacity-10 text-brand-primary font-bold uppercase tracking-widest rounded-xl hover:bg-brand-bg-opacity-20 transition-colors"
- >
- I Understand
- </button>
- )}
- </div>
+   <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-6 md:gap-8`}>
+     <div className="flex-1 glass-panel p-8 md:p-10 rounded-3xl border border-brand-border-opacity-10 shadow-lg flex flex-col justify-center min-h-[300px] relative overflow-hidden">
+       {/* Decorative subtle background glow */}
+       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+       
+       <div className="relative z-10 prose prose-invert prose-brand max-w-none text-brand-primary/90 leading-relaxed text-[15px]">
+         <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+       </div>
+       
+       {!stepComplete && (
+         <button
+           onClick={markComplete}
+           className="mt-8 w-full py-4 bg-brand-primary text-brand-void font-black uppercase tracking-widest rounded-xl hover:bg-white hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)] relative z-10"
+         >
+           I Understand
+         </button>
+       )}
+     </div>
+     
+     {currentStep.fen && (
+       <div className="flex-1 rounded-3xl overflow-hidden border border-brand-border-opacity-10 bg-black p-2 md:p-3 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex items-center justify-center max-w-sm mx-auto md:max-w-md w-full relative">
+         <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-inner">
+           {/* Glass overlay for static feeling */}
+           <div className="absolute inset-0 z-10 pointer-events-auto bg-transparent" />
+           <Chessboard 
+             id={`board-${currentStep.id}`}
+             position={currentStep.fen} 
+             boardOrientation={currentStep.boardOrientation || 'white'}
+             arePiecesDraggable={false}
+             customDarkSquareStyle={{ backgroundColor: '#7b9fb6' }}
+             customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
+           />
+         </div>
+       </div>
+     )}
+   </div>
  )}
 
  {currentStep.type === 'video' && (
