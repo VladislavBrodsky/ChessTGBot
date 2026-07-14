@@ -62,14 +62,3 @@ def upgrade() -> None:
     # If we just created it with default 'false', we should drop that default to match model.
     if 'is_premium' not in columns: 
         # We just added it with default 'false'
-        op.alter_column('users', 'is_premium', server_default=None)
-        
-    if 'balance' not in columns:
-        # We just added it with default '0'
-        op.alter_column('users', 'balance', server_default=None)
-
-def downgrade() -> None:
-    # Downgrade is dangerous for a repair script as it might remove columns 
-    # that existed before if logic was different. 
-    # We will skip dropping columns here to prevent accidental data loss.
-    pass

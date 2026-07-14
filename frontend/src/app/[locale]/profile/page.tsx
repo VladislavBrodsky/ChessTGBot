@@ -14,6 +14,71 @@ import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 
+// SVG Elo history chart component
+function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
+  const WIDTH = 300;
+  const HEIGHT = 80;
+  const PAD = 8;
+
+  if (!recentGames || recentGames.length === 0) {
+    // Empty state with subtle flat line
+    const midY = PAD + (HEIGHT - PAD * 2) / 2;
+    return (
+      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" style={{ height: HEIGHT }}>
+        <defs>
+          <linearGradient id="emptyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={`M ${PAD},${midY} L ${WIDTH - PAD},${midY}`} stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" fill="none" />
+        <text x={WIDTH / 2} y={HEIGHT / 2 + 4} textAnchor="middle" fill="#10b981" fontSize="9" opacity="0.4" fontWeight="700" letterSpacing="1">NO RATING HISTORY</text>
+      </svg>
+    );
+  }
+
+  // Reconstruct Elo history points (reverse chronological order)
+  const history = [currentElo];
+  let tempElo = currentElo;
+  for (let i = 0; i < Math.min(recentGames.length, 10); i++) {
+    tempElo -= (recentGames[i].elo_change || 0);
+    history.push(tempElo);
+  }
+  history.reverse(); // oldest to newest
+
+  const minVal = Math.min(...history) - 20;
+  const maxVal = Math.max(...history) + 20;
+  const range = maxVal - minVal;
+
+  const pts = history.map((val, i) => {
+    const x = PAD + (i / (history.length - 1)) * (WIDTH - PAD * 2);
+    const y = PAD + (1 - (val - minVal) / range) * (HEIGHT - PAD * 2);
+    return { x, y, val };
+  });
+
+  const pathD = pts.map((p, i) => (i === 0 ? `M ${p.x},${p.y}` : `L ${p.x},${p.y}`)).join(' ');
+  const areaD = `${pathD} L ${pts[pts.length - 1].x},${HEIGHT - PAD} L ${pts[0].x},${HEIGHT - PAD} Z`;
+
+  const isPositiveTrend = history[history.length - 1] >= history[0];
+  const strokeColor = isPositiveTrend ? "#10b981" : "#f43f5e"; // Emerald if up, Rose if down
+
+  return (
+    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full drop-shadow-sm" style={{ height: HEIGHT }}>
+      <defs>
+        <linearGradient id="eloChartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={strokeColor} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={areaD} fill="url(#eloChartGrad)" />
+      <path d={pathD} stroke={strokeColor} strokeWidth="2" fill="none" strokeLinejoin="round" />
+      {pts.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="3" fill={strokeColor} className="drop-shadow-md" />
+      ))}
+    </svg>
+  );
+}
+
 export default function ProfilePage() {
  const t = useTranslations('Index');
  const locale = useLocale();
@@ -200,6 +265,17 @@ export default function ProfilePage() {
           <span className="text-[10px] font-bold text-brand-primary opacity-40">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
       </div>
+    </Card>
+  )}
+
+  {/* ELO History Chart */}
+  {stats && (
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 space-y-2">
+      <div className="flex justify-between items-center px-1 mb-2">
+        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">Rating Trajectory</span>
+        <span className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest">Last 10 Games</span>
+      </div>
+      <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
     </Card>
   )}
 
