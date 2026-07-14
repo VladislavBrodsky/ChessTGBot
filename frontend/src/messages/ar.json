@@ -86,7 +86,10 @@
     "upgrade_for_access": "افتح الوصول المتقدم",
     "arena_alerts": "تنبيهات الحلبة",
     "arena_alerts_on": "مفعّل",
-    "arena_alerts_off": "متوقف"
+    "arena_alerts_off": "متوقف",
+    "reduce_motion": "تقليل الحركة",
+    "reduce_motion_on": "مفعّل",
+    "reduce_motion_off": "متوقف"
   },
   "Language": {
     "select": "اختر اللغة"

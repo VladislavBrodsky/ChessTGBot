@@ -1001,7 +1001,7 @@ body {
  * frame, and the large animated background blur blobs stop drifting. This cuts
  * continuous GPU compositing on exactly the devices that struggle with it, with
  * zero effect on users who haven't opted in. Framer-motion animations are
- * handled separately via <MotionConfig reducedMotion="user"> in Providers.tsx.
+ * handled separately by ReducedMotionProvider.
  */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1058,6 +1058,46 @@ body {
     animation: none !important;
     background-position: 0% 50% !important;
   }
+}
+
+/*
+ * In-app reduced-motion preference. The pre-hydration script in layout.tsx
+ * stamps this attribute before paint, so Tailwind pulse/ping utilities and
+ * custom CSS animations do not flash briefly on page load. Framer Motion is
+ * switched to reducedMotion="always" by ReducedMotionProvider.
+ */
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob1,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob2,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob3,
+:root[data-reduce-motion="true"] .premium-liquid-border::before,
+:root[data-reduce-motion="true"] .premium-liquid-border::after,
+:root[data-reduce-motion="true"] .premium-liquid-border,
+:root[data-reduce-motion="true"] .animate-shimmer,
+:root[data-reduce-motion="true"] .animate-radar-sweep,
+:root[data-reduce-motion="true"] .animate-active-portal,
+:root[data-reduce-motion="true"] .play-chess-card-premium::before,
+:root[data-reduce-motion="true"] .play-chess-card-premium::after,
+:root[data-reduce-motion="true"] .premium-liquid-button {
+  animation: none !important;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob1,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob2,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob3 {
+  will-change: auto;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-button {
+  background-position: 0% 50% !important;
 }
 
 /*
@@ -1197,6 +1237,5 @@ body {
 [dir="rtl"] .right-5 { left: 1.25rem !important; right: auto !important; }
 [dir="rtl"] .right-6 { left: 1.5rem !important; right: auto !important; }
 [dir="rtl"] .right-8 { left: 2rem !important; right: auto !important; }
-
 
 

@@ -3,12 +3,12 @@
 import { ReactNode, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { MotionConfig } from 'framer-motion';
 import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
 import ClientErrorReporter from './ClientErrorReporter';
 import TelemetryReporter from './TelemetryReporter';
+import { ReducedMotionProvider } from '@/context/ReducedMotionContext';
 
 // Lazy-load the TON Connect provider so its JS chunk (the TON SDK) and its
 // network cost (wallets-v2.json + ~35 wallet icon PNGs from config.ton.org) are
@@ -42,11 +42,9 @@ export default function Providers({ children }: { children: ReactNode }) {
     }, []);
 
     const inner = (
-        // reducedMotion="user" makes every framer-motion animation respect the
-        // OS "reduce motion" setting — disabling the app-wide infinite pulses,
-        // pings and drifts for users who opt in (often low-end devices), cutting
-        // continuous compositing work without changing the default experience.
-        <MotionConfig reducedMotion="user">
+        // This keeps OS-level reduced motion as the default and upgrades Framer
+        // Motion to "always" when the persisted in-app preference is enabled.
+        <ReducedMotionProvider>
             <ClientErrorReporter />
             <TelemetryReporter />
             <Suspense fallback={null}>
@@ -55,7 +53,7 @@ export default function Providers({ children }: { children: ReactNode }) {
             <CustomAlertModal />
             <TaskSuccessModal />
             {children}
-        </MotionConfig>
+        </ReducedMotionProvider>
     );
 
     if (needsTonConnect) {

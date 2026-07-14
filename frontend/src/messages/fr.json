@@ -86,7 +86,10 @@
     "upgrade_for_access": "Débloquez l'accès avancé",
     "arena_alerts": "Alertes d'Arène",
     "arena_alerts_on": "Activées",
-    "arena_alerts_off": "Désactivées"
+    "arena_alerts_off": "Désactivées",
+    "reduce_motion": "Réduire les animations",
+    "reduce_motion_on": "Activé",
+    "reduce_motion_off": "Désactivé"
   },
   "Language": {
     "select": "Choisir la Langue"

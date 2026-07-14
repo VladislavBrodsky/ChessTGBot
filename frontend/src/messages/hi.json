@@ -86,7 +86,10 @@
     "upgrade_for_access": "उन्नत एक्सेस अनलॉक करें",
     "arena_alerts": "एरिना अलर्ट",
     "arena_alerts_on": "चालू",
-    "arena_alerts_off": "बंद"
+    "arena_alerts_off": "बंद",
+    "reduce_motion": "गति कम करें",
+    "reduce_motion_on": "चालू",
+    "reduce_motion_off": "बंद"
   },
   "Language": {
     "select": "भाषा चुनें"

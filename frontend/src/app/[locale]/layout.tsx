@@ -79,6 +79,8 @@ export default async function LocaleLayout({
                                     } else {
                                         document.documentElement.setAttribute('data-theme', 'dark');
                                     }
+                                    var reduceMotion = localStorage.getItem('setting_reduce_motion') === 'true';
+                                    document.documentElement.setAttribute('data-reduce-motion', String(reduceMotion));
                                 } catch (e) {}
                             })();
                         `

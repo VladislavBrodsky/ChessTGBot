@@ -96,7 +96,10 @@
     "faq_a4": "Premium grants you access to all Academy lessons, advanced puzzles, exclusive profile badges, custom chessboards, and priority matchmaking.",
     "arena_alerts": "Arena Alerts",
     "arena_alerts_on": "On",
-    "arena_alerts_off": "Off"
+    "arena_alerts_off": "Off",
+    "reduce_motion": "Reduce Motion",
+    "reduce_motion_on": "On",
+    "reduce_motion_off": "Off"
   },
   "Language": {
     "select": "Choose Language"
