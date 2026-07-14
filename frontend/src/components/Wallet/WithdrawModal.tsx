@@ -43,8 +43,8 @@ export default function WithdrawModal({
   // Withdrawal Submission
   const handleWithdrawSubmit = async () => {
     const amt = parseFloat(withdrawAmount);
-    if (isNaN(amt) || amt <= 0) {
-      setErrorMessage(tw('invalid_amount'));
+    if (isNaN(amt) || amt < 10) {
+      setErrorMessage("Minimum withdrawal amount is $10.00 USDT");
       return;
     }
 
@@ -142,28 +142,55 @@ export default function WithdrawModal({
           </div>
 
           {/* Input amount */}
-          <div className="flex flex-col space-y-1">
-            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('withdraw_amount')}</label>
-            <input
-              type="number"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              className="cyber-input w-full p-3 rounded-xl border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-sm font-bold focus:outline-none focus:border-brand-primary transition-all"
-              placeholder={tw('amount_placeholder')}
-            />
+          <div className="flex flex-col space-y-1.5">
+            <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest flex items-center justify-between">
+              <span>{tw('withdraw_amount')}</span>
+              <span className="text-[8px] opacity-60">Min. $10.00</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[11px] font-black font-mono">$</span>
+              <input
+                type="number"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 pl-8 pr-4 text-sm text-brand-primary font-black focus:outline-none focus:border-brand-primary/50 transition-all"
+                placeholder={tw('amount_placeholder')}
+                min="10"
+              />
+            </div>
           </div>
 
           {/* Input Target Wallet */}
-          <div className="flex flex-col space-y-1">
-            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('target_address')}</label>
+          <div className="flex flex-col space-y-1.5">
+            <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest">{tw('target_address')}</label>
             <input
               type="text"
               value={withdrawAddress}
               onChange={(e) => setWithdrawAddress(e.target.value)}
-              className="cyber-input w-full p-3 rounded-xl border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-xs font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary transition-all"
+              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary/50 transition-all truncate"
               placeholder={tw('target_placeholder')}
             />
           </div>
+
+          {/* Fee Breakdown Display */}
+          {!isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
+            <div className="p-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 space-y-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60">
+              <div className="flex justify-between">
+                <span>Requested Amount:</span>
+                <span className="font-mono">${parseFloat(withdrawAmount).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-rose-400">
+                <span>Network Fee:</span>
+                <span className="font-mono">-$0.20</span>
+              </div>
+              <div className="flex justify-between border-t border-brand-border-opacity-10 pt-2 mt-1 font-black text-brand-primary">
+                <span>You Will Receive:</span>
+                <span className="font-mono text-emerald-400">
+                  ${Math.max(0, parseFloat(withdrawAmount) - 0.20).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Safety Checklist */}
           <div className="flex flex-col space-y-2 pt-2">

@@ -157,7 +157,7 @@ export default function WalletPage() {
           <span className="opacity-20">•</span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/40" />
-            {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">{tw('free')}</strong>
+            {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">$0.20</strong>
           </span>
         </div>
 

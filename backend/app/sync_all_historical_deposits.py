@@ -174,8 +174,8 @@ async def run_historical_sync():
                                 if existing_tx_result.scalars().first():
                                     continue
                                     
-                                credited_amount = int(round(amount_cents / 1.05))
-                                fee = amount_cents - credited_amount
+                                from app.api.v1.endpoints.wallet import _split_web3_top_up
+                                credited_amount, fee = _split_web3_top_up(amount_cents)
                                 
                                 user.balance += credited_amount
                                 db.add(user)

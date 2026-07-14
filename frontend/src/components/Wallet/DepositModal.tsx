@@ -199,7 +199,7 @@ export default function DepositModal({
       return;
     }
     const price = prices[currency] || 1.0;
-    const chargedUsd = usd * 1.05;
+    const chargedUsd = usd;
     const tokens = chargedUsd / price;
 
     if (currency === 'BTC') {
@@ -300,7 +300,7 @@ export default function DepositModal({
       if (!selectedCurrencyObj) throw new Error("Invalid currency selection");
 
       const price = prices[currency] || 1.0;
-      const chargedAmt = amt * 1.05;
+      const chargedAmt = amt;
       const tokensNeeded = chargedAmt / price;
       const decimals = selectedCurrencyObj.decimals;
       const amountUnits = BigInt(Math.round(tokensNeeded * Math.pow(10, decimals)));
@@ -805,7 +805,7 @@ export default function DepositModal({
               <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60">
                 <div className="flex justify-between">
                   <span>Credited to Balance:</span>
-                  <span className="text-emerald-400 font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
+                  <span className="text-emerald-400 font-mono">${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Platform Fee (5%):</span>
@@ -813,7 +813,7 @@ export default function DepositModal({
                 </div>
                 <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
                   <span>Total Charged:</span>
-                  <span className="font-mono">${(parseFloat(depositAmount) * 1.05).toFixed(2)}</span>
+                  <span className="font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -826,7 +826,7 @@ export default function DepositModal({
                 className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaWallet size={11} />
-                <span>Connect Wallet to Top Up</span>
+                <span>{walletAddress ? "Reconnect Wallet App" : "Connect Wallet to Top Up"}</span>
               </button>
             ) : (
               <button
@@ -922,28 +922,30 @@ export default function DepositModal({
               </button>
 
               {showManualFallback && (
-                <div className="space-y-3 pt-3">
+                <div className="space-y-4 pt-4">
 
-                  {/* ── Critical memo warning banner ── */}
-                  <div className="p-3.5 rounded-xl border-2 border-rose-500/60 bg-rose-500/10 flex flex-col gap-2 animate-pulse-slow">
-                    <div className="flex items-start gap-2">
-                      <span className="text-rose-400 text-base leading-none shrink-0 mt-0.5">🚨</span>
-                      <p className="text-[10px] font-black text-rose-300 uppercase tracking-wider leading-snug">
-                        YOU MUST INCLUDE THE MEMO COMMENT BELOW IN YOUR TRANSFER.
+                  {/* ── Info Banner ── */}
+                  <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/10 flex flex-col gap-2 backdrop-blur-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                        <span className="text-amber-400 text-[10px] font-black">i</span>
+                      </div>
+                      <p className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
+                        Important: Memo Required
                       </p>
                     </div>
-                    <p className="text-[10px] font-bold text-rose-300/70 leading-snug pl-6">
-                      Transfers sent WITHOUT the exact comment <span className="font-black text-rose-300">({memoComment})</span> cannot be attributed to your account and will be permanently lost. No refunds are possible.
+                    <p className="text-[10px] font-bold text-amber-400/80 leading-relaxed pl-6">
+                      Please ensure you include your unique memo comment below so we can correctly attribute the deposit to your account.
                     </p>
                   </div>
 
                   {/* ── Step 1: Copy destination address ── */}
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest">
                       Step 1 — {tw('destination')}
                     </label>
                     <div
-                      className="cyber-input w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary transition-all"
+                      className="group w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary/50 transition-all"
                       onClick={() => {
                         copyToClipboard(masterWallet).then((ok) => {
                           if (!ok) return;
@@ -962,19 +964,20 @@ export default function DepositModal({
                         {copiedWallet ? (
                           <FaCheck className="text-emerald-400 animate-pulse" />
                         ) : (
-                          <FaCopy className="text-brand-primary opacity-40" />
+                          <FaCopy className="text-brand-primary opacity-40 group-hover:opacity-100 transition-opacity" />
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* ── Step 2: Copy memo comment — highlighted ── */}
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-black text-rose-400 uppercase tracking-widest">
-                      Step 2 — {tw('comment_memo')} &nbsp;<span className="text-rose-500">★ REQUIRED ★</span>
+                  {/* ── Step 2: Copy memo comment ── */}
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black text-brand-primary opacity-80 uppercase tracking-widest flex items-center gap-2">
+                      <span>Step 2 — {tw('comment_memo')}</span>
+                      <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-[8px] font-black">REQUIRED</span>
                     </label>
                     <div
-                      className="cyber-input w-full p-3 rounded-xl border-2 border-rose-500/50 bg-rose-500/5 text-rose-300 text-[11px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-rose-400 transition-all shadow-[0_0_12px_rgba(244,63,94,0.15)]"
+                      className="group w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 text-brand-primary text-[11px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-brand-primary/60 hover:bg-brand-primary/10 transition-all"
                       onClick={() => {
                         copyToClipboard(memoComment).then((ok) => {
                           if (!ok) return;
@@ -994,29 +997,29 @@ export default function DepositModal({
                         {copiedMemo ? (
                           <><FaCheck className="text-emerald-400 animate-pulse" /><span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">Copied!</span></>
                         ) : (
-                          <><FaCopy className="text-rose-400 opacity-70" /><span className="text-[10px] font-black text-rose-400/70 uppercase tracking-wider">Tap to copy</span></>
+                          <><FaCopy className="text-brand-primary opacity-40 group-hover:opacity-100 transition-opacity" /><span className="text-[10px] font-black text-brand-primary/40 group-hover:text-brand-primary/70 uppercase tracking-wider transition-colors">Copy</span></>
                         )}
                       </div>
                     </div>
                   </div>
 
                   {/* ── Step 3: Memo confirmation checkbox ── */}
-                  <label className="flex items-start gap-2.5 cursor-pointer group">
+                  <label className="flex items-start gap-2.5 cursor-pointer group pt-1">
                     <input
                       type="checkbox"
                       checked={memoConfirmed}
                       onChange={(e) => setMemoConfirmed(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded accent-emerald-500 cursor-pointer shrink-0"
+                      className="mt-0.5 w-4 h-4 rounded border-brand-primary/30 accent-brand-primary cursor-pointer shrink-0"
                     />
-                    <span className="text-[10px] font-bold text-brand-primary/70 group-hover:text-brand-primary leading-snug transition-colors">
+                    <span className="text-[10px] font-bold text-brand-primary/60 group-hover:text-brand-primary/90 leading-relaxed transition-colors">
                       I have copied the exact memo comment <span className="font-black text-brand-primary">({memoComment})</span> and will include it in my transfer.
                     </span>
                   </label>
 
-                  {/* ── Step 4: Verify hash — only enabled after checkbox ── */}
-                  <div className={`flex flex-col space-y-1.5 pt-2 border-t border-brand-border-opacity-10 mt-1 transition-opacity ${memoConfirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                    <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
-                      Step 3 — Already paid? Paste transaction hash / event ID to verify:
+                  {/* ── Step 4: Verify hash ── */}
+                  <div className={`flex flex-col space-y-2 pt-3 border-t border-brand-border-opacity-10 transition-opacity duration-300 ${memoConfirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                    <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest">
+                      Step 3 — Already paid? Paste transaction hash to verify:
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -1025,13 +1028,13 @@ export default function DepositModal({
                         disabled={processing || !memoConfirmed}
                         onChange={(e) => setManualTxHash(e.target.value)}
                         placeholder="e.g. 0:abcd... or msg_hash..."
-                        className="flex-1 bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2 px-3 text-[10px] text-brand-primary font-mono focus:outline-none focus:border-brand-primary h-[34px]"
+                        className="flex-1 bg-brand-void border border-brand-border-opacity-20 rounded-xl py-2.5 px-3.5 text-[10px] text-brand-primary font-mono focus:outline-none focus:border-brand-primary/50 transition-colors"
                       />
                       <button
                         type="button"
                         disabled={processing || !manualTxHash.trim() || !memoConfirmed}
                         onClick={handleManualVerify}
-                        className="px-3 rounded-lg bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-[10px] font-black text-brand-primary hover:bg-brand-bg-opacity-20 transition-all uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-[34px]"
+                        className="px-4 rounded-xl bg-brand-primary text-brand-void text-[10px] font-black hover:bg-brand-primary-hover transition-all uppercase tracking-wider disabled:opacity-40 disabled:bg-brand-primary/50 disabled:cursor-not-allowed shrink-0"
                       >
                         {processing ? "Checking..." : "Verify"}
                       </button>

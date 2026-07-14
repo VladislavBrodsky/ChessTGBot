@@ -100,8 +100,9 @@ def _is_usdt_master(jetton_master_address: str) -> bool:
 
 def _split_web3_top_up(total_amount_cents: int) -> tuple[int, int]:
     """Split a Web3 transfer into requested credit and its 5% top-up fee."""
-    credited_amount = int(round(total_amount_cents / 1.05))
-    return credited_amount, total_amount_cents - credited_amount
+    fee = int(round(total_amount_cents * 0.05))
+    credited_amount = total_amount_cents - fee
+    return credited_amount, fee
 
 
 _master_usdt_jetton_wallet_cache = {"hex": None}
@@ -1317,6 +1318,59 @@ async def stripe_create_session(
         logger.error(f"Failed to create Stripe checkout session: {e}")
         raise HTTPException(status_code=500, detail="Stripe session creation failed.")
 
+async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, session_id: str) -> bool:
+    """
+    Idempotent, row-locked credit function for Stripe deposits.
+    Returns True if credited just now, False if already credited or failed.
+    """
+    tx_result = await db.execute(
+        select(Transaction).filter(
+            Transaction.id == tx_id,
+            Transaction.user_id == user_id
+        ).with_for_update()
+    )
+    tx = tx_result.scalars().first()
+    
+    if tx and tx.status == "pending":
+        user_result = await db.execute(
+            select(User).filter(User.telegram_id == user_id).with_for_update()
+        )
+        user = user_result.scalars().first()
+        
+        if user:
+            tx.status = "completed"
+            user.balance += tx.amount
+            
+            fee_tx = Transaction(
+                user_id=user_id,
+                type="deposit_fee",
+                amount=-tx.fee,
+                fee=0,
+                status="completed",
+                reference_id=f"fee_{session_id[:16]}"
+            )
+            db.add(fee_tx)
+            db.add(user)
+            db.add(tx)
+            await db.commit()
+            
+            try:
+                from app.services.telegram_bot import TelegramService
+                notification_text = (
+                    f"<b>💳 Card Top-Up Confirmed!</b>\n\n"
+                    f"• <b>Payment Method:</b> Credit/Debit Card\n"
+                    f"• <b>Amount Credited:</b> +${tx.amount / 100:.2f} USD\n"
+                    f"• <b>Platform Top-Up Fee (5%):</b> -${tx.fee / 100:.2f} USD\n"
+                    f"• <b>Stripe Session:</b> <code>{session_id[:20]}...</code>\n\n"
+                    f"<i>Your balance has been updated. Platform Balance: ${user.balance / 100:.2f} USD. Let's play! ♟️🎮</i>"
+                )
+                await TelegramService.send_notification(user_id, notification_text)
+            except Exception as notify_err:
+                logger.warning(f"Failed to send telegram notification: {notify_err}")
+                
+            return True
+    return False
+
 
 @router.get("/stripe/verify-session", response_model=StripeVerifyResponse)
 async def stripe_verify_session(
@@ -1335,7 +1389,20 @@ async def stripe_verify_session(
     if not tx:
         raise HTTPException(status_code=404, detail="Transaction not found.")
         
-    # Re-fetch user to get the latest balance after webhooks processed
+    if tx.status == "pending":
+        from app.core.config import get_settings
+        settings = get_settings()
+        if settings.STRIPE_SECRET_KEY:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            try:
+                session = stripe.checkout.Session.retrieve(session_id)
+                if session.get("payment_status") == "paid":
+                    await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
+                    await db.refresh(tx)
+            except Exception as e:
+                logger.error(f"Error querying stripe in verify: {e}")
+
+    # Re-fetch user to get the latest balance after webhooks/verify processed
     user_result = await db.execute(select(User).filter(User.telegram_id == current_user.telegram_id))
     db_user = user_result.scalars().first()
         
@@ -1596,58 +1663,10 @@ async def stripe_webhook(
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
-            # Lock the user and transaction to avoid race conditions
-            tx_result = await db.execute(
-                select(Transaction).filter(
-                    Transaction.id == tx_id,
-                    Transaction.user_id == user_id
-                ).with_for_update()
-            )
-            tx = tx_result.scalars().first()
+            credited = await _credit_stripe_deposit(db, tx_id, user_id, session.get('id', ''))
             
-            if tx and tx.status == "pending":
-                # Get the user
-                user_result = await db.execute(
-                    select(User).filter(User.telegram_id == user_id).with_for_update()
-                )
-                user = user_result.scalars().first()
-                
-                if user:
-                    # Update status
-                    tx.status = "completed"
-                    user.balance += tx.amount
-                    
-                    # Also log the fee transaction separately for ledger clarity
-                    fee_tx = Transaction(
-                        user_id=user_id,
-                        type="deposit_fee",
-                        amount=-tx.fee,
-                        fee=0,
-                        status="completed",
-                        reference_id=f"fee_{session.get('id', '')[:16]}"
-                    )
-                    db.add(fee_tx)
-                    
-                    db.add(user)
-                    db.add(tx)
-                    await db.commit()
-                    
-                    # Send telegram notification
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        notification_text = (
-                            f"<b>💳 Card Top-Up Confirmed!</b>\n\n"
-                            f"• <b>Payment Method:</b> Credit/Debit Card\n"
-                            f"• <b>Amount Credited:</b> +${tx.amount / 100:.2f} USD\n"
-                            f"• <b>Platform Top-Up Fee (5%):</b> -${tx.fee / 100:.2f} USD\n"
-                            f"• <b>Stripe Session:</b> <code>{session.get('id', '')[:20]}...</code>\n\n"
-                            f"<i>Your balance has been updated. Platform Balance: ${user.balance / 100:.2f} USD. Let's play! ♟️🎮</i>"
-                        )
-                        await TelegramService.send_notification(user_id, notification_text)
-                    except Exception as notify_err:
-                        logger.warning(f"Failed to send telegram notification: {notify_err}")
-                        
-                    return {"status": "success", "message": "Transaction credited successfully."}
+            if credited:
+                return {"status": "success", "message": "Transaction credited successfully."}
             else:
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
