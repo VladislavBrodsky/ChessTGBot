@@ -626,9 +626,16 @@ function TransactionsTab() {
   if (typeFilter) params.set('type', typeFilter);
   if (statusFilter) params.set('status', statusFilter);
 
-  const { data, isLoading: loading } = useSWRFetch(`/api/v1/admin/transactions?${params}`);
+  const {
+    data,
+    isLoading: loading,
+    isValidating,
+    error,
+    mutate: retryTransactions,
+  } = useSWRFetch(`/api/v1/admin/transactions?${params}`);
   const txs: Transaction[] = data?.transactions || [];
   const total = data?.total || 0;
+  const initialLoadFailed = Boolean(error) && !data;
 
   const pages = Math.max(1, Math.ceil(total / 25));
   const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee', 'chargeback', 'refund'];
@@ -674,6 +681,30 @@ function TransactionsTab() {
         </span>
       </div>
 
+      {error && data && (
+        <div
+          role="alert"
+          className="mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex items-start gap-2.5">
+            <FaTriangleExclamation className="mt-0.5 shrink-0 text-red-400" />
+            <div>
+              <p className="text-xs font-black text-red-300">Couldn&apos;t refresh transactions</p>
+              <p className="mt-0.5 text-[10px] text-brand-muted">Showing the last successfully loaded data.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => { void retryTransactions(); }}
+            disabled={isValidating}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-400/25 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-red-300 transition-colors hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <FaArrowsRotate className={isValidating ? 'animate-spin' : ''} />
+            {isValidating ? 'Retrying…' : 'Retry'}
+          </button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="premium-neon-card overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
@@ -685,11 +716,34 @@ function TransactionsTab() {
             </tr>
           </thead>
           <tbody>
-            {loading && txs.length === 0 ? (
+            {loading && !data ? (
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">
                 <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
                 Loading…
               </td></tr>
+            ) : initialLoadFailed ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-12 text-center">
+                  <div role="alert" className="mx-auto flex max-w-sm flex-col items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10 text-red-400">
+                      <FaTriangleExclamation />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-brand-primary">Couldn&apos;t load transactions</p>
+                      <p className="mt-1 text-[11px] text-brand-muted">The request failed. No transaction data was returned.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { void retryTransactions(); }}
+                      disabled={isValidating}
+                      className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white transition-colors hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <FaArrowsRotate className={isValidating ? 'animate-spin' : ''} />
+                      {isValidating ? 'Retrying…' : 'Retry'}
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ) : txs.length === 0 ? (
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">No transactions</td></tr>
             ) : txs.map(tx => (
@@ -734,7 +788,7 @@ function TransactionsTab() {
         </table>
       </div>
 
-      <Pagination page={page} pages={pages} onPage={setPage} />
+      {!initialLoadFailed && <Pagination page={page} pages={pages} onPage={setPage} />}
     </div>
   );
 }
