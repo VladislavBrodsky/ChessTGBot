@@ -40,9 +40,10 @@ interface ChessBoardProps {
     showConfetti?: boolean;
     autoPromoteToQueen?: boolean;
     customSquareStyles?: { [square: string]: any };
+    customArrows?: string[][];
 }
 
-export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false, customSquareStyles = {} }: ChessBoardProps) {
+export default function ChessBoardComponent({ fen, onMove, orientation = "white", showConfetti = false, autoPromoteToQueen = false, customSquareStyles = {}, customArrows = [] }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
@@ -317,6 +318,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 borderRadius: "12px",
                                 overflow: "hidden",
                             },
+                            customArrows: customArrows,
                             animationDurationInMs: 250,
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {

@@ -18,6 +18,8 @@ export interface LessonStep {
   boardOrientation?: 'white' | 'black';
   hintText?: string;
   successExplanation?: string;
+  arrows?: string[][];
+  highlightSquares?: string[];
 }
 
 interface LessonViewerProps {
@@ -122,6 +124,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
         hintsEnabled={true}
         hintText={currentStep.hintText}
         successExplanation={currentStep.successExplanation}
+        arrows={currentStep.arrows}
+        highlightSquares={currentStep.highlightSquares}
       />
     </div>
   )}

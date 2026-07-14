@@ -16,6 +16,8 @@ interface PuzzleBoardProps {
   hintsEnabled?: boolean;
   hintText?: string;
   successExplanation?: string;
+  arrows?: string[][];
+  highlightSquares?: string[];
 }
 
 export default function PuzzleBoard({ 
@@ -27,7 +29,9 @@ export default function PuzzleBoard({
   orientation = 'white', 
   hintsEnabled = false,
   hintText,
-  successExplanation
+  successExplanation,
+  arrows,
+  highlightSquares
 }: PuzzleBoardProps) {
   const [game, setGame] = useState(new Chess(initialFen, { skipValidation: true }));
   const [moveIndex, setMoveIndex] = useState(0);
@@ -238,9 +242,21 @@ export default function PuzzleBoard({
   };
 
   const customSquareStyles: { [square: string]: any } = {};
+  if (highlightSquares) {
+    highlightSquares.forEach(sq => {
+      customSquareStyles[sq] = { backgroundColor: 'rgba(255, 215, 0, 0.3)' }; // Subtle gold highlight for instructional squares
+    });
+  }
+  
   if (hintMove) {
     customSquareStyles[hintMove.from] = { backgroundColor: 'rgba(16, 185, 129, 0.4)' };
     customSquareStyles[hintMove.to] = { backgroundColor: 'rgba(16, 185, 129, 0.7)' };
+  }
+
+  let finalArrows = arrows || [];
+  if (hintMove) {
+    // If a hint is active, also draw an arrow for the hint move
+    finalArrows = [...finalArrows, [hintMove.from, hintMove.to]];
   }
 
   return (
@@ -251,6 +267,7 @@ export default function PuzzleBoard({
           onMove={onMove}
           orientation={orientation}
           customSquareStyles={customSquareStyles}
+          customArrows={finalArrows.length > 0 ? finalArrows : undefined}
         />
       </div>
 
@@ -308,14 +325,18 @@ export default function PuzzleBoard({
 
       {status === 'correct' && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center flex flex-col items-center gap-2"
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="text-center flex flex-col items-center gap-3 w-full"
         >
-          <h3 className="text-xl font-black text-green-400">PUZZLE SOLVED!</h3>
+          <div className="flex items-center gap-2 bg-green-500/10 text-green-400 px-4 py-1.5 rounded-full border border-green-500/20">
+            <FaFlag className="text-sm" />
+            <h3 className="text-sm font-black uppercase tracking-widest">SOLVED</h3>
+          </div>
           {dynamicSuccessExplanation ? (
-            <div className="text-xs font-medium text-green-400/90 bg-green-500/10 border border-green-500/20 rounded-xl p-3 mt-1 mb-2 max-w-[90%] mx-auto">
-              {dynamicSuccessExplanation}
+            <div className="text-xs font-medium text-brand-primary opacity-90 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
+              <span className="text-[10px] font-black uppercase text-green-400 mb-2 block tracking-widest">Grandmaster Explanation:</span>
+              <div dangerouslySetInnerHTML={{ __html: dynamicSuccessExplanation }} />
             </div>
           ) : (
             <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
