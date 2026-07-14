@@ -131,16 +131,16 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -20 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-panel w-full max-w-md rounded-3xl p-8 shadow-premium overflow-hidden flex flex-col justify-between min-h-[480px] relative z-10"
+        className="glass-panel w-[calc(100%-2rem)] max-w-[420px] rounded-[32px] p-8 shadow-premium overflow-hidden flex flex-col justify-between min-h-[500px] relative z-10"
       >
         {/* Skip button top right */}
         <button
           onClick={handleComplete}
-          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+          className="absolute top-5 right-5 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none"
           title={t('skip')}
           aria-label={t('skip')}
         >
-          <FaTimes className="text-lg" />
+          <FaTimes className="text-xl" />
         </button>
 
         {/* Content Slider */}
@@ -162,15 +162,15 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               </div>
 
               {/* Title & Subtitle */}
-              <span className={`text-[10px] font-black tracking-[0.2em] uppercase mb-2 ${slides[currentSlide].accentColor}`}>
+              <span className={`text-xs font-black tracking-[0.2em] uppercase mb-3 ${slides[currentSlide].accentColor}`}>
                 {slides[currentSlide].subtitle}
               </span>
-              <h2 id="onboarding-title" className="text-2xl font-black text-white tracking-tight mb-4 leading-snug drop-shadow-md">
+              <h2 id="onboarding-title" className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
                 {slides[currentSlide].title}
               </h2>
 
               {/* Description */}
-              <p id="onboarding-desc" className="text-brand-muted text-sm leading-relaxed max-w-[300px]">
+              <p id="onboarding-desc" className="text-slate-600 dark:text-slate-400 text-[15px] leading-relaxed max-w-[320px]">
                 {slides[currentSlide].description}
               </p>
             </motion.div>
@@ -178,9 +178,9 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         </div>
 
         {/* Navigation Section */}
-        <div className="mt-10 flex flex-col items-center gap-6 relative z-10">
+        <div className="mt-8 flex flex-col items-center gap-8 relative z-10">
           {/* Slide Indicator Dots */}
-          <div className="flex justify-center gap-2" role="tablist" aria-label="Onboarding Progress">
+          <div className="flex justify-center gap-2.5" role="tablist" aria-label="Onboarding Progress">
             {slides.map((_, idx) => (
               <button
                 key={idx}
@@ -191,42 +191,41 @@ export default function Onboarding({ onClose }: OnboardingProps) {
                 role="tab"
                 aria-selected={idx === currentSlide}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                className={`h-2.5 rounded-full transition-all duration-500 focus:outline-none ${
                   idx === currentSlide 
-                    ? 'w-8 bg-purple-500 shadow-[0_0_8px_#a855f7]' 
-                    : 'w-2 bg-white/20 hover:bg-white/40'
+                    ? 'w-10 bg-brand-primary shadow-[0_0_12px_rgba(99,102,241,0.6)]' 
+                    : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'
                 }`}
               />
             ))}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-between items-center w-full gap-4">
-            <button
-              onClick={handleBack}
-              disabled={currentSlide === 0}
-              aria-label={t('back')}
-              className={`glass-button flex items-center gap-2 px-5 py-3.5 font-bold text-xs tracking-wider uppercase transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                currentSlide === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'
-              }`}
-            >
-              <FaArrowLeft className="text-[10px]" /> {t('back')}
-            </button>
+          <div className="flex w-full gap-4">
+            {currentSlide > 0 && (
+              <button
+                onClick={handleBack}
+                aria-label={t('back')}
+                className="glass-button flex items-center justify-center w-14 h-14 rounded-2xl transition-all active:scale-95 focus:outline-none flex-shrink-0"
+              >
+                <FaArrowLeft className="text-lg" />
+              </button>
+            )}
 
             <button
               onClick={handleNext}
               aria-label={currentSlide === slides.length - 1 ? t('get_started') : t('next')}
-              className={`flex flex-1 items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-xs tracking-wider uppercase shadow-lg transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+              className={`flex flex-1 items-center justify-center gap-2 px-6 h-14 rounded-2xl font-black text-sm tracking-[0.15em] uppercase shadow-lg transition-all active:scale-95 focus:outline-none ${
                 currentSlide === slides.length - 1
-                  ? 'action-button bg-purple-600 text-white'
-                  : 'bg-white text-black hover:bg-gray-100'
+                  ? 'action-button bg-brand-primary text-white'
+                  : 'glass-button bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               {currentSlide === slides.length - 1 ? (
                 t('get_started')
               ) : (
                 <>
-                  {t('next')} <FaArrowRight className="text-[10px]" />
+                  {t('next')} <FaArrowRight className="text-sm" />
                 </>
               )}
             </button>
