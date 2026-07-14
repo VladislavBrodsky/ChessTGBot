@@ -26,8 +26,9 @@ frontend build doubles as the typecheck.
 >
 > **Cross-chain branch:** `feat/cross-chain-deposits` now uses a self-custodial
 > BTC/ETH → user TON wallet → verified USDT deposit flow. The earlier Changelly
-> API/order implementation was removed. The UI remains build-time OFF until the
-> live route canaries below pass. It has not been merged to `main` or deployed.
+> API/order implementation was removed. The owner accepted activation without
+> funded mainnet canaries; the UI now defaults ON and retains an explicit
+> build-time emergency kill switch. It has not been merged to `main` or deployed.
 
 ---
 
@@ -141,9 +142,11 @@ it public testnet-only and warns not to send real funds. Reconsider a direct
 BTC → tgBTC → USDT route only after a documented mainnet launch, audited
 contracts, sufficient TON DEX liquidity, and successful wallet canaries.
 
-**Do not enable in production until all of these are complete:**
-1. Keep `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false` for normal builds.
-2. On a private/canary build, run a minimum Ethereum route and inspect the TON
+**Post-activation validation and monitoring:**
+1. The owner accepted activation without funded ETH/BTC canaries. The bridge
+   defaults ON; set `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false` and rebuild
+   as an emergency response if a route is unsafe or misbehaves.
+2. When funds are available, run a minimum Ethereum route and inspect the TON
    output jetton master. It MUST be canonical TON USDT
    `EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs`; an OFT/wrapped USDT
    representation is not accepted and must not be presented as a deposit.
@@ -158,8 +161,8 @@ contracts, sufficient TON DEX liquidity, and successful wallet canaries.
 6. Review THORSwap/Stargate terms, frontend geography restrictions, protocol
    risks, supported wallets, and disclosures. "No exchange account" does not
    remove ChessTGBot's own legal/compliance obligations.
-7. Only then set `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=true`, rebuild both
-   Next.js outputs, and watch bridge-open → arrival → deposit telemetry.
+7. Watch bridge-open → arrival → deposit telemetry. Disable the bridge with the
+   kill switch if canonical asset delivery or settlement behavior is uncertain.
 
 ### Decision-gated (do NOT start without an explicit owner call)
 - **A5 hot wallet** — `PAYOUT_MNEMONIC` is a plaintext env var; leak = total

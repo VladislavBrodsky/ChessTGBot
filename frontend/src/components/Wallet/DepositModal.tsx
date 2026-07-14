@@ -33,10 +33,10 @@ interface DepositModalProps {
 const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
 const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
 const TRANSAK_MIN_USD = 15;
-// Keep the external bridge flow hidden until both live routes have delivered
-// the canonical TON USDT jetton in wallet canaries. Build-time opt-in prevents
-// an unverified route from appearing merely because the code is deployed.
-const SELF_CUSTODY_BRIDGE_ENABLED = process.env.NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED === 'true';
+// The owner has accepted activation without funded mainnet canaries. Keep an
+// explicit emergency off switch so operators can hide the external routes if a
+// provider becomes unsafe or stops delivering canonical TON USDT.
+const SELF_CUSTODY_BRIDGE_ENABLED = process.env.NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED !== 'false';
 
 // USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
 // The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
@@ -862,7 +862,7 @@ export default function DepositModal({
             )}
 
             {/* TON → USDT in-app swap (STON.fi) */}
-            {wallet && SELF_CUSTODY_BRIDGE_ENABLED && (
+            {wallet && (
               <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
                 <button
                   type="button"
@@ -883,7 +883,7 @@ export default function DepositModal({
               </div>
             )}
 
-            {wallet && (
+            {wallet && SELF_CUSTODY_BRIDGE_ENABLED && (
               <SelfCustodyBridge
                 walletRawAddress={wallet.account.address}
                 onBridgeStarted={async () => {

@@ -202,13 +202,15 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
 5. **Transak direct credit remains blocked on owner configuration.** Obtain the
    production API key and webhook secret before implementing signed
    `ORDER_COMPLETED` handling and order-id deduplication.
-6. **Activate self-custodial BTC/ETH deposits only after live canaries.** Branch
+6. **Monitor the activated self-custodial BTC/ETH deposit guide.** Branch
    `feat/cross-chain-deposits` removed Changelly and now guides wallet-owned
-   THORSwap/Stargate routes into the user's TON wallet. It defaults OFF via
-   `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false`. Prove each route delivers
-   canonical TON USDT (not a wrapped/OFT representation), the arrival watcher
-   sees it, and the user's subsequent normal deposit credits exactly once. See
-   `HANDOVER.md` for the full activation and compliance checklist.
+   THORSwap/Stargate routes into the user's TON wallet. The owner accepted
+   activation without funded mainnet canaries, so it defaults ON. Set
+   `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED=false` and rebuild as an emergency
+   kill switch. When funds are available, prove each route delivers canonical
+   TON USDT (not a wrapped/OFT representation), the arrival watcher sees it,
+   and the user's subsequent normal deposit credits exactly once. See
+   `HANDOVER.md` for the full monitoring and compliance checklist.
 
 ## Tracking gaps to add (so the next read is sharper)
 - Deposit-funnel events: `deposit_modal_open → initiated → address_copied →
