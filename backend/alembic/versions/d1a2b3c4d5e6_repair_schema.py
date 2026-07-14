@@ -62,3 +62,4 @@ def upgrade() -> None:
     # If we just created it with default 'false', we should drop that default to match model.
     if 'is_premium' not in columns: 
         # We just added it with default 'false'
+        pass
