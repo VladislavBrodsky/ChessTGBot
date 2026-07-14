@@ -318,7 +318,7 @@ export default function ChessBoardComponent({ fen, onMove, orientation = "white"
                                 borderRadius: "12px",
                                 overflow: "hidden",
                             },
-                            customArrows: customArrows,
+                            arrows: customArrows as any,
                             animationDurationInMs: 250,
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {

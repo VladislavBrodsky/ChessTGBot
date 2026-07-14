@@ -16,20 +16,20 @@ const ORIGINS_LESSON_STEPS: LessonStep[] = [
   {
     id: '1',
     type: 'text',
-    title: 'Origins of the Royal Game',
-    content: '<p>Chess is believed to have originated in India in the 6th century under the name <strong>Chaturanga</strong>. From there, it spread to Persia, the Islamic world, and eventually Europe, evolving into the modern game we know today.</p><p class="mt-4">For centuries, it has been the ultimate test of strategy, intellect, and willpower between two minds.</p>'
+    title: 'The Royal Game',
+    content: '<div class="space-y-4"><p>Chess originated in India in the 6th century as <strong>Chaturanga</strong>. It evolved through Persia and Europe into the ultimate test of strategy.</p><div class="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10"><span class="block text-brand-primary font-bold mb-2 uppercase tracking-widest text-xs">Fact</span>For centuries, it has tested intellect and willpower.</div></div>'
   },
   {
     id: '2',
     type: 'text',
-    title: 'The Ultimate Brain Workout',
-    content: '<p>Playing chess is a full-brain workout. It activates both hemispheres of your brain, improving memory, cognitive function, and problem-solving skills.</p><p class="mt-4">Grandmasters have been known to burn up to 6,000 calories a day during intense tournaments simply by thinking hard. By training your mind here, you are sharpening your focus for real life.</p>'
+    title: 'The Ultimate Workout',
+    content: '<div class="space-y-4"><p>Playing chess is a full-brain workout. It activates both hemispheres, boosting memory and problem-solving.</p><div class="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20"><span class="block text-amber-500 font-bold mb-2 uppercase tracking-widest text-xs">Did you know?</span>Grandmasters can burn up to 6,000 calories a day during intense tournaments simply by thinking!</div></div>'
   },
   {
     id: '3',
     type: 'text',
-    title: 'Web3Chess: Massive Gains',
-    content: '<p>Here in Web3Chess, your intellectual superiority translates directly into digital assets. Every time you outsmart an opponent, complete a puzzle, or invite a friend, you earn XP and USDT.</p><p class="mt-4">You are no longer just playing a game; you are participating in a decentralized intellectual economy. <strong>Play, learn, and earn massive gains!</strong></p>'
+    title: 'Web3Chess',
+    content: '<div class="space-y-4"><p>In Web3Chess, your intellectual superiority becomes digital assets. Outsmart opponents, solve puzzles, and earn XP and USDT.</p><p class="font-bold text-green-400 text-lg text-center mt-6 uppercase tracking-wider animate-pulse">Play, Learn, Earn!</p></div>'
   }
 ];
 
@@ -37,8 +37,8 @@ const OPENING_LESSON_STEPS: LessonStep[] = [
  {
  id: '1',
  type: 'text',
- title: 'The Philosophy of the Opening',
- content: '<p>Welcome to the Academy! As a professional coach, I\'ll tell you the secret of the opening: <strong>Time, Space, and Harmony</strong>.</p><p class="mt-4">The most critical principle is to <strong>control the center</strong> (the squares d4, e4, d5, e5). Whoever controls the center dictates the flow of the game, just like claiming the high ground in a battle.</p>'
+ title: 'The Opening Philosophy',
+ content: '<div class="space-y-4"><p>Welcome to the Academy! The secret of the opening is: <strong>Time, Space, and Harmony</strong>.</p><p>The most critical principle is to <strong>control the center</strong>. Whoever controls the center dictates the flow of the game.</p></div>'
  },
  {
  id: '2',
@@ -47,24 +47,28 @@ const OPENING_LESSON_STEPS: LessonStep[] = [
  content: 'Play <strong>1. e4</strong> to stake a claim in the center and open lines for your Bishop and Queen.',
  fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
  solution: ['e2e4'],
- hintText: 'The center squares are d4, e4, d5, e5. Move your e-pawn two squares forward to e4.',
- successExplanation: 'Excellent! 1. e4 controls d5 and f5, and frees your light-squared bishop and queen for rapid development.'
+ hintText: 'The center squares are highlighted in gold. Move your e-pawn two squares forward to e4.',
+ successExplanation: 'Excellent! <strong>1. e4</strong> controls d5 and f5, freeing your light-squared bishop and queen for rapid development.',
+ highlightSquares: ['d4', 'e4', 'd5', 'e5'],
+ arrows: [['e2', 'e4']]
  },
  {
  id: '3',
  type: 'interactive_board',
  title: 'Develop with Purpose',
- content: 'Now that the center is claimed, bring out your minor pieces (Knights before Bishops). Develop your Kingside Knight to its most active square.',
+ content: 'Now that the center is claimed, bring out your minor pieces (Knights before Bishops). Develop your Kingside Knight.',
  fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
  solution: ['g1f3'],
  hintText: 'Develop the Knight on g1 to f3, attacking the black pawn on e5.',
- successExplanation: 'Perfect! 2. Nf3 develops a piece, controls the center, and attacks Black\'s pawn on e5 immediately. Knights belong on c3 and f3.'
+ successExplanation: 'Perfect! <strong>2. Nf3</strong> develops a piece, controls the center, and attacks Black\'s pawn on e5 immediately.',
+ highlightSquares: ['f3'],
+ arrows: [['g1', 'f3']]
  },
  {
  id: '4',
  type: 'text',
  title: 'King Safety',
- content: '<p>Once your center is established and minor pieces are developed, your final opening task is <strong>King Safety</strong>.</p><p class="mt-4">Always aim to <strong>castle early</strong> (usually within the first 10 moves). A king stuck in the center is a primary target for tactical combinations.</p>'
+ content: '<div class="space-y-4"><p>Once your center is established and minor pieces are developed, your final opening task is <strong>King Safety</strong>.</p><div class="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10"><span class="block text-brand-primary font-bold mb-2 uppercase tracking-widest text-xs">Rule</span>Always aim to <strong>castle early</strong> (usually within the first 10 moves). A king stuck in the center is a primary target.</div></div>'
  }
 ];
 
@@ -73,7 +77,7 @@ const TACTICS_LESSON_STEPS: LessonStep[] = [
  id: '1',
  type: 'text',
  title: 'Forcing Moves',
- content: '<p>Tactics are the execution of short-term plans to win material or deliver checkmate. The golden rule of tactics is to look for <strong>Forcing Moves</strong>: Checks, Captures, and Threats.</p>'
+ content: '<div class="space-y-4"><p>Tactics are short-term plans to win material or deliver checkmate.</p><div class="p-4 bg-rose-500/10 rounded-xl border border-rose-500/20"><span class="block text-rose-500 font-bold mb-2 uppercase tracking-widest text-xs">The Golden Rule</span>Look for <strong>Forcing Moves</strong>: Checks, Captures, and Threats.</div></div>'
  },
  {
  id: '2',
@@ -82,8 +86,10 @@ const TACTICS_LESSON_STEPS: LessonStep[] = [
  content: 'A <strong>fork</strong> is when one piece attacks two pieces simultaneously. Find the Knight fork that attacks both the King and the Rook.',
  fen: 'r3k3/8/8/3N4/8/8/8/4K3 w q - 0 1',
  solution: ['d5c7'],
- hintText: 'Look for a square where the Knight can deliver a check to the King on e8 while simultaneously attacking the Rook on a8.',
- successExplanation: 'Brilliant! Nc7+ forces the King to move out of check, leaving the Rook defenseless on the next turn. This is a classic Royal Fork.'
+ hintText: 'Move the Knight to c7 to attack both the King on e8 and the Rook on a8.',
+ successExplanation: 'Brilliant! <strong>Nc7+</strong> forces the King to move out of check, leaving the Rook defenseless. This is a classic Royal Fork.',
+ highlightSquares: ['c7'],
+ arrows: [['c7', 'e8'], ['c7', 'a8']]
  },
  {
  id: '3',
@@ -92,18 +98,22 @@ const TACTICS_LESSON_STEPS: LessonStep[] = [
  content: 'A <strong>pin</strong> paralyzes an enemy piece. Find a move that pins the Black Queen to the King.',
  fen: '4k3/8/8/4q3/8/8/8/R3K3 w - - 0 1',
  solution: ['a1e1'],
- hintText: 'Find a piece that can attack the Queen while lining up perfectly with the King behind it on the e-file.',
- successExplanation: 'Great job! Re1 creates an Absolute Pin. The Black Queen cannot move because doing so would expose the King to check, which is illegal. The Queen is lost.'
+ hintText: 'Bring your Rook to e1 to attack the Queen. The Queen cannot move because the King is behind it.',
+ successExplanation: 'Great job! <strong>Re1</strong> creates an Absolute Pin. The Black Queen cannot move because doing so would expose the King to check.',
+ highlightSquares: ['e1'],
+ arrows: [['a1', 'e1'], ['e1', 'e5'], ['e5', 'e8']]
  },
  {
  id: '4',
  type: 'interactive_board',
  title: 'The Skewer',
- content: 'A <strong>skewer</strong> is the opposite of a pin: you attack the more valuable piece first, forcing it to move and exposing a lesser piece behind it. Skewer the King to win the Queen.',
- fen: '8/4k3/8/8/4q3/8/8/4R1K1 w - - 0 1',
- solution: ['e1e4', 'e1e7'],
- hintText: 'Bring your Rook to the same file as the King and Queen, attacking the King first.',
- successExplanation: 'Nailed it! Re7+ forces the King to move. Once the King escapes the check, the Queen behind him falls. A deadly skewer!'
+ content: 'A <strong>skewer</strong> is the opposite of a pin: you attack the more valuable piece first. Skewer the King to win the Queen.',
+ fen: '8/4q3/8/8/4k3/8/8/R5K1 w - - 0 1',
+ solution: ['a1e1'],
+ hintText: 'Move your Rook to e1 to check the King. When he moves, the Queen falls.',
+ successExplanation: 'Nailed it! <strong>Re1+</strong> forces the King to move. Once he escapes, the Queen behind him falls. A deadly skewer!',
+ highlightSquares: ['e1'],
+ arrows: [['a1', 'e1'], ['e1', 'e4'], ['e4', 'e7']]
  }
 ];
 
@@ -112,7 +122,7 @@ const ENDGAME_LESSON_STEPS: LessonStep[] = [
  id: '1',
  type: 'text',
  title: 'The Endgame Mindset',
- content: '<p>Welcome to the Endgame. Here, the board is empty, pawns become future queens, and your King transforms from a VIP hiding in a bunker into your most powerful attacking piece.</p>'
+ content: '<div class="space-y-4"><p>Welcome to the Endgame. The board is empty, pawns become future queens, and your King transforms into your most powerful attacking piece.</p></div>'
  },
  {
  id: '2',
@@ -121,18 +131,22 @@ const ENDGAME_LESSON_STEPS: LessonStep[] = [
  content: 'Use your two Rooks to push the enemy King to the edge of the board. Deliver the final blow.',
  fen: '4k3/6R1/8/8/8/8/8/R3K3 w - - 0 1',
  solution: ['a1a8'],
- hintText: 'The Rook on g7 prevents the King from stepping forward. Use your other Rook to attack the rank the King is on.',
- successExplanation: 'Checkmate! By alternating ranks, the two rooks act like feet climbing a ladder, forcing the king to the edge with nowhere left to run.'
+ hintText: 'Move the a1 rook to the 8th rank to deliver checkmate.',
+ successExplanation: 'Checkmate! By alternating ranks, the two rooks act like feet climbing a ladder, forcing the king to the edge.',
+ highlightSquares: ['a8'],
+ arrows: [['a1', 'a8'], ['a8', 'e8'], ['g7', 'e7']]
  },
  {
  id: '3',
  type: 'interactive_board',
- title: 'The Box Checkmate (Q vs K)',
+ title: 'The Box Checkmate',
  content: 'When you have a Queen, you must trap the King in a "box". Move the Queen a Knight\'s distance away from the King to shrink the box.',
  fen: '8/8/8/4k3/8/8/8/1Q2K3 w - - 0 1',
  solution: ['b1b4', 'b1f5', 'b1g6', 'b1d3'],
- hintText: 'Move the Queen to a square where it forms an "L" shape (like a Knight\'s move) relative to the black King on e5.',
- successExplanation: 'Well done! By staying a Knight\'s move away, you systematically shrink the box the King can walk in until he is trapped in the corner.'
+ hintText: 'Move the Queen to b4, staying a Knight-jump away from the King.',
+ successExplanation: 'Well done! By staying a Knight\'s move away, you systematically shrink the box the King can walk in until he is trapped.',
+ highlightSquares: ['b4'],
+ arrows: [['b1', 'b4']]
  }
 ];
 
