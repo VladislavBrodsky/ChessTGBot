@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { useTranslations } from 'next-intl';
+import { useNavbar } from '@/context/NavbarContext';
 
 interface ModalState {
   type: 'alert' | 'confirm';
@@ -15,6 +16,14 @@ interface ModalState {
 export default function CustomAlertModal() {
   const t = useTranslations('AlertModal');
   const [modal, setModal] = useState<ModalState | null>(null);
+  const { pushHide, popHide } = useNavbar();
+
+  useEffect(() => {
+    if (modal) {
+      pushHide();
+      return () => popHide();
+    }
+  }, [modal, pushHide, popHide]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

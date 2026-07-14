@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
 import { FaTrophy, FaCoins } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
+import { useNavbar } from '@/context/NavbarContext';
 
 interface SuccessState {
   title: string;
@@ -14,6 +15,14 @@ interface SuccessState {
 export default function TaskSuccessModal() {
   const [success, setSuccess] = useState<SuccessState | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const { pushHide, popHide } = useNavbar();
+
+  useEffect(() => {
+    if (success) {
+      pushHide();
+      return () => popHide();
+    }
+  }, [success, pushHide, popHide]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

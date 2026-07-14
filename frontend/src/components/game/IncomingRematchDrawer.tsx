@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { FaChessKnight, FaCheck, FaTimes, FaRegClock } from "react-icons/fa";
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
 interface IncomingRematchDrawerProps {
   incomingRematch: {
@@ -22,6 +23,7 @@ export default function IncomingRematchDrawer({
   onDecline,
 }: IncomingRematchDrawerProps) {
   const tg = useTranslations('Game');
+  useNavbarHideWhileMounted();
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop">

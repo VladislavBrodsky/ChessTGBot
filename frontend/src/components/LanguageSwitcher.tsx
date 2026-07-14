@@ -6,6 +6,7 @@ import { useState, useTransition, useEffect } from 'react';
 import { FaGlobe, FaCheck, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
+import { useNavbar } from '@/context/NavbarContext';
 
 export default function LanguageSwitcher() {
     const t = useTranslations('Language');
@@ -15,6 +16,14 @@ export default function LanguageSwitcher() {
     const [isPending, startTransition] = useTransition();
     const [isOpen, setIsOpen] = useState(false);
     const [canClose, setCanClose] = useState(false);
+    const { pushHide, popHide } = useNavbar();
+
+    useEffect(() => {
+        if (isOpen) {
+            pushHide();
+            return () => popHide();
+        }
+    }, [isOpen, pushHide, popHide]);
 
     // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
     useEffect(() => {

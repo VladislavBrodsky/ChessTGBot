@@ -6,6 +6,7 @@ import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
 import { copyToClipboard } from "@/lib/clipboard";
+import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
 interface WalletSelectorModalProps {
   onClose: () => void;
@@ -67,6 +68,7 @@ export default function WalletSelectorModal({
   const [connecting, setConnecting] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [canClose, setCanClose] = useState(false);
+  useNavbarHideWhileMounted();
 
   // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
   useEffect(() => {
