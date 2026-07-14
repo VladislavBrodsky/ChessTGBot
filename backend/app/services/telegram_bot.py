@@ -344,7 +344,6 @@ class TelegramService:
             xp_lbl = msgs.get("xp_label", "XP")
 
             welcome_msg = (
-                f"⚡ <b>FINCHESS ARENA</b> <i>v1.5</i>\n"
                 f"{msgs['greeting'].format(name=name)}\n"
                 f"🏅 <b>{level_lbl} {user_level}</b> • <b>{user_xp} {xp_lbl}</b>\n"
                 f"[<code>{bar}</code>] (<i>+{xp_to_next}</i>)\n\n"

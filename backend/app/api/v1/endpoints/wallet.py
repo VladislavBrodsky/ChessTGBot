@@ -912,7 +912,9 @@ async def get_jetton_wallet(
     settings = get_settings()
     
     import httpx
-    url = f"https://tonapi.io/v2/accounts/{user_address}/jettons/{jetton_master}"
+    # Use runGetMethod to deterministically calculate the Jetton wallet address
+    # This avoids 404 errors if the user has never held the token before.
+    url = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address?args={user_address}"
     headers = {}
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
@@ -922,11 +924,12 @@ async def get_jetton_wallet(
             res = await client.get(url, headers=headers)
             if res.status_code == 200:
                 data = res.json()
-                jetton_wallet = data.get("wallet_address", {}).get("address", "")
-                if jetton_wallet:
-                    # Convert to friendly address format
-                    friendly = convert_raw_to_friendly(jetton_wallet)
-                    return {"jetton_wallet_address": friendly}
+                if data.get("success") and "decoded" in data:
+                    jetton_wallet = data["decoded"].get("jetton_wallet_address", "")
+                    if jetton_wallet:
+                        # Convert to friendly address format
+                        friendly = convert_raw_to_friendly(jetton_wallet)
+                        return {"jetton_wallet_address": friendly}
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning(f"Failed to fetch jetton wallet from TonAPI: {e}")

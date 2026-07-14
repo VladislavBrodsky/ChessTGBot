@@ -48,7 +48,7 @@ export default function IncomingRematchDrawer({
         animate={{ opacity: 1, scale: 1, y: 0 }} 
         exit={{ opacity: 0, scale: 0.9, y: 15 }} 
         transition={{ type: "spring", damping: 25, stiffness: 380 }}
-        className="relative w-full max-w-[290px] bg-brand-surface/95 border border-brand-border-opacity-10 rounded-3xl p-5 shadow-premium backdrop-blur-xl flex flex-col items-center text-center space-y-4"
+        className="relative w-full max-w-[290px] bg-brand-surface border border-brand-border-opacity-10 rounded-3xl p-5 shadow-premium flex flex-col items-center text-center space-y-4 transform-gpu will-change-transform"
       >
         {/* Brand/Chess icon badge */}
         <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">

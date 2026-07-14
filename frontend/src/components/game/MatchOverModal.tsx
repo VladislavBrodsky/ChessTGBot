@@ -132,7 +132,7 @@ export default function MatchOverModal({
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.94, y: 20 }}
         transition={{ type: "spring", duration: 0.4 }}
-        className={`relative overflow-hidden w-full max-w-[300px] bg-brand-surface border rounded-[32px] p-6 flex flex-col items-center text-center space-y-6 z-10 ${theme.radialBorder} ${theme.shadow}`}
+        className={`relative overflow-hidden w-full max-w-[300px] bg-brand-surface border rounded-[32px] p-6 flex flex-col items-center text-center space-y-6 z-10 transform-gpu will-change-transform ${theme.radialBorder} ${theme.shadow}`}
       >
         {/* Ambient neon radial glows in background */}
         <div className={`absolute -top-20 -left-20 w-44 h-44 rounded-full ${theme.ambientGlow} blur-3xl pointer-events-none`} />

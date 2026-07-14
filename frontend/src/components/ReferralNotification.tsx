@@ -95,7 +95,7 @@ export default function ReferralNotification() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="w-full max-w-[340px] bg-[var(--cyber-card-bg)] backdrop-blur-xl border border-[var(--border-muted)] rounded-2xl py-2.5 px-3.5 flex items-center gap-3 shadow-[var(--shadow-premium)] pointer-events-auto transition-all duration-300 relative overflow-hidden"
+            className="w-full max-w-[340px] bg-[var(--bg-elevated)] border border-[var(--border-muted)] rounded-2xl py-2.5 px-3.5 flex items-center gap-3 shadow-[var(--shadow-premium)] pointer-events-auto transition-all duration-300 relative overflow-hidden transform-gpu"
           >
             {/* Soft background glow for premium feel */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none opacity-50" />

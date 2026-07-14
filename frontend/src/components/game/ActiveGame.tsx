@@ -833,7 +833,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none w-[90vw] max-w-[280px]"
           >
-            <div className={`p-3.5 rounded-2xl border bg-brand-surface/95 backdrop-blur-xl shadow-premium text-center pointer-events-auto transition-all ${
+            <div className={`p-3.5 rounded-2xl border bg-brand-surface shadow-premium text-center pointer-events-auto transition-all transform-gpu will-change-transform ${
               gameNotice.type === 'error' 
                 ? 'border-red-500/30 text-red-400' 
                 : gameNotice.type === 'warning'
@@ -863,7 +863,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90vw] max-w-[280px]"
         >
-          <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface/95 backdrop-blur-xl shadow-premium text-center pointer-events-auto">
+          <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface shadow-premium text-center pointer-events-auto transform-gpu will-change-transform">
             <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-0.5">System Warning</span>
             <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wide leading-tight">{error}</span>
           </div>

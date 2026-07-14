@@ -83,7 +83,7 @@ export default function TaskSuccessModal() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="relative w-full max-w-[300px] bg-gradient-to-b from-brand-surface/95 to-brand-bg/98 border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-premium backdrop-blur-xl flex flex-col items-center overflow-hidden"
+              className="relative w-full max-w-[300px] bg-gradient-to-b from-brand-surface to-brand-bg border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-premium flex flex-col items-center overflow-hidden transform-gpu will-change-transform"
             >
               {/* Gold Top Light Highlight */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />

@@ -613,7 +613,7 @@ export default function DepositModal({
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-brand-gold/30 bg-brand-void/95 backdrop-blur-xl shadow-2xl space-y-4"
+          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-brand-gold/30 bg-brand-void shadow-2xl space-y-4 transform-gpu will-change-transform"
         >
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-black animate-pulse">
             ✓
