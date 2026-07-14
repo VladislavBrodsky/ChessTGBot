@@ -191,7 +191,7 @@ export default function DepositModal({
     loadRatesAndConfig();
   }, []);
 
-  // Recalculate equivalent tokens needed based on USD amount entered (charged amount is selected + 5%)
+  // Recalculate equivalent tokens needed based on the total USD amount entered.
   useEffect(() => {
     const usd = parseFloat(depositAmount);
     if (isNaN(usd) || usd <= 0) {
