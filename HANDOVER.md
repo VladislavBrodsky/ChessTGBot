@@ -20,9 +20,9 @@ is a committed export for the monolith path — **rebuild after any
 frontend build doubles as the typecheck.
 
 > **This session:** shipped the region-targeted Daily Arena overhaul and the
-> Academy puzzle-instruction fixes (both merged to `main`, see below). Two new
-> code items from user feedback remain — see §1 (reduce-motion toggle,
-> game-only display name/avatar).
+> Academy puzzle-instruction fixes (both merged to `main`, see below). The
+> reduce-motion preference is implemented; the game-only display name/avatar
+> remains — see §1.
 >
 > **Cross-chain branch:** `feat/cross-chain-deposits` now uses a self-custodial
 > BTC/ETH → user TON wallet → verified USDT deposit flow. The earlier Changelly
@@ -34,6 +34,10 @@ frontend build doubles as the typecheck.
 
 ## Shipped this session (merged to `main`) — context + post-deploy watch
 
+- **In-app Reduce motion setting** — a Settings toggle persists in local
+  storage, stamps `data-reduce-motion` before paint, freezes CSS/Tailwind
+  animations, and switches the app-wide Framer Motion policy to `always`.
+  Turning it off restores the OS preference rather than forcing animation on.
 - **Academy puzzle-instruction fixes** — a user reported ~50% of the first 10
   puzzles had wrong instructions; engine-confirmed (mate-in-1s that weren't
   mate, a "fork" that didn't fork, an illegal position whose solution captured
@@ -61,19 +65,6 @@ frontend build doubles as the typecheck.
 ---
 
 ## 1. Code work remaining
-
-### Accessibility — in-app "Reduce motion" toggle (from user feedback; small–medium)
-An autistic user reported the "excessive movement of notifications is too
-distracting to play." The app already respects OS-level reduced motion
-(`frontend/src/app/globals.css` `@media (prefers-reduced-motion: reduce)`
-~line 1006, plus framer `MotionConfig reducedMotion="user"` in
-`frontend/src/components/Providers.tsx`), but there is no in-app control — many
-Telegram WebView users never set the OS flag. Ambient motion is heavy:
-`ActiveGame.tsx` (~14 always-animating elements), `PlayLobby.tsx` (~12),
-`ArenaBanner` pulses/pings. Fix: add a "Reduce motion" toggle in Settings
-(alongside the new Arena-alerts toggle), persist it, and gate animations via a
-root `data-*` attribute (covering Tailwind `animate-pulse`/`animate-ping` and
-framer variants). Dovetails with the Settings changes already on `main`.
 
 ### Privacy — game-only display name + avatar (from user feedback; larger)
 Same user asked to "change username and profile pic just for the game and

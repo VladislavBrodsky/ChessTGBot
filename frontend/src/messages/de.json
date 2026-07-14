@@ -86,7 +86,10 @@
     "upgrade_for_access": "Erweiterten Zugang freischalten",
     "arena_alerts": "Arena-Hinweise",
     "arena_alerts_on": "An",
-    "arena_alerts_off": "Aus"
+    "arena_alerts_off": "Aus",
+    "reduce_motion": "Bewegungen reduzieren",
+    "reduce_motion_on": "An",
+    "reduce_motion_off": "Aus"
   },
   "Language": {
     "select": "Sprache Wählen"

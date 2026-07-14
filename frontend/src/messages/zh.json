@@ -86,7 +86,10 @@
     "upgrade_for_access": "解锁高级权限",
     "arena_alerts": "竞技场提醒",
     "arena_alerts_on": "开",
-    "arena_alerts_off": "关"
+    "arena_alerts_off": "关",
+    "reduce_motion": "减少动态效果",
+    "reduce_motion_on": "开",
+    "reduce_motion_off": "关"
   },
   "Language": {
     "select": "选择语言"

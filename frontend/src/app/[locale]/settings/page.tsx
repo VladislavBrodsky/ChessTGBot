@@ -4,18 +4,20 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy, FaUniversalAccess } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import { apiFetch } from "@/lib/api";
+import { useReducedMotionPreference } from "@/context/ReducedMotionContext";
 
 export default function SettingsPage() {
  const t = useTranslations('Settings');
  const locale = useLocale();
  const { theme, toggleTheme } = useTheme();
+ const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
  const [soundEnabled, setSoundEnabled] = useState(true);
  // Pull wallet address from global context — no extra API call needed
  const { walletAddress, stats, syncStats } = useUser();
@@ -62,6 +64,11 @@ export default function SettingsPage() {
 
  const handleSoundToggle = () => {
    setSoundEnabled(prev => !prev);
+   telegramHaptic('light');
+ };
+
+ const handleReducedMotionToggle = () => {
+   setReducedMotion(!reducedMotion);
    telegramHaptic('light');
  };
 
@@ -161,6 +168,38 @@ export default function SettingsPage() {
  onClick={handleThemeToggle}
  className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
  theme === 'dark' ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ }`}
+ >
+ <motion.div
+ layout
+ transition={{ type: "spring", stiffness: 500, damping: 30 }}
+ className="w-5 h-5 rounded-full bg-white shadow-sm"
+ />
+ </button>
+ </div>
+
+ {/* Reduce motion row */}
+ <div className="p-4 flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <FaUniversalAccess />
+ </div>
+ <div className="flex flex-col text-left">
+ <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
+ {t('reduce_motion')}
+ </span>
+ <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ {reducedMotion ? t('reduce_motion_on') : t('reduce_motion_off')}
+ </span>
+ </div>
+ </div>
+ <button
+ role="switch"
+ aria-checked={reducedMotion}
+ aria-label={t('reduce_motion')}
+ onClick={handleReducedMotionToggle}
+ className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
+ reducedMotion ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
  <motion.div
