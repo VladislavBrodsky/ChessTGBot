@@ -102,12 +102,27 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    >   is the official Tether jetton and the path is sound; consistent with the
    >   $13.97 total balance.
    >
-   > **NEXT (needs owner — I can't see the Stripe Dashboard / prod env):**
-   > (a) Stripe Dashboard → Webhooks: is the endpoint the LIVE backend
-   > `…backend-production…/api/v1/wallet/stripe/webhook`? Any failed deliveries?
-   > (b) Were the 2 sessions actually **paid** (money stranded) or abandoned
-   > (harmless)? (c) Is `WEBAPP_URL` overridden to the live frontend in the backend
-   > service env?
+   > **FOLLOW-UP 2026-07-13 (still unresolved):** The current production query
+   > shows **3** pending live Checkout Sessions, not 2. Stripe Workbench screenshots
+   > show green integration health and successful `POST /v1/checkout/sessions`
+   > calls. That proves session creation works; it does **not** prove any Session
+   > was paid, that `checkout.session.completed` was emitted, or that the webhook
+   > reached this backend. For each of the 3 Session IDs, an owner with Dashboard
+   > access still needs to record `status` and `payment_status`, then inspect the
+   > related Events/webhook delivery attempts.
+   >
+   > Current `main` now defaults `WEBAPP_URL` to `https://web3chess.online` and
+   > `BACKEND_URL` to `https://api.web3chess.online`, and Stripe Checkout creation
+   > has an idempotency key. This removes the dead-monolith default from current
+   > code, but the deployed Railway variables and Stripe webhook destination still
+   > need direct verification. The expected webhook endpoint is
+   > `https://api.web3chess.online/api/v1/wallet/stripe/webhook`.
+   >
+   > **NEXT (needs owner Stripe access):** (a) classify all 3 Sessions as paid,
+   > open/abandoned, or expired from `status` + `payment_status`; (b) inspect any
+   > failed webhook deliveries; (c) verify Railway `WEBAPP_URL` and the Dashboard
+   > endpoint use the live custom domains. Do not change credit logic or manually
+   > credit balances until those facts are known.
    >
    > **CODE FIXES to apply (money-critical — get owner sign-off first):**
    > A. credit-on-redirect fallback (`Session.retrieve` → credit idempotently with
@@ -120,8 +135,8 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
    Also widen the ELO window as wait grows; show real queue size + "notify me
    when an opponent joins." Recovers the clearest demand in the data.
 
-   > **PARTIALLY IMPLEMENTED 2026-07-13.** The matcher already widened ELO and
-   > time-control pools as wait time grew. The client now offers a clearly
+   > **IMPLEMENTED AND MERGED 2026-07-13 (PR #9).** The matcher already widened
+   > ELO and time-control pools as wait time grew. The client now offers a clearly
    > labeled AI game after 15 seconds, records offered/accepted telemetry, keeps
    > navigation available during the search, and relies on the existing
    > `leave_matchmaking` refund path before opening AI difficulty selection.
@@ -158,19 +173,21 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
 
 ## Still to do (prioritized, as of 2026-07-13)
 
-1. **Resolve the two pending Stripe deposits before changing credit logic.**
-   In the Stripe Dashboard, confirm whether each Checkout Session was paid or
-   abandoned, inspect failed webhook deliveries, and verify the live endpoint is
-   `https://chesstgbot-backend-production.up.railway.app/api/v1/wallet/stripe/webhook`.
-   In Railway, verify backend `WEBAPP_URL` points to the live frontend rather
-   than the dead monolith.
+1. **Resolve the three pending Stripe deposits before changing credit logic.**
+   In live mode, record `status` and `payment_status` for each Session, classify
+   it as paid, abandoned/open, or expired, and inspect the associated webhook
+   deliveries. Verify the Dashboard endpoint is
+   `https://api.web3chess.online/api/v1/wallet/stripe/webhook` and Railway
+   `WEBAPP_URL` is `https://web3chess.online`. Green Health/API creation logs are
+   insufficient evidence that payment completion and crediting work.
 2. **After those production facts and explicit owner approval, harden Stripe
    crediting.** Extract one idempotent, row-locked credit function shared by the
    webhook and redirect verification; add a pending-deposit reconciliation
    sweeper; alert TREASURY when a deposit remains pending past the chosen SLA.
    Never credit from unverified redirect parameters alone.
-3. **Measure matchmaking recovery.** The real queue-size signal and free-search
-   "notify me" option are implemented; measure `queue_notify_opt_in`,
+3. **Measure matchmaking recovery after the 2026-07-13 merge/deploy.** The real
+   queue-size signal and free-search "notify me" option are implemented; measure
+   `queue_notify_opt_in`,
    `queue_ai_fallback_offered` to `accepted`, and matched/abandon/timeout rates
    to determine whether the 15-second offer is at
    the right point. The simulated lobby counters and referral-payout feed remain
@@ -214,6 +231,11 @@ contrast the `queue_*` events worked perfectly — that's how #2 was caught.)
 
 ## Notes / caveats
 - Money columns are cents; `amount/100` = USDT.
+- PR #9 also fixed the Web3 top-up fee regression caught by CI. The Web3 UI sends
+  requested credit plus a 5% fee, so both on-chain credit paths now split the
+  received total with `credited = round(total / 1.05)` and record the remainder
+  as the fee. The full backend suite passed before merge. This does not resolve
+  or alter the three pending Stripe Checkout Sessions above.
 - Arena data at snapshot: #1,#2 (19:00, old single-slot schedule) finished with 0
   participants; #3 (20:00, new 4×/day schedule) was **live with 2 participants /
   2 games** — the region-targeting had only just deployed. Re-check arena
