@@ -10,11 +10,11 @@ import { getFullPhotoUrl } from '@/lib/api';
 import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home',     icon: <FaChessPawn />,      href: '/home',       key: 'nav_home' },
-    { name: 'Play',     icon: <FaGamepad />,         href: '/game',       key: 'nav_play' },
-    { name: 'Learn',    icon: <FaGraduationCap />,   href: '/academy',    key: 'nav_learn' },
-    { name: 'Quests',   icon: <FaTrophy />,          href: '/challenges', key: 'nav_quests' },
-    { name: 'Settings', icon: <FaCog />,             href: '/settings',   key: 'nav_settings' },
+    { name: 'Home',        icon: <FaChessPawn />,      href: '/home',        key: 'nav_home' },
+    { name: 'Play',        icon: <FaGamepad />,        href: '/game',        key: 'nav_play' },
+    { name: 'Marketplace', icon: <FaGem />,            href: '/marketplace', key: 'nav_marketplace' },
+    { name: 'Learn',       icon: <FaGraduationCap />,  href: '/academy',     key: 'nav_learn' },
+    { name: 'Quests',      icon: <FaTrophy />,         href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;

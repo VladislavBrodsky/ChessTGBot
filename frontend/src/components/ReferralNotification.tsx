@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { FaCoins, FaCheck } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 // Simulated referral usernames
 const SIMULATED_USERNAMES = [
@@ -34,9 +34,16 @@ interface NotificationData {
 export default function ReferralNotification() {
   const t = useTranslations('Referral');
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const gameId = searchParams?.get('id') || '';
-  const isGameActive = pathname?.includes('/game') && gameId !== '';
+  const [isGameActive, setIsGameActive] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const gameId = params.get('id') || '';
+      setIsGameActive(!!(pathname?.includes('/game') && gameId !== ''));
+    }
+  }, [pathname]);
+
   const isAcademyActive = pathname?.includes('/academy');
   const shouldSuppressNotification = isGameActive || isAcademyActive;
 

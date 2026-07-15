@@ -41,7 +41,11 @@ export default function Providers({ children }: { children: ReactNode }) {
         } catch { /* detection is best-effort */ }
     }, []);
 
-    const inner = (
+    const pageContent = needsTonConnect ? (
+        <TonConnectProvider>{children}</TonConnectProvider>
+    ) : children;
+
+    return (
         // This keeps OS-level reduced motion as the default and upgrades Framer
         // Motion to "always" when the persisted in-app preference is enabled.
         <ReducedMotionProvider>
@@ -52,13 +56,7 @@ export default function Providers({ children }: { children: ReactNode }) {
             </Suspense>
             <CustomAlertModal />
             <TaskSuccessModal />
-            {children}
+            {pageContent}
         </ReducedMotionProvider>
     );
-
-    if (needsTonConnect) {
-        return <TonConnectProvider>{inner}</TonConnectProvider>;
-    }
-
-    return inner;
 }
