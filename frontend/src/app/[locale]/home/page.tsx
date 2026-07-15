@@ -11,6 +11,7 @@ import {
   FaWallet, FaGamepad, FaTrophy, 
   FaListOl, FaNewspaper, FaFire
 } from "react-icons/fa";
+import { FiBell, FiSettings } from 'react-icons/fi';
 import { useTranslations, useLocale } from 'next-intl';
 import Leaderboard from "@/components/Leaderboard";
 import NewsSection from "@/components/NewsSection";
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
+import NotificationModal from "@/components/NotificationModal";
 
 // Telegram's `start_param` persists for the whole webview session, so the
 // deep-link redirect below re-fired on EVERY Home mount — after finishing a
@@ -34,6 +36,7 @@ export default function Home() {
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
+ const [showNotifications, setShowNotifications] = useState(false);
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
 
  useEffect(() => {
@@ -71,18 +74,38 @@ export default function Home() {
 
 
  return (
- <LayoutWrapper className="pb-12 px-4 md:px-6">
+ <LayoutWrapper className="pb-12 px-4 md:px-6" hideHeaderControls>
  <DailyCheckinModal />
+ <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
-  {/* Dashboard Welcome Header */}
-  <div className="w-full text-left px-4 pr-[110px] mb-1">
-  <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left break-words">
-  {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
-  </h1>
-  <p className="text-[9px] font-black text-brand-muted uppercase tracking-[0.3em] mt-1.5 leading-none text-left">
-  {t('subtitle')}
-  </p>
+  {/* Dashboard Welcome Header — buttons rendered inline, never absolute */}
+  <div className="w-full flex items-center justify-between px-1 mb-1">
+    {/* Text block — shrinks to avoid the buttons */}
+    <div className="flex-1 min-w-0">
+      <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left break-words">
+        {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
+      </h1>
+      <p className="text-[9px] font-black text-brand-muted uppercase tracking-[0.3em] mt-1.5 leading-none text-left">
+        {t('subtitle')}
+      </p>
+    </div>
+
+    {/* Inline Header Controls — perfectly on the same line as the title */}
+    <div className="flex items-center gap-2.5 shrink-0 ml-3">
+      <button
+        onClick={() => setShowNotifications(true)}
+        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+      >
+        <FiBell size={18} />
+        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+      </button>
+      <Link href={`/${locale}/settings`}>
+        <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+          <FiSettings size={18} />
+        </button>
+      </Link>
+    </div>
   </div>
 
  {/* Unified Premium Profile Card */}

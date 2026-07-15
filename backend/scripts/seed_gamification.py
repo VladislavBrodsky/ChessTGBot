@@ -7,7 +7,7 @@ from sqlalchemy import select
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, backend_dir)
 
-from app.models.gamification import Achievement, Theme
+from app.models.gamification import Achievement, Theme  # noqa: E402
 
 # Get database URL (use same logic as env.py if needed, or just let SQLAlchemy handle it)
 # Assuming SQLite for local dev

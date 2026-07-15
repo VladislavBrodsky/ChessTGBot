@@ -739,7 +739,7 @@ export default function AcademyPage() {
       {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
       {showPremiumPromo && (
-      <div className="bottom-drawer-backdrop z-[110]">
+      <motion.div className="bottom-drawer-backdrop z-[110]">
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
@@ -827,7 +827,7 @@ export default function AcademyPage() {
           </motion.button>
         </div>
       </motion.div>
-      </div>
+      </motion.div>
       )}
       </AnimatePresence>,
       document.body
@@ -847,7 +847,7 @@ export default function AcademyPage() {
         const hintsEnabled = id <= 10;
 
         return (
-        <div className="bottom-drawer-backdrop z-[110]">
+        <motion.div className="bottom-drawer-backdrop z-[110]">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -964,7 +964,7 @@ export default function AcademyPage() {
               </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
         );
       })()}
       </AnimatePresence>,

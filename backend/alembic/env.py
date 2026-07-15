@@ -48,7 +48,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 from app.core.database import Base  # noqa: E402
-import app.models  # Ensure all models are imported so Base.metadata is fully populated
 
 target_metadata = Base.metadata
 
