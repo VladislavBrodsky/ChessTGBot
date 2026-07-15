@@ -55,11 +55,14 @@ frontend build doubles as the typecheck.
   (`frontend/src/components/RegionPrompt.tsx`). Wired the previously-orphaned
   `ArenaBanner` into the game lobby (`PlayLobby.tsx`) so the arena is joinable.
   Migration `a1f7c39b52d0` (region + arena_notifications).
-  **Post-deploy watch:** this is the first time the arena runs 4×/day and sends
-  real region-targeted notifications, and the first live `join_arena` round-trip
-  runs in prod (never browser-E2E'd — Telegram-auth-gated). Watch the first few
-  windows' logs; confirm per-user notification volume is ~1/day, not a full-base
-  blast (the whole point of the targeting).
+  **Post-deploy result (checked 2026-07-14):** the first complete observed
+  four-slot day dispatched `54/54`, `14/14`, `200/200`, and `843/843`
+  notifications. The partitioned counts are consistent with one best-fit slot
+  per eligible user, and every targeted send succeeded. Live `join_arena`
+  round-trips reached production, but observed arenas produced no paired or
+  scored players; delivery is healthy while participation remains weak. A
+  24-hour review across 28 backend deployments found no signup-cluster
+  warnings, stuck-payout alerts, or failures in either monitoring path.
 
 ---
 
@@ -150,12 +153,6 @@ contracts, sufficient TON DEX liquidity, and successful wallet canaries.
 - **Rotate the Postgres password** — alerts leaked `len + first5/last3` chars
   of it into Telegram for weeks before the fix. Treat as compromised.
 - **Staging environment / rollback story / backup strategy** — still none.
-- **Watch the new alerts for a few days**:
-  - 🛡️ signup-cluster alerts may be noisy on carrier-NAT IPs → raise
-    `SIGNUP_IP_CLUSTER_ALERT_THRESHOLD` (env) if so.
-  - 🧊 "Withdrawal stuck in processing_payout" = crash mid-payout; follow the
-    triage instructions IN the alert (check chain before refunding — never
-    blind-refund).
 - **Transak dashboard** — webhook secret + production key (unblocks B3 above).
 - **KYC / age / geo / licensing** — the biggest non-code risk; unchanged.
 

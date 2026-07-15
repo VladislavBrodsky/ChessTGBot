@@ -293,8 +293,10 @@ interface LessonClientProps {
 
     const handleComplete = async () => {
       try {
-        const res = await apiFetch(`/api/v1/gamification/academy/lessons/${details.id}/complete`, {
-          method: 'POST'
+        const res = await apiFetch("/api/v1/gamification/academy/complete-task", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
         });
         if (res.ok) {
           setEarnedXP(50); // Lessons give 50 XP
