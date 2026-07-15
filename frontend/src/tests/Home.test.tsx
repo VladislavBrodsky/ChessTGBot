@@ -78,6 +78,9 @@ jest.mock('@/components/Leaderboard', () => () => <div data-testid="leaderboard"
 jest.mock('@/components/NewsSection', () => () => <div data-testid="news-section">NewsSection Mock</div>);
 jest.mock('@/components/XPProgressBar', () => () => <div data-testid="xp-progress-bar">XPProgressBar Mock</div>);
 jest.mock('@/components/LayoutWrapper', () => ({ children }: any) => <div>{children}</div>);
+// Mocked because it fetches its claim status on mount, which otherwise
+// resolves outside act() after synchronous tests finish rendering.
+jest.mock('@/components/DailyCheckinModal', () => () => null);
 
 // Mock Framer Motion to avoid animation issues in tests
 jest.mock('framer-motion', () => ({
@@ -100,17 +103,18 @@ describe('Home', () => {
         expect(screen.getByText(/Daily Tasks/i)).toBeInTheDocument()
     })
 
-    it('frames the home summary around progress instead of negative results', () => {
+    // Stats row contents were deliberately reverted to win rate + streak in
+    // 358125d64; XP/level now live in the XPProgressBar above the row.
+    it('renders the win rate, streak, and games played stats row', () => {
         render(<Home />)
 
-        expect(screen.getByText('XP')).toBeInTheDocument()
-        expect(screen.getByText('850')).toBeInTheDocument()
-        expect(screen.getByText('LVL')).toBeInTheDocument()
-        expect(screen.getByText('5')).toBeInTheDocument()
+        expect(screen.getByText('Win Rate')).toBeInTheDocument()
+        expect(screen.getByText('57.1%')).toBeInTheDocument()
+        expect(screen.getByText('Current Streak')).toBeInTheDocument()
+        expect(screen.getByText('3')).toBeInTheDocument()
         expect(screen.getByText('Games Played')).toBeInTheDocument()
         expect(screen.getByText('28')).toBeInTheDocument()
-        expect(screen.queryByText('Win Rate')).not.toBeInTheDocument()
-        expect(screen.queryByText('Current Streak')).not.toBeInTheDocument()
+        expect(screen.getByTestId('xp-progress-bar')).toBeInTheDocument()
         expect(screen.queryByText('16/10/2')).not.toBeInTheDocument()
     })
 })
