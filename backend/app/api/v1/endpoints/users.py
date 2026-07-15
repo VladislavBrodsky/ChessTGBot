@@ -443,7 +443,8 @@ async def get_user_stats(
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
         study_streak=current_user.study_streak or 0,
         unlocked_items=current_user.unlocked_items,
-        xp_multiplier=current_user.xp_multiplier,
+        # None on unflushed instances (column default applies at INSERT).
+        xp_multiplier=current_user.xp_multiplier or 1.0,
         multiplier_expires_at=current_user.multiplier_expires_at,
     )
 
@@ -508,7 +509,8 @@ async def sync_user(
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
         study_streak=current_user.study_streak or 0,
         unlocked_items=current_user.unlocked_items,
-        xp_multiplier=current_user.xp_multiplier,
+        # None on unflushed instances (column default applies at INSERT).
+        xp_multiplier=current_user.xp_multiplier or 1.0,
         multiplier_expires_at=current_user.multiplier_expires_at,
     )
 
