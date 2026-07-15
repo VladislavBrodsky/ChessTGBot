@@ -12,11 +12,16 @@ def parse_curriculum_md():
     
     current_difficulty = "Beginner"
     for line in lines:
-        if line.startswith("### Phase 1:"): current_difficulty = "Beginner"
-        elif line.startswith("### Phase 2:"): current_difficulty = "Intermediate"
-        elif line.startswith("### Phase 3:"): current_difficulty = "Intermediate"
-        elif line.startswith("### Phase 4:"): current_difficulty = "Advanced"
-        elif line.startswith("### Phase 5:"): current_difficulty = "Expert"
+        if line.startswith("### Phase 1:"):
+            current_difficulty = "Beginner"
+        elif line.startswith("### Phase 2:"):
+            current_difficulty = "Intermediate"
+        elif line.startswith("### Phase 3:"):
+            current_difficulty = "Intermediate"
+        elif line.startswith("### Phase 4:"):
+            current_difficulty = "Advanced"
+        elif line.startswith("### Phase 5:"):
+            current_difficulty = "Expert"
         
         # Matches markdown table rows like: | 1 | The Chessboard | Board Geography | ...
         match = re.match(r'\|\s*\d+\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|', line)

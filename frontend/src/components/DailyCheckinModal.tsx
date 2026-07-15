@@ -76,86 +76,92 @@ export default function DailyCheckinModal() {
     }
   };
 
-  if (!isOpen || !status) return null;
-
-  const currentDayIndex = status.current_streak % 7;
+  const currentDayIndex = status ? status.current_streak % 7 : 0;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-surface/90 backdrop-blur-xl">
-        {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} />}
-        
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 30 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 30 }}
-          className="w-full max-w-sm p-7 rounded-[2rem] bg-gradient-to-br from-brand-surface via-[#13151A] to-[#0D0F12] border border-white/5 shadow-2xl relative overflow-hidden"
+      {isOpen && status && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-surface/90 backdrop-blur-xl"
         >
-          {/* Animated Glowing Orbs Background */}
-          <div className="absolute -top-32 -left-32 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] animate-pulse" />
-          <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+          {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} />}
           
-          <div className="relative z-10 text-center flex flex-col items-center">
-            {/* Crown/Icon at the top */}
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.4)] mb-4">
-              <FaGift className="text-white text-xl" />
-            </div>
-
-            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 tracking-tight mb-2">Daily Reward</h2>
-            <p className="text-xs font-bold text-white/50 uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
-
-            <div className="grid grid-cols-4 gap-3 mb-3 w-full">
-              {status.rewards.slice(0, 4).map((reward, idx) => (
-                <RewardDay 
-                  key={idx} 
-                  day={idx + 1} 
-                  reward={reward} 
-                  status={idx < currentDayIndex ? 'past' : idx === currentDayIndex ? 'current' : 'future'} 
-                />
-              ))}
-            </div>
-            <div className="grid grid-cols-3 gap-3 mb-8 w-full">
-              {status.rewards.slice(4, 7).map((reward, idx) => (
-                <RewardDay 
-                  key={idx + 4} 
-                  day={idx + 5} 
-                  reward={reward} 
-                  isBig={idx === 2}
-                  status={(idx + 4) < currentDayIndex ? 'past' : (idx + 4) === currentDayIndex ? 'current' : 'future'} 
-                />
-              ))}
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleClaim}
-              disabled={claiming || !status.can_claim_today}
-              className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
-                ${status.can_claim_today && !claiming
-                  ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
-                  : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
-                }`}
-            >
-              {/* Button shine effect */}
-              {status.can_claim_today && !claiming && (
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
-              )}
-              <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
-            </motion.button>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            className="w-full max-w-sm p-7 rounded-[2rem] bg-gradient-to-br from-brand-surface via-[#13151A] to-[#0D0F12] border border-white/5 shadow-2xl relative overflow-hidden"
+          >
+            {/* Animated Glowing Orbs Background */}
+            <div className="absolute -top-32 -left-32 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] animate-pulse" />
+            <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
             
-            {status.can_claim_today && (
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="mt-4 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest hover:opacity-100 transition-opacity"
+            <div className="relative z-10 text-center flex flex-col items-center">
+              {/* Crown/Icon at the top */}
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.4)] mb-4">
+                <FaGift className="text-white text-xl" />
+              </div>
+
+              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 tracking-tight mb-2">Daily Reward</h2>
+              <p className="text-xs font-bold text-white/50 uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
+
+              <div className="grid grid-cols-4 gap-3 mb-3 w-full">
+                {status.rewards.slice(0, 4).map((reward, idx) => (
+                  <RewardDay 
+                    key={idx} 
+                    day={idx + 1} 
+                    reward={reward} 
+                    status={idx < currentDayIndex ? 'past' : idx === currentDayIndex ? 'current' : 'future'} 
+                  />
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-3 mb-8 w-full">
+                {status.rewards.slice(4, 7).map((reward, idx) => (
+                  <RewardDay 
+                    key={idx + 4} 
+                    day={idx + 5} 
+                    reward={reward} 
+                    isBig={idx === 2}
+                    status={(idx + 4) < currentDayIndex ? 'past' : (idx + 4) === currentDayIndex ? 'current' : 'future'} 
+                  />
+                ))}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleClaim}
+                disabled={claiming || !status.can_claim_today}
+                className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
+                  ${status.can_claim_today && !claiming
+                    ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                    : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+                  }`}
               >
-                Skip for now
-              </button>
-            )}
-          </div>
+                {/* Button shine effect */}
+                {status.can_claim_today && !claiming && (
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+                )}
+                <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
+              </motion.button>
+              
+              {status.can_claim_today && (
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="mt-4 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest hover:opacity-100 transition-opacity"
+                >
+                  Skip for now
+                </button>
+              )}
+            </div>
+          </motion.div>
         </motion.div>
-      </div>
+      )}
     </AnimatePresence>
   );
 }

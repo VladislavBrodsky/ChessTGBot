@@ -7,7 +7,7 @@ from sqlalchemy import select
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, backend_dir)
 
-from app.models.content import Lesson, LessonStep, Puzzle
+from app.models.content import Lesson, LessonStep, Puzzle  # noqa: E402
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./chess.db")
 engine = create_async_engine(DATABASE_URL, echo=True)

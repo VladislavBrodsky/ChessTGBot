@@ -6,14 +6,14 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import async_session
+from app.core.database import AsyncSessionLocal
 from app.models.user import User
-from app.core.gamification import GamificationService
+from app.services.gamification_service import GamificationService
 from app.models.gamification import CompletedAcademyTask
 from sqlalchemy import select
 
 async def main():
-    async with async_session() as db:
+    async with AsyncSessionLocal() as db:
         # Create or get a test user
         result = await db.execute(select(User).where(User.telegram_id == 999888777))
         test_user = result.scalar_one_or_none()

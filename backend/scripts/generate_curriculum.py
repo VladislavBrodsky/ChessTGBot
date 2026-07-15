@@ -2,7 +2,7 @@ import os
 import json
 import asyncio
 import httpx
-from typing import List, Dict
+from typing import Dict
 
 # The remaining lessons (Phase 1 to 5)
 LESSONS_TO_GENERATE = [
