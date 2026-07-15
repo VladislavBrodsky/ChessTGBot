@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaTrophy, FaFire, FaCheckCircle, FaStar } from "react-icons/fa";
+import { FaArrowLeft, FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
@@ -170,6 +170,10 @@ export default function ChallengesPage() {
   const nextLevelXp = userLevel * 350;
   const levelProgressXp = Math.max(0, userXp - currentLevelMinXp);
   const progressPercentage = Math.min(100, Math.max(0, (levelProgressXp / 350) * 100));
+  // Levels are a high-watermark: XP can be spent after a level has been earned.
+  // Show that completed milestone as a silver medal rather than a misleading empty bar.
+  const levelSecured = userXp > 0 && userXp < currentLevelMinXp;
+  const visualProgressPercentage = levelSecured ? 100 : progressPercentage;
 
   return (
     <LayoutWrapper className="justify-start pt-8 pb-32">
@@ -252,34 +256,45 @@ export default function ChallengesPage() {
             <h1 className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
               {t('grandmaster_rising')}
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-6 opacity-40 text-brand-primary">
-              {t('next_level', { xp: nextLevelXp })}
-            </p>
+            <div className="flex items-center gap-2 mb-6">
+              {levelSecured && <FaCrown className="text-slate-200 drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
+              <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-slate-200/75' : 'opacity-40 text-brand-primary'}`}>
+                {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
+              </p>
+            </div>
  
             {/* XP Bar — premium with shimmer */}
             <div className="w-full max-w-[260px] mb-3">
               <div
-                className="relative h-3.5 rounded-full overflow-hidden bg-brand-void/50 border border-brand-border-opacity-10"
+                className={`relative h-3.5 rounded-full overflow-hidden border ${levelSecured ? 'bg-slate-950/70 border-slate-200/20 shadow-[inset_0_2px_8px_rgba(0,0,0,0.55),0_0_20px_rgba(226,232,240,0.08)]' : 'bg-brand-void/50 border-brand-border-opacity-10'}`}
               >
+                {levelSecured && <div aria-hidden="true" className="absolute inset-[2px] rounded-full border border-white/10 pointer-events-none" />}
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
+                  animate={{ width: `${visualProgressPercentage}%` }}
                   transition={{ duration: 1.8, ease: "circOut", delay: 0.3 }}
-                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
-                />
+                  className={`absolute top-0 left-0 h-full rounded-full overflow-hidden ${levelSecured ? 'bg-[linear-gradient(90deg,#64748b_0%,#e2e8f0_28%,#ffffff_50%,#cbd5e1_70%,#64748b_100%)] shadow-[0_0_18px_rgba(226,232,240,0.5)]' : 'bg-gradient-to-r from-amber-700 via-yellow-400 to-amber-500 shadow-[0_0_16px_rgba(250,204,21,0.52)]'}`}
+                >
+                  <motion.div
+                    aria-hidden="true"
+                    animate={{ x: ['-120%', '320%'] }}
+                    transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.2 }}
+                    className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/65 to-transparent -skew-x-12"
+                  />
+                </motion.div>
                 {/* Shimmer sweep */}
                 <motion.div
                   animate={{ x: ['-100%', '200%'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', delay: 1.8 }}
+                  transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.8 }}
                   className="absolute top-0 left-0 h-full w-1/3 pointer-events-none"
-                  style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }}
+                  style={{ background: levelSecured ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }}
                 />
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-[10px] font-black uppercase tracking-widest opacity-50 text-brand-primary">
+                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-slate-200/75' : 'opacity-50 text-brand-primary'}`}>
                   {userXp} XP
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-widest opacity-30 text-brand-primary">
+                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-slate-300/45' : 'opacity-30 text-brand-primary'}`}>
                   {nextLevelXp} XP
                 </span>
               </div>
@@ -287,9 +302,10 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-primary/5 dark:bg-brand-primary/10 text-brand-primary border border-brand-border-opacity-10"
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-slate-100/10 text-slate-100 border-slate-200/25 shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-yellow-200 border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
             >
-              {Math.round(progressPercentage)}% to next level
+              {levelSecured && <FaCheckCircle size={10} />}
+              {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}
             </div>
           </div>
         </motion.div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaMedal, FaUserCircle, FaFire, FaBook, FaGamepad, FaCrown, FaChessKnight } from 'react-icons/fa';
-import { FiX, FiAward, FiClock, FiChevronRight } from 'react-icons/fi';
+import { FiX, FiAward, FiClock, FiChevronRight, FiRadio, FiZap } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
@@ -126,6 +126,10 @@ export default function Leaderboard() {
  const displayedPlayers = players.slice(0, 5);
  const metricLabel = activeTab === 'arena' ? 'Elo rating' : 'Academy XP';
  const activityLabel = activeTab === 'arena' ? 'Arena standings' : 'Lesson standings';
+ const leader = players[0];
+ const leaderScore = leader ? (activeTab === 'arena' ? (leader.elo || 0) : (leader.xp || 0)) : 0;
+ const secondScore = players[1] ? (activeTab === 'arena' ? (players[1].elo || 0) : (players[1].xp || 0)) : 0;
+ const leaderGap = Math.max(0, leaderScore - secondScore);
  const topScore = activeTab === 'arena'
    ? Math.max(...players.map(p => p.elo || 1000), 2500)
    : Math.max(...players.map(p => p.xp || 0), 5000);
@@ -135,6 +139,9 @@ export default function Leaderboard() {
    const score = activeTab === 'arena' ? (item.elo || 0) : (item.xp || 0);
    const barPct = Math.min(100, Math.round((score / topScore) * 100));
    const hasActivity = (item.games_played || 0) > 0 || (item.xp || 0) > 0;
+   const isPodium = item.rank <= 3;
+   const rankCallout = item.rank === 1 ? 'Crown holder' : item.rank === 2 ? 'First challenger' : item.rank === 3 ? 'Rising force' : null;
+   const avatarSize = item.rank === 1 ? 'w-11 h-11' : 'w-9 h-9';
 
    return (
      <motion.div
@@ -143,15 +150,24 @@ export default function Leaderboard() {
        animate={{ opacity: 1, x: 0 }}
        whileHover={{ x: isModal ? 0 : 3 }}
        transition={{ delay: Math.min(idx * 0.04, 0.2), type: 'spring', stiffness: 380, damping: 28 }}
-       className={`relative flex items-center justify-between px-4 py-3.5 group transition-colors duration-200 overflow-hidden
-         ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow}
+       className={`relative flex items-center justify-between px-4 ${item.rank === 1 ? 'py-4' : 'py-3.5'} group transition-colors duration-200 overflow-hidden
+         ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow} ${item.rank === 1 ? 'shadow-[inset_0_1px_0_rgba(250,204,21,0.18)]' : ''}
          ${isModal ? 'rounded-2xl border border-white/5 mb-2' : ''}
        `}
      >
+       {item.rank === 1 && (
+         <motion.div
+           aria-hidden="true"
+           initial={{ x: '-120%' }}
+           animate={{ x: '220%' }}
+           transition={{ duration: 3.6, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
+           className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-yellow-200/10 to-transparent -skew-x-12 pointer-events-none"
+         />
+       )}
        {/* Rank Badge */}
-       <div className="w-8 flex justify-center shrink-0">
+       <div className="w-9 flex justify-center shrink-0 relative z-10">
          {item.rank <= 3 ? (
-           <div className={`flex flex-col items-center justify-center w-7 h-7 rounded-lg ${cfg.rankBg}`}>
+           <div className={`flex flex-col items-center justify-center ${item.rank === 1 ? 'w-9 h-9 rounded-xl' : 'w-8 h-8 rounded-lg'} ${cfg.rankBg} ${item.rank === 1 ? 'shadow-[0_0_20px_rgba(250,204,21,0.16)]' : ''}`}>
              {cfg.icon}
              <span className="text-[8px] font-black leading-none mt-0.5">{cfg.label}</span>
            </div>
@@ -161,7 +177,7 @@ export default function Leaderboard() {
        </div>
 
        {/* Avatar */}
-       <div className="relative shrink-0 mx-2">
+       <div className={`relative shrink-0 mx-2 ${item.rank === 1 ? 'p-0.5 rounded-full bg-gradient-to-br from-yellow-200 via-yellow-500 to-amber-700 shadow-[0_0_22px_rgba(250,204,21,0.22)]' : ''}`}>
          {item.photo_url && !brokenAvatars[item.telegram_id] ? (
            <img
              src={getFullPhotoUrl(item.photo_url)}
@@ -170,10 +186,10 @@ export default function Leaderboard() {
              decoding={idx < 5 ? 'sync' : 'async'}
              fetchPriority={idx < 3 ? 'high' : 'auto'}
              onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
-             className={`w-9 h-9 rounded-full object-cover ${cfg.avatarRing}`}
+             className={`${avatarSize} rounded-full object-cover ${cfg.avatarRing}`}
            />
          ) : (
-           <div className={`w-9 h-9 rounded-full flex items-center justify-center bg-white/5 ${cfg.avatarRing}`}>
+           <div className={`${avatarSize} rounded-full flex items-center justify-center bg-white/5 ${cfg.avatarRing}`}>
              <FaUserCircle className="text-brand-primary opacity-20" size={22} />
            </div>
          )}
@@ -187,10 +203,17 @@ export default function Leaderboard() {
        </div>
 
        {/* Name + Stats */}
-       <div className="flex flex-col flex-1 min-w-0">
-         <span className={`text-[11px] font-black uppercase tracking-tight truncate leading-none ${item.rank <= 3 ? 'text-brand-primary' : 'text-brand-primary/70'}`}>
-           {item.first_name}{item.last_name ? ` ${item.last_name}` : ''}
-         </span>
+       <div className="flex flex-col flex-1 min-w-0 relative z-10">
+         <div className="flex items-center gap-2 min-w-0">
+           <span className={`text-[11px] font-black uppercase tracking-tight truncate leading-none ${isPodium ? 'text-brand-primary' : 'text-brand-primary/70'}`}>
+             {item.first_name}{item.last_name ? ` ${item.last_name}` : ''}
+           </span>
+           {rankCallout && (
+             <span className={`hidden sm:inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-[0.12em] ${item.rank === 1 ? 'border-yellow-400/25 bg-yellow-400/10 text-yellow-300/90' : 'border-white/10 bg-white/[0.04] text-brand-primary/35'}`}>
+               {item.rank === 1 && <FiZap size={8} className="mr-0.5" />}{rankCallout}
+             </span>
+           )}
+         </div>
          <div className="flex items-center gap-1.5 mt-1">
            {activeTab === 'arena' ? (
              <>
@@ -218,7 +241,7 @@ export default function Leaderboard() {
        </div>
 
        {/* Score + Bar */}
-       <div className="flex flex-col items-end shrink-0 ml-2">
+       <div className="flex flex-col items-end shrink-0 ml-2 relative z-10">
          <div className="text-right">
            <span className={`text-[13px] font-black tracking-tighter leading-none ${item.rank === 1 ? 'text-yellow-300' : item.rank === 2 ? 'text-slate-200' : item.rank === 3 ? 'text-amber-500' : 'text-brand-primary/80'}`}>
              {score.toLocaleString()}
@@ -228,7 +251,7 @@ export default function Leaderboard() {
            </span>
          </div>
          {/* Progress bar — colored & proportional to top score */}
-         <div className="h-1 w-14 bg-white/5 rounded-full mt-1.5 overflow-hidden">
+         <div className={`h-1 ${item.rank === 1 ? 'w-16' : 'w-14'} bg-white/5 rounded-full mt-1.5 overflow-hidden`}>
            <motion.div
              initial={{ width: 0 }}
              animate={{ width: `${barPct}%` }}
@@ -255,27 +278,27 @@ export default function Leaderboard() {
          <span className="text-[9px] font-bold text-brand-primary/35 tracking-[0.24em] uppercase mt-2 block">{activityLabel} · Top {Math.min(players.length, 50)}</span>
        </div>
        <div className="flex flex-col items-end gap-1 pt-1">
-         <div className="flex items-center gap-1.5 text-yellow-300/70">
+         <div className="flex items-center gap-1.5 text-yellow-300/80">
            <FiAward size={12} />
            <span className="text-[9px] font-black uppercase tracking-widest">Season 1</span>
          </div>
-         <span className="text-[8px] font-bold text-brand-primary/25 uppercase tracking-[0.16em]">Live rankings</span>
+         <span className="flex items-center gap-1 text-[8px] font-bold text-brand-primary/30 uppercase tracking-[0.16em]"><FiRadio size={8} className="text-emerald-400" /> Live ladder</span>
        </div>
      </div>
 
      {/* Tab Switcher */}
-     <div className="flex bg-white/[0.03] rounded-2xl p-1 border border-white/[0.06] relative">
+     <div className="flex bg-black/35 rounded-2xl p-1 border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] relative">
       <button
          onClick={() => setActiveTab('arena')}
          aria-pressed={activeTab === 'arena'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'arena' ? 'text-yellow-100' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
        >
          <FaGamepad size={10} /> Arena
        </button>
       <button
          onClick={() => setActiveTab('academy')}
          aria-pressed={activeTab === 'academy'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'academy' ? 'text-yellow-100' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
        >
          <FaBook size={10} /> Scholars
        </button>
@@ -283,21 +306,23 @@ export default function Leaderboard() {
          initial={false}
          animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-brand-primary rounded-xl"
+         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-600 rounded-xl shadow-[0_0_18px_rgba(250,204,21,0.22)]"
        />
      </div>
 
      {/* Leaderboard Card */}
-     <Card variant="glass" className="rounded-3xl overflow-hidden border-white/[0.06] bg-white/[0.02] p-0">
-       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/[0.05] bg-gradient-to-r from-white/[0.035] to-transparent">
+     <Card variant="glass" className="rounded-3xl overflow-hidden border-white/[0.08] bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.10),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.035),rgba(0,0,0,0.16))] shadow-[0_18px_45px_rgba(0,0,0,0.28)] p-0">
+       <div className="relative flex items-center justify-between gap-3 px-4 py-3.5 border-b border-yellow-400/10 bg-gradient-to-r from-yellow-400/[0.07] via-transparent to-transparent overflow-hidden">
+         <div aria-hidden="true" className="absolute -right-8 -top-10 w-32 h-32 rounded-full bg-yellow-400/[0.05] blur-2xl" />
          <div className="min-w-0">
            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-primary/75">{metricLabel}</p>
            <p className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 mt-1 truncate">
              {activeTab === 'arena' ? 'Win games to climb the board' : 'Study daily to build your streak'}
            </p>
          </div>
-         <div className="shrink-0 flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-wider text-brand-primary/30">
-           <FiClock size={10} /> Refreshes every 5 min
+         <div className="shrink-0 flex flex-col items-end gap-1 text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 relative z-10">
+           <span className="flex items-center gap-1.5"><FiClock size={10} /> Refreshes every 5 min</span>
+           {leaderGap > 0 && <span className="text-yellow-300/55">Leader +{leaderGap.toLocaleString()}</span>}
          </div>
        </div>
        <AnimatePresence mode="wait">
@@ -307,7 +332,7 @@ export default function Leaderboard() {
            animate={{ opacity: 1 }}
            exit={{ opacity: 0 }}
            transition={{ duration: 0.15 }}
-           className="divide-y divide-white/[0.05]"
+           className="divide-y divide-white/[0.06]"
          >
            {displayedPlayers.length > 0 ? (
              displayedPlayers.map((item, idx) => renderRow(item, idx))
@@ -322,11 +347,11 @@ export default function Leaderboard() {
        </AnimatePresence>
 
        {players.length > 5 && (
-         <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-white/[0.05] bg-white/[0.01]">
+         <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-white/[0.06] bg-gradient-to-r from-black/20 to-white/[0.02]">
            <span className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/25">Showing 5 of {Math.min(players.length, 50)} contenders</span>
            <button
              onClick={() => setShowModal(true)}
-             className="flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 text-[9px] font-black uppercase tracking-wider text-brand-primary/70 hover:text-brand-primary active:scale-95 transition-all"
+             className="flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500/15 to-amber-500/10 hover:from-yellow-500/25 hover:to-amber-500/20 border border-yellow-400/20 text-[9px] font-black uppercase tracking-wider text-yellow-100/85 hover:text-yellow-100 active:scale-95 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.16)]"
            >
              <FaTrophy size={10} className="opacity-60" />
              View all
