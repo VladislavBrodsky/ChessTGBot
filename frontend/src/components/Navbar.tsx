@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt, FaGem } from 'react-icons/fa';
+import { FaChessPawn, FaGamepad, FaGraduationCap, FaTrophy, FaChessKnight, FaSignOutAlt, FaGem } from 'react-icons/fa';
 
 const NAV_ITEMS = [
     { name: 'Home',        icon: <FaChessPawn />,      href: '/home',        key: 'nav_home' },
@@ -158,7 +158,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
         );
     }
 
-    // ── MOBILE BOTTOM PILL (original) ────────────────────────────────────
+    // ── MOBILE BOTTOM NAVIGATION ─────────────────────────────────────────
     return (
         <motion.nav
             data-app-navbar
@@ -173,28 +173,43 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 pointerEvents: hide ? 'none' : 'auto',
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
-            className="fixed left-1/2 w-[90%] max-w-[390px] z-50 flex items-center bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 px-5 py-2.5 rounded-full shadow-premium justify-between"
+            aria-label="Primary navigation"
+            className="fixed left-1/2 w-[calc(100%-24px)] max-w-[420px] z-50 flex items-center bg-brand-void/95 backdrop-blur-3xl border border-brand-border-opacity-10 px-1.5 py-1.5 rounded-[22px] shadow-premium justify-between"
         >
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-full" />
 
-            <ul className="flex items-center relative z-10 w-full justify-around space-x-1" role="tablist" aria-label="Primary Navigation">
+            <ul className="flex items-center relative z-10 w-full justify-around gap-0.5">
                 {localizedItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     return (
-                        <li key={item.href} className="flex-1 max-w-[60px] min-w-[48px]" role="presentation">
-                            <Link href={item.href} aria-label={item.label} title={item.label} role="tab" aria-selected={isActive}>
-                                <div className="relative h-11 flex items-center justify-center transition-all duration-300">
+                        <li key={item.href} className="flex-1 min-w-0">
+                            <Link
+                                href={item.href}
+                                aria-label={item.label}
+                                aria-current={isActive ? 'page' : undefined}
+                                className="block rounded-2xl"
+                            >
+                                <div className="relative min-h-[52px] px-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 rounded-2xl">
                                     {isActive && (
-                                        <div className="absolute inset-[2px] bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-5 shadow-inner-glow" />
+                                        <motion.div
+                                            layoutId="mobile-nav-active"
+                                            className="absolute inset-0 bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-10 shadow-inner-glow"
+                                            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                                        />
                                     )}
-                                    <div className={`text-xl relative z-20 transition-all duration-200 ${
+                                    <div className={`text-[18px] relative z-20 transition-all duration-200 ${
                                         isActive
-                                            ? "text-[var(--text-primary)] scale-110"
+                                            ? "text-[var(--text-primary)] -translate-y-0.5"
                                             : "text-[var(--text-muted)]"
                                     }`}>
                                         {item.icon}
                                     </div>
+                                    <span className={`relative z-20 max-w-full truncate text-[8px] sm:text-[9px] font-extrabold leading-none tracking-wide transition-colors ${
+                                        isActive ? 'text-brand-primary' : 'text-brand-muted'
+                                    }`}>
+                                        {item.label}
+                                    </span>
                                 </div>
                             </Link>
                         </li>

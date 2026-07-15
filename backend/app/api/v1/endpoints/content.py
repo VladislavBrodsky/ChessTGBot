@@ -52,6 +52,7 @@ async def get_lessons(
 @router.get("/lessons/{slug}", response_model=LessonResponse)
 async def get_lesson(
     slug: str,
+    locale: str = "en",
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -62,6 +63,19 @@ async def get_lesson(
     lesson = result.scalars().first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
+
+    import json
+    
+    # Process each step to parse JSON and select the correct locale
+    for step in lesson.steps:
+        try:
+            parsed_content = json.loads(step.content)
+            if isinstance(parsed_content, dict):
+                step.content = parsed_content.get(locale, parsed_content.get("en", step.content))
+        except json.JSONDecodeError:
+            # If not JSON (e.g. legacy data), return raw content
+            pass
+            
     return lesson
 
 @router.get("/puzzles", response_model=List[PuzzleResponse])

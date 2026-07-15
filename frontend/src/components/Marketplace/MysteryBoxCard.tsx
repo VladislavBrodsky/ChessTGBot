@@ -20,79 +20,109 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
     const t = useTranslations('Marketplace');
     const [showOdds, setShowOdds] = useState(false);
     const cfg = BOX_CONFIG[tier];
-    const { accent, accent2, glow, rgb } = cfg.theme;
+    const { accent, glow, rgb } = cfg.theme;
 
     const affordable = userXP >= cfg.costXP;
     const shortfall = cfg.costXP - userXP;
     const locked = disabled || !affordable;
 
     return (
-        <motion.div
-            whileHover={{ y: locked ? 0 : -5 }}
-            whileTap={{ scale: locked ? 1 : 0.98 }}
+        <motion.article
+            whileHover={{ y: locked ? 0 : -3 }}
+            whileTap={{ scale: locked ? 1 : 0.985 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className="w-full rounded-[24px] p-[1px] relative group overflow-hidden self-start"
-            style={{ background: `linear-gradient(160deg, rgba(${rgb},0.4), rgba(255,255,255,0.05) 42%, transparent)` }}
+            className="w-full rounded-[22px] relative group overflow-hidden self-start border bg-brand-surface shadow-[0_14px_40px_rgba(0,0,0,0.28)]"
+            style={{ borderColor: `rgba(${rgb},0.3)` }}
         >
+            {/* A quiet chessboard texture ties all tiers to the game without
+                competing with each chest's piece-specific artwork. */}
             <div
-                className="w-full h-full rounded-[23px] bg-black/50 backdrop-blur-2xl border p-3.5 flex flex-col relative z-10"
-                style={{ borderColor: `rgba(${rgb},0.22)` }}
+                className="absolute inset-0 pointer-events-none opacity-70"
+                style={{
+                    backgroundImage: `linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%), linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%)`,
+                    backgroundPosition: '0 0, 10px 10px',
+                    backgroundSize: '20px 20px',
+                }}
+            />
+            <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
+            <div
+                className="absolute -top-20 -right-20 text-[150px] font-serif leading-none pointer-events-none select-none opacity-[0.035]"
+                style={{ color: accent }}
+                aria-hidden="true"
             >
-                {/* Ambient rarity glows */}
-                <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-20 group-hover:opacity-35 transition-opacity duration-700"
-                    style={{ background: `radial-gradient(circle, ${glow}, transparent 70%)` }} />
-                <div className="absolute -bottom-20 -left-16 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-10 group-hover:opacity-20 transition-opacity duration-700"
-                    style={{ background: `radial-gradient(circle, ${accent2}, transparent 70%)` }} />
+                {cfg.glyph}
+            </div>
 
-                {/* Limited ribbon */}
-                {cfg.limited && (
-                    <div className="absolute top-3.5 -right-8 rotate-45 px-9 py-0.5 text-[7px] font-black uppercase tracking-[0.2em] text-black shadow-lg z-20"
-                        style={{ background: `linear-gradient(90deg, ${accent}, ${glow})` }}>
-                        {t('limited')}
+            <div className="w-full h-full p-3 flex flex-col relative z-10">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <span
+                            className="w-7 h-7 shrink-0 rounded-lg border flex items-center justify-center font-serif text-sm"
+                            style={{ color: accent, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
+                            aria-hidden="true"
+                        >
+                            {cfg.glyph}
+                        </span>
+                        <div className="min-w-0 text-left">
+                            <span className="block text-[8px] font-black uppercase tracking-[0.16em] truncate" style={{ color: accent }}>{cfg.metal}</span>
+                            <span className="block text-[7px] font-bold uppercase tracking-widest text-brand-muted truncate">{cfg.piece}</span>
+                        </div>
                     </div>
-                )}
-
-                {/* Rarity badge */}
-                <div className="z-10 self-start px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-[0.15em]"
-                    style={{ color: accent, background: `rgba(${rgb},0.1)`, borderColor: `rgba(${rgb},0.28)` }}>
-                    {cfg.metal}
+                    {cfg.limited && (
+                        <span
+                            className="shrink-0 px-2 py-1 rounded-full text-[7px] font-black uppercase tracking-[0.14em] border"
+                            style={{ color: accent, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
+                        >
+                            {t('limited')}
+                        </span>
+                    )}
                 </div>
 
-                {/* Artwork */}
-                <div className="flex items-center justify-center relative my-1 z-10 h-[112px]">
+                <div className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[132px]">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-28 h-28 rounded-full blur-2xl opacity-25 group-hover:opacity-45 group-hover:scale-110 transition-all duration-500"
-                            style={{ background: `radial-gradient(circle, ${glow}, transparent 65%)` }} />
+                        <div
+                            className="w-32 h-20 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                            style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
+                        />
                     </div>
-                    <MysteryBoxArt tier={tier} size={110} />
+                    <MysteryBoxArt tier={tier} size={136} />
                 </div>
 
-                {/* Name + tagline */}
-                <div className="text-center z-10 min-h-[42px]">
-                    <h3 className="text-[13px] font-black uppercase tracking-wide leading-tight" style={{ color: accent }}>{cfg.name}</h3>
-                    <p className="text-[9px] text-white/45 leading-snug mt-0.5 font-medium">{cfg.tagline}</p>
-                    {cfg.limited && <SeasonalCountdown className="mt-1" accent={accent} />}
+                <div className="text-left z-10 min-h-[45px]">
+                    <h3 className="text-[13px] font-black uppercase tracking-tight leading-tight text-brand-primary">{cfg.name}</h3>
+                    <p className="text-[9px] text-brand-muted leading-snug mt-1 font-medium">{cfg.tagline}</p>
+                    {cfg.limited && <SeasonalCountdown className="mt-1.5" accent={accent} />}
                 </div>
 
-                {/* What's inside (odds transparency) */}
                 <button
-                    onClick={() => setShowOdds((v) => !v)}
-                    className="z-10 mx-auto mt-1.5 flex items-center gap-1 text-[8px] font-black uppercase tracking-[0.15em] text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                    type="button"
+                    onClick={() => setShowOdds((value) => !value)}
+                    aria-expanded={showOdds}
+                    aria-controls={`box-odds-${tier}`}
+                    className="z-10 min-h-11 w-full mt-1 flex items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-[8px] font-black uppercase tracking-[0.15em] text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
-                    {t('whats_inside')}
+                    <span>{t('whats_inside')}</span>
                     <motion.span animate={{ rotate: showOdds ? 180 : 0 }}><FiChevronDown size={11} /></motion.span>
                 </button>
+
                 <AnimatePresence initial={false}>
                     {showOdds && (
-                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="z-10 overflow-hidden">
+                        <motion.div
+                            id={`box-odds-${tier}`}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="z-10 overflow-hidden"
+                        >
                             <div className="space-y-1 py-2">
-                                {cfg.drops.map((d) => (
-                                    <div key={d.label} className="flex items-start justify-between gap-1.5">
+                                {cfg.drops.map((drop) => (
+                                    <div key={drop.label} className="flex items-start justify-between gap-1.5">
                                         <div className="flex items-start gap-1.5 min-w-0">
-                                            <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-1" style={{ background: DROP_KIND_COLOR[d.kind] }} />
-                                            <span className="text-[9px] text-white/60 leading-snug">{d.label}</span>
+                                            <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-1" style={{ background: DROP_KIND_COLOR[drop.kind] }} />
+                                            <span className="text-[9px] text-brand-muted leading-snug">{drop.label}</span>
                                         </div>
-                                        <span className="text-[9px] font-black tabular-nums shrink-0" style={{ color: DROP_KIND_COLOR[d.kind] }}>{d.chance}%</span>
+                                        <span className="text-[9px] font-black tabular-nums shrink-0" style={{ color: DROP_KIND_COLOR[drop.kind] }}>{drop.chance}%</span>
                                     </div>
                                 ))}
                             </div>
@@ -100,19 +130,21 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     )}
                 </AnimatePresence>
 
-                {/* CTA */}
                 <button
+                    type="button"
                     disabled={locked}
                     onClick={onUnbox}
-                    className={`z-10 w-full mt-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
-                        locked ? 'bg-white/[0.04] text-white/30 border border-white/5 cursor-not-allowed' : 'text-black active:scale-95 cursor-pointer shadow-lg'
+                    className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
+                        locked
+                            ? 'bg-brand-bg-opacity-5 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed'
+                            : 'text-black active:scale-[0.98] cursor-pointer shadow-lg'
                     }`}
-                    style={locked ? undefined : { background: `linear-gradient(90deg, ${accent}, ${glow})` }}
+                    style={locked ? undefined : { background: `linear-gradient(100deg, ${accent}, ${glow})` }}
                 >
                     {!locked && (
-                        <span className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                        <span className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none" />
                     )}
-                    <span className="relative z-10 flex items-center justify-center gap-1">
+                    <span className="relative z-10 flex items-center justify-center gap-1.5">
                         {!affordable && !disabled && <FiLock size={10} />}
                         {disabled
                             ? t('unavailable')
@@ -122,6 +154,6 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     </span>
                 </button>
             </div>
-        </motion.div>
+        </motion.article>
     );
 }

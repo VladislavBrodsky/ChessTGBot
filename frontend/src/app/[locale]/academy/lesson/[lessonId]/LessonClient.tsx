@@ -12,6 +12,7 @@ import { useLocale } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { useNavbarHide } from "@/context/NavbarContext";
 import Confetti from "react-confetti";
+import { mapBackendLessonStep } from "@/lib/lessonSteps";
 
 const ORIGINS_LESSON_STEPS: LessonStep[] = [
   {
@@ -251,24 +252,13 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   }, [hideNavbar, showNavbar]);
 
   useEffect(() => {
-    apiFetch(`/api/v1/content/lessons/${lessonId}`)
+    apiFetch(`/api/v1/content/lessons/${lessonId}?locale=${locale}`)
       .then(res => {
         if (!res.ok) throw new Error("Lesson not found");
         return res.json();
       })
       .then(data => {
-        // Map database steps to frontend steps
-        const steps = data.steps.map((step: any) => ({
-          id: step.id.toString(),
-          type: step.fen && step.content.includes("solution:") ? 'interactive_board' : (step.fen ? 'interactive_board' : 'text'),
-          title: data.title + ` (Part ${step.order_index})`,
-          content: step.content,
-          fen: step.fen,
-          // Simple parsing if we want to embed solution in content, or just fallback
-          // For now, if we don't have interactive fields in DB, we treat them as text/board
-          // Ideally DB models would be expanded, but we use what we have:
-          solution: step.content.includes("solution:") ? step.content.split("solution:")[1].trim().split(",") : [],
-        }));
+        const steps = data.steps.map((step: any) => mapBackendLessonStep(step, data.title));
         setLessonData({ ...data, steps });
         setLoading(false);
       })
@@ -276,7 +266,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
         console.error(err);
         setLoading(false);
       });
-  }, [lessonId]);
+  }, [lessonId, locale]);
 
   const handleComplete = async () => {
     try {

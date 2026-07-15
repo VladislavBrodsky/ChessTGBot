@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { apiFetch, getFullPhotoUrl } from "@/lib/api";
+import { getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
 import { 
   FaGraduationCap, FaStar, FaChessKnight, 
   FaWallet, FaGamepad, FaTrophy, 
-  FaListOl, FaNewspaper, FaFire
+  FaListOl, FaNewspaper, FaArrowRight
 } from "react-icons/fa";
 import { FiBell, FiSettings } from 'react-icons/fi';
 import { useTranslations, useLocale } from 'next-intl';
@@ -18,7 +18,6 @@ import NewsSection from "@/components/NewsSection";
 import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
 import NotificationModal from "@/components/NotificationModal";
@@ -94,16 +93,20 @@ export default function Home() {
     {/* Inline Header Controls — top-aligned with the first line of the heading */}
     <div className="flex items-center gap-2.5 shrink-0 ml-3 mt-0.5">
       <button
+        type="button"
         onClick={() => setShowNotifications(true)}
-        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+        aria-label="Notifications"
+        className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/70 hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
       >
         <FiBell size={18} />
         <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
       </button>
-      <Link href={`/${locale}/settings`}>
-        <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+      <Link
+        href={`/${locale}/settings`}
+        aria-label={t('nav_settings')}
+        className="w-11 h-11 flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/70 hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95"
+      >
           <FiSettings size={18} />
-        </button>
       </Link>
     </div>
   </div>
@@ -301,44 +304,54 @@ export default function Home() {
   </AnimatePresence>
 
 
- {/* Quick Shortcuts Hub Grid (3 Columns) */}
- <div className="grid grid-cols-3 gap-3 w-full relative z-10">
- <Link href={`/${locale}/academy`}>
- <motion.div
- whileHover={{ y: -2, scale: 1.02 }}
- whileTap={{ scale: 0.97 }}
- className="relative overflow-hidden w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-primary/20 hover:shadow-md transition-all duration-300 text-center"
- >
- <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
- <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
- <FaGraduationCap className="text-lg text-brand-primary opacity-80" />
- <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary">{t('academy')}</span>
- </motion.div>
- </Link>
-
-  <Link href={`/${locale}/game`}>
-  <motion.div
-  whileHover={{ y: -2, scale: 1.02 }}
-  whileTap={{ scale: 0.97 }}
-  className="play-chess-card-premium w-full py-5 flex flex-col items-center justify-center gap-2 cursor-pointer text-center"
-  >
-  <FaGamepad className="text-lg text-brand-primary opacity-70 relative z-10 drop-shadow-[0_2px_8px_rgba(168,85,247,0.4)]" />
-  <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary relative z-10">{t('play')}</span>
-  </motion.div>
+ {/* Primary action first, supporting actions second. */}
+ <div className="w-full space-y-3 relative z-10">
+  <Link href={`/${locale}/game`} className="block rounded-2xl">
+   <motion.div
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.985 }}
+    className="play-chess-card-premium min-h-[88px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
+   >
+    <div className="relative z-10 w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-brand-primary/10 border border-brand-primary/15 shadow-inner-glow">
+     <FaGamepad className="text-xl text-brand-primary drop-shadow-[0_2px_10px_rgba(168,85,247,0.45)]" />
+    </div>
+    <div className="relative z-10 min-w-0 flex-1 text-left">
+     <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-brand-muted mb-1">{t('play')}</span>
+     <span className="block text-lg font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
+    </div>
+    <div className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-primary">
+     <FaArrowRight className="text-xs rtl:rotate-180" />
+    </div>
+   </motion.div>
   </Link>
 
- <Link href={`/${locale}/challenges`}>
- <motion.div
- whileHover={{ y: -2, scale: 1.02 }}
- whileTap={{ scale: 0.97 }}
- className="relative overflow-hidden w-full py-[18px] flex flex-col items-center justify-center gap-2 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-primary/20 hover:shadow-md transition-all duration-300 text-center"
- >
- <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/0 via-brand-primary/[0.03] to-brand-primary/0 pointer-events-none" />
- <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 3.5, repeat: Infinity }} className="absolute top-2 right-2 w-1 h-1 rounded-full bg-brand-primary/40" />
- <FaTrophy className="text-lg text-brand-primary opacity-80" />
- <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary">{t('daily_tasks')}</span>
- </motion.div>
- </Link>
+  <div className="grid grid-cols-2 gap-3">
+   <Link href={`/${locale}/academy`} className="block rounded-2xl">
+    <motion.div
+     whileHover={{ y: -2 }}
+     whileTap={{ scale: 0.98 }}
+     className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
+    >
+     <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
+      <FaGraduationCap className="text-lg text-brand-primary/80" />
+     </div>
+     <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('academy')}</span>
+    </motion.div>
+   </Link>
+
+   <Link href={`/${locale}/challenges`} className="block rounded-2xl">
+    <motion.div
+     whileHover={{ y: -2 }}
+     whileTap={{ scale: 0.98 }}
+     className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
+    >
+     <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
+      <FaTrophy className="text-base text-brand-primary/80" />
+     </div>
+     <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('daily_tasks')}</span>
+    </motion.div>
+   </Link>
+  </div>
  </div>
 
  {/* Global Leaderboard Panel */}

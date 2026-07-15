@@ -34,6 +34,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
  const currentStep = steps[currentStepIndex];
  const isLastStep = currentStepIndex === steps.length - 1;
+ const hasInteractiveSolution =
+   currentStep.type === 'interactive_board' && (currentStep.solution?.length ?? 0) > 0;
 
  const handleNext = () => {
  if (currentStepIndex < steps.length - 1) {
@@ -80,7 +82,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  {currentStep.title}
  </h2>
 
- {currentStep.type === 'text' && (
+ {(currentStep.type === 'text' || (currentStep.type === 'interactive_board' && !hasInteractiveSolution)) && (
    <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-6 md:gap-8`}>
      <div className="flex-1 glass-panel p-8 md:p-10 rounded-3xl border border-brand-border-opacity-10 shadow-lg flex flex-col justify-center min-h-[300px] relative overflow-hidden">
        {/* Decorative subtle background glow */}
@@ -140,7 +142,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  </div>
  )}
 
-  {currentStep.type === 'interactive_board' && (
+  {hasInteractiveSolution && (
     <div className="glass-panel p-4 md:p-6 rounded-3xl border border-brand-border-opacity-10 w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5">
       <div className="text-sm md:text-base font-medium text-brand-primary opacity-90 mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: currentStep.content }} />
       <PuzzleBoard

@@ -36,6 +36,10 @@ export interface BoxConfig {
     name: string;
     /** Metal / rarity word, e.g. "Bronze". */
     metal: string;
+    /** Chess piece that defines this tier's visual language. */
+    piece: string;
+    /** Decorative chess glyph used by the card UI. */
+    glyph: string;
     /** One-line tagline under the name. */
     tagline: string;
     /** XP price. Mirrors BOX_COSTS_XP in the backend. */
@@ -50,9 +54,11 @@ export interface BoxConfig {
 export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
     common: {
         tier: 'common',
-        name: 'Novice Crate',
+        name: "Pawn's Gambit",
         metal: 'Bronze',
-        tagline: 'Riveted wooden chest',
+        piece: 'Pawn',
+        glyph: '♟',
+        tagline: 'Pawn-marked opening chest',
         costXP: 5000,
         theme: { accent: '#CD7F32', accent2: '#5C3317', glow: '#CD7F32', rgb: '205,127,50' },
         drops: [
@@ -63,9 +69,11 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
     },
     rare: {
         tier: 'rare',
-        name: 'Steel Vault',
+        name: "Knight's Gambit",
         metal: 'Silver',
-        tagline: 'Brushed safe with combo dial',
+        piece: 'Knight',
+        glyph: '♞',
+        tagline: 'Knight-forged tactical chest',
         costXP: 8000,
         theme: { accent: '#C0C0C0', accent2: '#606063', glow: '#D8D8D8', rgb: '192,192,192' },
         drops: [
@@ -76,9 +84,11 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
     },
     epic: {
         tier: 'epic',
-        name: 'Royal Coffer',
+        name: "Queen's Treasury",
         metal: 'Gold',
-        tagline: 'Gem-clasp treasure chest',
+        piece: 'Queen',
+        glyph: '♛',
+        tagline: 'Crown-clasp royal chess chest',
         costXP: 10000,
         theme: { accent: '#FFD700', accent2: '#B8860B', glow: '#FFE55C', rgb: '255,215,0' },
         drops: [
@@ -89,9 +99,11 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
     },
     legendary: {
         tier: 'legendary',
-        name: 'Prism Reliquary',
+        name: "King's Dominion",
         metal: 'Platinum',
-        tagline: 'Levitating diamond monolith',
+        piece: 'King',
+        glyph: '♚',
+        tagline: 'Pearl-board sovereign chest',
         costXP: 30000,
         theme: { accent: '#E5E4E2', accent2: '#A09F9C', glow: '#B9F2FF', rgb: '229,228,226' },
         drops: [
@@ -102,9 +114,11 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
     },
     seasonal: {
         tier: 'seasonal',
-        name: 'Ember Relic',
-        metal: 'Genesis',
-        tagline: 'Molten limited-edition drop',
+        name: 'Ember Checkmate',
+        metal: 'Ruby',
+        piece: 'Checkmate',
+        glyph: '♜',
+        tagline: 'Ruby-forged final-move chest',
         costXP: 12000,
         theme: { accent: '#FF4500', accent2: '#8B0000', glow: '#FF6347', rgb: '255,69,0' },
         limited: true,

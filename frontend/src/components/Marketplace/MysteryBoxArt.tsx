@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import type { BoxTier } from './boxConfig';
 
 /**
- * Per-tier Mystery Box artwork — rendered using ultra-premium 8k 3D renders.
- * Replaces the previous inline SVG approach.
+ * Per-tier chess chest artwork. Every tier keeps the same functional treasure
+ * box silhouette while changing its piece language and material treatment.
  */
 export default function MysteryBoxArt({ tier, size = 116 }: { tier: BoxTier; size?: number }) {
     const float = tier === 'legendary' ? [0, -9, 0] : [0, -6, 0];
@@ -19,18 +20,18 @@ export default function MysteryBoxArt({ tier, size = 116 }: { tier: BoxTier; siz
             style={{ width: size, height: size }}
             className="relative flex items-center justify-center"
         >
-            <img 
-                src={`/boxes/${tier}.jpg`}
-                alt={`${tier} Mystery Box`}
-                className="w-full h-full object-cover relative z-10 pointer-events-none drop-shadow-2xl"
+            <Image
+                src={`/boxes/${tier}-chess.jpg`}
+                alt={`${tier} chess treasure box`}
+                width={size}
+                height={size}
+                className="w-full h-full object-contain relative z-10 pointer-events-none select-none drop-shadow-2xl"
                 style={{
-                    // Use a radial gradient mask to smoothly blend the square image into the dark background
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)',
-                    maskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)',
-                    transform: 'scale(1.3)' // Scale up slightly to fill the mask well
+                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
+                    maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
+                    transform: 'scale(1.08)'
                 }}
             />
         </motion.div>
     );
 }
-
