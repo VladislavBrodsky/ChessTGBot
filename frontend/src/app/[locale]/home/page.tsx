@@ -260,9 +260,9 @@ export default function Home() {
       <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('current_streak')}</span>
       <div className="flex items-center gap-1 justify-center">
       <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
-      {(stats.current_streak?.count ?? 0) > 0 && (
-      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
-      {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
+      {(stats.current_streak?.count ?? 0) > 0 && stats.current_streak?.type !== 'none' && (
+      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : stats.current_streak?.type === 'draw' ? 'text-gray-400' : 'text-brand-primary opacity-45'}`}>
+      {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : stats.current_streak?.type === 'draw' ? (t('draws')?.[0] || 'D') : (t('losses')?.[0] || 'L')}
       </span>
       )}
       </div>
