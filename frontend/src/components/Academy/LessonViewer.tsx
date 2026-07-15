@@ -141,8 +141,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  )}
 
   {currentStep.type === 'interactive_board' && (
-    <div className="glass-panel p-4 rounded-3xl border border-brand-border-opacity-10 w-full">
-      <div className="text-sm font-medium text-brand-primary opacity-80 mb-4 text-center" dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+    <div className="glass-panel p-4 md:p-6 rounded-3xl border border-brand-border-opacity-10 w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5">
+      <div className="text-sm md:text-base font-medium text-brand-primary opacity-90 mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: currentStep.content }} />
       <PuzzleBoard
         initialFen={currentStep.fen || "start"}
         solution={currentStep.solution || []}
