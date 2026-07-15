@@ -1,152 +1,150 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiGift, FiAward, FiZap, FiCheck } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
+import { FiGift, FiAward, FiZap, FiCheck, FiStar, FiRefreshCw } from 'react-icons/fi';
+import { telegramHaptic } from '@/lib/telegram';
+import { BOX_CONFIG, type BoxTier, type DropRarity } from './boxConfig';
 
 interface UnboxingModalProps {
     isOpen: boolean;
     onClose: () => void;
-    tier: 'common' | 'rare' | 'epic' | 'legendary' | 'seasonal' | null;
+    tier: BoxTier | null;
     prizeName: string | null;
     prizeType: string | null;
 }
 
+const KIND_ICON: Record<string, React.ReactNode> = {
+    refund: <FiRefreshCw size={30} />,
+    boost: <FiZap size={30} />,
+    cosmetic: <FiAward size={30} />,
+    premium: <FiStar size={30} />,
+};
+
+// Rarity → celebration intensity. Higher tiers get confetti + longer glow.
+const INTENSITY: Record<BoxTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3, seasonal: 2 };
+
 export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeType }: UnboxingModalProps) {
-    const [animationState, setAnimationState] = useState<'shaking' | 'flash' | 'reveal'>('shaking');
-    const [revealedPrize, setRevealedPrize] = useState<{ name: string; type: string; icon: React.ReactNode } | null>(null);
+    const t = useTranslations('Marketplace');
+    const [state, setState] = useState<'shaking' | 'flash' | 'reveal'>('shaking');
 
     useEffect(() => {
         if (isOpen && tier && prizeName && prizeType) {
-            setAnimationState('shaking');
-            setRevealedPrize(null);
-
-            // Shaking suspense: 2.5 seconds
-            const shakeTimer = setTimeout(() => {
-                setAnimationState('flash');
-
-                // Determine correct icon based on server-provided prize type
-                let icon = <FiGift size={28} />;
-                if (prizeType === 'refund' || prizeType === 'boost') {
-                    icon = <FiZap size={28} />;
-                } else if (prizeType === 'cosmetic') {
-                    icon = <FiAward size={28} />;
-                }
-
-                setRevealedPrize({
-                    name: prizeName,
-                    type: prizeType,
-                    icon: icon
-                });
-
-                // Flash is very quick: 200ms
-                const flashTimer = setTimeout(() => {
-                    setAnimationState('reveal');
-                }, 250);
-
-                return () => clearTimeout(flashTimer);
-            }, 2500);
-
-            return () => clearTimeout(shakeTimer);
+            setState('shaking');
+            telegramHaptic('medium');
+            const shake = setTimeout(() => {
+                setState('flash');
+                // Rarity-scaled haptic on reveal.
+                telegramHaptic(INTENSITY[tier] >= 2 ? 'success' : 'light');
+                const flash = setTimeout(() => setState('reveal'), 220);
+                return () => clearTimeout(flash);
+            }, 2400);
+            return () => clearTimeout(shake);
         }
     }, [isOpen, tier, prizeName, prizeType]);
 
-    const tierGradients = {
-        common: 'from-white/10 to-black',
-        rare: 'from-white/20 to-black',
-        epic: 'from-white/30 to-black',
-        legendary: 'from-white/50 to-black shadow-[0_0_50px_rgba(255,255,255,0.15)]',
-        seasonal: 'from-white/25 to-black'
-    };
+    const cfg = tier ? BOX_CONFIG[tier] : null;
+    const intensity = tier ? INTENSITY[tier] : 0;
+    const icon = KIND_ICON[prizeType || ''] || <FiGift size={30} />;
+
+    // Pre-compute confetti particles (only for higher rarities).
+    const confetti = useMemo(() => {
+        if (!cfg || intensity < 2) return [];
+        const colors = [cfg.theme.accent, cfg.theme.glow, '#ffffff'];
+        return Array.from({ length: intensity >= 3 ? 60 : 36 }, (_, i) => ({
+            id: i,
+            x: (Math.random() - 0.5) * 360,
+            y: -(Math.random() * 300 + 120),
+            rotate: Math.random() * 360,
+            delay: Math.random() * 0.25,
+            color: colors[i % colors.length],
+            size: 5 + Math.random() * 6,
+        }));
+    }, [cfg, intensity]);
+
+    if (!cfg) return null;
+
+    const KNOWN_KINDS: DropRarity[] = ['refund', 'boost', 'cosmetic', 'premium'];
+    const kindLabel = KNOWN_KINDS.includes(prizeType as DropRarity)
+        ? t(`prize_kind_${prizeType}` as 'prize_kind_refund' | 'prize_kind_boost' | 'prize_kind_cosmetic' | 'prize_kind_premium')
+        : (prizeType || t('reward'));
 
     return (
         <AnimatePresence>
             {isOpen && tier && (
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
                 >
+                    {/* Tier ambient glow */}
+                    <div className="absolute inset-0 pointer-events-none"
+                        style={{ background: `radial-gradient(circle at 50% 45%, rgba(${cfg.theme.rgb},${0.05 + intensity * 0.04}), transparent 60%)` }} />
 
-                    {/* Unboxing Area */}
-                    <div className="relative w-full max-w-sm flex flex-col items-center justify-center text-center p-6 text-brand-primary h-[500px]">
-                        
-                        {/* Shaking State */}
-                        {animationState === 'shaking' && (
+                    <div className="relative w-full max-w-sm flex flex-col items-center justify-center text-center p-6 h-[500px]">
+
+                        {state === 'shaking' && (
                             <div className="space-y-8 flex flex-col items-center">
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 animate-pulse">
-                                    UNBOXING MYSTERY...
-                                </span>
-                                
-                                {/* 3D CSS Box Shaking */}
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 animate-pulse">{t('unboxing')}</span>
                                 <motion.div
-                                    animate={{ 
-                                        x: [-8, 8, -8, 8, 0],
-                                        y: [-4, 4, -4, 4, 0],
-                                        rotate: [-2, 2, -2, 2, 0]
-                                    }}
-                                    transition={{ 
-                                        duration: 0.18, 
-                                        repeat: Infinity,
-                                        ease: "easeInOut"
-                                    }}
-                                    className="w-32 h-32 rounded-3xl bg-gradient-to-br from-white/30 to-white/5 border border-white/20 shadow-premium flex items-center justify-center"
+                                    animate={{ x: [-8, 8, -8, 8, 0], y: [-4, 4, -4, 4, 0], rotate: [-3, 3, -3, 3, 0], scale: [1, 1.03, 1] }}
+                                    transition={{ duration: 0.2, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="w-36 h-36 rounded-3xl border flex items-center justify-center"
+                                    style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.4), rgba(0,0,0,0.6))`, borderColor: `rgba(${cfg.theme.rgb},0.4)` }}
                                 >
-                                    <span className="text-4xl font-black text-white/40">?</span>
+                                    <span className="text-5xl font-black" style={{ color: cfg.theme.accent }}>?</span>
                                 </motion.div>
                                 <div className="h-6" />
                             </div>
                         )}
 
-                        {/* Flash Transition */}
-                        {animationState === 'flash' && (
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-white z-50 flex items-center justify-center"
-                            />
+                        {state === 'flash' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-white z-50" />
                         )}
 
-                        {/* Reveal State */}
-                        {animationState === 'reveal' && revealedPrize && (
+                        {state === 'reveal' && (
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ type: 'spring', duration: 0.6 }}
-                                className="space-y-6 flex flex-col items-center w-full"
+                                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                                className="space-y-6 flex flex-col items-center w-full relative"
                             >
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">
-                                    YOU UNLOCKED
-                                </span>
+                                {/* Confetti */}
+                                {confetti.map((c) => (
+                                    <motion.span key={c.id}
+                                        initial={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
+                                        animate={{ opacity: 0, x: c.x, y: c.y, rotate: c.rotate }}
+                                        transition={{ duration: 1.4, delay: c.delay, ease: 'easeOut' }}
+                                        className="absolute left-1/2 top-1/3 rounded-sm pointer-events-none"
+                                        style={{ width: c.size, height: c.size, background: c.color }} />
+                                ))}
 
-                                {/* Prize Card Container */}
-                                <div className={`w-48 h-48 rounded-4xl bg-gradient-to-b ${tierGradients[tier]} border border-white/20 flex flex-col items-center justify-center p-4 relative overflow-hidden`}>
-                                    {/* Ambient background glow */}
-                                    <div className="absolute inset-0 bg-glass-gradient pointer-events-none" />
-                                    
-                                    <div className="w-16 h-16 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center mb-4 text-white shadow-inner-glow">
-                                        {revealedPrize.icon}
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: cfg.theme.accent }}>{t('you_unlocked')}</span>
+
+                                <motion.div
+                                    animate={intensity >= 2 ? { boxShadow: [`0 0 20px rgba(${cfg.theme.rgb},0.3)`, `0 0 55px rgba(${cfg.theme.rgb},0.6)`, `0 0 20px rgba(${cfg.theme.rgb},0.3)`] } : undefined}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="w-48 h-48 rounded-[32px] border flex flex-col items-center justify-center p-4 relative overflow-hidden"
+                                    style={{ background: `linear-gradient(180deg, rgba(${cfg.theme.rgb},0.18), rgba(0,0,0,0.9))`, borderColor: `rgba(${cfg.theme.rgb},0.35)` }}
+                                >
+                                    <div className="w-16 h-16 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center mb-3" style={{ color: cfg.theme.accent }}>
+                                        {icon}
                                     </div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/50">{revealedPrize.type}</span>
-                                </div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/50">{kindLabel}</span>
+                                </motion.div>
 
                                 <div className="space-y-2">
-                                    <h2 className="text-xl font-black uppercase tracking-wider text-white leading-none">
-                                        {revealedPrize.name}
-                                    </h2>
-                                    <p className="text-xs text-brand-muted">Item has been added to your inventory</p>
+                                    <h2 className="text-xl font-black uppercase tracking-wider text-white leading-tight">{prizeName}</h2>
+                                    <p className="text-xs text-white/50">{t('added_to_inventory')}</p>
                                 </div>
 
                                 <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                                     onClick={onClose}
-                                    className="px-8 py-3 rounded-full bg-white text-black text-xs font-black uppercase tracking-widest shadow-premium hover:bg-white/90 cursor-pointer flex items-center gap-2"
+                                    className="px-8 py-3 rounded-full text-black text-xs font-black uppercase tracking-widest shadow-premium cursor-pointer flex items-center gap-2"
+                                    style={{ background: `linear-gradient(90deg, ${cfg.theme.accent}, ${cfg.theme.glow})` }}
                                 >
                                     <FiCheck size={14} />
-                                    Acknowledge
+                                    {t('awesome')}
                                 </motion.button>
                             </motion.div>
                         )}

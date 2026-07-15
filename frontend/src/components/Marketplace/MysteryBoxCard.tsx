@@ -1,150 +1,126 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { FiChevronDown, FiLock } from 'react-icons/fi';
+import MysteryBoxArt from './MysteryBoxArt';
+import SeasonalCountdown from './SeasonalCountdown';
+import { BOX_CONFIG, DROP_KIND_COLOR, type BoxTier } from './boxConfig';
 
 interface MysteryBoxCardProps {
-    tier: 'common' | 'rare' | 'epic' | 'legendary' | 'seasonal';
-    name: string;
-    cost: number;
-    currency: 'xr' | 'xp';
-    description: string;
+    tier: BoxTier;
+    /** Current user XP — drives affordability gating. */
+    userXP: number;
     onUnbox: () => void;
     disabled?: boolean;
 }
 
-export default function MysteryBoxCard({ tier, name, cost, currency, description, onUnbox, disabled }: MysteryBoxCardProps) {
-    const t = useTranslations('Index');
+export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: MysteryBoxCardProps) {
+    const t = useTranslations('Marketplace');
+    const [showOdds, setShowOdds] = useState(false);
+    const cfg = BOX_CONFIG[tier];
+    const { accent, accent2, glow, rgb } = cfg.theme;
 
-    // Ultra-Premium Branding Configuration
-    const tierStyles = {
-        common: {
-            bg: 'bg-black/40',
-            border: 'border-[#8B4513]/30', // Bronze color
-            accent: 'from-[#CD7F32] via-[#8B4513] to-[#5C3317]',
-            text: 'text-[#CD7F32]',
-            badge: 'bg-[#CD7F32]/10 text-[#CD7F32] border-[#CD7F32]/20',
-            iconColor: 'text-[#CD7F32]'
-        },
-        rare: {
-            bg: 'bg-black/40',
-            border: 'border-[#C0C0C0]/30', // Silver color
-            accent: 'from-[#E8E8E8] via-[#C0C0C0] to-[#787878]',
-            text: 'text-[#E8E8E8]',
-            badge: 'bg-[#C0C0C0]/10 text-[#C0C0C0] border-[#C0C0C0]/20',
-            iconColor: 'text-[#C0C0C0]'
-        },
-        epic: {
-            bg: 'bg-black/50',
-            border: 'border-[#FFD700]/40', // Gold color
-            accent: 'from-[#FFE55C] via-[#FFD700] to-[#B8860B]',
-            text: 'text-[#FFD700]',
-            badge: 'bg-[#FFD700]/10 text-[#FFD700] border-[#FFD700]/20',
-            iconColor: 'text-[#FFD700]'
-        },
-        legendary: {
-            bg: 'bg-black/60',
-            border: 'border-[#E5E4E2]/50', // Platinum color
-            accent: 'from-[#FFFFFF] via-[#E5E4E2] to-[#A09F9C]',
-            text: 'text-white',
-            badge: 'bg-[#E5E4E2]/15 text-white border-[#E5E4E2]/30 shadow-[0_0_15px_rgba(229,228,226,0.2)]',
-            iconColor: 'text-white'
-        },
-        seasonal: {
-            bg: 'bg-black/50',
-            border: 'border-[#FF4500]/40', // Fire/Season color
-            accent: 'from-[#FF6347] via-[#FF4500] to-[#8B0000]',
-            text: 'text-[#FF4500]',
-            badge: 'bg-[#FF4500]/10 text-[#FF4500] border-[#FF4500]/20',
-            iconColor: 'text-[#FF4500]'
-        }
-    };
-
-    const style = tierStyles[tier];
+    const affordable = userXP >= cfg.costXP;
+    const shortfall = cfg.costXP - userXP;
+    const locked = disabled || !affordable;
 
     return (
         <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`w-full rounded-[32px] p-[1px] bg-gradient-to-b from-white/10 to-transparent relative group overflow-hidden`}
+            whileHover={{ y: locked ? 0 : -5 }}
+            whileTap={{ scale: locked ? 1 : 0.98 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+            className="w-full rounded-[24px] p-[1px] relative group overflow-hidden self-start"
+            style={{ background: `linear-gradient(160deg, rgba(${rgb},0.4), rgba(255,255,255,0.05) 42%, transparent)` }}
         >
-            {/* The Inner Card Content */}
-            <div className={`w-full h-full rounded-[31px] ${style.bg} backdrop-blur-2xl border ${style.border} p-6 flex flex-col justify-between relative z-10 min-h-[380px]`}>
-                
-                {/* Premium Background Glow Effect */}
-                <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${style.accent} opacity-10 rounded-full blur-3xl pointer-events-none group-hover:opacity-20 transition-opacity duration-700`} />
-                <div className={`absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr ${style.accent} opacity-5 rounded-full blur-3xl pointer-events-none group-hover:opacity-15 transition-opacity duration-700`} />
+            <div
+                className="w-full h-full rounded-[23px] bg-black/50 backdrop-blur-2xl border p-3.5 flex flex-col relative z-10"
+                style={{ borderColor: `rgba(${rgb},0.22)` }}
+            >
+                {/* Ambient rarity glows */}
+                <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-20 group-hover:opacity-35 transition-opacity duration-700"
+                    style={{ background: `radial-gradient(circle, ${glow}, transparent 70%)` }} />
+                <div className="absolute -bottom-20 -left-16 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-10 group-hover:opacity-20 transition-opacity duration-700"
+                    style={{ background: `radial-gradient(circle, ${accent2}, transparent 70%)` }} />
 
-                {/* Top Section */}
-                <div className="flex justify-between items-start z-10">
-                    <div className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${style.badge}`}>
-                        {tier}
+                {/* Limited ribbon */}
+                {cfg.limited && (
+                    <div className="absolute top-3.5 -right-8 rotate-45 px-9 py-0.5 text-[7px] font-black uppercase tracking-[0.2em] text-black shadow-lg z-20"
+                        style={{ background: `linear-gradient(90deg, ${accent}, ${glow})` }}>
+                        {t('limited')}
                     </div>
-                    <div className="text-right">
-                        <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] block mb-0.5">Price</span>
-                        <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-black text-white">{cost.toLocaleString()}</span>
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${style.text}`}>{currency}</span>
-                        </div>
-                    </div>
+                )}
+
+                {/* Rarity badge */}
+                <div className="z-10 self-start px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-[0.15em]"
+                    style={{ color: accent, background: `rgba(${rgb},0.1)`, borderColor: `rgba(${rgb},0.28)` }}>
+                    {cfg.metal}
                 </div>
 
-                {/* Center Visual Component (The Vault/Chest Concept) */}
-                <div className="flex-1 flex flex-col items-center justify-center relative my-6 z-10">
-                    <motion.div 
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="relative w-32 h-32 flex items-center justify-center"
-                    >
-                        {/* Glow Behind the Box */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${style.accent} rounded-full opacity-20 blur-xl group-hover:blur-2xl transition-all duration-500 group-hover:scale-110`} />
-                        
-                        {/* The Box Render (Minimalist geometric crystal shape) */}
-                        <div className={`w-20 h-24 bg-gradient-to-b ${style.accent} rounded-t-3xl rounded-b-xl shadow-2xl relative overflow-hidden flex flex-col items-center border border-white/20 z-10`}>
-                            {/* Vault Details */}
-                            <div className="w-full h-8 bg-black/40 border-b border-white/10 absolute top-0 left-0 flex items-center justify-center backdrop-blur-md">
-                                <div className="w-8 h-1 bg-white/20 rounded-full" />
+                {/* Artwork */}
+                <div className="flex items-center justify-center relative my-1 z-10 h-[112px]">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-28 h-28 rounded-full blur-2xl opacity-25 group-hover:opacity-45 group-hover:scale-110 transition-all duration-500"
+                            style={{ background: `radial-gradient(circle, ${glow}, transparent 65%)` }} />
+                    </div>
+                    <MysteryBoxArt tier={tier} size={110} />
+                </div>
+
+                {/* Name + tagline */}
+                <div className="text-center z-10 min-h-[42px]">
+                    <h3 className="text-[13px] font-black uppercase tracking-wide leading-tight" style={{ color: accent }}>{cfg.name}</h3>
+                    <p className="text-[9px] text-white/45 leading-snug mt-0.5 font-medium">{cfg.tagline}</p>
+                    {cfg.limited && <SeasonalCountdown className="mt-1" accent={accent} />}
+                </div>
+
+                {/* What's inside (odds transparency) */}
+                <button
+                    onClick={() => setShowOdds((v) => !v)}
+                    className="z-10 mx-auto mt-1.5 flex items-center gap-1 text-[8px] font-black uppercase tracking-[0.15em] text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                >
+                    {t('whats_inside')}
+                    <motion.span animate={{ rotate: showOdds ? 180 : 0 }}><FiChevronDown size={11} /></motion.span>
+                </button>
+                <AnimatePresence initial={false}>
+                    {showOdds && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="z-10 overflow-hidden">
+                            <div className="space-y-1 py-2">
+                                {cfg.drops.map((d) => (
+                                    <div key={d.label} className="flex items-start justify-between gap-1.5">
+                                        <div className="flex items-start gap-1.5 min-w-0">
+                                            <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-1" style={{ background: DROP_KIND_COLOR[d.kind] }} />
+                                            <span className="text-[9px] text-white/60 leading-snug">{d.label}</span>
+                                        </div>
+                                        <span className="text-[9px] font-black tabular-nums shrink-0" style={{ color: DROP_KIND_COLOR[d.kind] }}>{d.chance}%</span>
+                                    </div>
+                                ))}
                             </div>
-                            
-                            {/* Core Crystal */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 rotate-45 border border-white/20 shadow-inner-glow flex items-center justify-center">
-                                <span className={`-rotate-45 font-black text-xl ${style.text} drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]`}>?</span>
-                            </div>
-                            
-                            {/* Inner Refractions */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                        </div>
-                    </motion.div>
-                </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                {/* Bottom Info & Action */}
-                <div className="z-10 text-center space-y-4">
-                    <div>
-                        <h3 className={`text-base font-black uppercase tracking-widest ${style.text} mb-1.5 leading-tight`}>{name}</h3>
-                        <p className="text-[11px] text-white/50 leading-relaxed max-w-[200px] mx-auto line-clamp-2 font-medium">
-                            {description}
-                        </p>
-                    </div>
-                    
-                    <button
-                        disabled={disabled}
-                        onClick={onUnbox}
-                        className={`w-full py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 relative overflow-hidden group/btn ${
-                            disabled 
-                                ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed' 
-                                : `bg-gradient-to-r ${style.accent} text-black hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer`
-                        }`}
-                    >
-                        {/* Shimmer effect on button hover */}
-                        {!disabled && (
-                            <div className="absolute inset-0 -translate-x-[150%] hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
-                        )}
-                        <span className="relative z-10">{t('claim')}</span>
-                    </button>
-                </div>
+                {/* CTA */}
+                <button
+                    disabled={locked}
+                    onClick={onUnbox}
+                    className={`z-10 w-full mt-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
+                        locked ? 'bg-white/[0.04] text-white/30 border border-white/5 cursor-not-allowed' : 'text-black active:scale-95 cursor-pointer shadow-lg'
+                    }`}
+                    style={locked ? undefined : { background: `linear-gradient(90deg, ${accent}, ${glow})` }}
+                >
+                    {!locked && (
+                        <span className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                    )}
+                    <span className="relative z-10 flex items-center justify-center gap-1">
+                        {!affordable && !disabled && <FiLock size={10} />}
+                        {disabled
+                            ? t('unavailable')
+                            : affordable
+                                ? `${cfg.costXP.toLocaleString()} XP`
+                                : t('need_more_xp', { amount: shortfall.toLocaleString() })}
+                    </span>
+                </button>
             </div>
         </motion.div>
     );
