@@ -17,118 +17,132 @@ interface MysteryBoxCardProps {
 export default function MysteryBoxCard({ tier, name, cost, currency, description, onUnbox, disabled }: MysteryBoxCardProps) {
     const t = useTranslations('Index');
 
-    // Branding color configurations based on tier, maintaining a premium monochromatic scheme
+    // Ultra-Premium Branding Configuration
     const tierStyles = {
         common: {
-            bg: 'bg-white/[0.02]',
-            border: 'border-white/10 hover:border-white/20',
-            badge: 'text-white/40 border-white/10 bg-white/5',
-            boxGrad: 'from-[#333] to-[#111]',
-            text: 'text-white/80'
+            bg: 'bg-black/40',
+            border: 'border-[#8B4513]/30', // Bronze color
+            accent: 'from-[#CD7F32] via-[#8B4513] to-[#5C3317]',
+            text: 'text-[#CD7F32]',
+            badge: 'bg-[#CD7F32]/10 text-[#CD7F32] border-[#CD7F32]/20',
+            iconColor: 'text-[#CD7F32]'
         },
         rare: {
-            bg: 'bg-white/[0.03]',
-            border: 'border-white/15 hover:border-white/30',
-            badge: 'text-white/60 border-white/20 bg-white/10',
-            boxGrad: 'from-[#666] to-[#222]',
-            text: 'text-white/95'
+            bg: 'bg-black/40',
+            border: 'border-[#C0C0C0]/30', // Silver color
+            accent: 'from-[#E8E8E8] via-[#C0C0C0] to-[#787878]',
+            text: 'text-[#E8E8E8]',
+            badge: 'bg-[#C0C0C0]/10 text-[#C0C0C0] border-[#C0C0C0]/20',
+            iconColor: 'text-[#C0C0C0]'
         },
         epic: {
-            bg: 'bg-white/[0.04]',
-            border: 'border-white/20 hover:border-white/40',
-            badge: 'text-white/80 border-white/30 bg-white/15',
-            boxGrad: 'from-[#999] to-[#333]',
-            text: 'text-white font-extrabold'
+            bg: 'bg-black/50',
+            border: 'border-[#FFD700]/40', // Gold color
+            accent: 'from-[#FFE55C] via-[#FFD700] to-[#B8860B]',
+            text: 'text-[#FFD700]',
+            badge: 'bg-[#FFD700]/10 text-[#FFD700] border-[#FFD700]/20',
+            iconColor: 'text-[#FFD700]'
         },
         legendary: {
-            bg: 'bg-gradient-to-b from-white/[0.06] to-transparent',
-            border: 'border-white/30 hover:border-white/60',
-            badge: 'text-white border-white/40 bg-white/20 shadow-[0_0_12px_rgba(255,255,255,0.1)]',
-            boxGrad: 'from-[#fff] to-[#444]',
-            text: 'text-white font-black tracking-tight'
+            bg: 'bg-black/60',
+            border: 'border-[#E5E4E2]/50', // Platinum color
+            accent: 'from-[#FFFFFF] via-[#E5E4E2] to-[#A09F9C]',
+            text: 'text-white',
+            badge: 'bg-[#E5E4E2]/15 text-white border-[#E5E4E2]/30 shadow-[0_0_15px_rgba(229,228,226,0.2)]',
+            iconColor: 'text-white'
         },
         seasonal: {
-            bg: 'bg-white/[0.04]',
-            border: 'border-white/20 hover:border-white/40',
-            badge: 'text-white/80 border-white/25 bg-white/10',
-            boxGrad: 'from-[#888] to-[#222]',
-            text: 'text-white font-bold'
+            bg: 'bg-black/50',
+            border: 'border-[#FF4500]/40', // Fire/Season color
+            accent: 'from-[#FF6347] via-[#FF4500] to-[#8B0000]',
+            text: 'text-[#FF4500]',
+            badge: 'bg-[#FF4500]/10 text-[#FF4500] border-[#FF4500]/20',
+            iconColor: 'text-[#FF4500]'
         }
     };
 
-    const currentStyle = tierStyles[tier];
+    const style = tierStyles[tier];
 
     return (
         <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
+            whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full p-5 rounded-3xl border ${currentStyle.bg} ${currentStyle.border} transition-all duration-300 flex flex-col justify-between h-[360px] relative overflow-hidden group`}
+            className={`w-full rounded-[32px] p-[1px] bg-gradient-to-b from-white/10 to-transparent relative group overflow-hidden`}
         >
-            {/* Ambient inner shadow/glow */}
-            <div className="absolute inset-0 bg-glass-gradient opacity-50 pointer-events-none" />
+            {/* The Inner Card Content */}
+            <div className={`w-full h-full rounded-[31px] ${style.bg} backdrop-blur-2xl border ${style.border} p-6 flex flex-col justify-between relative z-10 min-h-[380px]`}>
+                
+                {/* Premium Background Glow Effect */}
+                <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${style.accent} opacity-10 rounded-full blur-3xl pointer-events-none group-hover:opacity-20 transition-opacity duration-700`} />
+                <div className={`absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr ${style.accent} opacity-5 rounded-full blur-3xl pointer-events-none group-hover:opacity-15 transition-opacity duration-700`} />
 
-            {/* Top Row: Tier Badge */}
-            <div className="flex justify-between items-start relative z-10">
-                <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border ${currentStyle.badge}`}>
-                    {tier}
-                </span>
-                <div className="text-right">
-                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest block leading-none mb-1">Cost</span>
-                    <span className="text-sm font-black text-brand-primary">{cost} {currency.toUpperCase()}</span>
+                {/* Top Section */}
+                <div className="flex justify-between items-start z-10">
+                    <div className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${style.badge}`}>
+                        {tier}
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] block mb-0.5">Price</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-black text-white">{cost.toLocaleString()}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${style.text}`}>{currency}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {/* Mystery Box Visual (Premium Minimalist 3D CSS / Icon render) */}
-            <div className="flex-1 flex items-center justify-center relative my-4">
-                <div className="relative w-24 h-24">
-                    {/* Background shadow/glow */}
-                    <div className="absolute inset-0 bg-white/5 rounded-full filter blur-xl group-hover:bg-white/10 transition-colors duration-300" />
-                    
-                    {/* Futuristic Monochromatic Cubic Box */}
+                {/* Center Visual Component (The Vault/Chest Concept) */}
+                <div className="flex-1 flex flex-col items-center justify-center relative my-6 z-10">
                     <motion.div 
-                        animate={{ 
-                            y: [0, -6, 0],
-                            rotateY: [0, 360]
-                        }}
-                        transition={{ 
-                            y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                            rotateY: { duration: 25, repeat: Infinity, ease: "linear" }
-                        }}
-                        className="w-full h-full relative"
-                        style={{ transformStyle: 'preserve-3d', perspective: '800px' }}
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="relative w-32 h-32 flex items-center justify-center"
                     >
-                        {/* Elegant Geometric Cube representation using CSS gradients */}
-                        <div className={`w-20 h-20 mx-auto mt-2 rounded-2xl bg-gradient-to-br ${currentStyle.boxGrad} border border-white/20 shadow-premium flex items-center justify-center relative overflow-hidden`}>
-                            {/* Inner core metallic plate */}
-                            <div className="w-12 h-12 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center shadow-inner-glow">
-                                <span className="text-lg font-black text-white/40 group-hover:text-white/80 transition-colors">?</span>
+                        {/* Glow Behind the Box */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${style.accent} rounded-full opacity-20 blur-xl group-hover:blur-2xl transition-all duration-500 group-hover:scale-110`} />
+                        
+                        {/* The Box Render (Minimalist geometric crystal shape) */}
+                        <div className={`w-20 h-24 bg-gradient-to-b ${style.accent} rounded-t-3xl rounded-b-xl shadow-2xl relative overflow-hidden flex flex-col items-center border border-white/20 z-10`}>
+                            {/* Vault Details */}
+                            <div className="w-full h-8 bg-black/40 border-b border-white/10 absolute top-0 left-0 flex items-center justify-center backdrop-blur-md">
+                                <div className="w-8 h-1 bg-white/20 rounded-full" />
                             </div>
                             
-                            {/* Accent geometric lines */}
-                            <div className="absolute inset-0 border-t-2 border-white/10 pointer-events-none" />
-                            <div className="absolute inset-x-0 top-1/2 h-0.5 bg-white/15 pointer-events-none" />
+                            {/* Core Crystal */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 rotate-45 border border-white/20 shadow-inner-glow flex items-center justify-center">
+                                <span className={`-rotate-45 font-black text-xl ${style.text} drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]`}>?</span>
+                            </div>
+                            
+                            {/* Inner Refractions */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                         </div>
                     </motion.div>
                 </div>
-            </div>
 
-            {/* Bottom Section: Info and CTA */}
-            <div className="space-y-3 relative z-10 text-center">
-                <div>
-                    <h3 className={`text-base uppercase tracking-wider ${currentStyle.text}`}>{name}</h3>
-                    <p className="text-[11px] text-brand-muted mt-1 leading-snug line-clamp-2">{description}</p>
+                {/* Bottom Info & Action */}
+                <div className="z-10 text-center space-y-4">
+                    <div>
+                        <h3 className={`text-base font-black uppercase tracking-widest ${style.text} mb-1.5 leading-tight`}>{name}</h3>
+                        <p className="text-[11px] text-white/50 leading-relaxed max-w-[200px] mx-auto line-clamp-2 font-medium">
+                            {description}
+                        </p>
+                    </div>
+                    
+                    <button
+                        disabled={disabled}
+                        onClick={onUnbox}
+                        className={`w-full py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 relative overflow-hidden group/btn ${
+                            disabled 
+                                ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed' 
+                                : `bg-gradient-to-r ${style.accent} text-black hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer`
+                        }`}
+                    >
+                        {/* Shimmer effect on button hover */}
+                        {!disabled && (
+                            <div className="absolute inset-0 -translate-x-[150%] hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                        )}
+                        <span className="relative z-10">{t('claim')}</span>
+                    </button>
                 </div>
-                <button
-                    disabled={disabled}
-                    onClick={onUnbox}
-                    className={`w-full py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 select-none ${
-                        disabled 
-                            ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed' 
-                            : 'bg-white text-black hover:bg-white/90 border border-white shadow-premium hover:shadow-2xl cursor-pointer active:scale-95'
-                    }`}
-                >
-                    {t('claim')}
-                </button>
             </div>
         </motion.div>
     );

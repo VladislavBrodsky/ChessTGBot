@@ -294,7 +294,7 @@ export default function MarketplacePage() {
                     <Card variant="glass" className="p-4 border-brand-border-opacity-10 shadow-premium flex items-center justify-between relative overflow-hidden bg-brand-surface/40">
                         <div className="absolute inset-0 bg-glass-gradient opacity-30 pointer-events-none" />
                         <div className="space-y-1 relative z-10 text-left">
-                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">Scholastic XP Balance</span>
+                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">XP Balance</span>
                             <span className="text-xl font-black text-white leading-none mt-1.5 block">
                                 {stats?.xp || 0} XP
                             </span>
