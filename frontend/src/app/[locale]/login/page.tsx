@@ -38,7 +38,7 @@ export default function LoginPage() {
                 <div className="flex flex-col items-center gap-4">
                     <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
                     <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-primary/60">
-                        Loading...
+                        Authenticating...
                     </p>
                 </div>
             </div>

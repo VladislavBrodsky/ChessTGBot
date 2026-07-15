@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonViewer, { LessonStep } from "@/components/Academy/LessonViewer";
 import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";
+import { FaChessKnight } from "react-icons/fa6";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -303,17 +304,26 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-brand-bg">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4">
+        <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-primary/60">
+          INITIALIZING LESSON...
+        </p>
       </div>
     );
   }
 
   if (!lessonData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4">
-        <h2 className="text-xl font-black text-brand-primary">Lesson not found</h2>
-        <button onClick={() => router.push(`/${locale}/academy`)} className="px-4 py-2 bg-brand-surface rounded-xl">Go Back</button>
+      <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4 px-6 text-center">
+        <h2 className="text-xl font-black text-brand-primary uppercase tracking-widest">Signal Lost</h2>
+        <p className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
+        <button 
+          onClick={() => router.push(`/${locale}/academy`)} 
+          className="px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-xs font-black uppercase tracking-widest text-brand-primary"
+        >
+          Return to Academy
+        </button>
       </div>
     );
   }

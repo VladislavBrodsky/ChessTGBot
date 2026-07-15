@@ -199,7 +199,7 @@ function PuzzleContent() {
 
 export default function PuzzlePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-primary opacity-20 font-black uppercase tracking-[0.5em] animate-pulse">Loading tactics level...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-primary opacity-20 font-black uppercase tracking-[0.5em] animate-pulse">Initializing Tactics...</div>}>
       <PuzzleContent />
     </Suspense>
   );
