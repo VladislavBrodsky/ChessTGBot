@@ -58,6 +58,33 @@ export default function ChessBoardComponent({
     customLightSquareStyle = { backgroundColor: '#ebecd0' },
 }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
+    const [boardTheme, setBoardTheme] = useState<string>('default');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('board_theme') || 'default';
+            setBoardTheme(saved);
+        }
+    }, []);
+
+    const themeStyles = {
+        default: { dark: '#7b9fb6', light: '#ebecd0' },
+        neon: { dark: '#0f172a', light: '#0891b2' },
+        obsidian: { dark: '#18181b', light: '#52525b' },
+        marble: { dark: '#78716c', light: '#e7e5e4' },
+        'theme-emerald': { dark: '#022c22', light: '#10b981' },
+        'theme-cyber': { dark: '#090d16', light: '#a21caf' },
+        'theme-gold': { dark: '#451a03', light: '#fef08a' }
+    };
+
+    const activeStyles = themeStyles[boardTheme as keyof typeof themeStyles] || themeStyles.default;
+    const finalDarkSquareStyle = customDarkSquareStyle.backgroundColor === '#7b9fb6'
+        ? { backgroundColor: activeStyles.dark }
+        : customDarkSquareStyle;
+    const finalLightSquareStyle = customLightSquareStyle.backgroundColor === '#ebecd0'
+        ? { backgroundColor: activeStyles.light }
+        : customLightSquareStyle;
+
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
     const [prevFen, setPrevFen] = useState<string | null>(null);
@@ -332,8 +359,8 @@ export default function ChessBoardComponent({
                                 overflow: "hidden",
                             },
                             arrows: toChessboardArrows(customArrows),
-                            darkSquareStyle: customDarkSquareStyle,
-                            lightSquareStyle: customLightSquareStyle,
+                            darkSquareStyle: finalDarkSquareStyle,
+                            lightSquareStyle: finalLightSquareStyle,
                             onSquareClick: handleSquareClick,
                             squareStyles: (() => {
                                 const styles: { [square: string]: any } = { ...customSquareStyles };

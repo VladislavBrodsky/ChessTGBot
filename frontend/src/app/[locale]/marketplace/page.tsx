@@ -38,6 +38,7 @@ export default function MarketplacePage() {
     // Themes states
     const [themes, setThemes] = useState<BoardTheme[]>([]);
     const [loadingThemes, setLoadingThemes] = useState(true);
+    const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
 
     // States for unboxing flow
     const [selectedTier, setSelectedTier] = useState<'common' | 'rare' | 'epic' | 'legendary' | 'seasonal' | null>(null);
@@ -63,8 +64,17 @@ export default function MarketplacePage() {
     };
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setActiveThemeCode(localStorage.getItem('board_theme') || 'default');
+        }
         fetchThemes();
     }, []);
+
+    const handleEquipTheme = (themeCode: string) => {
+        telegramHaptic('light');
+        localStorage.setItem('board_theme', themeCode);
+        setActiveThemeCode(themeCode);
+    };
 
     // Mystery Box configurations
     const BOX_COSTS_XR = { common: 50, rare: 150, epic: 500, legendary: 1500, seasonal: 800 };
@@ -463,17 +473,30 @@ export default function MarketplacePage() {
                                                 <p className="text-[10px] text-brand-muted leading-tight">{theme.description || "Customize your game board style."}</p>
                                             </div>
                                         </div>
-                                        <button
-                                            disabled={theme.owned}
-                                            onClick={() => handleBuyTheme(theme.code, theme.price_xp)}
-                                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shrink-0 ${
-                                                theme.owned
-                                                    ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
-                                                    : 'bg-white text-black hover:bg-white/90 shadow-md cursor-pointer transition-all active:scale-95'
-                                            }`}
-                                        >
-                                            {theme.owned ? 'Unlocked' : `${theme.price_xp} XP`}
-                                        </button>
+                                        {theme.owned ? (
+                                             activeThemeCode === theme.code ? (
+                                                 <button
+                                                     disabled
+                                                     className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0 cursor-not-allowed"
+                                                 >
+                                                     Active
+                                                 </button>
+                                             ) : (
+                                                 <button
+                                                     onClick={() => handleEquipTheme(theme.code)}
+                                                     className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/10 hover:bg-white/20 text-white shrink-0 cursor-pointer transition-all active:scale-95"
+                                                 >
+                                                     Equip
+                                                 </button>
+                                             )
+                                         ) : (
+                                             <button
+                                                 onClick={() => handleBuyTheme(theme.code, theme.price_xp)}
+                                                 className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white text-black hover:bg-white/90 shadow-md cursor-pointer transition-all active:scale-95 shrink-0"
+                                             >
+                                                 {theme.price_xp} XP
+                                             </button>
+                                         )}
                                     </div>
                                 );
                             })}

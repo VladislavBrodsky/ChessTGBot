@@ -23,8 +23,13 @@ export default function ThemeShopPage() {
   const [themes, setThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(true);
   const [userXp, setUserXp] = useState(0);
+  const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setActiveThemeCode(localStorage.getItem('board_theme') || 'default');
+    }
+    
     Promise.all([
       apiFetch('/api/v1/gamification/themes').then(res => res.json()),
       apiFetch('/api/v1/users/sync', { method: 'POST' }).then(res => res.json())
@@ -37,6 +42,12 @@ export default function ThemeShopPage() {
       setLoading(false);
     });
   }, []);
+
+  const handleEquip = (themeCode: string) => {
+    telegramHaptic('light');
+    localStorage.setItem('board_theme', themeCode);
+    setActiveThemeCode(themeCode);
+  };
 
   const handleBuy = (theme: Theme) => {
     if (theme.owned) return;
@@ -116,9 +127,18 @@ export default function ThemeShopPage() {
             
             <div className="ml-4 flex-shrink-0">
               {theme.owned ? (
-                <div className="flex items-center gap-2 text-emerald-400 font-black uppercase text-xs">
-                  <FaCheck /> Owned
-                </div>
+                activeThemeCode === theme.code ? (
+                  <div className="flex items-center gap-1.5 text-emerald-400 font-black uppercase text-xs">
+                    <FaCheck /> Active
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleEquip(theme.code)}
+                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black uppercase text-xs transition-all cursor-pointer"
+                  >
+                    Equip
+                  </button>
+                )
               ) : (
                 <button
                   onClick={() => handleBuy(theme)}

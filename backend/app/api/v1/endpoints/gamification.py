@@ -812,7 +812,7 @@ async def get_themes(
             description=t.description,
             price_xp=t.price_xp,
             css_class=t.css_class,
-            owned=t.id in owned_ids
+            owned=(t.id in owned_ids or t.code == "default")
         )
         for t in themes
     ]
