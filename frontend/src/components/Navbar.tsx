@@ -7,14 +7,14 @@ import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessPawn, FaGamepad, FaGraduationCap, FaTrophy, FaChessKnight, FaSignOutAlt, FaGem } from 'react-icons/fa';
+import { FaChessKing, FaChessKnight, FaChessQueen, FaChessBishop, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home',        icon: <FaChessPawn />,      href: '/home',        key: 'nav_home' },
-    { name: 'Play',        icon: <FaGamepad />,        href: '/game',        key: 'nav_play' },
-    { name: 'Marketplace', icon: <FaGem />,            href: '/marketplace', key: 'nav_marketplace' },
-    { name: 'Learn',       icon: <FaGraduationCap />,  href: '/academy',     key: 'nav_learn' },
-    { name: 'Quests',      icon: <FaTrophy />,         href: '/challenges',  key: 'nav_quests' },
+    { name: 'Home',        icon: <FaChessKing />,      href: '/home',        key: 'nav_home' },
+    { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play' },
+    { name: 'Marketplace', icon: <FaChessQueen />,     href: '/marketplace', key: 'nav_marketplace' },
+    { name: 'Learn',       icon: <FaChessBishop />,    href: '/academy',     key: 'nav_learn' },
+    { name: 'Quests',      icon: <FaChessRook />,      href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
@@ -174,10 +174,10 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="fixed left-1/2 w-[calc(100%-24px)] max-w-[420px] z-50 flex items-center bg-brand-void/95 backdrop-blur-3xl border border-brand-border-opacity-10 px-1.5 py-1.5 rounded-[22px] shadow-premium justify-between"
+            className="fixed left-1/2 w-[calc(100%-24px)] max-w-[420px] z-50 flex items-center bg-[linear-gradient(135deg,rgba(25,25,25,0.98),rgba(3,3,3,0.98))] backdrop-blur-3xl border border-white/[0.09] px-1.5 py-1.5 rounded-[22px] shadow-[0_14px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] justify-between"
         >
             {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-linear-to-b from-brand-border-opacity-5 to-transparent pointer-events-none rounded-full" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.08),transparent_60%)] pointer-events-none rounded-[22px]" />
 
             <ul className="flex items-center relative z-10 w-full justify-around gap-0.5">
                 {localizedItems.map((item) => {
@@ -190,26 +190,32 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 aria-current={isActive ? 'page' : undefined}
                                 className="block rounded-2xl"
                             >
-                                <div className="relative min-h-[52px] px-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 rounded-2xl">
+                                <div className="relative min-h-[54px] px-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 rounded-2xl">
                                     {isActive && (
                                         <motion.div
                                             layoutId="mobile-nav-active"
-                                            className="absolute inset-0 bg-brand-bg-opacity-5 rounded-2xl border border-brand-border-opacity-10 shadow-inner-glow"
+                                            className="absolute inset-0 bg-[linear-gradient(145deg,rgba(250,204,21,0.18),rgba(180,83,9,0.07))] rounded-2xl border border-yellow-300/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_18px_rgba(250,204,21,0.1)]"
                                             transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                                         />
                                     )}
-                                    <div className={`text-[18px] relative z-20 transition-all duration-200 ${
+                                    <div className={`relative z-20 flex h-6 w-7 items-center justify-center text-[18px] transition-all duration-200 ${
                                         isActive
-                                            ? "text-[var(--text-primary)] -translate-y-0.5"
-                                            : "text-[var(--text-muted)]"
+                                            ? "text-yellow-200 -translate-y-0.5 drop-shadow-[0_0_8px_rgba(250,204,21,0.48)]"
+                                            : "text-brand-primary/35"
                                     }`}>
                                         {item.icon}
                                     </div>
                                     <span className={`relative z-20 max-w-full truncate text-[8px] sm:text-[9px] font-extrabold leading-none tracking-wide transition-colors ${
-                                        isActive ? 'text-brand-primary' : 'text-brand-muted'
+                                        isActive ? 'text-yellow-100' : 'text-brand-primary/40'
                                     }`}>
                                         {item.label}
                                     </span>
+                                    {isActive && (
+                                        <motion.span
+                                            layoutId="mobile-nav-active-indicator"
+                                            className="absolute bottom-1.5 w-4 h-px rounded-full bg-yellow-300 shadow-[0_0_8px_rgba(250,204,21,0.8)]"
+                                        />
+                                    )}
                                 </div>
                             </Link>
                         </li>
