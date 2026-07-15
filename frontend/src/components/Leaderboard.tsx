@@ -135,11 +135,11 @@ interface LeaderboardItem {
                 animate={{ opacity: 1, x: 0 }}
                 whileHover={{ scale: 1.02, x: 5 }}
                 transition={{ delay: idx * 0.03, type: 'spring', stiffness: 400, damping: 25 }}
-                className={`flex items-center justify-between p-4 group transition-all duration-300 cursor-pointer ${
-                  item.rank === 1 ? 'bg-gradient-to-r from-yellow-500/10 via-transparent to-transparent hover:from-yellow-500/20' :
-                  item.rank === 2 ? 'bg-gradient-to-r from-slate-400/10 via-transparent to-transparent hover:from-slate-400/20' :
-                  item.rank === 3 ? 'bg-gradient-to-r from-amber-700/10 via-transparent to-transparent hover:from-amber-700/20' :
-                  'hover:bg-brand-bg-opacity-10'
+                className={`relative flex items-center justify-between p-4 group transition-all duration-300 cursor-pointer overflow-hidden ${
+                  item.rank === 1 ? 'bg-gradient-to-r from-yellow-500/20 via-yellow-500/5 to-transparent border-l-2 border-yellow-400 shadow-[inset_0_0_20px_rgba(250,204,21,0.15)]' :
+                  item.rank === 2 ? 'bg-gradient-to-r from-slate-300/20 via-slate-300/5 to-transparent border-l-2 border-slate-300 shadow-[inset_0_0_20px_rgba(203,213,225,0.1)]' :
+                  item.rank === 3 ? 'bg-gradient-to-r from-amber-700/20 via-amber-700/5 to-transparent border-l-2 border-amber-600 shadow-[inset_0_0_20px_rgba(180,83,9,0.15)]' :
+                  'bg-transparent hover:bg-brand-bg-opacity-5'
                 }`}
               >
                 <div className="flex items-center gap-4">

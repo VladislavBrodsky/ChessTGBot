@@ -62,14 +62,12 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
     return (
         <AnimatePresence>
             {isOpen && tier && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/95 backdrop-blur-xl"
-                    />
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+                >
 
                     {/* Unboxing Area */}
                     <div className="relative w-full max-w-sm flex flex-col items-center justify-center text-center p-6 text-brand-primary h-[500px]">
@@ -153,7 +151,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
                             </motion.div>
                         )}
                     </div>
-                </div>
+                </motion.div>
             )}
         </AnimatePresence>
     );

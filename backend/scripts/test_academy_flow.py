@@ -5,11 +5,9 @@ import os
 # Ensure backend root is in PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.services.gamification_service import GamificationService
-from app.models.gamification import CompletedAcademyTask
 from sqlalchemy import select
 
 async def main():
@@ -21,6 +19,7 @@ async def main():
             test_user = User(
                 telegram_id=999888777,
                 username="test_academy_user",
+                first_name="Test",
                 xp=0,
                 elo=1000,
                 study_streak=0
@@ -37,20 +36,18 @@ async def main():
         
         lesson_id = "opening-principles"
         
-        # Ensure it's not completed already
-        result = await db.execute(
-            select(CompletedAcademyTask).where(
-                CompletedAcademyTask.user_id == test_user.id,
-                CompletedAcademyTask.task_type == "lesson",
-                CompletedAcademyTask.item_id == lesson_id
-            )
-        )
-        existing_task = result.scalar_one_or_none()
-        if existing_task:
-            await db.delete(existing_task)
-            await db.commit()
-            print("Cleaned up existing completed task.")
-            
+        # Clean up in-memory cache for test idempotency
+        mem_key = f"{test_user.telegram_id}:lesson:{lesson_id}"
+        from app.services.session_manager import SessionManager
+        session_mgr = SessionManager()
+        if session_mgr.redis:
+            await session_mgr.redis.srem(f"user:completed_academy:{test_user.telegram_id}", f"lesson:{lesson_id}")
+            print("Cleaned up existing completed task in Redis.")
+        if hasattr(GamificationService, "_completed_academy"):
+            if mem_key in GamificationService._completed_academy:
+                GamificationService._completed_academy.remove(mem_key)
+                print("Cleaned up existing completed task in memory.")
+        
         # Test 1: Complete lesson
         updated_user, msg = await GamificationService.complete_academy_task(db, test_user, "lesson", lesson_id)
         if msg == "Success":

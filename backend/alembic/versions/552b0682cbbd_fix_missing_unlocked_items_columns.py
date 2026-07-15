@@ -27,7 +27,6 @@ def upgrade() -> None:
     # However, since this is to fix the PostgreSQL Railway deployment, we will use op.execute
     # and handle the PostgreSQL dialect specifically, or just use try-except for the batch op.
     
-    import sqlalchemy as sa
     from sqlalchemy.exc import ProgrammingError, OperationalError
     
     bind = op.get_bind()
