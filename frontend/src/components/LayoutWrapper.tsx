@@ -181,20 +181,22 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
             {/* Top-Right Header (Settings & Notifications) */}
             {isMainNavbarPage && !showOnboarding && !isCheckingActiveGame && (
-                <div className="absolute top-4 right-5 z-50 flex items-center gap-3">
+                <div className="absolute top-[calc(12px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
                     <button 
                         onClick={() => setShowNotifications(true)}
-                        className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-brand-surface/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
-                        <FiBell size={20} />
+                        <FiBell size={18} />
                         {/* Notification indicator dot */}
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                        <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                     </button>
-                    <Link href={`/${locale}/settings`}>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-brand-surface/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
-                            <FiSettings size={20} />
-                        </button>
-                    </Link>
+                    {!pathname.endsWith('/settings') && (
+                        <Link href={`/${locale}/settings`}>
+                            <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+                                <FiSettings size={18} />
+                            </button>
+                        </Link>
+                    )}
                 </div>
             )}
 

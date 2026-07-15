@@ -280,7 +280,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
   const handleComplete = async () => {
     try {
-      const res = await apiFetch('/api/v1/gamification/academy/complete', {
+      const res = await apiFetch('/api/v1/gamification/academy/complete-task', {
         method: 'POST',
         body: JSON.stringify({
           task_type: 'lesson',
@@ -294,11 +294,11 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
         setCompleted(true);
       } else {
         console.error('Failed to complete lesson');
-        setCompleted(true);
+        alert("Failed to submit lesson progress to the server. Please try again.");
       }
     } catch (e) {
       console.error(e);
-      setCompleted(true);
+      alert("Network error: failed to submit lesson progress.");
     }
   };
 

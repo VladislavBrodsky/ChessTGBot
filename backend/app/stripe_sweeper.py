@@ -2,12 +2,12 @@ import asyncio
 import logging
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
+
 
 from app.core.database import AsyncSessionLocal
 from app.core.config import get_settings
 from app.models.transaction import Transaction
-from app.models.user import User
+
 from app.api.v1.endpoints.wallet import _credit_stripe_deposit
 from app.core.alerts import send_admin_alert
 

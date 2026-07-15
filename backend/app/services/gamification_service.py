@@ -158,7 +158,6 @@ class GamificationService:
         if reason == "ai_match" and xp_earned > 0:
             from app.models.xp_transaction import XpTransaction
             from sqlalchemy import func, and_
-            from datetime import datetime, timezone
             
             today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).replace(tzinfo=None)
             
@@ -859,7 +858,6 @@ class GamificationService:
         db_user.is_premium = True
         db_user.premium_tier = "premium"
         
-        from datetime import datetime, timezone, timedelta
         now = datetime.now(timezone.utc).replace(tzinfo=None)
         db_user.premium_expires_at = now + timedelta(days=365)
 
@@ -973,8 +971,6 @@ class GamificationService:
         If last_study_date is yesterday, increment streak.
         If last_study_date is before yesterday, reset streak to 1.
         """
-        from datetime import datetime, timezone, timedelta
-        
         # Ensure we have the latest user state with a lock if not already locked
         user_stmt = select(User).where(User.id == user.id).with_for_update()
         res_user = await db.execute(user_stmt)

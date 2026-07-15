@@ -1799,7 +1799,7 @@ async def stripe_webhook(
                     if user:
                         user_id = user.telegram_id
                     else:
-                        logger.error(f"Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
+                        logger.error("Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
                 
                 if user:
                     user.is_premium = True

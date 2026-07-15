@@ -118,11 +118,11 @@ async def unbox_mystery_box(
 
     if tier == "common":
         if roll < 0.50:
-            prize_name = "50 XR (Full Refund)"
+            prize_name = "500 XP (Refund)"
             prize_type = "refund"
-            refund_amount = 5000
+            refund_amount = 500
         elif roll < 0.90:
-            prize_name = "1.2x XR Boost (24h)"
+            prize_name = "1.2x XP Boost (24h)"
             prize_type = "boost"
         else:
             prize_name = "Bronze Profile Border"
@@ -130,7 +130,7 @@ async def unbox_mystery_box(
 
     elif tier == "rare":
         if roll < 0.40:
-            prize_name = "1.5x XR Boost (48h)"
+            prize_name = "1.5x XP Boost (48h)"
             prize_type = "boost"
         elif roll < 0.80:
             prize_name = "Silver Profile Border"
@@ -149,14 +149,14 @@ async def unbox_mystery_box(
             prize_name = "Gold Profile Border"
             prize_type = "cosmetic"
         else:
-            prize_name = "2x XR Boost (72h)"
+            prize_name = "2x XP Boost (72h)"
             prize_type = "boost"
 
     elif tier == "legendary":
         if roll < 0.50:
-            prize_name = "500 XR Jackpot"
+            prize_name = "5,000 XP Jackpot"
             prize_type = "refund"
-            refund_amount = 50000
+            refund_amount = 5000
         elif roll < 0.80:
             prize_name = "Platinum Profile Border"
             prize_type = "cosmetic"
@@ -175,16 +175,17 @@ async def unbox_mystery_box(
 
     # Apply prize updates
     if refund_amount > 0:
-        # Credit refund atomically to user balance
-        await user_crud.atomic_credit(db, current_user.telegram_id, refund_amount, commit=False)
-        refund_tx = Transaction(
-            user_id=current_user.telegram_id,
-            type="marketplace_refund",
-            amount=refund_amount,
-            status="completed",
+        from app.services.gamification_service import GamificationService
+        await GamificationService.add_xp(
+            db, 
+            db_user, 
+            refund_amount, 
+            trigger_kickback=False, 
+            apply_booster=False, 
+            commit=False,
+            reason="marketplace_refund",
             reference_id=f"refund_{tier}"
         )
-        db.add(refund_tx)
 
     if premium_days > 0:
         now = datetime.now(timezone.utc).replace(tzinfo=None)

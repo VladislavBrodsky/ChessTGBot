@@ -32,8 +32,8 @@ export default function MarketplacePage() {
 
     const { stats, walletBalance, loadingStats, balanceError, syncStats } = useUser();
 
-    // Marketplace currency choice state
-    const [selectedCurrency, setSelectedCurrency] = useState<'xr' | 'xp'>('xr');
+    // Marketplace is XP only
+    const selectedCurrency = 'xp';
 
     // Themes states
     const [themes, setThemes] = useState<BoardTheme[]>([]);
@@ -77,14 +77,13 @@ export default function MarketplacePage() {
     };
 
     // Mystery Box configurations
-    const BOX_COSTS_XR = { common: 50, rare: 150, epic: 500, legendary: 1500, seasonal: 800 };
     const BOX_COSTS_XP = { common: 5000, rare: 8000, epic: 10000, legendary: 30000, seasonal: 12000 };
 
     const mysteryBoxes = [
         {
             tier: 'common' as const,
             name: "Bronze Mystery Box",
-            description: "Entry-level chest. Contains minor multipliers, profile styles, or partial XR refunds."
+            description: "Entry-level chest. Contains minor multipliers, profile styles, or partial XP refunds."
         },
         {
             tier: 'rare' as const,
@@ -109,7 +108,6 @@ export default function MarketplacePage() {
     ];
 
     // Direct Purchases
-    const DIRECT_COSTS_XR = { premium_1m: 1000, premium_1y: 8000 };
     const DIRECT_COSTS_XP = { premium_1m: 15000, premium_1y: 120000 };
 
     const directPurchases = [
@@ -128,22 +126,12 @@ export default function MarketplacePage() {
     const handleOpenBox = async (tier: 'common' | 'rare' | 'epic' | 'legendary' | 'seasonal') => {
         telegramHaptic('light');
 
-        if (selectedCurrency === 'xr') {
-            const cost = BOX_COSTS_XR[tier];
-            const userXR = walletBalance / 100;
-            if (userXR < cost) {
-                telegramHaptic('error');
-                alert("Insufficient XR balance. Play matches or complete quests to earn more.");
-                return;
-            }
-        } else {
-            const cost = BOX_COSTS_XP[tier];
-            const userXP = stats?.xp || 0;
-            if (userXP < cost) {
-                telegramHaptic('error');
-                alert("Insufficient XP balance. Complete lessons and puzzles to earn more.");
-                return;
-            }
+        const cost = BOX_COSTS_XP[tier];
+        const userXP = stats?.xp || 0;
+        if (userXP < cost) {
+            telegramHaptic('error');
+            alert("Insufficient XP balance. Complete lessons and puzzles to earn more.");
+            return;
         }
 
         try {
@@ -196,22 +184,12 @@ export default function MarketplacePage() {
     const handleDirectPurchase = async (id: string) => {
         telegramHaptic('light');
 
-        if (selectedCurrency === 'xr') {
-            const cost = DIRECT_COSTS_XR[id as keyof typeof DIRECT_COSTS_XR];
-            const userXR = walletBalance / 100;
-            if (userXR < cost) {
-                telegramHaptic('error');
-                alert("Insufficient XR balance.");
-                return;
-            }
-        } else {
-            const cost = DIRECT_COSTS_XP[id as keyof typeof DIRECT_COSTS_XP];
-            const userXP = stats?.xp || 0;
-            if (userXP < cost) {
-                telegramHaptic('error');
-                alert("Insufficient XP balance.");
-                return;
-            }
+        const cost = DIRECT_COSTS_XP[id as keyof typeof DIRECT_COSTS_XP];
+        const userXP = stats?.xp || 0;
+        if (userXP < cost) {
+            telegramHaptic('error');
+            alert("Insufficient XP balance.");
+            return;
         }
 
         try {
@@ -307,69 +285,24 @@ export default function MarketplacePage() {
                         Marketplace
                     </h1>
                     <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em] leading-none mt-1">
-                        Exchange XR or XP to unlock premium rewards & themes
+                        Exchange XP to unlock premium rewards & themes
                     </p>
                 </div>
 
-                {/* Dual Balance Display Banner */}
-                <div className="grid grid-cols-2 gap-3 w-full">
+                {/* Single Balance Display Banner */}
+                <div className="w-full">
                     <Card variant="glass" className="p-4 border-brand-border-opacity-10 shadow-premium flex items-center justify-between relative overflow-hidden bg-brand-surface/40">
                         <div className="absolute inset-0 bg-glass-gradient opacity-30 pointer-events-none" />
                         <div className="space-y-1 relative z-10 text-left">
-                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">XR balance</span>
-                            <span className="text-sm font-black text-white leading-none mt-1.5 block">
-                                {balanceError ? '—' : `${(walletBalance / 100).toFixed(0)} XR`}
-                            </span>
-                        </div>
-                        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 relative z-10 shadow-inner-glow">
-                            <FaWallet size={13} />
-                        </div>
-                    </Card>
-
-                    <Card variant="glass" className="p-4 border-brand-border-opacity-10 shadow-premium flex items-center justify-between relative overflow-hidden bg-brand-surface/40">
-                        <div className="absolute inset-0 bg-glass-gradient opacity-30 pointer-events-none" />
-                        <div className="space-y-1 relative z-10 text-left">
-                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">Scholastic XP</span>
-                            <span className="text-sm font-black text-white leading-none mt-1.5 block">
+                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">XP Balance</span>
+                            <span className="text-xl font-black text-white leading-none mt-1.5 block">
                                 {stats?.xp || 0} XP
                             </span>
                         </div>
-                        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 relative z-10 shadow-inner-glow">
-                            <FaGem size={13} />
+                        <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 relative z-10 shadow-inner-glow">
+                            <FaGem size={20} />
                         </div>
                     </Card>
-                </div>
-
-                {/* Currency Toggler Segment (Sleek pill design) */}
-                <div className="flex gap-2 p-1 rounded-xl bg-black/30 border border-brand-border-opacity-5 w-full">
-                    <button
-                        onClick={() => {
-                            telegramHaptic('light');
-                            setSelectedCurrency('xr');
-                        }}
-                        className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                            selectedCurrency === 'xr'
-                                ? 'bg-white/15 text-white border border-white/10 shadow-sm'
-                                : 'text-white/40 hover:text-white/60'
-                        }`}
-                    >
-                        <FaWallet size={12} />
-                        Unlock with XR
-                    </button>
-                    <button
-                        onClick={() => {
-                            telegramHaptic('light');
-                            setSelectedCurrency('xp');
-                        }}
-                        className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                            selectedCurrency === 'xp'
-                                ? 'bg-white/15 text-white border border-white/10 shadow-sm'
-                                : 'text-white/40 hover:text-white/60'
-                        }`}
-                    >
-                        <FaGem size={12} />
-                        Unlock with XP
-                    </button>
                 </div>
 
                 {/* Section: Mystery Boxes */}
@@ -379,16 +312,14 @@ export default function MarketplacePage() {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                         {mysteryBoxes.map((box) => {
-                            const cost = selectedCurrency === 'xr' 
-                                ? BOX_COSTS_XR[box.tier] 
-                                : BOX_COSTS_XP[box.tier];
+                            const cost = BOX_COSTS_XP[box.tier];
                             return (
                                 <MysteryBoxCard
                                     key={box.tier}
                                     tier={box.tier}
                                     name={box.name}
                                     cost={cost}
-                                    currency={selectedCurrency}
+                                    currency="xp"
                                     description={box.description}
                                     onUnbox={() => handleOpenBox(box.tier)}
                                     disabled={loadingStats || balanceError}
@@ -399,36 +330,34 @@ export default function MarketplacePage() {
                 </div>
 
                 {/* Section: Direct Upgrades (Subscriptions) */}
+                {/* Section: Premium Subscriptions */}
                 <div className="w-full space-y-4">
                     <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
                         Premium Subscriptions
                     </h3>
                     <div className="grid grid-cols-1 gap-3 w-full">
-                        {directPurchases.map((purchase) => {
-                            const cost = selectedCurrency === 'xr'
-                                ? DIRECT_COSTS_XR[purchase.id as keyof typeof DIRECT_COSTS_XR]
-                                : DIRECT_COSTS_XP[purchase.id as keyof typeof DIRECT_COSTS_XP];
+                        {directPurchases.map((item) => {
+                            const cost = DIRECT_COSTS_XP[item.id as keyof typeof DIRECT_COSTS_XP];
                             return (
-                                <div
-                                    key={purchase.id}
-                                    className="p-4 rounded-2xl border border-white/10 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.03] transition-all duration-300 gap-4"
+                                <Card
+                                    key={item.id}
+                                    variant="glass"
+                                    className="p-5 flex flex-col justify-between border-brand-border-opacity-10 hover:border-brand-primary/30 transition-all cursor-pointer group shadow-premium"
+                                    onClick={() => handleDirectPurchase(item.id)}
                                 >
-                                    <div className="flex items-center gap-4 text-left">
-                                        <div className="w-10 h-10 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-white shadow-inner-glow shrink-0">
-                                            <FaCrown className="text-white/60" size={16} />
+                                    <div>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="text-sm font-black text-white group-hover:text-brand-primary transition-colors flex items-center gap-2">
+                                                <FaCrown className="text-brand-primary opacity-60" />
+                                                {item.name}
+                                            </h4>
+                                            <Badge variant="outline" className="text-[9px] border-brand-primary/20 text-brand-primary bg-brand-primary/5 shadow-inner-glow">
+                                                {cost} XP
+                                            </Badge>
                                         </div>
-                                        <div className="space-y-1">
-                                            <h3 className="text-xs font-bold text-white leading-none">{purchase.name}</h3>
-                                            <p className="text-[10px] text-brand-muted leading-tight">{purchase.desc}</p>
-                                        </div>
+                                        <p className="text-[10px] text-brand-muted leading-tight">{item.desc}</p>
                                     </div>
-                                    <button
-                                        onClick={() => handleDirectPurchase(purchase.id)}
-                                        className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white text-black hover:bg-white/90 shadow-md cursor-pointer transition-all active:scale-95 shrink-0"
-                                    >
-                                        {cost} {selectedCurrency.toUpperCase()}
-                                    </button>
-                                </div>
+                                </Card>
                             );
                         })}
                     </div>

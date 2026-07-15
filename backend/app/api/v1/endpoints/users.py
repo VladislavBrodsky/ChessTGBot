@@ -87,6 +87,9 @@ class UserStats(BaseModel):
     arena_notifications: bool = True
     has_stripe_subscription: bool = False  # True only when subscribed via Stripe card (has stripe_customer_id)
     study_streak: int = 0
+    unlocked_items: Optional[str] = None
+    xp_multiplier: float = 1.0
+    multiplier_expires_at: Optional[datetime] = None
 
 class ReferralEarningPoint(BaseModel):
     date: str   # ISO date string e.g. "2025-06-10"
@@ -439,6 +442,10 @@ async def get_user_stats(
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
         study_streak=current_user.study_streak or 0,
+        unlocked_items=current_user.unlocked_items,
+        # None on unflushed instances (column default applies at INSERT).
+        xp_multiplier=current_user.xp_multiplier or 1.0,
+        multiplier_expires_at=current_user.multiplier_expires_at,
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -501,6 +508,10 @@ async def sync_user(
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
         study_streak=current_user.study_streak or 0,
+        unlocked_items=current_user.unlocked_items,
+        # None on unflushed instances (column default applies at INSERT).
+        xp_multiplier=current_user.xp_multiplier or 1.0,
+        multiplier_expires_at=current_user.multiplier_expires_at,
     )
 
 
