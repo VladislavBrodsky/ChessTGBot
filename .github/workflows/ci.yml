@@ -53,6 +53,22 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    # Scratch Postgres for the migration gate below. pytest is unaffected: it
+    # derives its DB from settings.DATABASE_URL, which stays sqlite here.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ci_migrations
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -70,6 +86,17 @@ jobs:
           SECRET_KEY: ci-dummy-secret
           WEBHOOK_SECRET: ci-dummy-webhook-secret
         run: python -c "import app.main; print('app imports OK')"
+      # A broken migration chain (duplicate revision, multiple heads, failing
+      # DDL) passes the import check and pytest but crash-loops the production
+      # container at boot, since both Docker entrypoints run `alembic upgrade
+      # head` before uvicorn (2026-07-15 backend outage). Apply the full chain
+      # to a fresh Postgres so it fails CI instead.
+      - name: Alembic migrations on fresh Postgres
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_migrations
+          SECRET_KEY: ci-dummy-secret
+          WEBHOOK_SECRET: ci-dummy-webhook-secret
+        run: python -m alembic upgrade head
       - name: Pytest
         run: python -m pytest
 

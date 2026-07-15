@@ -20,8 +20,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.add_column('users', sa.Column('checkin_streak', sa.Integer(), server_default="0", nullable=False))
-    op.add_column('users', sa.Column('last_checkin_date', sa.DateTime(), nullable=True))
+    # Idempotent: this migration sat unapplied in production for hours behind a
+    # broken (since-deleted) duplicate revision, so the columns may already
+    # exist via manual repair. Converge instead of crash-looping the deploy.
+    conn = op.get_bind()
+    columns = {c["name"] for c in sa.inspect(conn).get_columns("users")}
+    if "checkin_streak" not in columns:
+        op.add_column('users', sa.Column('checkin_streak', sa.Integer(), server_default="0", nullable=False))
+    if "last_checkin_date" not in columns:
+        op.add_column('users', sa.Column('last_checkin_date', sa.DateTime(), nullable=True))
 
 
 def downgrade() -> None:
