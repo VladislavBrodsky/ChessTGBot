@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTrophy, FaMedal, FaUserCircle, FaFire, FaBook, FaGamepad, FaCrown } from 'react-icons/fa';
-import { FiX, FiAward } from 'react-icons/fi';
+import { FaTrophy, FaMedal, FaUserCircle, FaFire, FaBook, FaGamepad, FaCrown, FaChessKnight } from 'react-icons/fa';
+import { FiX, FiAward, FiClock, FiChevronRight } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
@@ -124,6 +124,8 @@ export default function Leaderboard() {
  }
 
  const displayedPlayers = players.slice(0, 5);
+ const metricLabel = activeTab === 'arena' ? 'Elo rating' : 'Academy XP';
+ const activityLabel = activeTab === 'arena' ? 'Arena standings' : 'Lesson standings';
  const topScore = activeTab === 'arena'
    ? Math.max(...players.map(p => p.elo || 1000), 2500)
    : Math.max(...players.map(p => p.xp || 0), 5000);
@@ -141,7 +143,7 @@ export default function Leaderboard() {
        animate={{ opacity: 1, x: 0 }}
        whileHover={{ x: isModal ? 0 : 3 }}
        transition={{ delay: Math.min(idx * 0.04, 0.2), type: 'spring', stiffness: 380, damping: 28 }}
-       className={`relative flex items-center justify-between px-4 py-3.5 group transition-colors duration-200 cursor-pointer overflow-hidden
+       className={`relative flex items-center justify-between px-4 py-3.5 group transition-colors duration-200 overflow-hidden
          ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow}
          ${isModal ? 'rounded-2xl border border-white/5 mb-2' : ''}
        `}
@@ -242,27 +244,37 @@ export default function Leaderboard() {
  return (
    <div className="w-full space-y-4">
      {/* Section Header */}
-     <div className="flex items-center justify-between">
+     <div className="flex items-start justify-between gap-3">
        <div>
-         <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
-         <span className="text-[9px] font-bold text-brand-primary opacity-30 tracking-[0.3em] uppercase mt-1 block">{t('global_node_sync')}</span>
+         <div className="flex items-center gap-2">
+           <span className="w-6 h-6 rounded-lg border border-yellow-400/20 bg-yellow-400/10 text-yellow-300 flex items-center justify-center">
+             <FaChessKnight size={12} />
+           </span>
+           <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
+         </div>
+         <span className="text-[9px] font-bold text-brand-primary/35 tracking-[0.24em] uppercase mt-2 block">{activityLabel} · Top {Math.min(players.length, 50)}</span>
        </div>
-       <div className="flex items-center gap-1.5">
-         <FiAward className="text-white/20" size={12} />
-         <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Season 1</span>
+       <div className="flex flex-col items-end gap-1 pt-1">
+         <div className="flex items-center gap-1.5 text-yellow-300/70">
+           <FiAward size={12} />
+           <span className="text-[9px] font-black uppercase tracking-widest">Season 1</span>
+         </div>
+         <span className="text-[8px] font-bold text-brand-primary/25 uppercase tracking-[0.16em]">Live rankings</span>
        </div>
      </div>
 
      {/* Tab Switcher */}
      <div className="flex bg-white/[0.03] rounded-2xl p-1 border border-white/[0.06] relative">
-       <button
+      <button
          onClick={() => setActiveTab('arena')}
+         aria-pressed={activeTab === 'arena'}
          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
        >
          <FaGamepad size={10} /> Arena
        </button>
-       <button
+      <button
          onClick={() => setActiveTab('academy')}
+         aria-pressed={activeTab === 'academy'}
          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
        >
          <FaBook size={10} /> Scholars
@@ -277,6 +289,17 @@ export default function Leaderboard() {
 
      {/* Leaderboard Card */}
      <Card variant="glass" className="rounded-3xl overflow-hidden border-white/[0.06] bg-white/[0.02] p-0">
+       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/[0.05] bg-gradient-to-r from-white/[0.035] to-transparent">
+         <div className="min-w-0">
+           <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-primary/75">{metricLabel}</p>
+           <p className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 mt-1 truncate">
+             {activeTab === 'arena' ? 'Win games to climb the board' : 'Study daily to build your streak'}
+           </p>
+         </div>
+         <div className="shrink-0 flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-wider text-brand-primary/30">
+           <FiClock size={10} /> Refreshes every 5 min
+         </div>
+       </div>
        <AnimatePresence mode="wait">
          <motion.div
            key={activeTab}
@@ -289,21 +312,25 @@ export default function Leaderboard() {
            {displayedPlayers.length > 0 ? (
              displayedPlayers.map((item, idx) => renderRow(item, idx))
            ) : (
-             <div className="py-12 text-center text-brand-primary opacity-20 uppercase font-black text-[10px] tracking-widest">
-               {t('no_data')}
+             <div className="py-10 px-6 text-center">
+               <FaChessKnight className="mx-auto text-brand-primary/15 mb-3" size={22} />
+               <p className="text-brand-primary/40 uppercase font-black text-[10px] tracking-widest">{t('no_data')}</p>
+               <p className="text-brand-primary/25 text-[9px] font-bold mt-2">Complete a game or lesson to enter the standings.</p>
              </div>
            )}
          </motion.div>
        </AnimatePresence>
 
        {players.length > 5 && (
-         <div className="flex justify-center py-3 border-t border-white/[0.05] bg-white/[0.01]">
+         <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-white/[0.05] bg-white/[0.01]">
+           <span className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/25">Showing 5 of {Math.min(players.length, 50)} contenders</span>
            <button
              onClick={() => setShowModal(true)}
-             className="flex items-center gap-2 px-5 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 text-[10px] font-black uppercase tracking-wider text-brand-primary/60 hover:text-brand-primary active:scale-95 transition-all"
+             className="flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 text-[9px] font-black uppercase tracking-wider text-brand-primary/70 hover:text-brand-primary active:scale-95 transition-all"
            >
              <FaTrophy size={10} className="opacity-60" />
-             {t('show_top_50')}
+             View all
+             <FiChevronRight size={12} />
            </button>
          </div>
        )}
