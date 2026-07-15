@@ -954,3 +954,41 @@ class GamificationService:
                         completed_ids.append(mem_key.split(":", 2)[2])
                         
         return completed_ids
+
+    @staticmethod
+    async def update_study_streak(db: AsyncSession, user: User) -> User:
+        """
+        Update the study streak for a user.
+        If last_study_date is today, do nothing.
+        If last_study_date is yesterday, increment streak.
+        If last_study_date is before yesterday, reset streak to 1.
+        """
+        from datetime import datetime, timezone, timedelta
+        
+        # Ensure we have the latest user state with a lock if not already locked
+        user_stmt = select(User).where(User.id == user.id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        db_user = res_user.scalars().first()
+        if not db_user:
+            return user
+            
+        now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+        today = now_utc.date()
+        
+        last_date = db_user.last_study_date
+        
+        if last_date == today:
+            return db_user
+            
+        if last_date == today - timedelta(days=1):
+            db_user.study_streak += 1
+        else:
+            db_user.study_streak = 1
+            
+        db_user.last_study_date = today
+        db.add(db_user)
+        # We rely on the caller to commit or we can flush here
+        # Doing flush to ensure the change is pending for the caller's commit
+        await db.flush()
+        
+        return db_user

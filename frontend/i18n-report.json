@@ -1,0 +1,2354 @@
+{
+  "missingKeys": [
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Academy",
+      "key": "Lesson unlocked successfully!"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Academy",
+      "key": "Unlock failed"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Academy",
+      "key": "Unlock failed"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Upgrade successful! You are now a Premium member",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Academy",
+      "key": "Error upgrading with XP"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Subscription successful! You are now a Premium member",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "namespace": "Academy",
+      "key": "Error upgrading with Balance"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "namespace": "Academy",
+      "key": "id"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "namespace": "Home screen verified successfully! You can now claim your reward",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "namespace": "Network error during home screen verification",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "namespace": "Subscription verified successfully! You can now claim your ELO/XP reward",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "namespace": "Network error during subscription verification",
+      "key": "",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "namespace": "🏆 Join me on FinChess! Play chess, earn real USDT rewards",
+      "key": " ♟️",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/app/[locale]/game/page.tsx",
+      "namespace": "Game",
+      "key": "@/components/game/ActiveGame"
+    },
+    {
+      "file": "src/app/[locale]/game/page.tsx",
+      "namespace": "Game",
+      "key": "id"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": "react-chessboard"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/app/[locale]/home/page.tsx",
+      "namespace": "Index",
+      "key": "startapp"
+    },
+    {
+      "file": "src/app/[locale]/home/page.tsx",
+      "namespace": "Index",
+      "key": "start"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "namespace": "Wallet",
+      "key": "status"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "namespace": "Wallet",
+      "key": "session_id"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "namespace": "Wallet",
+      "key": "back"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "namespace": "Wallet",
+      "key": "status"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "namespace": "Wallet",
+      "key": "session_id"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "namespace": "Wallet",
+      "key": "back"
+    },
+    {
+      "file": "src/components/LanguageSwitcher.tsx",
+      "namespace": "Language",
+      "key": "/"
+    },
+    {
+      "file": "src/components/ReferralCard.tsx",
+      "namespace": "Gamification",
+      "key": "Join me in FinChess! ♟️🚀"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "namespace": "🏆 Join me on FinChess! Play chess, earn real USDT rewards",
+      "key": " ♟️",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "namespace": "Referral",
+      "key": " "
+    },
+    {
+      "file": "src/components/ReferralNotification.tsx",
+      "namespace": "Referral",
+      "key": "id"
+    },
+    {
+      "file": "src/components/TelegramInit.tsx",
+      "namespace": "8",
+      "key": "0",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "namespace": "0",
+      "key": "00",
+      "error": "Namespace missing"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "namespace": "Wallet",
+      "key": "@ston-fi/api"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "namespace": "Wallet",
+      "key": "@ston-fi/sdk"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "namespace": "Wallet",
+      "key": "@ton/ton"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "namespace": "Index",
+      "key": " "
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "status"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "session_id"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "secured_victory"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "fought_battle"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "reached_stalemate"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "against"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "global_ranking"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "join_matrix"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "Share link copied to clipboard!"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "execute_matchmaking"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "recent_activity"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "vs"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "namespace": "Wallet",
+      "key": "elo"
+    }
+  ],
+  "hardcodedTexts": [
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Chess originated in India in the 6th century as"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Chaturanga"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ". It evolved through Persia and Europe into the ultimate test of strategy."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Fact"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "For centuries, it has tested intellect and willpower of kings and commoners alike."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Playing chess is a full-brain workout. It activates both hemispheres, boosting memory and problem-solving."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Did you know?"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Grandmasters can burn up to 6,000 calories a day during intense tournaments simply by thinking!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "In Web3Chess, your intellectual superiority becomes digital assets. Outsmart opponents, solve puzzles, and earn XP and USDT."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Play, Learn, Earn!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Welcome to the Academy! The secret of the opening is:"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Time, Space, and Harmony"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "The most critical principle is to"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "control the center"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ". Whoever controls the center dictates the flow of the game."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "1. e4"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "to stake a claim in the center and open lines for your Bishop and Queen.',\n fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',\n solution: ['e2e4'],\n hintText: 'The center squares are highlighted in gold. Move your e-pawn two squares forward to e4.',\n successExplanation: 'Excellent!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "1. e4"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "2. Nf3"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Once your center is established and minor pieces are developed, your final opening task is"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "King Safety"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Rule"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Always aim to"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "castle early"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "(usually within the first 10 moves). A king stuck in the center is a primary target."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Tactics are short-term plans to win material or deliver checkmate."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "The Golden Rule"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Look for"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Forcing Moves"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ": Checks, Captures, and Threats."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "fork"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "is when one piece attacks two pieces simultaneously. Find the Knight fork that attacks both the King and the Rook.',\n fen: 'r3k3/8/8/3N4/8/8/8/4K3 w q - 0 1',\n solution: ['d5c7'],\n hintText: 'Move the Knight to c7 to attack both the King on e8 and the Rook on a8.',\n successExplanation: 'Brilliant!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Nc7+"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "pin"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "paralyzes an enemy piece. Find a move that pins the Black Queen to the King.',\n fen: '4k3/8/8/4q3/8/8/8/R3K3 w - - 0 1',\n solution: ['a1e1'],\n hintText: 'Bring your Rook to e1 to attack the Queen. The Queen cannot move because the King is behind it.',\n successExplanation: 'Great job!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Re1"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "skewer"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "is the opposite of a pin: you attack the more valuable piece first. Skewer the King to win the Queen.',\n fen: '8/4q3/8/8/4k3/8/8/R5K1 w - - 0 1',\n solution: ['a1e1'],\n hintText: 'Move your Rook to e1 to check the King. When he moves, the Queen falls.',\n successExplanation: 'Nailed it!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Re1+"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Welcome to the Endgame. The board is empty, pawns become future queens, and your King transforms into your most powerful attacking piece."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Mastering the endgame is the most reliable way to increase your chess rating."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Positional chess is the art of improving your pieces and creating weaknesses in your opponent\\'s camp without relying on immediate tactics."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Core Concept"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Look for"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Outposts"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ", control"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Open Files"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ", and maintain a healthy"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Pawn Structure"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "At the Grandmaster level, material is less important than initiative and mating attacks. Sometimes you must give to receive."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Calculated Risk"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "A sacrifice is only sound if it forcibly leads to a decisive advantage, a mate, or a draw in a lost position."
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "LESSON COMPLETE!"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Chess XP"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": "Back to Academy"
+    },
+    {
+      "file": "src/app/[locale]/academy/lesson/[lessonId]/LessonClient.tsx",
+      "text": ");\n  }\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "(null);\n  const [unlockedLessons, setUnlockedLessons] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "([]);\n  const [loading, setLoading] = useState(true);\n  const [puzzles, setPuzzles] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "([]);\n  const [completedPuzzles, setCompletedPuzzles] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "([]);\n  const [completedLessons, setCompletedLessons] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "([]);\n  const [showPremiumPromo, setShowPremiumPromo] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "(false);\n  const [selectedLevel, setSelectedLevel] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "= b.range[0] && id"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": ");\n  }\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "= 11 && id"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "completedLessons.includes(t.id)) && ("
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Completed Tracks"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "completedLessons.includes(t.id)).length}"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Next Milestone"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Current Title"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Next Level"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "You need"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Solve one more puzzle!"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "= 11 && id"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Hint Available"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Use the hint button inside the puzzle to reveal the best next move."
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "Reward for solving"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": "👑 Unlock with Premium"
+    },
+    {
+      "file": "src/app/[locale]/academy/page.tsx",
+      "text": ",\n      document.body\n      )}"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "(null);\n  const [earnedELO, setEarnedELO] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "(null);\n  const [loading, setLoading] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "(true);\n  const [error, setError] = useState"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": ") : error ? ("
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": ") : puzzle ? ("
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": ") : null}"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "Level Completed Successfully"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "ELO"
+    },
+    {
+      "file": "src/app/[locale]/academy/puzzle/page.tsx",
+      "text": "Loading tactics level..."
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "n.toLocaleString();\n\nconst TX_COLORS: Record"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "a + b, 0);\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "14 days"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "= 1 && p"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Access Denied"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "This panel is restricted to admin accounts only."
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Go Back"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "● Live"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "(null);\n  const [userDetail, setUserDetail] = useState"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Search"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "✕ Clear"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Loading users…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : users.length === 0 ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "No users found"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Standard"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Wallet"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Referral Code"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Recent Transactions"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "All Types"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Couldn&apos;t refresh transactions"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Showing the last successfully loaded data."
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Loading…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : initialLoadFailed ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Couldn&apos;t load transactions"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "The request failed. No transaction data was returned."
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : txs.length === 0 ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "No transactions"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "0 ? cents(tx.fee_cents) : '—'}"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ": tx.reference_id\n                  ) : '—'}"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "0 ? 'text-green-400' : delta"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ");\n  };\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Loading games…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : games.length === 0 ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "No games found"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "0 ? cents(g.bid_amount_cents) : '—'}"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "📢 New Broadcast"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Target Audience"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Message"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "(HTML supported: &lt;b&gt;, &lt;i&gt;, &lt;a&gt;)"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Campaign History"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Loading…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : broadcasts.length === 0 ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "No broadcasts yet."
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Cancel"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ", label: status };\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "System Status"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Refresh"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Running system diagnostics…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "⚠️ Ledger Anomalies Details"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "User"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Telegram ID"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Profile Balance"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Ledger Sum"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Difference"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ";\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "ADMIN COMMAND"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "FinChess Arena · Restricted Access"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": "Loading dashboard…"
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'Dashboard' && stats ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'Users' ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'Transactions' ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'Games' ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'Broadcasts' ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : activeTab === 'System' ? ("
+    },
+    {
+      "file": "src/app/[locale]/admin/page.tsx",
+      "text": ") : null}"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "([]);\n  const [loading, setLoading] = useState"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "(true);\n  const [claimingId, setClaimingId] = useState"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "(null);\n  const [showArchive, setShowArchive] = useState"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "LEVEL"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "!t.claimed).length === 0 ? ("
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": ") : task.claimed ? ("
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": ") : (task.title_key === \"join_channel\" || task.title_key === \"join_chat\" || task.title_key === \"add_to_home_screen\") ? ("
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": ") : task.title_key.startsWith(\"ach_refer_\") ? ("
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "Invite Friend"
+    },
+    {
+      "file": "src/app/[locale]/challenges/page.tsx",
+      "text": "t.claimed) && ("
+    },
+    {
+      "file": "src/app/[locale]/error.tsx",
+      "text": "Something went wrong"
+    },
+    {
+      "file": "src/app/[locale]/error.tsx",
+      "text": "The app hit an unexpected error. Our team has been notified automatically."
+    },
+    {
+      "file": "src/app/[locale]/error.tsx",
+      "text": "Try again"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(null);\n  const [gameData, setGameData] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(null);\n\n  // Reconstructed move history states\n  const [fens, setFens] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "([\"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\"]);\n  const [sanMoves, setSanMoves] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "([]);\n  const [currentStep, setCurrentStep] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(0);\n  const [isPlaying, setIsPlaying] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(false);\n  const playIntervalRef = useRef"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(null);\n\n  // AI Analysis states\n  const [isAnalyzing, setIsAnalyzing] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(false);\n  const [analysisProgress, setAnalysisProgress] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "(0);\n  const [analysis, setAnalysis] = useState"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Reconstructing Matrix..."
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Link Failure"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Return to Profile"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Winner"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "= 2 && changed.length"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Winner"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Pause"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Autoplay"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "A.I. Engine Review"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Run engine analysis to evaluate move accuracy and discover blunders."
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "⚡ Run A.I. Game Analysis"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Analyzing game moves..."
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Move Analysis"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Move Accuracy Summary"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Excellent:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Good:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Inaccuracy:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Mistake:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Blunder:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Excellent:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Good:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Inaccuracy:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Mistake:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Blunder:"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Move Ledger"
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "No moves played."
+    },
+    {
+      "file": "src/app/[locale]/game/review/[gameId]/GameReviewClient.tsx",
+      "text": "Termination Detail"
+    },
+    {
+      "file": "src/app/[locale]/home/page.tsx",
+      "text": ") : (!stats || loadingStats) ? ("
+    },
+    {
+      "file": "src/app/[locale]/home/page.tsx",
+      "text": ") : null}"
+    },
+    {
+      "file": "src/app/[locale]/home/page.tsx",
+      "text": "ANTIGRAVITY"
+    },
+    {
+      "file": "src/app/[locale]/login/page.tsx",
+      "text": "Loading..."
+    },
+    {
+      "file": "src/app/[locale]/login/page.tsx",
+      "text": ");\n    }\n\n    return ("
+    },
+    {
+      "file": "src/app/[locale]/login/page.tsx",
+      "text": "Chess Mat Bot · Powered by Telegram · Web3 Decentralized"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "('annual');\n  const [tgUser, setTgUser] = useState"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "setMounted(true), []);\n    if (!mounted) return null;\n    return createPortal("
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": ",\n      document.body\n    );\n  };\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Membership"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Current Plan"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Current Plan"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "/mo"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Upgrade using internal balance"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": ") : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? ("
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "You're on the best plan!"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Your annual subscription is active and gives you the maximum discount."
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": ") : stats?.has_stripe_subscription ? ("
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Active via In-App Balance"
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above."
+    },
+    {
+      "file": "src/app/[locale]/membership/page.tsx",
+      "text": "Pay with internal balance"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "NO RATING HISTORY"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": ");\n  }\n\n  // Reconstruct Elo history points (reverse chronological order)\n  const history = [currentElo];\n  let tempElo = currentElo;\n  for (let i = 0; i"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "= history[0];\n  const strokeColor = isPositiveTrend ? \"#10b981\" : \"#f43f5e\"; // Emerald if up, Rose if down\n\n  return ("
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "(null);\n const [stats, setStats] = useState"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "1500 ? t('grandmaster') : t('cyber_knight')}"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "Rating Trajectory"
+    },
+    {
+      "file": "src/app/[locale]/profile/page.tsx",
+      "text": "Last 10 Games"
+    },
+    {
+      "file": "src/app/[locale]/qr/QrClient.tsx",
+      "text": "Invalid Code"
+    },
+    {
+      "file": "src/app/[locale]/qr/QrClient.tsx",
+      "text": "Open in Telegram"
+    },
+    {
+      "file": "src/app/[locale]/qr/QrClient.tsx",
+      "text": "FinChess Arena · Scan to Join"
+    },
+    {
+      "file": "src/app/[locale]/settings/page.tsx",
+      "text": "PRO"
+    },
+    {
+      "file": "src/app/[locale]/settings/page.tsx",
+      "text": "Command Center"
+    },
+    {
+      "file": "src/app/[locale]/settings/page.tsx",
+      "text": "ADMIN"
+    },
+    {
+      "file": "src/app/[locale]/settings/page.tsx",
+      "text": "Manage users, payouts & broadcasts"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "text": "(null);\n  const [transactions, setTransactions] = useState"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "text": "([]);\n  // Distinguishes \"you have no transactions\" from \"the list failed to load\".\n  const [txError, setTxError] = useState(false);\n  const [loading, setLoading] = useState"
+    },
+    {
+      "file": "src/app/[locale]/wallet/page.tsx",
+      "text": "('none');\n  const [tgUser, setTgUser] = useState"
+    },
+    {
+      "file": "src/app/global-error.tsx",
+      "text": "Something went wrong"
+    },
+    {
+      "file": "src/app/global-error.tsx",
+      "text": "The app hit an unexpected error and has been notified."
+    },
+    {
+      "file": "src/app/global-error.tsx",
+      "text": "Try again"
+    },
+    {
+      "file": "src/components/Academy/DailyHintCard.tsx",
+      "text": "Hint of the Day"
+    },
+    {
+      "file": "src/components/Academy/DailyHintCard.tsx",
+      "text": "Tap to reveal tip"
+    },
+    {
+      "file": "src/components/Academy/DailyHintCard.tsx",
+      "text": "Earn XP"
+    },
+    {
+      "file": "src/components/Academy/DailyHintCard.tsx",
+      "text": "+10 XP"
+    },
+    {
+      "file": "src/components/Academy/DailyHintCard.tsx",
+      "text": "(Rewarded)"
+    },
+    {
+      "file": "src/components/Academy/LessonCard.tsx",
+      "text": "Start"
+    },
+    {
+      "file": "src/components/Academy/LessonViewer.tsx",
+      "text": "I Understand"
+    },
+    {
+      "file": "src/components/Academy/LessonViewer.tsx",
+      "text": "Video Watched"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "('playing');\n  const [hintMove, setHintMove] = useState"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "Hints available (Levels 1-10)"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "Coach Hint:"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "SOLVED"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "Grandmaster Explanation:"
+    },
+    {
+      "file": "src/components/Academy/PuzzleBoard.tsx",
+      "text": "+50 Chess XP"
+    },
+    {
+      "file": "src/components/AuthGuard.tsx",
+      "text": "Verifying Auth…"
+    },
+    {
+      "file": "src/components/AuthGuard.tsx",
+      "text": ");\n    }\n\n    return"
+    },
+    {
+      "file": "src/components/DailyTasks.tsx",
+      "text": "([]);\n    const [loading, setLoading] = useState"
+    },
+    {
+      "file": "src/components/DailyTasks.tsx",
+      "text": "(true);\n    const [claimingId, setClaimingId] = useState"
+    },
+    {
+      "file": "src/components/DailyTasks.tsx",
+      "text": ") : tasks.length === 0 ? ("
+    },
+    {
+      "file": "src/components/LayoutWrapper.tsx",
+      "text": "(false);\n    const [activeGameId, setActiveGameId] = useState"
+    },
+    {
+      "file": "src/components/LayoutWrapper.tsx",
+      "text": "(globalActiveGameId);\n    const [isCheckingActiveGame, setIsCheckingActiveGame] = useState"
+    },
+    {
+      "file": "src/components/LayoutWrapper.tsx",
+      "text": "(!globalActiveGameChecked);\n    const [isTelegramWeb, setIsTelegramWeb] = useState"
+    },
+    {
+      "file": "src/components/LayoutWrapper.tsx",
+      "text": "INITIALIZING ARENA..."
+    },
+    {
+      "file": "src/components/LayoutWrapper.tsx",
+      "text": ") : (\n                    children\n                )}"
+    },
+    {
+      "file": "src/components/Leaderboard.tsx",
+      "text": ";\n if (rank === 2) return"
+    },
+    {
+      "file": "src/components/Leaderboard.tsx",
+      "text": ";\n if (rank === 3) return"
+    },
+    {
+      "file": "src/components/Leaderboard.tsx",
+      "text": ";\n return"
+    },
+    {
+      "file": "src/components/Leaderboard.tsx",
+      "text": ");\n  }\n\n  const displayedPlayers = players.slice(0, 5);\n\n  return ("
+    },
+    {
+      "file": "src/components/Leaderboard.tsx",
+      "text": ",\n      document.body\n      )}"
+    },
+    {
+      "file": "src/components/MarketingBanners.tsx",
+      "text": ",\n  decoration: ("
+    },
+    {
+      "file": "src/components/MarketingBanners.tsx",
+      "text": ",\n  decoration: ("
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "text": ");\n    }\n\n    // ── MOBILE BOTTOM PILL (original) ────────────────────────────────────\n    return ("
+    },
+    {
+      "file": "src/components/Onboarding.tsx",
+      "text": "0 ? \"-100%\" : \"100%\",\n      opacity: 0,\n      scale: 0.95\n    })\n  };\n\n  return ("
+    },
+    {
+      "file": "src/components/ReferralCard.tsx",
+      "text": "🎁 Earn 15% Lifetime Commissions + 50 XP"
+    },
+    {
+      "file": "src/components/ReferralCard.tsx",
+      "text": "YOUR CODE"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "NO EARNINGS YET"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": ") : null\n      )}"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": ",\n      value: loading ?"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": ",\n      value: loading ?"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": ",\n      value: loading ?"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Share Commission Rate"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "15% Lifetime"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Of Platform Rake Fee"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Earn 15% of the 3% platform rake fee collected from all games played by your referrals, instantly credited to your wallet in USDT."
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "VIP"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Share to earn 15%"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "+50 XP"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "FinChess Invite Matrix"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Wager • Play • Earn"
+    },
+    {
+      "file": "src/components/ReferralDashboard.tsx",
+      "text": "Show this code to your friend in person. They can scan it with their phone camera to join your network."
+    },
+    {
+      "file": "src/components/ReferralNotification.tsx",
+      "text": "clearTimeout(timeoutId);\n  }, [shouldSuppressNotification]);\n\n  return ("
+    },
+    {
+      "file": "src/components/ReferralNotification.tsx",
+      "text": "Live Payout"
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "setCopied(false), 2000);\n      });\n    }\n  };\n\n return ("
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "Node Recruitment"
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "Referral Protocol"
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "Expand the FinChess network. Earn 50 XP and 10% Boost for every node synchronized via your code."
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "Nodes Recruited"
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "Active Multiplier"
+    },
+    {
+      "file": "src/components/ReferralSection.tsx",
+      "text": "1.0X ALPHA"
+    },
+    {
+      "file": "src/components/TaskSuccessModal.tsx",
+      "text": "Mission Completed"
+    },
+    {
+      "file": "src/components/TaskSuccessModal.tsx",
+      "text": "Reward Received"
+    },
+    {
+      "file": "src/components/TaskSuccessModal.tsx",
+      "text": "AWESOME!"
+    },
+    {
+      "file": "src/components/TierComparison.tsx",
+      "text": "},\n ];\n\n  return ("
+    },
+    {
+      "file": "src/components/TonConnectProvider.tsx",
+      "text": ";\n    }\n\n    return ("
+    },
+    {
+      "file": "src/components/Wallet/CyberCard.tsx",
+      "text": "USDT"
+    },
+    {
+      "file": "src/components/Wallet/CyberCard.tsx",
+      "text": "USDT"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "('crypto');\n  const [showConfetti, setShowConfetti] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [windowDimensions, setWindowDimensions] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const cardEnabled = true; // Always enable bank card tab since we use Stripe\n  \n  const [depositAmount, setDepositAmount] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "('USDT');\n  const [tokenAmount, setTokenAmount] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\"10.00\");\n  const [prices, setPrices] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [successMessage, setSuccessMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\" \");\n  const [errorMessage, setErrorMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\"\");\n  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [showManualFallback, setShowManualFallback] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [copiedWallet, setCopiedWallet] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [copiedMemo, setCopiedMemo] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [memoConfirmed, setMemoConfirmed] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [masterWallet, setMasterWallet] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\"UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN\");\n  const [manualTxHash, setManualTxHash] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\"\");\n  const [canClose, setCanClose] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n\n  // TON→USDT swap section + arrival watcher (swap / Transak funds land in the\n  // user's OWN wallet; we poll until the USDT shows up, then prefill the deposit).\n  const [showSwap, setShowSwap] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(false);\n  const [arrivalStatus, setArrivalStatus] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "('idle');\n  const arrivalBaselineRef = useRef"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(null);\n  const funnelStateRef = useRef"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "('opened');\n  const [arrivedUsdt, setArrivedUsdt] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(0);\n  const [gasGrantMsg, setGasGrantMsg] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "(\"\");\n  const [gasGrantBusy, setGasGrantBusy] = useState"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "c.symbol === currency);\n      if (!selectedCurrencyObj) throw new Error(\"Invalid currency selection\");\n\n      const price = prices[currency] || 1.0;\n      const chargedAmt = amt;\n      const tokensNeeded = chargedAmt / price;\n      const decimals = selectedCurrencyObj.decimals;\n      const amountUnits = BigInt(Math.round(tokensNeeded * Math.pow(10, decimals)));\n\n      if (amountUnits"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Top-Up Successful!"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Updated Balance"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Acknowledge & Close"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": ",\n      document.body\n    );\n  }\n\n  return createPortal("
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Quick Top Up & Play"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Wager Stake"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Your Balance"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Deficit Needed"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Deposit instantly using your connected Web3 wallet."
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Asset"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Amount (USD)"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Credited to Balance:"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Platform Fee (5%):"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Total Charged:"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Or Pay Manually (Direct Transfer)"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Important: Memo Required"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Please ensure you include your unique memo comment below so we can correctly attribute the deposit to your account."
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "REQUIRED"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Copied!"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Copy"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "I have copied the exact memo comment"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "and will include it in my transfer."
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Step 3 — Already paid? Paste transaction hash to verify:"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Instant Card Top-Up"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Amount (USD)"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Minimum top-up is $1.00 USD"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Credited to Balance:"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Platform Fee (5%):"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Total Charged:"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Guaranteed safe & secure"
+    },
+    {
+      "file": "src/components/Wallet/DepositModal.tsx",
+      "text": "Back"
+    },
+    {
+      "file": "src/components/Wallet/LinkWalletModal.tsx",
+      "text": "(initialAddress);\n  const [processing, setProcessing] = useState"
+    },
+    {
+      "file": "src/components/Wallet/LinkWalletModal.tsx",
+      "text": "(false);\n  const [successMessage, setSuccessMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/LinkWalletModal.tsx",
+      "text": "(\"\");\n  const [errorMessage, setErrorMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "void | Promise"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Bridge BTC or ETH without an exchange account"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Your assets stay under your wallet control. Bridge into your connected TON wallet first, then deposit the resulting USDT using the normal verified transfer above."
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Select Source Asset"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Ethereum"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Bitcoin"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Copy Destination Address"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "TON destination — your connected wallet"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Verify this exact address in every bridge confirmation. Never use the ChessTGBot master wallet as the bridge destination."
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Execute Bridge"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Open Stargate, connect your Ethereum wallet, choose USDT as the output asset and TON as the destination network, then paste your TON address above."
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Open non-custodial bridge"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Use THORSwap to exchange native BTC for USDT in your own Ethereum wallet."
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Open BTC swap"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Use Stargate to bridge that USDT from Ethereum to the TON address above."
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Open TON bridge"
+    },
+    {
+      "file": "src/components/Wallet/SelfCustodyBridge.tsx",
+      "text": "Check the route, destination, minimum received and network fees in your wallet before signing. Smart-contract and bridge risks still apply."
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": "(null);\n  const [amount, setAmount] = useState"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": "(\"1\");\n  const [quote, setQuote] = useState"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": "(null);\n  const [quoting, setQuoting] = useState(false);\n  const [swapping, setSwapping] = useState(false);\n  const [error, setError] = useState"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": "(\"\");\n  const [sent, setSent] = useState(false);\n  const [quoteNonce, setQuoteNonce] = useState(0);   // bump to force a re-quote\n  const debounceRef = useRef"
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": ");\n  }\n\n  return ("
+    },
+    {
+      "file": "src/components/Wallet/SwapToUsdt.tsx",
+      "text": "TON"
+    },
+    {
+      "file": "src/components/Wallet/TransactionLedger.tsx",
+      "text": "Balance History (USDT)"
+    },
+    {
+      "file": "src/components/Wallet/TransactionLedger.tsx",
+      "text": ") : error ? ("
+    },
+    {
+      "file": "src/components/Wallet/TransactionLedger.tsx",
+      "text": ") : transactions.length === 0 ? ("
+    },
+    {
+      "file": "src/components/Wallet/TransactionLedger.tsx",
+      "text": ":\n                     tx.type === 'game_free_pvp' ?"
+    },
+    {
+      "file": "src/components/Wallet/TransactionLedger.tsx",
+      "text": ":\n                     isPositive ?"
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": "setCopied(false), 2000);\n      });\n    }\n  };\n\n  return ("
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": "Web3 · TON Connect"
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": "Connected · GRAM Network"
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": "Disconnect Wallet"
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": ") : (\n            /* ── WALLET PICKER ── */"
+    },
+    {
+      "file": "src/components/Wallet/WalletSelectorModal.tsx",
+      "text": "Powered by TON Connect · GRAM Blockchain"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(\"10\");\n  const [withdrawAddress, setWithdrawAddress] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(initialWithdrawAddress);\n  const [processing, setProcessing] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(false);\n  const [successMessage, setSuccessMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "( \"\");\n  const [errorMessage, setErrorMessage] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(\"\");\n  const [checked1, setChecked1] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(false);\n  const [checked2, setChecked2] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "(false);\n  const [canClose, setCanClose] = useState"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "Min. $10.00"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "Requested Amount:"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "Network Fee:"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "You Will Receive:"
+    },
+    {
+      "file": "src/components/Wallet/WithdrawModal.tsx",
+      "text": "balance && ("
+    },
+    {
+      "file": "src/components/WalletConnect.tsx",
+      "text": ");\n    }\n\n    return ("
+    },
+    {
+      "file": "src/components/WalletConnect.tsx",
+      "text": ": tw('top_up')}"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": ";\n  }\n\n  return ("
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(false);\n  const [gameNotice, setGameNotice] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const lastCheckedFenRef = useRef"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const [isTelegramWeb, setIsTelegramWeb] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "clearTimeout(timer);\n  }, [isConnected, gameState]);\n\n  const [userId, setUserId] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const [userStats, setUserStats] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const [isTelegram, setIsTelegram] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(false);\n\n  const [showRematchChoice, setShowRematchChoice] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(false);\n  const [rematchStatus, setRematchStatus] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "('idle');\n  const [incomingRematch, setIncomingRematch] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const [confirmConfig, setConfirmConfig] = useState"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(0);\n  const moveHistoryRef = useRef"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "(null);\n  const prevStatusRef = useRef"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "f.split(' ')[0].replace(/[^a-zA-Z]/g, '').length;\n        if (getPieceCount(currentFen)"
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": ");\n  }\n\n  return ("
+    },
+    {
+      "file": "src/components/game/ActiveGame.tsx",
+      "text": "System Warning"
+    },
+    {
+      "file": "src/components/game/AiDifficultyDrawer.tsx",
+      "text": "(false);\n  const [selectedDifficulty, setSelectedDifficulty] = useState"
+    },
+    {
+      "file": "src/components/game/AiDifficultyDrawer.tsx",
+      "text": "clearTimeout(timer);\n  }, []);\n\n  return ("
+    },
+    {
+      "file": "src/components/game/AiDifficultyDrawer.tsx",
+      "text": "TRAINING ARENA"
+    },
+    {
+      "file": "src/components/game/ArenaBanner.tsx",
+      "text": ") : arena.status === 'settling' || arena.status === 'finished' ? ("
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "boolean | Promise"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "(null);\n    const [selectedSquare, setSelectedSquare] = useState"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "(null);\n    const [prevFen, setPrevFen] = useState"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "(null);\n    const [lastMoveSquares, setLastMoveSquares] = useState"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "= 2 && changed.length"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Pawn Promotion"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Queen"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Knight"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Rook"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Bishop"
+    },
+    {
+      "file": "src/components/game/ChessBoard.tsx",
+      "text": "Cancel"
+    },
+    {
+      "file": "src/components/game/FriendInviteDrawer.tsx",
+      "text": "(false);\n  const [canClose, setCanClose] = useState"
+    },
+    {
+      "file": "src/components/game/FriendInviteDrawer.tsx",
+      "text": "setCopiedLink(false), 2000);\n    });\n  };\n\n  return ("
+    },
+    {
+      "file": "src/components/game/IncomingRematchDrawer.tsx",
+      "text": "Time Control"
+    },
+    {
+      "file": "src/components/game/MatchOverModal.tsx",
+      "text": "(0);\n  const [animatedPayout, setAnimatedPayout] = useState"
+    },
+    {
+      "file": "src/components/game/MatchOverModal.tsx",
+      "text": "};\n\n  // Rendered through a portal to document.body: a `fixed` overlay inside the\n  // page tree silently scopes to any transformed/filtered ancestor (the trap\n  // that once broke the leaderboard modal). Presence context crosses portals,\n  // so AnimatePresence exit animations still work.\n  if (typeof document === 'undefined') return null;\n  return createPortal("
+    },
+    {
+      "file": "src/components/game/MatchOverModal.tsx",
+      "text": "0 && isWin && ("
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(500); // in cents (default $5)\n  const [customWagerInput, setCustomWagerInput] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(\"5.00\");\n  const [isCustomWager, setIsCustomWager] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n  const [matchmakingState, setMatchmakingState] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "('idle');\n  const [matchFoundData, setMatchFoundData] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(null);\n  const [searchTimer, setSearchTimer] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(0);\n  const [matchmakingError, setMatchmakingError] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(\"\");\n  const [notifySearchEnabled, setNotifySearchEnabled] = useState(false);\n  const [notifyRequestPending, setNotifyRequestPending] = useState(false);\n  const [realQueueSnapshot, setRealQueueSnapshot] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(null);\n  const [isCreating, setIsCreating] = useState(false);\n  const [showRakeInfo, setShowRakeInfo] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n\n  // Time control\n  const [timeControl, setTimeControl] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(600); // 10 minutes default\n\n  // Quick Top-up states\n  const [showDepositDrawer, setShowDepositDrawer] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n  const [showAiDifficultyDrawer, setShowAiDifficultyDrawer] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n\n  // Refs for scroll container alignment\n  const wagerScrollRef = useRef"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(null);\n  const timeScrollRef = useRef"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(null);\n  const submittingRef = useRef"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n  const aiFallbackOfferedRef = useRef"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(false);\n  const keepSearchingOnExitRef = useRef"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "clearTimeout(timer);\n  }, []);\n\n  // Visual Header Stats states (Players Online & Active Users)\n  const [playersOnline, setPlayersOnline] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(782);\n  const [activeUsers, setActiveUsers] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "(3768);\n  const [contendersCount, setContendersCount] = useState"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "= 4 && next"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "= chosenWager;\n\n  return ("
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "Server queue"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "other in this pool"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "across all pools"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "Syncing..."
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "MATCH FOUND"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "0.5 ? 20 : -20), 800), 2200) : 1000} ELO"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "Stakes locked"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "Entering arena..."
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": ") : matchmakingState === 'searching' ? ("
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "= 15 && chosenWager === 0 && (\n                notifySearchEnabled ? ("
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "Telegram alert enabled"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "We will keep searching for up to 30 minutes. You can leave this screen."
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": ") : (\n            /* Config / Lobby View */"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "TRAIN"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "AGAINST A.I."
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "PLAY"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "WITH FRIEND"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": ") : game.result === 'loss' ? ("
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": ") : game.elo_change"
+    },
+    {
+      "file": "src/components/game/PlayLobby.tsx",
+      "text": "0 ELO"
+    },
+    {
+      "file": "src/components/game/RakeInfoDrawer.tsx",
+      "text": "clearTimeout(timer);\n  }, []);\n\n  return ("
+    },
+    {
+      "file": "src/components/game/RematchChoiceDrawer.tsx",
+      "text": "clearTimeout(timer);\n  }, []);\n\n  // MatchOverModal is portalled to document.body. Keeping this fixed drawer\n  // inside the animated route wrapper traps it in that wrapper's stacking\n  // context, behind the game-over modal, regardless of its local z-index.\n  if (typeof document === 'undefined') return null;\n\n  return createPortal("
+    },
+    {
+      "file": "src/components/game/TimeControlSelector.tsx",
+      "text": "void;\n  timeScrollRef: React.RefObject"
+    },
+    {
+      "file": "src/components/game/WagerSelector.tsx",
+      "text": "void;\n  wagerScrollRef: React.RefObject"
+    },
+    {
+      "file": "src/components/ui/Button.tsx",
+      "text": ") : leftIcon ? ("
+    },
+    {
+      "file": "src/components/ui/Card.tsx",
+      "text": ");\n  }\n\n  return ("
+    },
+    {
+      "file": "src/context/NavbarContext.tsx",
+      "text": "void;\n    /** True when at least one caller has pushed a hide. */\n    isHidden: boolean;\n}\n\nconst NavbarContext = createContext"
+    },
+    {
+      "file": "src/context/NavbarContext.tsx",
+      "text": "Math.max(0, d - 1)), []);\n\n    return ("
+    },
+    {
+      "file": "src/context/ReducedMotionContext.tsx",
+      "text": "void;\n}\n\nconst ReducedMotionContext = createContext"
+    },
+    {
+      "file": "src/context/ThemeContext.tsx",
+      "text": "void;\n}\n\nconst ThemeContext = createContext"
+    },
+    {
+      "file": "src/context/UserContext.tsx",
+      "text": "Promise"
+    },
+    {
+      "file": "src/context/UserContext.tsx",
+      "text": "Promise"
+    },
+    {
+      "file": "src/context/UserContext.tsx",
+      "text": ";\n    loadingBalance: boolean;\n    loadingStats: boolean;\n    /**\n     * True when the last balance fetch failed. Consumers MUST NOT present\n     * walletBalance as \"$0.00\" while this is set — a user with real funds on a\n     * flaky connection would read it as \"my money is gone\". Show an\n     * unavailable/retry state instead.\n     */\n    balanceError: boolean;\n    statsError: boolean;\n}\n\nconst UserContext = createContext"
+    },
+    {
+      "file": "src/hooks/useChessClock.ts",
+      "text": "gameState?.white_time_left ?? 600);\n  const [blackTime, setBlackTime] = useState"
+    },
+    {
+      "file": "src/hooks/useGameSocket.ts",
+      "text": "(null);\n    const [gameState, setGameState] = useState"
+    },
+    {
+      "file": "src/tests/AdminTransactionsTab.test.tsx",
+      "text": "& Record"
+    },
+    {
+      "file": "src/tests/AdminTransactionsTab.test.tsx",
+      "text": ";\n\nfunction renderTransactionsTab(transactionResult: ReturnType"
+    },
+    {
+      "file": "src/tests/AdminTransactionsTab.test.tsx",
+      "text": "));\n\n  render("
+    },
+    {
+      "file": "src/tests/Home.test.tsx",
+      "text": "Leaderboard Mock"
+    },
+    {
+      "file": "src/tests/Home.test.tsx",
+      "text": "NewsSection Mock"
+    },
+    {
+      "file": "src/tests/Home.test.tsx",
+      "text": "XPProgressBar Mock"
+    },
+    {
+      "file": "src/tests/RematchDrawers.test.tsx",
+      "text": "(key: string, values?: Record"
+    },
+    {
+      "file": "src/tests/SelfCustodyBridge.test.tsx",
+      "text": "true);\nconst logTelemetryEvent = jest.fn"
+    },
+    {
+      "file": "src/tests/SelfCustodyBridge.test.tsx",
+      "text": "undefined);\n    render("
+    },
+    {
+      "file": "src/tests/TonConnectProvider.test.tsx",
+      "text": "render("
+    }
+  ]
+}

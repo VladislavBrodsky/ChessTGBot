@@ -9,7 +9,7 @@ import Link from "next/link";
 import { 
   FaGraduationCap, FaStar, FaChessKnight, 
   FaWallet, FaGamepad, FaTrophy, 
-  FaListOl, FaNewspaper
+  FaListOl, FaNewspaper, FaFire
 } from "react-icons/fa";
 import { useTranslations, useLocale } from 'next-intl';
 import Leaderboard from "@/components/Leaderboard";
@@ -19,6 +19,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import XPProgressBar from "@/components/XPProgressBar";
+import DailyCheckinModal from "@/components/DailyCheckinModal";
 
 // Telegram's `start_param` persists for the whole webview session, so the
 // deep-link redirect below re-fired on EVERY Home mount — after finishing a
@@ -71,6 +72,7 @@ export default function Home() {
 
  return (
  <LayoutWrapper className="pb-12 px-4 md:px-6">
+ <DailyCheckinModal />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
  {/* Dashboard Welcome Header */}
@@ -143,7 +145,11 @@ export default function Home() {
         <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
 
         {/* Bottom Stats Grid */}
-        <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center">
+        <div className="grid grid-cols-4 divide-x divide-brand-border-opacity-10 text-center">
+          <div className="flex flex-col items-center">
+            <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
+            <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
+          </div>
           <div className="flex flex-col items-center">
             <div className="h-2 bg-brand-primary opacity-5 rounded w-10 mb-2" />
             <div className="h-3 bg-brand-primary opacity-10 rounded w-6" />
@@ -245,7 +251,7 @@ export default function Home() {
       <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
 
       {/* Compact Stats Row */}
-      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
+      <div className="grid grid-cols-4 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
       <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('xp')}</span>
       <span className="text-xs font-black text-brand-primary">{(stats.xp ?? 0).toLocaleString(locale)}</span>
@@ -257,6 +263,10 @@ export default function Home() {
       <div className="flex flex-col items-center">
       <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
       <span className="text-xs font-black text-brand-primary">{(stats.games_played ?? 0).toLocaleString(locale)}</span>
+      </div>
+      <div className="flex flex-col items-center">
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">Streak</span>
+      <span className="text-xs font-black text-amber-500 flex items-center gap-1"><FaFire className="text-[10px]" /> {stats.study_streak || 0}</span>
       </div>
       </div>
       </Card>

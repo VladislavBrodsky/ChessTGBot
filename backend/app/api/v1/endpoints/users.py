@@ -23,6 +23,15 @@ class LeaderboardItem(BaseModel):
     elo: int
     rank: int
 
+class AcademyLeaderboardItem(BaseModel):
+    telegram_id: int
+    first_name: str
+    last_name: Optional[str] = None
+    photo_url: Optional[str] = None
+    xp: int
+    study_streak: int
+    rank: int
+
 class OpponentInfo(BaseModel):
     name: str
     elo: int
@@ -77,6 +86,7 @@ class UserStats(BaseModel):
     region: Optional[str] = None
     arena_notifications: bool = True
     has_stripe_subscription: bool = False  # True only when subscribed via Stripe card (has stripe_customer_id)
+    study_streak: int = 0
 
 class ReferralEarningPoint(BaseModel):
     date: str   # ISO date string e.g. "2025-06-10"
@@ -232,6 +242,8 @@ async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):
             "last_name": user.last_name,
             "photo_url": f"/api/v1/users/avatar/{user.telegram_id}" if user.photo_url else None,
             "elo": user.elo,
+            "games_played": user.games_played,
+            "win_rate": round((user.wins / user.games_played * 100) if user.games_played > 0 else 0),
             "rank": idx + 1
         }
         for idx, user in enumerate(top_users)
@@ -246,6 +258,55 @@ async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):
             await session_mgr.redis.set(cache_key, json_data, ex=300)
         except Exception as e:
             print(f"Leaderboard Redis cache set error: {e}")
+            
+    return Response(content=json_data, media_type="application/json")
+
+@router.get("/leaderboard/academy")
+async def get_academy_leaderboard(db: AsyncSession = Depends(get_read_db)):
+    from app.services.session_manager import SessionManager
+    import json
+    
+    session_mgr = SessionManager()
+    cache_key = "api:cache:leaderboard:academy"
+    
+    # Try cache first if Redis is available
+    if not SessionManager._use_memory and session_mgr.redis:
+        try:
+            cached_data = await session_mgr.redis.get(cache_key)
+            if cached_data:
+                return Response(content=cached_data, media_type="application/json")
+        except Exception as e:
+            print(f"Academy Leaderboard Redis cache error: {e}")
+            
+    # Cache miss: fetch from DB
+    result = await db.execute(
+        select(User).order_by(User.xp.desc(), User.study_streak.desc()).limit(50)
+    )
+    top_users = result.scalars().all()
+    
+    # Build data
+    leaderboard_data = [
+        {
+            "telegram_id": user.telegram_id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "photo_url": f"/api/v1/users/avatar/{user.telegram_id}" if user.photo_url else None,
+            "xp": user.xp,
+            "study_streak": user.study_streak,
+            "rank": idx + 1
+        }
+        for idx, user in enumerate(top_users)
+    ]
+    
+    # Serialize once
+    json_data = json.dumps(leaderboard_data)
+    
+    # Store in cache with 5-minute TTL
+    if not SessionManager._use_memory and session_mgr.redis:
+        try:
+            await session_mgr.redis.set(cache_key, json_data, ex=300)
+        except Exception as e:
+            print(f"Academy Leaderboard Redis cache set error: {e}")
             
     return Response(content=json_data, media_type="application/json")
 
@@ -377,6 +438,7 @@ async def get_user_stats(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
+        study_streak=current_user.study_streak or 0,
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -438,6 +500,7 @@ async def sync_user(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
+        study_streak=current_user.study_streak or 0,
     )
 
 

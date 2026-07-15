@@ -6,7 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramAlert } from "@/lib/telegram";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
@@ -67,6 +67,7 @@ function PuzzleContent() {
       if (data.status === "success" && !data.message?.includes("Already solved")) {
         setEarnedXP(puzzle?.xp_reward || 50);
         setEarnedELO(5);
+        new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
       }
       return;
     }
@@ -83,6 +84,7 @@ function PuzzleContent() {
         if (resData.status === "success" && !resData.message?.includes("Already solved")) {
           setEarnedXP(puzzle.xp_reward);
           setEarnedELO(5);
+          new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
         }
       }
     } catch (e) {
@@ -175,11 +177,18 @@ function PuzzleContent() {
               </div>
             )}
             
-            <Link href={`/${locale}/academy`}>
-              <button className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest text-xs rounded-xl cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
-                {t('continue')}
-              </button>
-            </Link>
+            <div className="flex gap-4 justify-center w-full mt-2">
+              <Link href={`/${locale}/academy`} className="flex-1">
+                <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-opacity-10 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
+                  {t('continue')}
+                </button>
+              </Link>
+              <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just cracked a daily tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
+                <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
+                  <FaTelegramPlane className="text-lg" /> Share
+                </button>
+              </a>
+            </div>
           </motion.div>
         )}
       </div>

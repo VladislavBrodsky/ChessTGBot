@@ -182,7 +182,6 @@ export default function AcademyPage() {
     }
   };
 
-  const [streak, setStreak] = useState(0);
   const CHESS_QUOTES = [
     { quote: "Every chess master was once a beginner.", author: "Irving Chernev" },
     { quote: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
@@ -194,30 +193,6 @@ export default function AcademyPage() {
 
   useEffect(() => {
     fetchData();
-    
-    // Streak logic (frontend simulation until backend support)
-    try {
-        const lastStudy = localStorage.getItem('last_study_date');
-        const currentStreak = parseInt(localStorage.getItem('study_streak') || '0', 10);
-        const today = new Date().toDateString();
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
-        if (lastStudy !== today) {
-            if (lastStudy === yesterday) {
-                setStreak(currentStreak + 1);
-                localStorage.setItem('study_streak', (currentStreak + 1).toString());
-            } else {
-                setStreak(1);
-                localStorage.setItem('study_streak', '1');
-            }
-            localStorage.setItem('last_study_date', today);
-        } else {
-            setStreak(currentStreak || 1);
-        }
-    } catch (e) {
-        setStreak(1);
-    }
-
     setQuoteIdx(Math.floor(Math.random() * CHESS_QUOTES.length));
   }, []);
 
@@ -478,7 +453,7 @@ export default function AcademyPage() {
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>
                     <FaFire className="text-amber-500" />
-                  </motion.div> {streak} Day Streak
+                  </motion.div> {stats.study_streak || 0} Day Streak
                 </Badge>
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonViewer, { LessonStep } from "@/components/Academy/LessonViewer";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -291,21 +291,20 @@ interface LessonClientProps {
 
  const details = getLessonDetails();
 
-   const handleComplete = async () => {
-     try {
-       const res = await apiFetch("/api/v1/gamification/academy/complete-task", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
-       });
-       if (res.ok) {
-         setEarnedXP(50); // Lessons give 50 XP
-       }
-     } catch (e) {
-       console.error("Failed to submit lesson completion", e);
-     }
-     setCompleted(true);
-   };
+    const handleComplete = async () => {
+      try {
+        const res = await apiFetch(`/api/v1/gamification/academy/lessons/${details.id}/complete`, {
+          method: 'POST'
+        });
+        if (res.ok) {
+          setEarnedXP(50); // Lessons give 50 XP
+        }
+      } catch (e) {
+        console.error("Failed to submit lesson completion", e);
+      }
+      setCompleted(true);
+      new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
+    };
 
   if (completed) {
    return (
@@ -330,12 +329,17 @@ interface LessonClientProps {
     </div>
   )}
  
-  <div className="flex gap-4 justify-center">
-  <Link href={`/${locale}/academy`}>
-  <button className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all text-xs">
-  Back to Academy
+  <div className="flex gap-4 justify-center w-full mt-2">
+  <Link href={`/${locale}/academy`} className="flex-1">
+  <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-opacity-10 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
+  Back
   </button>
   </Link>
+  <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${details.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
+  <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
+  <FaTelegramPlane className="text-lg" /> Share
+  </button>
+  </a>
   </div>
   </motion.div>
   </div>

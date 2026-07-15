@@ -397,15 +397,21 @@ export default function DepositModal({
           setSuccessMessage("");
         }, 3000);
       } else {
-        // The transaction was already signed and broadcast on-chain above, so the
-        // funds are on their way even though immediate verification didn't catch
-        // them yet (TonAPI indexing lag). The background deposit crawler credits
-        // any confirmed transfer within ~2 minutes, so show a reassuring pending
-        // state instead of an alarming "verification failed".
-        setErrorMessage("");
-        setSuccessMessage("Deposit sent! ✅ It will be credited automatically within a couple of minutes — you can safely close this window.");
-        telegramHaptic('success');
-        setTimeout(() => { closeDeposit(); setSuccessMessage(""); }, 6000);
+        const errData = await verifyRes.json().catch(() => ({}));
+        
+        if (verifyRes.status === 404) {
+          // TonAPI might be lagging behind the blockchain.
+          // Show a reassuring pending message.
+          setErrorMessage("");
+          setSuccessMessage("Transaction is still pending on the blockchain. If you approved it in your wallet, it will be credited automatically within a couple of minutes.");
+          telegramHaptic('success');
+          setTimeout(() => { closeDeposit(); setSuccessMessage(""); }, 6000);
+        } else {
+          // A real validation error from the backend
+          setSuccessMessage("");
+          setErrorMessage(errData.detail || "Transaction verification failed.");
+          telegramHaptic('error');
+        }
       }
 
     } catch (err: any) {

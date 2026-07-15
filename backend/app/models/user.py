@@ -39,6 +39,9 @@ class User(Base):
     preferred_language: Mapped[str] = mapped_column(String, default='en')
     study_streak: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     last_study_date: Mapped[Optional[date]] = mapped_column(DateTime, nullable=True)
+    
+    checkin_streak: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_checkin_date: Mapped[Optional[date]] = mapped_column(DateTime, nullable=True)
 
     # Sybil tracking: hashed IP the account was created from, and when. Used to
     # refuse same-device referral attribution and to alert on one IP minting

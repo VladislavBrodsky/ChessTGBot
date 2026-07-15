@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTrophy, FaMedal, FaUserCircle } from 'react-icons/fa';
+import { FaTrophy, FaMedal, FaUserCircle, FaFire, FaBook, FaGamepad } from 'react-icons/fa';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
@@ -11,18 +11,29 @@ import { Card } from '@/components/ui/Card';
 import { useNavbar } from '@/context/NavbarContext';
 
 interface LeaderboardItem {
- telegram_id: number;
- first_name: string;
- last_name?: string;
- photo_url?: string;
- elo: number;
- rank: number;
+  telegram_id: number;
+  first_name: string;
+  last_name?: string;
+  photo_url?: string;
+  elo?: number;
+  games_played?: number;
+  win_rate?: number;
+  xp?: number;
+  study_streak?: number;
+  rank: number;
 }
 
  export default function Leaderboard() {
  const t = useTranslations('Index');
- const { data: playersData, isLoading: loading } = useSWRFetch('/api/v1/users/leaderboard');
- const players: LeaderboardItem[] = Array.isArray(playersData) ? playersData : [];
+ const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
+ const { data: arenaData, isLoading: loadingArena } = useSWRFetch('/api/v1/users/leaderboard');
+ const { data: academyData, isLoading: loadingAcademy } = useSWRFetch('/api/v1/users/leaderboard/academy');
+ 
+ const players: LeaderboardItem[] = activeTab === 'arena' 
+   ? (Array.isArray(arenaData) ? arenaData : [])
+   : (Array.isArray(academyData) ? academyData : []);
+ const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
+
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [showModal, setShowModal] = useState(false);
  const { pushHide, popHide } = useNavbar();
@@ -93,6 +104,27 @@ interface LeaderboardItem {
         <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-[0.4em] uppercase">{t('global_node_sync')}</span>
       </div>
 
+      <div className="flex bg-brand-bg-opacity-5 rounded-2xl p-1 mb-2 border border-brand-border-opacity-10 relative">
+        <button 
+          onClick={() => setActiveTab('arena')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-primary opacity-60 hover:opacity-100'}`}
+        >
+          <FaGamepad /> Arena
+        </button>
+        <button 
+          onClick={() => setActiveTab('academy')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-primary opacity-60 hover:opacity-100'}`}
+        >
+          <FaBook /> Scholars
+        </button>
+        <motion.div 
+          initial={false}
+          animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-brand-primary rounded-xl"
+        />
+      </div>
+
       <Card variant="glass" className="rounded-3xl overflow-hidden border-brand-border-opacity-5 bg-brand-bg-opacity-5">
         <div className="divide-y divide-brand-border-opacity-10">
           {displayedPlayers.length > 0 ? (
@@ -135,19 +167,33 @@ interface LeaderboardItem {
                     <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[120px]">
                       {item.first_name} {item.last_name}
                     </span>
-                    <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
-                      {t('active_protocol')}
-                    </span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {activeTab === 'arena' ? (
+                        <>
+                          <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                            {item.games_played || 0} GAMES
+                          </span>
+                          <span className="w-1 h-1 rounded-full bg-brand-primary opacity-20"></span>
+                          <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                            {item.win_rate || 0}% WIN
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-[9px] font-bold text-amber-500 opacity-80 flex items-center gap-1 uppercase tracking-widest">
+                          <FaFire /> {item.study_streak || 0} STREAK
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                    {item.elo} <span className="text-[10px] opacity-40 not-italic">EL</span>
+                    {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'EL' : 'XP'}</span>
                   </div>
                   <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (item.elo / 2500) * 100)}%` }}
+                      animate={{ width: `${Math.min(100, ((activeTab === 'arena' ? (item.elo || 1000) : (item.xp || 0)) / (activeTab === 'arena' ? 2500 : 5000)) * 100)}%` }}
                       className="h-full bg-brand-primary opacity-40"
                     />
                   </div>
@@ -245,19 +291,33 @@ interface LeaderboardItem {
                         <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[140px]">
                           {item.first_name} {item.last_name}
                         </span>
-                        <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
-                          {t('active_protocol')}
-                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {activeTab === 'arena' ? (
+                            <>
+                              <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                                {item.games_played || 0} GAMES
+                              </span>
+                              <span className="w-1 h-1 rounded-full bg-brand-primary opacity-20"></span>
+                              <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                                {item.win_rate || 0}% WIN
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-[9px] font-bold text-amber-500 opacity-80 flex items-center gap-1 uppercase tracking-widest">
+                              <FaFire /> {item.study_streak || 0} STREAK
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                        {item.elo} <span className="text-[10px] opacity-40 not-italic">EL</span>
+                        {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'EL' : 'XP'}</span>
                       </div>
                       <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden ml-auto">
                         <motion.div
                           initial={{ width: 0 }}
-                          animate={{ width: `${Math.min(100, (item.elo / 2500) * 100)}%` }}
+                          animate={{ width: `${Math.min(100, ((activeTab === 'arena' ? (item.elo || 1000) : (item.xp || 0)) / (activeTab === 'arena' ? 2500 : 5000)) * 100)}%` }}
                           className="h-full bg-brand-primary opacity-40"
                         />
                       </div>
