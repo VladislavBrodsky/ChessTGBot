@@ -12,29 +12,27 @@ import { ReactNode } from 'react';
  * exists — eagerly download the TON SDK chunks, wallets-v2.json, and ~35 wallet
  * icon PNGs from config.ton.org on first load. See Providers.tsx.
  *
- * manifestUrl is computed SYNCHRONOUSLY at render. This component is imported
- * with `dynamic(..., { ssr: false })`, so it only ever renders on the client
- * where `window` exists — there is no server render to guard against. Resolving
- * the URL in a useEffect instead would leave the FIRST render without a
- * provider; because this component now mounts fresh when the user navigates to
- * /game, that first render is exactly when a consumer (WalletConnect) mounts and
- * calls useTonConnectUI(), which throws "You should add <TonConnectUIProvider>".
+ * manifestUrl is PINNED to the Railway frontend URL — never derived from
+ * window.location.origin. The manifest is fetched by the WALLET's
+ * infrastructure (e.g. Telegram Wallet's backend), not by this WebView, so it
+ * must live on a host that resolves everywhere. When the app moved to
+ * web3chess.online, the apex's Namecheap DNS kept a URL-forwarding A record
+ * (162.255.119.119, no HTTPS) that most public resolvers return — the app
+ * loaded for users whose resolver had the Railway answer, but Telegram Wallet
+ * couldn't fetch the origin-derived manifest and every connect died with
+ * "App Manifest Error". The Railway domain has no such split-DNS failure mode.
  */
+const MANIFEST_URL =
+    process.env.NEXT_PUBLIC_TONCONNECT_MANIFEST_URL ||
+    'https://chesstgbot-frontend-production.up.railway.app/tonconnect-manifest.json';
+
 export default function TonConnectProvider({ children }: { children: ReactNode }) {
-    const manifestUrl =
-        typeof window !== 'undefined'
-            ? `${window.location.origin}/tonconnect-manifest.json`
-            : '';
-
-    // Extremely unlikely (ssr:false ⇒ always client), but if window is somehow
-    // unavailable, render children rather than crash — a wallet action would
-    // simply no-op until a real render occurs.
-    if (!manifestUrl) {
-        return <>{children}</>;
-    }
-
+    // The URL is a synchronous constant: the provider must exist on the FIRST
+    // render, because this component mounts fresh on /game navigation exactly
+    // when a consumer (WalletConnect) calls useTonConnectUI(), which throws
+    // "You should add <TonConnectUIProvider>" without it.
     return (
-        <TonConnectUIProvider manifestUrl={manifestUrl}>
+        <TonConnectUIProvider manifestUrl={MANIFEST_URL}>
             {children}
         </TonConnectUIProvider>
     );
