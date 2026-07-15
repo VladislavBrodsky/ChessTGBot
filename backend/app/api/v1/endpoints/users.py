@@ -438,7 +438,7 @@ async def get_user_stats(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
-        study_streak=current_user.study_streak,
+        study_streak=current_user.study_streak or 0,
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
@@ -500,7 +500,7 @@ async def sync_user(
             current_user.arena_notifications if current_user.arena_notifications is not None else True
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
-        study_streak=current_user.study_streak,
+        study_streak=current_user.study_streak or 0,
     )
 
 
