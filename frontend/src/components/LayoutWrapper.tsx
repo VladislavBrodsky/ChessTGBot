@@ -181,7 +181,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
             {/* Top-Right Header (Settings & Notifications) */}
             {isMainNavbarPage && !showOnboarding && !isCheckingActiveGame && (
-                <div className="absolute top-[calc(12px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 z-50 flex items-center gap-2.5">
+                <div className="absolute top-[calc(12px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
                     <button 
                         onClick={() => setShowNotifications(true)}
                         className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
