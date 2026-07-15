@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, BigInteger, Boolean, DateTime
+from sqlalchemy import Integer, String, BigInteger, Boolean, DateTime, Float
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.core.database import Base
 from datetime import datetime, timezone, date
@@ -31,6 +31,11 @@ class User(Base):
     # Stripe billing identifiers
     stripe_customer_id: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
     stripe_subscription_id: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
+
+    # Cosmetics & XP Boosters
+    unlocked_items: Mapped[Optional[str]] = mapped_column(String, default="[]")  # JSON string of unlocked cosmetic item codes
+    xp_multiplier: Mapped[float] = mapped_column(Float, default=1.0)
+    multiplier_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Gamification & i18n
     level: Mapped[int] = mapped_column(Integer, default=1)

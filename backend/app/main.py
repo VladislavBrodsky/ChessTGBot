@@ -398,7 +398,7 @@ def create_application() -> FastAPI:
         )
 
     # API Routers
-    from app.api.v1.endpoints import game, users, webhook, gamification, wallet, admin, arena, telemetry, content
+    from app.api.v1.endpoints import game, users, webhook, gamification, wallet, admin, arena, telemetry, content, marketplace
     application.include_router(arena.router, prefix="/api/v1/arena", tags=["arena"])
     application.include_router(game.router, prefix="/api/v1/game", tags=["game"])
     application.include_router(users.router, prefix="/api/v1/users", tags=["users"])
@@ -408,6 +408,7 @@ def create_application() -> FastAPI:
     application.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
     application.include_router(telemetry.router, prefix="/api/v1/telemetry", tags=["telemetry"])
     application.include_router(content.router, prefix="/api/v1/content", tags=["content"])
+    application.include_router(marketplace.router, prefix="/api/v1/marketplace", tags=["marketplace"])
 
     # Sliding window rate limiter for client-side logs (max 5 requests per minute per IP)
     client_log_limits = {}

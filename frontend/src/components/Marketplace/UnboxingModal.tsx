@@ -2,64 +2,46 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiGift, FiAward, FiZap, FiCheck } from 'react-icons/fi';
+import { FiGift, FiAward, FiZap, FiCheck } from 'react-icons/fi';
 
 interface UnboxingModalProps {
     isOpen: boolean;
     onClose: () => void;
     tier: 'common' | 'rare' | 'epic' | 'legendary' | 'seasonal' | null;
-    onSuccess: (prizeName: string) => void;
+    prizeName: string | null;
+    prizeType: string | null;
 }
 
-export default function UnboxingModal({ isOpen, onClose, tier, onSuccess }: UnboxingModalProps) {
+export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeType }: UnboxingModalProps) {
     const [animationState, setAnimationState] = useState<'shaking' | 'flash' | 'reveal'>('shaking');
     const [revealedPrize, setRevealedPrize] = useState<{ name: string; type: string; icon: React.ReactNode } | null>(null);
 
-    const prizesByTier = {
-        common: [
-            { name: "50 XR (Full Refund)", type: "refund", icon: <FiZap size={28} /> },
-            { name: "Bronze Profile Border", type: "cosmetic", icon: <FiAward size={28} /> },
-            { name: "1.2x XR Boost (24h)", type: "boost", icon: <FiZap size={28} /> }
-        ],
-        rare: [
-            { name: "1-Week Premium", type: "premium", icon: <FiGift size={28} /> },
-            { name: "Silver Profile Border", type: "cosmetic", icon: <FiAward size={28} /> },
-            { name: "1.5x XR Boost (48h)", type: "boost", icon: <FiZap size={28} /> }
-        ],
-        epic: [
-            { name: "1-Month Premium", type: "premium", icon: <FiGift size={28} /> },
-            { name: "Gold Profile Border", type: "cosmetic", icon: <FiAward size={28} /> },
-            { name: "2x XR Boost (72h)", type: "boost", icon: <FiZap size={28} /> }
-        ],
-        legendary: [
-            { name: "1-Year Premium", type: "premium", icon: <FiGift size={28} /> },
-            { name: "Platinum Profile Border", type: "cosmetic", icon: <FiAward size={28} /> },
-            { name: "500 XR Jackpot", type: "refund", icon: <FiZap size={28} /> }
-        ],
-        seasonal: [
-            { name: "Limited Season Badge", type: "cosmetic", icon: <FiAward size={28} /> },
-            { name: "Season multiplier Boost", type: "boost", icon: <FiZap size={28} /> }
-        ]
-    };
-
     useEffect(() => {
-        if (isOpen && tier) {
+        if (isOpen && tier && prizeName && prizeType) {
             setAnimationState('shaking');
             setRevealedPrize(null);
 
             // Shaking suspense: 2.5 seconds
             const shakeTimer = setTimeout(() => {
                 setAnimationState('flash');
-                
-                // Determine a random prize based on tier
-                const possiblePrizes = prizesByTier[tier];
-                const prize = possiblePrizes[Math.floor(Math.random() * possiblePrizes.length)];
-                setRevealedPrize(prize);
+
+                // Determine correct icon based on server-provided prize type
+                let icon = <FiGift size={28} />;
+                if (prizeType === 'refund' || prizeType === 'boost') {
+                    icon = <FiZap size={28} />;
+                } else if (prizeType === 'cosmetic') {
+                    icon = <FiAward size={28} />;
+                }
+
+                setRevealedPrize({
+                    name: prizeName,
+                    type: prizeType,
+                    icon: icon
+                });
 
                 // Flash is very quick: 200ms
                 const flashTimer = setTimeout(() => {
                     setAnimationState('reveal');
-                    onSuccess(prize.name);
                 }, 250);
 
                 return () => clearTimeout(flashTimer);
@@ -67,7 +49,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, onSuccess }: Unbo
 
             return () => clearTimeout(shakeTimer);
         }
-    }, [isOpen, tier]);
+    }, [isOpen, tier, prizeName, prizeType]);
 
     const tierGradients = {
         common: 'from-white/10 to-black',

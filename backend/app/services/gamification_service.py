@@ -142,8 +142,18 @@ class GamificationService:
             db_user = user # Fallback
 
         xp_earned = amount
-        if apply_booster and db_user.is_premium_active and amount > 0:
-            xp_earned = amount * 2
+        if apply_booster and amount > 0:
+            multiplier = 1.0
+            if db_user.is_premium_active:
+                multiplier *= 2.0
+            
+            # Check dynamic box booster
+            if db_user.xp_multiplier and db_user.multiplier_expires_at:
+                now = datetime.now(timezone.utc).replace(tzinfo=None)
+                if db_user.multiplier_expires_at > now:
+                    multiplier *= db_user.xp_multiplier
+            
+            xp_earned = int(amount * multiplier)
 
         if reason == "ai_match" and xp_earned > 0:
             from app.models.xp_transaction import XpTransaction

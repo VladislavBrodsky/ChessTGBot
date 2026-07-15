@@ -8,12 +8,13 @@ interface MysteryBoxCardProps {
     tier: 'common' | 'rare' | 'epic' | 'legendary' | 'seasonal';
     name: string;
     cost: number;
+    currency: 'xr' | 'xp';
     description: string;
     onUnbox: () => void;
     disabled?: boolean;
 }
 
-export default function MysteryBoxCard({ tier, name, cost, description, onUnbox, disabled }: MysteryBoxCardProps) {
+export default function MysteryBoxCard({ tier, name, cost, currency, description, onUnbox, disabled }: MysteryBoxCardProps) {
     const t = useTranslations('Index');
 
     // Branding color configurations based on tier, maintaining a premium monochromatic scheme
@@ -73,7 +74,7 @@ export default function MysteryBoxCard({ tier, name, cost, description, onUnbox,
                 </span>
                 <div className="text-right">
                     <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest block leading-none mb-1">Cost</span>
-                    <span className="text-sm font-black text-brand-primary">{cost} XR</span>
+                    <span className="text-sm font-black text-brand-primary">{cost} {currency.toUpperCase()}</span>
                 </div>
             </div>
 

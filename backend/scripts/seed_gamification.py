@@ -36,9 +36,9 @@ async def seed_gamification():
         # Themes
         themes = [
             {"code": "default", "theme_type": "board", "name": "Classic Wood", "description": "The default classic wood board.", "price_xp": 0, "css_class": "board-classic"},
-            {"code": "neon", "theme_type": "board", "name": "Cyberpunk Neon", "description": "A futuristic neon glowing board.", "price_xp": 1000, "css_class": "board-neon"},
-            {"code": "obsidian", "theme_type": "board", "name": "Dark Obsidian", "description": "A sleek, dark obsidian board.", "price_xp": 2000, "css_class": "board-obsidian"},
-            {"code": "marble", "theme_type": "board", "name": "Roman Marble", "description": "An elegant marble finish.", "price_xp": 5000, "css_class": "board-marble"},
+            {"code": "neon", "theme_type": "board", "name": "Cyberpunk Neon", "description": "A futuristic neon glowing board.", "price_xp": 5000, "css_class": "board-neon"},
+            {"code": "obsidian", "theme_type": "board", "name": "Dark Obsidian", "description": "A sleek, dark obsidian board.", "price_xp": 10000, "css_class": "board-obsidian"},
+            {"code": "marble", "theme_type": "board", "name": "Roman Marble", "description": "An elegant marble finish.", "price_xp": 25000, "css_class": "board-marble"},
         ]
 
         for theme_data in themes:

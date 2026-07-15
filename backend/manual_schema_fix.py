@@ -16,7 +16,10 @@ async def update_schema():
             ("premium_tier", "VARCHAR"),
             ("premium_expires_at", "TIMESTAMP"),
             ("balance", "INTEGER DEFAULT 0"),
-            ("wallet_address", "VARCHAR")
+            ("wallet_address", "VARCHAR"),
+            ("unlocked_items", "VARCHAR DEFAULT '[]'"),
+            ("xp_multiplier", "DOUBLE PRECISION DEFAULT 1.0"),
+            ("multiplier_expires_at", "TIMESTAMP")
         ]
         
         for col_name, col_type in columns:
