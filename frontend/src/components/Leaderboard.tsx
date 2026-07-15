@@ -189,7 +189,7 @@ interface LeaderboardItem {
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                    {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'EL' : 'XP'}</span>
+                    {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'ELO' : 'XP'}</span>
                   </div>
                   <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden">
                     <motion.div
@@ -314,7 +314,7 @@ interface LeaderboardItem {
                     </div>
                     <div className="text-right">
                       <div className="text-[12px] font-black text-brand-primary tracking-tighter">
-                        {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'EL' : 'XP'}</span>
+                        {activeTab === 'arena' ? item.elo : item.xp} <span className="text-[10px] opacity-40 not-italic">{activeTab === 'arena' ? 'ELO' : 'XP'}</span>
                       </div>
                       <div className="h-1 w-16 bg-brand-bg-opacity-10 rounded-full mt-1 overflow-hidden ml-auto">
                         <motion.div

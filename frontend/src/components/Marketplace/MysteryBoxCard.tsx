@@ -65,6 +65,8 @@ export default function MysteryBoxCard({ tier, name, cost, currency, description
 
     return (
         <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className={`w-full rounded-[32px] p-[1px] bg-gradient-to-b from-white/10 to-transparent relative group overflow-hidden`}
