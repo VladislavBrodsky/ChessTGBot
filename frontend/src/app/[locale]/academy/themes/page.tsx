@@ -13,7 +13,7 @@ interface Theme {
   theme_type: string;
   name: string;
   description: string;
-  price_xp: int;
+  price_xp: number;
   css_class: string;
   owned: boolean;
 }
@@ -27,7 +27,7 @@ export default function ThemeShopPage() {
   useEffect(() => {
     Promise.all([
       apiFetch('/api/v1/gamification/themes').then(res => res.json()),
-      apiFetch('/api/v1/user/me').then(res => res.json())
+      apiFetch('/api/v1/users/sync', { method: 'POST' }).then(res => res.json())
     ]).then(([themesData, userData]) => {
       setThemes(themesData);
       setUserXp(userData.xp);

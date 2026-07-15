@@ -644,7 +644,7 @@ export default function AcademyPage() {
           </div>
           
           {/* Completed Tracks (Archive) */}
-          {ALL_TRACKS.some(t => completedLessons.includes(t.id)) && (
+          {dynamicLessons.some(lesson => completedLessons.includes(lesson.slug)) && (
             <div className="mt-6 border border-brand-border-opacity-10 rounded-2xl bg-brand-surface/30 overflow-hidden transition-all duration-300">
               <button 
                 onClick={() => setShowArchive(!showArchive)}
@@ -654,7 +654,7 @@ export default function AcademyPage() {
                   <FaCheckCircle className="text-emerald-500 text-sm" />
                   <span className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-80">Completed Tracks</span>
                   <span className="ml-2 text-[10px] font-bold bg-brand-primary/10 px-2 py-0.5 rounded-full text-brand-primary/60">
-                    {ALL_TRACKS.filter(t => completedLessons.includes(t.id)).length}
+                    {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).length}
                   </span>
                 </div>
                 <motion.div
@@ -675,16 +675,15 @@ export default function AcademyPage() {
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-2 grid grid-cols-1 gap-4 border-t border-brand-border-opacity-5">
-                      {ALL_TRACKS.filter(t => completedLessons.includes(t.id)).map(track => (
-                        <div key={track.id} className="opacity-75 hover:opacity-100 transition-opacity">
+                      {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).map(lesson => (
+                        <div key={lesson.slug} className="opacity-75 hover:opacity-100 transition-opacity">
                           <LessonCard
-                            title={t(track.titleKey) || track.fallbackTitle}
-                            description={t(track.descKey) || track.fallbackDesc}
+                            title={lesson.title}
+                            description={lesson.description}
                             progress={100}
-                            difficulty={t(track.difficultyKey) || track.fallbackDifficulty}
-                            duration={track.duration}
+                            difficulty={lesson.difficulty}
                             locked={false}
-                            onClick={() => handleLessonClick(track.id, false)}
+                            onClick={() => router.push(`/${locale}/academy/lesson/${lesson.slug}`)}
                           />
                         </div>
                       ))}
