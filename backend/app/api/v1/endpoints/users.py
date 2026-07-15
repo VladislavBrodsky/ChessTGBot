@@ -442,6 +442,9 @@ async def get_user_stats(
         ),
         has_stripe_subscription=bool(current_user.stripe_customer_id and current_user.stripe_subscription_id),
         study_streak=current_user.study_streak or 0,
+        unlocked_items=current_user.unlocked_items,
+        xp_multiplier=current_user.xp_multiplier,
+        multiplier_expires_at=current_user.multiplier_expires_at,
     )
 
 @router.post("/sync", response_model=UserStats, dependencies=[Depends(ip_rate_limit(limit=10, window=60))])
