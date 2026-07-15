@@ -62,7 +62,8 @@
     "nav_quests": "Missões",
     "nav_settings": "Configurações",
     "nav_profile": "Perfil",
-    "nav_logout": "Sair"
+    "nav_logout": "Sair",
+    "nav_marketplace": "Mercado"
   },
   "Settings": {
     "return": "Voltar",

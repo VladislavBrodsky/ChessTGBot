@@ -62,7 +62,8 @@
     "nav_quests": "Quests",
     "nav_settings": "Einstellungen",
     "nav_profile": "Profil",
-    "nav_logout": "Abmelden"
+    "nav_logout": "Abmelden",
+    "nav_marketplace": "Marktplatz"
   },
   "Settings": {
     "return": "Zurück",

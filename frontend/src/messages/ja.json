@@ -62,7 +62,8 @@
     "nav_quests": "クエスト",
     "nav_settings": "設定",
     "nav_profile": "プロフィール",
-    "nav_logout": "ログアウト"
+    "nav_logout": "ログアウト",
+    "nav_marketplace": "市場"
   },
   "Settings": {
     "return": "戻る",

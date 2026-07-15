@@ -4,12 +4,15 @@ import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Onboarding from './Onboarding';
 import RegionPrompt from './RegionPrompt';
+import NotificationModal from './NotificationModal';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useTheme } from '@/context/ThemeContext';
 import { useNavbar } from '@/context/NavbarContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
+import Link from 'next/link';
+import { FiSettings, FiBell } from 'react-icons/fi';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -34,6 +37,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     }
 
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+    const [showNotifications, setShowNotifications] = useState<boolean>(false);
     const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
     const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
     const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
@@ -175,6 +179,25 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 <div className="absolute inset-0 opacity-[0.01] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02),rgba(255,255,255,.06))] bg-size-[100%_2px,3px_100%]" />
             </div>
 
+            {/* Top-Right Header (Settings & Notifications) */}
+            {isMainNavbarPage && !showOnboarding && !isCheckingActiveGame && (
+                <div className="absolute top-4 right-5 z-50 flex items-center gap-3">
+                    <button 
+                        onClick={() => setShowNotifications(true)}
+                        className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-brand-surface/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                    >
+                        <FiBell size={20} />
+                        {/* Notification indicator dot */}
+                        <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                    </button>
+                    <Link href={`/${locale}/settings`}>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-brand-surface/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+                            <FiSettings size={20} />
+                        </button>
+                    </Link>
+                </div>
+            )}
+
             {/* Content Container */}
             <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
@@ -197,6 +220,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
             </main>
 
             <Navbar hide={shouldHideNavbar} />
+
+            <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
 
             <AnimatePresence>
                 {showOnboarding && (

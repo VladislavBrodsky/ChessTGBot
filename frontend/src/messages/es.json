@@ -62,7 +62,8 @@
     "nav_quests": "Misiones",
     "nav_settings": "Ajustes",
     "nav_profile": "Perfil",
-    "nav_logout": "Cerrar sesión"
+    "nav_logout": "Cerrar sesión",
+    "nav_marketplace": "Mercado"
   },
   "Settings": {
     "return": "Voltar",

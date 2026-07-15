@@ -62,7 +62,8 @@
     "nav_quests": "任务",
     "nav_settings": "设置",
     "nav_profile": "个人资料",
-    "nav_logout": "退出登录"
+    "nav_logout": "退出登录",
+    "nav_marketplace": "市场"
   },
   "Settings": {
     "return": "返回",

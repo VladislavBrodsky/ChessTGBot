@@ -62,7 +62,8 @@
     "nav_quests": "Квесты",
     "nav_settings": "Настройки",
     "nav_profile": "Профиль",
-    "nav_logout": "Выйти"
+    "nav_logout": "Выйти",
+    "nav_marketplace": "Маркетплейс"
   },
   "Settings": {
     "return": "Назад",

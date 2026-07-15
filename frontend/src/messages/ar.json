@@ -62,7 +62,8 @@
     "nav_quests": "المهام",
     "nav_settings": "الإعدادات",
     "nav_profile": "الملف الشخصي",
-    "nav_logout": "تسجيل الخروج"
+    "nav_logout": "تسجيل الخروج",
+    "nav_marketplace": "المتجر"
   },
   "Settings": {
     "return": "عودة",

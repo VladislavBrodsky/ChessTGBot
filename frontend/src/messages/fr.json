@@ -62,7 +62,8 @@
     "nav_quests": "Quêtes",
     "nav_settings": "Paramètres",
     "nav_profile": "Profil",
-    "nav_logout": "Déconnexion"
+    "nav_logout": "Déconnexion",
+    "nav_marketplace": "Marché"
   },
   "Settings": {
     "return": "Retour",

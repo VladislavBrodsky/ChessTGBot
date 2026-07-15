@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt } from 'react-icons/fa';
+import { FaChessPawn, FaGamepad, FaGraduationCap, FaCog, FaTrophy, FaChessKnight, FaSignOutAlt, FaGem } from 'react-icons/fa';
 
 const NAV_ITEMS = [
     { name: 'Home',        icon: <FaChessPawn />,      href: '/home',        key: 'nav_home' },
