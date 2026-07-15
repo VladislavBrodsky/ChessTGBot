@@ -75,15 +75,15 @@ export default function Home() {
  <DailyCheckinModal />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
- {/* Dashboard Welcome Header */}
- <div className="w-full text-center px-1 mb-1">
- <h1 className="text-xl font-black tracking-tighter text-brand-primary leading-none uppercase animate-float">
- {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
- </h1>
- <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.4em] mt-2">
- {t('subtitle')}
- </p>
- </div>
+  {/* Dashboard Welcome Header */}
+  <div className="w-full text-left px-4 pr-24 mb-1">
+  <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase">
+  {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
+  </h1>
+  <p className="text-[9px] font-black text-brand-muted uppercase tracking-[0.3em] mt-1.5 leading-none">
+  {t('subtitle')}
+  </p>
+  </div>
 
  {/* Unified Premium Profile Card */}
   <AnimatePresence mode="wait" initial={false}>
