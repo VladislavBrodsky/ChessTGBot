@@ -23,4 +23,4 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # Run Application with Alembic automatic head upgrades
-CMD sh -c "python -m alembic upgrade head; uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD sh -c "python -m alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"

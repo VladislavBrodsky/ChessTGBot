@@ -6,6 +6,7 @@ import { useState, useEffect, type CSSProperties } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
+import { toChessboardArrows } from "@/lib/chessboardArrows";
 import { telegramHaptic } from "@/lib/telegram";
 
 function getChangedSquares(fen1: string, fen2: string): string[] {
@@ -330,7 +331,7 @@ export default function ChessBoardComponent({
                                 borderRadius: "12px",
                                 overflow: "hidden",
                             },
-                            arrows: customArrows as any,
+                            arrows: toChessboardArrows(customArrows),
                             darkSquareStyle: customDarkSquareStyle,
                             lightSquareStyle: customLightSquareStyle,
                             onSquareClick: handleSquareClick,
