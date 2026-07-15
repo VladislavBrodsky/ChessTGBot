@@ -16,6 +16,8 @@ interface LeaderboardItem {
  last_name?: string;
  photo_url?: string;
  elo: number;
+ games_played: number;
+ win_rate: number;
  rank: number;
 }
 
@@ -135,9 +137,15 @@ interface LeaderboardItem {
                     <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[120px]">
                       {item.first_name} {item.last_name}
                     </span>
-                    <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
-                      {t('active_protocol')}
-                    </span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                        {item.games_played || 0} GAMES
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-brand-primary opacity-20"></span>
+                      <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                        {item.win_rate || 0}% WIN
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -245,9 +253,15 @@ interface LeaderboardItem {
                         <span className="text-[11px] font-black text-brand-primary opacity-80 uppercase truncate max-w-[140px]">
                           {item.first_name} {item.last_name}
                         </span>
-                        <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
-                          {t('active_protocol')}
-                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                            {item.games_played || 0} GAMES
+                          </span>
+                          <span className="w-1 h-1 rounded-full bg-brand-primary opacity-20"></span>
+                          <span className="text-[9px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">
+                            {item.win_rate || 0}% WIN
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">

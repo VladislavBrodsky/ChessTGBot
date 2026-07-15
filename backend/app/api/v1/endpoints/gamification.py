@@ -288,6 +288,10 @@ async def complete_academy_task(
     updated_user, message = await GamificationService.complete_academy_task(
         db, current_user, req.task_type, req.item_id
     )
+    
+    if message == "Success":
+        updated_user = await GamificationService.update_study_streak(db, updated_user)
+        await db.commit()
     return {
         "status": "success",
         "new_xp": updated_user.xp,
@@ -600,6 +604,9 @@ async def verify_puzzle_solution(
     
     # Track completion in user tasks: complete task type puzzle
     await GamificationService.update_task_progress(db, locked_user.id, "login", increment=0, commit=False) # dummy keep db hot
+    
+    # Update study streak
+    updated_user = await GamificationService.update_study_streak(db, updated_user)
     
     await db.commit()
     
