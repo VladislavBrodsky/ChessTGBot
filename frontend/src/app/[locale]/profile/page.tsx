@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apiFetch, getFullPhotoUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa";
+import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
@@ -198,6 +198,14 @@ export default function ProfilePage() {
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
  {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
  </h1>
+ 
+ {stats && stats.study_streak > 0 && (
+    <div className="flex items-center gap-1.5 mb-4 text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
+        <FaFire className="text-sm" />
+        <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t('day_streak') || 'Day Streak'}</span>
+    </div>
+ )}
+ 
  <div className="mb-6 w-full max-w-[200px]">
  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
  </div>
