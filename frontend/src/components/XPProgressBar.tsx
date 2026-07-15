@@ -40,20 +40,18 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 {/* Fill */}
                 <motion.div
                     initial={{ width: 0 }}
-                    animate={{ 
-                        width: `${progressPercentage}%`,
-                        backgroundPosition: ["0% 50%", "200% 50%"]
-                    }}
+                    animate={{ width: `${progressPercentage}%` }}
                     transition={{ 
                         width: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
-                        backgroundPosition: { repeat: Infinity, duration: 3, ease: "linear" }
                     }}
-                    className="h-full relative rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] border-y border-r border-amber-300/40"
+                    className="h-full relative rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] border-y border-r border-amber-300/40 overflow-hidden"
                     style={{
-                        background: 'linear-gradient(90deg, #b45309 0%, #f59e0b 50%, #fbbf24 100%)',
-                        backgroundSize: '200% 100%',
+                        background: 'linear-gradient(90deg, #92400e 0%, #d97706 55%, #fbbf24 100%)',
                     }}
                 >
+                    {/* Shimmer sweeps left → right */}
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] -translate-x-full animate-shimmer" />
+
                     {/* Glowing Leading-Edge Spark */}
                     {progressPercentage > 0 && (
                         <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-6 h-full pointer-events-none overflow-visible">

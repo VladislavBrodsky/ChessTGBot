@@ -80,7 +80,7 @@ export default function Home() {
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
   {/* Dashboard Welcome Header — buttons rendered inline, never absolute */}
-  <div className="w-full flex items-center justify-between px-1 mb-1">
+  <div className="w-full flex items-start justify-between px-1 mb-1">
     {/* Text block — shrinks to avoid the buttons */}
     <div className="flex-1 min-w-0">
       <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left break-words">
@@ -91,8 +91,8 @@ export default function Home() {
       </p>
     </div>
 
-    {/* Inline Header Controls — perfectly on the same line as the title */}
-    <div className="flex items-center gap-2.5 shrink-0 ml-3">
+    {/* Inline Header Controls — top-aligned with the first line of the heading */}
+    <div className="flex items-center gap-2.5 shrink-0 ml-3 mt-0.5">
       <button
         onClick={() => setShowNotifications(true)}
         className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
