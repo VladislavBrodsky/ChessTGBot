@@ -86,19 +86,26 @@ export default function DailyCheckinModal() {
         {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} />}
         
         <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          initial={{ scale: 0.9, opacity: 0, y: 30 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="w-full max-w-sm glass-panel p-6 rounded-3xl border border-brand-border-opacity-20 relative overflow-hidden"
+          exit={{ scale: 0.9, opacity: 0, y: 30 }}
+          className="w-full max-w-sm p-7 rounded-[2rem] bg-gradient-to-br from-brand-surface via-[#13151A] to-[#0D0F12] border border-white/5 shadow-2xl relative overflow-hidden"
         >
-          {/* Glowing background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-purple-500/10 pointer-events-none" />
+          {/* Animated Glowing Orbs Background */}
+          <div className="absolute -top-32 -left-32 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] animate-pulse" />
+          <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
           
-          <div className="relative z-10 text-center">
-            <h2 className="text-3xl font-black text-brand-primary uppercase tracking-tight mb-2">Daily Reward</h2>
-            <p className="text-xs font-bold text-brand-primary opacity-60 uppercase tracking-widest mb-6">Return every day to unlock massive rewards!</p>
+          <div className="relative z-10 text-center flex flex-col items-center">
+            {/* Crown/Icon at the top */}
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.4)] mb-4">
+              <FaGift className="text-white text-xl" />
+            </div>
 
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 tracking-tight mb-2">Daily Reward</h2>
+            <p className="text-xs font-bold text-white/50 uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
+
+            <div className="grid grid-cols-4 gap-3 mb-3 w-full">
               {status.rewards.slice(0, 4).map((reward, idx) => (
                 <RewardDay 
                   key={idx} 
@@ -108,7 +115,7 @@ export default function DailyCheckinModal() {
                 />
               ))}
             </div>
-            <div className="grid grid-cols-3 gap-2 mb-8">
+            <div className="grid grid-cols-3 gap-3 mb-8 w-full">
               {status.rewards.slice(4, 7).map((reward, idx) => (
                 <RewardDay 
                   key={idx + 4} 
@@ -120,17 +127,23 @@ export default function DailyCheckinModal() {
               ))}
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleClaim}
               disabled={claiming || !status.can_claim_today}
-              className={`w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]
+              className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
                 ${status.can_claim_today && !claiming
-                  ? "bg-amber-500 hover:bg-amber-400 text-slate-900 cursor-pointer"
-                  : "bg-brand-surface border border-brand-border-opacity-20 text-brand-primary opacity-50 cursor-not-allowed"
+                  ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                  : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
                 }`}
             >
-              {claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}
-            </button>
+              {/* Button shine effect */}
+              {status.can_claim_today && !claiming && (
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+              )}
+              <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
+            </motion.button>
             
             {status.can_claim_today && (
               <button 
@@ -150,27 +163,34 @@ export default function DailyCheckinModal() {
 function RewardDay({ day, reward, status, isBig = false }: { day: number, reward: number, status: 'past' | 'current' | 'future', isBig?: boolean }) {
   const isPast = status === 'past';
   const isCurrent = status === 'current';
+  const isFuture = status === 'future';
   
   return (
-    <div className={`relative flex flex-col items-center justify-center p-2 rounded-xl border ${isBig ? 'col-span-1 border-amber-500/50 bg-amber-500/10' : 'border-brand-border-opacity-20 bg-brand-surface'} ${isCurrent ? 'ring-2 ring-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : ''} ${isPast ? 'opacity-50' : ''}`}>
-      <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary opacity-60 mb-1">Day {day}</span>
-      
-      {isPast ? (
-        <FaCheckCircle className="text-emerald-500 text-xl my-1" />
-      ) : isBig ? (
-        <FaGift className={`text-3xl my-1 ${isCurrent ? 'text-amber-400' : 'text-amber-500/40'}`} />
-      ) : (
-        <div className={`flex flex-col items-center my-1 ${isCurrent ? 'text-amber-400' : 'text-brand-primary opacity-40'}`}>
-          <span className="font-black text-sm">{reward}</span>
-          <span className="text-[8px] font-bold">XP</span>
-        </div>
+    <div className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300
+      ${isBig ? 'col-span-1' : ''} 
+      ${isCurrent ? 'border-amber-400/50 bg-amber-400/10 shadow-[0_0_25px_rgba(245,158,11,0.2)] transform scale-105 z-10' : 'border-white/5 bg-white/5'} 
+      ${isPast ? 'opacity-50 grayscale border-white/5 bg-transparent' : ''}
+    `}>
+      {isCurrent && (
+        <div className="absolute inset-0 bg-amber-400/20 blur-xl rounded-full z-0" />
       )}
       
-      {status === 'future' && !isBig && (
-        <div className="absolute inset-0 bg-brand-surface/50 rounded-xl flex items-center justify-center backdrop-blur-[1px]">
-          <FaLock className="text-brand-primary opacity-30 text-xs" />
-        </div>
-      )}
+      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${isCurrent ? 'text-amber-300' : 'text-white/50'}`}>Day {day}</span>
+      
+      <div className="relative z-10 flex flex-col items-center my-1 h-8 justify-center">
+        {isPast ? (
+          <FaCheckCircle className="text-emerald-500 text-xl drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+        ) : isFuture && !isBig ? (
+          <FaLock className="text-white/20 text-lg" />
+        ) : isBig ? (
+          <FaGift className={`text-3xl ${isCurrent ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-bounce' : 'text-amber-500/40'}`} />
+        ) : (
+          <div className={`flex flex-col items-center ${isCurrent ? 'text-amber-400' : 'text-white'}`}>
+            <span className={`font-black ${isCurrent ? 'text-xl drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]' : 'text-lg opacity-80'}`}>{reward}</span>
+            <span className={`text-[8px] font-bold ${isCurrent ? 'text-amber-400/80' : 'text-white/40'}`}>XP</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

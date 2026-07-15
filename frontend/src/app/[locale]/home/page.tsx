@@ -251,22 +251,23 @@ export default function Home() {
       <div className="h-px w-full bg-brand-border-opacity-10 mb-4" />
 
       {/* Compact Stats Row */}
-      <div className="grid grid-cols-4 divide-x divide-brand-border-opacity-10 text-center relative z-10">
+      <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('xp')}</span>
-      <span className="text-xs font-black text-brand-primary">{(stats.xp ?? 0).toLocaleString(locale)}</span>
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('win_rate')}</span>
+      <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || 0}%</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('level')}</span>
-      <span className="text-xs font-black text-brand-primary">{stats.level ?? 1}</span>
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('current_streak')}</span>
+      <div className="flex items-center gap-1 justify-center">
+      <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
+      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : 'text-brand-primary opacity-45'}`}>
+      {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : (t('losses')?.[0] || 'L')}
+      </span>
+      </div>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
+      <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-none mb-1.5">{t('games_played')}</span>
       <span className="text-xs font-black text-brand-primary">{(stats.games_played ?? 0).toLocaleString(locale)}</span>
-      </div>
-      <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">Streak</span>
-      <span className="text-xs font-black text-amber-500 flex items-center gap-1"><FaFire className="text-[10px]" /> {stats.study_streak || 0}</span>
       </div>
       </div>
       </Card>

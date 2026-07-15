@@ -722,7 +722,13 @@ async def claim_daily_checkin(
     current_user.checkin_streak = current_streak + 1
     current_user.last_checkin_date = now
     
-    await GamificationService.add_xp(db, current_user.id, xp_reward, f"daily_checkin_day_{reward_index + 1}")
+    await GamificationService.add_xp(
+        db=db, 
+        user=current_user, 
+        amount=xp_reward, 
+        reason=f"daily_checkin_day_{reward_index + 1}",
+        commit=False
+    )
     await db.commit()
     
     return DailyCheckinClaimResponse(
