@@ -32,6 +32,7 @@ from sqlalchemy import select, func
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.core.config import get_settings
+from app.core.logger import exception_summary
 
 logger = logging.getLogger(__name__)
 
@@ -120,8 +121,9 @@ class SolvencyService:
             raw_balance = int(data.get("balance", 0))
             return raw_balance // 10_000, None
         except Exception as e:  # noqa: BLE001 - network/parse errors are all "unknown"
-            logger.warning(f"Failed to fetch on-chain USDT balance: {e}")
-            return None, str(e)
+            error = exception_summary(e)
+            logger.warning("Failed to fetch on-chain USDT balance from TonAPI: %s", error)
+            return None, error
 
     @classmethod
     async def get_master_ton_balance(cls) -> tuple[Optional[float], Optional[str]]:
@@ -146,8 +148,9 @@ class SolvencyService:
             nano = int(data.get("balance", 0))
             return nano / 1_000_000_000.0, None
         except Exception as e:  # noqa: BLE001
-            logger.warning(f"Failed to fetch master TON balance: {e}")
-            return None, str(e)
+            error = exception_summary(e)
+            logger.warning("Failed to fetch master TON balance from TonAPI: %s", error)
+            return None, error
 
     @classmethod
     async def run_solvency_report(cls, db, include_onchain: bool = True) -> dict:

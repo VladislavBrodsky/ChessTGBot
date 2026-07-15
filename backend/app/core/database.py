@@ -1,8 +1,11 @@
+import logging
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import get_settings
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 # Use settings directly
 DATABASE_URL = settings.DATABASE_URL
@@ -74,9 +77,9 @@ async def init_db():
             # However, for the first run or dev, we can keep create_all if needed,
             # but the goal is to move to Alembic exclusively.
             await conn.run_sync(Base.metadata.create_all)
-            print("Database Schema: Tables verified via SQLite Base metadata.")
+            logger.info("Database schema: tables verified via SQLite Base metadata.")
     else:
-        print("Database Schema: Skipping create_all on PostgreSQL (managed by Alembic).")
+        logger.info("Database schema: skipping create_all on PostgreSQL (managed by Alembic).")
 
     # Seed default tasks & achievements idempotently by ID
     async with AsyncSessionLocal() as session:
@@ -109,4 +112,7 @@ async def init_db():
                 
         if seeded > 0:
             await session.commit()
-            print(f"Database Seeding: {seeded} default tasks/achievements seeded successfully.")
+            logger.info(
+                "Database seeding: %s default tasks/achievements seeded successfully.",
+                seeded,
+            )

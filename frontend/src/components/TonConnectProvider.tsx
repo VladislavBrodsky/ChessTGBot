@@ -23,7 +23,7 @@ import { ReactNode } from 'react';
 export default function TonConnectProvider({ children }: { children: ReactNode }) {
     const manifestUrl =
         typeof window !== 'undefined'
-            ? `${window.location.origin}/tonconnect-manifest.json`
+            ? `${window.location.origin}/tonconnect-manifest-v2.json`
             : '';
 
     // Extremely unlikely (ssr:false ⇒ always client), but if window is somehow

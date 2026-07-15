@@ -10,6 +10,7 @@ from app.core.database import AsyncSessionLocal
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.core.config import get_settings
+from app.core.logger import exception_summary, setup_logging
 from app.services.payout_service import execute_usdt_payout
 from app.services.telegram_bot import TelegramService
 from sqlalchemy import select
@@ -17,7 +18,6 @@ from sqlalchemy import select
 logger = logging.getLogger(__name__)
 
 async def _process_backlog_with_db(db):
-    print("Fetching backlog of completed simulated/mock withdrawals...")
     logger.info("Fetching backlog of completed simulated/mock withdrawals...")
     
     # Fetch all completed withdrawal transactions
@@ -37,17 +37,14 @@ async def _process_backlog_with_db(db):
             backlog_txs.append(tx)
             
     if not backlog_txs:
-        print("No simulated/mock withdrawal backlog found. All payouts are up to date!")
         logger.info("No simulated/mock withdrawal backlog found. All payouts are up to date!")
         return
         
-    print(f"Found {len(backlog_txs)} backlog transactions to process on-chain.")
-    logger.info(f"Found {len(backlog_txs)} backlog transactions to process on-chain.")
+    logger.info("Found %s backlog transactions to process on-chain.", len(backlog_txs))
     
     processed_count = 0
     for tx in backlog_txs:
         msg = f"Processing Transaction #{tx.id} for User {tx.user_id} (${abs(tx.amount)/100:.2f} USDT)..."
-        print(msg)
         logger.info(msg)
         
         # 1. Resolve destination address
@@ -64,17 +61,17 @@ async def _process_backlog_with_db(db):
                 
         if not address:
             err_msg = f"❌ Error: Could not resolve destination address for Transaction #{tx.id}. Skipping."
-            print(err_msg)
             logger.error(err_msg)
             continue
             
-        print(f"Destination Wallet: {address}")
+        destination_display = f"{address[:6]}...{address[-4:]}" if len(address) > 10 else address
+        logger.info("Destination wallet for Transaction #%s: %s", tx.id, destination_display)
         
         # 2. Execute on-chain payout
         try:
             payout_amount_cents = abs(tx.amount)
             
-            print(f"Sending ${payout_amount_cents/100:.2f} USDT on-chain...")
+            logger.info("Sending $%.2f USDT on-chain...", payout_amount_cents / 100)
             tx_hash = await execute_usdt_payout(address, payout_amount_cents)
             
             # 3. Update transaction reference_id to the real transaction hash
@@ -83,7 +80,6 @@ async def _process_backlog_with_db(db):
             await db.commit()
             
             success_msg = f"✅ Success! Transaction #{tx.id} updated with Tx Hash: {tx_hash}"
-            print(success_msg)
             logger.info(success_msg)
             
             # 4. Notify user via Telegram
@@ -102,12 +98,14 @@ async def _process_backlog_with_db(db):
             # Sleep briefly to avoid race conditions or API rate limits
             await asyncio.sleep(2.0)
         except Exception as e:
-            err_msg = f"❌ Failed to process Transaction #{tx.id} on-chain: {e}"
-            print(err_msg)
-            logger.error(err_msg)
+            logger.error(
+                "❌ Failed to process Transaction #%s on-chain: %s",
+                tx.id,
+                exception_summary(e),
+                exc_info=True,
+            )
             
     summary_msg = f"Backlog processing complete. Successfully sent {processed_count} of {len(backlog_txs)} transactions on-chain."
-    print(summary_msg)
     logger.info(summary_msg)
 
 async def process_payouts_backlog(db=None):
@@ -118,7 +116,6 @@ async def process_payouts_backlog(db=None):
     """
     settings = get_settings()
     if not settings.PAYOUT_MNEMONIC:
-        print("Warning: PAYOUT_MNEMONIC is not configured in environment variables.")
         logger.warning("Warning: PAYOUT_MNEMONIC is not configured. Payout backlog processing skipped.")
         return
 
@@ -146,5 +143,5 @@ async def start_payout_backlog_loop():
 
 if __name__ == "__main__":
     # Setup manual execution logger
-    logging.basicConfig(level=logging.INFO)
+    setup_logging()
     asyncio.run(process_payouts_backlog())

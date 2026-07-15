@@ -102,6 +102,7 @@ def test_system_for_logger_attribution():
     assert system_for_logger("app.client") == "game_client"
     assert system_for_logger("app.services.solvency_service") == "treasury"
     assert system_for_logger("app.services.deposit_crawler") == "treasury"
+    assert system_for_logger("app.process_payouts_backlog") == "treasury"
     assert system_for_logger("app.api.v1.endpoints.wallet") == "treasury"
     assert system_for_logger("app.services.matchmaker") == "realtime"
     assert system_for_logger("app.api.v1.endpoints.users") == "core_api"

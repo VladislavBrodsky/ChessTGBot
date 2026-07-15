@@ -1,11 +1,24 @@
 import logging
 import json
+import sys
 import time
 import contextvars
 import uuid
 
 # Context variable to hold the request/correlation ID for the duration of a task
 request_id_var = contextvars.ContextVar("request_id", default="")
+
+
+def exception_summary(exc: BaseException) -> str:
+    """Return useful, single-line exception detail even for blank exceptions.
+
+    Several network exceptions (notably ``httpx.ReadTimeout``) have an empty
+    string representation.  Logging only ``str(exc)`` made Railway show a
+    warning with no cause at all.  The class name is stable and useful while
+    avoiding a full repr, which may contain request data or credentials.
+    """
+    message = str(exc).strip()
+    return f"{type(exc).__name__}: {message}" if message else type(exc).__name__
 
 class JSONFormatter(logging.Formatter):
     def format(self, record):
@@ -30,7 +43,11 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(log_record)
 
 def setup_logging():
-    handler = logging.StreamHandler()
+    # Railway assigns severity from the stream for non-JSON output.  Send the
+    # JSON stream to stdout and let its explicit `level` field carry severity.
+    # This also gives Uvicorn startup messages the correct INFO severity once
+    # their loggers are routed through this handler below.
+    handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(JSONFormatter())
     
     handlers = [handler]
@@ -43,6 +60,14 @@ def setup_logging():
         print(f"[Logger] Failed to initialize TelegramAlertHandler: {e}")
         
     logging.basicConfig(level=logging.INFO, handlers=handlers, force=True)
+
+    # Uvicorn installs dedicated stderr handlers before importing the ASGI app.
+    # Its normal startup INFO records were therefore classified by Railway as
+    # errors.  Route all Uvicorn records through the root JSON handler instead.
+    for logger_name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
+        uvicorn_logger = logging.getLogger(logger_name)
+        uvicorn_logger.handlers.clear()
+        uvicorn_logger.propagate = True
 
     # httpx logs every request URL at INFO — for Telegram Bot API calls the URL
     # contains the bot token (api.telegram.org/bot<TOKEN>/...), which would put
@@ -105,4 +130,3 @@ class LoggingMiddleware:
             })
             # Reset contextvars token to prevent leakage
             request_id_var.reset(token)
-

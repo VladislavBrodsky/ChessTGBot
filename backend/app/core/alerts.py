@@ -41,6 +41,7 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.services.gas_grant", "treasury"),
     ("app.services.settlement", "treasury"),
     ("app.services.withdrawal_policy", "treasury"),
+    ("app.process_payouts_backlog", "treasury"),
     ("app.api.v1.endpoints.wallet", "treasury"),
     ("app.core.security", "security"),
     ("app.services.sybil_guard", "security"),

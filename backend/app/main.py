@@ -3,20 +3,23 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from app.core.config import get_settings
-from app.core.socket import sio
-import app.socket_events # Register events
 import os
 import asyncio
 import logging
 import re
 import anyio
 from app.services.telegram_bot import TelegramService
-from app.core.logger import setup_logging, LoggingMiddleware
+from app.core.logger import exception_summary, setup_logging, LoggingMiddleware
 from app.middleware.head_middleware import HeadMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 setup_logging()
 logger = logging.getLogger(__name__)
+
+# Import Socket.IO only after logging is configured so its initialization is
+# emitted as structured JSON rather than an unstructured print line.
+from app.core.socket import DisconnectSafeSocketIOASGIApp, sio  # noqa: E402
+import app.socket_events  # noqa: E402,F401 - register Socket.IO event handlers
 
 settings = get_settings()
 
@@ -162,10 +165,16 @@ async def lifespan(app: FastAPI):
                 db_name = engine.url.database
                 db_user = engine.url.username
                 db_pw = engine.url.password or ""
-                pw_info = f"len={len(db_pw)}"
-                if len(db_pw) >= 10:
-                    pw_info += f", start={db_pw[:10]}, end={db_pw[-3:]}"
-                logger.info(f"✅ Database Connection details: host={db_host}, port={db_port}, database={db_name}, user={db_user}, password_info=({pw_info})")
+                credentials_state = "configured" if db_pw else "missing"
+                logger.info(
+                    "✅ Database connection: host=%s, port=%s, database=%s, "
+                    "user=%s, credentials=%s",
+                    db_host,
+                    db_port,
+                    db_name,
+                    db_user,
+                    credentials_state,
+                )
                 if db_host in ["127.0.0.1", "localhost", "::1"] and "railway" in settings.WEBAPP_URL:
                      logger.warning("⚠️  WARNING: Production App config points to Localhost DB! Ensure DATABASE_URL is set.")
             except Exception as host_err:
@@ -391,7 +400,11 @@ def create_application() -> FastAPI:
 
     @application.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
-        print(f"Global Exception: {exc}")
+        logger.error(
+            "Unhandled request exception: %s",
+            exception_summary(exc),
+            exc_info=(type(exc), exc, exc.__traceback__),
+        )
         return JSONResponse(
             status_code=500,
             content={"message": "Internal Server Error"},
@@ -491,7 +504,12 @@ def create_application() -> FastAPI:
             # the "app.client" logger name attributes it to the Game Client system.
             client_logger.error(f"[CLIENT ERROR] {msg}{context}")
         else:
-            print(f"[CLIENT {lvl}] {msg}{context}")
+            log_method = {
+                "DEBUG": client_logger.debug,
+                "WARNING": client_logger.warning,
+                "WARN": client_logger.warning,
+            }.get(lvl, client_logger.info)
+            log_method("[CLIENT %s] %s%s", lvl, msg, context)
 
     @application.post("/api/v1/client-log")
     async def client_log(request: Request):
@@ -634,8 +652,7 @@ _fastapi_app = create_application()
 # Wrap FastAPI with Socket.IO ASGI app.
 # socketio.ASGIApp routes /socket.io/* to the Socket.IO server and
 # delegates all other requests to the FastAPI application.
-import socketio as _socketio_module  # noqa: E402
-app = _socketio_module.ASGIApp(socketio_server=sio, other_asgi_app=_fastapi_app)
+app = DisconnectSafeSocketIOASGIApp(socketio_server=sio, other_asgi_app=_fastapi_app)
 
 # Expose dependency_overrides on the wrapper so that tests can override
 # dependencies the same way they do on a plain FastAPI app.

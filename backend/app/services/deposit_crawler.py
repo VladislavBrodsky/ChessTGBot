@@ -7,6 +7,7 @@ from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master
+from app.core.logger import exception_summary
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,10 @@ async def start_deposit_crawler():
                 try:
                     res = await client.get(url, headers=headers)
                 except Exception as api_err:
-                    logger.warning(f"DepositCrawler: API request failed (will retry): {api_err}")
+                    logger.warning(
+                        "DepositCrawler: TonAPI request failed; retrying in 90s (%s)",
+                        exception_summary(api_err),
+                    )
                     await asyncio.sleep(90)
                     continue
 
