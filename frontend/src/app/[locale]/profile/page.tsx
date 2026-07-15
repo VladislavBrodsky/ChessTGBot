@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apiFetch, getFullPhotoUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine } from "react-icons/fa";
+import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
@@ -135,10 +135,33 @@ export default function ProfilePage() {
    global_rank: 42,
    percentile: 96.8,
    total_score: 18.0,
-   recent_games: []
- });
- }
- }, []);
+    recent_games: []
+  });
+  }
+  }, []);
+
+  // Parse unlocked items
+  const unlockedItems: string[] = typeof stats?.unlocked_items === 'string' 
+    ? JSON.parse(stats.unlocked_items) 
+    : (stats?.unlocked_items || []);
+
+  // Determine active profile border
+  let borderOuterClass = "absolute inset-0 rounded-full border border-brand-primary/30 animate-pulse scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none";
+  let borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-2 border-brand-primary/10 flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.15)]";
+  
+  if (unlockedItems.includes("border_platinum")) {
+    borderOuterClass = "absolute inset-0 rounded-full border border-purple-500/50 animate-pulse scale-110 shadow-[0_0_32px_rgba(168,85,247,0.4)] pointer-events-none";
+    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-purple-500/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.3)]";
+  } else if (unlockedItems.includes("border_gold")) {
+    borderOuterClass = "absolute inset-0 rounded-full border border-amber-400/50 animate-pulse scale-110 shadow-[0_0_32px_rgba(251,191,36,0.4)] pointer-events-none";
+    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-amber-400/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(251,191,36,0.3)]";
+  } else if (unlockedItems.includes("border_silver")) {
+    borderOuterClass = "absolute inset-0 rounded-full border border-slate-300/50 animate-pulse scale-110 shadow-[0_0_24px_rgba(203,213,225,0.4)] pointer-events-none";
+    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-slate-300/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(203,213,225,0.2)]";
+  } else if (unlockedItems.includes("border_bronze")) {
+    borderOuterClass = "absolute inset-0 rounded-full border border-orange-700/50 animate-pulse scale-110 shadow-[0_0_24px_rgba(194,65,12,0.4)] pointer-events-none";
+    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-orange-700/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(194,65,12,0.2)]";
+  }
 
  return (
  <LayoutWrapper className="justify-start pt-8 pb-32">
@@ -148,8 +171,8 @@ export default function ProfilePage() {
  <div className="w-full flex flex-col items-center text-center">
  <div className="relative mb-4">
  {/* Outer rotating/pulsing ring */}
- <div className="absolute inset-0 rounded-full border border-brand-primary/30 animate-pulse scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none" />
- <div className="w-24 h-24 rounded-full bg-brand-surface border-2 border-brand-primary/10 flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.15)]">
+ <div className={borderOuterClass} />
+ <div className={borderInnerClass}>
  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
  <img 
    src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} 
@@ -161,14 +184,28 @@ export default function ProfilePage() {
  <FaChessKing className="text-4xl text-brand-primary opacity-40 drop-shadow-md" />
  )}
  </div>
- {/* Premium overlay badge */}
- <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
- 👑 {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
- </div>
+  {/* Premium overlay badge */}
+  {stats?.is_premium ? (
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
+      👑 PREMIUM
+    </div>
+  ) : (
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-primary/30 bg-gradient-to-br from-brand-surface to-brand-void text-brand-primary/80 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(255,255,255,0.05)] backdrop-blur-md">
+      {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
+    </div>
+  )}
  </div>
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
  {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
  </h1>
+ 
+ {stats && stats.study_streak > 0 && (
+    <div className="flex items-center gap-1.5 mb-4 text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
+        <FaFire className="text-sm" />
+        <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t('day_streak') || 'Day Streak'}</span>
+    </div>
+ )}
+ 
  <div className="mb-6 w-full max-w-[200px]">
  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
  </div>
@@ -282,6 +319,40 @@ export default function ProfilePage() {
  {/* Gamification Sections */}
  <DailyTasks />
  <ReferralDashboard />
+
+ {/* Inventory & Boosters */}
+ {stats && (stats.xp_multiplier > 1.0 || unlockedItems.length > 0) && (
+   <div className="w-full space-y-4">
+     <h2 className="text-sm font-black text-brand-primary uppercase tracking-[0.2em]">Inventory & Boosters</h2>
+     <div className="grid grid-cols-2 gap-3">
+       {/* Active Boosters */}
+       {stats.xp_multiplier > 1.0 && (
+         <Card variant="glass" className="p-4 border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent relative overflow-hidden flex flex-col items-center text-center">
+           <div className="absolute -right-4 -top-4 text-6xl opacity-5">🚀</div>
+           <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-widest mb-2">Active Booster</span>
+           <span className="text-2xl font-black text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]">
+             {stats.xp_multiplier}x XP
+           </span>
+           {stats.multiplier_expires_at && (
+             <span className="text-[10px] text-amber-400/60 font-bold mt-2">
+               Expires: {new Date(stats.multiplier_expires_at).toLocaleDateString()}
+             </span>
+           )}
+         </Card>
+       )}
+       {/* Cosmetics Count */}
+       {unlockedItems.length > 0 && (
+         <Card variant="glass" className="p-4 border-brand-primary/20 flex flex-col items-center text-center justify-center">
+           <span className="text-[10px] font-black text-brand-primary/60 uppercase tracking-widest mb-1">Cosmetics Owned</span>
+           <span className="text-2xl font-black text-brand-primary">
+             {unlockedItems.length}
+           </span>
+           <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-widest mt-1">Profile Styles</span>
+         </Card>
+       )}
+     </div>
+   </div>
+ )}
 
  {/* Recent Games History */}
  <div className="w-full space-y-4">
