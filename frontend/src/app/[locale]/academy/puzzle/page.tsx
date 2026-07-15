@@ -67,6 +67,7 @@ function PuzzleContent() {
       if (data.status === "success" && !data.message?.includes("Already solved")) {
         setEarnedXP(puzzle?.xp_reward || 50);
         setEarnedELO(5);
+        new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
       }
       return;
     }
@@ -83,6 +84,7 @@ function PuzzleContent() {
         if (resData.status === "success" && !resData.message?.includes("Already solved")) {
           setEarnedXP(puzzle.xp_reward);
           setEarnedELO(5);
+          new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
         }
       }
     } catch (e) {

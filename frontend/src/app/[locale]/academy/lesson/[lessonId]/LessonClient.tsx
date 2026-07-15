@@ -291,21 +291,20 @@ interface LessonClientProps {
 
  const details = getLessonDetails();
 
-   const handleComplete = async () => {
-     try {
-       const res = await apiFetch("/api/v1/gamification/academy/complete-task", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
-       });
-       if (res.ok) {
-         setEarnedXP(50); // Lessons give 50 XP
-       }
-     } catch (e) {
-       console.error("Failed to submit lesson completion", e);
-     }
-     setCompleted(true);
-   };
+    const handleComplete = async () => {
+      try {
+        const res = await apiFetch(`/api/v1/gamification/academy/lessons/${details.id}/complete`, {
+          method: 'POST'
+        });
+        if (res.ok) {
+          setEarnedXP(50); // Lessons give 50 XP
+        }
+      } catch (e) {
+        console.error("Failed to submit lesson completion", e);
+      }
+      setCompleted(true);
+      new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
+    };
 
   if (completed) {
    return (
