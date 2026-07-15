@@ -180,8 +180,10 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 <div className="absolute inset-0 opacity-[0.01] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02),rgba(255,255,255,.06))] bg-size-[100%_2px,3px_100%]" />
             </div>
 
-            {/* Top-Right Header (Settings & Notifications) — hidden on pages that render their own inline header controls */}
-            {isMainNavbarPage && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
+            {/* Top-Right Header (Settings & Notifications) — only rendered on /home if not suppressed.
+                Home page passes hideHeaderControls and renders them inline instead, so this block
+                is effectively a no-op on all pages. Kept here for any future page that opts in. */}
+            {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
                 <div className="absolute top-[calc(20px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
                     <button 
                         onClick={() => setShowNotifications(true)}
