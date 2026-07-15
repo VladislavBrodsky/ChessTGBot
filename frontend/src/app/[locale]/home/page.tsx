@@ -19,6 +19,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import XPProgressBar from "@/components/XPProgressBar";
+import DailyCheckinModal from "@/components/DailyCheckinModal";
 
 // Telegram's `start_param` persists for the whole webview session, so the
 // deep-link redirect below re-fired on EVERY Home mount — after finishing a
@@ -71,6 +72,7 @@ export default function Home() {
 
  return (
  <LayoutWrapper className="pb-12 px-4 md:px-6">
+ <DailyCheckinModal />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
  {/* Dashboard Welcome Header */}

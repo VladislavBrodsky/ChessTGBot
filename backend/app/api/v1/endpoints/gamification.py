@@ -6,6 +6,7 @@ from app.services.gamification_service import GamificationService
 from app.models.user import User
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
+from datetime import datetime, timezone, timedelta
 
 router = APIRouter()
 
@@ -655,3 +656,78 @@ async def get_xp_transactions(
     txs = result.scalars().all()
     return txs
 
+class DailyCheckinStatus(BaseModel):
+    can_claim_today: bool
+    current_streak: int
+    last_checkin_date: Optional[datetime] = None
+    rewards: List[int]
+
+class DailyCheckinClaimResponse(BaseModel):
+    status: str
+    message: str
+    xp_granted: int
+    new_streak: int
+
+DAILY_CHECKIN_REWARDS = [50, 100, 150, 200, 250, 300, 1000]
+
+@router.get("/daily-checkin/status", response_model=DailyCheckinStatus)
+async def get_daily_checkin_status(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    today = now.date()
+    
+    can_claim_today = True
+    current_streak = current_user.checkin_streak or 0
+    last_checkin = current_user.last_checkin_date
+
+    if last_checkin:
+        last_checkin_date = last_checkin.date()
+        if last_checkin_date == today:
+            can_claim_today = False
+        elif last_checkin_date < today - timedelta(days=1):
+            # Streak broken
+            current_streak = 0
+            
+    return DailyCheckinStatus(
+        can_claim_today=can_claim_today,
+        current_streak=current_streak,
+        last_checkin_date=current_user.last_checkin_date,
+        rewards=DAILY_CHECKIN_REWARDS
+    )
+
+@router.post("/daily-checkin/claim", response_model=DailyCheckinClaimResponse)
+async def claim_daily_checkin(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    today = now.date()
+    
+    current_streak = current_user.checkin_streak or 0
+    last_checkin = current_user.last_checkin_date
+
+    if last_checkin:
+        last_checkin_date = last_checkin.date()
+        if last_checkin_date == today:
+            raise HTTPException(status_code=400, detail="Already claimed today")
+        elif last_checkin_date < today - timedelta(days=1):
+            # Streak broken
+            current_streak = 0
+
+    reward_index = current_streak % len(DAILY_CHECKIN_REWARDS)
+    xp_reward = DAILY_CHECKIN_REWARDS[reward_index]
+    
+    current_user.checkin_streak = current_streak + 1
+    current_user.last_checkin_date = now
+    
+    await GamificationService.add_xp(db, current_user.id, xp_reward, f"daily_checkin_day_{reward_index + 1}")
+    await db.commit()
+    
+    return DailyCheckinClaimResponse(
+        status="success",
+        message="Daily check-in claimed",
+        xp_granted=xp_reward,
+        new_streak=current_user.checkin_streak
+    )
