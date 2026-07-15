@@ -41,8 +41,12 @@ async def main():
         from app.services.session_manager import SessionManager
         session_mgr = SessionManager()
         if session_mgr.redis:
-            await session_mgr.redis.srem(f"user:completed_academy:{test_user.telegram_id}", f"lesson:{lesson_id}")
-            print("Cleaned up existing completed task in Redis.")
+            try:
+                await session_mgr.redis.srem(f"user:completed_academy:{test_user.telegram_id}", f"lesson:{lesson_id}")
+                print("Cleaned up existing completed task in Redis.")
+            except Exception as e:
+                print(f"Redis not available: {e}")
+        
         if hasattr(GamificationService, "_completed_academy"):
             if mem_key in GamificationService._completed_academy:
                 GamificationService._completed_academy.remove(mem_key)
@@ -62,6 +66,8 @@ async def main():
             print("❌ FAILED: XP did not increase!")
         else:
             print("✅ PASSED: XP increased correctly.")
+            
+        print("MEMORY CACHE:", getattr(GamificationService, "_completed_academy", "Not found"))
             
         # Test 2: Complete again (idempotency check)
         updated_user2, msg2 = await GamificationService.complete_academy_task(db, updated_user, "lesson", lesson_id)

@@ -908,12 +908,12 @@ class GamificationService:
         redis_key = f"user:completed_academy:{db_user.telegram_id}"
         task_val = f"{task_type}:{item_id}"
         
-        already_completed = False
+        already_completed = None
         if session_mgr.redis and not session_mgr._use_memory:
             try:
                 already_completed = await session_mgr.redis.sismember(redis_key, task_val)
             except Exception:
-                pass
+                already_completed = None
 
         if (not session_mgr.redis or session_mgr._use_memory) or already_completed is None:
             if not hasattr(GamificationService, "_completed_academy"):
