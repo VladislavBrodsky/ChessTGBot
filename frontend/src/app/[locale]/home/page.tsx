@@ -76,8 +76,8 @@ export default function Home() {
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
   {/* Dashboard Welcome Header */}
-  <div className="w-full text-left px-4 pr-24 mb-1 self-start">
-  <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left">
+  <div className="w-full text-left px-4 pr-[110px] mb-1">
+  <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left break-words">
   {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
   </h1>
   <p className="text-[9px] font-black text-brand-muted uppercase tracking-[0.3em] mt-1.5 leading-none text-left">
