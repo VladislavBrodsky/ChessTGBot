@@ -18,13 +18,14 @@ interface LayoutWrapperProps {
     children: React.ReactNode;
     className?: string;
     bgClass?: string;
+    hideHeaderControls?: boolean;
 }
 let globalActiveGameChecked = false;
 let globalActiveGameId: string | null = null;
 let globalIsTelegramWeb: boolean | null = null;
 let globalIsDesktopBrowser: boolean | null = null;
 
-export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void" }: LayoutWrapperProps) {
+export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
     const locale = useLocale();
     const pathname = usePathname();
     const router = useRouter();
@@ -179,8 +180,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 <div className="absolute inset-0 opacity-[0.01] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02),rgba(255,255,255,.06))] bg-size-[100%_2px,3px_100%]" />
             </div>
 
-            {/* Top-Right Header (Settings & Notifications) */}
-            {isMainNavbarPage && !showOnboarding && !isCheckingActiveGame && (
+            {/* Top-Right Header (Settings & Notifications) — hidden on pages that render their own inline header controls */}
+            {isMainNavbarPage && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
                 <div className="absolute top-[calc(20px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
                     <button 
                         onClick={() => setShowNotifications(true)}
