@@ -106,38 +106,54 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                         </div>
 
                         {/* Content Area */}
-                        <div className="min-h-[260px] max-h-[360px] overflow-y-auto pr-1">
-                            {activeTab === 'guide' ? (
-                                <div className="space-y-4">
-                                    {guideSteps.map((step, idx) => (
-                                        <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                                            <div className="text-xl font-black text-white/30 tracking-tight">
-                                                {step.step}
+                        <div className="min-h-[260px] max-h-[360px] overflow-y-auto pr-1 overflow-x-hidden">
+                            <AnimatePresence mode="wait">
+                                {activeTab === 'guide' ? (
+                                    <motion.div 
+                                        key="guide"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="space-y-4"
+                                    >
+                                        {guideSteps.map((step, idx) => (
+                                            <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                                                <div className="text-xl font-black text-white/30 tracking-tight">
+                                                    {step.step}
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <h3 className="text-sm font-bold text-white">{step.title}</h3>
+                                                    <p className="text-xs text-white/50 leading-relaxed">{step.desc}</p>
+                                                </div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <h3 className="text-sm font-bold text-white">{step.title}</h3>
-                                                <p className="text-xs text-white/50 leading-relaxed">{step.desc}</p>
+                                        ))}
+                                    </motion.div>
+                                ) : (
+                                    <motion.div 
+                                        key="news"
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="space-y-4"
+                                    >
+                                        {newsItems.map((item) => (
+                                            <div key={item.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] space-y-2 hover:border-white/[0.08] transition-colors cursor-pointer">
+                                                <div className="flex items-center justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                                                    <span>{item.date}</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <FiClock size={10} />
+                                                        {item.readTime}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-sm font-bold text-white">{item.title}</h3>
+                                                <p className="text-xs text-white/50 leading-relaxed">{item.excerpt}</p>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {newsItems.map((item) => (
-                                        <div key={item.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] space-y-2 hover:border-white/[0.08] transition-colors cursor-pointer">
-                                            <div className="flex items-center justify-between text-[10px] text-white/40 uppercase tracking-wider">
-                                                <span>{item.date}</span>
-                                                <span className="flex items-center gap-1">
-                                                    <FiClock size={10} />
-                                                    {item.readTime}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-sm font-bold text-white">{item.title}</h3>
-                                            <p className="text-xs text-white/50 leading-relaxed">{item.excerpt}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </motion.div>
                 </div>

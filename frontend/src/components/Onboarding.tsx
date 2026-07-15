@@ -1,13 +1,18 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { FaChessKnight, FaWallet, FaShareAlt, FaCrown, FaArrowRight, FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 
 interface OnboardingProps {
   onClose: () => void;
 }
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
 
 export default function Onboarding({ onClose }: OnboardingProps) {
   const t = useTranslations('Onboarding');
@@ -118,7 +123,11 @@ export default function Onboarding({ onClose }: OnboardingProps) {
   };
 
   return (
-    <div 
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4 modal-backdrop"
       role="dialog"
       aria-modal="true"
@@ -131,7 +140,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -20 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-panel w-[calc(100%-2rem)] max-w-[420px] rounded-[32px] p-8 shadow-premium overflow-hidden flex flex-col justify-between min-h-[500px] relative z-10"
+        className="glass-panel w-[calc(100%-2rem)] max-w-[420px] max-h-[95vh] rounded-[32px] p-6 sm:p-8 shadow-premium flex flex-col justify-between min-h-[450px] sm:min-h-[500px] relative z-10 overflow-y-auto no-scrollbar"
       >
         {/* Skip button top right */}
         <button
@@ -144,7 +153,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         </button>
 
         {/* Content Slider */}
-        <div className="relative flex-grow flex flex-col justify-center items-center text-center min-h-[280px]">
+        <div className="relative flex-grow w-full flex flex-col justify-center items-center text-center py-2 sm:py-4">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlide}
@@ -154,7 +163,18 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               animate="center"
               exit="exit"
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 flex flex-col items-center justify-center text-center"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }: PanInfo) => {
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold) {
+                  handleNext();
+                } else if (swipe > swipeConfidenceThreshold) {
+                  handleBack();
+                }
+              }}
+              className="w-full flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing"
             >
               {/* Slide Icon */}
               <div className={`mb-6 p-6 rounded-3xl bg-white/5 border border-white/10 shadow-inner flex items-center justify-center bg-gradient-to-br ${slides[currentSlide].gradient}`}>
@@ -178,7 +198,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         </div>
 
         {/* Navigation Section */}
-        <div className="mt-8 flex flex-col items-center gap-8 relative z-10">
+        <div className="mt-6 sm:mt-8 flex flex-col items-center gap-6 sm:gap-8 relative z-10">
           {/* Slide Indicator Dots */}
           <div className="flex justify-center gap-2.5" role="tablist" aria-label="Onboarding Progress">
             {slides.map((_, idx) => (
@@ -232,6 +252,6 @@ export default function Onboarding({ onClose }: OnboardingProps) {
           </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

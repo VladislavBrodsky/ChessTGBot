@@ -318,6 +318,7 @@ export default function Leaderboard() {
              animate={{ opacity: 1 }}
              exit={{ opacity: 0 }}
              className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-brand-void/80 backdrop-blur-md modal-backdrop"
+             onClick={() => setShowModal(false)}
            >
              <motion.div
                initial={{ y: '100%', scale: 1 }}
@@ -325,6 +326,7 @@ export default function Leaderboard() {
                exit={{ y: '100%' }}
                transition={{ type: 'spring', damping: 32, stiffness: 360 }}
                className="w-full max-w-md max-h-[85vh] bg-brand-surface border border-white/8 rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col"
+               onClick={(e) => e.stopPropagation()}
              >
                {/* Modal Header */}
                <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.07]">

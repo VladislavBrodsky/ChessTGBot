@@ -177,10 +177,12 @@ export default function DailyTasks() {
                                         )}
 
                                         {status === 'pending' && (
-                                            <div className="w-16 h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden border border-brand-border-opacity-5">
-                                                <div
-                                                    className="h-full bg-brand-primary opacity-50 rounded-full"
-                                                    style={{ width: `${(task.progress / task.target_count) * 100}%` }}
+                                            <div className="w-16 h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden border border-brand-border-opacity-5 relative">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
+                                                    transition={{ duration: 1, ease: 'easeOut', delay: index * 0.05 + 0.2 }}
+                                                    className="h-full bg-brand-primary opacity-50 rounded-full absolute left-0 top-0"
                                                 />
                                             </div>
                                         )}
