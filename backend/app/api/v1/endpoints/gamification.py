@@ -731,3 +731,95 @@ async def claim_daily_checkin(
         xp_granted=xp_reward,
         new_streak=current_user.checkin_streak
     )
+
+class AchievementResponse(BaseModel):
+    id: int
+    code: str
+    title: str
+    description: str
+    icon: str
+    xp_reward: int
+    unlocked: bool
+    unlocked_at: Optional[datetime] = None
+
+class ThemeResponse(BaseModel):
+    id: int
+    code: str
+    theme_type: str
+    name: str
+    description: str
+    price_xp: int
+    css_class: Optional[str] = None
+    owned: bool
+
+@router.get("/achievements", response_model=List[AchievementResponse])
+async def get_achievements(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.models.gamification import Achievement, UserAchievement
+    from sqlalchemy import select
+
+    # We evaluate first to see if any new ones unlock instantly
+    await GamificationService.evaluate_achievements(db, current_user.id)
+
+    ach_res = await db.execute(select(Achievement))
+    achievements = ach_res.scalars().all()
+
+    ua_res = await db.execute(select(UserAchievement).where(UserAchievement.user_id == current_user.id))
+    unlocked_map = {ua.achievement_id: ua.unlocked_at for ua in ua_res.scalars().all()}
+
+    return [
+        AchievementResponse(
+            id=a.id,
+            code=a.code,
+            title=a.title,
+            description=a.description,
+            icon=a.icon,
+            xp_reward=a.xp_reward,
+            unlocked=a.id in unlocked_map,
+            unlocked_at=unlocked_map.get(a.id)
+        )
+        for a in achievements
+    ]
+
+@router.get("/themes", response_model=List[ThemeResponse])
+async def get_themes(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.models.gamification import Theme, UserInventory
+    from sqlalchemy import select
+
+    theme_res = await db.execute(select(Theme))
+    themes = theme_res.scalars().all()
+
+    inv_res = await db.execute(select(UserInventory).where(UserInventory.user_id == current_user.id))
+    owned_ids = {inv.theme_id for inv in inv_res.scalars().all()}
+
+    return [
+        ThemeResponse(
+            id=t.id,
+            code=t.code,
+            theme_type=t.theme_type.value if hasattr(t.theme_type, 'value') else t.theme_type,
+            name=t.name,
+            description=t.description,
+            price_xp=t.price_xp,
+            css_class=t.css_class,
+            owned=t.id in owned_ids
+        )
+        for t in themes
+    ]
+
+class BuyThemeRequest(BaseModel):
+    theme_code: str
+
+@router.post("/themes/buy")
+async def buy_theme(
+    req: BuyThemeRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    theme = await GamificationService.unlock_theme(db, current_user.id, req.theme_code)
+    return {"status": "success", "message": f"Unlocked theme {theme.name}"}
+

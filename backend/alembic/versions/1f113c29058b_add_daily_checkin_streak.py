@@ -1,7 +1,7 @@
 """add daily checkin streak
 
 Revision ID: 1f113c29058b
-Revises: 068a2009f2ca
+Revises: 8e3d9b5f0a2c
 Create Date: 2026-07-15 00:15:55.878387
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import sqlite
 
 # revision identifiers, used by Alembic.
 revision: str = '1f113c29058b'
-down_revision: Union[str, Sequence[str], None] = '068a2009f2ca'
+down_revision: Union[str, Sequence[str], None] = '8e3d9b5f0a2c'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

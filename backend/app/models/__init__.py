@@ -1,6 +1,6 @@
 from app.models.user import User
 from app.models.game_history import GameHistory
-from app.models.gamification import Task, UserTask, Referral, UnlockedLesson
+from app.models.gamification import Task, UserTask, Referral, UnlockedLesson, SolvedPuzzle, UnlockedPuzzle, Achievement, UserAchievement, Theme, UserInventory
 from app.models.transaction import Transaction
 from app.models.xp_transaction import XpTransaction
 from app.models.arena import Arena, ArenaPlayer
@@ -19,4 +19,10 @@ __all__ = [
     "ArenaPlayer",
     "TelemetryLog",
     "TelemetryDailyRollup",
+    "SolvedPuzzle",
+    "UnlockedPuzzle",
+    "Achievement",
+    "UserAchievement",
+    "Theme",
+    "UserInventory",
 ]

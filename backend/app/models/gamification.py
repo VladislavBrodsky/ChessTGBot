@@ -72,3 +72,48 @@ class UnlockedPuzzle(Base):
     puzzle_id = Column(Integer, index=True, nullable=False)
     unlocked_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
 
+class Achievement(Base):
+    __tablename__ = "achievements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True) # e.g., 'first_win', 'streak_7'
+    title = Column(String)
+    description = Column(String)
+    icon = Column(String)
+    xp_reward = Column(Integer, default=0)
+    requirement_type = Column(String) # e.g., 'wins', 'puzzles_solved', 'streak'
+    requirement_value = Column(Integer)
+
+class UserAchievement(Base):
+    __tablename__ = "user_achievements"
+    __table_args__ = (UniqueConstraint('user_id', 'achievement_id', name='uq_user_achievements_user_achievement'),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"), index=True, nullable=False)
+    unlocked_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+
+class ThemeType(str, enum.Enum):
+    BOARD = "board"
+    PIECES = "pieces"
+
+class Theme(Base):
+    __tablename__ = "themes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True) # e.g., 'neon', 'wood'
+    theme_type = Column(SQLEnum(ThemeType))
+    name = Column(String)
+    description = Column(String)
+    price_xp = Column(Integer, default=0)
+    css_class = Column(String, nullable=True) # for frontend rendering
+
+class UserInventory(Base):
+    __tablename__ = "user_inventory"
+    __table_args__ = (UniqueConstraint('user_id', 'theme_id', name='uq_user_inventory_user_theme'),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    theme_id = Column(Integer, ForeignKey("themes.id"), index=True, nullable=False)
+    acquired_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+

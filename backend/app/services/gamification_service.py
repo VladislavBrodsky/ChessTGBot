@@ -992,3 +992,101 @@ class GamificationService:
         await db.flush()
         
         return db_user
+
+    @staticmethod
+    async def evaluate_achievements(db: AsyncSession, user_id: int):
+        """
+        Evaluate and unlock achievements for a user based on their stats.
+        Returns a list of newly unlocked achievements.
+        """
+        from app.models.gamification import Achievement, UserAchievement
+        
+        # Lock user to read their stats
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        user = res_user.scalars().first()
+        if not user:
+            return []
+            
+        # Get all achievements
+        achievements_res = await db.execute(select(Achievement))
+        all_achievements = achievements_res.scalars().all()
+        
+        # Get user's current achievements
+        user_ach_res = await db.execute(select(UserAchievement).where(UserAchievement.user_id == user_id))
+        unlocked_ids = {ua.achievement_id for ua in user_ach_res.scalars().all()}
+        
+        newly_unlocked = []
+        
+        for ach in all_achievements:
+            if ach.id in unlocked_ids:
+                continue
+                
+            # Evaluate based on requirement_type
+            unlocked = False
+            if ach.requirement_type == "wins":
+                unlocked = user.wins >= (ach.requirement_value or 0)
+            elif ach.requirement_type == "games_played":
+                unlocked = user.games_played >= (ach.requirement_value or 0)
+            elif ach.requirement_type == "study_streak":
+                unlocked = user.study_streak >= (ach.requirement_value or 0)
+            elif ach.requirement_type == "xp":
+                unlocked = user.xp >= (ach.requirement_value or 0)
+            elif ach.requirement_type == "puzzles_solved":
+                unlocked = False # Require joining puzzles table if needed, for now skip or check if user has a puzzle stat. We will handle elsewhere.
+                
+            if unlocked:
+                ua = UserAchievement(user_id=user_id, achievement_id=ach.id)
+                db.add(ua)
+                newly_unlocked.append(ach)
+                if ach.xp_reward > 0:
+                    user = await GamificationService.add_xp(db, user, ach.xp_reward, reason=f"achievement_{ach.code}", trigger_kickback=False)
+                    
+        if newly_unlocked:
+            await db.commit()
+            
+        return newly_unlocked
+
+    @staticmethod
+    async def unlock_theme(db: AsyncSession, user_id: int, theme_code: str):
+        """
+        Unlock a theme for a user if they have enough XP.
+        """
+        from app.models.gamification import Theme, UserInventory
+        from fastapi import HTTPException
+        
+        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        res_user = await db.execute(user_stmt)
+        user = res_user.scalars().first()
+        
+        theme_res = await db.execute(select(Theme).where(Theme.code == theme_code))
+        theme = theme_res.scalars().first()
+        
+        if not theme:
+            raise HTTPException(status_code=404, detail="Theme not found")
+            
+        inv_res = await db.execute(select(UserInventory).where(
+            and_(UserInventory.user_id == user_id, UserInventory.theme_id == theme.id)
+        ))
+        if inv_res.scalars().first():
+            raise HTTPException(status_code=400, detail="Theme already owned")
+            
+        if user.xp < theme.price_xp:
+            raise HTTPException(status_code=400, detail="Not enough XP to purchase this theme")
+            
+        user.xp -= theme.price_xp
+        # Add negative XP transaction
+        from app.models.xp_transaction import XpTransaction
+        tx = XpTransaction(
+            user_id=user.telegram_id,
+            amount=-theme.price_xp,
+            reason=f"buy_theme_{theme_code}"
+        )
+        db.add(tx)
+        
+        inv = UserInventory(user_id=user_id, theme_id=theme.id)
+        db.add(inv)
+        db.add(user)
+        
+        await db.commit()
+        return theme

@@ -6,7 +6,7 @@ import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
 import Confetti from "react-confetti";
 import { Chessboard } from "react-chessboard";
-import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet, FaChevronDown } from 'react-icons/fa';
+import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet, FaChevronDown, FaPalette } from 'react-icons/fa';
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
