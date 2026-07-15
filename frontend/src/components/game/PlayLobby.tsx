@@ -988,14 +988,23 @@ export default function PlayLobby() {
                       borderColor: ["rgba(255,255,255,0.05)", "rgba(16,185,129,0.3)", "rgba(255,255,255,0.05)"]
                     } : {}}
                     transition={!hasSufficient && !isCreating ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
-                    className={`w-full py-5 flex flex-col items-center justify-center gap-0.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 ${
+                    className={`w-full p-3.5 flex items-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-left ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'bg-gradient-to-b from-brand-surface to-emerald-950/20 border border-brand-border-opacity-10 text-brand-primary/90 hover:border-emerald-500/30 rounded-2xl shadow-lg'
+                        : 'bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 text-brand-primary hover:border-emerald-500/40 rounded-2xl shadow-[0_4px_24px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_32px_rgba(16,185,129,0.25)]'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
+                    <motion.div
+                      animate={{ opacity: [0.6, 1, 0.6] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full ${
+                        hasSufficient
+                          ? 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]'
+                          : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
+                      }`}
+                    />
                     {!hasSufficient && !isCreating && (
                       <motion.div
                         initial={{ x: '-150%', opacity: 0 }}
@@ -1004,17 +1013,35 @@ export default function PlayLobby() {
                         className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-emerald-400/15 to-transparent skew-x-12"
                       />
                     )}
-                    <div className="flex items-center gap-2 relative z-10">
-                      <FaChessKnight size={13} className={!hasSufficient && !isCreating ? "text-emerald-500" : "text-current"} />
-                      <span className={`text-[11px] font-black tracking-[0.2em] uppercase ${!hasSufficient && !isCreating ? 'text-brand-primary drop-shadow-md' : 'text-current'}`}>
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 z-10 ${
+                        hasSufficient
+                          ? 'bg-gradient-to-br from-amber-500/30 to-amber-500/10 border border-amber-500/40 shadow-[0_0_16px_rgba(245,158,11,0.3)]'
+                          : 'bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.3)]'
+                      }`}
+                    >
+                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-amber-500' : 'text-emerald-500'}`} />
+                    </div>
+                    <div className="flex flex-col min-w-0 z-10">
+                      <span className={`text-sm font-black leading-none tracking-wide uppercase ${
+                        hasSufficient ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                      }`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
-                    </div>
-                    {hasSufficient && chosenWager > 0 && (
-                      <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 flex items-center gap-0.5 text-current opacity-75 relative z-10">
-                        <FaFire className="text-emerald-500 text-[10px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary flex items-center gap-1">
+                        {hasSufficient ? (
+                          chosenWager > 0 ? (
+                            <>
+                              <FaFire className="text-amber-500 text-[10px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                            </>
+                          ) : (
+                            "FREE PRACTICE MATCH"
+                          )
+                        ) : (
+                          tg('amount_needed', { amount: `$${((chosenWager - walletBalance) / 100).toFixed(2)}` })
+                        )}
                       </span>
-                    )}
+                    </div>
                   </motion.button>
                 </div>
               </div>
