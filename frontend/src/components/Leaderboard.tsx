@@ -58,7 +58,7 @@ export default function Leaderboard() {
      icon: <FaCrown className="text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]" size={14} />,
      label: '1',
      rowBg: 'bg-gradient-to-r from-yellow-500/15 via-yellow-500/5 to-transparent',
-     borderLeft: 'border-l-2 border-yellow-400',
+     borderLeft: '',
      glow: 'shadow-[inset_0_0_30px_rgba(250,204,21,0.08)]',
      avatarRing: 'ring-2 ring-yellow-400/60 ring-offset-1 ring-offset-transparent',
      barColor: 'bg-gradient-to-r from-yellow-400 to-amber-300',
@@ -68,7 +68,7 @@ export default function Leaderboard() {
      icon: <FaMedal className="text-slate-300" size={13} />,
      label: '2',
      rowBg: 'bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent',
-     borderLeft: 'border-l-2 border-slate-300',
+     borderLeft: '',
      glow: 'shadow-[inset_0_0_20px_rgba(203,213,225,0.05)]',
      avatarRing: 'ring-2 ring-slate-300/50 ring-offset-1 ring-offset-transparent',
      barColor: 'bg-gradient-to-r from-slate-300 to-slate-200',
@@ -78,7 +78,7 @@ export default function Leaderboard() {
      icon: <FaMedal className="text-amber-600" size={13} />,
      label: '3',
      rowBg: 'bg-gradient-to-r from-amber-700/12 via-amber-700/5 to-transparent',
-     borderLeft: 'border-l-2 border-amber-600',
+     borderLeft: '',
      glow: 'shadow-[inset_0_0_20px_rgba(180,83,9,0.08)]',
      avatarRing: 'ring-2 ring-amber-600/50 ring-offset-1 ring-offset-transparent',
      barColor: 'bg-gradient-to-r from-amber-600 to-amber-500',
@@ -125,7 +125,6 @@ export default function Leaderboard() {
 
  const displayedPlayers = players.slice(0, 5);
  const metricLabel = activeTab === 'arena' ? 'Elo rating' : 'Academy XP';
- const activityLabel = activeTab === 'arena' ? 'Arena standings' : 'Lesson standings';
  const leader = players[0];
  const leaderScore = leader ? (activeTab === 'arena' ? (leader.elo || 0) : (leader.xp || 0)) : 0;
  const secondScore = players[1] ? (activeTab === 'arena' ? (players[1].elo || 0) : (players[1].xp || 0)) : 0;
@@ -142,6 +141,13 @@ export default function Leaderboard() {
    const isPodium = item.rank <= 3;
    const rankCallout = item.rank === 1 ? 'Crown holder' : item.rank === 2 ? 'First challenger' : item.rank === 3 ? 'Rising force' : null;
    const avatarSize = item.rank === 1 ? 'w-11 h-11' : 'w-9 h-9';
+   const rowFrame = item.rank === 1
+     ? 'border border-yellow-400/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_10px_26px_rgba(0,0,0,0.18)]'
+     : item.rank === 2
+       ? 'border border-slate-300/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+       : item.rank === 3
+         ? 'border border-amber-600/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
+         : 'border border-white/[0.055]';
 
    return (
      <motion.div
@@ -150,9 +156,9 @@ export default function Leaderboard() {
        animate={{ opacity: 1, x: 0 }}
        whileHover={{ x: isModal ? 0 : 3 }}
        transition={{ delay: Math.min(idx * 0.04, 0.2), type: 'spring', stiffness: 380, damping: 28 }}
-       className={`relative flex items-center justify-between px-4 ${item.rank === 1 ? 'py-4' : 'py-3.5'} group transition-colors duration-200 overflow-hidden
-         ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow} ${item.rank === 1 ? 'shadow-[inset_0_1px_0_rgba(250,204,21,0.18)]' : ''}
-         ${isModal ? 'rounded-2xl border border-white/5 mb-2' : ''}
+       className={`relative flex items-center justify-between px-4 ${item.rank === 1 ? 'py-4' : 'py-3.5'} group transition-colors duration-200 overflow-hidden rounded-2xl
+         ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow} ${rowFrame}
+         ${isModal ? 'mb-2' : ''}
        `}
      >
        {item.rank === 1 && (
@@ -267,22 +273,17 @@ export default function Leaderboard() {
  return (
    <div className="w-full space-y-4">
      {/* Section Header */}
-     <div className="flex items-start justify-between gap-3">
-       <div>
-         <div className="flex items-center gap-2">
-           <span className="w-6 h-6 rounded-lg border border-yellow-400/20 bg-yellow-400/10 text-yellow-300 flex items-center justify-center">
-             <FaChessKnight size={12} />
-           </span>
-           <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
-         </div>
-         <span className="text-[9px] font-bold text-brand-primary/35 tracking-[0.24em] uppercase mt-2 block">{activityLabel} · Top {Math.min(players.length, 50)}</span>
+     <div className="flex flex-col items-center text-center gap-2">
+       <div className="flex items-center justify-center gap-2">
+         <span className="w-7 h-7 rounded-lg border border-yellow-400/25 bg-gradient-to-br from-yellow-400/20 to-amber-600/10 text-yellow-300 flex items-center justify-center shadow-[0_0_16px_rgba(250,204,21,0.12)]">
+           <FaChessKnight size={13} />
+         </span>
+         <h3 className="text-base font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
        </div>
-       <div className="flex flex-col items-end gap-1 pt-1">
-         <div className="flex items-center gap-1.5 text-yellow-300/80">
-           <FiAward size={12} />
-           <span className="text-[9px] font-black uppercase tracking-widest">Season 1</span>
-         </div>
-         <span className="flex items-center gap-1 text-[8px] font-bold text-brand-primary/30 uppercase tracking-[0.16em]"><FiRadio size={8} className="text-emerald-400" /> Live ladder</span>
+       <div className="flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-[0.18em]">
+         <span className="flex items-center gap-1.5 text-yellow-300/85"><FiAward size={11} /> Season 1</span>
+         <span className="w-1 h-1 rounded-full bg-white/20" />
+         <span className="flex items-center gap-1 text-brand-primary/35"><FiRadio size={8} className="text-emerald-400" /> Live ladder</span>
        </div>
      </div>
 
@@ -312,12 +313,12 @@ export default function Leaderboard() {
 
      {/* Leaderboard Card */}
      <Card variant="glass" className="rounded-3xl overflow-hidden border-white/[0.08] bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.10),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.035),rgba(0,0,0,0.16))] shadow-[0_18px_45px_rgba(0,0,0,0.28)] p-0">
-       <div className="relative flex items-center justify-between gap-3 px-4 py-3.5 border-b border-yellow-400/10 bg-gradient-to-r from-yellow-400/[0.07] via-transparent to-transparent overflow-hidden">
+       <div className="relative flex items-center justify-between gap-3 px-5 py-4 border-b border-yellow-400/10 bg-gradient-to-r from-yellow-400/[0.07] via-transparent to-transparent overflow-hidden">
          <div aria-hidden="true" className="absolute -right-8 -top-10 w-32 h-32 rounded-full bg-yellow-400/[0.05] blur-2xl" />
          <div className="min-w-0">
-           <p className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-primary/75">{metricLabel}</p>
-           <p className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 mt-1 truncate">
-             {activeTab === 'arena' ? 'Win games to climb the board' : 'Study daily to build your streak'}
+           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-yellow-200/85">{activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}</p>
+           <p className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/35 mt-1 truncate">
+             {metricLabel} · {activeTab === 'arena' ? 'Win games to climb' : 'Study daily to climb'}
            </p>
          </div>
          <div className="shrink-0 flex flex-col items-end gap-1 text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 relative z-10">
@@ -332,7 +333,7 @@ export default function Leaderboard() {
            animate={{ opacity: 1 }}
            exit={{ opacity: 0 }}
            transition={{ duration: 0.15 }}
-           className="divide-y divide-white/[0.06]"
+           className="space-y-2 p-2"
          >
            {displayedPlayers.length > 0 ? (
              displayedPlayers.map((item, idx) => renderRow(item, idx))
