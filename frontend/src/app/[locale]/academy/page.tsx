@@ -36,71 +36,7 @@ export default function AcademyPage() {
   const [showArchive, setShowArchive] = useState(false);
   const { pushHide, popHide } = useNavbar();
 
-  const ALL_TRACKS = [
-    {
-      id: 'origins-of-chess',
-      titleKey: 'origins_title',
-      fallbackTitle: 'Origins & Motivation',
-      descKey: 'origins_desc',
-      fallbackDesc: 'Discover the history of chess and its impact on the mind.',
-      difficultyKey: 'introductory',
-      fallbackDifficulty: 'Introductory',
-      duration: '5 min',
-      alwaysUnlocked: true
-    },
-    {
-      id: 'opening-principles',
-      titleKey: 'opening_title',
-      fallbackTitle: 'Opening Principles',
-      descKey: 'opening_desc',
-      fallbackDesc: 'Master the center and develop your pieces efficiently.',
-      difficultyKey: 'beginner',
-      fallbackDifficulty: 'Beginner',
-      duration: '10 min',
-      alwaysUnlocked: true
-    },
-    {
-      id: 'tactical-patterns',
-      titleKey: 'tactics_title',
-      fallbackTitle: 'Tactical Patterns',
-      descKey: 'tactics_desc',
-      fallbackDesc: 'Learn forks, pins, skewers, and basic combinations.',
-      difficultyKey: 'intermediate',
-      fallbackDifficulty: 'Intermediate',
-      duration: '15 min',
-      alwaysUnlocked: true
-    },
-    {
-      id: 'endgame-basics',
-      titleKey: 'endgame_title',
-      fallbackTitle: 'Endgame Basics',
-      descKey: 'endgame_desc',
-      fallbackDesc: 'Convert winning advantages and save lost positions.',
-      difficultyKey: 'advanced',
-      fallbackDifficulty: 'Advanced',
-      duration: '20 min'
-    },
-    {
-      id: 'positional-understanding',
-      titleKey: 'positional_title',
-      fallbackTitle: 'Positional Understanding',
-      descKey: 'positional_desc',
-      fallbackDesc: 'Evaluate pawn structures, outposts, and piece activity.',
-      difficultyKey: 'master',
-      fallbackDifficulty: 'Master',
-      duration: '25 min'
-    },
-    {
-      id: 'grandmaster-sacrifices',
-      titleKey: 'gm_sacrifices_title',
-      fallbackTitle: 'Grandmaster Sacrifices',
-      descKey: 'gm_sacrifices_desc',
-      fallbackDesc: 'Unleash devastating sacrifices to shatter defenses.',
-      difficultyKey: 'grandmaster',
-      fallbackDifficulty: 'Grandmaster',
-      duration: '30 min'
-    }
-  ];
+  const [dynamicLessons, setDynamicLessons] = useState<any[]>([]);
 
   const triggerConfetti = () => {
     setShowConfetti(true);
@@ -148,6 +84,12 @@ export default function AcademyPage() {
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
+      }
+
+      const contentLessonsRes = await apiFetch("/api/v1/content/lessons");
+      if (contentLessonsRes.ok) {
+        const cLessons = await contentLessonsRes.json();
+        setDynamicLessons(cLessons);
       }
 
       const lessonsRes = await apiFetch("/api/v1/gamification/academy/unlocked-lessons");
@@ -652,18 +594,53 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {ALL_TRACKS.filter(t => !completedLessons.includes(t.id)).map(track => (
-              <LessonCard
-                key={track.id}
-                title={t(track.titleKey) || track.fallbackTitle}
-                description={t(track.descKey) || track.fallbackDesc}
-                progress={0}
-                difficulty={t(track.difficultyKey) || track.fallbackDifficulty}
-                duration={track.duration}
-                locked={!track.alwaysUnlocked && !unlockedLessons.includes(track.id)}
-                onClick={() => handleLessonClick(track.id, !track.alwaysUnlocked && !unlockedLessons.includes(track.id))}
-              />
-            ))}
+            {dynamicLessons.map((lesson, index) => {
+              const isUnlocked = index === 0 || index === 1 || unlockedLessons.includes(lesson.slug);
+              const isCompleted = completedLessons.includes(lesson.slug);
+              
+              return (
+                <div 
+                  key={lesson.slug}
+                  onClick={() => {
+                    if (isUnlocked) {
+                      router.push(`/${locale}/academy/lesson/${lesson.slug}`);
+                    }
+                  }}
+                  className={`w-full p-4 rounded-2xl glass-panel border border-brand-border-opacity-10 bg-brand-surface space-y-3 cursor-pointer ${isUnlocked ? 'hover:border-brand-primary/30 transition-all' : 'opacity-60 grayscale'}`}
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className={`font-black uppercase text-sm ${isUnlocked ? 'text-brand-primary' : 'text-brand-primary/60'}`}>
+                      {lesson.title}
+                    </h3>
+                    <p className={`text-xs mt-1 leading-relaxed ${isUnlocked ? 'text-brand-primary/60' : 'text-brand-primary/40'}`}>
+                      {lesson.description}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 mt-3">
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                      lesson.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                      lesson.difficulty === 'Intermediate' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                      lesson.difficulty === 'Advanced' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' :
+                      'bg-purple-500/10 text-purple-500 border border-purple-500/20'
+                    }`}>
+                      {lesson.difficulty}
+                    </span>
+                    
+                    <span className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-wider flex items-center gap-1">
+                      <FaCheckCircle className={isCompleted ? 'text-emerald-500' : 'text-brand-primary/30'} /> 
+                      {lesson.xp_reward} XP
+                    </span>
+                  </div>
+                  {!isUnlocked && (
+                    <div className="flex items-center justify-center pt-2">
+                      <FaLock className="text-amber-500 mb-1" />
+                      <span>100 XP</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           
           {/* Completed Tracks (Archive) */}

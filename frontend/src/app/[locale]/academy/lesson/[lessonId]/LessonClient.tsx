@@ -229,84 +229,94 @@ interface LessonClientProps {
  lessonId: string;
 }
 
- export default function LessonClient({ lessonId }: LessonClientProps) {
+export default function LessonClient({ lessonId }: LessonClientProps) {
   const router = useRouter();
   const [completed, setCompleted] = useState(false);
   const [earnedXP, setEarnedXP] = useState<number | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const locale = useLocale();
 
- const { hideNavbar, showNavbar } = useNavbarHide();
+  const [lessonData, setLessonData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { hideNavbar, showNavbar } = useNavbarHide();
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     hideNavbar();
     return () => {
-     showNavbar();
-   };
- }, [hideNavbar, showNavbar]);
-
- const getLessonDetails = () => {
- switch (lessonId) {
- case 'origins-of-chess':
- return {
- title: "Origins & Motivation",
- track: "Introductory Track",
- steps: ORIGINS_LESSON_STEPS
- };
- case 'tactics-101':
- case 'tactical-patterns':
- return {
- title: "Tactical Patterns",
- track: "Intermediate Track",
- steps: TACTICS_LESSON_STEPS
- };
- case 'endgame-basics':
- return {
- title: "Endgame Basics",
- track: "Advanced Track",
- steps: ENDGAME_LESSON_STEPS
- };
- case 'positional-understanding':
- return {
- title: "Positional Understanding",
- track: "Master Track",
- steps: POSITIONAL_LESSON_STEPS
- };
- case 'grandmaster-sacrifices':
- return {
- title: "Grandmaster Sacrifices",
- track: "Grandmaster Track",
- steps: GM_LESSON_STEPS
- };
- case 'opening-principles':
- default:
- return {
- title: "Opening Principles",
- track: "Beginner Track",
- steps: OPENING_LESSON_STEPS
- };
- }
- };
-
- const details = getLessonDetails();
-
-    const handleComplete = async () => {
-      try {
-        const res = await apiFetch("/api/v1/gamification/academy/complete-task", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task_type: "lesson", item_id: lessonId })
-        });
-        if (res.ok) {
-          setEarnedXP(50); // Lessons give 50 XP
-        }
-      } catch (e) {
-        console.error("Failed to submit lesson completion", e);
-      }
-      setCompleted(true);
-      new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio play blocked:', e));
+      showNavbar();
     };
+  }, [hideNavbar, showNavbar]);
+
+  useEffect(() => {
+    apiFetch(`/api/v1/content/lessons/${lessonId}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Lesson not found");
+        return res.json();
+      })
+      .then(data => {
+        // Map database steps to frontend steps
+        const steps = data.steps.map((step: any) => ({
+          id: step.id.toString(),
+          type: step.fen && step.content.includes("solution:") ? 'interactive_board' : (step.fen ? 'interactive_board' : 'text'),
+          title: data.title + ` (Part ${step.order_index})`,
+          content: step.content,
+          fen: step.fen,
+          // Simple parsing if we want to embed solution in content, or just fallback
+          // For now, if we don't have interactive fields in DB, we treat them as text/board
+          // Ideally DB models would be expanded, but we use what we have:
+          solution: step.content.includes("solution:") ? step.content.split("solution:")[1].trim().split(",") : [],
+        }));
+        setLessonData({ ...data, steps });
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [lessonId]);
+
+  const handleComplete = async () => {
+    try {
+      const res = await apiFetch('/api/v1/gamification/academy/complete', {
+        method: 'POST',
+        body: JSON.stringify({
+          task_type: 'lesson',
+          item_id: lessonId
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setEarnedXP(lessonData?.xp_reward || 50);
+        setCompleted(true);
+      } else {
+        console.error('Failed to complete lesson');
+        setCompleted(true);
+      }
+    } catch (e) {
+      console.error(e);
+      setCompleted(true);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (!lessonData) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4">
+        <h2 className="text-xl font-black text-brand-primary">Lesson not found</h2>
+        <button onClick={() => router.push(`/${locale}/academy`)} className="px-4 py-2 bg-brand-surface rounded-xl">Go Back</button>
+      </div>
+    );
+  }
 
   if (completed) {
    return (
@@ -320,7 +330,7 @@ interface LessonClientProps {
   <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
   
   <h1 className="text-3xl font-black text-emerald-400 mb-2 uppercase leading-none">LESSON COMPLETE!</h1>
-  <p className="text-xs font-bold text-brand-primary opacity-60 mb-6 uppercase tracking-wide">You have mastered the basics of {details.title}.</p>
+  <p className="text-xs font-bold text-brand-primary opacity-60 mb-6 uppercase tracking-wide">You have mastered the basics of {lessonData.title}.</p>
  
   {earnedXP && (
     <div className="flex justify-center mb-8">
@@ -337,7 +347,7 @@ interface LessonClientProps {
   Back
   </button>
   </Link>
-  <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${details.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
+  <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
   <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
   <FaTelegramPlane className="text-lg" /> Share
   </button>
@@ -359,15 +369,15 @@ interface LessonClientProps {
  <FaArrowLeft />
  </Link>
  <div>
- <h1 className="text-xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{details.title}</h1>
- <p className="text-[10px] text-brand-primary opacity-40 font-bold uppercase tracking-widest">{details.track}</p>
+ <h1 className="text-xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{lessonData.title}</h1>
+ <p className="text-[10px] text-brand-primary opacity-40 font-bold uppercase tracking-widest">{lessonData.track}</p>
  </div>
  </div>
 
- <LessonViewer
- steps={details.steps}
- onComplete={handleComplete}
- />
+      <LessonViewer
+        steps={lessonData.steps}
+        onComplete={handleComplete}
+      />
  </div>
  </LayoutWrapper>
  );
