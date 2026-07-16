@@ -79,20 +79,15 @@ export default function Home() {
  <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
-  {/* Dashboard Welcome Header — buttons rendered inline, never absolute */}
-  <div className="w-full flex items-start justify-between px-1 mb-1">
-    {/* Text block — shrinks to avoid the buttons */}
-    <div className="flex-1 min-w-0">
-      <h1 className="text-lg font-black tracking-tighter text-brand-primary leading-none uppercase text-left break-words">
+  {/* Dashboard Welcome Header — controls share the title row, subtitle stays below. */}
+  <header className="mb-1 w-full px-1">
+    <div className="flex items-center gap-3">
+      <h1 className="min-w-0 flex-1 truncate text-left text-lg font-black uppercase leading-none tracking-tighter text-brand-primary" title={t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}>
         {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
       </h1>
-      <p className="text-[9px] font-black text-brand-muted uppercase tracking-[0.3em] mt-1.5 leading-none text-left">
-        {t('subtitle')}
-      </p>
-    </div>
 
-    {/* Inline Header Controls — top-aligned with the first line of the heading */}
-    <div className="flex items-center gap-2.5 shrink-0 ml-3 mt-0.5">
+      {/* Inline Header Controls — explicitly aligned with the title baseline row. */}
+      <div className="flex shrink-0 items-center gap-2">
       <button
         type="button"
         onClick={() => setShowNotifications(true)}
@@ -109,8 +104,12 @@ export default function Home() {
       >
           <FiSettings size={18} />
       </Link>
+      </div>
     </div>
-  </div>
+    <p className="mt-1.5 text-left text-[9px] font-black uppercase leading-none tracking-[0.3em] text-brand-muted">
+      {t('subtitle')}
+    </p>
+  </header>
 
  {/* Unified Premium Profile Card */}
   <AnimatePresence mode="wait" initial={false}>

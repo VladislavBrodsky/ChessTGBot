@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import LayoutWrapper from '@/components/LayoutWrapper';
@@ -8,6 +9,7 @@ import { useUser } from '@/context/UserContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
 import { FaArrowLeft, FaGem, FaCrown } from 'react-icons/fa';
@@ -49,11 +51,15 @@ const RECENT_KEY = 'mkt_recent_wins';
 
 export default function MarketplacePage() {
     const t = useTranslations('Marketplace');
+    const ti = useTranslations('Index');
     const locale = useLocale();
     const router = useRouter();
 
     const { stats, loadingStats, balanceError, syncStats } = useUser();
     const userXP = stats?.xp || 0;
+    const nextTier = BOX_ORDER.find((tier) => BOX_CONFIG[tier].costXP > userXP);
+    const nextBox = nextTier ? BOX_CONFIG[nextTier] : null;
+    const xpToNextBox = nextBox ? nextBox.costXP - userXP : 0;
 
     const [themes, setThemes] = useState<BoardTheme[]>([]);
     const [loadingThemes, setLoadingThemes] = useState(true);
@@ -212,57 +218,55 @@ export default function MarketplacePage() {
 
     return (
         <LayoutWrapper className="pb-32 px-4 md:px-6">
-            <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-6 py-4">
-
-                {/* Top nav */}
-                <div className="w-full flex justify-between items-center">
+            <div className="flex w-full max-w-sm flex-col items-center space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
+                <div className="w-full">
                     <button
                         onClick={() => { telegramHaptic('light'); router.push(`/${locale}/home`); }}
-                        className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                        className="flex min-h-11 items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-brand-muted transition-colors hover:text-brand-primary"
                     >
                         <FaArrowLeft className="text-[10px]" />
                         <span>{t('back')}</span>
                     </button>
-                    <div className="px-3 py-1 rounded-full bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest flex items-center gap-1.5">
-                        <FaGem className="text-white/60" />
-                        <span>{t('title')}</span>
-                    </div>
                 </div>
 
-                {/* Title */}
-                <div className="w-full text-center flex flex-col items-center">
-                    <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1.5 whitespace-nowrap leading-none flex items-center gap-2">
-                        <FaGem className="text-white/60 text-lg" />
+                <header className="flex w-full flex-col items-center text-center">
+                    <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
+                        <FaGem className="text-brand-gold" />
                         {t('title')}
                     </h1>
-                    <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em] leading-none mt-1">
+                    <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
                         {t('subtitle')}
                     </p>
-                </div>
+                </header>
 
-                {/* Balance banner */}
                 <div className="w-full">
-                    <Card variant="glass" className="p-4 border-brand-border-opacity-10 shadow-premium flex items-center justify-between relative overflow-hidden bg-brand-surface/40">
-                        <motion.div
-                            className="absolute inset-0 pointer-events-none opacity-40"
-                            style={{ background: 'linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.06) 50%, transparent 80%)' }}
-                            animate={{ x: ['-100%', '100%'] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                        />
-                        <div className="space-y-1 relative z-10 text-left">
-                            <span className="text-[9px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">{t('xp_balance')}</span>
+                    <Card variant="solid" className="border-brand-border-opacity-20 p-5 shadow-premium">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="space-y-1 text-left">
+                            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>
                             {loadingStats ? (
-                                <span className="block h-6 w-24 mt-1.5 rounded-md bg-white/10 animate-pulse" />
+                                <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
                             ) : (
                                 <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                    className="text-xl font-black text-white leading-none mt-1.5 block tabular-nums">
+                                    className="mt-2 block text-3xl font-black leading-none tabular-nums text-brand-primary">
                                     {userXP.toLocaleString()} XP
                                 </motion.span>
                             )}
+                            </div>
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                                <FaGem size={20} />
+                            </div>
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 relative z-10 shadow-inner-glow">
-                            <FaGem size={20} />
-                        </div>
+                        {nextBox && !loadingStats && (
+                            <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4">
+                                <p className="text-xs leading-5 text-brand-muted">
+                                    <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
+                                </p>
+                                <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-brand-gold hover:underline">
+                                    {ti('academy')}
+                                </Link>
+                            </div>
+                        )}
                     </Card>
                 </div>
 
@@ -287,10 +291,11 @@ export default function MarketplacePage() {
                     )}
                 </AnimatePresence>
 
-                {/* Mystery Boxes */}
-                <div className="w-full space-y-4">
-                    <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">{t('section_boxes')}</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full items-start">
+                <section className="w-full space-y-4" aria-labelledby="marketplace-vaults-title">
+                    <div className="text-center">
+                        <h2 id="marketplace-vaults-title" className="text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_boxes')}</h2>
+                    </div>
+                    <div className="grid w-full grid-cols-1 items-start gap-3 min-[480px]:grid-cols-2 md:grid-cols-3">
                         {BOX_ORDER.map((tier) => (
                             <MysteryBoxCard
                                 key={tier}
@@ -301,43 +306,50 @@ export default function MarketplacePage() {
                             />
                         ))}
                     </div>
-                </div>
+                </section>
 
-                {/* Premium Subscriptions */}
-                <div className="w-full space-y-4">
-                    <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">{t('section_premium')}</h3>
+                <section className="w-full space-y-4" aria-labelledby="marketplace-premium-title">
+                    <h2 id="marketplace-premium-title" className="text-center text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_premium')}</h2>
                     <div className="grid grid-cols-1 gap-3 w-full">
                         {directPurchases.map((item) => {
                             const affordable = userXP >= item.cost;
                             return (
                                 <Card
                                     key={item.id}
-                                    variant="glass"
-                                    className={`p-5 flex flex-col justify-between border-brand-border-opacity-10 transition-all group shadow-premium ${affordable ? 'hover:border-brand-primary/30 cursor-pointer' : 'opacity-70'}`}
-                                    onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
+                                    variant="solid"
+                                    className={`p-5 transition-colors ${affordable ? 'border-brand-border-opacity-20' : 'opacity-70'}`}
                                 >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-sm font-black text-white group-hover:text-brand-primary transition-colors flex items-center gap-2">
-                                            <FaCrown className="text-brand-primary opacity-60" />
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="min-w-0">
+                                        <h3 className="flex items-center gap-2 text-base font-black text-brand-primary">
+                                            <FaCrown className="text-brand-gold" />
                                             {item.name}
-                                        </h4>
-                                        <Badge variant="outline" className={`text-[9px] border-brand-primary/20 bg-brand-primary/5 shadow-inner-glow ${affordable ? 'text-brand-primary' : 'text-white/40'}`}>
+                                        </h3>
+                                        <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
+                                        </div>
+                                        <Badge variant="outline" className="shrink-0 border-brand-gold/30 bg-brand-gold/10 text-[10px] text-brand-gold">
                                             {item.cost.toLocaleString()} XP
                                         </Badge>
                                     </div>
-                                    <p className="text-[10px] text-brand-muted leading-tight">{item.desc}</p>
+                                    <Button
+                                        variant={affordable ? 'primary' : 'secondary'}
+                                        className={affordable ? 'mt-4 w-full bg-brand-gold text-brand-void hover:bg-brand-gold/90' : 'mt-4 w-full'}
+                                        disabled={!affordable || loadingStats || Boolean(balanceError)}
+                                        onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
+                                    >
+                                        {affordable ? `${item.cost.toLocaleString()} XP` : t('need_more_xp', { amount: (item.cost - userXP).toLocaleString() })}
+                                    </Button>
                                 </Card>
                             );
                         })}
                     </div>
-                </div>
+                </section>
 
-                {/* Board Themes */}
-                <div className="w-full space-y-4">
-                    <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">{t('section_themes')}</h3>
+                <section className="w-full space-y-4" aria-labelledby="marketplace-themes-title">
+                    <h2 id="marketplace-themes-title" className="text-center text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_themes')}</h2>
                     {loadingThemes ? (
                         <div className="grid grid-cols-1 gap-3 w-full">
-                            {[0, 1, 2].map((i) => <div key={i} className="h-[72px] rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />)}
+                            {[0, 1, 2].map((i) => <div key={i} className="h-[92px] animate-pulse rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />)}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 gap-3 w-full">
@@ -345,17 +357,17 @@ export default function MarketplacePage() {
                                 const swatch = THEME_SWATCHES[theme.code] || THEME_SWATCHES.default;
                                 const affordable = userXP >= theme.price_xp;
                                 return (
-                                    <div key={theme.id} className="p-4 rounded-2xl border border-white/10 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.03] transition-all duration-300 gap-4">
+                                    <Card key={theme.id} variant="solid" className="flex items-center justify-between gap-4 p-4">
                                         <div className="flex items-center gap-4 text-left min-w-0">
-                                            <div className="flex w-10 h-10 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                                            <div className="flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-brand-border-opacity-20">
                                                 <div className="flex-1" style={{ background: swatch[0] }} />
                                                 <div className="flex-1" style={{ background: swatch[1] }} />
                                             </div>
                                             <div className="space-y-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <h3 className="text-xs font-bold text-white leading-none truncate">{theme.name}</h3>
+                                                    <h3 className="truncate text-sm font-bold leading-none text-brand-primary">{theme.name}</h3>
                                                     {theme.owned && (
-                                                        <Badge variant="secondary" className="text-[8px] font-black uppercase border-white/20 text-white/60 bg-white/5 py-0 px-1.5">{t('owned')}</Badge>
+                                                        <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-[8px] font-black uppercase text-emerald-500">{t('owned')}</Badge>
                                                     )}
                                                 </div>
                                                 <p className="text-[10px] text-brand-muted leading-tight line-clamp-1">{theme.description || t('theme_default_desc')}</p>
@@ -363,24 +375,27 @@ export default function MarketplacePage() {
                                         </div>
                                         {theme.owned ? (
                                             activeThemeCode === theme.code ? (
-                                                <button disabled className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0 cursor-not-allowed">{t('active')}</button>
+                                                <Button disabled variant="secondary" size="sm" className="shrink-0 border-emerald-500/20 bg-emerald-500/10 text-[10px] font-black uppercase tracking-widest text-emerald-500">{t('active')}</Button>
                                             ) : (
-                                                <button onClick={() => handleEquipTheme(theme.code)} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/10 hover:bg-white/20 text-white shrink-0 cursor-pointer transition-all active:scale-95">{t('equip')}</button>
+                                                <Button onClick={() => handleEquipTheme(theme.code)} variant="secondary" size="sm" className="shrink-0 text-[10px] font-black uppercase tracking-widest">{t('equip')}</Button>
                                             )
                                         ) : (
-                                            <button
+                                            <Button
                                                 onClick={() => handleBuyTheme(theme.code, theme.name, theme.price_xp)}
-                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md cursor-pointer transition-all active:scale-95 shrink-0 ${affordable ? 'bg-white text-black hover:bg-white/90' : 'bg-white/10 text-white/50'}`}
+                                                variant={affordable ? 'primary' : 'secondary'}
+                                                size="sm"
+                                                disabled={!affordable || loadingStats || Boolean(balanceError)}
+                                                className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-brand-gold text-brand-void hover:bg-brand-gold/90' : ''}`}
                                             >
-                                                {theme.price_xp.toLocaleString()} XP
-                                            </button>
+                                                {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
+                                            </Button>
                                         )}
-                                    </div>
+                                    </Card>
                                 );
                             })}
                         </div>
                     )}
-                </div>
+                </section>
             </div>
 
             <UnboxingModal
