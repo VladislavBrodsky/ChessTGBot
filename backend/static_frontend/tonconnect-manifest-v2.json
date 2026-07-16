@@ -1,7 +1,7 @@
 {
-  "url": "https://web3chess.online",
+  "url": "https://chesstgbot-frontend-production.up.railway.app",
   "name": "FinChess Protocol",
-  "iconUrl": "https://web3chess.online/icon.png",
-  "termsOfUseUrl": "https://web3chess.online/terms",
-  "privacyPolicyUrl": "https://web3chess.online/privacy"
+  "iconUrl": "https://chesstgbot-frontend-production.up.railway.app/icon.png",
+  "termsOfUseUrl": "https://chesstgbot-frontend-production.up.railway.app/terms",
+  "privacyPolicyUrl": "https://chesstgbot-frontend-production.up.railway.app/privacy"
 }
