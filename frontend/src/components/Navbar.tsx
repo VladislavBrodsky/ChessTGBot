@@ -220,9 +220,6 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                     }`}>
                                         {item.label}
                                     </span>
-                                    {isActive && (
-                                        <span className="absolute bottom-1.5 h-[2px] w-6 rounded-full bg-brand-gold shadow-[0_0_8px_rgba(245,158,11,0.55)]" aria-hidden="true" />
-                                    )}
                                 </div>
                             </Link>
                         </li>
