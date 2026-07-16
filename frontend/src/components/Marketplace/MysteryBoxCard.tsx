@@ -79,7 +79,12 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     )}
                 </div>
 
-                <div className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[118px]">
+                <div 
+                    className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[118px]"
+                    style={{
+                        background: 'radial-gradient(circle, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 68%)'
+                    }}
+                >
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div
                             className="w-28 h-16 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-300"
