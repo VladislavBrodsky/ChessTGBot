@@ -35,8 +35,8 @@ export default function MysteryBoxArt({ tier, size = 116 }: { tier: BoxTier; siz
                 height={size}
                 className="w-full h-full object-contain relative z-10 pointer-events-none select-none drop-shadow-2xl"
                 style={{
-                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
-                    maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 42%, transparent 70%)',
+                    maskImage: 'radial-gradient(circle at center, black 42%, transparent 70%)',
                     transform: 'scale(1.08)'
                 }}
             />
