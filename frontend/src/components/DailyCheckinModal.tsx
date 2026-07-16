@@ -103,7 +103,7 @@ export default function DailyCheckinModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-void/82 backdrop-blur-xl"
+          className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-brand-void/82 backdrop-blur-xl"
         >
           {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 120 : 240} />}
           

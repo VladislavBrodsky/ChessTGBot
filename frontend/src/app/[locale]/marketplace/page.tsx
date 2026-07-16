@@ -217,7 +217,7 @@ export default function MarketplacePage() {
     };
 
     return (
-        <LayoutWrapper className="pb-32 px-4 md:px-6">
+        <LayoutWrapper className="w-full px-4 md:px-6">
             <div className="flex w-full max-w-sm flex-col items-center space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
                 <header className="flex w-full flex-col items-center text-center">
                     <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">

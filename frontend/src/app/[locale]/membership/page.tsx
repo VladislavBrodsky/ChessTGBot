@@ -266,7 +266,7 @@ export default function MembershipPage() {
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative">
+    <LayoutWrapper className="w-full relative">
 
       <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
 

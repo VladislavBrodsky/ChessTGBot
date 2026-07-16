@@ -257,7 +257,7 @@ export default function AcademyPage() {
 
   if (loading) {
     return (
-      <LayoutWrapper className="pb-32 pt-6">
+      <LayoutWrapper className="w-full px-4">
         <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8 animate-pulse">
           {/* Header Skeleton */}
           <div className="flex flex-col items-center w-full mb-4">
@@ -318,7 +318,7 @@ export default function AcademyPage() {
   }
 
   return (
-    <LayoutWrapper className="pb-32 pt-6">
+    <LayoutWrapper className="w-full px-4">
       {showConfetti && typeof window !== 'undefined' && (
         <div className="fixed inset-0 z-20 pointer-events-none flex items-center justify-center">
           <Confetti

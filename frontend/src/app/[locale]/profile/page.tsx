@@ -171,7 +171,7 @@ export default function ProfilePage() {
   }
 
  return (
- <LayoutWrapper className="justify-start pt-8 pb-32" hideHeaderControls>
+ <LayoutWrapper className="w-full" hideHeaderControls>
  <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8">
 
  {/* Profile Header */}

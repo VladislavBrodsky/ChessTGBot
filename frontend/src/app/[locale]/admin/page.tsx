@@ -1283,7 +1283,7 @@ export default function AdminPage() {
   if (accessDenied) return <AccessDenied />;
 
   return (
-    <LayoutWrapper className="admin-command-root justify-start pt-6 pb-32 w-full" bgClass="admin-command-root">
+    <LayoutWrapper className="admin-command-root w-full" bgClass="admin-command-root">
     <div className="admin-command-shell relative w-full min-h-[100dvh] overflow-hidden text-brand-primary font-sans pb-[120px]">
       {/* Ambient background glows */}
       <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-amber-900/10 blur-[120px] rounded-full pointer-events-none" />

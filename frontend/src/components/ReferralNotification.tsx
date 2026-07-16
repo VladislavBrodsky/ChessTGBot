@@ -93,7 +93,7 @@ export default function ReferralNotification() {
   }, [shouldSuppressNotification]);
 
   return (
-    <div className="fixed bottom-[calc(100px+var(--app-safe-bottom))] left-0 right-0 z-20 flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-[calc(100px+var(--app-safe-bottom))] left-0 right-0 z-[90] flex justify-center pointer-events-none px-4">
       <AnimatePresence mode="wait">
         {notification && (
           <motion.div
