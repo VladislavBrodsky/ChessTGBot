@@ -555,7 +555,11 @@ class TelegramService:
         if use_webhook:
             webhook_url = f"{base_url}/api/v1/webhook/telegram"
             try:
-                await cls.application.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+                await cls.application.bot.set_webhook(
+                    url=webhook_url,
+                    drop_pending_updates=True,
+                    secret_token=settings.WEBHOOK_SECRET,
+                )
                 logger.info(f"👑 Bot Webhook Successfully Set: {webhook_url}")
                 cls.receiver_active = True
                 cls.receiver_type = "webhook"
