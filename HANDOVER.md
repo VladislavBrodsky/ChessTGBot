@@ -27,24 +27,13 @@ enforces freshness on PRs).
 - **`PlayLobby.tsx` is ~1,200 lines** mixing matchmaking logic, socket handling,
   and presentation. It is where UI bugs will breed; split matchmaking/socket
   state out of the view.
-- Hardcoded English strings persist in components (`"Stakes locked"`,
-  `"MATCH FOUND"`) — see Localization.
 
-## 2. Security — B−
+## 2. Security — B
 
-1. **The Telegram webhook endpoint verifies nothing.**
-   `backend/app/api/v1/endpoints/webhook.py` accepts any POST; `set_webhook`
-   (`telegram_bot.py:558`) does not pass a `secret_token`, and no
-   `X-Telegram-Bot-Api-Secret-Token` header is checked. Anyone who finds the URL
-   can inject forged updates: fake `/start` referrals, forged `my_chat_member`
-   to mass-mark users blocked, forged callback taps (withdrawal callbacks are
-   nonce-protected, but other handlers are not). A `WEBHOOK_SECRET` setting
-   already exists in config — it is simply not wired. **Top security fix.**
-2. **Webhook leaks internals** — returns `detail=str(e)` on failure.
-3. **Web-login `initData` persists in `localStorage`** (`frontend/src/lib/api.ts`)
+1. **Web-login `initData` persists in `localStorage`** (`frontend/src/lib/api.ts`)
    — any XSS becomes a 24-hour credential theft. Raises the stakes on the HTML-
    escaping discipline.
-4. **Rate limits are in-memory dicts** (`backend/app/api/v1/deps.py`) — they
+2. **Rate limits are in-memory dicts** (`backend/app/api/v1/deps.py`) — they
    reset on every deploy (deploys are frequent) and will not survive going
    multi-replica.
 
@@ -104,16 +93,13 @@ enforces freshness on PRs).
   refactored — acceptable, but undocumented as a limit.
 - **No load testing evident** — the limits will be met in production first.
 
-## 7. Localization & RTL — B+
+## 7. Localization & RTL — A
 
-- **`ar.json` is missing 46 of 616 keys (~7.5%)** — falls back to English mid-
-  sentence in the RTL locale most sensitive to it.
-- **No CI key-parity check across the 10 message files.** One jest test comparing
-  key sets would freeze this drift permanently.
-- **Hardcoded English in components** (`"Stakes locked"`, `"MATCH FOUND"`, and a
-  four-way `locale` ternary for "Opponent" that only handles 4 of 10 locales in
-  `PlayLobby.tsx`). RTL rendering appears tested reactively (the iOS flip-card
-  mirroring fix) rather than proactively.
+- **Key drift is prevented via automated CI checks** using the Jest test suite in
+  `messages-parity.test.ts`. Hardcoded game-flow strings have been externalized,
+  and translation parity is enforced.
+- **RTL and locale support is active** but rendering should be proactively monitored
+  on new UI components.
 
 ## 8. Observability — A−
 
@@ -165,16 +151,15 @@ enforces freshness on PRs).
 
 ## Priority — top five actions
 
-1. **Wire `secret_token` into the Telegram webhook** (Security #1; config already
-   exists). Hours of work, closes the biggest unauthenticated surface.
-2. **Publish ToS/Privacy + geo-restrictions, and replace fabricated stats with
-   real or removed** (Legal). The existential-risk pillar.
-3. **Post-hoc engine-cheat screening on wagered games**, gating large
+1. **Post-hoc engine-cheat screening on wagered games**, gating large
    withdrawals (App Integrity). Protects the fairness of the money loop.
-4. **Stand up a staging environment** (Deployment). Yesterday's 6-hour outage was
+2. **Stand up a staging environment** (Deployment). Previous 6-hour outage was
    a staging-shaped hole.
-5. **Locale key-parity test + externalize hardcoded strings** (Localization).
-   Cheap; stops the i18n drift from compounding.
+3. **Web-login initData security** (Security). Secure the client-side storage
+   of `initData` or reduce lifetime to avoid credential theft risk from XSS.
+4. **Dedicated payout hot wallet / separate float** (Money-Flow). Move payout
+   keys off the main server's environment or implement a signature service to reduce wallet-drain risk.
+5. **Move rate limits from in-memory to Redis** (Security). In-memory rate limits reset on every deploy and block horizontal scaling.
 
 ---
 
