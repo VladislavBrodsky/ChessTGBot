@@ -61,6 +61,8 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
     init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
     headers = {"X-Telegram-Init-Data": init_data}
 
+    from unittest.mock import AsyncMock, patch
+    mock_tg = patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock).start()
     try:
         # Mock TonAPI prices query
         async def mock_fetch_all_prices():
@@ -225,6 +227,22 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         assert v_usdt_data["fee"] == 50
         assert v_usdt_data["new_balance"] == 1450 # 500 + 950
 
+        # Verify telegram alerts were sent
+        assert mock_tg.call_count == 3  # 1 user + 2 admins
+        calls = mock_tg.call_args_list
+        assert calls[0][0][0] == telegram_id
+        assert "Cyber Web3 Top-Up Confirmed!" in calls[0][0][1]
+        
+        admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
+        assert set(admin_calls.keys()) == {1016749901, 716720099}
+        for admin_id, msg in admin_calls.items():
+            assert "New USDT deposit" in msg
+            assert "User: ID 999111222" in msg
+            assert "Amount: $10.00" in msg
+            assert "Transaction ID: msg_usdt_hash" in msg
+            
+        mock_tg.reset_mock()
+
         # Verify DB Transactions were written (stored under the resolved event_id/transaction hash msg_usdt_hash)
         tx_res = await db_session.execute(
             select(Transaction).filter(Transaction.reference_id == "msg_usdt_hash")
@@ -256,6 +274,22 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         assert v_low_usdt_data["credited_amount"] == 1
         assert v_low_usdt_data["new_balance"] == 1451 # 1450 + 1
 
+        # Verify telegram alerts were sent for low value deposit (0.01 USDT)
+        assert mock_tg.call_count == 3  # 1 user + 2 admins
+        calls = mock_tg.call_args_list
+        assert calls[0][0][0] == telegram_id
+        assert "Cyber Web3 Top-Up Confirmed!" in calls[0][0][1]
+        
+        admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
+        assert set(admin_calls.keys()) == {1016749901, 716720099}
+        for admin_id, msg in admin_calls.items():
+            assert "New USDT deposit" in msg
+            assert "User: ID 999111222" in msg
+            assert "Amount: $0.01" in msg
+            assert "Transaction ID: msg_low_usdt_hash" in msg
+            
+        mock_tg.reset_mock()
+
         # 7. Test Verify via Resolvable Message Hash (Resolves to transaction hash then event)
         res_v_resolved = await client.post(
             "/api/v1/wallet/deposit/verify",
@@ -268,4 +302,5 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         assert v_resolved_data["new_balance"] == 2401 # 1451 + 950
 
     finally:
+        patch.stopall()
         settings.TELEGRAM_BOT_TOKEN = original_token
