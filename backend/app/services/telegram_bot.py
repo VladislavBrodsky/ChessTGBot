@@ -396,17 +396,7 @@ class TelegramService:
             # restart). Routine churn, not a bug: mark them blocked the same way
             # on_my_chat_member does and skip the admin alert.
             logger.info(f"/start reply skipped: user {user.id} has blocked the bot")
-            try:
-                from datetime import datetime, timezone
-                async with AsyncSessionLocal() as db:
-                    result = await db.execute(select(User).where(User.telegram_id == user.id))
-                    db_user = result.scalars().first()
-                    if db_user and not db_user.is_blocked:
-                        db_user.is_blocked = True
-                        db_user.blocked_at = datetime.now(timezone.utc).replace(tzinfo=None)
-                        await db.commit()
-            except Exception as mark_err:
-                logger.warning(f"Could not mark user {user.id} as blocked: {mark_err}")
+            await TelegramService.mark_user_blocked(user.id)
         except Exception as e:
             # Log for admins (routed to alerts); the user gets a friendly
             # PLAIN-TEXT apology. Never echo the exception or a traceback back
@@ -422,6 +412,31 @@ class TelegramService:
                 )
             except Exception:
                 pass
+
+    @staticmethod
+    async def mark_user_blocked(telegram_id: int) -> None:
+        """Persist is_blocked for a user we just failed to message with Forbidden.
+
+        Safety net for blocks the my_chat_member webhook never delivered (bot
+        offline, webhook gap, blocks predating the handler): without it those
+        users stay eligible and every broadcast retries them and logs errors.
+        """
+        from app.models.user import User
+        from sqlalchemy import select
+        from app.core.database import AsyncSessionLocal
+        from datetime import datetime, timezone
+
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(select(User).where(User.telegram_id == telegram_id))
+                db_user = result.scalars().first()
+                if db_user and not db_user.is_blocked:
+                    db_user.is_blocked = True
+                    db_user.blocked_at = datetime.now(timezone.utc).replace(tzinfo=None)
+                    await db.commit()
+                    logger.info(f"🚫 User {telegram_id} has blocked the bot (Forbidden on send). Marked as blocked.")
+        except Exception as mark_err:
+            logger.warning(f"Could not mark user {telegram_id} as blocked: {mark_err}")
 
     @staticmethod
     async def on_my_chat_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -949,6 +964,12 @@ class TelegramService:
                 # Send message
                 await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
                 logger.info(f"✉️ Telegram Notification successfully pushed to user {telegram_id}")
+            except Forbidden:
+                # Routine churn, not a bug: the user blocked the bot but the
+                # my_chat_member update never reached us. Persist the flag so
+                # broadcast targeting stops selecting them.
+                logger.info(f"Notification to {telegram_id} skipped: user has blocked the bot")
+                await cls.mark_user_blocked(telegram_id)
             except Exception as e:
                 logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
