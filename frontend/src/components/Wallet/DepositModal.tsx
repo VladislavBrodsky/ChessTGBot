@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
@@ -41,17 +40,6 @@ const TRANSAK_MIN_USD = 15;
 const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
 ];
-
-// Lazy: the STON.fi SDK + @ton/ton are only pulled in when the user opens
-// the swap section, keeping them off the deposit modal's critical path.
-const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
-  ssr: false,
-  loading: () => (
-    <div className="p-3 flex justify-center">
-      <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin opacity-40" />
-    </div>
-  ),
-});
 
 export default function DepositModal({
   onClose,
@@ -101,13 +89,7 @@ export default function DepositModal({
   const [manualTxHash, setManualTxHash] = useState<string>("");
   const [canClose, setCanClose] = useState<boolean>(false);
 
-  // TON→USDT swap section + arrival watcher (swap / Transak funds land in the
-  // user's OWN wallet; we poll until the USDT shows up, then prefill the deposit).
-  const [showSwap, setShowSwap] = useState<boolean>(false);
-  const [arrivalStatus, setArrivalStatus] = useState<'idle' | 'watching' | 'arrived' | 'timeout'>('idle');
-  const arrivalBaselineRef = useRef<bigint | null>(null);
   const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
-  const [arrivedUsdt, setArrivedUsdt] = useState<number>(0);
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
   const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
 
@@ -198,53 +180,6 @@ export default function DepositModal({
       setTokenAmount(tokens.toFixed(4));
     }
   }, [depositAmount, currency, prices]);
-
-  const fetchUsdtUnits = async (): Promise<bigint | null> => {
-    if (!wallet) return null;
-    try {
-      const res = await apiFetch(`/api/v1/wallet/onchain-balances?user_address=${encodeURIComponent(wallet.account.address)}`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      return BigInt(data.usdt_units ?? 0);
-    } catch {
-      return null;
-    }
-  };
-
-  // Snapshot the current on-chain USDT, then poll until more arrives
-  // (post-swap or post-Transak). On arrival, prefill the deposit amount.
-  const startArrivalWatch = async () => {
-    arrivalBaselineRef.current = await fetchUsdtUnits();
-    setArrivedUsdt(0);
-    setArrivalStatus('watching');
-  };
-
-  useEffect(() => {
-    if (arrivalStatus !== 'watching') return;
-    let polls = 0;
-    const interval = setInterval(async () => {
-      polls += 1;
-      if (polls > 30) {        // ~5 minutes
-        setArrivalStatus('timeout');
-        clearInterval(interval);
-        return;
-      }
-      const units = await fetchUsdtUnits();
-      if (units === null) return;
-      const baseline = arrivalBaselineRef.current ?? BigInt(0);
-      if (units > baseline) {
-        const deltaUsdt = Number(units - baseline) / 1e6;
-        setArrivedUsdt(deltaUsdt);
-        // Prefill so "Top Up" deposits what just arrived (5% fee on top).
-        setDepositAmount(Math.max(1, deltaUsdt / 1.05).toFixed(2));
-        setArrivalStatus('arrived');
-        telegramHaptic('success');
-        clearInterval(interval);
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrivalStatus]);
 
   // Gas wall escape hatch: the platform sends a TON splash to wallets that
   // hold USDT but can't pay jetton-transfer gas (server-side gated).
@@ -837,46 +772,6 @@ export default function DepositModal({
                 )}
                 <span>{processing ? "Waiting..." : `Top Up via Connected Wallet`}</span>
               </button>
-            )}
-
-            {/* Swap / on-ramp arrival status */}
-            {arrivalStatus === 'watching' && (
-              <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/70 uppercase tracking-wider text-center flex items-center justify-center gap-2">
-                <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                {tw('arrival_watching')}
-              </div>
-            )}
-            {arrivalStatus === 'arrived' && (
-              <div className="p-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-[10px] font-black text-emerald-400 uppercase tracking-wider text-center">
-                {tw('arrival_arrived', { amount: arrivedUsdt.toFixed(2) })}
-              </div>
-            )}
-            {arrivalStatus === 'timeout' && (
-              <div className="p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void/50 text-[10px] font-bold text-brand-primary/60 leading-relaxed text-center">
-                {tw('arrival_timeout')}
-              </div>
-            )}
-
-            {/* TON → USDT in-app swap (STON.fi) */}
-            {wallet && (
-              <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
-                <button
-                  type="button"
-                  onClick={() => { telegramHaptic('light'); setShowSwap(v => !v); }}
-                  className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-primary/60 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
-                >
-                  <span>{tw('swap_toggle')}</span>
-                  <FaAngleDown className={`transition-transform ${showSwap ? 'rotate-180' : ''}`} />
-                </button>
-                {showSwap && (
-                  <div className="pt-3">
-                    <SwapToUsdt
-                      walletRawAddress={wallet.account.address}
-                      onSwapSent={startArrivalWatch}
-                    />
-                  </div>
-                )}
-              </div>
             )}
 
             {/* Gas wall escape hatch */}
