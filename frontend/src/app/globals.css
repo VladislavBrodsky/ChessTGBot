@@ -74,10 +74,20 @@
   --color-brand-elevated: #111111;
   --color-brand-border: #1F1F1F;
   --color-brand-text-gray: #71767B;
-  --color-nav-surface: #101010;
-  --color-nav-active: #1A1A1A;
+  --color-nav-surface: linear-gradient(135deg, rgba(12, 12, 12, 0.94) 0%, rgba(24, 22, 15, 0.92) 52%, rgba(8, 8, 8, 0.96) 100%);
+  --color-nav-active: transparent;
   --color-nav-border: rgba(255, 255, 255, 0.14);
   --color-nav-inactive: #A1A1AA;
+  --nav-primary-surface: transparent;
+  --nav-primary-border: transparent;
+  --nav-primary-shadow: none;
+  --premium-surface-gradient: linear-gradient(145deg, rgba(18, 18, 18, 0.92) 0%, rgba(8, 8, 8, 0.82) 58%, rgba(42, 30, 8, 0.74) 100%);
+  --premium-surface-border: rgba(255, 255, 255, 0.12);
+  --premium-orb-gold: rgba(251, 191, 36, 0.18);
+  --premium-orb-silver: rgba(226, 232, 240, 0.10);
+  --progress-track-bg: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(226, 232, 240, 0.16), rgba(255, 255, 255, 0.06));
+  --progress-secured-fill: linear-gradient(90deg, #64748B 0%, #E2E8F0 32%, #FFFFFF 50%, #CBD5E1 68%, #64748B 100%);
+  --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
 
   --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%);
   --gradient-arena-action: linear-gradient(135deg, #FDE68A 0%, #FBBF24 46%, #D97706 100%);
@@ -148,10 +158,20 @@
   --color-brand-elevated: #FAFBFB;
   --color-brand-border: rgba(0, 0, 0, 0.06);
   --color-brand-text-gray: #64748B;
-  --color-nav-surface: #111827;
-  --color-nav-active: #1E293B;
-  --color-nav-border: rgba(15, 23, 42, 0.18);
-  --color-nav-inactive: #CBD5E1;
+  --color-nav-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 251, 244, 0.92) 48%, rgba(238, 242, 247, 0.88) 100%);
+  --color-nav-active: transparent;
+  --color-nav-border: rgba(15, 23, 42, 0.12);
+  --color-nav-inactive: #475569;
+  --nav-primary-surface: transparent;
+  --nav-primary-border: transparent;
+  --nav-primary-shadow: none;
+  --premium-surface-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.72) 48%, rgba(255, 243, 205, 0.54) 100%);
+  --premium-surface-border: rgba(15, 23, 42, 0.09);
+  --premium-orb-gold: rgba(245, 158, 11, 0.20);
+  --premium-orb-silver: rgba(100, 116, 139, 0.10);
+  --progress-track-bg: linear-gradient(90deg, rgba(15, 23, 42, 0.10), rgba(148, 163, 184, 0.30), rgba(15, 23, 42, 0.10));
+  --progress-secured-fill: linear-gradient(90deg, #64748B 0%, #CBD5E1 30%, #FFFFFF 50%, #94A3B8 72%, #475569 100%);
+  --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #F59E0B 38%, #FDE68A 56%, #D97706 100%);
 
   --accent-silver: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
   --gradient-arena-action: linear-gradient(135deg, #FFE8A3 0%, #F9C74F 45%, #D99112 100%);
@@ -199,7 +219,7 @@
   --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
   --shadow-premium: 0 8px 28px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
   --shadow-inner-glow: inset 0 0 10px rgba(15, 23, 42, 0.04);
-  --shadow-nav: 0 10px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-nav: 0 18px 42px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.98);
 
   --glass-button-hover-bg: rgba(15, 23, 42, 0.04);
   --glass-button-hover-border: rgba(15, 23, 42, 0.12);
@@ -222,10 +242,20 @@
   --color-brand-elevated: #150035;
   --color-brand-border: #2D0066;
   --color-brand-text-gray: #A088FF;
-  --color-nav-surface: #100729;
-  --color-nav-active: #1A0B3D;
+  --color-nav-surface: linear-gradient(135deg, rgba(16, 7, 41, 0.94) 0%, rgba(26, 11, 61, 0.92) 52%, rgba(5, 0, 20, 0.96) 100%);
+  --color-nav-active: transparent;
   --color-nav-border: rgba(160, 136, 255, 0.24);
   --color-nav-inactive: #C4B5FD;
+  --nav-primary-surface: transparent;
+  --nav-primary-border: transparent;
+  --nav-primary-shadow: none;
+  --premium-surface-gradient: linear-gradient(145deg, rgba(21, 0, 53, 0.9) 0%, rgba(5, 0, 20, 0.82) 55%, rgba(0, 240, 255, 0.08) 100%);
+  --premium-surface-border: rgba(160, 136, 255, 0.24);
+  --premium-orb-gold: rgba(251, 191, 36, 0.16);
+  --premium-orb-silver: rgba(0, 240, 255, 0.13);
+  --progress-track-bg: linear-gradient(90deg, rgba(160, 136, 255, 0.08), rgba(0, 240, 255, 0.18), rgba(160, 136, 255, 0.08));
+  --progress-secured-fill: linear-gradient(90deg, #00F0FF 0%, #C4B5FD 50%, #7B2CBF 100%);
+  --progress-gold-fill: linear-gradient(90deg, #F59E0B 0%, #FDE68A 52%, #00F0FF 100%);
 
   --accent-silver: linear-gradient(180deg, #00F0FF 0%, #7B2CBF 100%);
   --gradient-arena-action: linear-gradient(135deg, #FDE68A 0%, #FBBF24 46%, #D97706 100%);
@@ -304,6 +334,13 @@ body {
   padding-bottom: var(--tg-content-safe-area-inset-bottom, var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
 
+.app-shell:not(.admin-command-root) {
+  background:
+    radial-gradient(circle at 78% 4%, var(--premium-orb-gold), transparent 30%),
+    radial-gradient(circle at 10% 82%, var(--premium-orb-silver), transparent 28%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 86%, var(--bg-surface)), var(--bg-primary) 58%, color-mix(in srgb, var(--bg-primary) 92%, var(--text-gold) 8%)) !important;
+}
+
 /* Consistent, visible keyboard focus without changing pointer interactions. */
 :where(a, button, input, select, textarea, [role='button']):focus-visible {
   outline: 2px solid color-mix(in srgb, var(--text-primary) 78%, transparent);
@@ -320,18 +357,115 @@ body {
   background: var(--color-nav-surface) !important;
   border-color: var(--color-nav-border) !important;
   box-shadow: var(--shadow-nav) !important;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .app-bottom-nav__item--active {
   background: var(--color-nav-active) !important;
 }
 
-/* The navigation surface stays obsidian in Light theme; its inactive items
-   therefore need their own high-contrast ink rather than page-muted text. */
+.app-bottom-nav__button {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.app-bottom-nav__button::before {
+  content: "";
+  position: absolute;
+  inset: 7px 10px 15px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.18), transparent 68%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+  pointer-events: none;
+}
+
+.app-bottom-nav__item--active::before {
+  opacity: 1;
+}
+
+.app-bottom-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 55%);
+  pointer-events: none;
+}
+
+.app-bottom-nav__primary {
+  background: var(--nav-primary-surface) !important;
+  border-color: var(--nav-primary-border) !important;
+  box-shadow: var(--nav-primary-shadow) !important;
+}
+
+/* Navigation items use their own ink so Light theme never inherits washed-out
+   page-muted text and dark themes remain legible on obsidian surfaces. */
 .app-bottom-nav__item--inactive,
 .app-bottom-nav__item--inactive .app-bottom-nav__icon,
 .app-bottom-nav__item--inactive .app-bottom-nav__label {
   color: var(--color-nav-inactive) !important;
+}
+
+[data-theme='light'] .app-bottom-nav {
+  backdrop-filter: blur(24px) saturate(1.35);
+}
+
+[data-theme='light'] .app-bottom-nav::before {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.18), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.2) 62%, rgba(15, 23, 42, 0.03));
+}
+
+.app-premium-surface {
+  background: var(--premium-surface-gradient);
+  border-color: var(--premium-surface-border);
+  box-shadow: var(--shadow-premium);
+}
+
+.app-premium-surface::before,
+.app-premium-surface::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(42px);
+}
+
+.app-premium-surface::before {
+  top: -4rem;
+  right: -3rem;
+  width: 13rem;
+  height: 13rem;
+  background: var(--premium-orb-gold);
+}
+
+.app-premium-surface::after {
+  bottom: -4rem;
+  left: -3rem;
+  width: 11rem;
+  height: 11rem;
+  background: var(--premium-orb-silver);
+}
+
+.app-progress-track {
+  background: var(--progress-track-bg);
+  border-color: var(--premium-surface-border);
+  box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.22), 0 0 20px rgba(148, 163, 184, 0.12);
+}
+
+.app-progress-fill--secured {
+  background: var(--progress-secured-fill);
+  box-shadow: 0 0 18px rgba(148, 163, 184, 0.38);
+}
+
+.app-progress-fill--gold {
+  background: var(--progress-gold-fill);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.46);
 }
 
 @layer components {

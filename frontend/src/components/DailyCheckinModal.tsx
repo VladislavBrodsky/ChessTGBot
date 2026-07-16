@@ -103,7 +103,7 @@ export default function DailyCheckinModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-surface/90 backdrop-blur-xl"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-void/82 backdrop-blur-xl"
         >
           {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 120 : 240} />}
           
@@ -117,9 +117,8 @@ export default function DailyCheckinModal() {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-sm overflow-hidden rounded-[2rem] border border-brand-border-opacity-20 bg-brand-surface p-7 pb-[calc(28px+var(--app-safe-bottom))] shadow-premium"
+            className="app-premium-surface relative w-full max-w-sm overflow-hidden rounded-[2rem] border p-7 pb-[calc(28px+var(--app-safe-bottom))]"
           >
-            <div className="absolute -top-24 -left-24 h-48 w-48 rounded-full bg-amber-500/10 blur-[64px]" />
             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
             
             <div className="relative z-10 text-center flex flex-col items-center">
@@ -129,7 +128,7 @@ export default function DailyCheckinModal() {
               </div>
 
               <h2 id="daily-reward-title" className="mb-2 text-3xl font-black tracking-tight text-brand-primary">Daily Reward</h2>
-              <p className="text-xs font-bold text-white/50 uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
+              <p className="text-xs font-bold text-brand-muted uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
 
               <div className="grid grid-cols-4 gap-3 mb-3 w-full">
                 {status.rewards.slice(0, 4).map((reward, idx) => (
@@ -161,7 +160,7 @@ export default function DailyCheckinModal() {
                 className={`min-h-12 w-full rounded-2xl py-4 font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
                   ${status.can_claim_today && !claiming
                     ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
-                    : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+                    : "bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-muted cursor-not-allowed"
                   }`}
               >
                 <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
@@ -191,26 +190,26 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
   return (
     <div className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300
       ${isBig ? 'col-span-1' : ''} 
-      ${isCurrent ? 'border-amber-400/50 bg-amber-400/10 shadow-[0_0_25px_rgba(245,158,11,0.2)] transform scale-105 z-10' : 'border-white/5 bg-white/5'} 
-      ${isPast ? 'opacity-50 grayscale border-white/5 bg-transparent' : ''}
+      ${isCurrent ? 'border-amber-400/50 bg-amber-400/10 shadow-[0_0_25px_rgba(245,158,11,0.2)] transform scale-105 z-10' : 'border-brand-border-opacity-10 bg-brand-bg-opacity-5'}
+      ${isPast ? 'opacity-60 grayscale border-brand-border-opacity-10 bg-transparent' : ''}
     `}>
       {isCurrent && (
         <div className="absolute inset-0 bg-amber-400/20 blur-xl rounded-full z-0" />
       )}
       
-      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${isCurrent ? 'text-amber-300' : 'text-white/50'}`}>Day {day}</span>
+      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${isCurrent ? 'text-brand-gold' : 'text-brand-muted'}`}>Day {day}</span>
       
       <div className="relative z-10 flex flex-col items-center my-1 h-8 justify-center">
         {isPast ? (
           <FaCheckCircle className="text-emerald-500 text-xl drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
         ) : isFuture && !isBig ? (
-          <FaLock className="text-white/20 text-lg" />
+          <FaLock className="text-brand-muted/40 text-lg" />
         ) : isBig ? (
           <FaGift className={`text-3xl ${isCurrent ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-bounce' : 'text-amber-500/40'}`} />
         ) : (
-          <div className={`flex flex-col items-center ${isCurrent ? 'text-amber-400' : 'text-white'}`}>
+          <div className={`flex flex-col items-center ${isCurrent ? 'text-brand-gold' : 'text-brand-primary'}`}>
             <span className={`font-black ${isCurrent ? 'text-xl drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]' : 'text-lg opacity-80'}`}>{reward}</span>
-            <span className={`text-[8px] font-bold ${isCurrent ? 'text-amber-400/80' : 'text-white/40'}`}>XP</span>
+            <span className={`text-[8px] font-bold ${isCurrent ? 'text-brand-gold/80' : 'text-brand-muted'}`}>XP</span>
           </div>
         )}
       </div>

@@ -191,16 +191,8 @@ export default function ChallengesPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           whileHover={{ scale: 1.01 }}
-          className="w-full relative overflow-hidden rounded-3xl mb-8 border border-brand-border-opacity-10 bg-brand-surface/40 dark:bg-brand-surface/20 shadow-premium"
+          className="app-premium-surface w-full relative overflow-hidden rounded-3xl mb-8 border"
         >
-          {/* Static ambient accents keep this card calm and inexpensive to render. */}
-          <div
-            className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-amber-500 blur-3xl pointer-events-none"
-          />
-          <div
-            className="absolute -bottom-10 -left-8 w-32 h-32 rounded-full bg-amber-500 blur-3xl pointer-events-none"
-          />
- 
           <div className="relative z-10 p-6 flex flex-col items-center text-center">
             {/* Level badge */}
             <div className="relative mb-5">
@@ -242,8 +234,8 @@ export default function ChallengesPage() {
               {t('grandmaster_rising')}
             </h1>
             <div className="flex items-center gap-2 mb-6">
-              {levelSecured && <FaCrown className="text-slate-200 drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
-              <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-slate-200/75' : 'opacity-40 text-brand-primary'}`}>
+              {levelSecured && <FaCrown className="text-brand-gold drop-shadow-[0_0_8px_rgba(217,119,6,0.28)] dark:text-slate-200 dark:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
+              <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
                 {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
               </p>
             </div>
@@ -251,20 +243,20 @@ export default function ChallengesPage() {
             {/* XP Bar — premium with shimmer */}
             <div className="w-full max-w-[260px] mb-3">
               <div
-                className={`relative h-3.5 rounded-full overflow-hidden border ${levelSecured ? 'bg-slate-950/70 border-slate-200/20 shadow-[inset_0_2px_8px_rgba(0,0,0,0.55),0_0_20px_rgba(226,232,240,0.08)]' : 'bg-brand-void/50 border-brand-border-opacity-10'}`}
+                className="app-progress-track relative h-3.5 rounded-full overflow-hidden border"
               >
-                {levelSecured && <div aria-hidden="true" className="absolute inset-[2px] rounded-full border border-white/10 pointer-events-none" />}
+                  {levelSecured && <div aria-hidden="true" className="absolute inset-[2px] rounded-full border border-brand-border-opacity-20 pointer-events-none" />}
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}
                   transition={{ duration: 1.8, ease: "circOut", delay: 0.3 }}
-                  className={`absolute top-0 left-0 h-full rounded-full overflow-hidden ${levelSecured ? 'bg-[linear-gradient(90deg,#64748b_0%,#e2e8f0_28%,#ffffff_50%,#cbd5e1_70%,#64748b_100%)] shadow-[0_0_18px_rgba(226,232,240,0.5)]' : 'bg-gradient-to-r from-amber-700 via-yellow-400 to-amber-500 shadow-[0_0_16px_rgba(250,204,21,0.52)]'}`}
+                  className={`absolute top-0 left-0 h-full rounded-full overflow-hidden ${levelSecured ? 'app-progress-fill--secured' : 'app-progress-fill--gold'}`}
                 >
                   <motion.div
                     aria-hidden="true"
                     animate={{ x: ['-120%', '320%'] }}
                     transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.2 }}
-                    className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/65 to-transparent -skew-x-12"
+                    className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent -skew-x-12"
                   />
                 </motion.div>
                 {/* Shimmer sweep */}
@@ -276,10 +268,10 @@ export default function ChallengesPage() {
                 />
               </div>
               <div className="flex justify-between mt-2">
-                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-slate-200/75' : 'opacity-50 text-brand-primary'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
                   {levelSecured ? 'Level secured' : `${currentLevelProgress} / ${XP_PER_LEVEL} XP`}
                 </span>
-                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-slate-300/45' : 'opacity-30 text-brand-primary'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-brand-primary/70' : 'text-brand-muted'}`}>
                   {levelSecured ? `Level ${userLevel}` : `${nextLevelXp} XP`}
                 </span>
               </div>
@@ -287,7 +279,7 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-slate-100/10 text-slate-100 border-slate-200/25 shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-yellow-200 border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-brand-elevated text-brand-primary border-brand-border-opacity-20 shadow-[0_0_16px_rgba(15,23,42,0.06)] dark:bg-slate-100/10 dark:text-slate-100 dark:border-slate-200/25 dark:shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-brand-gold border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
             >
               {levelSecured && <FaCheckCircle size={10} />}
               {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}

@@ -187,9 +187,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[420px] rounded-2xl border px-1.5 py-1.5 backdrop-blur-xl"
+            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[390px] rounded-[26px] border px-2 py-2 backdrop-blur-xl"
         >
-            <ul className="grid w-full grid-cols-5 gap-1">
+            <ul className="grid w-full grid-cols-5 gap-0.5">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     const isPrimary = item.primary === true;
@@ -201,27 +201,27 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 aria-current={isActive ? 'page' : undefined}
                                 className="block rounded-xl focus-visible:ring-2 focus-visible:ring-brand-gold"
                             >
-                                <div className={`relative flex flex-col items-center justify-center gap-0.5 px-1 transition-colors duration-150 ${
+                                <div className={`app-bottom-nav__button relative flex min-h-[46px] flex-col items-center justify-center gap-0.5 rounded-[18px] border px-1 transition-all duration-150 ${
                                     isPrimary
-                                        ? `min-h-[48px] rounded-2xl border ${isActive ? 'border-brand-gold bg-brand-gold text-brand-void shadow-sm' : 'border-brand-gold/30 bg-brand-elevated text-brand-gold hover:border-brand-gold/50'}`
-                                        : `app-bottom-nav__item min-h-[44px] rounded-xl ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:bg-brand-elevated/60'}`
+                                        ? `${isActive ? 'app-bottom-nav__primary app-bottom-nav__item--active text-brand-gold' : 'text-brand-gold hover:text-brand-gold'}`
+                                        : `app-bottom-nav__item ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
                                 }`}>
                                     <div className={`app-bottom-nav__icon flex h-5 w-6 items-center justify-center text-[16px] ${
                                         isPrimary
-                                            ? (isActive ? 'text-brand-void' : 'text-brand-gold')
+                                            ? (isActive ? 'text-[18px] text-brand-gold' : 'text-[17px] text-brand-gold/80')
                                             : (isActive ? "-translate-y-px text-brand-gold" : "")
                                     }`}>
                                         {item.icon}
                                     </div>
                                     <span className={`app-bottom-nav__label max-w-full truncate text-[8px] font-bold leading-none tracking-[0.01em] ${
                                         isPrimary
-                                            ? (isActive ? 'text-brand-void' : 'text-brand-primary')
+                                            ? (isActive ? 'text-brand-primary' : 'text-brand-muted')
                                             : (isActive ? 'text-brand-primary' : '')
                                     }`}>
                                         {item.label}
                                     </span>
-                                    {isActive && !isPrimary && (
-                                        <span className="absolute inset-x-3 bottom-1 h-px rounded-full bg-brand-gold" aria-hidden="true" />
+                                    {isActive && (
+                                        <span className="absolute bottom-1.5 h-[2px] w-6 rounded-full bg-brand-gold shadow-[0_0_8px_rgba(245,158,11,0.55)]" aria-hidden="true" />
                                     )}
                                 </div>
                             </Link>
