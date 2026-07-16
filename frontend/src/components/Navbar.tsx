@@ -187,9 +187,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[390px] rounded-[26px] border px-2 py-2 backdrop-blur-xl"
+            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[390px] rounded-[22px] border px-1 py-1 backdrop-blur-xl"
         >
-            <ul className="grid w-full grid-cols-5 gap-0.5">
+            <ul className="grid w-full grid-cols-5 gap-0">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     const isPrimary = item.primary === true;
@@ -199,16 +199,16 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
-                                className="block rounded-xl focus-visible:ring-2 focus-visible:ring-brand-gold"
+                                className="block rounded-[14px] focus-visible:ring-2 focus-visible:ring-brand-gold"
                             >
-                                <div className={`app-bottom-nav__button relative flex min-h-[46px] flex-col items-center justify-center gap-0.5 rounded-[18px] border px-1 transition-all duration-150 ${
+                                <div className={`app-bottom-nav__button relative flex min-h-[40px] flex-col items-center justify-center gap-0.5 rounded-[14px] border px-1 transition-all duration-150 ${
                                     isPrimary
                                         ? `${isActive ? 'app-bottom-nav__primary app-bottom-nav__item--active text-brand-gold' : 'text-brand-gold hover:text-brand-gold'}`
                                         : `app-bottom-nav__item ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
                                 }`}>
-                                    <div className={`app-bottom-nav__icon flex h-5 w-6 items-center justify-center text-[16px] ${
+                                    <div className={`app-bottom-nav__icon flex items-center justify-center text-[19px] ${
                                         isPrimary
-                                            ? (isActive ? 'text-[18px] text-brand-gold' : 'text-[17px] text-brand-gold/80')
+                                            ? (isActive ? 'text-[21px] text-brand-gold' : 'text-[20px] text-brand-gold/80')
                                             : (isActive ? "-translate-y-px text-brand-gold" : "")
                                     }`}>
                                         {item.icon}
