@@ -45,13 +45,6 @@ export default function PlayLobby() {
   const [matchmakingError, setMatchmakingError] = useState<string>("");
   const [notifySearchEnabled, setNotifySearchEnabled] = useState(false);
   const [notifyRequestPending, setNotifyRequestPending] = useState(false);
-  const [realQueueSnapshot, setRealQueueSnapshot] = useState<{
-    bidAmount: number;
-    timeControl: number;
-    poolSize: number;
-    totalSize: number;
-    poolOpponents: number;
-  } | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
 
@@ -68,7 +61,6 @@ export default function PlayLobby() {
   const submittingRef = useRef<boolean>(false);
   const aiFallbackOfferedRef = useRef<boolean>(false);
   const keepSearchingOnExitRef = useRef<boolean>(false);
-  const queueSelectionRef = useRef({ bidAmount: selectedWager, timeControl: 600 });
 
   const scrollToWager = () => {
     telegramHaptic('light');
@@ -433,22 +425,6 @@ export default function PlayLobby() {
       }
     };
 
-    const onQueueSize = (data: any) => {
-      const expected = queueSelectionRef.current;
-      if (
-        Number(data.bid_amount) !== expected.bidAmount ||
-        Number(data.time_control) !== expected.timeControl ||
-        data.queue_size_source !== 'server_shared_queue'
-      ) return;
-      setRealQueueSnapshot({
-        bidAmount: Number(data.bid_amount),
-        timeControl: Number(data.time_control),
-        poolSize: Number(data.real_pool_queue_size ?? 0),
-        totalSize: Number(data.real_total_queue_size ?? 0),
-        poolOpponents: Number(data.real_pool_opponents ?? 0),
-      });
-    };
-
     const restoreMatchmaking = () => {
       socket.emit('check_matchmaking', {});
     };
@@ -457,7 +433,6 @@ export default function PlayLobby() {
     socket.on('matchmaking_error', onMatchmakingError);
     socket.on('matchmaking_status', onMatchmakingStatus);
     socket.on('matchmaking_notifications_status', onNotificationStatus);
-    socket.on('matchmaking_queue_size', onQueueSize);
     socket.on('connect', restoreMatchmaking);
     if (socket.connected) {
       restoreMatchmaking();
@@ -468,32 +443,9 @@ export default function PlayLobby() {
       socket.off('matchmaking_error', onMatchmakingError);
       socket.off('matchmaking_status', onMatchmakingStatus);
       socket.off('matchmaking_notifications_status', onNotificationStatus);
-      socket.off('matchmaking_queue_size', onQueueSize);
       socket.off('connect', restoreMatchmaking);
     };
   }, [locale, router, playAudio]);
-
-  useEffect(() => {
-    const bidAmount = isCustomWager
-      ? Math.round(parseFloat(customWagerInput) * 100)
-      : selectedWager;
-    if (!Number.isFinite(bidAmount) || bidAmount < 0) return;
-
-    queueSelectionRef.current = { bidAmount, timeControl };
-    setRealQueueSnapshot(null);
-    const requestSnapshot = () => {
-      getSocket().emit('get_matchmaking_queue_size', {
-        bid_amount: bidAmount,
-        time_control: timeControl,
-      });
-    };
-    requestSnapshot();
-    const interval = setInterval(
-      requestSnapshot,
-      matchmakingState === 'searching' ? 5000 : 15000,
-    );
-    return () => clearInterval(interval);
-  }, [selectedWager, isCustomWager, customWagerInput, timeControl, matchmakingState]);
 
   const handleLauncherClick = () => {
     if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
@@ -653,24 +605,6 @@ export default function PlayLobby() {
             <span>{activeUsers.toLocaleString()} {tg('active_users')}</span>
           </div>
 
-          <div
-            className="mt-2 w-full rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-3 py-2 flex items-center justify-between gap-3"
-            title="Verified from the shared server matchmaking queue. Header activity counters remain presentation-only."
-          >
-            <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-500 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              Server queue
-            </span>
-            {realQueueSnapshot ? (
-              <span className="text-[9px] font-bold text-brand-primary/55 text-right leading-tight">
-                <strong className="text-cyan-500">{realQueueSnapshot.poolOpponents}</strong> other in this pool
-                <span className="mx-1.5 opacity-30">|</span>
-                <strong className="text-cyan-500">{realQueueSnapshot.totalSize}</strong> across all pools
-              </span>
-            ) : (
-              <span className="text-[9px] font-bold uppercase tracking-wider text-brand-primary/35">Syncing...</span>
-            )}
-          </div>
         </div>
 
         {/* Daily Arena event banner — schedule, live join, standings */}
