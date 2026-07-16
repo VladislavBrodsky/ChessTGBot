@@ -6,7 +6,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/grandmaestro/Developer/ChessTGBot/backend && SECRET_KEY=devsecret WEBHOOK_SECRET=devhook ENVIRONMENT=development ENV=development DATABASE_URL='postgresql+asyncpg://dimitri@localhost/chess_db' REDIS_URL= TELEGRAM_BOT_TOKEN=123456789:test_token ./venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000"
+        "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/backend && SECRET_KEY=devsecret WEBHOOK_SECRET=devhook ENVIRONMENT=development ENV=development DATABASE_URL='postgresql+asyncpg://dimitri@localhost/chess_db' REDIS_URL= TELEGRAM_BOT_TOKEN=123456789:test_token ./venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000"
       ],
       "port": 8000
     },
@@ -15,7 +15,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/grandmaestro/Developer/ChessTGBot/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
+        "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
       ],
       "port": 3000
     }

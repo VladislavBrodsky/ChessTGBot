@@ -130,7 +130,7 @@ export default function ArenaBanner() {
             {isLive ? (
               <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]" />
-                {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)} · {arena.participants} {t('players')}
+                {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
               <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider mt-0.5">
