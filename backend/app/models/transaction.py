@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey, Index, text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import datetime, timezone
@@ -17,5 +17,21 @@ class Transaction(Base):
 
     # Relationship to user
     user = relationship("User", back_populates="transactions")
+
+    # A blockchain transfer may be observed by the immediate verifier, TonAPI
+    # webhook and the recovery crawler.  The user lock prevents the common
+    # race, while this partial index is the final database-level guard against
+    # ever crediting the same on-chain deposit twice.  Other transaction types
+    # legitimately share reference IDs (for example, both players in a game).
+    __table_args__ = (
+        Index(
+            "uq_transactions_deposit_user_reference",
+            "user_id",
+            "reference_id",
+            unique=True,
+            postgresql_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
+            sqlite_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
+        ),
+    )
 
 # Update the User class to back-populate if needed, but let's register this relationship cleanly.

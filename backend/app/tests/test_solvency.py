@@ -94,6 +94,19 @@ async def test_platform_revenue_excluded_from_liabilities(db):
     assert s["platform_revenue_cents"] == 80
 
 
+async def test_external_stripe_subscription_revenue_does_not_change_wallet_reconciliation(db):
+    db.add(_user(1, 500))
+    db.add_all([
+        _tx(1, "deposit", 500),
+        _tx(1, "stripe_subscription_payment", 999),
+    ])
+    await db.commit()
+
+    s = await SolvencyService.get_ledger_summary(db)
+    assert s["ledger_user_sum_cents"] == 500
+    assert s["internal_reconciled"] is True
+
+
 async def test_pending_transactions_ignored(db):
     db.add_all([_user(1, 500)])
     db.add_all([
@@ -182,4 +195,3 @@ async def test_solvency_loop_dormant_by_default():
     from app.services.solvency_service import start_solvency_alert_loop
     # Disabled by default/testing -> returns immediately.
     await asyncio.wait_for(start_solvency_alert_loop(), timeout=5)
-

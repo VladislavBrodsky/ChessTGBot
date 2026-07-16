@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 from sqlalchemy.future import select  # noqa: E402
 from sqlalchemy import desc, func, or_  # noqa: E402
+from sqlalchemy.exc import IntegrityError  # noqa: E402
 from app.core.database import get_db, get_read_db  # noqa: E402
 from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit  # noqa: E402
 from app.models.user import User  # noqa: E402
@@ -843,33 +844,29 @@ async def receive_ton_deposit_webhook(
     credited_amount, fee = _split_web3_top_up(amount_cents)
 
     # Atomically credit user balance
-    updated_user = await user_crud.atomic_credit(db, telegram_id, credited_amount)
-    if not updated_user:
-        raise HTTPException(status_code=404, detail="User associated with comment not found")
+    try:
+        # Keep the balance mutation and both ledger rows in the same database
+        # transaction.  A failed ledger insert must roll back the credit too.
+        updated_user = await user_crud.atomic_credit(db, telegram_id, credited_amount, commit=False)
+        if not updated_user:
+            raise HTTPException(status_code=404, detail="User associated with comment not found")
 
-    # Log deposit transaction
-    tx_deposit = Transaction(
-        user_id=telegram_id,
-        type="deposit",
-        amount=credited_amount,
-        fee=fee,
-        status="completed",
-        reference_id=tx_hash
-    )
-    db.add(tx_deposit)
-
-    # Log routed commission transaction to Company Wallet
-    tx_commission = Transaction(
-        user_id=telegram_id,
-        type="deposit_fee",
-        amount=-fee,
-        fee=0,
-        status="completed",
-        reference_id=f"fee_{tx_hash[:16]}"
-    )
-    db.add(tx_commission)
-
-    await db.commit()
+        db.add(Transaction(
+            user_id=telegram_id, type="deposit", amount=credited_amount,
+            fee=fee, status="completed", reference_id=tx_hash,
+        ))
+        tx_commission = Transaction(
+            user_id=telegram_id, type="deposit_fee", amount=-fee, fee=0,
+            status="completed", reference_id=f"fee_{tx_hash[:16]}",
+        )
+        db.add(tx_commission)
+        await db.commit()
+    except IntegrityError:
+        # The partial unique index won a concurrent race.  Nothing was
+        # credited because the transaction was rolled back.
+        await db.rollback()
+        current = (await db.execute(select(User).filter(User.telegram_id == telegram_id))).scalars().first()
+        return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": current.balance if current else 0}
     logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit | amount={credited_amount} cents (${credited_amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_hash} | status=completed")
     logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit_fee | amount=-{fee} cents (-${fee/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_commission.reference_id} | status=completed")
 
@@ -1192,7 +1189,12 @@ async def verify_deposit(
         )
         db.add(tx_fee)
 
-        await db.commit()
+        try:
+            await db.commit()
+        except IntegrityError:
+            await db.rollback()
+            current = (await db.execute(select(User).filter(User.telegram_id == telegram_id))).scalars().first()
+            return {"status": "success", "credited_amount": 0, "new_balance": current.balance if current else 0, "message": "Already processed"}
         await db.refresh(user)
         final_balance = user.balance
 
@@ -1441,9 +1443,13 @@ async def create_stripe_subscription(
     if not redirect_path.startswith("/"):
         redirect_path = "/" + redirect_path
 
+    billing_period = request.billing_period.lower()
+    if billing_period not in ("monthly", "annual"):
+        raise HTTPException(status_code=400, detail="billing_period must be 'monthly' or 'annual'.")
+
     # If user already has an active subscription AND wants the same billing period, block them
     if current_user.stripe_subscription_id and current_user.is_premium_active:
-        if current_user.premium_billing_period == request.billing_period:
+        if current_user.premium_billing_period == billing_period:
             raise HTTPException(
                 status_code=400,
                 detail="You already have an active subscription on this plan. Use 'Manage Subscription' to change it."
@@ -1456,7 +1462,7 @@ async def create_stripe_subscription(
             )
 
     # Use the appropriate price ID based on the billing period
-    if request.billing_period == "annual":
+    if billing_period == "annual":
         price_id = settings.STRIPE_ANNUAL_PRICE_ID
     else:
         price_id = settings.STRIPE_MONTHLY_PRICE_ID
@@ -1481,7 +1487,12 @@ async def create_stripe_subscription(
         if current_user.stripe_customer_id:
             session_kwargs['customer'] = current_user.stripe_customer_id
 
-        checkout_session = stripe.checkout.Session.create(**session_kwargs)
+        # Retries/double taps must return the same Checkout Session rather than
+        # create parallel subscriptions for the same account and plan.
+        checkout_session = stripe.checkout.Session.create(
+            **session_kwargs,
+            idempotency_key=f"premium_checkout_{current_user.telegram_id}_{billing_period}",
+        )
 
         return StripeSessionResponse(
             session_id=checkout_session.id,
@@ -1649,14 +1660,12 @@ async def stripe_webhook(
                     except Exception:
                         user.premium_billing_period = "monthly"  # safe fallback
 
-                    user.is_premium = True
-                    from datetime import datetime, timezone, timedelta
-                    now = datetime.now(timezone.utc).replace(tzinfo=None)
-                    user.premium_expires_at = now + timedelta(days=365 if user.premium_billing_period == "annual" else 30)
-
+                    # Checkout completion only links the Stripe objects.  Access is
+                    # granted by invoice.payment_succeeded below, which proves that
+                    # Stripe actually collected the first subscription payment.
                     db.add(user)
                     await db.commit()
-            return {"status": "success", "message": "Subscription mapped to user."}
+            return {"status": "success", "message": "Subscription mapped; awaiting paid invoice."}
 
         # Handle One-Time Wallet Top-ups
         tx_id_str = session.get('metadata', {}).get('tx_id')
@@ -1802,18 +1811,32 @@ async def stripe_webhook(
                         logger.error("Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
                 
                 if user:
+                    invoice_ref = f"sub_{invoice.get('id', '')}"
+                    # Stripe can retry the same event.  Do not extend access or
+                    # create another accounting row for an invoice we already
+                    # settled.
+                    prior_invoice = await db.execute(
+                        select(Transaction).filter(Transaction.reference_id == invoice_ref)
+                    )
+                    if prior_invoice.scalars().first():
+                        return {"status": "ignored", "message": "Subscription invoice already processed."}
+
                     user.is_premium = True
                     user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
                     
                     from datetime import datetime, timezone, timedelta
                     now = datetime.now(timezone.utc).replace(tzinfo=None)
+                    # Renew from the later of now or the existing entitlement;
+                    # this prevents a retried/early invoice from shortening a
+                    # valid subscription period.
+                    starts_at = max(now, user.premium_expires_at) if user.premium_expires_at else now
                     
                     price_id = subscription["items"]["data"][0]["price"]["id"]
                     if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
-                        user.premium_expires_at = now + timedelta(days=365)
+                        user.premium_expires_at = starts_at + timedelta(days=365)
                         user.premium_billing_period = "annual"
                     else:
-                        user.premium_expires_at = now + timedelta(days=30)
+                        user.premium_expires_at = starts_at + timedelta(days=30)
                         user.premium_billing_period = "monthly"
                     
                     db.add(user)
@@ -1823,11 +1846,14 @@ async def stripe_webhook(
                     if amount_paid > 0:
                         sub_tx = Transaction(
                             user_id=user_id,
-                            type="subscription",
+                            # This is external card revenue, not a movement in the
+                            # user's playable wallet balance.  Keep it out of the
+                            # balance-reconciliation transaction family.
+                            type="stripe_subscription_payment",
                             amount=amount_paid,
                             fee=0,  # Stripe fees handled differently, but we log gross
                             status="completed",
-                            reference_id=f"sub_{invoice.get('id', '')}"
+                            reference_id=invoice_ref
                         )
                         db.add(sub_tx)
                     
@@ -1903,5 +1929,3 @@ async def stripe_webhook(
                 logger.error(f"Failed to process subscription deletion: {e}")
 
     return {"status": "success", "message": "Event received."}
-
-

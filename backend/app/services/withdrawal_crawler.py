@@ -12,6 +12,31 @@ from app.services.telegram_bot import TelegramService
 
 logger = logging.getLogger(__name__)
 
+
+async def flag_unconfirmed_broadcast(tx: Transaction, reason: str) -> None:
+    """Escalate an uncertain on-chain payout; never refund it automatically.
+
+    A broadcaster timeout or an indexer delay does not prove that the transfer
+    failed.  Refunding here could pay the customer twice, so Treasury must
+    inspect the master wallet before deciding the next action.
+    """
+    logger.error("Withdrawal #%s needs manual chain review: %s", tx.id, reason)
+    try:
+        from app.core.alerts import send_alert_with_redis_rate_limit
+        await send_alert_with_redis_rate_limit(
+            f"uncertain_payout:{tx.id}",
+            "🧊 <b>Withdrawal needs chain review — no automatic refund</b>\n\n"
+            f"• <b>Transaction ID:</b> #{tx.id}\n"
+            f"• <b>User:</b> <code>{tx.user_id}</code>\n"
+            f"• <b>Amount:</b> ${abs(tx.amount) / 100:.2f} USDT\n"
+            f"• <b>Reference:</b> <code>{tx.reference_id}</code>\n"
+            f"• <b>Reason:</b> {reason}\n\n"
+            "<i>Check Tonviewer/master-wallet history. Do not refund or resend until the broadcast is resolved.</i>",
+            system="treasury",
+        )
+    except Exception as alert_err:
+        logger.warning("Could not alert Treasury for withdrawal #%s: %s", tx.id, alert_err)
+
 async def start_withdrawal_crawler():
     """
     Background loop that polls TonAPI for pending withdrawals,
@@ -103,12 +128,11 @@ async def start_withdrawal_crawler():
                         # No actions found, but event is not in_progress. Check if it's failed/empty
                         logger.warning(f"Withdrawal transaction #{tx.id} has no actions on-chain but not in-progress.")
                         if age_seconds > 900:
-                            await process_withdrawal_failure(tx.id, "No on-chain actions executed within timeout")
+                            await flag_unconfirmed_broadcast(tx, "No on-chain actions after 15 minutes")
                 else:
                     # Transaction not found on-chain
                     if age_seconds > 900:
-                        logger.warning(f"Pending withdrawal transaction #{tx.id} not found on-chain after 15 minutes. Marking as failed.")
-                        await process_withdrawal_failure(tx.id, "On-chain transaction not found (expired/dropped)")
+                        await flag_unconfirmed_broadcast(tx, "Transaction not indexed after 15 minutes")
                         
         except Exception as loop_err:
             logger.error(f"Error in background withdrawal crawler loop: {loop_err}", exc_info=True)

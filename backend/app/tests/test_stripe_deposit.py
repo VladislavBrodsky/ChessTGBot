@@ -3,6 +3,7 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.core.database import Base
@@ -13,7 +14,9 @@ from app.api.v1.endpoints.wallet import (
     stripe_create_session,
     stripe_verify_session,
     stripe_webhook,
-    StripeSessionRequest
+    StripeSessionRequest,
+    StripeSubscribeRequest,
+    create_stripe_subscription,
 )
 
 @pytest_asyncio.fixture
@@ -150,3 +153,116 @@ async def test_stripe_webhook_success(db, monkeypatch):
 
         # Verify telegram notified
         assert mock_tg.called
+
+
+@pytest.mark.asyncio
+async def test_subscription_checkout_only_links_stripe_objects(db, monkeypatch):
+    """Checkout completion is not proof of collection; the paid invoice grants access."""
+    user = _user(45678, 0)
+    db.add(user)
+    await db.commit()
+
+    event = {
+        "type": "checkout.session.completed",
+        "data": {"object": {
+            "mode": "subscription", "client_reference_id": "45678",
+            "customer": "cus_456", "subscription": "sub_456",
+        }},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    subscription = {"items": {"data": [{"price": {"id": "price_monthly"}}]}}
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+    monkeypatch.setattr(settings, "STRIPE_MONTHLY_PRICE_ID", "price_monthly")
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("stripe.Subscription.retrieve", return_value=subscription):
+        result = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(user)
+    assert result["status"] == "success"
+    assert user.stripe_customer_id == "cus_456"
+    assert user.stripe_subscription_id == "sub_456"
+    assert user.is_premium is False
+    assert user.premium_expires_at is None
+
+
+@pytest.mark.asyncio
+async def test_paid_subscription_invoice_activates_once_and_stays_out_of_wallet_ledger(db, monkeypatch):
+    user = _user(56789, 0)
+    user.stripe_customer_id = "cus_567"
+    user.stripe_subscription_id = "sub_567"
+    db.add(user)
+    await db.commit()
+
+    event = {
+        "type": "invoice.payment_succeeded",
+        "data": {"object": {
+            "id": "in_567", "subscription": "sub_567", "amount_paid": 999,
+        }},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    subscription = {
+        "metadata": {"user_id": "56789", "tier": "premium"},
+        "items": {"data": [{"price": {"id": "price_monthly"}}]},
+    }
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+    monkeypatch.setattr(settings, "STRIPE_MONTHLY_PRICE_ID", "price_monthly")
+
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("stripe.Subscription.retrieve", return_value=subscription), \
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+        first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+        await db.refresh(user)
+        first_expiry = user.premium_expires_at
+        second = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    assert first["status"] == "success"
+    assert second["status"] == "ignored"
+    assert user.is_premium is True
+    assert user.premium_expires_at == first_expiry
+    rows = await db.execute(select(Transaction).filter(Transaction.reference_id == "sub_in_567"))
+    entries = rows.scalars().all()
+    assert len(entries) == 1
+    assert entries[0].type == "stripe_subscription_payment"
+    assert user.balance == 0
+
+
+@pytest.mark.asyncio
+async def test_subscription_checkout_rejects_invalid_period_before_stripe_call(db, monkeypatch):
+    user = _user(67890, 0)
+    db.add(user)
+    await db.commit()
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+
+    with patch("stripe.checkout.Session.create") as create:
+        with pytest.raises(Exception) as excinfo:
+            await create_stripe_subscription(
+                StripeSubscribeRequest(billing_period="weekly"), current_user=user, db=db
+            )
+    assert getattr(excinfo.value, "status_code", None) == 400
+    create.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_deposit_reference_is_unique_per_user_at_database_level(db):
+    """A second observer cannot turn one on-chain transfer into two credits."""
+    user = _user(78901, 0)
+    db.add(user)
+    db.add(Transaction(
+        user_id=78901, type="deposit", amount=1000, status="completed", reference_id="chain_tx_1"
+    ))
+    await db.commit()
+
+    db.add(Transaction(
+        user_id=78901, type="deposit", amount=1000, status="completed", reference_id="chain_tx_1"
+    ))
+    with pytest.raises(IntegrityError):
+        await db.commit()
+    await db.rollback()
