@@ -429,18 +429,18 @@ export default function AcademyPage() {
             </div>
 
             <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent uppercase mb-2">
-              {allSolved 
-                ? (locale === 'ru' ? 'ВСЕ УРОВНИ РЕШЕНЫ!' : 'ALL LEVELS SOLVED!') 
-                : nextPuzzle 
-                  ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title}` 
+              {allSolved
+                ? t('all_levels_solved')
+                : nextPuzzle
+                  ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title}`
                   : t('mate_in_2')
               }
             </h2>
             <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">
-              {allSolved 
-                ? (locale === 'ru' ? 'Поздравляем! Вы прошли все 100 тактических уровней. Продолжайте тренироваться!' : 'Congratulations! You have completed all 100 tactical levels. Keep practicing!') 
-                : nextPuzzle 
-                  ? nextPuzzle.description 
+              {allSolved
+                ? t('all_levels_congrats')
+                : nextPuzzle
+                  ? nextPuzzle.description
                   : t('puzzle_desc')
               }
             </p>
@@ -452,7 +452,7 @@ export default function AcademyPage() {
             >
               <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-20),transparent)] -translate-x-full animate-shimmer" />
               <span className="relative z-10">
-                {allSolved ? (locale === 'ru' ? 'Повторить Уровень 1' : 'Review Level 1') : t('start_puzzle')}
+                {allSolved ? t('review_level_1') : t('start_puzzle')}
               </span>
             </Button>
           </div>

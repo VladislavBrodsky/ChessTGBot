@@ -184,7 +184,7 @@ export default function MatchOverModal({
               <div className="h-px w-full bg-brand-border-opacity-5" />
               <div className="flex justify-between items-center animate-fade-in">
                 <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
-                  {locale === 'ru' ? 'Опыт' : 'XP Reward'}
+                  {tg('xp_reward')}
                 </span>
                 <span className="text-xs font-black text-amber-400 tracking-wider font-mono flex items-center gap-1">
                   +{xpGained} XP ⭐
@@ -198,7 +198,7 @@ export default function MatchOverModal({
         <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
             <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
-              <span>{isBotGame ? (locale === 'ru' ? 'Создание дуэли...' : 'Creating Match...') : 'Pending Opponent...'}</span>
+              <span>{isBotGame ? tg('creating_match') : tg('pending_opponent')}</span>
             </div>
           ) : (
             <motion.button
@@ -219,7 +219,7 @@ export default function MatchOverModal({
                 className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
               >
                 <FaRedo size={10} className="text-brand-primary opacity-60" />
-                <span>{locale === 'ru' ? 'В лобби' : 'To Lobby'}</span>
+                <span>{tg('to_lobby')}</span>
               </motion.button>
             </Link>
             
