@@ -231,7 +231,7 @@ async def test_paid_subscription_invoice_activates_once_and_stays_out_of_wallet_
 
     with patch("stripe.Webhook.construct_event", return_value=event), \
          patch("stripe.Subscription.retrieve", return_value=subscription), \
-         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_tg:
         first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
         await db.refresh(user)
         first_expiry = user.premium_expires_at
@@ -246,6 +246,20 @@ async def test_paid_subscription_invoice_activates_once_and_stays_out_of_wallet_
     assert len(entries) == 1
     assert entries[0].type == "stripe_subscription_payment"
     assert user.balance == 0
+
+    # Verify admin subscription alerts were sent
+    assert mock_tg.call_count == 3  # 1 user + 2 admins
+    calls = mock_tg.call_args_list
+    assert calls[0][0][0] == 56789
+    assert "Premium Subscription Active!" in calls[0][0][1]
+
+    admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
+    assert set(admin_calls.keys()) == {1016749901, 716720099}
+    for admin_id, msg in admin_calls.items():
+        assert "New Premium subscription (1 month)" in msg
+        assert "User: ID 56789" in msg
+        assert "Amount: $9.99" in msg
+        assert "Transaction ID: in_567" in msg
 
 
 @pytest.mark.asyncio

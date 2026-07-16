@@ -1908,6 +1908,19 @@ async def stripe_webhook(
                         )
                     except Exception:
                         pass
+
+                    # Send admin alert
+                    try:
+                        from app.core.alerts import send_premium_subscription_alert
+                        await send_premium_subscription_alert(
+                            username=user.username,
+                            telegram_id=user_id,
+                            billing_period=user.premium_billing_period,
+                            amount=amount_paid / 100.0,
+                            tx_id=invoice.get('id', '')
+                        )
+                    except Exception as e:
+                        logger.warning(f"Failed to send admin subscription alert: {e}")
                     
                     return {"status": "success", "message": "Subscription activated."}
             except Exception as e:

@@ -348,3 +348,36 @@ async def send_deposit_alert(
             except Exception as e:
                 # Print directly to stdout/stderr to avoid circular logging loops
                 print(f"[Alerts] Failed to send deposit alert to admin {admin_id}: {e}")
+
+
+async def send_premium_subscription_alert(
+    username: str | None,
+    telegram_id: int,
+    billing_period: str | None,
+    amount: float,
+    tx_id: str
+):
+    """
+    Sends a telegram alert to all admins for a new Premium subscription.
+    """
+    from app.services.telegram_bot import TelegramService
+    
+    duration = "1 year" if billing_period == "annual" else "1 month"
+    user_display = f"@{username}" if username else f"ID {telegram_id}"
+    date_time_str = format_alert_time()
+    
+    alert_text = (
+        f"New Premium subscription ({duration})\n"
+        f"User: {user_display}\n"
+        f"Amount: ${amount:.2f}\n"
+        f"Date and time: {date_time_str}\n"
+        f"Transaction ID: {tx_id}"
+    )
+    
+    for admin_id in settings.admin_telegram_ids:
+        if admin_id > 0:
+            try:
+                await TelegramService.send_notification(admin_id, alert_text)
+            except Exception as e:
+                # Print directly to stdout/stderr to avoid circular logging loops
+                print(f"[Alerts] Failed to send subscription alert to admin {admin_id}: {e}")
