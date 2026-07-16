@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaCheck, FaArrowLeft } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
@@ -269,15 +269,6 @@ export default function MembershipPage() {
     <LayoutWrapper className="pb-32 pt-4 min-h-screen relative">
 
       <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
-
-        {/* ── Back + Hero ─────────────────────────────────────── */}
-        <div className="w-full flex items-center justify-between pt-1">
-          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-muted hover:text-brand-primary transition-colors">
-            <FaArrowLeft className="text-[10px]" />
-            <span className="text-[10px] font-black uppercase tracking-widest">{t('back')}</span>
-          </Link>
-          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-muted">Membership</span>
-        </div>
 
         {/* Hero with Gold Accents */}
         <motion.div

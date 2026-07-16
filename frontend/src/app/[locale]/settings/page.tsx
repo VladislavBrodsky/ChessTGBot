@@ -75,21 +75,6 @@ export default function SettingsPage() {
  return (
  <LayoutWrapper className="justify-start pt-8 pb-32">
  <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto">
- {/* Immersive Header */}
- <div className="w-full flex justify-between items-center mb-8">
- <Link href={`/${locale}/home`} className="html-back-button">
- <motion.button
- whileHover={{ x: -2 }}
- className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
- >
- <FaArrowLeft className="text-[10px]" />
- <span>{t('return')}</span>
- </motion.button>
- </Link>
- <div className="px-3 py-1 rounded-full bg-brand-surface border border-brand-border-opacity-10 text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">
- {t('config_core')}
- </div>
- </div>
 
  {/* Page Title & Subtitle Centered in 1 Line */}
  <div className="w-full text-center flex flex-col items-center mb-8">
