@@ -1,6 +1,6 @@
 # ChessTGBot — Gap Register (updated 2026-07-16)
 
-Ten-pillar assessment of the app, reduced to **gaps only** — what is missing,
+Nine-pillar assessment of the app, reduced to **gaps only** — what is missing,
 weak, or risky per pillar. Strengths are omitted by design; this is a worklist,
 not a scorecard. Each pillar carries a letter grade for triage. Fix priority is
 summarized at the bottom.
@@ -16,14 +16,6 @@ enforces freshness on PRs).
 
 ## 1. UI/UX — B+
 
-- **The lobby leans entirely on simulated activity.** `playersOnline` seeds at
-  782, `activeUsers` at 3768 (`frontend/src/components/game/PlayLobby.tsx`), and
-  the match-found screen shows a fabricated opponent ELO (`yours ± 20`). It hides
-  the empty-room problem but sets up a consistency break: a user who joins an
-  "812 online" arena and then waits minutes for a match feels the lie — and the
-  one truthful signal (the server-queue card) was just removed. Prefer honest-
-  but-warm waiting states ("matching you against players in your rating range…")
-  over more invented numbers.
 - **`PlayLobby.tsx` is ~1,200 lines** mixing matchmaking logic, socket handling,
   and presentation. It is where UI bugs will breed; split matchmaking/socket
   state out of the view.
@@ -59,8 +51,6 @@ enforces freshness on PRs).
   unbeatable. Start with **post-hoc** analysis on wagered games (engine move-
   match %, centipawn-loss profiles) feeding a review queue that gates large
   withdrawals; real-time detection can come later.
-- **Fabricated counters + fake opponent ELO are an integrity liability**, not
-  just a UX choice (see Legal).
 - **Matchmaker/arena/rate-limit/profile-cache state is in-memory, single-
   instance by design.** Fine now, but it is an undocumented ceiling on
   horizontal scaling.
@@ -113,29 +103,7 @@ enforces freshness on PRs).
   match rates are invisible. One latency histogram + queue-depth gauge would go
   a long way.
 
-## 9. Legal & Compliance — D  (weakest pillar; existential)
-
-- **No Terms of Service or Privacy Policy anywhere in the app.** Searched —
-  there are none.
-- **Real-money USDT wagering with rake, and no KYC / AML / sanctions screening /
-  geo-blocking / age gate.** Even under a "skill gaming" theory (chess is the
-  strongest case), cash play is regulated or prohibited in many jurisdictions;
-  crypto settlement adds money-transmission/AML exposure. There is currently no
-  jurisdictional filter of any kind.
-- **Fabricated figures on the login page** ("12K+ PLAYERS", "$4.2K PRIZE POOL")
-  and simulated lobby counts are deceptive-practices exposure independent of
-  gambling law.
-- **Mystery boxes brush against loot-box regulation** in several markets.
-- **Telegram's own platform terms around gambling bots are a de-platforming
-  risk** that no legal structure fixes.
-- **Minimum viable steps:** publish ToS + Privacy Policy with jurisdiction
-  restrictions and an age requirement; geo-block clearly prohibited markets;
-  replace invented numbers with real ones or remove them; obtain one real legal
-  opinion on the skill-vs-chance classification in target markets. *(Not legal
-  advice — but the current posture is "none," and anything above none is
-  progress.)*
-
-## 10. Engineering Excellence — B+
+## 9. Engineering Excellence — B+
 
 - **File gigantism in the highest-risk domains:** `wallet.py` (~1,931 lines),
   `telegram_bot.py` (~1,000), `PlayLobby.tsx` (~1,200). Lowest navigability
