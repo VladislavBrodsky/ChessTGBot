@@ -33,11 +33,6 @@ interface DepositModalProps {
 const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
 const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
 const TRANSAK_MIN_USD = 15;
-// The owner has accepted activation without funded mainnet canaries. Keep an
-// explicit emergency off switch so operators can hide the external routes if a
-// provider becomes unsafe or stops delivering canonical TON USDT.
-const SELF_CUSTODY_BRIDGE_ENABLED = process.env.NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED !== 'false';
-
 // USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
 // The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
 // must only ever settle USDT. Users holding BTC/ETH can bridge into their OWN
@@ -56,11 +51,6 @@ const SwapToUsdt = dynamic(() => import("./SwapToUsdt"), {
       <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin opacity-40" />
     </div>
   ),
-});
-
-const SelfCustodyBridge = dynamic(() => import("./SelfCustodyBridge"), {
-  ssr: false,
-  loading: () => null,
 });
 
 export default function DepositModal({
@@ -887,16 +877,6 @@ export default function DepositModal({
                   </div>
                 )}
               </div>
-            )}
-
-            {wallet && SELF_CUSTODY_BRIDGE_ENABLED && (
-              <SelfCustodyBridge
-                walletRawAddress={wallet.account.address}
-                onBridgeStarted={async () => {
-                  trackDepositInitiated('self_custody_bridge', parseFloat(depositAmount) || 0);
-                  await startArrivalWatch();
-                }}
-              />
             )}
 
             {/* Gas wall escape hatch */}
