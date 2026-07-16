@@ -16,6 +16,7 @@ requests>=2.31.0
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
 aiosqlite>=0.19.0  # in-memory SQLite for pure-unit DB tests (test_solvency.py)
+aiohttp>=3.9.0  # python-socketio AsyncClient transport for the socket E2E test (test_socket_e2e.py)
 httpx>=0.27.0
 uvloop>=0.19.0; sys_platform != 'win32'
 tonsdk>=1.0.15
