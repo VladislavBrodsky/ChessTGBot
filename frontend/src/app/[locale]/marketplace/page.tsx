@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
-import { FaArrowLeft, FaGem, FaCrown } from 'react-icons/fa';
+import { FaGem, FaCrown } from 'react-icons/fa';
 import { FiBox } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
@@ -219,16 +219,6 @@ export default function MarketplacePage() {
     return (
         <LayoutWrapper className="pb-32 px-4 md:px-6">
             <div className="flex w-full max-w-sm flex-col items-center space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
-                <div className="w-full">
-                    <button
-                        onClick={() => { telegramHaptic('light'); router.push(`/${locale}/home`); }}
-                        className="flex min-h-11 items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-brand-muted transition-colors hover:text-brand-primary"
-                    >
-                        <FaArrowLeft className="text-[10px]" />
-                        <span>{t('back')}</span>
-                    </button>
-                </div>
-
                 <header className="flex w-full flex-col items-center text-center">
                     <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
                         <FaGem className="text-brand-gold" />

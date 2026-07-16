@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
+import { FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
@@ -172,18 +172,6 @@ export default function ChallengesPage() {
   return (
     <LayoutWrapper className="justify-start pt-8 pb-32">
       <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto">
-        {/* Header */}
-        <div className="w-full flex justify-between items-center mb-8">
-          <Link href={`/${locale}/home`} className="html-back-button">
-            <motion.button
-              whileHover={{ x: -2 }}
-              className="text-brand-primary opacity-40 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer"
-            >
-              <FaArrowLeft className="text-[10px]" />
-              <span>{t('return') || 'Return'}</span>
-            </motion.button>
-          </Link>
-        </div>
 
         {/* Level Progress Card — Ultra Premium */}
         <motion.div
