@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "国际象棋应用",
+    "welcome": "欢迎，{name}",
+    "welcome_greeting": "欢迎，",
     "subtitle": "FinChess 竞技场",
     "rating": "评分",
     "win_rate": "胜率",

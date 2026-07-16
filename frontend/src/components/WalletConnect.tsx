@@ -77,30 +77,21 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
 
     if (minimal) {
         return (
-            <div className="w-full flex items-center justify-between min-w-0 gap-1.5 relative">
+            <div className="w-full min-w-0">
                 {wallet ? (
-                    <>
-                        <button
-                            onClick={handleTopUpClick}
-                            className="flex-1 py-2 px-2.5 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md min-w-0"
-                            title={`Connected: ${getShortAddress(wallet.account.address)}`}
-                        >
-                            <FaWallet size={10} className="shrink-0" />
-                            <span className="truncate">{tw('top_up')}</span>
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
-                        </button>
-                        <button
-                            onClick={handleDisconnect}
-                            className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                            title="Disconnect Wallet"
-                        >
-                            <FaTimes size={9} />
-                        </button>
-                    </>
+                    <button
+                        onClick={handleTopUpClick}
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
+                        title={`Connected: ${getShortAddress(wallet.account.address)}`}
+                    >
+                        <FaWallet size={10} className="shrink-0" />
+                        <span className="truncate">{tw('top_up')}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
+                    </button>
                 ) : (
                     <button
                         onClick={handleTopUpClick}
-                        className="w-full py-2 px-3 rounded-xl bg-brand-primary hover:opacity-90 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
                     >
                         <FaWallet size={10} />
                         <span>{tw('top_up')}</span>

@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "تطبيق الشطرنج",
+    "welcome": "أهلاً بك، {name}",
+    "welcome_greeting": "أهلاً بك،",
     "subtitle": "حلبة FinChess",
     "rating": "التقييم",
     "win_rate": "معدل الفوز",

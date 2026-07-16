@@ -265,34 +265,18 @@ export default function MembershipPage() {
     finally { setSubmitting(false); }
   };
 
-const PortalBackground = () => {
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
-    if (!mounted) return null;
-    return createPortal(
-      <div className="fixed inset-0 pointer-events-none z-[-1] bg-gradient-to-b from-brand-gold/5 via-brand-void to-brand-void">
-        <div 
-          className="absolute top-[-150px] left-1/2 -translate-x-1/2 w-[350px] h-[350px] rounded-full opacity-20 filter blur-[120px]"
-          style={{ background: 'radial-gradient(circle, var(--text-gold) 0%, rgba(0,0,0,0) 80%)' }}
-        />
-      </div>,
-      document.body
-    );
-  };
-
   return (
-    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative" bgClass="bg-transparent">
-      <PortalBackground />
+    <LayoutWrapper className="pb-32 pt-4 min-h-screen relative">
 
       <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
 
         {/* ── Back + Hero ─────────────────────────────────────── */}
         <div className="w-full flex items-center justify-between pt-1">
-          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-primary opacity-40 hover:opacity-85 transition-opacity">
+          <Link href={`/${locale}/home`} className="flex items-center gap-1.5 text-brand-muted hover:text-brand-primary transition-colors">
             <FaArrowLeft className="text-[10px]" />
             <span className="text-[10px] font-black uppercase tracking-widest">{t('back')}</span>
           </Link>
-          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-primary opacity-30">Membership</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-muted">Membership</span>
         </div>
 
         {/* Hero with Gold Accents */}
@@ -301,22 +285,14 @@ const PortalBackground = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3"
         >
-          <div className="relative">
-            {/* Soft pulsing glow behind crown */}
-            <motion.div 
-              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-[22px] bg-brand-gold/20 blur-xl pointer-events-none"
-            />
-            <div className="w-16 h-16 rounded-[22px] bg-gradient-to-br from-brand-gold to-brand-gold/70 text-brand-void flex items-center justify-center shadow-[0_8px_32px_rgba(var(--color-brand-gold),0.25)] border border-brand-gold/30">
-              <IconCrown />
-            </div>
+          <div className="w-16 h-16 rounded-[22px] bg-brand-gold text-brand-void flex items-center justify-center shadow-premium border border-brand-gold/30">
+            <IconCrown />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase bg-gradient-to-r from-brand-primary via-brand-gold to-brand-primary bg-clip-text text-transparent leading-none">
+            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none">
               {stripEmojis(tm('title'))}
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold opacity-80 mt-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-muted mt-2">
               {tm('subtitle')}
             </p>
           </div>
@@ -327,7 +303,7 @@ const PortalBackground = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full bg-brand-surface/40 backdrop-blur-md border border-brand-gold/20 rounded-[20px] p-4 flex items-center gap-3 shadow-md"
+            className="w-full bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center gap-3 shadow-premium"
           >
             <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse shrink-0" />
             <div className="flex flex-col">
@@ -346,8 +322,8 @@ const PortalBackground = () => {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('monthly'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'monthly'
-                ? "bg-brand-surface/80 border-brand-gold shadow-[0_4px_20px_rgba(var(--color-brand-gold),0.1)] text-brand-primary"
-                : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
+                ? "bg-brand-gold/10 border-brand-gold text-brand-primary shadow-premium"
+                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-gold/40"
             }`}
           >
             {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && (
@@ -357,13 +333,13 @@ const PortalBackground = () => {
                 </div>
               </div>
             )}
-            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{tm('monthly')}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">{tm('monthly')}</span>
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-black tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
-                <span className="text-xs font-black opacity-45 mb-0.5">.00</span>
+                <span className="text-xs font-black text-brand-muted mb-0.5">.00</span>
               </div>
-              <span className="text-[10px] font-bold block mt-1 uppercase opacity-40">{tm('per_month')}</span>
+              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-muted">{tm('per_month')}</span>
             </div>
           </button>
 
@@ -372,8 +348,8 @@ const PortalBackground = () => {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('annual'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'annual'
-                ? "bg-brand-surface/80 border-brand-gold shadow-[0_4px_20px_rgba(var(--color-brand-gold),0.15)] text-brand-primary"
-                : "bg-brand-surface/30 border-brand-border-opacity-10 text-brand-primary opacity-60 hover:opacity-100"
+                ? "bg-brand-gold/10 border-brand-gold text-brand-primary shadow-premium"
+                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-gold/40"
             }`}
           >
             {/* Badges */}
@@ -393,9 +369,9 @@ const PortalBackground = () => {
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-black tracking-tighter text-brand-gold">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-xs font-black text-brand-gold opacity-50 mb-0.5">/mo</span>
+                <span className="text-xs font-black text-brand-gold/80 mb-0.5">/mo</span>
               </div>
-              <span className="text-[10px] font-bold block mt-1 uppercase opacity-50 text-brand-gold">
+              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-gold/80">
                 {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
               </span>
             </div>
@@ -405,12 +381,9 @@ const PortalBackground = () => {
         {/* ── Features list with Gold Accents ──────────────────── */}
         <div className="w-full flex flex-col space-y-2.5">
           {FEATURES.map((f, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="flex items-center gap-3 px-4 py-3 bg-brand-surface/50 backdrop-blur-sm border border-brand-border-opacity-10 rounded-[18px] hover:border-brand-gold/20 transition-all duration-300 group"
+              className="flex items-center gap-3 px-4 py-3 bg-brand-surface border border-brand-border-opacity-20 rounded-[18px] hover:border-brand-gold/40 transition-colors group"
             >
               <div className="w-9 h-9 rounded-[12px] bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center text-brand-gold shrink-0 group-hover:scale-105 transition-transform duration-300">
                 {f.icon}
@@ -419,12 +392,12 @@ const PortalBackground = () => {
                 <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-none mb-0.5">
                   {stripEmojis(f.title)}
                 </span>
-                <span className="text-[10px] text-brand-primary opacity-45 font-medium leading-snug truncate">
+                <span className="text-[10px] text-brand-muted font-medium leading-snug truncate">
                   {stripEmojis(f.desc)}
                 </span>
               </div>
               <FaCheck className="text-brand-gold shrink-0" fontSize={10} />
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -438,10 +411,10 @@ const PortalBackground = () => {
                   whileTap={submitting ? {} : { scale: 0.985 }}
                   onClick={stats.has_stripe_subscription ? handleUpgradeStripe : handleUpgradeBalance}
                   disabled={submitting}
-                  className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.25)] relative overflow-hidden ${
+                  className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
                     submitting 
                       ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
-                      : 'bg-brand-gold text-brand-void hover:opacity-95 bg-gradient-to-r from-[#FFD700] via-[#FDB931] to-[#FFD700] bg-[length:200%_auto] animate-gradient'
+                  : 'bg-brand-gold text-brand-void hover:brightness-95'
                   }`}
                 >
                   {submitting && <div className="w-4 h-4 rounded-full border-2 border-brand-void border-t-transparent animate-spin mr-2.5" />}
@@ -452,18 +425,18 @@ const PortalBackground = () => {
                   <button
                     onClick={handleUpgradeBalance}
                     disabled={submitting}
-                    className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
+                    className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
                   >
                     Upgrade using internal balance
                   </button>
                 )}
               </>
             ) : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? (
-              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
+              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-brand-gold/30 flex flex-col items-center gap-1 text-center">
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
                   You're on the best plan!
                 </span>
-                <span className="text-[10px] text-brand-primary opacity-50 font-medium">
+                <span className="text-[10px] text-brand-muted font-medium">
                   Your annual subscription is active and gives you the maximum discount.
                 </span>
               </div>
@@ -473,7 +446,7 @@ const PortalBackground = () => {
                 whileTap={submitting ? {} : { scale: 0.985 }}
                 onClick={handleManageSubscription}
                 disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-sm relative overflow-hidden ${
                   submitting 
                     ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
                     : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-brand-gold/50'
@@ -483,11 +456,11 @@ const PortalBackground = () => {
                 {submitting ? tm('processing') : "Manage Subscription"}
               </motion.button>
             ) : (
-              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface/40 border border-brand-gold/20 flex flex-col items-center gap-1 text-center">
+              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-brand-gold/30 flex flex-col items-center gap-1 text-center">
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">
                   Active via In-App Balance
                 </span>
-                <span className="text-[10px] text-brand-primary opacity-50 font-medium">
+                <span className="text-[10px] text-brand-muted font-medium">
                   Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
                 </span>
               </div>
@@ -499,10 +472,10 @@ const PortalBackground = () => {
                 whileTap={submitting ? {} : { scale: 0.985 }}
                 onClick={handleSubscribeStripe}
                 disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-[0_4px_24px_rgba(var(--color-brand-gold),0.15)] relative overflow-hidden ${
+                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
                   submitting 
                     ? 'opacity-60 cursor-not-allowed bg-brand-gold text-brand-void' 
-                    : 'bg-brand-gold text-brand-void hover:opacity-95 bg-gradient-to-r from-[#FFD700] via-[#FDB931] to-[#FFD700] bg-[length:200%_auto] animate-gradient'
+                  : 'bg-brand-gold text-brand-void hover:brightness-95'
                 }`}
               >
                 {submitting && <div className="w-4 h-4 rounded-full border-2 border-brand-void border-t-transparent animate-spin mr-2.5" />}
@@ -512,7 +485,7 @@ const PortalBackground = () => {
               <button
                 onClick={handleSubscribeBalance}
                 disabled={submitting}
-                className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-primary opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center border border-transparent hover:border-white/10 hover:bg-white/5"
+                className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
               >
                 Pay with internal balance
               </button>
@@ -523,7 +496,7 @@ const PortalBackground = () => {
         {/* ── Compare tiers toggle ─────────────────────────────── */}
         <button
           onClick={() => { telegramHaptic('light'); setShowComparison(v => !v); }}
-          className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40 hover:opacity-75 transition-opacity py-1 mt-1"
+          className="text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-brand-primary transition-colors py-1 mt-1"
         >
           {showComparison ? `▴ ${tm('hide_comparison')}` : `▾ ${tm('compare_tiers')}`}
         </button>
@@ -543,14 +516,14 @@ const PortalBackground = () => {
 
         {/* ── XP Upgrade (Free Path) ───────────────────────────── */}
         {stats && !stats.is_premium && (
-          <div className="w-full bg-brand-surface/40 backdrop-blur-sm border border-brand-border-opacity-10 p-5 rounded-[24px] space-y-3 text-center">
+          <div className="w-full bg-brand-surface border border-brand-border-opacity-20 p-5 rounded-[24px] space-y-3 text-center shadow-sm">
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold opacity-80 block">
               {tm('xp_upgrade_badge')}
             </span>
             <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
               {tm('xp_upgrade_title')}
             </h3>
-            <p className="text-[10px] text-brand-primary opacity-50 leading-relaxed">
+            <p className="text-[10px] text-brand-muted leading-relaxed">
               {tm('xp_upgrade_desc')}
             </p>
             <div className="bg-brand-gold/10 rounded-xl py-2 border border-brand-gold/25 text-[10px] font-black uppercase text-brand-gold tracking-widest max-w-[220px] mx-auto">
@@ -565,7 +538,7 @@ const PortalBackground = () => {
           </div>
         )}
 
-        <p className="w-full text-[10px] text-brand-primary opacity-25 text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
+        <p className="w-full text-[10px] text-brand-muted text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
           {tm('legal')}
         </p>
       </div>

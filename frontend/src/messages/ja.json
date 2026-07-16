@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "チェスアプリ",
+    "welcome": "ようこそ、{name}",
+    "welcome_greeting": "ようこそ、",
     "subtitle": "FinChessアリーナ",
     "rating": "レーティング",
     "win_rate": "勝率",

@@ -16,6 +16,7 @@ import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { getXPProgress } from '@/lib/xpProgress';
 
 // These libraries are only needed after a user opens a puzzle preview or
 // earns a reward. Keeping them out of the Academy entry bundle makes normal
@@ -159,10 +160,7 @@ export default function AcademyPage() {
     return 'Grandmaster';
   };
 
-  const getNextMilestoneXP = (xp: number) => {
-    const currentLevel = Math.floor(xp / 350) + 1;
-    return currentLevel * 350;
-  };
+  const xpProgress = stats ? getXPProgress(stats.xp, stats.level) : null;
 
   const handlePuzzleClick = async (id: number, pInfo: any) => {
     if (!pInfo) return;
@@ -322,12 +320,12 @@ export default function AcademyPage() {
   return (
     <LayoutWrapper className="pb-32 pt-6">
       {showConfetti && typeof window !== 'undefined' && (
-        <div className="fixed inset-0 z-[200] pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-20 pointer-events-none flex items-center justify-center">
           <Confetti
             width={window.innerWidth}
             height={window.innerHeight}
             recycle={false}
-            numberOfPieces={400}
+            numberOfPieces={window.innerWidth < 768 ? 80 : 140}
             gravity={0.15}
           />
         </div>
@@ -684,24 +682,29 @@ export default function AcademyPage() {
               <div className="flex justify-between items-end mb-3 relative z-10">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary/50 mb-1">Current Title</p>
-                  <p className="text-sm font-black text-brand-primary">{getPlayerTitle(stats.level)}</p>
+                  <p className="text-sm font-black text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-black uppercase tracking-widest text-amber-500/70 mb-1">Next Level</p>
-                  <p className="text-sm font-black text-amber-400">Level {stats.level + 1}</p>
+                  <p className="text-sm font-black text-amber-400">{xpProgress!.isLevelSecured ? 'Level secured' : `Level ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
               
               <div className="w-full h-2 bg-brand-primary/10 rounded-full overflow-hidden relative z-10 mb-2">
                 <div 
                   className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                  style={{ width: `${(stats.xp / getNextMilestoneXP(stats.xp)) * 100}%` }}
+                  style={{
+                    width: `${xpProgress!.progressPercentage}%`,
+                    background: xpProgress!.isLevelSecured ? 'var(--accent-silver)' : undefined,
+                  }}
                 />
               </div>
               
               <div className="text-center relative z-10 mt-3">
                 <p className="text-[10px] font-bold text-brand-primary/60">
-                  You need <span className="text-amber-400 font-black">{getNextMilestoneXP(stats.xp) - stats.xp} XP</span> to reach Level {stats.level + 1}. <br/> Solve one more puzzle!
+                  {xpProgress!.isLevelSecured
+                    ? 'This level is secured. Earn XP to continue toward your next crown.'
+                    : <>You need <span className="text-amber-400 font-black">{xpProgress!.nextLevelXp - stats.xp} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!</>}
                 </p>
               </div>
             </div>

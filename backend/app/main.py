@@ -239,12 +239,13 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(start_telemetry_maintenance_loop())
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
-    # Fixes any users whose `level` column drifted from their actual XP due
-    # to the bug where level was not recalculated after XP deductions.
-    # Formula: level = max(1, floor(xp / 200) + 1)  (high-watermark: only up)
+    # Lifts users whose stored level is below the level earned from their XP.
+    # Levels are high-watermarks, so spending XP never lowers a level.
+    # Formula: level = max(1, floor(xp / XP_PER_LEVEL) + 1) (high-watermark: only up)
     try:
         from app.core.database import AsyncSessionLocal
         from app.models.user import User as UserModel
+        from app.services.gamification_service import XP_PER_LEVEL
         from sqlalchemy import select as sa_select
 
         if not engine.url.drivername.startswith("sqlite"):
@@ -264,9 +265,9 @@ async def lifespan(app: FastAPI):
                     
                     fixed_in_batch = 0
                     for u in users:
-                        correct_level = max(1, int(u.xp // 200) + 1)
-                        if correct_level != u.level:
-                            u.level = max(u.level, correct_level)
+                        correct_level = max(1, int(u.xp // XP_PER_LEVEL) + 1)
+                        if correct_level > u.level:
+                            u.level = correct_level
                             fixed_in_batch += 1
                             total_fixed += 1
                     

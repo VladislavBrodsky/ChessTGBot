@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { FiChevronDown, FiLock } from 'react-icons/fi';
 import MysteryBoxArt from './MysteryBoxArt';
 import SeasonalCountdown from './SeasonalCountdown';
-import { BOX_CONFIG, DROP_KIND_COLOR, type BoxTier } from './boxConfig';
+import MysteryBoxDetailsSheet from './MysteryBoxDetailsSheet';
+import { BOX_CONFIG, type BoxTier } from './boxConfig';
 
 interface MysteryBoxCardProps {
     tier: BoxTier;
@@ -18,7 +19,7 @@ interface MysteryBoxCardProps {
 
 export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: MysteryBoxCardProps) {
     const t = useTranslations('Marketplace');
-    const [showOdds, setShowOdds] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const cfg = BOX_CONFIG[tier];
     const { accent, glow, rgb } = cfg.theme;
 
@@ -31,7 +32,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
             whileHover={{ y: locked ? 0 : -3 }}
             whileTap={{ scale: locked ? 1 : 0.985 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className="w-full rounded-[22px] relative group overflow-hidden self-start border bg-brand-surface shadow-[0_14px_40px_rgba(0,0,0,0.28)]"
+            className="w-full rounded-[22px] relative group overflow-hidden self-start border bg-brand-surface shadow-premium"
             style={{ borderColor: `rgba(${rgb},0.3)` }}
         >
             {/* A quiet chessboard texture ties all tiers to the game without
@@ -78,14 +79,14 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     )}
                 </div>
 
-                <div className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[132px]">
+                <div className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[118px]">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div
-                            className="w-32 h-20 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                            className="w-28 h-16 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-300"
                             style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
                         />
                     </div>
-                    <MysteryBoxArt tier={tier} size={136} />
+                    <MysteryBoxArt tier={tier} size={124} />
                 </div>
 
                 <div className="text-left z-10 min-h-[45px]">
@@ -96,39 +97,13 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
 
                 <button
                     type="button"
-                    onClick={() => setShowOdds((value) => !value)}
-                    aria-expanded={showOdds}
-                    aria-controls={`box-odds-${tier}`}
+                    onClick={() => setShowDetails(true)}
+                    aria-haspopup="dialog"
                     className="z-10 min-h-11 w-full mt-1 flex items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-[8px] font-black uppercase tracking-[0.15em] text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
                     <span>{t('whats_inside')}</span>
-                    <motion.span animate={{ rotate: showOdds ? 180 : 0 }}><FiChevronDown size={11} /></motion.span>
+                    <FiChevronDown size={11} className="-rotate-90" />
                 </button>
-
-                <AnimatePresence initial={false}>
-                    {showOdds && (
-                        <motion.div
-                            id={`box-odds-${tier}`}
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="z-10 overflow-hidden"
-                        >
-                            <div className="space-y-1 py-2">
-                                {cfg.drops.map((drop) => (
-                                    <div key={drop.label} className="flex items-start justify-between gap-1.5">
-                                        <div className="flex items-start gap-1.5 min-w-0">
-                                            <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-1" style={{ background: DROP_KIND_COLOR[drop.kind] }} />
-                                            <span className="text-[9px] text-brand-muted leading-snug">{drop.label}</span>
-                                        </div>
-                                        <span className="text-[9px] font-black tabular-nums shrink-0" style={{ color: DROP_KIND_COLOR[drop.kind] }}>{drop.chance}%</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
 
                 <button
                     type="button"
@@ -137,13 +112,9 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
                         locked
                             ? 'bg-brand-bg-opacity-5 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed'
-                            : 'text-black active:scale-[0.98] cursor-pointer shadow-lg'
+                            : 'bg-brand-gold text-brand-void active:scale-[0.98] cursor-pointer'
                     }`}
-                    style={locked ? undefined : { background: `linear-gradient(100deg, ${accent}, ${glow})` }}
                 >
-                    {!locked && (
-                        <span className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none" />
-                    )}
                     <span className="relative z-10 flex items-center justify-center gap-1.5">
                         {!affordable && !disabled && <FiLock size={10} />}
                         {disabled
@@ -154,6 +125,15 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     </span>
                 </button>
             </div>
+            {showDetails && (
+                <MysteryBoxDetailsSheet
+                    tier={tier}
+                    userXP={userXP}
+                    disabled={disabled}
+                    onClose={() => setShowDetails(false)}
+                    onUnbox={onUnbox}
+                />
+            )}
         </motion.article>
     );
 }

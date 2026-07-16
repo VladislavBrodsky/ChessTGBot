@@ -6,10 +6,12 @@ from datetime import datetime, timedelta, timezone
 import random
 import string
 
+XP_PER_LEVEL = 350
+
 
 def _xp_to_level(xp: int) -> int:
     """Canonical formula: 1 level per 350 XP, minimum level 1."""
-    return max(1, int(xp // 350) + 1)
+    return max(1, int(xp // XP_PER_LEVEL) + 1)
 
 
 class GamificationService:

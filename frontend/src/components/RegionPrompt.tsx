@@ -16,6 +16,8 @@ import { FaGlobeAmericas, FaGlobeEurope, FaGlobeAfrica, FaGlobeAsia } from 'reac
 import { useUser } from '@/context/UserContext';
 import { apiFetch } from '@/lib/api';
 import { telegramHaptic } from '@/lib/telegram';
+import { useNavbar } from '@/context/NavbarContext';
+import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
 
 const SESSION_KEY = 'region_prompt_seen';
 
@@ -31,6 +33,7 @@ export default function RegionPrompt() {
   const { stats, syncStats } = useUser();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
+  const { pushHide, popHide } = useNavbar();
 
   useEffect(() => {
     if (!stats) return; // wait for the synced profile
@@ -43,6 +46,13 @@ export default function RegionPrompt() {
     if (typeof window !== 'undefined') sessionStorage.setItem(SESSION_KEY, '1');
     setOpen(false);
   };
+  const dialogRef = useDialogAccessibility(open, dismiss);
+
+  useEffect(() => {
+    if (!open) return;
+    pushHide();
+    return () => popHide();
+  }, [open, popHide, pushHide]);
 
   const choose = async (regionId: string) => {
     if (saving) return;
@@ -74,6 +84,11 @@ export default function RegionPrompt() {
           onClick={dismiss}
         >
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="region-prompt-title"
+            tabIndex={-1}
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
@@ -83,7 +98,7 @@ export default function RegionPrompt() {
           >
             <div className="text-center mb-4">
               <span className="text-2xl">🏟️</span>
-              <h2 className="text-base font-black uppercase tracking-wide text-brand-primary mt-2">
+              <h2 id="region-prompt-title" className="text-base font-black uppercase tracking-wide text-brand-primary mt-2">
                 {t('title')}
               </h2>
               <p className="text-[11px] font-bold text-brand-primary/50 mt-1.5 leading-relaxed">

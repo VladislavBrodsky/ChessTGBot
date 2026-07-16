@@ -44,7 +44,7 @@ function getMovesSanList(moveHistory: string[]): { white: string; black?: string
         const promotion = whiteUci.substring(4, 5) || undefined;
         const move = tempChess.move({ from, to, promotion });
         whiteSan = move.san;
-      } catch (e) {
+      } catch {
         whiteSan = whiteUci;
       }
     }
@@ -57,7 +57,7 @@ function getMovesSanList(moveHistory: string[]): { white: string; black?: string
         const promotion = blackUci.substring(4, 5) || undefined;
         const move = tempChess.move({ from, to, promotion });
         blackSan = move.san;
-      } catch (e) {
+      } catch {
         blackSan = blackUci;
       }
     }
@@ -107,7 +107,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const router = useRouter();
   const locale = useLocale();
   const tg = useTranslations('Game');
-  const tIndex = useTranslations('Index');
 
   const { playTickSound } = useAudioSynth();
   const { play: playAudio } = useAudio();
@@ -585,7 +584,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     const playSound = (soundName: any) => {
       try {
         playAudio(soundName);
-      } catch (e) {}
+      } catch {}
     };
 
     const currentFen = gameState.fen;
@@ -657,7 +656,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const shareGame = () => {
-    let success = false;
     const link = typeof window !== 'undefined' ? window.location.href : "";
     const shareText = `I played a chess match on FinChess! ♟️⚡️`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`;
@@ -1243,7 +1241,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       )}
 
       {showCrashOverlay && (
-        <div className="fixed inset-0 bg-brand-void/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-brand-void/80 p-6 backdrop-blur-md" role="alertdialog" aria-modal="true" aria-labelledby="game-crashed-title">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -1254,7 +1252,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               <span className="text-3xl font-black">⚠️</span>
             </div>
             
-            <h2 className="text-lg font-black uppercase tracking-wider text-brand-primary">
+            <h2 id="game-crashed-title" className="text-lg font-black uppercase tracking-wider text-brand-primary">
               {tg('game_crashed')}
             </h2>
             

@@ -585,23 +585,53 @@ export default function PlayLobby() {
       <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-4">
         
         {/* Visual Header */}
-        <div className="flex flex-col items-center w-full mt-2 space-y-1">
-          <div className="flex items-center gap-2 text-brand-primary text-2xl font-black tracking-tighter select-none">
-            <FaChessKnight className="text-xl opacity-80" />
-            <span>{tg('battle_arena')}</span>
+        <header className="flex flex-col items-center w-full mt-2 space-y-2 text-center">
+          <div className="flex items-center gap-2.5 text-brand-primary text-[28px] font-black tracking-tight select-none">
+            <span className="w-9 h-9 rounded-xl bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-gold shadow-inner-glow">
+              <FaChessKnight className="text-lg" aria-hidden="true" />
+            </span>
+            <h1>{tg('battle_arena')}</h1>
           </div>
 
-          {/* Sleek 2026-style Metadata Stats */}
-          <div className="flex items-center gap-3 text-[10px] font-bold tracking-[0.25em] text-brand-primary/40 uppercase select-none">
+          <div role="status" className="flex items-center gap-2.5 text-[10px] font-bold tracking-[0.18em] text-brand-muted uppercase select-none">
             <div className="flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
               <span className="text-emerald-400">{playersOnline} {tg('online')}</span>
             </div>
-            <span className="opacity-30">|</span>
+            <span className="w-px h-3 bg-brand-border-opacity-20" aria-hidden="true" />
             <span>{activeUsers.toLocaleString()} {tg('active_users')}</span>
           </div>
+        </header>
 
-        </div>
+        {/* Wallet actions come before the event: funding is the prerequisite to playing. */}
+        {matchmakingState === 'idle' && (
+          <section
+            aria-label={tg('cyber_balance')}
+            className="arena-wallet-rail grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border p-1.5"
+          >
+            <div className="min-w-0 pe-1.5">
+              <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
+            </div>
+
+            <Link
+              href={`/${locale}/wallet`}
+              className="arena-wallet-balance group flex min-h-[44px] min-w-0 items-center gap-2 border-s ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-brand-gold transition-colors group-hover:border-brand-gold/30">
+                <FaWallet size={11} aria-hidden="true" />
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="truncate text-[9px] font-black uppercase leading-none tracking-[0.14em] text-brand-muted">
+                  {tg('cyber_balance')}
+                </span>
+                <span className={`mt-1 truncate text-sm font-black leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+                  {/* Never present a failed balance fetch as "$0.00" */}
+                  {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
+                </span>
+              </span>
+            </Link>
+          </section>
+        )}
 
         {/* Daily Arena event banner — schedule, live join, standings */}
         <ArenaBanner />
@@ -689,26 +719,26 @@ export default function PlayLobby() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="w-full p-6 rounded-3xl border border-brand-primary/20 bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 flex flex-col items-center justify-center space-y-6 text-center shadow-[0_8px_32px_rgba(var(--brand-primary),0.15)] relative overflow-hidden"
+              className="app-premium-surface w-full p-6 rounded-3xl border flex flex-col items-center justify-center space-y-6 text-center relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
-              <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary),1)]" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+              <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-gold shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
               
               {/* Active Contenders Badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/10 text-purple-400 animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
-                <span className="w-1 h-1 rounded-full bg-purple-400 animate-ping" />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-gold/25 bg-brand-gold/10 text-brand-gold animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
+                <span className="w-1 h-1 rounded-full bg-brand-gold animate-ping" />
                 <span>{tg('scanning_contenders', { count: contendersCount })}</span>
               </div>
 
               {/* Conic sonar radar widget */}
-              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-primary/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(var(--brand-primary),0.2)]">
+              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-gold/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(245,158,11,0.16)]">
                 <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none" />
-                <div className="absolute w-32 h-32 rounded-full border border-brand-primary/30 shadow-[0_0_15px_rgba(var(--brand-primary),0.2)] animate-ping opacity-60" />
-                <div className="absolute w-24 h-24 rounded-full border border-brand-primary/20 shadow-[0_0_10px_rgba(var(--brand-primary),0.1)]" />
-                <div className="absolute w-12 h-12 rounded-full border border-brand-primary/40 animate-pulse bg-brand-primary/5 shadow-[0_0_8px_rgba(var(--brand-primary),0.3)]" />
+                <div className="absolute w-32 h-32 rounded-full border border-brand-gold/30 shadow-[0_0_15px_rgba(245,158,11,0.2)] animate-ping opacity-60" />
+                <div className="absolute w-24 h-24 rounded-full border border-brand-gold/20 shadow-[0_0_10px_rgba(245,158,11,0.12)]" />
+                <div className="absolute w-12 h-12 rounded-full border border-brand-gold/40 animate-pulse bg-brand-gold/5 shadow-[0_0_8px_rgba(245,158,11,0.22)]" />
 
-                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-primary flex items-center justify-center shadow-[0_0_15px_rgba(var(--brand-primary),0.4)]">
-                  <FaChessKnight className="text-lg text-brand-primary animate-bounce drop-shadow-[0_0_5px_rgba(var(--brand-primary),0.8)]" />
+                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-gold flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.32)]">
+                  <FaChessKnight className="text-lg text-brand-gold animate-bounce drop-shadow-[0_0_5px_rgba(245,158,11,0.55)]" />
                 </div>
               </div>
 
@@ -797,31 +827,8 @@ export default function PlayLobby() {
               className="w-full space-y-3"
             >
 
-              {/* ─── UNIFIED STATUS BAR ─── */}
-              <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm px-3 py-2.5 grid grid-cols-2 items-center divide-x divide-brand-border-opacity-10 gap-3">
-                {/* Wallet side */}
-                <div className="pr-3 flex items-center justify-between min-w-0">
-                  <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
-                </div>
-                {/* Balance side */}
-                <div className="pl-3 min-w-0">
-                  <Link href={`/${locale}/wallet`} className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 flex items-center justify-center shrink-0 group-hover:border-brand-border-opacity-20 transition-all">
-                      <FaWallet size={11} className="text-brand-primary opacity-50 group-hover:opacity-80 transition-all" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
-                      <span className={`text-[11px] font-black tracking-wide leading-none truncate ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
-                        {/* Never present a failed balance fetch as "$0.00" */}
-                        {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
               {/* ─── BATTLE ARENA CONFIG CARD ─── */}
-              <div className="glass-panel rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium overflow-hidden">
+              <div className="arena-config-shell rounded-3xl border border-brand-border-opacity-10 shadow-premium overflow-hidden">
                 
                 {/* Wager Selection Carousel */}
                 <WagerSelector
@@ -845,10 +852,8 @@ export default function PlayLobby() {
 
                 {/* Summary Row */}
                 {chosenWager > 0 && (
-                  <div
-                    className="mx-3 mb-3 rounded-2xl overflow-hidden animate-fade-in"
-                  >
-                    <div className="flex items-center justify-between px-2 py-2.5 bg-brand-void/60 border border-brand-border-opacity-10 rounded-2xl shadow-inner-glow">
+                  <div className="mx-3 mb-3 rounded-2xl overflow-hidden animate-fade-in">
+                    <div className="flex items-center justify-between px-2 py-2.5 bg-brand-void/60 border border-brand-border-opacity-10 rounded-2xl">
                       <button
                         onClick={scrollToWager}
                         className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
@@ -866,25 +871,13 @@ export default function PlayLobby() {
                           telegramHaptic('light');
                           setShowRakeInfo(true);
                         }}
-                        animate={!hasSufficient ? { 
-                           boxShadow: ["0 0 15px rgba(16,185,129,0.15)", "0 0 30px rgba(16,185,129,0.3)", "0 0 15px rgba(16,185,129,0.15)"],
-                           borderColor: ["rgba(16,185,129,0.2)", "rgba(16,185,129,0.5)", "rgba(16,185,129,0.2)"]
-                        } : {}}
-                        transition={!hasSufficient ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
-                        className="relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] cursor-pointer hover:bg-emerald-500/20 active:scale-95 transition-all duration-150"
+                        aria-label={tg('win_up_to')}
+                        className="arena-win-summary relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border cursor-pointer hover:brightness-105 active:scale-95 transition-all duration-150"
                       >
-                        {!hasSufficient && (
-                          <motion.div
-                            initial={{ x: '-150%' }}
-                            animate={{ x: '150%' }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
-                            className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent skew-x-12"
-                          />
-                        )}
-                        <span className="relative z-10 text-[10px] font-black text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                          <FaFire className="text-emerald-400 text-[10px] animate-pulse" /> {tg('win_up_to')}
+                        <span className="relative z-10 text-[10px] font-black text-brand-gold uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
+                          <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')}
                         </span>
-                        <span className="relative z-10 text-[11px] font-black text-emerald-400 tracking-tight leading-none">
+                        <span className="relative z-10 text-[11px] font-black text-brand-gold tracking-tight leading-none">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
                       </motion.button>
@@ -898,7 +891,7 @@ export default function PlayLobby() {
                         <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                           <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
                         </span>
-                        <span className="text-[11px] font-black text-amber-400 uppercase">
+                        <span className="text-[11px] font-black text-brand-gold uppercase">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
                         </span>
                       </button>
@@ -913,56 +906,35 @@ export default function PlayLobby() {
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
                     disabled={isCreating}
-                    animate={!hasSufficient && !isCreating ? {
-                      boxShadow: ["0 4px 15px rgba(16,185,129,0.05)", "0 4px 25px rgba(16,185,129,0.2)", "0 4px 15px rgba(16,185,129,0.05)"],
-                      borderColor: ["rgba(255,255,255,0.05)", "rgba(16,185,129,0.3)", "rgba(255,255,255,0.05)"]
-                    } : {}}
-                    transition={!hasSufficient && !isCreating ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
                     className={`w-full p-3.5 flex items-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-left ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 text-brand-primary hover:border-emerald-500/40 rounded-2xl shadow-[0_4px_24px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_32px_rgba(16,185,129,0.25)]'
+                        : 'arena-topup-launcher rounded-2xl'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
-                    <motion.div
-                      animate={{ opacity: [0.6, 1, 0.6] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full ${
-                        hasSufficient
-                          ? 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]'
-                          : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
-                      }`}
-                    />
-                    {!hasSufficient && !isCreating && (
-                      <motion.div
-                        initial={{ x: '-150%', opacity: 0 }}
-                        animate={{ x: '150%', opacity: [0, 1, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5, delay: 0.3 }}
-                        className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-emerald-400/15 to-transparent skew-x-12"
-                      />
-                    )}
+                    <span className={`absolute top-3 right-3 w-1.5 h-1.5 rounded-full ${hasSufficient ? 'bg-brand-gold' : 'bg-brand-void/60'}`} aria-hidden="true" />
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 z-10 ${
                         hasSufficient
                           ? 'bg-gradient-to-br from-amber-500/30 to-amber-500/10 border border-amber-500/40 shadow-[0_0_16px_rgba(245,158,11,0.3)]'
-                          : 'bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.3)]'
+                          : 'bg-brand-void/10 border border-brand-void/15'
                       }`}
                     >
-                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-amber-500' : 'text-emerald-500'}`} />
+                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-brand-gold' : 'text-brand-void'}`} />
                     </div>
                     <div className="flex flex-col min-w-0 z-10">
                       <span className={`text-sm font-black leading-none tracking-wide uppercase ${
-                        hasSufficient ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                        hasSufficient ? 'text-brand-gold' : 'text-brand-void'
                       }`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary flex items-center gap-1">
+                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-primary/50' : 'text-brand-void/70'}`}>
                         {hasSufficient ? (
                           chosenWager > 0 ? (
                             <>
-                              <FaFire className="text-amber-500 text-[10px] animate-pulse" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                              <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                             </>
                           ) : (
                             "FREE PRACTICE MATCH"
@@ -990,16 +962,16 @@ export default function PlayLobby() {
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={triggerPlayVsComputer}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 shadow-[0_4px_24px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_32px_rgba(16,185,129,0.25)] transition-all group"
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-brand-surface border border-brand-border-opacity-20 hover:border-brand-primary/35 transition-all group"
                 >
-                  <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-brand-primary/35" aria-hidden="true" />
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/30 to-emerald-500/10 border border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_24px_rgba(16,185,129,0.5)] transition-all"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-brand-elevated border border-brand-border-opacity-10 text-brand-primary/80 group-hover:text-brand-primary transition-colors"
                   >
-                    <FaRobot className="text-emerald-500 text-[15px] drop-shadow-md group-hover:scale-110 transition-transform" />
+                    <FaRobot className="text-[15px] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-emerald-600 dark:text-emerald-400 tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-brand-primary tracking-wide uppercase">
                       TRAIN
                     </span>
                     <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
@@ -1014,16 +986,16 @@ export default function PlayLobby() {
                    whileTap={!isCreating ? { scale: 0.98 } : {}}
                    onClick={playVsFriend}
                    disabled={isCreating}
-                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/30 shadow-[0_4px_24px_rgba(168,85,247,0.15)] hover:shadow-[0_4px_32px_rgba(168,85,247,0.25)] transition-all group"
+                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-brand-surface border border-brand-border-opacity-20 hover:border-brand-primary/35 transition-all group"
                  >
-                   <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                   <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-brand-primary/35" aria-hidden="true" />
                    <div
-                     className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-purple-500/30 to-purple-500/10 border border-purple-500/40 shadow-[0_0_16px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_24px_rgba(168,85,247,0.5)] transition-all"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-brand-elevated border border-brand-border-opacity-10 text-brand-primary/80 group-hover:text-brand-primary transition-colors"
                    >
-                     <FaShareAlt className="text-purple-500 text-[14px] drop-shadow-md group-hover:scale-110 transition-transform" />
+                     <FaShareAlt className="text-[14px] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-purple-600 dark:text-purple-400 tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-brand-primary tracking-wide uppercase">
                       PLAY
                     </span>
                     <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">

@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "Ajedrez App",
+    "welcome": "Hola, {name}",
+    "welcome_greeting": "Hola,",
     "subtitle": "Arena FinChess",
     "rating": "Puntuación",
     "win_rate": "Tasa de Victoria",

@@ -112,24 +112,24 @@ export default function ArenaBanner() {
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`w-full mb-4 p-4 rounded-3xl border relative overflow-hidden backdrop-blur-md transition-all duration-500 ${
+      className={`arena-event-banner ${isLive ? 'arena-event-banner--live' : ''} w-full mb-1 p-3 rounded-2xl border relative overflow-hidden transition-colors duration-200 ${
         isLive
-          ? 'border-amber-500/30 bg-gradient-to-br from-amber-500/15 via-brand-surface/90 to-brand-surface shadow-[0_8px_32px_-4px_rgba(245,158,11,0.25)]'
-          : 'border-brand-primary/15 bg-brand-surface/60'
+          ? 'border-brand-gold/30 bg-brand-gold/10 shadow-premium'
+          : 'border-brand-border-opacity-10 bg-brand-surface'
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-10 h-10 shrink-0 rounded-[14px] flex items-center justify-center transition-all duration-300 ${isLive ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-[0_0_16px_rgba(245,158,11,0.5)]' : 'bg-brand-primary/10 text-brand-primary'}`}>
+          <div className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center border ${isLive ? 'bg-brand-gold text-brand-void border-brand-gold' : 'bg-brand-elevated text-brand-gold border-brand-border-opacity-10'}`}>
             <FaTrophy size={16} />
           </div>
           <div className="flex flex-col min-w-0 justify-center">
-            <span className="text-[12px] font-black uppercase tracking-widest text-brand-primary truncate leading-tight">
+            <span className="text-[12px] font-black uppercase tracking-[0.14em] text-brand-primary truncate leading-tight">
               {t('title')}
             </span>
             {isLive ? (
-              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]" />
+              <span className="text-[10px] font-bold text-brand-gold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                 {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
@@ -137,12 +137,19 @@ export default function ArenaBanner() {
                 {t('finished')} · {t('next_in')} {fmtCountdown(startsIn)}
               </span>
             ) : (
-              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider mt-0.5">
-                {t('starts_in')} {fmtCountdown(startsIn)} · 🏆 {prizes} XP
+              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
+                {t('starts_in')} {fmtCountdown(startsIn)}
               </span>
             )}
           </div>
         </div>
+
+        {!isLive && arena.status === 'scheduled' && (
+          <div className="arena-reward-badge shrink-0 rounded-xl border px-2.5 py-2 text-right">
+            <span className="block text-[9px] font-black uppercase tracking-wider text-brand-gold">XP</span>
+            <span className="block mt-0.5 text-[10px] font-black tabular-nums text-brand-primary">{prizes}</span>
+          </div>
+        )}
 
         {isLive && (
           joined ? (
@@ -155,7 +162,7 @@ export default function ArenaBanner() {
           ) : (
             <button
               onClick={handleJoin}
-              className="shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+              className="shrink-0 min-h-[44px] px-4 rounded-xl text-[10px] font-black uppercase tracking-wider bg-brand-gold text-brand-void hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
             >
               <FaBolt size={10} /> {t('join')}
             </button>

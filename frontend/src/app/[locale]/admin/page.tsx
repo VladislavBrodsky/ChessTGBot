@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
@@ -130,6 +131,22 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: '#6b7280',
 };
 
+const ADMIN_ACCENTS = {
+  violet: 'var(--admin-accent-violet)',
+  gold: 'var(--admin-accent-gold)',
+  emerald: 'var(--admin-accent-emerald)',
+  blue: 'var(--admin-accent-blue)',
+  cyan: 'var(--admin-accent-cyan)',
+  rose: 'var(--admin-accent-rose)',
+  orange: 'var(--admin-accent-orange)',
+} as const;
+
+type AdminAccent = keyof typeof ADMIN_ACCENTS;
+
+const adminAccentStyle = (accent: AdminAccent): CSSProperties => ({
+  '--admin-accent': ADMIN_ACCENTS[accent],
+} as CSSProperties);
+
 function formatDate(iso: string | null) {
   if (!iso) return '—';
   return new Date(iso).toLocaleString('en-US', {
@@ -143,12 +160,10 @@ function BarChart({
   data,
   valueKey,
   label,
-  color = '#8b5cf6',
 }: {
   data: { date: string; [k: string]: number | string }[];
   valueKey: string;
   label: string;
-  color?: string;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const values = data.map(d => Number(d[valueKey]));
@@ -158,8 +173,8 @@ function BarChart({
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-3">
-        <p className="text-[11px] text-brand-muted uppercase tracking-widest font-bold">{label}</p>
-        <p className="text-[11px] font-black" style={{ color }}>
+        <p className="admin-chart-label text-[11px] uppercase tracking-widest font-bold">{label}</p>
+        <p className="admin-chart-total text-[11px] font-black">
           {valueKey.includes('cents') ? cents(total) : fmt(total)} total
         </p>
       </div>
@@ -175,26 +190,22 @@ function BarChart({
               onMouseLeave={() => setHovered(null)}
             >
               {hovered === i && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 bg-black/90 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white whitespace-nowrap z-10 pointer-events-none">
+                <div className="admin-chart-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded-lg px-2 py-1 text-[10px] whitespace-nowrap z-10 pointer-events-none">
                   <div className="font-bold">{d.date.slice(5)}</div>
-                  <div style={{ color }}>{valueKey.includes('cents') ? cents(values[i]) : fmt(values[i])}</div>
+                  <div className="admin-chart-total">{valueKey.includes('cents') ? cents(values[i]) : fmt(values[i])}</div>
                 </div>
               )}
               <div
-                className="w-full rounded-t-[3px] transition-all duration-200"
+                className={`w-full rounded-t-[3px] transition-all duration-200 ${hovered === i ? 'admin-chart-bar-active' : 'admin-chart-bar'}`}
                 style={{
                   height: h,
-                  background: hovered === i
-                    ? color
-                    : `linear-gradient(180deg, ${color}cc, ${color}55)`,
-                  boxShadow: hovered === i ? `0 -4px 12px ${color}60` : 'none',
                 }}
               />
             </div>
           );
         })}
       </div>
-      <div className="flex justify-between mt-1.5 text-[10px] text-brand-muted">
+      <div className="admin-chart-axis flex justify-between mt-1.5 text-[10px]">
         <span>{data[0]?.date?.slice(5)}</span>
         <span className="opacity-50">14 days</span>
         <span>{data[data.length - 1]?.date?.slice(5)}</span>
@@ -209,58 +220,39 @@ function KpiCard({
   label,
   value,
   sub,
-  color = '#8b5cf6',
+  accent = 'violet',
   icon,
 }: {
   label: string;
   value: string | number;
   sub?: string;
-  color?: string;
+  accent?: AdminAccent;
   icon: ReactNode;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative rounded-2xl p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4 overflow-hidden w-full min-w-0"
-      style={{
-        backgroundColor: 'rgba(10, 10, 15, 0.6)',
-        border: `1px solid ${color}40`,
-        boxShadow: `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 20px ${color}10`,
-        backdropFilter: 'blur(12px)',
-      }}
+      className="admin-kpi-card relative rounded-2xl p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4 w-full min-w-0"
+      style={adminAccentStyle(accent)}
     >
       {/* Top right glowing dot */}
-      <div 
-        className="absolute top-2 right-2 w-1 h-1 sm:top-2.5 sm:right-2.5 sm:w-1.5 sm:h-1.5 rounded-full"
-        style={{ 
-          backgroundColor: color,
-          boxShadow: `0 0 8px ${color}, 0 0 12px ${color}`
-        }}
-      />
+      <div className="admin-kpi-dot absolute top-2 right-2 w-1 h-1 sm:top-2.5 sm:right-2.5 sm:w-1.5 sm:h-1.5 rounded-full" />
       
       {/* Icon Box */}
-      <div 
-        className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 text-base sm:text-xl"
-        style={{
-          backgroundColor: `${color}15`,
-          color: color,
-          border: `1px solid ${color}30`,
-          boxShadow: `0 0 15px ${color}20`
-        }}
-      >
+      <div className="admin-kpi-icon relative z-10 w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 text-base sm:text-xl">
         {icon}
       </div>
 
       {/* Content */}
-      <div className="flex flex-col min-w-0 flex-1">
-        <p className="text-lg sm:text-2xl font-black leading-none text-white tracking-wide mb-1" style={{ textShadow: `0 0 10px ${color}50` }}>
+      <div className="relative z-10 flex flex-col min-w-0 flex-1">
+        <p className="admin-kpi-value text-lg sm:text-2xl font-black leading-none tracking-wide mb-1">
           {value}
         </p>
-        <p className="text-[10px] sm:text-[11px] text-brand-primary opacity-60 uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
+        <p className="admin-kpi-label text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
           {label}
         </p>
-        {sub && <p className="text-[10px] sm:text-[11px] text-brand-muted mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
+        {sub && <p className="admin-kpi-sub text-[10px] sm:text-[11px] mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
       </div>
     </motion.div>
   );
@@ -347,37 +339,37 @@ function DashboardTab({ stats }: { stats: Stats }) {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-black text-white">{greeting}, Admin 👋</h2>
-          <p className="text-[11px] text-brand-muted mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <p className="admin-kpi-sub text-[11px] mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div className="px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-green-500/10 border border-green-500/20 text-green-400">
+        <div className="admin-live-badge px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest">
           ● Live
         </div>
       </div>
 
       {/* KPI Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8 w-full">
-        <KpiCard label="Total Users" value={fmt(stats.total_users)} icon={<FaUsers />} color="#8b5cf6" />
-        <KpiCard label="Premium" value={fmt(stats.premium_users)} sub={pct(stats.premium_conversion_rate) + ' conversion'} icon={<FaStar />} color="#f59e0b" />
-        <KpiCard label="Active 24h" value={fmt(stats.active_24h)} sub={pct(stats.engagement_rate_24h) + ' engagement'} icon={<FaBolt />} color="#22c55e" />
-        <KpiCard label="Active 7d" value={fmt(stats.active_7d)} icon={<FaCalendarWeek />} color="#3b82f6" />
-        <KpiCard label="Active 30d" value={fmt(stats.active_30d)} icon={<FaCalendarDays />} color="#14b8a6" />
-        <KpiCard label="Total Games" value={fmt(stats.total_games)} sub={`${fmt(stats.games_today)} today`} icon={<FaChessKnight />} color="#ec4899" />
-        <KpiCard label="Deposits" value={cents(stats.total_deposits_cents)} icon={<FaArrowDown />} color="#22c55e" />
-        <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon={<FaArrowUp />} color="#f97316" />
-        <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon={<FaChartLine />} color="#8b5cf6" />
-        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} color="#a855f7" />
-        <KpiCard label="Chargebacks" value={cents(stats.total_chargebacks_cents)} icon={<FaCircleXmark />} color="#ef4444" />
-        <KpiCard label="Refunds" value={cents(stats.total_refunds_cents)} icon={<FaArrowsRotate />} color="#f59e0b" />
-        <KpiCard label="Blocked Users" value={fmt(stats.total_blocked_users)} sub={stats.total_users > 0 ? pct(stats.total_blocked_users / stats.total_users * 100) + ' of users' : '0%'} icon={<FaBan />} color="#ef4444" />
+        <KpiCard label="Total Users" value={fmt(stats.total_users)} icon={<FaUsers />} accent="violet" />
+        <KpiCard label="Premium" value={fmt(stats.premium_users)} sub={pct(stats.premium_conversion_rate) + ' conversion'} icon={<FaStar />} accent="gold" />
+        <KpiCard label="Active 24h" value={fmt(stats.active_24h)} sub={pct(stats.engagement_rate_24h) + ' engagement'} icon={<FaBolt />} accent="emerald" />
+        <KpiCard label="Active 7d" value={fmt(stats.active_7d)} icon={<FaCalendarWeek />} accent="blue" />
+        <KpiCard label="Active 30d" value={fmt(stats.active_30d)} icon={<FaCalendarDays />} accent="cyan" />
+        <KpiCard label="Total Games" value={fmt(stats.total_games)} sub={`${fmt(stats.games_today)} today`} icon={<FaChessKnight />} accent="violet" />
+        <KpiCard label="Deposits" value={cents(stats.total_deposits_cents)} icon={<FaArrowDown />} accent="emerald" />
+        <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon={<FaArrowUp />} accent="orange" />
+        <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon={<FaChartLine />} accent="violet" />
+        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} accent="violet" />
+        <KpiCard label="Chargebacks" value={cents(stats.total_chargebacks_cents)} icon={<FaCircleXmark />} accent="rose" />
+        <KpiCard label="Refunds" value={cents(stats.total_refunds_cents)} icon={<FaArrowsRotate />} accent="gold" />
+        <KpiCard label="Blocked Users" value={fmt(stats.total_blocked_users)} sub={stats.total_users > 0 ? pct(stats.total_blocked_users / stats.total_users * 100) + ' of users' : '0%'} icon={<FaBan />} accent="rose" />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="premium-neon-card p-5">
-          <BarChart data={stats.daily_activity} valueKey="count" label="Daily Activity" color="#8b5cf6" />
+        <div className="admin-chart-card rounded-3xl p-5" style={adminAccentStyle('violet')}>
+          <BarChart data={stats.daily_activity} valueKey="count" label="Daily Activity" />
         </div>
-        <div className="premium-neon-card p-5">
-          <BarChart data={stats.daily_revenue} valueKey="total_cents" label="Daily Revenue" color="#22c55e" />
+        <div className="admin-chart-card rounded-3xl p-5" style={adminAccentStyle('emerald')}>
+          <BarChart data={stats.daily_revenue} valueKey="total_cents" label="Daily Revenue" />
         </div>
       </div>
     </div>
@@ -1056,25 +1048,6 @@ function BroadcastsTab() {
 
 // ─── System Status Tab ────────────────────────────────────────────────────────
 
-interface SystemStatus {
-  overall: string;
-  checked_at: string;
-  systems: {
-    database?: { status: string; latency_ms: number | null; detail: string };
-    redis?: { status: string; latency_ms: number | null; detail: string };
-    telegram_bot?: { status: string; latency_ms: number | null; bot_username: string; is_leader: boolean; receiver_active: boolean; receiver_type: string | null; detail: string };
-    web3?: { status: string; ton_api_configured: boolean; payout_mnemonic_configured: boolean; master_wallet_address: string; company_wallet_address: string; master_wallet_balance_ton: number | null; detail: string };
-    xp_engine?: { status: string; total_xp_transactions: number | null; xp_per_level: number; detail: string };
-    notifications?: { status: string; active_broadcasts: number; completed_broadcasts: number; detail: string };
-    ledger_audit?: { 
-      status: string; 
-      mismatches_count: number | null; 
-      detail: string;
-      mismatches?: { telegram_id: number; first_name: string; balance: number; ledger_sum: number }[];
-    };
-  };
-}
-
 function StatusBadge({ status }: { status: string }) {
   const cfg: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
     online: { color: '#22c55e', icon: <FaCircleCheck />, label: 'Online' },
@@ -1310,17 +1283,11 @@ export default function AdminPage() {
   if (accessDenied) return <AccessDenied />;
 
   return (
-    <LayoutWrapper className="justify-start pt-6 pb-32 w-full">
-    <div className="relative w-full min-h-screen overflow-hidden text-brand-primary font-sans pb-[120px]"
-      style={{
-        backgroundColor: '#050505',
-        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
-        backgroundSize: '24px 24px'
-      }}
-    >
+    <LayoutWrapper className="admin-command-root justify-start pt-6 pb-32 w-full" bgClass="admin-command-root">
+    <div className="admin-command-shell relative w-full min-h-[100dvh] overflow-hidden text-brand-primary font-sans pb-[120px]">
       {/* Ambient background glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[50%] bg-amber-900/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-amber-900/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[50%] bg-white/[0.03] blur-[100px] rounded-full pointer-events-none" />
       
       <div className="relative z-10 w-full max-w-[1100px] mx-auto px-4 pt-8">
 
@@ -1330,10 +1297,10 @@ export default function AdminPage() {
           
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
             
-            <h1 className="text-3xl font-black text-white tracking-wide mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <h1 className="text-3xl font-black text-white tracking-wide mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.18)]">
               ADMIN COMMAND
             </h1>
-            <p className="text-[10px] text-brand-muted uppercase tracking-[0.2em] font-black">
+            <p className="admin-kpi-sub text-[10px] uppercase tracking-[0.2em] font-black">
               FinChess Arena · Restricted Access
             </p>
           </motion.div>
@@ -1347,10 +1314,10 @@ export default function AdminPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-none px-5 md:px-6 py-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                className={`admin-tab flex-none px-5 md:px-6 py-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
                   activeTab === tab 
-                    ? 'bg-white/10 border border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]' 
-                    : 'text-brand-muted hover:text-white border border-transparent hover:border-white/5 hover:bg-white/5'
+                    ? 'admin-tab-active'
+                    : ''
                 }`}
               >
                 <Icon className="text-sm opacity-80" /> {tab}

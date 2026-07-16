@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiBookOpen, FiClock, FiCheckCircle, FiInfo } from 'react-icons/fi';
+import { FiX, FiBookOpen, FiClock, FiInfo } from 'react-icons/fi';
+import { useNavbar } from '@/context/NavbarContext';
+import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
 
 interface NotificationModalProps {
     isOpen: boolean;
@@ -11,18 +13,26 @@ interface NotificationModalProps {
 
 export default function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
     const [activeTab, setActiveTab] = useState<'news' | 'guide'>('guide');
+    const { pushHide, popHide } = useNavbar();
+    const dialogRef = useDialogAccessibility(isOpen, onClose);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        pushHide();
+        return () => popHide();
+    }, [isOpen, popHide, pushHide]);
 
     const newsItems = [
         {
             id: 1,
-            title: "Web3 Marketplace Launch",
+            title: "Marketplace vaults",
             date: "July 15, 2026",
-            excerpt: "The long-awaited Marketplace is finally here. Exchange your hard-earned XR for Mystery Boxes, Premium upgrades, and exclusive profile styles.",
+            excerpt: "Spend XP on mystery vaults, premium upgrades, and board themes. Review reward odds before opening a vault.",
             readTime: "2 min read"
         },
         {
             id: 2,
-            title: "Season 1 Arena Commences",
+            title: "Arena season is live",
             date: "July 12, 2026",
             excerpt: "Step into the arena, challenge opponents, and climb the leaderboard. Top players at the end of the season will receive exclusive token airdrops.",
             readTime: "3 min read"
@@ -33,26 +43,29 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
         {
             step: "01",
             title: "Connect Your Wallet",
-            desc: "Use TON Connect in the profile tab to link your non-custodial wallet and secure your assets."
+            desc: "Use your profile to link a non-custodial wallet when you want to fund a paid match."
         },
         {
             step: "02",
-            title: "Earn XR Tokens",
-            desc: "Play chess matches, complete daily quests, and participate in tournaments to accumulate XR."
+            title: "Earn XP",
+            desc: "Play chess, complete daily quests, and finish Academy lessons to grow your XP."
         },
         {
             step: "03",
             title: "Unlock Mystery Boxes",
-            desc: "Spend your XR in the marketplace to open Mystery Boxes. Tiers range from Common to Legendary, with rare drops including 1-year Premium memberships."
+            desc: "Spend XP in the Marketplace to open vaults. Each vault shows its rewards and odds before you commit."
         }
     ];
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <motion.div 
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="notification-modal-title"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -62,31 +75,36 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
 
                     {/* Modal Content */}
                     <motion.div 
+                        ref={dialogRef}
+                        tabIndex={-1}
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ type: 'spring', duration: 0.4 }}
-                        className="relative w-full max-w-md overflow-hidden rounded-3xl bg-brand-surface/90 border border-brand-border-opacity-10 shadow-premium p-6 text-brand-primary"
+                        className="relative max-h-[min(760px,calc(100dvh-32px-var(--app-safe-bottom)))] w-full max-w-md overflow-hidden rounded-3xl border border-brand-border bg-brand-surface p-5 text-brand-primary shadow-[var(--shadow-premium)] outline-none sm:p-6"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold uppercase tracking-wider text-white">Updates & Info</h2>
+                            <h2 id="notification-modal-title" className="text-xl font-bold uppercase tracking-wider text-brand-primary">Updates & Info</h2>
                             <button 
                                 onClick={onClose}
-                                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/60 hover:text-white"
+                                aria-label="Close updates"
+                                className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
                             >
                                 <FiX size={16} />
                             </button>
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex gap-2 p-1 rounded-xl bg-black/30 border border-brand-border-opacity-5 mb-6">
+                        <div className="mb-5 flex gap-2 rounded-2xl border border-brand-border bg-brand-elevated/70 p-1.5 shadow-inner" role="tablist" aria-label="Notification content">
                             <button 
                                 onClick={() => setActiveTab('guide')}
-                                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                                role="tab"
+                                aria-selected={activeTab === 'guide'}
+                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
                                     activeTab === 'guide' 
-                                        ? 'bg-white/10 text-white border border-white/10 shadow-sm' 
-                                        : 'text-white/40 hover:text-white/60'
+                                        ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
+                                        : 'text-brand-muted hover:text-brand-primary'
                                 }`}
                             >
                                 <FiBookOpen size={14} />
@@ -94,10 +112,12 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                             </button>
                             <button 
                                 onClick={() => setActiveTab('news')}
-                                className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                                role="tab"
+                                aria-selected={activeTab === 'news'}
+                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
                                     activeTab === 'news' 
-                                        ? 'bg-white/10 text-white border border-white/10 shadow-sm' 
-                                        : 'text-white/40 hover:text-white/60'
+                                        ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
+                                        : 'text-brand-muted hover:text-brand-primary'
                                 }`}
                             >
                                 <FiInfo size={14} />
@@ -106,7 +126,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                         </div>
 
                         {/* Content Area */}
-                        <div className="min-h-[260px] max-h-[360px] overflow-y-auto pr-1 overflow-x-hidden">
+                        <div className="max-h-[calc(100dvh-260px-var(--app-safe-bottom))] min-h-[260px] overflow-y-auto overflow-x-hidden pr-1">
                             <AnimatePresence mode="wait">
                                 {activeTab === 'guide' ? (
                                     <motion.div 
@@ -118,13 +138,13 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                         className="space-y-4"
                                     >
                                         {guideSteps.map((step, idx) => (
-                                            <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                                                <div className="text-xl font-black text-white/30 tracking-tight">
+                                            <div key={idx} className="flex gap-4 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm">
+                                                <div className="text-xl font-black tracking-tight text-brand-gold">
                                                     {step.step}
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <h3 className="text-sm font-bold text-white">{step.title}</h3>
-                                                    <p className="text-xs text-white/50 leading-relaxed">{step.desc}</p>
+                                                    <h3 className="text-sm font-bold text-brand-primary">{step.title}</h3>
+                                                    <p className="text-xs text-brand-muted leading-relaxed">{step.desc}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -139,16 +159,16 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                         className="space-y-4"
                                     >
                                         {newsItems.map((item) => (
-                                            <div key={item.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] space-y-2 hover:border-white/[0.08] transition-colors cursor-pointer">
-                                                <div className="flex items-center justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                                            <div key={item.id} className="space-y-2 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm transition-colors hover:border-brand-border">
+                                                <div className="flex items-center justify-between text-[10px] text-brand-muted uppercase tracking-wider">
                                                     <span>{item.date}</span>
                                                     <span className="flex items-center gap-1">
                                                         <FiClock size={10} />
                                                         {item.readTime}
                                                     </span>
                                                 </div>
-                                                <h3 className="text-sm font-bold text-white">{item.title}</h3>
-                                                <p className="text-xs text-white/50 leading-relaxed">{item.excerpt}</p>
+                                                <h3 className="text-sm font-bold text-brand-primary">{item.title}</h3>
+                                                <p className="text-xs text-brand-muted leading-relaxed">{item.excerpt}</p>
                                             </div>
                                         ))}
                                     </motion.div>

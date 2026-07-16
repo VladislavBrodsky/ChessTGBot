@@ -25,10 +25,10 @@ export default function WagerSelector({
   tg
 }: WagerSelectorProps) {
   return (
-    <div className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-5">
-      <div className="flex justify-center items-center mb-2.5">
-        <span className="text-[10px] font-black uppercase text-brand-primary opacity-45 tracking-widest flex items-center gap-1.5">
-          <FaCoins className="opacity-60" size={8} />
+    <section className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-10" aria-labelledby="wager-selector-title">
+      <div className="flex justify-center items-center mb-3">
+        <span id="wager-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
+          <FaCoins className="text-brand-gold" size={9} />
           {tg('select_wager')}
         </span>
       </div>
@@ -36,10 +36,7 @@ export default function WagerSelector({
       <div className="relative fade-edges w-full">
         <motion.div
           ref={wagerScrollRef}
-          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1.5 px-[calc(50%-38px)] snap-x snap-mandatory"
-          initial={{ x: 0 }}
-          animate={{ x: [0, -14, 12, -7, 4, 0] }}
-          transition={{ delay: 0.5, duration: 0.85, ease: "easeInOut" }}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none py-1 px-[calc(50%-42px)] snap-x snap-mandatory"
         >
           {[
             { label: "FREE", val: 0 },
@@ -58,6 +55,7 @@ export default function WagerSelector({
               <button
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
+                aria-pressed={isSelected}
                 onClick={(e) => {
                   setSelectedWager(opt.val);
                   setIsCustomWager(false);
@@ -68,22 +66,24 @@ export default function WagerSelector({
                     inline: 'center'
                   });
                 }}
-                className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative ${
+                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                   isSelected
-                    ? 'border-brand-primary bg-brand-void text-brand-primary shadow-neon scale-105 font-extrabold'
-                    : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+                    ? 'arena-option--wager-selected font-extrabold'
+                    : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
-                {opt.val === 100000 && <FaCrown className="text-[10px] text-yellow-400 mr-0.5 animate-pulse" />}
-                <span className={isSelected ? "mb-1.5" : ""}>{opt.label}</span>
+                {opt.val === 100000 && <FaCrown className="text-[10px] text-brand-gold mr-1" />}
+                <span>{opt.label}</span>
                 {isSelected && (
-                  <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />
+                  <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-brand-gold" />
                 )}
               </button>
             );
           })}
           <button
             data-active={isCustomWager ? "true" : "false"}
+            aria-label={tg('enter_amount')}
+            aria-pressed={isCustomWager}
             onClick={(e) => {
               setIsCustomWager(true);
               telegramHaptic('light');
@@ -93,15 +93,15 @@ export default function WagerSelector({
                 inline: 'center'
               });
             }}
-            className={`w-[76px] py-2.5 rounded-xl shrink-0 flex items-center justify-center border text-[10px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative ${
+            className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
               isCustomWager
-                ? 'border-brand-primary bg-brand-void text-brand-primary shadow-neon scale-105 font-extrabold'
-                : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-primary/50 hover:text-brand-primary/80 hover:border-brand-border-opacity-20 hover:scale-105'
+                ? 'arena-option--wager-selected font-extrabold'
+                : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
             }`}
           >
-            <span className={isCustomWager ? "mb-1.5" : ""}>···</span>
+            <span>···</span>
             {isCustomWager && (
-              <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(var(--color-brand-primary-rgb,255,255,255),0.8)]" />
+              <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-brand-gold" />
             )}
           </button>
         </motion.div>
@@ -118,6 +118,6 @@ export default function WagerSelector({
           />
         </motion.div>
       )}
-    </div>
+    </section>
   );
 }

@@ -7,18 +7,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessKing, FaChessKnight, FaChessQueen, FaChessBishop, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
+import { FaChessKing, FaChessKnight, FaChessQueen, FaChessPawn, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
     { name: 'Home',        icon: <FaChessKing />,      href: '/home',        key: 'nav_home' },
-    { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play' },
     { name: 'Marketplace', icon: <FaChessQueen />,     href: '/marketplace', key: 'nav_marketplace' },
-    { name: 'Learn',       icon: <FaChessBishop />,    href: '/academy',     key: 'nav_learn' },
+    { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play', primary: true },
+    { name: 'Learn',       icon: <FaChessPawn />,      href: '/academy',     key: 'nav_learn' },
     { name: 'Quests',      icon: <FaChessRook />,      href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
 let globalIsDesktopBrowser: boolean | null = null;
+const prefetchedLocales = new Set<string>();
 
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
@@ -55,10 +56,14 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
 
     React.useEffect(() => {
         // The five primary destinations are always visible. Warm their route
-        // payloads after first paint so a normal navigation has no chunk fetch
-        // on the tap path. Delaying avoids competing with initial app startup.
+        // payloads once per locale so a normal navigation has no chunk fetch
+        // on the tap path. Without this guard, every page remount scheduled
+        // another five prefetches and could compete with the next transition.
+        if (prefetchedLocales.has(locale)) return;
+
         const timer = window.setTimeout(() => {
             NAV_ITEMS.forEach((item) => router.prefetch(`/${locale}${item.href}`));
+            prefetchedLocales.add(locale);
         }, 800);
 
         return () => window.clearTimeout(timer);
@@ -85,13 +90,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 initial={{ x: -72, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="fixed left-0 top-0 h-full w-[72px] z-50 flex flex-col items-center justify-between py-6 bg-brand-void/70 backdrop-blur-[20px] border-r border-purple-500/10 shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
+                className="fixed left-0 top-0 z-50 flex h-full w-[72px] flex-col items-center justify-between border-r border-brand-border-opacity-10 bg-brand-void/70 py-6 backdrop-blur-[20px] shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center gap-1">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                         style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)' }}>
-                        <FaChessKnight size={18} style={{ color: 'rgba(168,85,247,1)' }} />
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                        <FaChessKnight size={18} />
                     </div>
                 </div>
 
@@ -105,25 +109,22 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                     <motion.div
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="relative w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-200 group"
-                                        style={{
-                                            background: isActive ? 'rgba(168,85,247,0.2)' : 'transparent',
-                                            border: isActive ? '1px solid rgba(168,85,247,0.35)' : '1px solid transparent',
-                                        }}
+                                        className={`relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 group ${
+                                            isActive ? 'border-brand-gold/30 bg-brand-gold/10' : 'border-transparent'
+                                        }`}
                                     >
                                         {isActive && (
                                             <motion.div
                                                 layoutId="sidebar-active"
-                                                className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r"
-                                                style={{ background: 'rgba(168,85,247,1)', marginLeft: '-1px' }}
+                                                className="absolute -left-px top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r bg-brand-gold"
                                             />
                                         )}
-                                        <span className={`text-lg transition-colors ${isActive ? 'text-purple-400' : 'text-white/30 group-hover:text-white/60'}`}>
+                                        <span className={`text-lg transition-colors ${isActive ? 'text-brand-gold' : 'text-brand-primary/30 group-hover:text-brand-primary/60'}`}>
                                             {item.icon}
                                         </span>
 
                                         {/* Tooltip */}
-                                        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-brand-void text-purple-400 border border-purple-500/20 shadow-md">
+                                        <div className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg border border-brand-gold/20 bg-brand-void px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-gold opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                                             {item.label}
                                         </div>
                                     </motion.div>
@@ -139,14 +140,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         <Link href={`/${locale}/profile`} title={t('nav_profile')} aria-label={t('nav_profile')}>
                             <motion.div
                                 whileHover={{ scale: 1.08 }}
-                                className="w-10 h-10 rounded-xl overflow-hidden border-2 cursor-pointer"
-                                style={{ borderColor: 'rgba(168,85,247,0.4)' }}
+                                className="h-10 w-10 cursor-pointer overflow-hidden rounded-xl border-2 border-brand-gold/40"
                             >
                                 {stats.photo_url ? (
                                     <img src={getFullPhotoUrl(stats.photo_url)} alt="You" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-sm font-black"
-                                         style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,1)' }}>
+                                    <div className="flex h-full w-full items-center justify-center bg-brand-gold/10 text-sm font-black text-brand-gold">
                                         {stats.first_name?.[0] || '?'}
                                     </div>
                                 )}
@@ -174,59 +173,55 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
     return (
         <motion.nav
             data-app-navbar
-            initial={{ x: "-50%", y: 0, opacity: 1 }}
+            // The navbar is recreated by page layouts. Skipping its initial
+            // animation avoids a visible slide/fade on every route change.
+            initial={false}
             animate={{
                 x: "-50%",
-                y: hide ? 150 : 0,
+                y: hide ? 112 : 0,
                 opacity: hide ? 0 : 1
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             style={{
                 pointerEvents: hide ? 'none' : 'auto',
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="fixed left-1/2 w-[calc(100%-24px)] max-w-[420px] z-50 flex items-center bg-[linear-gradient(135deg,rgba(25,25,25,0.98),rgba(3,3,3,0.98))] backdrop-blur-3xl border border-white/[0.09] px-1.5 py-1.5 rounded-[22px] shadow-[0_14px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] justify-between"
+            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[390px] rounded-[26px] border px-2 py-2 backdrop-blur-xl"
         >
-            {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.08),transparent_60%)] pointer-events-none rounded-[22px]" />
-
-            <ul className="flex w-full max-w-[360px] mx-auto items-center justify-around gap-0.5 relative z-10">
+            <ul className="grid w-full grid-cols-5 gap-0.5">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    const isPrimary = item.primary === true;
                     return (
-                        <li key={item.href} className="flex-1 min-w-0">
+                        <li key={item.href} className="min-w-0">
                             <Link
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
-                                className="block rounded-2xl"
+                                className="block rounded-xl focus-visible:ring-2 focus-visible:ring-brand-gold"
                             >
-                                <div className="relative min-h-[54px] px-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 rounded-2xl">
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="mobile-nav-active"
-                                            className="absolute inset-0 bg-[linear-gradient(145deg,rgba(250,204,21,0.18),rgba(180,83,9,0.07))] rounded-2xl border border-yellow-300/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_18px_rgba(250,204,21,0.1)]"
-                                            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                                        />
-                                    )}
-                                    <div className={`relative z-20 flex h-6 w-7 items-center justify-center text-[18px] transition-all duration-200 ${
-                                        isActive
-                                            ? "text-yellow-200 -translate-y-0.5 drop-shadow-[0_0_8px_rgba(250,204,21,0.48)]"
-                                            : "text-brand-primary/35"
+                                <div className={`app-bottom-nav__button relative flex min-h-[46px] flex-col items-center justify-center gap-0.5 rounded-[18px] border px-1 transition-all duration-150 ${
+                                    isPrimary
+                                        ? `${isActive ? 'app-bottom-nav__primary app-bottom-nav__item--active text-brand-gold' : 'text-brand-gold hover:text-brand-gold'}`
+                                        : `app-bottom-nav__item ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
+                                }`}>
+                                    <div className={`app-bottom-nav__icon flex h-5 w-6 items-center justify-center text-[16px] ${
+                                        isPrimary
+                                            ? (isActive ? 'text-[18px] text-brand-gold' : 'text-[17px] text-brand-gold/80')
+                                            : (isActive ? "-translate-y-px text-brand-gold" : "")
                                     }`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`relative z-20 max-w-full truncate text-[8px] sm:text-[9px] font-extrabold leading-none tracking-wide transition-colors ${
-                                        isActive ? 'text-yellow-100' : 'text-brand-primary/40'
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[8px] font-bold leading-none tracking-[0.01em] ${
+                                        isPrimary
+                                            ? (isActive ? 'text-brand-primary' : 'text-brand-muted')
+                                            : (isActive ? 'text-brand-primary' : '')
                                     }`}>
                                         {item.label}
                                     </span>
                                     {isActive && (
-                                        <motion.span
-                                            layoutId="mobile-nav-active-indicator"
-                                            className="absolute bottom-1.5 w-4 h-px rounded-full bg-yellow-300 shadow-[0_0_8px_rgba(250,204,21,0.8)]"
-                                        />
+                                        <span className="absolute bottom-1.5 h-[2px] w-6 rounded-full bg-brand-gold shadow-[0_0_8px_rgba(245,158,11,0.55)]" aria-hidden="true" />
                                     )}
                                 </div>
                             </Link>
