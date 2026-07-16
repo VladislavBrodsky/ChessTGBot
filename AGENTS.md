@@ -2,6 +2,12 @@
 
 Telegram Mini App chess game. Next.js frontend + FastAPI backend.
 
+## Brand & UI system
+
+- All frontend visual work **MUST** follow [`BRAND_DESIGN_SYSTEM.md`](BRAND_DESIGN_SYSTEM.md). Read it before creating or changing pages, modals, drawers, cards, navigation, state UI, or animation.
+- Obsidian Chess is the default identity: semantic tokens and shared UI primitives first; gold for achievement/action, silver for progression/secured states, and purple only for the optional Nebula theme.
+- The guide's Telegram safe-area, `NavbarContext`, accessibility, reduced-motion, z-index, and performance rules are mandatory. Update the guide in the same change when those conventions or shared primitives change.
+
 ## Production topology (verified 2026-07)
 
 Two separate Railway services, auto-deployed from this repo on push to `main`:

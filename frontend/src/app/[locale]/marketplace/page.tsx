@@ -290,16 +290,14 @@ export default function MarketplacePage() {
                 {/* Mystery Boxes */}
                 <div className="w-full space-y-4">
                     <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">{t('section_boxes')}</h3>
-                    <div className="grid grid-cols-2 gap-3 w-full">
-                        {BOX_ORDER.map((tier, idx) => (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full items-start">
+                        {BOX_ORDER.map((tier) => (
                             <MysteryBoxCard
                                 key={tier}
                                 tier={tier}
                                 userXP={userXP}
                                 onUnbox={() => handleOpenBox(tier)}
                                 disabled={loadingStats || balanceError}
-                                /* seasonal is the 5th box — let it span the full row */
-                                className={idx === BOX_ORDER.length - 1 && BOX_ORDER.length % 2 !== 0 ? 'col-span-2' : ''}
                             />
                         ))}
                     </div>

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaCopy, FaUserPlus, FaCheck } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
-import { apiFetch } from '@/lib/api';
 import { copyToClipboard } from '@/lib/clipboard';
+import { useUser } from '@/context/UserContext';
 
 interface ReferralCardProps {
     referralCode?: string;
@@ -14,31 +14,10 @@ interface ReferralCardProps {
 
 export default function ReferralCard({ referralCode, onInteraction }: ReferralCardProps) {
     const t = useTranslations('Gamification');
-    const [userCode, setUserCode] = useState(referralCode || "");
-    const [botUsername, setBotUsername] = useState("FinChess_bot");
     const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        apiFetch("/api/v1/users/sync", { method: "POST" })
-            .then(res => res.json())
-            .then(data => {
-                if (data) {
-                    if (data.referral_code && !referralCode) {
-                        setUserCode(data.referral_code);
-                    }
-                    if (data.bot_username) {
-                        setBotUsername(data.bot_username);
-                    }
-                }
-            })
-            .catch(err => console.error("Failed to fetch referral code in ReferralCard:", err));
-
-        if (referralCode) {
-            setUserCode(referralCode);
-        }
-    }, [referralCode]);
-
-    const displayCode = userCode || "MATRIX-CORE";
+    const { stats } = useUser();
+    const displayCode = referralCode || stats?.referral_code || "MATRIX-CORE";
+    const botUsername = stats?.bot_username || "FinChess_bot";
     const inviteLink = `https://t.me/${botUsername}/app?startapp=ref_${displayCode}`;
 
     const handleCopy = () => {

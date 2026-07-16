@@ -92,6 +92,7 @@ export const useGameSocket = (gameId: string) => {
         }
 
         return () => {
+            socket.emit("leave_room", { room: gameId });
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("game_state", onGameState);

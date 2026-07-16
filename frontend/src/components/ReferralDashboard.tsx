@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCopy, FaCheck, FaShareAlt, FaUsers, FaBolt, FaDollarSign, FaChartLine, FaQrcode } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
@@ -33,6 +33,7 @@ interface ReferralDashboardProps {
 // Animated counter hook
 function useCountUp(target: number, duration = 1200) {
   const [value, setValue] = useState(0);
+  const frameRef = useRef<number | null>(null);
   useEffect(() => {
     if (target === 0) { setValue(0); return; }
     const start = Date.now();
@@ -41,9 +42,12 @@ function useCountUp(target: number, duration = 1200) {
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) frameRef.current = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
+    frameRef.current = requestAnimationFrame(step);
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    };
   }, [target, duration]);
   return value;
 }

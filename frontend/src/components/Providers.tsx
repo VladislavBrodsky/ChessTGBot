@@ -3,6 +3,7 @@
 import { ReactNode, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
+import { SWRConfig } from 'swr';
 import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
@@ -46,8 +47,18 @@ export default function Providers({ children }: { children: ReactNode }) {
     ) : children;
 
     return (
-        // This keeps OS-level reduced motion as the default and upgrades Framer
-        // Motion to "always" when the persisted in-app preference is enabled.
+        <SWRConfig value={{
+            // Keep previously rendered data visible while the app checks for a
+            // fresher value. Re-fetching on every Telegram foreground event
+            // creates unnecessary flashes and request bursts in the WebView.
+            dedupingInterval: 60_000,
+            focusThrottleInterval: 60_000,
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            keepPreviousData: true,
+        }}>
+        {/* This keeps OS-level reduced motion as the default and upgrades Framer
+            Motion to "always" when the persisted in-app preference is enabled. */}
         <ReducedMotionProvider>
             <ClientErrorReporter />
             <TelemetryReporter />
@@ -58,5 +69,6 @@ export default function Providers({ children }: { children: ReactNode }) {
             <TaskSuccessModal />
             {pageContent}
         </ReducedMotionProvider>
+        </SWRConfig>
     );
 }

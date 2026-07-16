@@ -106,14 +106,6 @@
   --glass-button-hover-border: rgba(255, 255, 255, 0.15);
   --glass-button-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 
-  /* Premium play chess shifting gradient variables (Dark Theme Default) */
-  --premium-grad-1: #4F46E5;
-  --premium-grad-2: #7C3AED;
-  --premium-grad-3: #EC4899;
-  --premium-border-1: rgba(99, 102, 241, 0.4);
-  --premium-border-2: rgba(168, 85, 247, 0.6);
-  --premium-border-3: rgba(244, 63, 94, 0.5);
-  --premium-shadow-color: rgba(139, 92, 246, 0.25);
 }
 
 [data-theme='light'] {
@@ -163,14 +155,6 @@
   --glass-button-hover-border: rgba(15, 23, 42, 0.12);
   --glass-button-hover-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 
-  /* Premium play chess shifting gradient variables (Light Theme) */
-  --premium-grad-1: #6366F1;
-  --premium-grad-2: #A855F7;
-  --premium-grad-3: #F43F5E;
-  --premium-border-1: rgba(99, 102, 241, 0.35);
-  --premium-border-2: rgba(168, 85, 247, 0.45);
-  --premium-border-3: rgba(244, 63, 94, 0.35);
-  --premium-shadow-color: rgba(99, 102, 241, 0.15);
 }
 
 [data-theme='nebula'] {
@@ -220,14 +204,6 @@
   --glass-button-hover-border: rgba(160, 136, 255, 0.2);
   --glass-button-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 
-  /* Premium play chess shifting gradient variables (Nebula Theme) */
-  --premium-grad-1: #00F0FF;
-  --premium-grad-2: #7B2CBF;
-  --premium-grad-3: #FF007A;
-  --premium-border-1: rgba(0, 240, 255, 0.5);
-  --premium-border-2: rgba(123, 44, 191, 0.7);
-  --premium-border-3: rgba(255, 0, 122, 0.5);
-  --premium-shadow-color: rgba(123, 44, 191, 0.35);
 }
 
 html {
@@ -926,75 +902,47 @@ body {
   filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)) !important;
 }
 
-/* Premium Shifting Soft Gradient Card for Play Chess */
+/* Primary arena entry: a quiet gold move marker over the shared obsidian shell. */
 .play-chess-card-premium {
   position: relative;
-  background: var(--bg-elevated) !important;
-  border: 1px solid transparent !important;
-  border-radius: 14px;
+  isolation: isolate;
+  background: linear-gradient(115deg, var(--bg-elevated) 0%, var(--bg-surface) 68%, var(--bg-elevated) 100%) !important;
+  border: 1px solid var(--border-muted) !important;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: var(--shadow-premium);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
 }
 
-/* The moving soft gradient background */
+/* The gold field signals the next meaningful move without a default Nebula glow. */
 .play-chess-card-premium::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(125deg, 
-    var(--premium-grad-1), 
-    var(--premium-grad-2), 
-    var(--premium-grad-3),
-    var(--premium-grad-2),
-    var(--premium-grad-1)
-  );
-  background-size: 300% 300%;
-  animation: gradientShift 8s ease infinite;
-  opacity: 0.08; /* Subtle soft glow background */
-  transition: opacity 0.3s ease;
+  background:
+    linear-gradient(90deg, var(--text-gold) 0 3px, transparent 3px),
+    radial-gradient(circle at 14% 50%, var(--color-amber-opacity-10), transparent 38%);
+  opacity: 1;
+  pointer-events: none;
 }
 
-/* The glowing animated masked border */
-.play-chess-card-premium::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 14px;
-  padding: 1.5px; /* Border thickness */
-  background: linear-gradient(125deg, 
-    var(--premium-border-1), 
-    var(--premium-border-2), 
-    var(--premium-border-3),
-    var(--premium-border-2),
-    var(--premium-border-1)
-  );
-  background-size: 300% 300%;
-  animation: gradientShift 8s ease infinite;
-  -webkit-mask: 
-     linear-gradient(#fff 0 0) content-box, 
-     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
+.play-chess-card-piece {
+  color: var(--text-gold);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-inner-glow);
+}
+
+.play-chess-card-arrow {
+  color: var(--bg-primary);
+  background: var(--text-gold);
+  box-shadow: 0 0 0 4px var(--color-amber-opacity-10);
 }
 
 .play-chess-card-premium:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--premium-shadow-color) !important;
-  border-color: transparent !important;
-}
-
-.play-chess-card-premium:hover::before {
-  opacity: 0.15; /* Shine brighter on hover */
-}
-
-.play-chess-card-premium:hover::after {
-  opacity: 1.0; /* Full borders glow on hover */
+  border-color: var(--text-gold) !important;
+  box-shadow: var(--shadow-premium), 0 0 0 1px var(--color-amber-opacity-10) !important;
 }
 
 /* 
@@ -1058,12 +1006,6 @@ body {
     animation: none !important;
   }
 
-  /* Freeze the shifting gradient on play-chess premium card pseudo-elements. */
-  .play-chess-card-premium::before,
-  .play-chess-card-premium::after {
-    animation: none !important;
-  }
-
   /* Freeze the liquid gradient button shift. */
   .premium-liquid-button {
     animation: none !important;
@@ -1095,8 +1037,6 @@ body {
 :root[data-reduce-motion="true"] .animate-shimmer,
 :root[data-reduce-motion="true"] .animate-radar-sweep,
 :root[data-reduce-motion="true"] .animate-active-portal,
-:root[data-reduce-motion="true"] .play-chess-card-premium::before,
-:root[data-reduce-motion="true"] .play-chess-card-premium::after,
 :root[data-reduce-motion="true"] .premium-liquid-button {
   animation: none !important;
 }
@@ -1137,8 +1077,6 @@ body {
 :root.lite-fx .animate-shimmer,
 :root.lite-fx .animate-radar-sweep,
 :root.lite-fx .animate-active-portal,
-:root.lite-fx .play-chess-card-premium::before,
-:root.lite-fx .play-chess-card-premium::after,
 :root.lite-fx .premium-liquid-button {
   animation: none !important;
 }
@@ -1248,4 +1186,3 @@ body {
 [dir="rtl"] .right-5 { left: 1.25rem !important; right: auto !important; }
 [dir="rtl"] .right-6 { left: 1.5rem !important; right: auto !important; }
 [dir="rtl"] .right-8 { left: 2rem !important; right: auto !important; }
-

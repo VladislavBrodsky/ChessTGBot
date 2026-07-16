@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserPlus, FaCopy, FaShareAlt, FaCheck } from 'react-icons/fa';
-import { apiFetch } from '@/lib/api';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { useUser } from '@/context/UserContext';
 
 interface ReferralSectionProps {
  referralCode: string;
@@ -13,18 +13,8 @@ interface ReferralSectionProps {
 
 export default function ReferralSection({ referralCode }: ReferralSectionProps) {
  const [copied, setCopied] = useState(false);
- const [botUsername, setBotUsername] = useState("FinChess_bot");
-
- useEffect(() => {
-   apiFetch("/api/v1/users/sync", { method: "POST" })
-     .then(res => res.json())
-     .then(data => {
-       if (data && data.bot_username) {
-         setBotUsername(data.bot_username);
-       }
-     })
-     .catch(err => console.error("Failed to fetch bot username in ReferralSection:", err));
- }, []);
+ const { stats } = useUser();
+ const botUsername = stats?.bot_username || "FinChess_bot";
 
  const inviteLink = `https://t.me/${botUsername}?start=${referralCode}`;
 

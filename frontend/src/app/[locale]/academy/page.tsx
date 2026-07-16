@@ -1,13 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from 'next/dynamic';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
-import Confetti from "react-confetti";
-import { Chessboard } from "react-chessboard";
-import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaStar, FaTrophy, FaArrowRight, FaPlay, FaFire, FaBookOpen, FaWallet, FaChevronDown, FaPalette } from 'react-icons/fa';
-import Link from "next/link";
+import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
@@ -18,6 +16,23 @@ import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+
+// These libraries are only needed after a user opens a puzzle preview or
+// earns a reward. Keeping them out of the Academy entry bundle makes normal
+// navigation and the initial lesson list render sooner on mobile.
+const Chessboard = dynamic(
+  () => import('react-chessboard').then((module) => module.Chessboard),
+  { ssr: false },
+);
+const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
+
+const CHESS_QUOTES = [
+  { quote: "Every chess master was once a beginner.", author: "Irving Chernev" },
+  { quote: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
+  { quote: "Tactics flow from a superior position.", author: "Bobby Fischer" },
+  { quote: "When you see a good move, look for a better one.", author: "Emanuel Lasker" },
+  { quote: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" },
+] as const;
 
 export default function AcademyPage() {
   const locale = useLocale();
@@ -80,19 +95,24 @@ export default function AcademyPage() {
 
   const fetchData = async () => {
     try {
-      const statsRes = await apiFetch("/api/v1/users/sync", { method: "POST" });
+      const [statsRes, contentLessonsRes, lessonsRes, completedLessonsRes, puzzlesRes] = await Promise.all([
+        apiFetch("/api/v1/users/sync", { method: "POST" }),
+        apiFetch("/api/v1/content/lessons"),
+        apiFetch("/api/v1/gamification/academy/unlocked-lessons"),
+        apiFetch("/api/v1/gamification/academy/completed-lessons"),
+        apiFetch("/api/v1/gamification/academy/puzzles"),
+      ]);
+
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
       }
 
-      const contentLessonsRes = await apiFetch("/api/v1/content/lessons");
       if (contentLessonsRes.ok) {
         const cLessons = await contentLessonsRes.json();
         setDynamicLessons(cLessons);
       }
 
-      const lessonsRes = await apiFetch("/api/v1/gamification/academy/unlocked-lessons");
       if (lessonsRes.ok) {
         const lessonsData = await lessonsRes.json();
         if (Array.isArray(lessonsData)) {
@@ -100,7 +120,6 @@ export default function AcademyPage() {
         }
       }
 
-      const completedLessonsRes = await apiFetch("/api/v1/gamification/academy/completed-lessons");
       if (completedLessonsRes.ok) {
         const completedData = await completedLessonsRes.json();
         if (Array.isArray(completedData)) {
@@ -108,7 +127,6 @@ export default function AcademyPage() {
         }
       }
 
-      const puzzlesRes = await apiFetch("/api/v1/gamification/academy/puzzles");
       if (puzzlesRes.ok) {
         const puzzlesData = await puzzlesRes.json();
         if (Array.isArray(puzzlesData)) {
@@ -124,13 +142,6 @@ export default function AcademyPage() {
     }
   };
 
-  const CHESS_QUOTES = [
-    { quote: "Every chess master was once a beginner.", author: "Irving Chernev" },
-    { quote: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
-    { quote: "Tactics flow from a superior position.", author: "Bobby Fischer" },
-    { quote: "When you see a good move, look for a better one.", author: "Emanuel Lasker" },
-    { quote: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" }
-  ];
   const [quoteIdx, setQuoteIdx] = useState(0);
 
   useEffect(() => {
@@ -151,42 +162,6 @@ export default function AcademyPage() {
   const getNextMilestoneXP = (xp: number) => {
     const currentLevel = Math.floor(xp / 350) + 1;
     return currentLevel * 350;
-  };
-
-  const handleLessonClick = async (lessonId: string, isLocked: boolean) => {
-    if (!isLocked) {
-      router.push(`/${locale}/academy/lesson/${lessonId}`);
-      return;
-    }
-
-    const currentXp = stats?.xp || 0;
-    if (currentXp < 100) {
-      telegramAlert(`This advanced lesson requires 100 XP to unlock. You only have ${currentXp} XP.`);
-      return;
-    }
-
-    telegramConfirm(`Unlock "Endgame Magic" lesson by spending 100 XP? (You have ${currentXp} XP)`, async (confirmed) => {
-      if (!confirmed) return;
-
-      try {
-        const res = await apiFetch("/api/v1/gamification/academy/unlock-lesson", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ lesson_id: lessonId })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === "success") {
-          triggerConfetti();
-          telegramAlert("Lesson unlocked successfully!");
-          fetchData();
-        } else {
-          telegramAlert(data.detail || "Failed to unlock lesson");
-        }
-      } catch (e) {
-        console.error(e);
-        telegramAlert("Unlock failed");
-      }
-    });
   };
 
   const handlePuzzleClick = async (id: number, pInfo: any) => {

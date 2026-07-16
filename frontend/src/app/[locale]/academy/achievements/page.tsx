@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { FaTrophy, FaStar, FaShieldAlt, FaBook, FaFire, FaCoins, FaLock } from "react-icons/fa";
-import { useTranslations } from "next-intl";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 interface Achievement {
   id: number;
@@ -27,7 +26,6 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export default function AchievementsPage() {
-  const t = useTranslations('Academy');
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,16 +44,25 @@ export default function AchievementsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
-      </div>
+      <LayoutWrapper className="pb-32 px-4 md:px-6">
+        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 pt-6" role="status" aria-label="Loading achievements">
+          <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
+          <div className="mx-auto h-3 w-28 rounded-full bg-brand-bg-opacity-5" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }, (_, index) => (
+              <div key={index} className="h-48 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />
+            ))}
+          </div>
+        </div>
+      </LayoutWrapper>
     );
   }
 
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
-    <div className="pb-24 pt-6 px-4 md:px-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col h-full overflow-y-auto hide-scrollbar">
+    <LayoutWrapper className="pb-32 px-4 md:px-6">
+    <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight">Achievements</h1>
         <p className="text-sm font-bold text-brand-primary opacity-60 tracking-widest uppercase">
@@ -64,12 +71,9 @@ export default function AchievementsPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {achievements.map((ach, idx) => (
-          <motion.div
+        {achievements.map((ach) => (
+          <div
             key={ach.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
             className={`relative p-4 rounded-2xl border flex flex-col items-center text-center transition-all ${
               ach.unlocked 
                 ? 'glass-panel border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
@@ -94,9 +98,10 @@ export default function AchievementsPage() {
                 <FaLock className="text-xs text-slate-500" />
               </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
+    </LayoutWrapper>
   );
 }

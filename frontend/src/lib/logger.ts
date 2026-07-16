@@ -7,9 +7,11 @@ if (typeof window !== "undefined" && SENTRY_DSN) {
   try {
     Sentry.init({
       dsn: SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      replaysSessionSampleRate: 0.1,
-      replaysOnErrorSampleRate: 1.0,
+      // Full tracing/replay on every session is excessive for a mobile mini
+      // app. Preserve error visibility without taxing normal game sessions.
+      tracesSampleRate: 0.1,
+      replaysSessionSampleRate: 0.01,
+      replaysOnErrorSampleRate: 0.1,
     });
   } catch (err) {
     console.error("Failed to initialize Sentry:", err);

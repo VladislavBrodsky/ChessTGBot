@@ -16,7 +16,9 @@ const nextConfig = {
     transpilePackages: ['react-chessboard'],
     ...(isStaticExport ? { output: 'export' } : { output: 'standalone' }),
     images: {
-        unoptimized: true,
+        // Railway's Next.js service can optimize local assets at runtime.
+        // Static exports cannot, so retain plain files only for that build.
+        unoptimized: isStaticExport,
     },
     typescript: { ignoreBuildErrors: true },
     experimental: {},

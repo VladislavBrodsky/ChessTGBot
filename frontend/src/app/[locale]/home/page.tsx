@@ -8,7 +8,7 @@ import { getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
 import { 
   FaGraduationCap, FaStar, FaChessKnight, 
-  FaWallet, FaGamepad, FaTrophy, 
+  FaWallet, FaTrophy,
   FaListOl, FaNewspaper, FaArrowRight
 } from "react-icons/fa";
 import { FiBell, FiSettings } from 'react-icons/fi';
@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/Button";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
 import NotificationModal from "@/components/NotificationModal";
+import { telegramHaptic } from "@/lib/telegram";
 
 // Telegram's `start_param` persists for the whole webview session, so the
 // deep-link redirect below re-fired on EVERY Home mount — after finishing a
@@ -306,21 +307,25 @@ export default function Home() {
 
  {/* Primary action first, supporting actions second. */}
  <div className="w-full space-y-3 relative z-10">
-  <Link href={`/${locale}/game`} className="block rounded-2xl">
+  <Link
+   href={`/${locale}/game`}
+   onClick={() => telegramHaptic('medium')}
+   className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
+  >
    <motion.div
     whileHover={{ y: -2 }}
     whileTap={{ scale: 0.985 }}
-    className="play-chess-card-premium min-h-[88px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
+    className="play-chess-card-premium min-h-[96px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
    >
-    <div className="relative z-10 w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-brand-primary/10 border border-brand-primary/15 shadow-inner-glow">
-     <FaGamepad className="text-xl text-brand-primary drop-shadow-[0_2px_10px_rgba(168,85,247,0.45)]" />
+    <div className="play-chess-card-piece relative z-10 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center">
+     <FaChessKnight className="text-2xl" aria-hidden="true" />
     </div>
     <div className="relative z-10 min-w-0 flex-1 text-left">
-     <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-brand-muted mb-1">{t('play')}</span>
-     <span className="block text-lg font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
+     <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-brand-gold mb-1.5">{t('play')}</span>
+     <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
     </div>
-    <div className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-primary">
-     <FaArrowRight className="text-xs rtl:rotate-180" />
+    <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">
+     <FaArrowRight className="text-sm rtl:rotate-180" aria-hidden="true" />
     </div>
    </motion.div>
   </Link>

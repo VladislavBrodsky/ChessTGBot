@@ -45,16 +45,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const { data: balanceData, error: balanceSWR_Error, isLoading: loadingBalance, mutate: syncBalance } = useSWRFetch(
         isAuthenticated() ? '/api/v1/wallet/balance' : null,
         {
-            revalidateOnFocus: true,
-            dedupingInterval: 5000, // 5 seconds
+            revalidateOnFocus: false,
+            dedupingInterval: 30_000,
         }
     );
 
     const { data: statsData, error: statsSWR_Error, isLoading: loadingStats, mutate: syncStats } = useSWRFetch(
         isAuthenticated() ? ['/api/v1/users/sync', {}] : null,
         {
-            revalidateOnFocus: true,
-            dedupingInterval: 10000, // 10 seconds
+            revalidateOnFocus: false,
+            dedupingInterval: 60_000,
         }
     );
 

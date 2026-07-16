@@ -35,7 +35,7 @@ export function useChessClock(
       const activeColor = turnRef.current;
       if (activeColor === 'w') {
         setWhiteTime((prev) => {
-          const next = Math.max(0, prev - 0.1);
+          const next = Math.max(0, prev - 0.25);
           if (isWhite) {
             onClockWarning(next);
           }
@@ -43,14 +43,14 @@ export function useChessClock(
         });
       } else {
         setBlackTime((prev) => {
-          const next = Math.max(0, prev - 0.1);
+          const next = Math.max(0, prev - 0.25);
           if (!isWhite) {
             onClockWarning(next);
           }
           return next;
         });
       }
-    }, 100);
+    }, 250);
 
     return () => clearInterval(interval);
   }, [gameState, isWhite, onClockWarning]);

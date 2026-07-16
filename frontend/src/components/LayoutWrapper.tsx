@@ -7,7 +7,6 @@ import RegionPrompt from './RegionPrompt';
 import NotificationModal from './NotificationModal';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
-import { useTheme } from '@/context/ThemeContext';
 import { useNavbar } from '@/context/NavbarContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
@@ -74,6 +73,15 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
   // Check active game status and redirect if needed
   const checkActiveGame = useCallback(async () => {
+        // LayoutWrapper is rendered by individual pages. Once the active-game
+        // status is known for this app session, do not repeat this network
+        // check on every route transition and compete with the next screen.
+        if (globalActiveGameChecked) {
+            setActiveGameId(globalActiveGameId);
+            setIsCheckingActiveGame(false);
+            return;
+        }
+
         try {
             const res = await apiFetch('/api/v1/game/active');
             if (res.ok) {
@@ -166,7 +174,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     // hidden by game state. However, if a modal/drawer is open (isNavbarHiddenByContext),
     // we MUST hide it so it doesn't bleed through backdrop blurs.
     const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
-        !isMainNavbarPage && (!!activeGameId || (isCorePage && isCheckingActiveGame))
+        !isMainNavbarPage && !!activeGameId
     );
 
     return (
@@ -212,7 +220,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                         ? 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(150px+var(--app-safe-bottom))]'
                         : 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--app-safe-bottom))]'
             } ${className}`}>
-                {isCorePage && isCheckingActiveGame ? (
+                {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
                         <span className="text-[10px] font-black uppercase tracking-[0.25em] mt-3.5 opacity-40 animate-pulse text-brand-primary">

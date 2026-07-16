@@ -61,7 +61,7 @@ export default function TaskSuccessModal() {
             width={dimensions.width}
             height={dimensions.height}
             recycle={false}
-            numberOfPieces={250}
+            numberOfPieces={dimensions.width < 768 ? 110 : 220}
             gravity={0.25}
           />
         </div>

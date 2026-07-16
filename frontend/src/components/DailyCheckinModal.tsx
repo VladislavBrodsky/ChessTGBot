@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import Confetti from "react-confetti";
 import { FaCheckCircle, FaLock, FaGift } from "react-icons/fa";
+import { useNavbar } from '@/context/NavbarContext';
 
 interface DailyStatus {
   can_claim_today: boolean;
@@ -20,6 +21,13 @@ export default function DailyCheckinModal() {
   const [claiming, setClaiming] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const { pushHide, popHide } = useNavbar();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    pushHide();
+    return () => popHide();
+  }, [isOpen, pushHide, popHide]);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -87,7 +95,7 @@ export default function DailyCheckinModal() {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-surface/90 backdrop-blur-xl"
         >
-          {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} />}
+          {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 120 : 240} />}
           
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 30 }}

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronRight, FaChevronLeft, FaCheck } from "react-icons/fa";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { Chessboard } from "react-chessboard";
+import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
 
 export type LessonStepType = 'text' | 'video' | 'interactive_board';
 
@@ -36,6 +37,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  const isLastStep = currentStepIndex === steps.length - 1;
  const hasInteractiveSolution =
    currentStep.type === 'interactive_board' && (currentStep.solution?.length ?? 0) > 0;
+ const safeStepContent = useMemo(() => sanitizeRichContent(currentStep.content), [currentStep.content]);
 
  const handleNext = () => {
  if (currentStepIndex < steps.length - 1) {
@@ -89,7 +91,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
        
        <div className="relative z-10 prose prose-invert prose-brand max-w-none text-brand-primary/90 leading-relaxed text-[15px]">
-         <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+         <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
        </div>
        
        {!stepComplete && (
@@ -144,7 +146,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
   {hasInteractiveSolution && (
     <div className="glass-panel p-4 md:p-6 rounded-3xl border border-brand-border-opacity-10 w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5">
-      <div className="text-sm md:text-base font-medium text-brand-primary opacity-90 mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+      <div className="text-sm md:text-base font-medium text-brand-primary opacity-90 mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: safeStepContent }} />
       <PuzzleBoard
         initialFen={currentStep.fen || "start"}
         solution={currentStep.solution || []}

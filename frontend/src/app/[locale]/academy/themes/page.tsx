@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
-import { FaPalette, FaCheck, FaLock, FaCoins } from "react-icons/fa";
-import { useTranslations } from "next-intl";
+import { FaPalette, FaCheck, FaLock } from "react-icons/fa";
 import { telegramHaptic, telegramAlert, telegramConfirm } from "@/lib/telegram";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 interface Theme {
   id: number;
@@ -19,7 +18,6 @@ interface Theme {
 }
 
 export default function ThemeShopPage() {
-  const t = useTranslations('Academy');
   const [themes, setThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(true);
   const [userXp, setUserXp] = useState(0);
@@ -86,14 +84,24 @@ export default function ThemeShopPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-      </div>
+      <LayoutWrapper className="pb-32 px-4 md:px-6">
+        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-6 pt-6" role="status" aria-label="Loading board themes">
+          <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
+          <div className="mx-auto h-3 w-32 rounded-full bg-brand-bg-opacity-5" />
+          <div className="mx-auto h-9 w-36 rounded-full bg-brand-bg-opacity-10" />
+          <div className="space-y-4">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div key={index} className="h-28 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />
+            ))}
+          </div>
+        </div>
+      </LayoutWrapper>
     );
   }
 
   return (
-    <div className="pb-24 pt-6 px-4 md:px-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col h-full overflow-y-auto hide-scrollbar">
+    <LayoutWrapper className="pb-32 px-4 md:px-6">
+    <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight flex items-center justify-center gap-3">
           <FaPalette className="text-amber-500" /> Theme Shop
@@ -108,12 +116,9 @@ export default function ThemeShopPage() {
       </div>
 
       <div className="space-y-4">
-        {themes.map((theme, idx) => (
-          <motion.div
+        {themes.map((theme) => (
+          <div
             key={theme.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.1 }}
             className={`relative p-4 rounded-2xl border flex items-center justify-between transition-all ${
               theme.owned 
                 ? 'glass-panel border-amber-500/30 bg-amber-500/5' 
@@ -152,9 +157,10 @@ export default function ThemeShopPage() {
                 </button>
               )}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
+    </LayoutWrapper>
   );
 }

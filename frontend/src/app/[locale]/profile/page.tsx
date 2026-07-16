@@ -141,9 +141,16 @@ export default function ProfilePage() {
   }, []);
 
   // Parse unlocked items
-  const unlockedItems: string[] = typeof stats?.unlocked_items === 'string' 
-    ? JSON.parse(stats.unlocked_items) 
-    : (stats?.unlocked_items || []);
+  const unlockedItems: string[] = (() => {
+    if (Array.isArray(stats?.unlocked_items)) return stats.unlocked_items;
+    if (typeof stats?.unlocked_items !== 'string') return [];
+    try {
+      const parsed = JSON.parse(stats.unlocked_items);
+      return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+    } catch {
+      return [];
+    }
+  })();
 
   // Determine active profile border
   let borderOuterClass = "absolute inset-0 rounded-full border border-brand-primary/30 animate-pulse scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none";

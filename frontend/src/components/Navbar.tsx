@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
@@ -22,6 +22,7 @@ let globalIsDesktopBrowser: boolean | null = null;
 
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
+    const router = useRouter();
     const locale = useLocale();
     const t = useTranslations('Index');
     const { stats } = useUser();
@@ -51,6 +52,17 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             setIsDesktopBrowser(isDesktop);
         }
     }, []);
+
+    React.useEffect(() => {
+        // The five primary destinations are always visible. Warm their route
+        // payloads after first paint so a normal navigation has no chunk fetch
+        // on the tap path. Delaying avoids competing with initial app startup.
+        const timer = window.setTimeout(() => {
+            NAV_ITEMS.forEach((item) => router.prefetch(`/${locale}${item.href}`));
+        }, 800);
+
+        return () => window.clearTimeout(timer);
+    }, [locale, router]);
 
     const handleLogout = () => {
         if (typeof window !== 'undefined') {
@@ -179,7 +191,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.08),transparent_60%)] pointer-events-none rounded-[22px]" />
 
-            <ul className="flex items-center relative z-10 w-full justify-around gap-0.5">
+            <ul className="flex w-full max-w-[360px] mx-auto items-center justify-around gap-0.5 relative z-10">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     return (

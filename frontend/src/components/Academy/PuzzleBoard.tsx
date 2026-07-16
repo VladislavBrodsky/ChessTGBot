@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Chess } from "chess.js";
 import ChessBoardComponent from "@/components/game/ChessBoard";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLightbulb, FaUndo, FaFlag } from "react-icons/fa";
+import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
 
 interface PuzzleBoardProps {
   initialFen: string;
@@ -40,6 +41,10 @@ export default function PuzzleBoard({
   const [showHintText, setShowHintText] = useState(false);
   const [dynamicHintText, setDynamicHintText] = useState(hintText || "");
   const [dynamicSuccessExplanation, setDynamicSuccessExplanation] = useState(successExplanation || "");
+  const safeSuccessExplanation = useMemo(
+    () => sanitizeRichContent(dynamicSuccessExplanation),
+    [dynamicSuccessExplanation]
+  );
 
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
@@ -338,7 +343,7 @@ export default function PuzzleBoard({
           {dynamicSuccessExplanation ? (
             <div className="text-xs font-medium text-brand-primary opacity-90 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
               <span className="text-[10px] font-black uppercase text-green-400 mb-2 block tracking-widest">Grandmaster Explanation:</span>
-              <div dangerouslySetInnerHTML={{ __html: dynamicSuccessExplanation }} />
+              <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>
           ) : (
             <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
