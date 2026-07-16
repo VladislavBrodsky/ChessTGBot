@@ -282,19 +282,18 @@ def rate_limit(limit: int, window: int):
         
         if use_redis:
             try:
-                current_count_str = await session_mgr.redis.get(user_key)
-                if current_count_str:
-                    current_count = int(current_count_str)
-                    if current_count >= limit:
-                        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
-                    await session_mgr.redis.incr(user_key)
-                else:
-                    await session_mgr.redis.set(user_key, "1", ex=window)
+                val = await session_mgr.redis.incr(user_key)
+                if val == 1:
+                    await session_mgr.redis.expire(user_key, window)
+                if val > limit:
+                    raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
                 return
             except HTTPException:
                 raise
-            except Exception:
-                SessionManager._use_memory = True
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Redis rate limit check failed: {e}. Falling back to memory.")
                 pass
                 
         # In-memory fallback
@@ -329,19 +328,18 @@ def ip_rate_limit(limit: int, window: int):
 
         if use_redis:
             try:
-                current_count_str = await session_mgr.redis.get(key)
-                if current_count_str:
-                    current_count = int(current_count_str)
-                    if current_count >= limit:
-                        raise HTTPException(status_code=429, detail="Too many requests from this IP. Please try again later.")
-                    await session_mgr.redis.incr(key)
-                else:
-                    await session_mgr.redis.set(key, "1", ex=window)
+                val = await session_mgr.redis.incr(key)
+                if val == 1:
+                    await session_mgr.redis.expire(key, window)
+                if val > limit:
+                    raise HTTPException(status_code=429, detail="Too many requests from this IP. Please try again later.")
                 return
             except HTTPException:
                 raise
-            except Exception:
-                SessionManager._use_memory = True
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Redis IP rate limit check failed: {e}. Falling back to memory.")
                 pass
 
         # In-memory fallback

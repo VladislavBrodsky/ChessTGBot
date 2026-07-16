@@ -2,8 +2,4 @@
 2:I[57121,[],""]
 3:I[74581,[],""]
 4:[]
-<<<<<<< Updated upstream
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"o6nJySYttEq7lXF__Mwgo"}
-=======
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"Mtr9Q4RPLkQchS5BxNvKv"}
->>>>>>> Stashed changes
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"Z42iOGNezYDVHBUEgdPIz"}

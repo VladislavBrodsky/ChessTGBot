@@ -48,8 +48,8 @@ async def test_rate_limiter_redis():
     
     # Mock SessionManager
     mock_redis = AsyncMock()
-    # First call to get returns None, next returns "1", next returns "2" (exceeded)
-    mock_redis.get.side_effect = [None, "1", "2"]
+    # incr returns 1 on first call, 2 on second call, 3 on third call
+    mock_redis.incr.side_effect = [1, 2, 3]
     
     mock_session_mgr = MagicMock()
     mock_session_mgr.redis = mock_redis
@@ -58,15 +58,15 @@ async def test_rate_limiter_redis():
     with patch("app.services.session_manager.SessionManager", return_value=mock_session_mgr):
         limiter = rate_limit(limit=2, window=60)
         
-        # 1. First call (redis returns None) -> sets key to 1, passes
+        # 1. First call (incr returns 1) -> sets expire, passes
         await limiter(req, user)
-        mock_redis.set.assert_called_once()
+        mock_redis.expire.assert_called_once()
         
-        # 2. Second call (redis returns "1") -> increments key, passes
+        # 2. Second call (incr returns 2) -> passes, no expire called again
         await limiter(req, user)
-        mock_redis.incr.assert_called_once()
+        assert mock_redis.expire.call_count == 1
         
-        # 3. Third call (redis returns "2" >= 2) -> raises 429
+        # 3. Third call (incr returns 3 > 2) -> raises 429
         with pytest.raises(HTTPException) as excinfo:
             await limiter(req, user)
         assert excinfo.value.status_code == 429
