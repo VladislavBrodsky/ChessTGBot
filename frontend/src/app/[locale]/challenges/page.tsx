@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
 import { FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
+import XPProgressBar from "@/components/XPProgressBar";
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
@@ -229,41 +230,12 @@ export default function ChallengesPage() {
             </div>
  
             {/* XP Bar — premium with shimmer */}
-            <div className="w-full max-w-[260px] mb-3">
-              <div
-                className="app-progress-track relative h-3.5 rounded-full overflow-hidden border"
-              >
-                  {levelSecured && <div aria-hidden="true" className="absolute inset-[2px] rounded-full border border-brand-border-opacity-20 pointer-events-none" />}
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  transition={{ duration: 1.8, ease: "circOut", delay: 0.3 }}
-                  className={`absolute top-0 left-0 h-full rounded-full overflow-hidden ${levelSecured ? 'app-progress-fill--secured' : 'app-progress-fill--gold'}`}
-                >
-                  <motion.div
-                    aria-hidden="true"
-                    animate={{ x: ['-120%', '320%'] }}
-                    transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.2 }}
-                    className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent -skew-x-12"
-                  />
-                </motion.div>
-                {/* Shimmer sweep */}
-                <motion.div
-                  animate={{ x: ['-100%', '200%'] }}
-                  transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.8 }}
-                  className="absolute top-0 left-0 h-full w-1/3 pointer-events-none"
-                  style={{ background: levelSecured ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }}
-                />
-              </div>
-              <div className="flex justify-between mt-2">
-                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
-                  {levelSecured ? 'Level secured' : `${currentLevelProgress} / ${XP_PER_LEVEL} XP`}
-                </span>
-                <span className={`text-[10px] font-black uppercase tracking-widest ${levelSecured ? 'text-brand-primary/70' : 'text-brand-muted'}`}>
-                  {levelSecured ? `Level ${userLevel}` : `${nextLevelXp} XP`}
-                </span>
-              </div>
-            </div>
+            <XPProgressBar
+              xp={userXp}
+              level={stats?.level ?? 1}
+              levelLabel={t('level') || 'Level'}
+              className="max-w-[260px] mb-4"
+            />
  
             {/* XP percentage pill */}
             <div
