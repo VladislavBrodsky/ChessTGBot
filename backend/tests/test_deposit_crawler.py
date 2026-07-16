@@ -88,6 +88,9 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
 
     monkeypatch.setattr("httpx.AsyncClient", lambda *args, **kwargs: mock_client)
     
+    from unittest.mock import patch
+    mock_tg = patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock).start()
+
     # 3. Patch AsyncSessionLocal inside deposit_crawler to yield db_session
     from app.services import deposit_crawler
     
@@ -141,3 +144,19 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
     assert tx_deposit.amount == 100
     assert tx_deposit.fee == 5
     assert tx_deposit.reference_id == "3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c"
+
+    # Verify telegram alerts were sent (1 user + 2 admins)
+    assert mock_tg.call_count == 3
+    calls = mock_tg.call_args_list
+    assert calls[0][0][0] == user.telegram_id
+    assert "Top-Up Confirmed (Auto-Synced)!" in calls[0][0][1]
+
+    admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
+    assert set(admin_calls.keys()) == {1016749901, 716720099}
+    for admin_id, msg in admin_calls.items():
+        assert "New USDT deposit" in msg
+        assert "User: ID 1016749901" in msg
+        assert "Amount: $1.05" in msg
+        assert "Transaction ID: 3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c" in msg
+
+    patch.stopall()

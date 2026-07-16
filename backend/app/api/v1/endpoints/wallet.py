@@ -886,6 +886,19 @@ async def receive_ton_deposit_webhook(
     except Exception:
         pass
 
+    # Send admin alert
+    try:
+        from app.core.alerts import send_deposit_alert
+        await send_deposit_alert(
+            deposit_type="USDT",
+            username=updated_user.username,
+            telegram_id=telegram_id,
+            amount=amount_cents / 100.0,
+            tx_id=tx_hash
+        )
+    except Exception as e:
+        logger.warning(f"Failed to send admin deposit alert: {e}")
+
     return {
         "status": "success",
         "credited_amount": credited_amount,
@@ -1215,6 +1228,19 @@ async def verify_deposit(
     except Exception:
         pass
 
+    # Send admin alert
+    try:
+        from app.core.alerts import send_deposit_alert
+        await send_deposit_alert(
+            deposit_type="USDT",
+            username=user.username,
+            telegram_id=telegram_id,
+            amount=amount_cents / 100.0,
+            tx_id=tx_hash
+        )
+    except Exception as e:
+        logger.warning(f"Failed to send admin deposit alert: {e}")
+
     return {
         "status": "success",
         "credited_amount": credited_amount,
@@ -1372,6 +1398,19 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
                 await TelegramService.send_notification(user_id, notification_text)
             except Exception as notify_err:
                 logger.warning(f"Failed to send telegram notification: {notify_err}")
+
+            # Send admin alert
+            try:
+                from app.core.alerts import send_deposit_alert
+                await send_deposit_alert(
+                    deposit_type="Stripe",
+                    username=user.username,
+                    telegram_id=user_id,
+                    amount=(tx.amount + tx.fee) / 100.0,
+                    tx_id=session_id
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send admin deposit alert: {e}")
                 
             return True
     return False
@@ -1869,6 +1908,19 @@ async def stripe_webhook(
                         )
                     except Exception:
                         pass
+
+                    # Send admin alert
+                    try:
+                        from app.core.alerts import send_premium_subscription_alert
+                        await send_premium_subscription_alert(
+                            username=user.username,
+                            telegram_id=user_id,
+                            billing_period=user.premium_billing_period,
+                            amount=amount_paid / 100.0,
+                            tx_id=invoice.get('id', '')
+                        )
+                    except Exception as e:
+                        logger.warning(f"Failed to send admin subscription alert: {e}")
                     
                     return {"status": "success", "message": "Subscription activated."}
             except Exception as e:
