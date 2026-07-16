@@ -6,6 +6,7 @@ import { FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { useTranslations } from 'next-intl';
 import { useNavbar } from '@/context/NavbarContext';
+import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
 
 interface ModalState {
   type: 'alert' | 'confirm';
@@ -68,6 +69,7 @@ export default function CustomAlertModal() {
     }
     setModal(null);
   };
+  const dialogRef = useDialogAccessibility(Boolean(modal), () => handleClose(modal?.type === 'alert'));
 
   return (
     <AnimatePresence>
@@ -77,7 +79,7 @@ export default function CustomAlertModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center px-6 pointer-events-auto modal-backdrop"
+          className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop"
         >
           {/* Backdrop layer with visual overlay & scroll-lock */}
           <div 
@@ -87,6 +89,11 @@ export default function CustomAlertModal() {
           />
 
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="custom-alert-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.9, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 15 }}
@@ -99,7 +106,7 @@ export default function CustomAlertModal() {
             </div>
 
             <div className="space-y-1.5 w-full">
-              <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
+              <h3 id="custom-alert-title" className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
                 {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
               <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">

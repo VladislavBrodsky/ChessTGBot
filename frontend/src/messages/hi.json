@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "शतरंज ऐप",
+    "welcome": "स्वागत है, {name}",
+    "welcome_greeting": "स्वागत है,",
     "subtitle": "FinChess मैट्रिक्स प्रोटोकॉल",
     "rating": "रेटिंग",
     "win_rate": "जीत दर",

@@ -162,13 +162,7 @@ export default function Leaderboard() {
        `}
      >
        {item.rank === 1 && (
-         <motion.div
-           aria-hidden="true"
-           initial={{ x: '-120%' }}
-           animate={{ x: '220%' }}
-           transition={{ duration: 3.6, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
-           className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-yellow-200/10 to-transparent -skew-x-12 pointer-events-none"
-         />
+        <div aria-hidden="true" className="absolute inset-y-0 left-1/2 w-16 -translate-x-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-yellow-200/10 to-transparent pointer-events-none" />
        )}
        {/* Rank Badge */}
        <div className="w-9 flex justify-center shrink-0 relative z-10">

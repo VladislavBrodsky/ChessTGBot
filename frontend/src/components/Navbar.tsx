@@ -85,13 +85,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 initial={{ x: -72, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="fixed left-0 top-0 h-full w-[72px] z-50 flex flex-col items-center justify-between py-6 bg-brand-void/70 backdrop-blur-[20px] border-r border-purple-500/10 shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
+                className="fixed left-0 top-0 z-50 flex h-full w-[72px] flex-col items-center justify-between border-r border-brand-border-opacity-10 bg-brand-void/70 py-6 backdrop-blur-[20px] shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center gap-1">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                         style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)' }}>
-                        <FaChessKnight size={18} style={{ color: 'rgba(168,85,247,1)' }} />
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                        <FaChessKnight size={18} />
                     </div>
                 </div>
 
@@ -105,25 +104,22 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                     <motion.div
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="relative w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-200 group"
-                                        style={{
-                                            background: isActive ? 'rgba(168,85,247,0.2)' : 'transparent',
-                                            border: isActive ? '1px solid rgba(168,85,247,0.35)' : '1px solid transparent',
-                                        }}
+                                        className={`relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 group ${
+                                            isActive ? 'border-brand-gold/30 bg-brand-gold/10' : 'border-transparent'
+                                        }`}
                                     >
                                         {isActive && (
                                             <motion.div
                                                 layoutId="sidebar-active"
-                                                className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r"
-                                                style={{ background: 'rgba(168,85,247,1)', marginLeft: '-1px' }}
+                                                className="absolute -left-px top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r bg-brand-gold"
                                             />
                                         )}
-                                        <span className={`text-lg transition-colors ${isActive ? 'text-purple-400' : 'text-white/30 group-hover:text-white/60'}`}>
+                                        <span className={`text-lg transition-colors ${isActive ? 'text-brand-gold' : 'text-brand-primary/30 group-hover:text-brand-primary/60'}`}>
                                             {item.icon}
                                         </span>
 
                                         {/* Tooltip */}
-                                        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-brand-void text-purple-400 border border-purple-500/20 shadow-md">
+                                        <div className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg border border-brand-gold/20 bg-brand-void px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-gold opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                                             {item.label}
                                         </div>
                                     </motion.div>
@@ -139,14 +135,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         <Link href={`/${locale}/profile`} title={t('nav_profile')} aria-label={t('nav_profile')}>
                             <motion.div
                                 whileHover={{ scale: 1.08 }}
-                                className="w-10 h-10 rounded-xl overflow-hidden border-2 cursor-pointer"
-                                style={{ borderColor: 'rgba(168,85,247,0.4)' }}
+                                className="h-10 w-10 cursor-pointer overflow-hidden rounded-xl border-2 border-brand-gold/40"
                             >
                                 {stats.photo_url ? (
                                     <img src={getFullPhotoUrl(stats.photo_url)} alt="You" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-sm font-black"
-                                         style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,1)' }}>
+                                    <div className="flex h-full w-full items-center justify-center bg-brand-gold/10 text-sm font-black text-brand-gold">
                                         {stats.first_name?.[0] || '?'}
                                     </div>
                                 )}

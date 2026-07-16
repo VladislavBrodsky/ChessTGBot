@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "Application Échecs",
+    "welcome": "Bienvenue, {name}",
+    "welcome_greeting": "Bienvenue,",
     "subtitle": "Arène FinChess",
     "rating": "Classement",
     "win_rate": "Taux de Victoire",

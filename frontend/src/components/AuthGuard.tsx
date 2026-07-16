@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
 
 /**
@@ -61,7 +61,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (authState === 'checking' || authState === 'redirecting') {
         return (
             <div
-                className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-brand-void"
+                className="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-brand-void"
                 style={{ background: 'var(--color-void, #000)' }}
             >
                 {/* Animated chess knight */}
@@ -70,12 +70,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                     <FaChessKnight
                         className="text-brand-primary relative z-10 animate-pulse"
                         size={48}
-                        style={{ color: 'var(--color-primary, #a855f7)' }}
+                        style={{ color: 'var(--color-primary, #ffffff)' }}
                     />
                 </div>
                 <p
                     className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse"
-                    style={{ color: 'var(--color-primary, #a855f7)', opacity: 0.6 }}
+                    style={{ color: 'var(--color-primary, #ffffff)', opacity: 0.6 }}
                 >
                     Verifying Auth…
                 </p>

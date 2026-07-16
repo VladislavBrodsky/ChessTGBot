@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "Xadrez App",
+    "welcome": "Olá, {name}",
+    "welcome_greeting": "Olá,",
     "subtitle": "Arena FinChess",
     "rating": "Classificação",
     "win_rate": "Taxa de Vitória",

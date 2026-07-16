@@ -1,10 +1,9 @@
 'use client';
 
-import { ReactNode, Suspense, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { SWRConfig } from 'swr';
-import ReferralNotification from './ReferralNotification';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
 import ClientErrorReporter from './ClientErrorReporter';
@@ -62,9 +61,6 @@ export default function Providers({ children }: { children: ReactNode }) {
         <ReducedMotionProvider>
             <ClientErrorReporter />
             <TelemetryReporter />
-            <Suspense fallback={null}>
-                <ReferralNotification />
-            </Suspense>
             <CustomAlertModal />
             <TaskSuccessModal />
             {pageContent}

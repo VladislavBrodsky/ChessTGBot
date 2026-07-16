@@ -322,12 +322,12 @@ export default function AcademyPage() {
   return (
     <LayoutWrapper className="pb-32 pt-6">
       {showConfetti && typeof window !== 'undefined' && (
-        <div className="fixed inset-0 z-[200] pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-20 pointer-events-none flex items-center justify-center">
           <Confetti
             width={window.innerWidth}
             height={window.innerHeight}
             recycle={false}
-            numberOfPieces={400}
+            numberOfPieces={window.innerWidth < 768 ? 80 : 140}
             gravity={0.15}
           />
         </div>

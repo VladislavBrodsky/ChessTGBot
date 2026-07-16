@@ -2,6 +2,7 @@
   "Index": {
     "title": "Chess App",
     "welcome": "Welcome, {name}",
+    "welcome_greeting": "Welcome,",
     "subtitle": "FinChess Arena",
     "rating": "Rating",
     "win_rate": "Win Rate",

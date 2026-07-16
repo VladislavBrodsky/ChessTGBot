@@ -38,6 +38,9 @@ export default function Home() {
  const [tgUser, setTgUser] = useState<any>(null);
  const [showNotifications, setShowNotifications] = useState(false);
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
+ const displayName = stats
+   ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
+   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : 'Combatant');
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -79,11 +82,12 @@ export default function Home() {
  <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
  <div className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
 
-  {/* Dashboard Welcome Header — controls share the title row, subtitle stays below. */}
+  {/* Dashboard Welcome Header — a two-line greeting keeps the profile moment clear at every width. */}
   <header className="mb-1 w-full px-1">
-    <div className="flex items-center gap-3">
-      <h1 className="min-w-0 flex-1 truncate text-left text-lg font-black uppercase leading-none tracking-tighter text-brand-primary" title={t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}>
-        {t('welcome', { name: stats ? `${stats.first_name}${stats.last_name ? ' ' + stats.last_name : ''}` : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}` : 'Combatant') })}
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <h1 className="min-w-0 text-start text-xl font-black uppercase leading-[0.95] tracking-tighter text-brand-primary sm:text-2xl" title={t('welcome', { name: displayName })}>
+        <span className="block">{t('welcome_greeting')}</span>
+        <span className="mt-1 block break-words">{displayName}</span>
       </h1>
 
       {/* Inline Header Controls — explicitly aligned with the title baseline row. */}
@@ -106,9 +110,6 @@ export default function Home() {
       </Link>
       </div>
     </div>
-    <p className="mt-1.5 text-left text-[9px] font-black uppercase leading-none tracking-[0.3em] text-brand-muted">
-      {t('subtitle')}
-    </p>
   </header>
 
  {/* Unified Premium Profile Card */}
@@ -201,11 +202,7 @@ export default function Home() {
     >
       <Card variant="solid" className="w-full relative overflow-hidden p-5 bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 group cursor-pointer hover:border-brand-primary/20 hover:shadow-md transition-all duration-300">
       {/* Indicator dot */}
-      <motion.div
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-brand-primary/80 shadow-[0_0_8px_rgba(var(--brand-primary),0.8)]"
-      />
+      <div className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-brand-primary/80" aria-hidden="true" />
       {/* Decorative background chess piece */}
       <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform rotate-12">
       <FaChessKnight size={140} />

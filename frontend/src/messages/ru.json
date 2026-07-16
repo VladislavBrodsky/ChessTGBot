@@ -1,6 +1,8 @@
 {
   "Index": {
     "title": "Шахматы",
+    "welcome": "Добро пожаловать, {name}",
+    "welcome_greeting": "Добро пожаловать,",
     "subtitle": "Арена FinChess",
     "rating": "Рейтинг",
     "win_rate": "Винрейт",

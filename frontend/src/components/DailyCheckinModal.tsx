@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import Confetti from "react-confetti";
 import { FaCheckCircle, FaLock, FaGift } from "react-icons/fa";
 import { useNavbar } from '@/context/NavbarContext';
+import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
 
 interface DailyStatus {
   can_claim_today: boolean;
@@ -22,6 +23,12 @@ export default function DailyCheckinModal() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const { pushHide, popHide } = useNavbar();
+  const confettiTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const closeModal = () => {
+    if (!claiming) setIsOpen(false);
+  };
+  const dialogRef = useDialogAccessibility(Boolean(isOpen && status), closeModal);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,6 +52,10 @@ export default function DailyCheckinModal() {
       .catch(err => console.error("Failed to fetch daily checkin status:", err));
   }, []);
 
+  useEffect(() => () => {
+    if (confettiTimer.current) clearTimeout(confettiTimer.current);
+  }, []);
+
   const handleClaim = async () => {
     if (claiming) return;
     setClaiming(true);
@@ -60,6 +71,8 @@ export default function DailyCheckinModal() {
         telegramHaptic('success');
         setShowConfetti(true);
         new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio blocked', e));
+        if (confettiTimer.current) clearTimeout(confettiTimer.current);
+        confettiTimer.current = setTimeout(() => setShowConfetti(false), 1800);
         
         // Update local state to reflect claim
         setStatus(prev => prev ? {
@@ -68,9 +81,6 @@ export default function DailyCheckinModal() {
           current_streak: data.new_streak
         } : null);
 
-        setTimeout(() => {
-          setIsOpen(false);
-        }, 3000); // Close after 3 seconds of celebration
       } else {
         const err = await res.json();
         telegramAlert(err.detail || "Failed to claim reward");
@@ -98,15 +108,18 @@ export default function DailyCheckinModal() {
           {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 120 : 240} />}
           
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="daily-reward-title"
+            tabIndex={-1}
             initial={{ scale: 0.9, opacity: 0, y: 30 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="w-full max-w-sm p-7 rounded-[2rem] bg-gradient-to-br from-brand-surface via-[#13151A] to-[#0D0F12] border border-white/5 shadow-2xl relative overflow-hidden"
+            className="relative w-full max-w-sm overflow-hidden rounded-[2rem] border border-brand-border-opacity-20 bg-brand-surface p-7 pb-[calc(28px+var(--app-safe-bottom))] shadow-premium"
           >
-            {/* Animated Glowing Orbs Background */}
-            <div className="absolute -top-32 -left-32 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] animate-pulse" />
-            <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute -top-24 -left-24 h-48 w-48 rounded-full bg-amber-500/10 blur-[64px]" />
             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
             
             <div className="relative z-10 text-center flex flex-col items-center">
@@ -115,7 +128,7 @@ export default function DailyCheckinModal() {
                 <FaGift className="text-white text-xl" />
               </div>
 
-              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 tracking-tight mb-2">Daily Reward</h2>
+              <h2 id="daily-reward-title" className="mb-2 text-3xl font-black tracking-tight text-brand-primary">Daily Reward</h2>
               <p className="text-xs font-bold text-white/50 uppercase tracking-[0.15em] mb-8 max-w-[250px]">Return every day to unlock massive rewards!</p>
 
               <div className="grid grid-cols-4 gap-3 mb-3 w-full">
@@ -145,23 +158,19 @@ export default function DailyCheckinModal() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleClaim}
                 disabled={claiming || !status.can_claim_today}
-                className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
+                className={`min-h-12 w-full rounded-2xl py-4 font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
                   ${status.can_claim_today && !claiming
                     ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
                     : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
                   }`}
               >
-                {/* Button shine effect */}
-                {status.can_claim_today && !claiming && (
-                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
-                )}
                 <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
               </motion.button>
               
               {status.can_claim_today && (
                 <button 
-                  onClick={() => setIsOpen(false)}
-                  className="mt-4 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest hover:opacity-100 transition-opacity"
+                  onClick={closeModal}
+                  className="mt-4 min-h-11 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest hover:opacity-100 transition-opacity"
                 >
                   Skip for now
                 </button>

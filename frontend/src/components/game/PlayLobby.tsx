@@ -607,6 +607,36 @@ export default function PlayLobby() {
           </div>
         </header>
 
+        {/* Wallet actions come before the event: funding is the prerequisite to playing. */}
+        {matchmakingState === 'idle' && (
+          <section
+            aria-label={tg('cyber_balance')}
+            className="grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border border-brand-gold/20 bg-brand-surface p-1.5 shadow-sm"
+          >
+            <div className="min-w-0 pe-1.5">
+              <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
+            </div>
+
+            <Link
+              href={`/${locale}/wallet`}
+              className="group flex min-h-[44px] min-w-0 items-center gap-2 border-s border-brand-border-opacity-10 ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-brand-gold transition-colors group-hover:border-brand-gold/30">
+                <FaWallet size={11} aria-hidden="true" />
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="truncate text-[9px] font-black uppercase leading-none tracking-[0.14em] text-brand-muted">
+                  {tg('cyber_balance')}
+                </span>
+                <span className={`mt-1 truncate text-sm font-black leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+                  {/* Never present a failed balance fetch as "$0.00" */}
+                  {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
+                </span>
+              </span>
+            </Link>
+          </section>
+        )}
+
         {/* Daily Arena event banner — schedule, live join, standings */}
         <ArenaBanner />
 
@@ -800,29 +830,6 @@ export default function PlayLobby() {
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="w-full space-y-3"
             >
-
-              {/* ─── UNIFIED STATUS BAR ─── */}
-              <section aria-label={tg('cyber_balance')} className="w-full rounded-2xl border border-brand-border-opacity-10 bg-brand-surface px-3 py-2.5 grid grid-cols-[1.1fr_1fr] items-center divide-x divide-brand-border-opacity-10 gap-3 shadow-sm">
-                {/* Wallet side */}
-                <div className="pr-3 flex items-center justify-between min-w-0">
-                  <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
-                </div>
-                {/* Balance side */}
-                <div className="pl-3 min-w-0">
-                  <Link href={`/${locale}/wallet`} className="flex items-center gap-2 group">
-                    <div className="w-9 h-9 rounded-xl bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center shrink-0 group-hover:border-brand-border-opacity-20 transition-all">
-                      <FaWallet size={11} className="text-brand-primary/70 group-hover:text-brand-primary transition-all" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45 leading-none mb-1">{tg('cyber_balance')}</span>
-                      <span className={`text-[11px] font-black tracking-wide leading-none truncate ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
-                        {/* Never present a failed balance fetch as "$0.00" */}
-                        {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              </section>
 
               {/* ─── BATTLE ARENA CONFIG CARD ─── */}
               <div className="glass-panel rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium overflow-hidden">
