@@ -210,25 +210,51 @@ async def test_heal_zombie_wagers(db_session):
     await db_session.commit()
     await db_session.refresh(user)
 
-    # 2. Create a pending matchmaking wager transaction (zombie matchmaking wager)
+    # 2. Create a pending matchmaking wager transaction (zombie matchmaking wager).
+    # Backdated past the wagered-queue TTL: heal only refunds wagers old enough
+    # that they cannot belong to a live queue entry (see the age gate in
+    # heal_zombie_wagers — refunding a fresh one free-rolls an active search).
+    from datetime import datetime, timedelta, timezone
     tx = Transaction(
         user_id=telegram_id,
         type="game_wager",
         amount=-100,  # 1.00 USDT wagered
         fee=0,
         status="pending",
-        reference_id="matchmaking"
+        reference_id="matchmaking",
+        created_at=datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=10)
     )
     db_session.add(tx)
     await db_session.commit()
+
+    # 2b. A FRESH pending matchmaking wager (an active search on this
+    # connection) must NOT be refunded.
+    fresh_tx = Transaction(
+        user_id=telegram_id,
+        type="game_wager",
+        amount=-50,
+        fee=0,
+        status="pending",
+        reference_id="matchmaking"
+    )
+    db_session.add(fresh_tx)
+    await db_session.commit()
+    fresh_tx_id = fresh_tx.id
 
     # 3. Call heal_zombie_wagers
     service = GameService()
     await service.heal_zombie_wagers(db_session, telegram_id)
 
-    # 4. Verify user was refunded and transaction marked failed
+    # 4. Verify user was refunded ONLY the aged zombie; the fresh wager stays locked
     await db_session.refresh(user)
-    assert user.balance == 600  # 500 + 100 refund
+    assert user.balance == 600  # 500 + 100 refund; the fresh -50 is untouched
+
+    res_fresh = await db_session.execute(
+        select(Transaction).where(Transaction.id == fresh_tx_id)
+    )
+    fresh_after = res_fresh.scalars().first()
+    assert fresh_after.status == "pending"
+    assert fresh_after.reference_id == "matchmaking"
 
     # Verify transaction status
     res = await db_session.execute(

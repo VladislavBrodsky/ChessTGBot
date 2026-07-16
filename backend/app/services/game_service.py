@@ -1430,19 +1430,33 @@ class GameService:
         dangling friendly PVP game wagers (e.g. from previous sessions where the server crashed
         and clean disconnect/refund events didn't run).
         """
+        from datetime import datetime, timedelta, timezone
+
         from app.models.game_history import GameHistory
         from sqlalchemy import select, and_
         from app.crud import user as user_crud
-        
+        from app.services.matchmaker import MatchmakerService
+
         # 1. Refund any zombie pending matchmaking wagers
-        # This handles wagers from users who were added to the matchmaking queue but never matched
+        # This handles wagers from users who were added to the matchmaking queue but never matched.
+        # Age-gated: this runs 0.1-3s after EVERY socket connect, so a pending
+        # wager the user just created by joining the queue on this same
+        # connection must not be treated as a zombie — refunding it mid-search
+        # free-rolls the wager and makes the eventual match fail transaction
+        # reconciliation. A wagered queue entry lives at most
+        # WAGERED_QUEUE_TTL_SECONDS, so anything older is a true orphan.
+        zombie_cutoff = (
+            datetime.now(timezone.utc).replace(tzinfo=None)
+            - timedelta(seconds=MatchmakerService.WAGERED_QUEUE_TTL_SECONDS)
+        )
         result = await db.execute(
             select(Transaction).where(
                 and_(
                     Transaction.user_id == user_id,
                     Transaction.type == "game_wager",
                     Transaction.status == "pending",
-                    Transaction.reference_id == "matchmaking"
+                    Transaction.reference_id == "matchmaking",
+                    Transaction.created_at < zombie_cutoff,
                 )
             )
         )
