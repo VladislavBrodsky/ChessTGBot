@@ -232,6 +232,19 @@ async def start_deposit_crawler():
                                         except Exception as notification_err:
                                             logger.warning(f"Failed to send telegram notification for synced deposit: {notification_err}")
                                             
+                                        # Send admin alert
+                                        try:
+                                            from app.core.alerts import send_deposit_alert
+                                            await send_deposit_alert(
+                                                deposit_type="USDT",
+                                                username=user.username,
+                                                telegram_id=telegram_id,
+                                                amount=amount_cents / 100.0,
+                                                tx_id=event_id
+                                            )
+                                        except Exception as e:
+                                            logger.warning(f"Failed to send admin deposit alert: {e}")
+                                            
                                         logger.info(f"DepositCrawler: Successfully processed synced deposit for user {telegram_id}.")
                 else:
                     logger.warning(f"DepositCrawler: TonAPI returned status {res.status_code}")

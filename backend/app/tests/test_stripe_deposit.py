@@ -152,7 +152,22 @@ async def test_stripe_webhook_success(db, monkeypatch):
         assert fee_tx.amount == -50
 
         # Verify telegram notified
-        assert mock_tg.called
+        assert mock_tg.call_count == 3  # 1 for user, 2 for admins
+        calls = mock_tg.call_args_list
+        
+        # User notification
+        assert calls[0][0][0] == 12345
+        assert "Card Top-Up Confirmed!" in calls[0][0][1]
+        
+        # Admin alerts (order-independent because admin_telegram_ids is a set)
+        admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
+        assert set(admin_calls.keys()) == {1016749901, 716720099}
+        
+        for admin_id, msg in admin_calls.items():
+            assert "New Stripe deposit" in msg
+            assert "User: ID 12345" in msg
+            assert "Amount: $10.50" in msg
+            assert "Transaction ID: cs_test_webhook" in msg
 
 
 @pytest.mark.asyncio

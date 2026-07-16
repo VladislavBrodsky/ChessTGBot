@@ -316,3 +316,35 @@ class TelegramAlertHandler(logging.Handler):
         except Exception as e:
             # Fail silently to avoid breaking the application execution flow
             print(f"[Alerts] Exception in TelegramAlertHandler emit: {e}")
+
+
+async def send_deposit_alert(
+    deposit_type: str,
+    username: str | None,
+    telegram_id: int,
+    amount: float,
+    tx_id: str
+):
+    """
+    Sends a telegram alert to all admins for a new deposit.
+    """
+    from app.services.telegram_bot import TelegramService
+    
+    user_display = f"@{username}" if username else f"ID {telegram_id}"
+    date_time_str = format_alert_time()
+    
+    alert_text = (
+        f"New {deposit_type} deposit\n"
+        f"User: {user_display}\n"
+        f"Amount: ${amount:.2f}\n"
+        f"Date and time: {date_time_str}\n"
+        f"Transaction ID: {tx_id}"
+    )
+    
+    for admin_id in settings.admin_telegram_ids:
+        if admin_id > 0:
+            try:
+                await TelegramService.send_notification(admin_id, alert_text)
+            except Exception as e:
+                # Print directly to stdout/stderr to avoid circular logging loops
+                print(f"[Alerts] Failed to send deposit alert to admin {admin_id}: {e}")
