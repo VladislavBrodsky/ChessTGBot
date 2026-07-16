@@ -186,11 +186,7 @@ export default function PlayLobby() {
 
   const getOpponentName = (name: string) => {
     if (name === "A.I. Coach") {
-      return locale === 'ru' ? "ИИ Тренера" :
-             locale === 'es' ? "Entrenador I.A." :
-             locale === 'fr' ? "Entraîneur I.A." :
-             locale === 'zh' ? "人工智能教练" :
-             "A.I. Coach";
+      return tg('ai_coach');
     }
     return name;
   };
@@ -623,7 +619,7 @@ export default function PlayLobby() {
             >
               <div className="absolute inset-0 bg-conic-radar opacity-10 pointer-events-none" />
               <div className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.25em] animate-pulse">
-                MATCH FOUND
+                {tg('match_found')}
               </div>
               
               {/* VS Avatars container */}
@@ -639,7 +635,7 @@ export default function PlayLobby() {
                     />
                   </div>
                   <span className="text-[10px] font-black text-brand-primary truncate max-w-[80px]">
-                    {tgUser?.first_name || 'You'}
+                    {tgUser?.first_name || tg('you_label')}
                   </span>
                   <span className="text-[10px] font-bold text-brand-primary/50">
                     {stats?.elo || 1000} ELO
@@ -650,7 +646,7 @@ export default function PlayLobby() {
                 <div className="relative flex items-center justify-center w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping" />
                   <div className="w-10 h-10 rounded-full bg-brand-void border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    <span className="text-[11px] font-black text-emerald-400 tracking-tighter">VS</span>
+                    <span className="text-[11px] font-black text-emerald-400 tracking-tighter">{tg('vs')}</span>
                   </div>
                 </div>
 
@@ -665,7 +661,7 @@ export default function PlayLobby() {
                     />
                   </div>
                   <span className="text-[10px] font-black text-emerald-400 truncate max-w-[80px]">
-                    {locale === 'ru' ? 'Соперник' : locale === 'es' ? 'Rival' : locale === 'fr' ? 'Adversaire' : 'Opponent'}
+                    {tg('opponent')}
                   </span>
                   <span className="text-[10px] font-bold text-emerald-400/50">
                     {stats?.elo ? Math.min(Math.max(stats.elo + (Math.random() > 0.5 ? 20 : -20), 800), 2200) : 1000} ELO
@@ -675,7 +671,7 @@ export default function PlayLobby() {
 
               {/* Stake & loading */}
               <div className="w-full p-3 rounded-2xl bg-brand-void border border-brand-border-opacity-10 text-center">
-                <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">Stakes locked</span>
+                <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">{tg('stakes_locked')}</span>
                 <span className="text-xs font-black text-emerald-400">
                   ${((matchFoundData?.bid_amount || 0) / 100).toFixed(2)} USDT
                 </span>
@@ -683,7 +679,7 @@ export default function PlayLobby() {
 
               <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-emerald-400/60 uppercase tracking-widest animate-pulse">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>Entering arena...</span>
+                <span>{tg('entering_arena')}</span>
               </div>
             </motion.div>
           ) : matchmakingState === 'searching' ? (
@@ -701,7 +697,7 @@ export default function PlayLobby() {
               {/* Active Contenders Badge */}
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/10 text-purple-400 animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
                 <span className="w-1 h-1 rounded-full bg-purple-400 animate-ping" />
-                <span>{locale === 'ru' ? `Сканирование: ${contendersCount} соперников` : `Scanning: ${contendersCount} contenders`}</span>
+                <span>{tg('scanning_contenders', { count: contendersCount })}</span>
               </div>
 
               {/* Conic sonar radar widget */}
@@ -723,7 +719,7 @@ export default function PlayLobby() {
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
                 <span className="text-[10px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
-                  {locale === 'ru' ? 'Ср. ожидание: ~15с' : 'Est. Wait: ~15s'}
+                  {tg('est_wait')}
                 </span>
               </div>
 

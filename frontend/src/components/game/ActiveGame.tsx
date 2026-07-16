@@ -355,12 +355,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     const onDrawOffered = (data: { game_id: string; offered_by: number }) => {
       if (data.offered_by !== userId) {
         setConfirmConfig({
-          title: locale === 'ru' ? "Предложение ничьей" : "Draw Offered",
-          message: locale === 'ru'
-            ? "Ваш оппонент предлагает ничью. Вы согласны?"
-            : "Your opponent has offered a draw. Do you accept?",
-          confirmText: locale === 'ru' ? "Принять" : "Accept Draw",
-          cancelText: locale === 'ru' ? "Отклонить" : "Decline",
+          title: tg('draw_offered_title'),
+          message: tg('draw_offered_message'),
+          confirmText: tg('accept_draw'),
+          cancelText: tg('decline'),
           onConfirm: () => {
             socket.emit("accept_draw", { game_id: gameId });
           }
@@ -528,12 +526,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const handleResign = () => {
     setConfirmConfig({
-      title: locale === 'ru' ? "Сдаться" : "Resign Match",
-      message: locale === 'ru' 
-        ? "Вы уверены, что хотите сдаться в этой партии?" 
-        : "Are you sure you want to resign this match?",
-      confirmText: locale === 'ru' ? "Да, сдаться" : "Yes, Resign",
-      cancelText: locale === 'ru' ? "Отмена" : "Cancel",
+      title: tg('resign_title'),
+      message: tg('resign_message'),
+      confirmText: tg('resign_confirm'),
+      cancelText: tg('cancel'),
       onConfirm: () => {
         const socket = getSocket();
         socket.emit("resign", { game_id: gameId });
@@ -544,12 +540,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const handleOfferDraw = () => {
     if (isBotGame) {
       setConfirmConfig({
-        title: locale === 'ru' ? "Ничья отклонена" : "Draw Declined",
-        message: locale === 'ru'
-          ? "ИИ отклоняет предложения ничьей. Хотите сдаться вместо этого?"
-          : "The A.I. declines draw offers. Do you want to resign instead?",
-        confirmText: locale === 'ru' ? "Сдаться" : "Resign",
-        cancelText: locale === 'ru' ? "Продолжить игру" : "Keep Playing",
+        title: tg('draw_declined_title'),
+        message: tg('draw_declined_message'),
+        confirmText: tg('resign'),
+        cancelText: tg('keep_playing'),
         onConfirm: () => {
           setTimeout(() => {
             handleResign();
@@ -560,12 +554,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     }
 
     setConfirmConfig({
-      title: locale === 'ru' ? "Предложить ничью" : "Offer Draw",
-      message: locale === 'ru'
-        ? "Предложить ничью вашему оппоненту?"
-        : "Offer a draw to your opponent?",
-      confirmText: locale === 'ru' ? "Предложить" : "Offer Draw",
-      cancelText: locale === 'ru' ? "Отмена" : "Cancel",
+      title: tg('offer_draw_title'),
+      message: tg('offer_draw_message'),
+      confirmText: tg('offer_draw_confirm'),
+      cancelText: tg('cancel'),
       onConfirm: () => {
         const socket = getSocket();
         socket.emit("offer_draw", { game_id: gameId });
@@ -777,7 +769,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             </div>
           </div>
           <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-primary opacity-40 animate-pulse">
-            {locale === 'ru' ? 'СИНХРОНИЗАЦИЯ АРЕНЫ...' : 'SYNCHRONIZING ARENA...'}
+            {tg('synchronizing_arena')}
           </span>
         </div>
       </LayoutWrapper>
@@ -809,7 +801,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               }`}
             >
               <span className="text-[10px] font-black uppercase tracking-wider">
-                {locale === 'ru' ? 'Авто-Ферзь' : 'Auto-Queen'}
+                {tg('auto_queen')}
               </span>
               <div className={`w-2 h-2 rounded-full ${autoPromote ? 'bg-brand-primary animate-pulse' : 'bg-brand-primary/30'}`} />
             </button>
@@ -841,11 +833,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 : 'border-brand-primary/20 text-brand-primary'
             }`}>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] block mb-1 opacity-60">
-                {gameNotice.type === 'error' 
-                  ? (locale === 'ru' ? 'ВНИМАНИЕ' : 'ATTENTION') 
+                {gameNotice.type === 'error'
+                  ? tg('notice_attention')
                   : gameNotice.type === 'warning'
-                  ? (locale === 'ru' ? 'ПРЕДУПРЕЖДЕНИЕ' : 'WARNING')
-                  : 'INFO'}
+                  ? tg('notice_warning')
+                  : tg('notice_info')}
               </span>
               <span className="text-[10px] font-black uppercase tracking-wide leading-tight block">
                 {gameNotice.message}
@@ -864,7 +856,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90vw] max-w-[280px]"
         >
           <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface shadow-premium text-center pointer-events-auto transform-gpu will-change-transform">
-            <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-0.5">System Warning</span>
+            <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-0.5">{tg('system_warning')}</span>
             <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wide leading-tight">{error}</span>
           </div>
         </motion.div>
@@ -889,10 +881,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
             <div className="flex flex-col space-y-1.5 mb-6">
               <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
-                {locale === 'ru' ? 'Ожидание оппонента' : 'Waiting for Opponent'}
+                {tg('waiting_opponent_title')}
               </span>
               <span className="text-sm font-bold text-brand-primary uppercase tracking-wide">
-                {locale === 'ru' ? 'Поделитесь ссылкой для дуэли' : 'Share the invite code to begin'}
+                {tg('share_invite_hint')}
               </span>
             </div>
 
@@ -900,17 +892,17 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
               <div className="flex flex-col items-start text-left">
                 <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
-                  {locale === 'ru' ? 'Ставка' : 'Wager Tier'}
+                  {tg('wager_tier')}
                 </span>
                 <span className="text-xs font-black text-emerald-400">
                   {gameState.bid_amount > 0 
                     ? `$${(gameState.bid_amount / 100).toFixed(2)} USDT` 
-                    : (locale === 'ru' ? 'Бесплатно' : 'Free Match')}
+                    : tg('free_match')}
                 </span>
               </div>
               <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
                 <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
-                  {locale === 'ru' ? 'Контроль времени' : 'Time Control'}
+                  {tg('time_control')}
                 </span>
                 <span className="text-xs font-black text-amber-400 uppercase">
                   {gameState.time_control_seconds >= 60 
@@ -941,7 +933,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                   className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-neon"
                 >
                   <FaShareAlt size={11} />
-                  <span>{locale === 'ru' ? 'Пригласить в Telegram' : 'Invite on Telegram'}</span>
+                  <span>{tg('invite_on_telegram')}</span>
                 </motion.button>
 
                 {gameState.white_player_id === userId && (
@@ -953,7 +945,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                     }}
                     className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
                   >
-                    <span>{locale === 'ru' ? 'Отменить и вернуть средства' : 'Cancel & Refund Match'}</span>
+                    <span>{tg('cancel_refund_match')}</span>
                   </motion.button>
                 )}
               </div>
@@ -963,9 +955,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           
           <div className="w-full text-center px-4">
             <p className="text-[10px] font-semibold text-brand-primary opacity-30 uppercase tracking-wider leading-relaxed">
-              {locale === 'ru' 
-                ? 'Не закрывайте эту вкладку. Партия начнется автоматически, как только ваш оппонент подключится к дуэли.' 
-                : 'Do not close this page. The match will automatically begin as soon as your opponent joins the lobby.'}
+              {tg('waiting_keep_open')}
             </p>
           </div>
         </div>
@@ -994,7 +984,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               </span>
               {isOpponentTurn ? (
                 <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1 animate-pulse">
-                  {locale === 'ru' ? 'Думает' : 'Thinking'}
+                  {tg('thinking')}
                   <span className="inline-flex gap-0.5 ml-0.5">
                     <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -1083,7 +1073,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               </span>
               {isMyTurn ? (
                 <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
-                  {locale === 'ru' ? 'Ваш ход' : 'Your turn'}
+                  {tg('your_turn')}
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </span>
               ) : (
