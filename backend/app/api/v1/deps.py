@@ -36,10 +36,8 @@ async def auth_ip_is_blocked(ip_hash: Optional[str]) -> bool:
         if sm.redis and not sm._use_memory:
             val = await sm.redis.get(key)
             return bool(val) and int(val) >= AUTH_FAIL_LIMIT
-    except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Redis check in auth_ip_is_blocked failed: {e}. Falling back to memory.")
+    except Exception:
+        SessionManager._use_memory = True
         pass
     now = time.time()
     hist = [t for t in _auth_fail_memory.get(key, []) if now - t < AUTH_FAIL_WINDOW]
@@ -59,10 +57,8 @@ async def register_auth_failure(ip_hash: Optional[str]) -> None:
             if count == 1:
                 await sm.redis.expire(key, AUTH_FAIL_WINDOW)
             return
-    except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Redis increment in register_auth_failure failed: {e}. Falling back to memory.")
+    except Exception:
+        SessionManager._use_memory = True
         pass
     _auth_fail_memory.setdefault(key, []).append(time.time())
 
