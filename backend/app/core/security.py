@@ -219,6 +219,9 @@ def is_allowed_cors_origin(origin: str | None) -> bool:
     allowed_origins = {
         "https://chesstgbot-frontend-production.up.railway.app",
         "https://chesstgbot-backend-production.up.railway.app",
+        "https://web3chess.online",
+        "https://www.web3chess.online",
+        "https://api.web3chess.online",
         "https://web.telegram.org",
         "https://telegram.org",
     }

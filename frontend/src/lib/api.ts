@@ -37,8 +37,11 @@ export const getApiBaseUrl = () => {
     const host = window.location.hostname;
     
     // 1. Hardcoded production fallback
-    if (host === "chesstgbot-frontend-production.up.railway.app" || host === "web3chess.online" || host === "www.web3chess.online") {
+    if (host === "chesstgbot-frontend-production.up.railway.app") {
       return "https://chesstgbot-backend-production.up.railway.app";
+    }
+    if (host === "web3chess.online" || host === "www.web3chess.online") {
+      return "https://api.web3chess.online";
     }
 
     // 2. Dynamic Railway URL resolution (e.g. chesstgbot-frontend-xxx.up.railway.app -> chesstgbot-backend-xxx.up.railway.app)

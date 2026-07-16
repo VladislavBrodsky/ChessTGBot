@@ -62,9 +62,13 @@ export default async function LocaleLayout({
     return (
         <html lang={locale} dir={dir} suppressHydrationWarning>
             <head>
-                {/* Preconnect to backend to eliminate TCP handshake latency on first avatar load */}
+                {/* Preconnect to backend to eliminate TCP handshake latency on first avatar load.
+                    Both hints are kept since this markup is shared across the Railway subdomain
+                    and the web3chess.online custom domain — only one resolves per visit. */}
                 <link rel="preconnect" href="https://chesstgbot-backend-production.up.railway.app" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://chesstgbot-backend-production.up.railway.app" />
+                <link rel="preconnect" href="https://api.web3chess.online" crossOrigin="anonymous" />
+                <link rel="dns-prefetch" href="https://api.web3chess.online" />
                 <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
                 <script
                     dangerouslySetInnerHTML={{
