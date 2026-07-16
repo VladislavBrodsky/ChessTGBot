@@ -62,10 +62,13 @@ Core existing tokens and their intended meanings:
 | Void / page field | `--bg-primary`, `--color-brand-void`, `bg-brand-void` | Page backgrounds and deep negative space |
 | Surface | `--bg-surface`, `--color-brand-surface`, `bg-brand-surface` | Standard cards, grouped content, navigation surfaces |
 | Elevated surface | `--bg-elevated`, `--color-brand-elevated`, `bg-brand-elevated` | Selected states, controls, sheets, modest elevation |
+| Bottom navigation | `--color-nav-surface`, `--color-nav-active`, `--color-nav-inactive`, `--color-nav-border`, `--shadow-nav` | Fixed primary navigation; preserves a clear, theme-appropriate boundary from page content and keeps inactive items readable against the navigation surface |
 | Quiet border | `--border-muted`, `--color-brand-border`, `border-brand-border` | Separation, card edges, control outlines |
 | Primary text | `--text-primary`, `--color-brand-primary`, `text-brand-primary` | Essential content and high-emphasis labels |
 | Muted text | `--text-muted`, `--color-brand-muted`, `text-brand-muted` | Supporting copy; never the only carrier of critical information |
 | Gold | `--text-gold`, `--color-brand-gold`, `text-brand-gold` | Achievement, rank one, selected primary action, reward, important progress |
+| Arena funding action | `--gradient-arena-action`, `--arena-action-foreground`, `--arena-action-shadow`, `--arena-panel-gradient`, `--arena-selection-gradient` | The single primary funding/play action in the Arena; use the documented gradient rather than a flat orange fill, while its surrounding setup controls remain quiet and token-based |
+| Admin command center | `--admin-bg`, `--admin-surface`, `--admin-border`, `--admin-text`, `--admin-muted`, `--admin-accent-*` | Operational admin surfaces that intentionally stay dark across themes for contrast, chart legibility, and consistent scroll backgrounds |
 | Silver | `--accent-silver`, silver text/border utilities where present | Progression, secured/locked systems, neutral premium elevation |
 | Emerald | `emerald-500` plus `--color-emerald-opacity-10` / `--color-emerald-opacity-20` | Success, confirmed, live/connected when a status also has text/icon |
 | Amber | `amber-500` plus `--color-amber-opacity-10` | Attention, warning, limited time, pending action |
@@ -274,6 +277,7 @@ Progress must answer: **where am I, what is next, and what action moves me forwa
 - Make the current level/achievement the focal object.
 - Use a gold fill for earned/active achievement progress and silver for neutral/secured progress. The unfilled track remains dark and quiet.
 - Always pair the bar with textual values such as current XP, target XP, and percentage or remaining XP. Color cannot be the only progress signal.
+- Use the shared `frontend/src/lib/xpProgress.ts` helper for every XP/level view. It mirrors the backend’s 350-XP level curve and handles the intentional high-watermark level after XP is spent; never recreate a level curve in a page or component.
 - Reserve a bounded bar height and avoid animated shimmer loops. On value change, a short transform/opacity transition is enough.
 - Use the same semantic treatment for locked rewards: silver/quiet for locked, gold for earned/selectable, emerald for claimed/success.
 
@@ -292,14 +296,15 @@ Bottom navigation is a product anchor and must use a single semantic chess-piece
 | Destination | Semantic icon |
 | --- | --- |
 | Home | King |
-| Play | Knight |
 | Marketplace | Queen |
-| Learn | Bishop |
+| Play (center action) | Knight |
+| Academy / Learn | Pawn |
 | Quests | Rook |
 
 Rules:
 
 - Use the existing vector icon system (currently `react-icons/fa`) consistently. Do not mix a chess piece with a generic gamepad, gem, graduation cap, trophy, or emoji in the same navigation system.
+- Keep Play as the centered primary destination. It may use the one compact gold focal treatment in the bar; the other destinations stay calm and comparable.
 - The active destination uses the Obsidian Chess active treatment: clear contrast plus gold emphasis. Do not rely on gold alone; preserve active surface/label distinction.
 - Primary mobile destinations have a 44px default touch target, including safe-area clearance.
 - Labels remain visible for primary destinations. Do not hide them only to fit decorative icons.

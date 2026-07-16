@@ -81,7 +81,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 {wallet ? (
                     <button
                         onClick={handleTopUpClick}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-brand-gold hover:brightness-110 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm focus-visible:ring-brand-gold"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
                         title={`Connected: ${getShortAddress(wallet.account.address)}`}
                     >
                         <FaWallet size={10} className="shrink-0" />
@@ -91,7 +91,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 ) : (
                     <button
                         onClick={handleTopUpClick}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-brand-gold hover:brightness-110 text-brand-void text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm focus-visible:ring-brand-gold"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
                     >
                         <FaWallet size={10} />
                         <span>{tw('top_up')}</span>

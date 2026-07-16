@@ -7,18 +7,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessKing, FaChessKnight, FaChessQueen, FaChessBishop, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
+import { FaChessKing, FaChessKnight, FaChessQueen, FaChessPawn, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
     { name: 'Home',        icon: <FaChessKing />,      href: '/home',        key: 'nav_home' },
-    { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play' },
     { name: 'Marketplace', icon: <FaChessQueen />,     href: '/marketplace', key: 'nav_marketplace' },
-    { name: 'Learn',       icon: <FaChessBishop />,    href: '/academy',     key: 'nav_learn' },
+    { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play', primary: true },
+    { name: 'Learn',       icon: <FaChessPawn />,      href: '/academy',     key: 'nav_learn' },
     { name: 'Quests',      icon: <FaChessRook />,      href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
 let globalIsDesktopBrowser: boolean | null = null;
+const prefetchedLocales = new Set<string>();
 
 export default function Navbar({ hide = false }: { hide?: boolean }) {
     const pathname = usePathname();
@@ -55,10 +56,14 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
 
     React.useEffect(() => {
         // The five primary destinations are always visible. Warm their route
-        // payloads after first paint so a normal navigation has no chunk fetch
-        // on the tap path. Delaying avoids competing with initial app startup.
+        // payloads once per locale so a normal navigation has no chunk fetch
+        // on the tap path. Without this guard, every page remount scheduled
+        // another five prefetches and could compete with the next transition.
+        if (prefetchedLocales.has(locale)) return;
+
         const timer = window.setTimeout(() => {
             NAV_ITEMS.forEach((item) => router.prefetch(`/${locale}${item.href}`));
+            prefetchedLocales.add(locale);
         }, 800);
 
         return () => window.clearTimeout(timer);
@@ -168,59 +173,55 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
     return (
         <motion.nav
             data-app-navbar
-            initial={{ x: "-50%", y: 0, opacity: 1 }}
+            // The navbar is recreated by page layouts. Skipping its initial
+            // animation avoids a visible slide/fade on every route change.
+            initial={false}
             animate={{
                 x: "-50%",
-                y: hide ? 150 : 0,
+                y: hide ? 112 : 0,
                 opacity: hide ? 0 : 1
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             style={{
                 pointerEvents: hide ? 'none' : 'auto',
                 bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="fixed left-1/2 w-[calc(100%-40px)] max-w-[380px] z-50 flex items-center bg-[linear-gradient(135deg,rgba(25,25,25,0.98),rgba(3,3,3,0.98))] backdrop-blur-3xl border border-white/[0.09] px-1 py-1 rounded-[20px] shadow-[0_14px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] justify-between"
+            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[420px] rounded-2xl border px-1.5 py-1.5 backdrop-blur-xl"
         >
-            {/* Subtle glow overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.08),transparent_60%)] pointer-events-none rounded-[20px]" />
-
-            <ul className="flex w-full max-w-[340px] mx-auto items-center justify-around gap-px relative z-10">
+            <ul className="grid w-full grid-cols-5 gap-1">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    const isPrimary = item.primary === true;
                     return (
-                        <li key={item.href} className="flex-1 min-w-0">
+                        <li key={item.href} className="min-w-0">
                             <Link
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
-                                className="block rounded-2xl"
+                                className="block rounded-xl focus-visible:ring-2 focus-visible:ring-brand-gold"
                             >
-                                <div className="relative min-h-[50px] px-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-200 rounded-[18px]">
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="mobile-nav-active"
-                                            className="absolute inset-0 bg-[linear-gradient(145deg,rgba(250,204,21,0.18),rgba(180,83,9,0.07))] rounded-[18px] border border-yellow-300/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_18px_rgba(250,204,21,0.1)]"
-                                            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                                        />
-                                    )}
-                                    <div className={`relative z-20 flex h-5 w-6 items-center justify-center text-[16px] transition-all duration-200 ${
-                                        isActive
-                                            ? "text-yellow-200 -translate-y-px drop-shadow-[0_0_8px_rgba(250,204,21,0.48)]"
-                                            : "text-brand-primary/35"
+                                <div className={`relative flex flex-col items-center justify-center gap-0.5 px-1 transition-colors duration-150 ${
+                                    isPrimary
+                                        ? `min-h-[48px] rounded-2xl border ${isActive ? 'border-brand-gold bg-brand-gold text-brand-void shadow-sm' : 'border-brand-gold/30 bg-brand-elevated text-brand-gold hover:border-brand-gold/50'}`
+                                        : `app-bottom-nav__item min-h-[44px] rounded-xl ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:bg-brand-elevated/60'}`
+                                }`}>
+                                    <div className={`app-bottom-nav__icon flex h-5 w-6 items-center justify-center text-[16px] ${
+                                        isPrimary
+                                            ? (isActive ? 'text-brand-void' : 'text-brand-gold')
+                                            : (isActive ? "-translate-y-px text-brand-gold" : "")
                                     }`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`relative z-20 max-w-full truncate text-[7px] sm:text-[8px] font-extrabold leading-none tracking-wide transition-colors ${
-                                        isActive ? 'text-yellow-100' : 'text-brand-primary/40'
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[8px] font-bold leading-none tracking-[0.01em] ${
+                                        isPrimary
+                                            ? (isActive ? 'text-brand-void' : 'text-brand-primary')
+                                            : (isActive ? 'text-brand-primary' : '')
                                     }`}>
                                         {item.label}
                                     </span>
-                                    {isActive && (
-                                        <motion.span
-                                            layoutId="mobile-nav-active-indicator"
-                                            className="absolute bottom-1 w-3.5 h-px rounded-full bg-yellow-300 shadow-[0_0_8px_rgba(250,204,21,0.8)]"
-                                        />
+                                    {isActive && !isPrimary && (
+                                        <span className="absolute inset-x-3 bottom-1 h-px rounded-full bg-brand-gold" aria-hidden="true" />
                                     )}
                                 </div>
                             </Link>

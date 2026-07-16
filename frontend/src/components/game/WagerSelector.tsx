@@ -68,7 +68,7 @@ export default function WagerSelector({
                 }}
                 className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                   isSelected
-                    ? 'border-brand-gold bg-brand-gold/10 text-brand-primary shadow-[0_0_0_1px_var(--color-amber-opacity-10)] font-extrabold'
+                    ? 'arena-option--wager-selected font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
@@ -95,7 +95,7 @@ export default function WagerSelector({
             }}
             className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
               isCustomWager
-                ? 'border-brand-gold bg-brand-gold/10 text-brand-primary shadow-[0_0_0_1px_var(--color-amber-opacity-10)] font-extrabold'
+                ? 'arena-option--wager-selected font-extrabold'
                 : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
             }`}
           >

@@ -63,11 +63,9 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <motion.div 
-                        ref={dialogRef}
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="notification-modal-title"
-                        tabIndex={-1}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -77,11 +75,13 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
 
                     {/* Modal Content */}
                     <motion.div 
+                        ref={dialogRef}
+                        tabIndex={-1}
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ type: 'spring', duration: 0.4 }}
-                        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-brand-border-opacity-20 bg-brand-surface p-6 pb-[calc(24px+var(--app-safe-bottom))] text-brand-primary shadow-premium"
+                        className="relative max-h-[min(760px,calc(100dvh-32px-var(--app-safe-bottom)))] w-full max-w-md overflow-hidden rounded-3xl border border-brand-border bg-brand-surface p-5 text-brand-primary shadow-[var(--shadow-premium)] outline-none sm:p-6"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6">
@@ -96,14 +96,14 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                         </div>
 
                         {/* Tabs */}
-                        <div className="mb-6 flex gap-2 rounded-xl border border-brand-border-opacity-10 bg-brand-void/60 p-1" role="tablist" aria-label="Notification content">
+                        <div className="mb-5 flex gap-2 rounded-2xl border border-brand-border bg-brand-elevated/70 p-1.5 shadow-inner" role="tablist" aria-label="Notification content">
                             <button 
                                 onClick={() => setActiveTab('guide')}
                                 role="tab"
                                 aria-selected={activeTab === 'guide'}
                                 className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
                                     activeTab === 'guide' 
-                                        ? 'border border-brand-border-opacity-20 bg-brand-elevated text-brand-primary shadow-sm'
+                                        ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
                                         : 'text-brand-muted hover:text-brand-primary'
                                 }`}
                             >
@@ -116,7 +116,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                 aria-selected={activeTab === 'news'}
                                 className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
                                     activeTab === 'news' 
-                                        ? 'border border-brand-border-opacity-20 bg-brand-elevated text-brand-primary shadow-sm'
+                                        ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
                                         : 'text-brand-muted hover:text-brand-primary'
                                 }`}
                             >
@@ -126,7 +126,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                         </div>
 
                         {/* Content Area */}
-                        <div className="min-h-[260px] max-h-[360px] overflow-y-auto pr-1 overflow-x-hidden">
+                        <div className="max-h-[calc(100dvh-260px-var(--app-safe-bottom))] min-h-[260px] overflow-y-auto overflow-x-hidden pr-1">
                             <AnimatePresence mode="wait">
                                 {activeTab === 'guide' ? (
                                     <motion.div 
@@ -138,13 +138,13 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                         className="space-y-4"
                                     >
                                         {guideSteps.map((step, idx) => (
-                                            <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                                                <div className="text-xl font-black text-white/30 tracking-tight">
+                                            <div key={idx} className="flex gap-4 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm">
+                                                <div className="text-xl font-black tracking-tight text-brand-gold">
                                                     {step.step}
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <h3 className="text-sm font-bold text-white">{step.title}</h3>
-                                                    <p className="text-xs text-white/50 leading-relaxed">{step.desc}</p>
+                                                    <h3 className="text-sm font-bold text-brand-primary">{step.title}</h3>
+                                                    <p className="text-xs text-brand-muted leading-relaxed">{step.desc}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -159,16 +159,16 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                         className="space-y-4"
                                     >
                                         {newsItems.map((item) => (
-                                            <div key={item.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] space-y-2 hover:border-white/[0.08] transition-colors cursor-pointer">
-                                                <div className="flex items-center justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                                            <div key={item.id} className="space-y-2 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm transition-colors hover:border-brand-border">
+                                                <div className="flex items-center justify-between text-[10px] text-brand-muted uppercase tracking-wider">
                                                     <span>{item.date}</span>
                                                     <span className="flex items-center gap-1">
                                                         <FiClock size={10} />
                                                         {item.readTime}
                                                     </span>
                                                 </div>
-                                                <h3 className="text-sm font-bold text-white">{item.title}</h3>
-                                                <p className="text-xs text-white/50 leading-relaxed">{item.excerpt}</p>
+                                                <h3 className="text-sm font-bold text-brand-primary">{item.title}</h3>
+                                                <p className="text-xs text-brand-muted leading-relaxed">{item.excerpt}</p>
                                             </div>
                                         ))}
                                     </motion.div>

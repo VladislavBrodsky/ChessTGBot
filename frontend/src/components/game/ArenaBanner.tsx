@@ -112,7 +112,7 @@ export default function ArenaBanner() {
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`w-full mb-1 p-3 rounded-2xl border relative overflow-hidden transition-colors duration-200 ${
+      className={`arena-event-banner ${isLive ? 'arena-event-banner--live' : ''} w-full mb-1 p-3 rounded-2xl border relative overflow-hidden transition-colors duration-200 ${
         isLive
           ? 'border-brand-gold/30 bg-brand-gold/10 shadow-premium'
           : 'border-brand-border-opacity-10 bg-brand-surface'
@@ -145,7 +145,7 @@ export default function ArenaBanner() {
         </div>
 
         {!isLive && arena.status === 'scheduled' && (
-          <div className="shrink-0 rounded-xl border border-brand-gold/20 bg-brand-gold/10 px-2.5 py-2 text-right">
+          <div className="arena-reward-badge shrink-0 rounded-xl border px-2.5 py-2 text-right">
             <span className="block text-[9px] font-black uppercase tracking-wider text-brand-gold">XP</span>
             <span className="block mt-0.5 text-[10px] font-black tabular-nums text-brand-primary">{prizes}</span>
           </div>

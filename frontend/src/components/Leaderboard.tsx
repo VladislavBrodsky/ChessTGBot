@@ -55,44 +55,36 @@ export default function Leaderboard() {
 
  const getRankConfig = (rank: number) => {
    if (rank === 1) return {
-     icon: <FaCrown className="text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]" size={14} />,
+     icon: <FaCrown className="text-brand-gold" size={14} />,
      label: '1',
-     rowBg: 'bg-gradient-to-r from-yellow-500/15 via-yellow-500/5 to-transparent',
-     borderLeft: '',
-     glow: 'shadow-[inset_0_0_30px_rgba(250,204,21,0.08)]',
-     avatarRing: 'ring-2 ring-yellow-400/60 ring-offset-1 ring-offset-transparent',
-     barColor: 'bg-gradient-to-r from-yellow-400 to-amber-300',
-     rankBg: 'bg-yellow-500/10 text-yellow-400',
+     rowBg: 'leaderboard-row--leader',
+     avatarRing: 'ring-2 ring-brand-gold/60 ring-offset-1 ring-offset-brand-surface',
+     barColor: 'bg-brand-gold',
+     rankBg: 'bg-brand-gold/10 text-brand-gold',
    };
    if (rank === 2) return {
-     icon: <FaMedal className="text-slate-300" size={13} />,
+     icon: <FaMedal className="text-brand-primary" size={13} />,
      label: '2',
-     rowBg: 'bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent',
-     borderLeft: '',
-     glow: 'shadow-[inset_0_0_20px_rgba(203,213,225,0.05)]',
-     avatarRing: 'ring-2 ring-slate-300/50 ring-offset-1 ring-offset-transparent',
-     barColor: 'bg-gradient-to-r from-slate-300 to-slate-200',
-     rankBg: 'bg-slate-300/10 text-slate-300',
+     rowBg: 'leaderboard-row--runner-up',
+     avatarRing: 'ring-2 ring-brand-primary/30 ring-offset-1 ring-offset-brand-surface',
+     barColor: 'bg-brand-primary/70',
+     rankBg: 'bg-brand-elevated text-brand-primary',
    };
    if (rank === 3) return {
-     icon: <FaMedal className="text-amber-600" size={13} />,
+     icon: <FaMedal className="text-brand-gold" size={13} />,
      label: '3',
-     rowBg: 'bg-gradient-to-r from-amber-700/12 via-amber-700/5 to-transparent',
-     borderLeft: '',
-     glow: 'shadow-[inset_0_0_20px_rgba(180,83,9,0.08)]',
-     avatarRing: 'ring-2 ring-amber-600/50 ring-offset-1 ring-offset-transparent',
-     barColor: 'bg-gradient-to-r from-amber-600 to-amber-500',
-     rankBg: 'bg-amber-700/10 text-amber-600',
+     rowBg: 'leaderboard-row--third',
+     avatarRing: 'ring-2 ring-brand-gold/40 ring-offset-1 ring-offset-brand-surface',
+     barColor: 'bg-brand-gold/70',
+     rankBg: 'bg-brand-gold/10 text-brand-gold',
    };
    return {
      icon: null,
      label: `#${rank}`,
-     rowBg: 'hover:bg-white/[0.02]',
-     borderLeft: '',
-     glow: '',
-     avatarRing: 'ring-1 ring-white/10',
-     barColor: 'bg-white/25',
-     rankBg: 'text-white/25',
+     rowBg: 'leaderboard-row--standard',
+     avatarRing: 'ring-1 ring-brand-border-opacity-20',
+     barColor: 'bg-brand-muted/60',
+     rankBg: 'text-brand-muted',
    };
  };
 
@@ -138,32 +130,19 @@ export default function Leaderboard() {
    const score = activeTab === 'arena' ? (item.elo || 0) : (item.xp || 0);
    const barPct = Math.min(100, Math.round((score / topScore) * 100));
    const hasActivity = (item.games_played || 0) > 0 || (item.xp || 0) > 0;
-   const isPodium = item.rank <= 3;
    const rankCallout = item.rank === 1 ? 'Crown holder' : item.rank === 2 ? 'First challenger' : item.rank === 3 ? 'Rising force' : null;
    const avatarSize = item.rank === 1 ? 'w-11 h-11' : 'w-9 h-9';
-   const rowFrame = item.rank === 1
-     ? 'border border-yellow-400/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_10px_26px_rgba(0,0,0,0.18)]'
-     : item.rank === 2
-       ? 'border border-slate-300/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
-       : item.rank === 3
-         ? 'border border-amber-600/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-         : 'border border-white/[0.055]';
-
    return (
      <motion.div
        key={item.telegram_id + (isModal ? '-modal' : '')}
-       initial={{ opacity: 0, x: -8 }}
-       animate={{ opacity: 1, x: 0 }}
-       whileHover={{ x: isModal ? 0 : 3 }}
-       transition={{ delay: Math.min(idx * 0.04, 0.2), type: 'spring', stiffness: 380, damping: 28 }}
-       className={`relative flex items-center justify-between px-4 ${item.rank === 1 ? 'py-4' : 'py-3.5'} group transition-colors duration-200 overflow-hidden rounded-2xl
-         ${cfg.rowBg} ${cfg.borderLeft} ${cfg.glow} ${rowFrame}
+       initial={false}
+       animate={{ opacity: 1 }}
+       transition={{ duration: 0.15 }}
+       className={`leaderboard-row relative flex items-center justify-between px-4 ${item.rank === 1 ? 'py-4' : 'py-3.5'} group transition-colors duration-200 overflow-hidden rounded-2xl
+         ${cfg.rowBg}
          ${isModal ? 'mb-2' : ''}
        `}
      >
-       {item.rank === 1 && (
-        <div aria-hidden="true" className="absolute inset-y-0 left-1/2 w-16 -translate-x-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-yellow-200/10 to-transparent pointer-events-none" />
-       )}
        {/* Rank Badge */}
        <div className="w-9 flex justify-center shrink-0 relative z-10">
          {item.rank <= 3 ? (
@@ -189,15 +168,14 @@ export default function Leaderboard() {
              className={`${avatarSize} rounded-full object-cover ${cfg.avatarRing}`}
            />
          ) : (
-           <div className={`${avatarSize} rounded-full flex items-center justify-center bg-white/5 ${cfg.avatarRing}`}>
-             <FaUserCircle className="text-brand-primary opacity-20" size={22} />
+           <div className={`${avatarSize} rounded-full flex items-center justify-center bg-brand-elevated ${cfg.avatarRing}`}>
+             <FaUserCircle className="text-brand-muted" size={22} />
            </div>
          )}
          {/* Online pulse for top 3 */}
          {item.rank <= 3 && (
            <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-brand-void
-             ${item.rank === 1 ? 'bg-yellow-400' : item.rank === 2 ? 'bg-slate-300' : 'bg-amber-600'}
-             animate-pulse`}
+             ${item.rank === 1 ? 'bg-brand-gold' : item.rank === 2 ? 'bg-brand-primary' : 'bg-brand-gold/70'}`}
            />
          )}
        </div>
@@ -205,11 +183,11 @@ export default function Leaderboard() {
        {/* Name + Stats */}
        <div className="flex flex-col flex-1 min-w-0 relative z-10">
          <div className="flex items-center gap-2 min-w-0">
-           <span className={`text-[11px] font-black uppercase tracking-tight truncate leading-none ${isPodium ? 'text-brand-primary' : 'text-brand-primary/70'}`}>
+           <span className="text-[11px] font-black uppercase tracking-tight truncate leading-none text-brand-primary">
              {item.first_name}{item.last_name ? ` ${item.last_name}` : ''}
            </span>
            {rankCallout && (
-             <span className={`hidden sm:inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-[0.12em] ${item.rank === 1 ? 'border-yellow-400/25 bg-yellow-400/10 text-yellow-300/90' : 'border-white/10 bg-white/[0.04] text-brand-primary/35'}`}>
+             <span className={`hidden sm:inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-[0.12em] ${item.rank === 1 ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold' : 'border-brand-border-opacity-20 bg-brand-elevated text-brand-muted'}`}>
                {item.rank === 1 && <FiZap size={8} className="mr-0.5" />}{rankCallout}
              </span>
            )}
@@ -217,23 +195,23 @@ export default function Leaderboard() {
          <div className="flex items-center gap-1.5 mt-1">
            {activeTab === 'arena' ? (
              <>
-               <span className={`text-[8px] font-bold uppercase tracking-widest ${hasActivity ? 'text-brand-primary/50' : 'text-brand-primary/20'}`}>
+               <span className="text-[8px] font-bold uppercase tracking-widest text-brand-muted">
                  {item.games_played || 0}G
                </span>
                {hasActivity && (
                  <>
-                   <span className="w-px h-2.5 bg-white/10" />
-                   <span className={`text-[8px] font-black uppercase tracking-widest ${(item.win_rate || 0) >= 50 ? 'text-emerald-400/80' : 'text-brand-primary/40'}`}>
+                   <span className="w-px h-2.5 bg-brand-border-opacity-20" />
+                   <span className={`text-[8px] font-black uppercase tracking-widest ${(item.win_rate || 0) >= 50 ? 'text-emerald-500' : 'text-brand-muted'}`}>
                      {item.win_rate || 0}% W
                    </span>
                  </>
                )}
                {!hasActivity && (
-                 <span className="text-[8px] font-bold text-white/15 uppercase tracking-widest">No games yet</span>
+                 <span className="text-[8px] font-bold text-brand-muted uppercase tracking-widest">No games yet</span>
                )}
              </>
            ) : (
-             <span className={`text-[8px] font-black flex items-center gap-1 uppercase tracking-widest ${(item.study_streak || 0) > 0 ? 'text-orange-400/80' : 'text-white/20'}`}>
+             <span className={`text-[8px] font-black flex items-center gap-1 uppercase tracking-widest ${(item.study_streak || 0) > 0 ? 'text-brand-gold' : 'text-brand-muted'}`}>
                {(item.study_streak || 0) > 0 ? <><FaFire size={8} /> {item.study_streak} streak</> : 'No streak yet'}
              </span>
            )}
@@ -243,19 +221,19 @@ export default function Leaderboard() {
        {/* Score + Bar */}
        <div className="flex flex-col items-end shrink-0 ml-2 relative z-10">
          <div className="text-right">
-           <span className={`text-[13px] font-black tracking-tighter leading-none ${item.rank === 1 ? 'text-yellow-300' : item.rank === 2 ? 'text-slate-200' : item.rank === 3 ? 'text-amber-500' : 'text-brand-primary/80'}`}>
+           <span className={`text-[13px] font-black tracking-tighter leading-none ${item.rank === 1 || item.rank === 3 ? 'text-brand-gold' : 'text-brand-primary'}`}>
              {score.toLocaleString()}
            </span>
-           <span className="text-[8px] font-black opacity-30 ml-1 not-italic">
+           <span className="text-[8px] font-black text-brand-muted ml-1 not-italic">
              {activeTab === 'arena' ? 'ELO' : 'XP'}
            </span>
          </div>
          {/* Progress bar — colored & proportional to top score */}
-         <div className={`h-1 ${item.rank === 1 ? 'w-16' : 'w-14'} bg-white/5 rounded-full mt-1.5 overflow-hidden`}>
+         <div className={`h-1 ${item.rank === 1 ? 'w-16' : 'w-14'} bg-brand-elevated rounded-full mt-1.5 overflow-hidden`}>
            <motion.div
-             initial={{ width: 0 }}
+             initial={false}
              animate={{ width: `${barPct}%` }}
-             transition={{ delay: idx * 0.05 + 0.2, duration: 0.5, ease: 'easeOut' }}
+             transition={{ duration: 0.2, ease: 'easeOut' }}
              className={`h-full rounded-full ${cfg.barColor}`}
            />
          </div>
@@ -269,55 +247,54 @@ export default function Leaderboard() {
      {/* Section Header */}
      <div className="flex flex-col items-center text-center gap-2">
        <div className="flex items-center justify-center gap-2">
-         <span className="w-7 h-7 rounded-lg border border-yellow-400/25 bg-gradient-to-br from-yellow-400/20 to-amber-600/10 text-yellow-300 flex items-center justify-center shadow-[0_0_16px_rgba(250,204,21,0.12)]">
+         <span className="w-7 h-7 rounded-lg border border-brand-gold/30 bg-brand-gold/10 text-brand-gold flex items-center justify-center">
            <FaChessKnight size={13} />
          </span>
          <h3 className="text-base font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
        </div>
        <div className="flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-[0.18em]">
-         <span className="flex items-center gap-1.5 text-yellow-300/85"><FiAward size={11} /> Season 1</span>
-         <span className="w-1 h-1 rounded-full bg-white/20" />
-         <span className="flex items-center gap-1 text-brand-primary/35"><FiRadio size={8} className="text-emerald-400" /> Live ladder</span>
+         <span className="flex items-center gap-1.5 text-brand-gold"><FiAward size={11} /> Season 1</span>
+         <span className="w-1 h-1 rounded-full bg-brand-border-opacity-20" />
+         <span className="flex items-center gap-1 text-brand-muted"><FiRadio size={8} className="text-emerald-500" /> Live ladder</span>
        </div>
      </div>
 
      {/* Tab Switcher */}
-     <div className="flex bg-black/35 rounded-2xl p-1 border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] relative">
+     <div className="flex bg-brand-elevated rounded-2xl p-1 border border-brand-border-opacity-20 relative">
       <button
          onClick={() => setActiveTab('arena')}
          aria-pressed={activeTab === 'arena'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'arena' ? 'text-yellow-100' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
        >
          <FaGamepad size={10} /> Arena
        </button>
       <button
          onClick={() => setActiveTab('academy')}
          aria-pressed={activeTab === 'academy'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-all rounded-xl z-10 ${activeTab === 'academy' ? 'text-yellow-100' : 'text-brand-primary/50 hover:text-brand-primary/80'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
        >
          <FaBook size={10} /> Scholars
        </button>
        <motion.div
          initial={false}
          animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
-         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-600 rounded-xl shadow-[0_0_18px_rgba(250,204,21,0.22)]"
+         transition={{ duration: 0.2, ease: 'easeOut' }}
+         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-brand-gold rounded-xl"
        />
      </div>
 
      {/* Leaderboard Card */}
-     <Card variant="glass" className="rounded-3xl overflow-hidden border-white/[0.08] bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.10),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.035),rgba(0,0,0,0.16))] shadow-[0_18px_45px_rgba(0,0,0,0.28)] p-0">
-       <div className="relative flex items-center justify-between gap-3 px-5 py-4 border-b border-yellow-400/10 bg-gradient-to-r from-yellow-400/[0.07] via-transparent to-transparent overflow-hidden">
-         <div aria-hidden="true" className="absolute -right-8 -top-10 w-32 h-32 rounded-full bg-yellow-400/[0.05] blur-2xl" />
+     <Card variant="solid" className="leaderboard-shell rounded-3xl overflow-hidden p-0">
+       <div className="leaderboard-header relative flex items-center justify-between gap-3 px-5 py-4 border-b overflow-hidden">
          <div className="min-w-0">
-           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-yellow-200/85">{activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}</p>
-           <p className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/35 mt-1 truncate">
+           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-gold">{activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}</p>
+           <p className="text-[8px] font-bold uppercase tracking-wider text-brand-muted mt-1 truncate">
              {metricLabel} · {activeTab === 'arena' ? 'Win games to climb' : 'Study daily to climb'}
            </p>
          </div>
-         <div className="shrink-0 flex flex-col items-end gap-1 text-[8px] font-bold uppercase tracking-wider text-brand-primary/30 relative z-10">
+         <div className="shrink-0 flex flex-col items-end gap-1 text-[8px] font-bold uppercase tracking-wider text-brand-muted relative z-10">
            <span className="flex items-center gap-1.5"><FiClock size={10} /> Refreshes every 5 min</span>
-           {leaderGap > 0 && <span className="text-yellow-300/55">Leader +{leaderGap.toLocaleString()}</span>}
+           {leaderGap > 0 && <span className="text-brand-gold">Leader +{leaderGap.toLocaleString()}</span>}
          </div>
        </div>
        <AnimatePresence mode="wait">
@@ -333,20 +310,20 @@ export default function Leaderboard() {
              displayedPlayers.map((item, idx) => renderRow(item, idx))
            ) : (
              <div className="py-10 px-6 text-center">
-               <FaChessKnight className="mx-auto text-brand-primary/15 mb-3" size={22} />
-               <p className="text-brand-primary/40 uppercase font-black text-[10px] tracking-widest">{t('no_data')}</p>
-               <p className="text-brand-primary/25 text-[9px] font-bold mt-2">Complete a game or lesson to enter the standings.</p>
+               <FaChessKnight className="mx-auto text-brand-muted mb-3" size={22} />
+               <p className="text-brand-primary uppercase font-black text-[10px] tracking-widest">{t('no_data')}</p>
+               <p className="text-brand-muted text-[9px] font-bold mt-2">Complete a game or lesson to enter the standings.</p>
              </div>
            )}
          </motion.div>
        </AnimatePresence>
 
        {players.length > 5 && (
-         <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-white/[0.06] bg-gradient-to-r from-black/20 to-white/[0.02]">
-           <span className="text-[8px] font-bold uppercase tracking-wider text-brand-primary/25">Showing 5 of {Math.min(players.length, 50)} contenders</span>
+         <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-brand-border-opacity-20 bg-brand-elevated">
+           <span className="text-[8px] font-bold uppercase tracking-wider text-brand-muted">Showing 5 of {Math.min(players.length, 50)} contenders</span>
            <button
              onClick={() => setShowModal(true)}
-             className="flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500/15 to-amber-500/10 hover:from-yellow-500/25 hover:to-amber-500/20 border border-yellow-400/20 text-[9px] font-black uppercase tracking-wider text-yellow-100/85 hover:text-yellow-100 active:scale-95 transition-all shadow-[0_6px_20px_rgba(0,0,0,0.16)]"
+             className="flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-gold/10 hover:bg-brand-gold/15 border border-brand-gold/30 text-[9px] font-black uppercase tracking-wider text-brand-gold active:scale-95 transition-colors"
            >
              <FaTrophy size={10} className="opacity-60" />
              View all
@@ -372,18 +349,18 @@ export default function Leaderboard() {
                animate={{ y: 0, scale: 1 }}
                exit={{ y: '100%' }}
                transition={{ type: 'spring', damping: 32, stiffness: 360 }}
-               className="w-full max-w-md max-h-[85vh] bg-brand-surface border border-white/8 rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col"
+               className="w-full max-w-md max-h-[85vh] bg-brand-surface border border-brand-border-opacity-20 rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col"
                onClick={(e) => e.stopPropagation()}
              >
                {/* Modal Header */}
-               <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.07]">
+               <div className="flex items-center justify-between px-6 py-5 border-b border-brand-border-opacity-20">
                  <div>
                    <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{t('global_ranking')}</h3>
-                   <span className="text-[9px] font-bold text-brand-primary/30 tracking-[0.3em] uppercase mt-1 block">{t('global_node_sync')} · {players.length} players</span>
+                   <span className="text-[9px] font-bold text-brand-muted tracking-[0.3em] uppercase mt-1 block">{t('global_node_sync')} · {players.length} players</span>
                  </div>
                  <button
                    onClick={() => setShowModal(false)}
-                   className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/8 flex items-center justify-center text-brand-primary/50 hover:text-brand-primary active:scale-95 transition-all"
+                   className="w-8 h-8 rounded-full bg-brand-elevated hover:bg-brand-bg-opacity-10 border border-brand-border-opacity-20 flex items-center justify-center text-brand-muted hover:text-brand-primary active:scale-95 transition-colors"
                  >
                    <FiX size={14} />
                  </button>
@@ -391,18 +368,18 @@ export default function Leaderboard() {
 
                {/* Tab switcher inside modal */}
                <div className="px-4 pt-3 pb-0">
-                 <div className="flex bg-white/[0.03] rounded-xl p-0.5 border border-white/[0.05] relative">
-                   <button onClick={() => setActiveTab('arena')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all rounded-lg z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-primary/40'}`}>
+                 <div className="flex bg-brand-elevated rounded-xl p-0.5 border border-brand-border-opacity-20 relative">
+                   <button onClick={() => setActiveTab('arena')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-muted'}`}>
                      <FaGamepad size={9} /> Arena
                    </button>
-                   <button onClick={() => setActiveTab('academy')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all rounded-lg z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-primary/40'}`}>
+                   <button onClick={() => setActiveTab('academy')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-muted'}`}>
                      <FaBook size={9} /> Scholars
                    </button>
                    <motion.div
                      initial={false}
                      animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
-                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                     className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] bg-brand-primary rounded-[9px]"
+                     transition={{ duration: 0.2, ease: 'easeOut' }}
+                     className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] bg-brand-gold rounded-[9px]"
                    />
                  </div>
                </div>

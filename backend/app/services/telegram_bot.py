@@ -53,8 +53,8 @@ class TelegramService:
             logger.error(f"Failed to fetch/cache profile photo for {user_id}: {e}")
         return None
 
-    # XP needed to complete each level (200 XP per level, canonical formula)
-    XP_PER_LEVEL = 200
+    # XP needed to complete each level. Keep this aligned with GamificationService.
+    XP_PER_LEVEL = 350
 
     WELCOME_MESSAGES = {
         "en": {
@@ -334,12 +334,17 @@ class TelegramService:
             if user.last_name:
                 name += f" {html_mod.escape(user.last_name)}"
 
-            # ── XP progress bar (8 blocks, 200 XP per level) ──────────────
+            # ── XP progress bar (8 blocks, 350 XP per level) ──────────────
             xp_per_level = TelegramService.XP_PER_LEVEL
-            xp_in_level = user_xp % xp_per_level
+            earned_level = max(1, int(user_xp // xp_per_level) + 1)
+            # Marketplace spending can lower the available XP balance after a
+            # level has been earned. The level itself remains secured, so the
+            # welcome bar must stay complete instead of implying lost progress.
+            level_secured = user_level > earned_level
+            xp_in_level = xp_per_level if level_secured else user_xp % xp_per_level
             filled = round((xp_in_level / xp_per_level) * 8)
             bar = "█" * filled + "░" * (8 - filled)
-            xp_to_next = xp_per_level - xp_in_level
+            xp_to_next = 0 if level_secured else xp_per_level - xp_in_level
             level_lbl = msgs.get("level_label", "LVL")
             xp_lbl = msgs.get("xp_label", "XP")
 
@@ -978,5 +983,3 @@ class TelegramService:
                 logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
         asyncio.create_task(_do_send())
-
-

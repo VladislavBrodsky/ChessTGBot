@@ -611,7 +611,7 @@ export default function PlayLobby() {
         {matchmakingState === 'idle' && (
           <section
             aria-label={tg('cyber_balance')}
-            className="grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border border-brand-gold/20 bg-brand-surface p-1.5 shadow-sm"
+            className="arena-wallet-rail grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border p-1.5"
           >
             <div className="min-w-0 pe-1.5">
               <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
@@ -619,7 +619,7 @@ export default function PlayLobby() {
 
             <Link
               href={`/${locale}/wallet`}
-              className="group flex min-h-[44px] min-w-0 items-center gap-2 border-s border-brand-border-opacity-10 ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
+              className="arena-wallet-balance group flex min-h-[44px] min-w-0 items-center gap-2 border-s ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-brand-gold transition-colors group-hover:border-brand-gold/30">
                 <FaWallet size={11} aria-hidden="true" />
@@ -832,7 +832,7 @@ export default function PlayLobby() {
             >
 
               {/* ─── BATTLE ARENA CONFIG CARD ─── */}
-              <div className="glass-panel rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium overflow-hidden">
+              <div className="arena-config-shell rounded-3xl border border-brand-border-opacity-10 shadow-premium overflow-hidden">
                 
                 {/* Wager Selection Carousel */}
                 <WagerSelector
@@ -876,7 +876,7 @@ export default function PlayLobby() {
                           setShowRakeInfo(true);
                         }}
                         aria-label={tg('win_up_to')}
-                        className="relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl bg-brand-gold/10 border border-brand-gold/25 cursor-pointer hover:bg-brand-gold/15 active:scale-95 transition-all duration-150"
+                        className="arena-win-summary relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border cursor-pointer hover:brightness-105 active:scale-95 transition-all duration-150"
                       >
                         <span className="relative z-10 text-[10px] font-black text-brand-gold uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
                           <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')}
@@ -895,7 +895,7 @@ export default function PlayLobby() {
                         <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                           <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
                         </span>
-                        <span className="text-[11px] font-black text-amber-400 uppercase">
+                        <span className="text-[11px] font-black text-brand-gold uppercase">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
                         </span>
                       </button>
@@ -913,7 +913,7 @@ export default function PlayLobby() {
                     className={`w-full p-3.5 flex items-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-left ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'bg-brand-gold text-brand-void border border-brand-gold hover:opacity-90 rounded-2xl shadow-premium'
+                        : 'arena-topup-launcher rounded-2xl'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
