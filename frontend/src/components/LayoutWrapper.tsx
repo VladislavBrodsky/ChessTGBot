@@ -192,7 +192,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 Home page passes hideHeaderControls and renders them inline instead, so this block
                 is effectively a no-op on all pages. Kept here for any future page that opts in. */}
             {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
-                <div className="absolute top-[calc(20px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
+                <div className="absolute top-[calc(24px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
                     <button 
                         onClick={() => setShowNotifications(true)}
                         className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
@@ -217,8 +217,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                     // Desktop: sidebar is 72px wide; top padding only
                     ? 'md:pl-[72px] pt-6 pb-8'
                     : isTelegramWeb
-                        ? 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(150px+var(--app-safe-bottom))]'
-                        : 'pt-[calc(24px+var(--tg-content-safe-area-inset-top,var(--tg-safe-area-inset-top,0px)))] pb-[calc(100px+var(--app-safe-bottom))]'
+                        ? 'pt-[calc(28px+var(--app-safe-top))] pb-[calc(150px+var(--app-safe-bottom))]'
+                        : 'pt-[calc(28px+var(--app-safe-top))] pb-[calc(100px+var(--app-safe-bottom))]'
             } ${className}`}>
                 {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
