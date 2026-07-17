@@ -82,8 +82,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
     # Deployment
-    # This URL should be the production URL of your app
-    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://www.web3chess.online")
+    # This URL should be the production URL of your app.
+    # NOTE: The custom domain web3chess.online has a DNS misconfiguration
+    # (apex A record points to Namecheap parking IP 162.255.119.119, not
+    # Railway). Until the registrar DNS is corrected, the Railway subdomain
+    # is the only reliable endpoint. Set WEBAPP_URL env var on Railway to
+    # override once the custom domain DNS is fixed.
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://chesstgbot-frontend-production.up.railway.app")
     BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments
