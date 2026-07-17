@@ -83,7 +83,7 @@ class Settings(BaseSettings):
 
     # Deployment
     # This URL should be the production URL of your app
-    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://web3chess.online")
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://www.web3chess.online")
     BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments
