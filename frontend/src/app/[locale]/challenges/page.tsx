@@ -223,7 +223,7 @@ export default function ChallengesPage() {
               {t('grandmaster_rising')}
             </h1>
             <div className="flex items-center gap-2 mb-6">
-              {levelSecured && <FaCrown className="text-brand-gold drop-shadow-[0_0_8px_rgba(217,119,6,0.28)] dark:text-slate-200 dark:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
+              {levelSecured && <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(217,119,6,0.28)] dark:text-slate-200 dark:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
               <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
                 {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
               </p>
@@ -239,7 +239,7 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-brand-elevated text-brand-primary border-brand-border-opacity-20 shadow-[0_0_16px_rgba(15,23,42,0.06)] dark:bg-slate-100/10 dark:text-slate-100 dark:border-slate-200/25 dark:shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-brand-gold border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-brand-elevated text-brand-primary border-brand-border-opacity-20 shadow-[0_0_16px_rgba(15,23,42,0.06)] dark:bg-slate-100/10 dark:text-slate-100 dark:border-slate-200/25 dark:shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-purple-500 border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
             >
               {levelSecured && <FaCheckCircle size={10} />}
               {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}

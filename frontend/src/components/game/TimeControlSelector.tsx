@@ -54,7 +54,7 @@ export default function TimeControlSelector({
                     inline: 'center'
                   });
                 }}
-                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
+                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                   isSelected
                     ? 'arena-option--time-selected font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'

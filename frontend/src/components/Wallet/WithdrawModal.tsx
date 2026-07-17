@@ -140,7 +140,7 @@ export default function WithdrawModal({
 
           <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-10">
             <span className="text-brand-primary opacity-60">{tw('available_balance')}</span>
-            <span className="text-sm font-black text-brand-gold">${(balance / 100).toFixed(2)}</span>
+            <span className="text-sm font-black text-emerald-500">${(balance / 100).toFixed(2)}</span>
           </div>
 
           {/* Input amount */}
@@ -155,7 +155,7 @@ export default function WithdrawModal({
                 type="number"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full bg-brand-void border border-brand-gold/20 rounded-xl py-3 pl-8 pr-4 text-sm text-brand-gold font-black focus:outline-none focus:border-brand-gold/60 transition-all shadow-inner"
+                className="w-full bg-brand-void border border-emerald-500/20 rounded-xl py-3 pl-8 pr-4 text-sm text-emerald-500 font-black focus:outline-none focus:border-emerald-500/60 transition-all shadow-inner"
                 placeholder={tw('amount_placeholder')}
                 min="10"
               />
@@ -169,7 +169,7 @@ export default function WithdrawModal({
               type="text"
               value={withdrawAddress}
               onChange={(e) => setWithdrawAddress(e.target.value)}
-              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-brand-gold/50 transition-all truncate shadow-inner"
+              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-emerald-500/50 transition-all truncate shadow-inner"
               placeholder={tw('target_placeholder')}
             />
           </div>
@@ -224,8 +224,8 @@ export default function WithdrawModal({
           )}
 
           {pendingConfirmation && (
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-xl text-center space-y-2 shadow-premium">
-              <div className="text-brand-gold text-[11px] font-black uppercase tracking-widest animate-pulse">Action Required</div>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-2 shadow-premium">
+              <div className="text-emerald-500 text-[11px] font-black uppercase tracking-widest animate-pulse">Action Required</div>
               <p className="text-[10px] font-bold text-brand-primary/80 leading-relaxed">
                 Check your Telegram DMs with the bot. You must tap <strong>Confirm</strong> to release the funds.
               </p>
@@ -238,7 +238,7 @@ export default function WithdrawModal({
           <button
             onClick={handleWithdrawSubmit}
             disabled={processing || pendingConfirmation || parseFloat(withdrawAmount) * 100 > balance || !checked1 || !checked2}
-            className="w-full mt-2 py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest hover:brightness-110 shadow-premium transition-all disabled:opacity-50"
+            className="w-full mt-2 py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-[11px] font-black uppercase tracking-widest hover:brightness-110 shadow-premium transition-all disabled:opacity-50"
           >
             {processing ? tw('signing_tx') : tw('request_withdraw')}
           </button>

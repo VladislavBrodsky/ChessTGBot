@@ -587,7 +587,7 @@ export default function PlayLobby() {
         {/* Visual Header */}
         <header className="flex flex-col items-center w-full mt-2 space-y-2 text-center">
           <div className="flex items-center gap-2.5 text-brand-primary text-[28px] font-black tracking-tight select-none">
-            <span className="w-9 h-9 rounded-xl bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-gold shadow-inner-glow">
+            <span className="w-9 h-9 rounded-xl bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-emerald-500 shadow-inner-glow">
               <FaChessKnight className="text-lg" aria-hidden="true" />
             </span>
             <h1>{tg('battle_arena')}</h1>
@@ -617,7 +617,7 @@ export default function PlayLobby() {
               href={`/${locale}/wallet`}
               className="arena-wallet-balance group flex min-h-[44px] min-w-0 items-center gap-2 border-s ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-brand-gold transition-colors group-hover:border-brand-gold/30">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-emerald-500 transition-colors group-hover:border-emerald-500/30">
                 <FaWallet size={11} aria-hidden="true" />
               </span>
               <span className="flex min-w-0 flex-col">
@@ -721,24 +721,24 @@ export default function PlayLobby() {
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="app-premium-surface w-full p-6 rounded-3xl border flex flex-col items-center justify-center space-y-6 text-center relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
-              <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-gold shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+              <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
               
               {/* Active Contenders Badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-gold/25 bg-brand-gold/10 text-brand-gold animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
-                <span className="w-1 h-1 rounded-full bg-brand-gold animate-ping" />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-500 animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
+                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
                 <span>{tg('scanning_contenders', { count: contendersCount })}</span>
               </div>
 
               {/* Conic sonar radar widget */}
-              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-brand-gold/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(245,158,11,0.16)]">
+              <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-emerald-500/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(16,185,129,0.16)]">
                 <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none" />
-                <div className="absolute w-32 h-32 rounded-full border border-brand-gold/30 shadow-[0_0_15px_rgba(245,158,11,0.2)] animate-ping opacity-60" />
-                <div className="absolute w-24 h-24 rounded-full border border-brand-gold/20 shadow-[0_0_10px_rgba(245,158,11,0.12)]" />
-                <div className="absolute w-12 h-12 rounded-full border border-brand-gold/40 animate-pulse bg-brand-gold/5 shadow-[0_0_8px_rgba(245,158,11,0.22)]" />
+                <div className="absolute w-32 h-32 rounded-full border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)] animate-ping opacity-60" />
+                <div className="absolute w-24 h-24 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.12)]" />
+                <div className="absolute w-12 h-12 rounded-full border border-emerald-500/40 animate-pulse bg-emerald-500/5 shadow-[0_0_8px_rgba(16,185,129,0.22)]" />
 
-                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-brand-gold flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.32)]">
-                  <FaChessKnight className="text-lg text-brand-gold animate-bounce drop-shadow-[0_0_5px_rgba(245,158,11,0.55)]" />
+                <div className="z-10 w-12 h-12 rounded-full bg-brand-surface border-2 border-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.32)]">
+                  <FaChessKnight className="text-lg text-emerald-500 animate-bounce drop-shadow-[0_0_5px_rgba(16,185,129,0.55)]" />
                 </div>
               </div>
 
@@ -891,7 +891,7 @@ export default function PlayLobby() {
                         <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                           <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
                         </span>
-                        <span className="text-[11px] font-black text-brand-gold uppercase">
+                        <span className="text-[11px] font-black text-emerald-500 uppercase">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
                         </span>
                       </button>
@@ -911,22 +911,22 @@ export default function PlayLobby() {
                         ? 'play-chess-card-premium text-brand-primary'
                         : 'arena-topup-launcher rounded-[20px] bg-gradient-to-br from-[#2a2a30] to-[#16161a] border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
                     } ${
-                      chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
+                      chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(16,185,129,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
-                    <span className={`absolute top-4 right-4 w-2 h-2 rounded-full ${hasSufficient ? 'bg-brand-gold shadow-[0_0_8px_rgba(234,179,8,1)]' : 'bg-brand-primary/30'}`} aria-hidden="true" />
+                    <span className={`absolute top-4 right-4 w-2 h-2 rounded-full ${hasSufficient ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)]' : 'bg-brand-primary/30'}`} aria-hidden="true" />
                     <div
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 z-10 ${
                         hasSufficient
-                          ? 'bg-gradient-to-br from-brand-gold/20 to-brand-gold/5 border border-brand-gold/30 shadow-[0_0_12px_rgba(234,179,8,0.2)]'
+                          ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
                           : 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
                       }`}
                     >
-                      <FaChessKnight className={`text-[20px] drop-shadow-lg ${hasSufficient ? 'text-brand-gold' : 'text-brand-primary'}`} />
+                      <FaChessKnight className={`text-[20px] drop-shadow-lg ${hasSufficient ? 'text-emerald-500' : 'text-brand-primary'}`} />
                     </div>
                     <div className="flex flex-col min-w-0 z-10 items-center justify-center">
                       <span className={`text-sm font-black leading-none tracking-wide uppercase ${
-                        hasSufficient ? 'text-brand-gold' : 'text-brand-primary'
+                        hasSufficient ? 'text-emerald-500' : 'text-brand-primary'
                       }`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
@@ -934,7 +934,7 @@ export default function PlayLobby() {
                         {hasSufficient ? (
                           chosenWager > 0 ? (
                             <>
-                              <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                              <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                             </>
                           ) : (
                             "FREE PRACTICE MATCH"

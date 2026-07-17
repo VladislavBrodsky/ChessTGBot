@@ -28,7 +28,7 @@ export default function WagerSelector({
     <section className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-10" aria-labelledby="wager-selector-title">
       <div className="flex justify-center items-center mb-3">
         <span id="wager-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
-          <FaCoins className="text-brand-gold" size={9} />
+          <FaCoins className="text-emerald-500" size={9} />
           {tg('select_wager')}
         </span>
       </div>
@@ -66,16 +66,16 @@ export default function WagerSelector({
                     inline: 'center'
                   });
                 }}
-                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
+                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   isSelected
                     ? 'arena-option--wager-selected font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
-                {opt.val === 100000 && <FaCrown className="text-[10px] text-brand-gold mr-1" />}
+                {opt.val === 100000 && <FaCrown className="text-[10px] text-emerald-500 mr-1" />}
                 <span>{opt.label}</span>
                 {isSelected && (
-                  <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-brand-gold" />
+                  <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-emerald-500" />
                 )}
               </button>
             );
@@ -93,7 +93,7 @@ export default function WagerSelector({
                 inline: 'center'
               });
             }}
-            className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
+            className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               isCustomWager
                 ? 'arena-option--wager-selected font-extrabold'
                 : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
@@ -101,7 +101,7 @@ export default function WagerSelector({
           >
             <span>···</span>
             {isCustomWager && (
-              <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-brand-gold" />
+              <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-emerald-500" />
             )}
           </button>
         </motion.div>

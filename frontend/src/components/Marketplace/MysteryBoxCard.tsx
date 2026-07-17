@@ -117,7 +117,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
                         locked
                             ? 'bg-brand-bg-opacity-5 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed'
-                            : 'bg-brand-gold text-brand-void active:scale-[0.98] cursor-pointer'
+                            : 'bg-purple-500 text-brand-void active:scale-[0.98] cursor-pointer'
                     }`}
                 >
                     <span className="relative z-10 flex items-center justify-center gap-1.5">

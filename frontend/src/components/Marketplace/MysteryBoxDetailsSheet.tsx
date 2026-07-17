@@ -100,7 +100,7 @@ export default function MysteryBoxDetailsSheet({
                         <h3 className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-primary">
                             {t('whats_inside')}
                         </h3>
-                        <span className="text-[10px] font-black tabular-nums text-brand-gold">{cfg.costXP.toLocaleString()} XP</span>
+                        <span className="text-[10px] font-black tabular-nums text-purple-500">{cfg.costXP.toLocaleString()} XP</span>
                     </div>
                     <ul className="mt-3 space-y-2.5">
                         {cfg.drops.map((drop) => (
@@ -125,7 +125,7 @@ export default function MysteryBoxDetailsSheet({
                     className={`mt-4 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-black uppercase tracking-[0.12em] transition-all ${
                         locked
                             ? 'cursor-not-allowed border border-brand-border-opacity-10 bg-brand-bg-opacity-5 text-brand-muted'
-                            : 'bg-brand-gold text-brand-void active:scale-[0.98]'
+                            : 'bg-purple-500 text-brand-void active:scale-[0.98]'
                     }`}
                 >
                     {locked && <FiLock size={14} />}

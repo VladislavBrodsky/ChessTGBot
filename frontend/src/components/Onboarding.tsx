@@ -48,9 +48,9 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       title: t('slide4_title'),
       subtitle: t('slide4_subtitle'),
       description: t('slide4_desc'),
-      icon: <FaCrown className="text-brand-gold text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />,
-      gradient: "from-brand-gold/15 to-brand-gold/5",
-      accentColor: "text-brand-gold"
+      icon: <FaCrown className="text-purple-500 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />,
+      gradient: "from-purple-500/15 to-purple-500/5",
+      accentColor: "text-purple-500"
     }
   ];
 

@@ -139,7 +139,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                     >
                                         {guideSteps.map((step, idx) => (
                                             <div key={idx} className="flex gap-4 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm">
-                                                <div className="text-xl font-black tracking-tight text-brand-gold">
+                                                <div className="text-xl font-black tracking-tight text-purple-500">
                                                     {step.step}
                                                 </div>
                                                 <div className="space-y-1">

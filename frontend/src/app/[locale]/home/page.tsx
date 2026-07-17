@@ -235,7 +235,7 @@ export default function Home() {
         );
       })()}
       {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-primary/40 bg-gradient-to-br from-amber-400/20 to-amber-600/20 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)] backdrop-blur-md">
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-primary/40 bg-gradient-to-br from-purple-400/20 to-purple-600/20 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.3)] backdrop-blur-md">
       <FaStar />
       </div>
       )}

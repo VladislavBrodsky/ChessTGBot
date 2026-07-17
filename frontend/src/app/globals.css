@@ -1280,14 +1280,14 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(90deg, var(--text-gold) 0 3px, transparent 3px),
-    radial-gradient(circle at 14% 50%, var(--color-amber-opacity-10), transparent 38%);
+    linear-gradient(90deg, #10b981 0 3px, transparent 3px),
+    radial-gradient(circle at 14% 50%, rgba(16, 185, 129, 0.15), transparent 38%);
   opacity: 1;
   pointer-events: none;
 }
 
 .play-chess-card-piece {
-  color: var(--text-gold);
+  color: #10b981;
   background: var(--bg-primary);
   border: 1px solid var(--border-muted);
   box-shadow: var(--shadow-inner-glow);
@@ -1295,13 +1295,13 @@ body {
 
 .play-chess-card-arrow {
   color: var(--bg-primary);
-  background: var(--text-gold);
-  box-shadow: 0 0 0 4px var(--color-amber-opacity-10);
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
 }
 
 .play-chess-card-premium:hover {
-  border-color: var(--text-gold) !important;
-  box-shadow: var(--shadow-premium), 0 0 0 1px var(--color-amber-opacity-10) !important;
+  border-color: #10b981 !important;
+  box-shadow: var(--shadow-premium), 0 0 0 1px rgba(16, 185, 129, 0.15) !important;
 }
 
 /* Arena funding and match setup use one calm premium action system. */

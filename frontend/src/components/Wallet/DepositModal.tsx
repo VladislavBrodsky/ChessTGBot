@@ -544,13 +544,13 @@ export default function DepositModal({
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-brand-gold/30 bg-brand-void shadow-2xl space-y-4 transform-gpu will-change-transform"
+          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-emerald-500/30 bg-brand-void shadow-2xl space-y-4 transform-gpu will-change-transform"
         >
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-black animate-pulse">
             ✓
           </div>
           <div className="space-y-1">
-            <h2 className="text-lg font-black text-brand-gold uppercase tracking-wider animate-pulse-slow">Top-Up Successful!</h2>
+            <h2 className="text-lg font-black text-emerald-500 uppercase tracking-wider animate-pulse-slow">Top-Up Successful!</h2>
             <p className="text-xs text-brand-primary/60 font-bold uppercase tracking-widest">{successMessage}</p>
           </div>
           <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
@@ -559,7 +559,7 @@ export default function DepositModal({
           </div>
           <button
             onClick={() => { setVerificationSuccess(false); setSuccessMessage(""); closeDeposit(); }}
-            className="w-full py-3 rounded-xl bg-brand-gold text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+            className="w-full py-3 rounded-xl bg-emerald-500 text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
           >
             Acknowledge & Close
           </button>
@@ -626,7 +626,7 @@ export default function DepositModal({
           {cardEnabled && (
             <div className="relative flex p-1 rounded-xl bg-brand-void/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-inner overflow-hidden">
               <div 
-                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-brand-gold shadow-[0_0_12px_rgba(255,215,0,0.25)] transition-all duration-300 ease-out"
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(255,215,0,0.25)] transition-all duration-300 ease-out"
                 style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
               />
               {(['crypto', 'card'] as const).map((tab) => (
@@ -754,7 +754,7 @@ export default function DepositModal({
               <button
                 type="button"
                 onClick={() => tonConnectUI.openModal()}
-                className="w-full py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaWallet size={11} />
                 <span>{walletAddress ? "Reconnect Wallet App" : "Connect Wallet to Top Up"}</span>
@@ -763,7 +763,7 @@ export default function DepositModal({
               <button
                 onClick={handleWeb3Deposit}
                 disabled={processing}
-                className="w-full py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {processing ? (
                   <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />
@@ -936,9 +936,9 @@ export default function DepositModal({
           {activeTab === 'card' && (
           <div className="space-y-4">
             <div className="flex justify-center mb-2">
-              <div className="px-3 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse"></div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold">
+              <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">
                   Instant Card Top-Up
                 </span>
               </div>

@@ -94,7 +94,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center gap-1">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500">
                         <FaChessKnight size={18} />
                     </div>
                 </div>
@@ -110,21 +110,21 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
                                         className={`relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 group ${
-                                            isActive ? 'border-brand-gold/30 bg-brand-gold/10' : 'border-transparent'
+                                            isActive ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-transparent'
                                         }`}
                                     >
                                         {isActive && (
                                             <motion.div
                                                 layoutId="sidebar-active"
-                                                className="absolute -left-px top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r bg-brand-gold"
+                                                className="absolute -left-px top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r bg-emerald-500"
                                             />
                                         )}
-                                        <span className={`text-lg transition-colors ${isActive ? 'text-brand-gold' : 'text-brand-primary/30 group-hover:text-brand-primary/60'}`}>
+                                        <span className={`text-lg transition-colors ${isActive ? 'text-emerald-500' : 'text-brand-primary/30 group-hover:text-brand-primary/60'}`}>
                                             {item.icon}
                                         </span>
 
                                         {/* Tooltip */}
-                                        <div className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg border border-brand-gold/20 bg-brand-void px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-gold opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                                        <div className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg border border-emerald-500/20 bg-brand-void px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-500 opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                                             {item.label}
                                         </div>
                                     </motion.div>
@@ -140,12 +140,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         <Link href={`/${locale}/profile`} title={t('nav_profile')} aria-label={t('nav_profile')}>
                             <motion.div
                                 whileHover={{ scale: 1.08 }}
-                                className="h-10 w-10 cursor-pointer overflow-hidden rounded-xl border-2 border-brand-gold/40"
+                                className="h-10 w-10 cursor-pointer overflow-hidden rounded-xl border-2 border-emerald-500/40"
                             >
                                 {stats.photo_url ? (
                                     <img src={getFullPhotoUrl(stats.photo_url)} alt="You" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-brand-gold/10 text-sm font-black text-brand-gold">
+                                    <div className="flex h-full w-full items-center justify-center bg-emerald-500/10 text-sm font-black text-emerald-500">
                                         {stats.first_name?.[0] || '?'}
                                     </div>
                                 )}
@@ -198,24 +198,24 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
-                                className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-brand-gold outline-none"
+                                className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                             >
                                 <div className={`relative flex flex-col items-center justify-center transition-all duration-300 ${
                                     isPrimary 
-                                        ? 'min-h-[58px] -mt-5 mb-1 mx-0.5 rounded-[20px] bg-gradient-to-b from-[#FBBF24] to-[#D97706] shadow-[0_8px_20px_rgba(245,158,11,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] ring-1 ring-white/20'
+                                        ? 'min-h-[58px] -mt-5 mb-1 mx-0.5 rounded-[20px] bg-gradient-to-b from-emerald-400 to-emerald-600 shadow-[0_8px_20px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] ring-1 ring-white/20'
                                         : `app-bottom-nav__button min-h-[54px] rounded-2xl relative w-full ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}`
                                 }`}>
                                     <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-300 relative z-10 ${
                                         isPrimary
                                             ? 'text-[26px] text-[#17120A]'
-                                            : `text-[22px] ${isActive ? 'text-brand-gold -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]' : ''}`
+                                            : `text-[22px] ${isActive ? 'text-emerald-500 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.5)]' : ''}`
                                     }`}>
                                         {item.icon}
                                     </div>
                                     <span className={`app-bottom-nav__label max-w-full truncate text-[11px] font-bold tracking-[0.02em] transition-all duration-300 relative z-10 ${
                                         isPrimary
                                             ? 'text-[#17120A] mt-1'
-                                            : isActive ? 'text-brand-gold mt-0.5' : 'text-brand-muted mt-0.5'
+                                            : isActive ? 'text-emerald-500 mt-0.5' : 'text-brand-muted mt-0.5'
                                     }`}>
                                         {item.label}
                                     </span>
