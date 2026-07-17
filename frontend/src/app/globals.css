@@ -55,6 +55,12 @@
     env(safe-area-inset-bottom, 0px)
   );
 
+  --app-safe-top: max(
+    var(--tg-content-safe-area-inset-top, 0px),
+    var(--tg-safe-area-inset-top, 0px),
+    env(safe-area-inset-top, 0px)
+  );
+
   --font-inter: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-sans: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -316,6 +322,7 @@ html {
   overflow-x: hidden !important;
   scrollbar-gutter: stable;
   background-color: var(--bg-primary) !important;
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -330,6 +337,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden !important;
   scrollbar-gutter: stable;
+  overscroll-behavior-y: none;
 }
 
 .app-shell:not(.admin-command-root) {
