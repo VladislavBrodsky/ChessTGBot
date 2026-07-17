@@ -12,11 +12,9 @@
     },
     {
       "name": "frontend",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": [
-        "-c",
-        "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
-      ],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "C:/Users/dmitriy.ivanovskiy/Documents/ChessTGBot-main/frontend",
       "port": 3000
     }
   ]
