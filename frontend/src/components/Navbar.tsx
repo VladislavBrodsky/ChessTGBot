@@ -183,12 +183,12 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             transition={{ duration: 0.18, ease: "easeOut" }}
             style={{
                 pointerEvents: hide ? 'none' : 'auto',
-                paddingBottom: `calc(${isTelegramWeb ? '0px' : '12px'} + var(--app-safe-bottom))`
+                bottom: `calc(16px + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-0 bottom-0 z-[100] w-full rounded-t-[32px] border-t border-white/10 bg-[#0a0a0a]/70 px-4 pt-2 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex justify-center"
+            className="app-bottom-nav fixed left-4 right-4 z-[100] w-auto max-w-[420px] mx-auto rounded-[32px] border border-white/10 bg-[#0a0a0a]/70 px-2 py-2 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex justify-center"
         >
-            <ul className="grid w-full max-w-[420px] grid-cols-5 gap-1">
+            <ul className="grid w-full grid-cols-5 gap-1">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     const isPrimary = item.primary === true;

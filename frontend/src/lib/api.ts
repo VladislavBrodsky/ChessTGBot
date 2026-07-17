@@ -149,3 +149,21 @@ export const getFullPhotoUrl = (url?: string | null): string | undefined => {
   }
   return `${getApiBaseUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
 };
+
+export const sendTelemetryEvent = async (eventType: string, eventData?: Record<string, any>) => {
+  try {
+    await apiFetch('/api/v1/telemetry/log', {
+      method: 'POST',
+      body: JSON.stringify({
+        events: [
+          {
+            event_type: eventType,
+            event_data: eventData || {}
+          }
+        ]
+      })
+    });
+  } catch (err) {
+    console.error('Failed to send telemetry event', err);
+  }
+};

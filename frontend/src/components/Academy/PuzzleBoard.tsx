@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLightbulb, FaUndo, FaFlag } from "react-icons/fa";
 import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
+import { useTelemetry } from "@/hooks/useTelemetry";
 
 const ChessBoardComponent = dynamic(() => import('@/components/game/ChessBoard'), { ssr: false });
 
@@ -44,6 +45,7 @@ export default function PuzzleBoard({
   const [dynamicHintText, setDynamicHintText] = useState(hintText || "");
   const [dynamicSuccessExplanation, setDynamicSuccessExplanation] = useState(successExplanation || "");
   const [shake, setShake] = useState(false);
+  const { trackEvent } = useTelemetry();
   const safeSuccessExplanation = useMemo(
     () => sanitizeRichContent(dynamicSuccessExplanation),
     [dynamicSuccessExplanation]
@@ -115,6 +117,7 @@ export default function PuzzleBoard({
 
         if (nextIndex >= solution.length) {
           setStatus('correct');
+          trackEvent('puzzle_solved', { puzzle_id: 'lesson_puzzle' });
           onSolve();
         } else {
           setTimeout(() => {
@@ -124,6 +127,7 @@ export default function PuzzleBoard({
         return true;
       } else {
         setStatus('wrong');
+        trackEvent('puzzle_failed', { puzzle_id: 'lesson_puzzle' });
         onFail();
         setTimeout(() => setStatus('playing'), 1000); // Reset status to allow retry
         return false;
@@ -148,10 +152,12 @@ export default function PuzzleBoard({
             setDynamicSuccessExplanation(data.explanation);
           }
           setStatus('correct');
+          trackEvent('puzzle_solved', { puzzle_id: puzzleId });
           onSolve(data);
           return true;
         } else {
           setStatus('wrong');
+          trackEvent('puzzle_failed', { puzzle_id: puzzleId });
           onFail();
           setTimeout(() => setStatus('playing'), 1000);
           return false;
@@ -159,6 +165,7 @@ export default function PuzzleBoard({
       } catch (e) {
         console.error(e);
         setStatus('wrong');
+        trackEvent('puzzle_failed', { puzzle_id: puzzleId, error: true });
         onFail();
         setTimeout(() => setStatus('playing'), 1000);
         return false;
@@ -203,6 +210,7 @@ export default function PuzzleBoard({
           to: expectedMove.substring(2, 4)
         });
         setShowHintText(true);
+        trackEvent('puzzle_hint_used', { puzzle_id: 'lesson_puzzle' });
       }
       return;
     }
@@ -223,6 +231,7 @@ export default function PuzzleBoard({
               setDynamicHintText(data.hint_text);
             }
             setShowHintText(true);
+            trackEvent('puzzle_hint_used', { puzzle_id: puzzleId });
           }
         }
       } catch (e) {
@@ -233,6 +242,8 @@ export default function PuzzleBoard({
 
   const handleGiveUp = () => {
     if (status !== 'playing' || !solution || solution.length === 0) return;
+    
+    trackEvent('puzzle_gave_up', { puzzle_id: puzzleId || 'lesson_puzzle' });
     
     // Auto-play the solution
     let currentIndex = moveIndex;

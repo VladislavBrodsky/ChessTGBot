@@ -13,6 +13,7 @@ import { apiFetch } from "@/lib/api";
 import { useNavbarHide } from "@/context/NavbarContext";
 import Confetti from "react-confetti";
 import { mapBackendLessonStep } from "@/lib/lessonSteps";
+import { useTelemetry } from "@/hooks/useTelemetry";
 
 interface LessonClientProps {
  lessonId: string;
@@ -29,6 +30,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   const [loading, setLoading] = useState(true);
 
   const { hideNavbar, showNavbar } = useNavbarHide();
+  const { trackEvent } = useTelemetry();
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -48,6 +50,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
         const steps = data.steps.map((step: any) => mapBackendLessonStep(step, data.title));
         setLessonData({ ...data, steps });
         setLoading(false);
+        trackEvent('academy_lesson_started', { lesson_id: lessonId });
       })
       .catch(err => {
         console.error(err);
@@ -69,6 +72,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
         const data = await res.json();
         setEarnedXP(lessonData?.xp_reward || 50);
         setCompleted(true);
+        trackEvent('academy_lesson_completed', { lesson_id: lessonId, xp_reward: lessonData?.xp_reward || 50 });
       } else {
         console.error('Failed to complete lesson');
         alert("Failed to submit lesson progress to the server. Please try again.");

@@ -10,6 +10,7 @@ import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { useNavbar } from '@/context/NavbarContext';
+import { useTelemetry } from '@/hooks/useTelemetry';
 
 interface LeaderboardItem {
   telegram_id: number;
@@ -38,6 +39,11 @@ export default function Leaderboard() {
  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
  const [showModal, setShowModal] = useState(false);
  const { pushHide, popHide } = useNavbar();
+ const { trackEvent } = useTelemetry();
+
+ useEffect(() => {
+   trackEvent('leaderboard_viewed', { tab: activeTab });
+ }, [activeTab, trackEvent]);
 
  useEffect(() => {
    if (!showModal) return;

@@ -906,25 +906,25 @@ export default function PlayLobby() {
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
                     disabled={isCreating}
-                    className={`w-full p-3.5 flex items-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-left ${
+                    className={`w-full p-4 flex flex-col items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-center ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'arena-topup-launcher rounded-2xl'
+                        : 'arena-topup-launcher rounded-[20px] bg-gradient-to-br from-[#2a2a30] to-[#16161a] border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
-                    <span className={`absolute top-3 right-3 w-1.5 h-1.5 rounded-full ${hasSufficient ? 'bg-brand-gold' : 'bg-brand-primary/30'}`} aria-hidden="true" />
+                    <span className={`absolute top-4 right-4 w-2 h-2 rounded-full ${hasSufficient ? 'bg-brand-gold shadow-[0_0_8px_rgba(234,179,8,1)]' : 'bg-brand-primary/30'}`} aria-hidden="true" />
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 z-10 ${
+                      className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 z-10 ${
                         hasSufficient
                           ? 'bg-gradient-to-br from-brand-gold/20 to-brand-gold/5 border border-brand-gold/30 shadow-[0_0_12px_rgba(234,179,8,0.2)]'
-                          : 'bg-brand-elevated border border-brand-border-opacity-10'
+                          : 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
                       }`}
                     >
-                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-brand-gold' : 'text-brand-primary/80'}`} />
+                      <FaChessKnight className={`text-[20px] drop-shadow-lg ${hasSufficient ? 'text-brand-gold' : 'text-brand-primary'}`} />
                     </div>
-                    <div className="flex flex-col min-w-0 z-10">
+                    <div className="flex flex-col min-w-0 z-10 items-center justify-center">
                       <span className={`text-sm font-black leading-none tracking-wide uppercase ${
                         hasSufficient ? 'text-brand-gold' : 'text-brand-primary'
                       }`}>
