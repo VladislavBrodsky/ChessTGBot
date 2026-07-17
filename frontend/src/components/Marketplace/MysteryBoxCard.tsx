@@ -35,16 +35,6 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
             className="w-full rounded-[22px] relative group overflow-hidden self-start border bg-brand-surface shadow-premium"
             style={{ borderColor: `rgba(${rgb},0.3)` }}
         >
-            {/* A quiet chessboard texture ties all tiers to the game without
-                competing with each chest's piece-specific artwork. */}
-            <div
-                className="absolute inset-0 pointer-events-none opacity-70"
-                style={{
-                    backgroundImage: `linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%), linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%)`,
-                    backgroundPosition: '0 0, 10px 10px',
-                    backgroundSize: '20px 20px',
-                }}
-            />
             <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
             <div
                 className="absolute -top-20 -right-20 text-[150px] font-serif leading-none pointer-events-none select-none opacity-[0.035]"
@@ -80,18 +70,15 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                 </div>
 
                 <div 
-                    className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[118px]"
-                    style={{
-                        background: 'radial-gradient(circle, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 68%)'
-                    }}
+                    className="flex items-center justify-center relative -mx-3 -mt-1 z-10 h-[118px] overflow-hidden bg-brand-void/50 border-y border-brand-border-opacity-5"
                 >
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div
-                            className="w-28 h-16 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-300"
+                            className="w-28 h-16 rounded-full blur-2xl opacity-20 group-hover:opacity-35 transition-opacity duration-300"
                             style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
                         />
                     </div>
-                    <MysteryBoxArt tier={tier} size={124} />
+                    <MysteryBoxArt tier={tier} size={110} />
                 </div>
 
                 <div className="text-left z-10 min-h-[45px]">
