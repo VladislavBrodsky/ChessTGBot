@@ -14,30 +14,31 @@ const FLOAT: Record<BoxTier, { y: number[]; dur: number }> = {
 };
 
 /**
- * Per-tier chess chest artwork. Every tier keeps the same functional treasure
- * box silhouette while changing its piece language and material treatment.
- * Animates with a soft floating effect.
+ * Per-tier chess chest artwork. Each render is a dark studio shot on a near-black
+ * backdrop, so it is presented edge-to-edge (object-cover) over the card's dark
+ * plate — the image's own black background blends into the plate seamlessly.
+ *
+ * NOTE: use the original `.jpg` renders, NOT the `-chess.webp` variants. Those
+ * webps were produced by luma-keyed "transparent" background removal that erased
+ * the chests' own dark bodies (dark-on-dark can't be keyed), leaving broken,
+ * washed-out cutouts. Fills its (relatively positioned) parent.
  */
-export default function MysteryBoxArt({ tier, size = 116 }: { tier: BoxTier; size?: number }) {
+export default function MysteryBoxArt({ tier }: { tier: BoxTier }) {
     const { y, dur } = FLOAT[tier];
 
     return (
         <motion.div
             animate={{ y }}
             transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ width: size, height: size }}
-            className="relative flex items-center justify-center"
+            className="absolute inset-0 z-10"
         >
             <Image
-                src={`/boxes/${tier}-chess.webp`}
+                src={`/boxes/${tier}-chess.jpg`}
                 alt={`${tier} chess treasure box`}
-                width={size}
-                height={size}
-                className="w-full h-full object-contain relative z-10 pointer-events-none select-none drop-shadow-2xl"
+                fill
+                sizes="220px"
+                className="object-cover object-center pointer-events-none select-none"
                 priority
-                style={{
-                    transform: 'scale(1.08)'
-                }}
             />
         </motion.div>
     );
