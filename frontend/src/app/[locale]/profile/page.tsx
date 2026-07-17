@@ -13,6 +13,7 @@ import ReferralDashboard from "@/components/ReferralDashboard";
 import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import NoiseGradient from "@/components/ui/NoiseGradient";
 
 // SVG Elo history chart component
 function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
@@ -170,16 +171,21 @@ export default function ProfilePage() {
     borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-orange-700/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(194,65,12,0.2)]";
   }
 
- return (
- <LayoutWrapper className="w-full" hideHeaderControls>
- <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8">
+  return (
+    <LayoutWrapper className="w-full premium-liquid-mesh-container min-h-screen relative overflow-x-hidden" hideHeaderControls>
+      <NoiseGradient opacity={0.15} />
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 relative z-10 pt-4 pb-12">
 
  {/* Profile Header */}
  <div className="w-full flex flex-col items-center text-center">
  <div className="relative mb-4">
- {/* Outer rotating/pulsing ring */}
- <div className={borderOuterClass} />
- <div className={borderInnerClass}>
+  {/* Outer rotating/pulsing ring */}
+  <motion.div 
+    animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.6, 1, 0.6] }} 
+    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+    className={borderOuterClass} 
+  />
+  <div className={borderInnerClass}>
  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
  <img 
    src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} 
@@ -222,13 +228,13 @@ export default function ProfilePage() {
   <div className="w-full grid grid-cols-2 gap-3">
     {/* ELO & Rank Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden animate-pulse h-24 w-full">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-12 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-16 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-24" />
       </Card>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
         <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
@@ -241,13 +247,13 @@ export default function ProfilePage() {
 
     {/* Games Played & Total Score Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden animate-pulse h-24 w-full">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-16 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-12 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-20" />
       </Card>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-10 relative overflow-hidden">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
         <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
@@ -259,7 +265,7 @@ export default function ProfilePage() {
 
   {/* Visual W - D - L Breakdown Bar */}
   {!stats ? (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 animate-pulse space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl animate-pulse space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-24" />
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-12" />
@@ -272,7 +278,7 @@ export default function ProfilePage() {
       </div>
     </Card>
   ) : (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{labels.breakdown}</span>
         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
@@ -314,7 +320,7 @@ export default function ProfilePage() {
 
   {/* ELO History Chart */}
   {stats && (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-10 space-y-2">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl space-y-2">
       <div className="flex justify-between items-center px-1 mb-2">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">Rating Trajectory</span>
         <span className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest">Last 10 Games</span>
@@ -334,8 +340,8 @@ export default function ProfilePage() {
      <div className="grid grid-cols-2 gap-3">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
-         <Card variant="glass" className="p-4 border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent relative overflow-hidden flex flex-col items-center text-center">
-           <div className="absolute -right-4 -top-4 text-6xl opacity-5">🚀</div>
+         <Card variant="glass" className="p-4 border-amber-500/30 shadow-[0_8px_32px_rgba(251,191,36,0.15)] bg-gradient-to-br from-amber-500/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
+           <div className="absolute -right-4 -top-4 text-6xl opacity-10">🚀</div>
            <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-widest mb-2">Active Booster</span>
            <span className="text-2xl font-black text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]">
              {stats.xp_multiplier}x XP
@@ -349,7 +355,7 @@ export default function ProfilePage() {
        )}
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
-         <Card variant="glass" className="p-4 border-brand-primary/20 flex flex-col items-center text-center justify-center">
+         <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex flex-col items-center text-center justify-center">
            <span className="text-[10px] font-black text-brand-primary/60 uppercase tracking-widest mb-1">Cosmetics Owned</span>
            <span className="text-2xl font-black text-brand-primary">
              {unlockedItems.length}
@@ -389,16 +395,16 @@ export default function ProfilePage() {
          const isWin = game.result === 'win';
          const isLoss = game.result === 'loss';
          const badgeColor = isWin 
-           ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.15)]" 
+           ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.25)]" 
            : isLoss 
-             ? "border-red-500/20 bg-red-500/10 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.15)]" 
+             ? "border-red-500/30 bg-red-500/15 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.25)]" 
              : "border-brand-primary/20 bg-brand-primary/10 text-brand-primary opacity-60";
          
          const rowGlow = isWin
-           ? "hover:border-emerald-500/20 bg-gradient-to-r from-emerald-500/[0.03] to-transparent shadow-[0_2px_12px_rgba(16,185,129,0.03)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.06)]"
+           ? "hover:border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(16,185,129,0.1)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.2)]"
            : isLoss
-             ? "hover:border-red-500/20 bg-gradient-to-r from-red-500/[0.03] to-transparent shadow-[0_2px_12px_rgba(239,68,68,0.03)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.06)]"
-             : "hover:border-brand-primary/20 bg-brand-surface border-brand-border-opacity-10 shadow-[0_2px_8px_rgba(0,0,0,0.03)]";
+             ? "hover:border-red-500/30 bg-gradient-to-r from-red-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(239,68,68,0.1)] hover:shadow-[0_8px_24px_rgba(239,68,68,0.2)]"
+             : "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md";
 
          return (
            <motion.div
@@ -406,11 +412,23 @@ export default function ProfilePage() {
              whileHover={{ scale: 1.01 }}
              whileTap={{ scale: 0.99 }}
              onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
-             className={`p-4 rounded-2xl border border-brand-border-opacity-10 flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden ${rowGlow}`}
+             className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden ${rowGlow}`}
            >
              {/* Ambient hover glow indicator */}
-             {isWin && <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />}
-             {isLoss && <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />}
+             {isWin && (
+               <motion.div 
+                 animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
+                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                 className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
+               />
+             )}
+             {isLoss && (
+               <motion.div 
+                 animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
+                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                 className="absolute top-0 right-0 w-24 h-24 bg-red-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
+               />
+             )}
 
              <div className="flex items-center gap-3 relative z-10">
                <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
