@@ -422,7 +422,7 @@ export default function AcademyPage() {
               {allSolved
                 ? t('all_levels_solved')
                 : nextPuzzle
-                  ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title}`
+                  ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title.replace(/\s*[—\-]\s*Level\s*\d+/i, '')}`
                   : t('mate_in_2')
               }
             </h2>
@@ -557,9 +557,10 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {lessonsList.map((lesson, index) => {
-              const isUnlocked = index === 0 || index === 1 || unlockedLessons.includes(lesson.slug);
-              const isCompleted = completedLessons.includes(lesson.slug);
+            {lessonsList.filter(lesson => !completedLessons.includes(lesson.slug)).map((lesson) => {
+              const originalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
+              const isUnlocked = originalIndex === 0 || originalIndex === 1 || unlockedLessons.includes(lesson.slug);
+              const isCompleted = false;
               
               return (
                 <div 
