@@ -616,6 +616,25 @@ def create_application() -> FastAPI:
                 )
             return FileResponse(f"{static_dir}/index.html", headers=HTML_NO_CACHE)
 
+        # Serve tonconnect-manifest dynamically to guarantee that the manifest url
+        # matches the requesting origin exactly (required by TON Connect for safety).
+        @application.get("/tonconnect-manifest.json")
+        @application.get("/tonconnect-manifest-v2.json")
+        async def serve_tonconnect_manifest(request: Request):
+            base_url = str(request.base_url).rstrip("/")
+            x_forwarded_proto = request.headers.get("x-forwarded-proto")
+            if x_forwarded_proto == "https" and base_url.startswith("http://"):
+                base_url = base_url.replace("http://", "https://", 1)
+                
+            manifest_data = {
+                "url": base_url,
+                "name": "FinChess Protocol",
+                "iconUrl": f"{base_url}/icon.png",
+                "termsOfUseUrl": f"{base_url}/terms",
+                "privacyPolicyUrl": f"{base_url}/privacy"
+            }
+            return JSONResponse(content=manifest_data)
+
         @application.get("/{full_path:path}")
         async def serve_frontend(full_path: str):
             # Exclude api and socket paths from fallback serving
