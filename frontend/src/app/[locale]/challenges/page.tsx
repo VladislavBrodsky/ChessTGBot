@@ -233,7 +233,7 @@ export default function ChallengesPage() {
             <XPProgressBar
               xp={userXp}
               level={stats?.level ?? 1}
-              levelLabel={t('level') || 'Level'}
+              levelLabel={t.has('level') ? t('level') : 'Level'}
               className="max-w-[260px] mb-4"
             />
  

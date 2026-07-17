@@ -361,6 +361,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Fix iOS Safari border-radius clipping bug on overflow-hidden elements */
+.overflow-hidden {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
 /* The fixed navigation must remain distinct from the page in every theme. */
 .app-bottom-nav {
   background: var(--color-nav-surface) !important;
@@ -607,6 +612,8 @@ body {
   overflow-y: auto;
   position: relative;
   touch-action: pan-y !important;
+  /* Fix iOS Safari border-radius clipping bug */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 /* Drawer drag handle indicator */

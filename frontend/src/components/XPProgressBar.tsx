@@ -72,9 +72,9 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 
                 {/* Outer Shimmer sweep */}
                 <motion.div
-                    animate={{ x: ['-100%', '200%'] }}
+                    animate={{ x: ['-100%', '300%'] }}
                     transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.0 }}
-                    className="absolute top-0 left-0 h-full w-1/3 pointer-events-none z-15"
+                    className="absolute top-0 left-0 h-full w-1/3 pointer-events-none z-20"
                     style={{
                         background: levelSecured
                             ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)'
