@@ -82,21 +82,21 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     )}
                 </div>
 
-                <div 
-                    className="flex items-center justify-center relative -mx-2 -mt-1 z-10 h-[118px]"
+                <div
+                    className="relative -mx-1 mt-1 mb-1 z-10 h-[118px] rounded-2xl overflow-hidden border border-white/5"
                     style={{
-                        background: 'radial-gradient(circle, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 68%)'
+                        background: 'radial-gradient(120% 100% at 50% 30%, #202027 0%, #0c0c10 62%, #060607 100%)'
                     }}
                 >
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                         <motion.div
-                            animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.05, 1] }}
+                            animate={{ opacity: [0.12, 0.28, 0.12], scale: [1, 1.05, 1] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="w-28 h-16 rounded-full blur-2xl group-hover:opacity-30 group-hover:scale-110 transition-all duration-500"
+                            className="w-28 h-16 rounded-full blur-2xl group-hover:opacity-40 group-hover:scale-110 transition-all duration-500 mix-blend-screen"
                             style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
                         />
                     </div>
-                    <MysteryBoxArt tier={tier} size={124} />
+                    <MysteryBoxArt tier={tier} />
                 </div>
 
                 <div className="text-left z-10 min-h-[45px]">
