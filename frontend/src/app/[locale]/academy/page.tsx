@@ -36,6 +36,26 @@ const CHESS_QUOTES = [
   { quote: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" },
 ] as const;
 
+interface AcademyPuzzle {
+  id: number;
+  title: string;
+  description: string;
+  xp_reward: number;
+  xp_cost?: number;
+  is_solved: boolean;
+  is_sequential_locked: boolean;
+  is_premium_locked: boolean;
+  is_xp_locked: boolean;
+}
+
+interface AcademyLesson {
+  slug: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  xp_reward: number;
+}
+
 export default function AcademyPage() {
   const locale = useLocale();
   const t = useTranslations('Academy');
@@ -58,7 +78,10 @@ export default function AcademyPage() {
 
   const loading = !stats || !dynamicLessons || !unlockedLessons || !completedLessons || !puzzles;
 
-  const completedPuzzles = puzzles ? puzzles.filter((p: any) => p.is_solved).map((p: any) => p.id) : [];
+  const puzzlesList = (puzzles || []) as AcademyPuzzle[];
+  const lessonsList = (dynamicLessons || []) as AcademyLesson[];
+
+  const completedPuzzles = puzzlesList.filter((p) => p.is_solved).map((p) => p.id);
 
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
@@ -103,9 +126,9 @@ export default function AcademyPage() {
     const band = LEVEL_THEMES.find(b => id >= b.range[0] && id <= b.range[1]);
     return band || { theme: `Level ${id}`, emoji: '♟️', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
   };
-  const nextPuzzle = puzzles ? puzzles.find((p: any) => !p.is_solved) : undefined;
+  const nextPuzzle = puzzlesList.find((p) => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
-  const allSolved = puzzles && puzzles.length > 0 && !nextPuzzle;
+  const allSolved = puzzlesList.length > 0 && !nextPuzzle;
 
   const [quoteIdx, setQuoteIdx] = useState(0);
 
@@ -370,11 +393,11 @@ export default function AcademyPage() {
             variant="glass" 
             interactive
             onClick={() => {
-              if (!puzzles.length) return;
+              if (!puzzlesList.length) return;
               if (nextPuzzle) {
                 handlePuzzleClick(nextPuzzle.id, nextPuzzle);
               } else if (allSolved) {
-                handlePuzzleClick(1, puzzles[0]);
+                handlePuzzleClick(1, puzzlesList[0]);
               }
             }}
             className="p-6 relative overflow-hidden group shadow-premium border-brand-primary/20 rounded-3xl"
@@ -461,7 +484,7 @@ export default function AcademyPage() {
               <div className="grid grid-cols-10 gap-1.5 w-full">
                 {Array.from({ length: 100 }, (_, i) => {
                   const id = i + 1;
-                  const puzzleInfo = puzzles.find(p => p.id === id);
+                  const puzzleInfo = puzzlesList.find(p => p.id === id);
                   const isCompleted = completedPuzzles.includes(id);
                   const isSequentialLocked = puzzleInfo ? puzzleInfo.is_sequential_locked : (id > 1);
                   const isPremiumLocked = puzzleInfo ? puzzleInfo.is_premium_locked : (id > 30);
@@ -534,7 +557,7 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {dynamicLessons.map((lesson, index) => {
+            {lessonsList.map((lesson, index) => {
               const isUnlocked = index === 0 || index === 1 || unlockedLessons.includes(lesson.slug);
               const isCompleted = completedLessons.includes(lesson.slug);
               
@@ -598,7 +621,7 @@ export default function AcademyPage() {
           </div>
           
           {/* Completed Tracks (Archive) */}
-          {dynamicLessons.some(lesson => completedLessons.includes(lesson.slug)) && (
+          {lessonsList.some(lesson => completedLessons.includes(lesson.slug)) && (
             <div className="mt-6 border border-brand-border-opacity-10 rounded-2xl bg-brand-surface/30 overflow-hidden transition-all duration-300">
               <button 
                 onClick={() => setShowArchive(!showArchive)}
@@ -608,7 +631,7 @@ export default function AcademyPage() {
                   <FaCheckCircle className="text-emerald-500 text-sm" />
                   <span className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-80">Completed Tracks</span>
                   <span className="ml-2 text-[10px] font-bold bg-brand-primary/10 px-2 py-0.5 rounded-full text-brand-primary/60">
-                    {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).length}
+                    {lessonsList.filter(lesson => completedLessons.includes(lesson.slug)).length}
                   </span>
                 </div>
                 <motion.div
@@ -629,7 +652,7 @@ export default function AcademyPage() {
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-2 grid grid-cols-1 gap-4 border-t border-brand-border-opacity-5">
-                      {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).map(lesson => (
+                      {lessonsList.filter(lesson => completedLessons.includes(lesson.slug)).map(lesson => (
                         <div key={lesson.slug} className="opacity-75 hover:opacity-100 transition-opacity">
                           <LessonCard
                             title={lesson.title}
