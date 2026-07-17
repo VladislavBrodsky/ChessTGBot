@@ -66,7 +66,7 @@ export default function LoginPage() {
                 <motion.div
                     animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
                     transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] rounded-full transition-all duration-500 bg-brand-gold/10 blur-[100px]"
+                    className="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] rounded-full transition-all duration-500 bg-emerald-500/10 blur-[100px]"
                 />
             </div>
 
@@ -107,7 +107,7 @@ export default function LoginPage() {
                                     transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                                     className="absolute inset-0 rounded-full blur-md opacity-50"
                                     style={{ 
-                                        background: 'conic-gradient(from 0deg, var(--color-brand-primary), transparent, var(--color-brand-gold), transparent)' 
+                                        background: 'conic-gradient(from 0deg, var(--color-brand-primary), transparent, var(--color-emerald-500), transparent)' 
                                     }}
                                 />
                                 <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-20 shadow-inner-glow">
@@ -120,7 +120,7 @@ export default function LoginPage() {
                                 <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500 text-brand-primary/80">
                                     {t('secure_web_portal')}
                                 </p>
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none transition-all duration-500 bg-gradient-to-br from-brand-primary to-brand-gold bg-clip-text text-transparent drop-shadow-sm">
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none transition-all duration-500 bg-gradient-to-br from-brand-primary to-emerald-500 bg-clip-text text-transparent drop-shadow-sm">
                                     {t('web3chess')}
                                 </h1>
                             </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
                             {/* QR Code with border */}
                             <motion.div
                                 whileHover={{ scale: 1.03 }}
-                                className="relative p-1 rounded-2xl transition-all duration-500 bg-gradient-to-br from-brand-primary/20 to-brand-gold/20 shadow-neon"
+                                className="relative p-1 rounded-2xl transition-all duration-500 bg-gradient-to-br from-brand-primary/20 to-emerald-500/20 shadow-neon"
                             >
                                 <div className="bg-white p-4 rounded-xl shadow-inner">
                                     <img
