@@ -88,9 +88,9 @@ export default function SettingsPage() {
 
  {/* Standalone Glowing Premium Card */}
  <Link href={`/${locale}/membership`} className="w-full block mb-6">
- <div className="w-full glass-panel bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-brand-gold/60 transition-all duration-300 shadow-sm">
+ <div className="w-full glass-panel bg-brand-surface border border-purple-500/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-purple-500/60 transition-all duration-300 shadow-sm">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center text-brand-gold text-sm shrink-0">
+ <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-500 text-sm shrink-0">
  <svg
    viewBox="0 0 24 24"
    fill="none"
@@ -111,15 +111,15 @@ export default function SettingsPage() {
  <div className="flex flex-col text-left">
  <span className="text-xs font-black text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
  {t('premium_membership')}
- <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wide">PRO</span>
+ <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500 text-white tracking-wide">PRO</span>
  </span>
- <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest leading-none opacity-80">
+ <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest leading-none opacity-80">
  {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
  </span>
  </div>
  </div>
- <div className="w-7 h-7 rounded-full border border-brand-gold/25 bg-brand-gold/10 flex items-center justify-center shrink-0">
- <FaArrowLeft className="rotate-180 text-[10px] text-brand-gold" />
+ <div className="w-7 h-7 rounded-full border border-purple-500/25 bg-purple-500/10 flex items-center justify-center shrink-0">
+ <FaArrowLeft className="rotate-180 text-[10px] text-purple-500" />
  </div>
  </div>
  </Link>
