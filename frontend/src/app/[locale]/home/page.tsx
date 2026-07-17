@@ -317,7 +317,7 @@ export default function Home() {
       <FaChessKnight className="text-2xl" aria-hidden="true" />
      </div>
      <div className="relative z-10 min-w-0 flex-1 text-left">
-      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-amber-500 mb-1.5">{t('play')}</span>
+      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500 mb-1.5">{t('play')}</span>
       <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
      </div>
      <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">
