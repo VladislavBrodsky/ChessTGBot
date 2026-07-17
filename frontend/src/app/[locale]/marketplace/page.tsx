@@ -218,174 +218,183 @@ export default function MarketplacePage() {
 
     return (
         <LayoutWrapper className="w-full px-4 md:px-6">
-            <div className="flex w-full max-w-sm flex-col items-center space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
-                <header className="flex w-full flex-col items-center text-center">
-                    <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
-                        <FaGem className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-                        {t('title')}
-                    </h1>
-                    <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
-                        {t('subtitle')}
-                    </p>
-                </header>
+            <div className="premium-liquid-mesh-container w-full h-full relative isolate">
+                {/* Subtle ambient glow behind the main content area */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+                
+                <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-5 md:max-w-xl lg:max-w-3xl relative z-10">
+                    <header className="flex w-full flex-col items-center text-center relative">
+                        <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -left-4 w-12 h-12 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+                        <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
+                            <FaGem className="text-purple-500 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
+                            {t('title')}
+                        </h1>
+                        <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
+                            {t('subtitle')}
+                        </p>
+                    </header>
 
-                <div className="w-full">
-                    <Card variant="solid" className="border-brand-border-opacity-20 p-5 shadow-premium">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="space-y-1 text-left">
-                            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>
-                            {loadingStats ? (
-                                <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
-                            ) : (
-                                <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                    className="mt-2 block text-3xl font-black leading-none tabular-nums text-brand-primary">
-                                    {userXP.toLocaleString()} XP
-                                </motion.span>
+                    <div className="w-full">
+                        <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-5 shadow-premium overflow-hidden relative">
+                            {/* Inner ambient light for XP card */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+                            <div className="flex items-center justify-between gap-4 relative z-10">
+                                <div className="space-y-1 text-left">
+                                <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>
+                                {loadingStats ? (
+                                    <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
+                                ) : (
+                                    <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                                        className="mt-2 block text-3xl font-black leading-none tabular-nums text-brand-primary drop-shadow-sm">
+                                        {userXP.toLocaleString()} XP
+                                    </motion.span>
+                                )}
+                                </div>
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10 text-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+                                    <FaGem size={20} className="drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                                </div>
+                            </div>
+                            {nextBox && !loadingStats && (
+                                <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
+                                    <p className="text-xs leading-5 text-brand-muted">
+                                        <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
+                                    </p>
+                                    <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-purple-500 hover:text-purple-400 transition-colors drop-shadow-[0_0_5px_rgba(168,85,247,0.3)]">
+                                        {ti('academy')}
+                                    </Link>
+                                </div>
                             )}
-                            </div>
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-                                <FaGem size={20} />
-                            </div>
-                        </div>
-                        {nextBox && !loadingStats && (
-                            <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4">
-                                <p className="text-xs leading-5 text-brand-muted">
-                                    <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
-                                </p>
-                                <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-purple-500 hover:underline drop-shadow-sm">
-                                    {ti('academy')}
-                                </Link>
-                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Recently won */}
+                    <AnimatePresence>
+                        {recentWins.length > 0 && (
+                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
+                                <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
+                                <div className="flex gap-2.5 overflow-x-auto pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                                    {recentWins.map((w) => {
+                                        const c = BOX_CONFIG[w.tier].theme;
+                                        return (
+                                            <div key={w.at} className="premium-liquid-content shrink-0 px-3.5 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-sm transition-all hover:-translate-y-0.5"
+                                                style={{ borderColor: `rgba(${c.rgb},0.25)`, background: `rgba(${c.rgb},0.08)` }}>
+                                                <FiBox size={13} style={{ color: c.accent }} className="drop-shadow-md" />
+                                                <span className="text-[10px] font-black tracking-wide text-brand-primary whitespace-nowrap">{w.name}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </motion.div>
                         )}
-                    </Card>
-                </div>
+                    </AnimatePresence>
 
-                {/* Recently won */}
-                <AnimatePresence>
-                    {recentWins.length > 0 && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                            <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full mb-2">{t('recently_won')}</h3>
-                            <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                                {recentWins.map((w) => {
-                                    const c = BOX_CONFIG[w.tier].theme;
-                                    return (
-                                        <div key={w.at} className="shrink-0 px-3 py-2 rounded-xl border flex items-center gap-2"
-                                            style={{ borderColor: `rgba(${c.rgb},0.25)`, background: `rgba(${c.rgb},0.06)` }}>
-                                            <FiBox size={12} style={{ color: c.accent }} />
-                                            <span className="text-[10px] font-bold text-white/70 whitespace-nowrap">{w.name}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <section className="w-full space-y-4" aria-labelledby="marketplace-vaults-title">
-                    <div className="text-center">
-                        <h2 id="marketplace-vaults-title" className="text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_boxes')}</h2>
-                    </div>
-                    <div className="grid w-full grid-cols-1 items-start gap-3 min-[480px]:grid-cols-2 md:grid-cols-3">
-                        {BOX_ORDER.map((tier) => (
-                            <MysteryBoxCard
-                                key={tier}
-                                tier={tier}
-                                userXP={userXP}
-                                onUnbox={() => handleOpenBox(tier)}
-                                disabled={loadingStats || balanceError}
-                            />
-                        ))}
-                    </div>
-                </section>
-
-                <section className="w-full space-y-4" aria-labelledby="marketplace-premium-title">
-                    <h2 id="marketplace-premium-title" className="text-center text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_premium')}</h2>
-                    <div className="grid grid-cols-1 gap-3 w-full">
-                        {directPurchases.map((item) => {
-                            const affordable = userXP >= item.cost;
-                            return (
-                                <Card
-                                    key={item.id}
-                                    variant="solid"
-                                    className={`p-5 transition-colors ${affordable ? 'border-brand-border-opacity-20' : 'opacity-70'}`}
-                                >
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="min-w-0">
-                                        <h3 className="flex items-center gap-2 text-base font-black text-brand-primary">
-                                            <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-                                            {item.name}
-                                        </h3>
-                                        <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
-                                        </div>
-                                        <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
-                                            {item.cost.toLocaleString()} XP
-                                        </Badge>
-                                    </div>
-                                    <Button
-                                        variant={affordable ? 'primary' : 'secondary'}
-                                        className={affordable ? 'mt-4 w-full bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
-                                        disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                        onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
-                                    >
-                                        {affordable ? `${item.cost.toLocaleString()} XP` : t('need_more_xp', { amount: (item.cost - userXP).toLocaleString() })}
-                                    </Button>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                </section>
-
-                <section className="w-full space-y-4" aria-labelledby="marketplace-themes-title">
-                    <h2 id="marketplace-themes-title" className="text-center text-xs font-black uppercase tracking-[0.22em] text-brand-primary">{t('section_themes')}</h2>
-                    {loadingThemes ? (
-                        <div className="grid grid-cols-1 gap-3 w-full">
-                            {[0, 1, 2].map((i) => <div key={i} className="h-[92px] animate-pulse rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />)}
+                    <section className="w-full space-y-5" aria-labelledby="marketplace-vaults-title">
+                        <div className="text-center relative">
+                            <h2 id="marketplace-vaults-title" className="text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_boxes')}</h2>
                         </div>
-                    ) : (
+                        {/* Ultra-premium 2026: Enforce exactly 2 columns for a robust, chunky layout */}
+                        <div className="grid w-full grid-cols-2 items-start gap-3 md:gap-4">
+                            {BOX_ORDER.map((tier) => (
+                                <MysteryBoxCard
+                                    key={tier}
+                                    tier={tier}
+                                    userXP={userXP}
+                                    onUnbox={() => handleOpenBox(tier)}
+                                    disabled={loadingStats || balanceError}
+                                />
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="w-full space-y-5 mt-4" aria-labelledby="marketplace-premium-title">
+                        <h2 id="marketplace-premium-title" className="text-center text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_premium')}</h2>
                         <div className="grid grid-cols-1 gap-3 w-full">
-                            {themes.map((theme) => {
-                                const swatch = THEME_SWATCHES[theme.code] || THEME_SWATCHES.default;
-                                const affordable = userXP >= theme.price_xp;
+                            {directPurchases.map((item) => {
+                                const affordable = userXP >= item.cost;
                                 return (
-                                    <Card key={theme.id} variant="solid" className="flex items-center justify-between gap-4 p-4">
-                                        <div className="flex items-center gap-4 text-left min-w-0">
-                                            <div className="flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-brand-border-opacity-20">
-                                                <div className="flex-1" style={{ background: swatch[0] }} />
-                                                <div className="flex-1" style={{ background: swatch[1] }} />
+                                    <Card
+                                        key={item.id}
+                                        variant="solid"
+                                        className={`premium-liquid-content p-5 transition-colors ${affordable ? 'border-brand-border-opacity-20 shadow-premium' : 'opacity-70 border-brand-border-opacity-5'}`}
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="min-w-0">
+                                            <h3 className="flex items-center gap-2 text-base font-black text-brand-primary">
+                                                <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                                                {item.name}
+                                            </h3>
+                                            <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                             </div>
-                                            <div className="space-y-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="truncate text-sm font-bold leading-none text-brand-primary">{theme.name}</h3>
-                                                    {theme.owned && (
-                                                        <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-[8px] font-black uppercase text-emerald-500">{t('owned')}</Badge>
-                                                    )}
-                                                </div>
-                                                <p className="text-[10px] text-brand-muted leading-tight line-clamp-1">{theme.description || t('theme_default_desc')}</p>
-                                            </div>
+                                            <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                                                {item.cost.toLocaleString()} XP
+                                            </Badge>
                                         </div>
-                                        {theme.owned ? (
-                                            activeThemeCode === theme.code ? (
-                                                <Button disabled variant="secondary" size="sm" className="shrink-0 border-emerald-500/20 bg-emerald-500/10 text-[10px] font-black uppercase tracking-widest text-emerald-500">{t('active')}</Button>
-                                            ) : (
-                                                <Button onClick={() => handleEquipTheme(theme.code)} variant="secondary" size="sm" className="shrink-0 text-[10px] font-black uppercase tracking-widest">{t('equip')}</Button>
-                                            )
-                                        ) : (
-                                            <Button
-                                                onClick={() => handleBuyTheme(theme.code, theme.name, theme.price_xp)}
-                                                variant={affordable ? 'primary' : 'secondary'}
-                                                size="sm"
-                                                disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
-                                            >
-                                                {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
-                                            </Button>
-                                        )}
+                                        <Button
+                                            variant={affordable ? 'primary' : 'secondary'}
+                                            className={affordable ? 'mt-4 w-full bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
+                                            disabled={!affordable || loadingStats || Boolean(balanceError)}
+                                            onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
+                                        >
+                                            {affordable ? `${item.cost.toLocaleString()} XP` : t('need_more_xp', { amount: (item.cost - userXP).toLocaleString() })}
+                                        </Button>
                                     </Card>
                                 );
                             })}
                         </div>
-                    )}
-                </section>
+                    </section>
+
+                    <section className="w-full space-y-5 mt-4 pb-10" aria-labelledby="marketplace-themes-title">
+                        <h2 id="marketplace-themes-title" className="text-center text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_themes')}</h2>
+                        {loadingThemes ? (
+                            <div className="grid grid-cols-1 gap-3 w-full">
+                                {[0, 1, 2].map((i) => <div key={i} className="h-[92px] animate-pulse rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />)}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-3 w-full">
+                                {themes.map((theme) => {
+                                    const swatch = THEME_SWATCHES[theme.code] || THEME_SWATCHES.default;
+                                    const affordable = userXP >= theme.price_xp;
+                                    return (
+                                        <Card key={theme.id} variant="solid" className="premium-liquid-content flex items-center justify-between gap-4 p-4 shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="flex items-center gap-4 text-left min-w-0">
+                                                <div className="flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-brand-border-opacity-20 shadow-inner">
+                                                    <div className="flex-1" style={{ background: swatch[0] }} />
+                                                    <div className="flex-1" style={{ background: swatch[1] }} />
+                                                </div>
+                                                <div className="space-y-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="truncate text-sm font-bold leading-none text-brand-primary">{theme.name}</h3>
+                                                        {theme.owned && (
+                                                            <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-[8px] font-black uppercase text-emerald-500 drop-shadow-sm">{t('owned')}</Badge>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-[10px] text-brand-muted leading-tight line-clamp-1 font-medium">{theme.description || t('theme_default_desc')}</p>
+                                                </div>
+                                            </div>
+                                            {theme.owned ? (
+                                                activeThemeCode === theme.code ? (
+                                                    <Button disabled variant="secondary" size="sm" className="shrink-0 border-emerald-500/20 bg-emerald-500/10 text-[10px] font-black uppercase tracking-widest text-emerald-500 shadow-[inset_0_0_10px_rgba(16,185,129,0.1)]">{t('active')}</Button>
+                                                ) : (
+                                                    <Button onClick={() => handleEquipTheme(theme.code)} variant="secondary" size="sm" className="shrink-0 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-colors">{t('equip')}</Button>
+                                                )
+                                            ) : (
+                                                <Button
+                                                    onClick={() => handleBuyTheme(theme.code, theme.name, theme.price_xp)}
+                                                    variant={affordable ? 'primary' : 'secondary'}
+                                                    size="sm"
+                                                    disabled={!affordable || loadingStats || Boolean(balanceError)}
+                                                    className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
+                                                >
+                                                    {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
+                                                </Button>
+                                            )}
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
 
             <UnboxingModal

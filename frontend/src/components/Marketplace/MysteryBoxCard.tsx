@@ -7,6 +7,7 @@ import { FiChevronDown, FiLock } from 'react-icons/fi';
 import MysteryBoxArt from './MysteryBoxArt';
 import SeasonalCountdown from './SeasonalCountdown';
 import MysteryBoxDetailsSheet from './MysteryBoxDetailsSheet';
+import NoiseGradient from '@/components/ui/NoiseGradient';
 import { BOX_CONFIG, type BoxTier } from './boxConfig';
 
 interface MysteryBoxCardProps {
@@ -38,13 +39,15 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
             {/* A quiet chessboard texture ties all tiers to the game without
                 competing with each chest's piece-specific artwork. */}
             <div
-                className="absolute inset-0 pointer-events-none opacity-70"
+                className="absolute inset-0 pointer-events-none opacity-70 mix-blend-overlay"
                 style={{
                     backgroundImage: `linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%), linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%)`,
                     backgroundPosition: '0 0, 10px 10px',
                     backgroundSize: '20px 20px',
                 }}
             />
+            {/* Ultra-premium subtle noise texture overlay for 2026 aesthetics */}
+            <NoiseGradient opacity={0.25} />
             <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
             <div
                 className="absolute -top-20 -right-20 text-[150px] font-serif leading-none pointer-events-none select-none opacity-[0.035]"
@@ -86,8 +89,10 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     }}
                 >
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div
-                            className="w-28 h-16 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-300"
+                        <motion.div
+                            animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.05, 1] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="w-28 h-16 rounded-full blur-2xl group-hover:opacity-30 group-hover:scale-110 transition-all duration-500"
                             style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
                         />
                     </div>
@@ -117,11 +122,15 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
                         locked
                             ? 'bg-brand-bg-opacity-5 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed'
-                            : 'bg-purple-500 text-brand-void active:scale-[0.98] cursor-pointer'
+                            : 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.25)] hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-[0.98] cursor-pointer'
                     }`}
                 >
                     <span className="relative z-10 flex items-center justify-center gap-1.5">
-                        {!affordable && !disabled && <FiLock size={10} />}
+                        {!affordable && !disabled && (
+                            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
+                                <FiLock size={10} />
+                            </motion.div>
+                        )}
                         {disabled
                             ? t('unavailable')
                             : affordable
