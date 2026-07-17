@@ -13,6 +13,7 @@ import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
+import NoiseGradient from "@/components/ui/NoiseGradient";
 import Link from "next/link";
 
 const stripEmojis = (str: string): string => {
@@ -423,8 +424,9 @@ export default function MembershipPage() {
                 )}
               </>
             ) : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? (
-              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <span className="text-[10px] font-black uppercase tracking-widest text-purple-500">
+              <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
+                <NoiseGradient opacity={0.15} />
+                <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
                   You're on the best plan!
                 </span>
                 <span className="text-[10px] text-brand-muted font-medium">
@@ -447,8 +449,9 @@ export default function MembershipPage() {
                 {submitting ? tm('processing') : "Manage Subscription"}
               </motion.button>
             ) : (
-              <div className="w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <span className="text-[10px] font-black uppercase tracking-widest text-purple-500">
+              <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
+                <NoiseGradient opacity={0.15} />
+                <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
                   Active via In-App Balance
                 </span>
                 <span className="text-[10px] text-brand-muted font-medium">

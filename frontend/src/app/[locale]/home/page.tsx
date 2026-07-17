@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import NoiseGradient from "@/components/ui/NoiseGradient";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
@@ -313,6 +314,7 @@ export default function Home() {
     whileTap={{ scale: 0.985 }}
     className="play-chess-card-premium min-h-[96px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
    >
+    <NoiseGradient />
     <div className="play-chess-card-piece relative z-10 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center">
      <FaChessKnight className="text-2xl" aria-hidden="true" />
     </div>

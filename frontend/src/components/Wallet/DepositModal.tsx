@@ -584,7 +584,7 @@ export default function DepositModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10 pb-8 sm:pb-4"
+        className="bottom-drawer-sheet relative z-10 pb-[calc(32px+var(--app-safe-bottom))] sm:pb-[calc(16px+var(--app-safe-bottom))]"
       >
         <div className="bottom-drawer-handle" />
         <button
@@ -626,7 +626,7 @@ export default function DepositModal({
           {cardEnabled && (
             <div className="relative flex p-1 rounded-xl bg-brand-void/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-inner overflow-hidden">
               <div 
-                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(255,215,0,0.25)] transition-all duration-300 ease-out"
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
                 style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
               />
               {(['crypto', 'card'] as const).map((tab) => (

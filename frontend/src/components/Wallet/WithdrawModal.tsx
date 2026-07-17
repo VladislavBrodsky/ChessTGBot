@@ -124,7 +124,7 @@ export default function WithdrawModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
+        className="bottom-drawer-sheet relative z-10 pb-[calc(16px+var(--app-safe-bottom))]"
       >
         <div className="bottom-drawer-handle" />
         <button
