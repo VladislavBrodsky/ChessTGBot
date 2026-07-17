@@ -16,7 +16,6 @@ def main():
     # We'll just replace everything between LESSONS = [ and the PUZZLES = [
     # But wait, it's safer to just split by "PUZZLES = [" and replace the LESSONS part.
     
-    # Original 2 lessons to keep them as is:
     original_lessons = [
         {
             "slug": "piece-values",
@@ -26,8 +25,40 @@ def main():
             "order_index": 1,
             "xp_reward": 50,
             "steps": [
-                {"order_index": 1, "content": "A pawn is worth 1 point. Knights and Bishops are worth 3 points.", "fen": None},
-                {"order_index": 2, "content": "A rook is worth 5 points, and a queen is worth 9. The king's value is infinite!", "fen": None},
+                {"order_index": 1, "content": """<div class="space-y-4">
+    <p>Every chess piece has a relative numerical value. Understanding these values helps you decide which trades are beneficial!</p>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="glass-panel p-4 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5">
+            <span class="text-3xl mb-2 drop-shadow-md">♙</span>
+            <span class="font-bold text-brand-primary text-xs uppercase tracking-widest">Pawn</span>
+            <span class="text-amber-400 font-black text-lg">1 Point</span>
+        </div>
+        <div class="glass-panel p-4 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5">
+            <span class="text-3xl mb-2 drop-shadow-md">♘ ♗</span>
+            <span class="font-bold text-brand-primary text-xs uppercase tracking-widest text-center">Knight / Bishop</span>
+            <span class="text-amber-400 font-black text-lg">3 Points</span>
+        </div>
+    </div>
+</div>""", "fen": None},
+                {"order_index": 2, "content": """<div class="space-y-4">
+    <p>The major pieces hold the most power. The King, however, cannot be captured, so its value is <span class="text-amber-400 font-bold">infinite</span>!</p>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="glass-panel p-4 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5">
+            <span class="text-3xl mb-2 drop-shadow-md">♖</span>
+            <span class="font-bold text-brand-primary text-xs uppercase tracking-widest">Rook</span>
+            <span class="text-amber-400 font-black text-lg">5 Points</span>
+        </div>
+        <div class="glass-panel p-4 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5">
+            <span class="text-3xl mb-2 drop-shadow-md">♕</span>
+            <span class="font-bold text-brand-primary text-xs uppercase tracking-widest">Queen</span>
+            <span class="text-amber-400 font-black text-lg">9 Points</span>
+        </div>
+    </div>
+    <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+        <span class="text-amber-400 font-black uppercase tracking-widest text-[10px]">Strategic Tip</span>
+        <p class="text-sm mt-1 text-brand-primary/90 font-medium">Trading a 3-point piece for a 5-point piece is a great deal!</p>
+    </div>
+</div>""", "fen": None},
             ],
         },
         {
@@ -38,8 +69,19 @@ def main():
             "order_index": 2,
             "xp_reward": 100,
             "steps": [
-                {"order_index": 1, "content": "A fork happens when a single piece attacks two or more of the opponent's pieces simultaneously.", "fen": "8/8/8/3N4/8/2q1k3/8/8 w - - 0 1"},
-                {"order_index": 2, "content": "Knights are especially famous for their forks, often attacking a king and a queen.", "fen": None},
+                {"order_index": 1, "content": """<div class="space-y-4">
+    <p>A <strong class="text-amber-400 font-black">fork</strong> is a devastating tactical maneuver where a single piece attacks two or more of the opponent's pieces at the exact same time.</p>
+    <div class="p-4 rounded-2xl bg-brand-void/30 border border-white/5">
+        <ul class="list-disc pl-5 space-y-2 text-sm text-brand-primary/80 font-medium">
+            <li>It forces your opponent into a difficult choice.</li>
+            <li>Since they can only move one piece per turn, the other piece is usually lost!</li>
+        </ul>
+    </div>
+</div>""", "fen": "8/8/8/3N4/8/2q1k3/8/8 w - - 0 1"},
+                {"order_index": 2, "content": """<div class="space-y-4">
+    <p>While any piece can fork, <strong class="text-amber-400 font-black">Knights</strong> are the undisputed masters of this tactic.</p>
+    <p class="text-sm text-brand-primary/80 leading-relaxed">Because of their unique L-shaped movement, knights can attack pieces without being attacked back in the same way. The most famous fork is the <em class="text-emerald-400 not-italic font-bold">Royal Fork</em>, which attacks the King and Queen simultaneously!</p>
+</div>""", "fen": None},
             ],
         }
     ]

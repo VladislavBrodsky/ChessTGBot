@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import LessonViewer, { LessonStep } from "@/components/Academy/LessonViewer";
-import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";
+import { FaArrowLeft, FaTelegramPlane, FaCheck } from "react-icons/fa";
 import { FaChessKnight } from "react-icons/fa6";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -114,41 +114,51 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   if (completed) {
    return (
    <LayoutWrapper className="pt-6 relative">
-   <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto z-10">
+   <div className="w-full h-full min-h-[70vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto z-10">
   <motion.div
   initial={{ scale: 0.9, opacity: 0, y: 20 }}
   animate={{ scale: 1, opacity: 1, y: 0 }}
-  className="glass-panel p-8 rounded-3xl border border-emerald-500/30 bg-brand-surface shadow-[0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden"
+  className="w-full relative overflow-hidden group"
   >
-  <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
-  
-  <h1 className="text-3xl font-black text-emerald-400 mb-2 uppercase leading-none">LESSON COMPLETE!</h1>
-  <p className="text-xs font-bold text-brand-primary opacity-60 mb-6 uppercase tracking-wide">You have mastered the basics of {lessonData.title}.</p>
- 
-  {earnedXP && (
-    <div className="flex justify-center mb-8">
-      <div className="flex flex-col items-center p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl min-w-[100px]">
-        <span className="text-amber-400 font-black text-2xl">+{earnedXP}</span>
-        <span className="text-[10px] text-amber-400/60 font-black uppercase tracking-widest mt-1">Chess XP</span>
-      </div>
+  <div className="glass-panel p-8 md:p-12 rounded-[32px] border border-white/10 bg-gradient-to-br from-[#121814] to-[#0a0f0c] shadow-[0_0_50px_rgba(16,185,129,0.2)] relative z-10">
+    <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
+    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/30" />
+    
+    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)] mb-6 rotate-12 group-hover:rotate-0 transition-all duration-500">
+      <FaCheck className="text-4xl text-white drop-shadow-md" />
     </div>
-  )}
- 
-  <div className="flex gap-4 justify-center w-full mt-2">
-  <Link href={`/${locale}/academy`} className="flex-1">
-  <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-opacity-10 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
-  Back
-  </button>
-  </Link>
-  <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
-  <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
-  <FaTelegramPlane className="text-lg" /> Share
-  </button>
-  </a>
+
+    <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 mb-2 uppercase tracking-tight">LESSON COMPLETE!</h1>
+    <p className="text-[11px] font-black text-emerald-400/80 mb-8 uppercase tracking-[0.2em]">You have mastered {lessonData.title}</p>
+  
+    {earnedXP && (
+      <div className="flex justify-center mb-10">
+        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-gradient-to-br from-[#2a2210] to-[#1a150a] border border-amber-500/30 rounded-3xl shadow-[0_0_40px_rgba(245,158,11,0.2)] relative overflow-hidden">
+          <div className="absolute inset-0 bg-amber-500/10 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
+          
+          <span className="text-amber-400 font-black text-4xl drop-shadow-[0_2px_10px_rgba(245,158,11,0.6)] relative z-10">+{earnedXP}</span>
+          <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
+        </div>
+      </div>
+    )}
+  
+    <div className="flex flex-col md:flex-row gap-4 justify-center w-full">
+      <Link href={`/${locale}/academy`} className="flex-1 w-full">
+        <button className="w-full px-4 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs">
+          Back
+        </button>
+      </Link>
+      <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full">
+        <button className="w-full px-4 py-4 bg-gradient-to-r from-[#2AABEE] to-[#229ED9] hover:from-[#35b5f8] hover:to-[#2AABEE] text-white font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.5)] transition-all text-xs flex items-center justify-center gap-3">
+          <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
+        </button>
+      </a>
+    </div>
   </div>
   </motion.div>
   </div>
-  <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={250} gravity={0.15} colors={['#10B981', '#F59E0B', '#3B82F6', '#FFFFFF']} style={{ zIndex: 0 }} />
+  <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} gravity={0.2} colors={['#10B981', '#F59E0B', '#3B82F6', '#FFFFFF']} style={{ zIndex: 0 }} />
   </LayoutWrapper>
   );
   }

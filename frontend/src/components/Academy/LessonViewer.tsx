@@ -88,23 +88,26 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
  {(currentStep.type === 'text' || (currentStep.type === 'interactive_board' && !hasInteractiveSolution)) && (
    <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-6 md:gap-8`}>
-     <div className="flex-1 glass-panel p-8 md:p-10 rounded-3xl border border-brand-border-opacity-10 shadow-lg flex flex-col justify-center min-h-[300px] relative overflow-hidden">
-       {/* Decorative subtle background glow */}
-       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-       
-       <div className="relative z-10 prose prose-invert prose-brand max-w-none text-brand-primary/90 leading-relaxed text-[15px]">
-         <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
-       </div>
-       
-       {!stepComplete && (
-         <button
-           onClick={markComplete}
-           className="mt-8 w-full py-4 bg-brand-primary text-brand-void font-black uppercase tracking-widest rounded-xl hover:bg-white hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)] relative z-10"
-         >
-           I Understand
-         </button>
-       )}
-     </div>
+      <div className="flex-1 p-8 md:p-10 rounded-3xl border border-white/10 bg-gradient-to-br from-[#1a1a24] to-[#121218] shadow-premium flex flex-col justify-center min-h-[300px] relative overflow-hidden group">
+        <div className="absolute inset-0 bg-brand-void/40 pointer-events-none" />
+        {/* Decorative subtle background glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/20" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+        
+        <div className="relative z-10 prose prose-invert prose-brand max-w-none text-brand-primary/90 leading-relaxed text-[15px]">
+          <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
+        </div>
+        
+        {!stepComplete && (
+          <button
+            onClick={markComplete}
+            className="mt-8 w-full py-4 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500 bg-[length:200%_auto] text-brand-void font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_4px_30px_rgba(16,185,129,0.6)] relative z-10 flex items-center justify-center gap-2 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] -translate-x-full animate-shimmer" />
+            <FaCheck /> I Understand
+          </button>
+        )}
+      </div>
      
      {currentStep.fen && (
        <div className="flex-1 rounded-3xl overflow-hidden border border-brand-border-opacity-10 bg-black p-2 md:p-3 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex items-center justify-center max-w-sm mx-auto md:max-w-md w-full relative">
