@@ -7,7 +7,6 @@ import { FiChevronDown, FiLock } from 'react-icons/fi';
 import MysteryBoxArt from './MysteryBoxArt';
 import SeasonalCountdown from './SeasonalCountdown';
 import MysteryBoxDetailsSheet from './MysteryBoxDetailsSheet';
-import NoiseGradient from '@/components/ui/NoiseGradient';
 import { BOX_CONFIG, type BoxTier } from './boxConfig';
 
 interface MysteryBoxCardProps {
@@ -33,28 +32,18 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
             whileHover={{ y: locked ? 0 : -3 }}
             whileTap={{ scale: locked ? 1 : 0.985 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className="w-full rounded-[22px] relative group overflow-hidden self-start border bg-brand-surface shadow-premium"
-            style={{ borderColor: `rgba(${rgb},0.3)` }}
+            className="w-full rounded-[22px] relative group self-start bg-brand-surface shadow-premium border border-brand-border-opacity-10"
         >
-            {/* A quiet chessboard texture ties all tiers to the game without
-                competing with each chest's piece-specific artwork. */}
-            <div
-                className="absolute inset-0 pointer-events-none opacity-70 mix-blend-overlay"
-                style={{
-                    backgroundImage: `linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%), linear-gradient(45deg, rgba(${rgb},0.035) 25%, transparent 25%, transparent 75%, rgba(${rgb},0.035) 75%)`,
-                    backgroundPosition: '0 0, 10px 10px',
-                    backgroundSize: '20px 20px',
-                }}
-            />
-            {/* Ultra-premium subtle noise texture overlay for 2026 aesthetics */}
-            <NoiseGradient opacity={0.25} />
-            <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
-            <div
-                className="absolute -top-20 -right-20 text-[150px] font-serif leading-none pointer-events-none select-none opacity-[0.035]"
-                style={{ color: accent }}
-                aria-hidden="true"
-            >
-                {cfg.glyph}
+            {/* Inner wrapper for overflow-hidden to prevent shadow clipping on Safari */}
+            <div className="absolute inset-0 rounded-[22px] overflow-hidden pointer-events-none">
+                <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
+                <div
+                    className="absolute -top-20 -right-20 text-[150px] font-serif leading-none opacity-[0.035]"
+                    style={{ color: accent }}
+                    aria-hidden="true"
+                >
+                    {cfg.glyph}
+                </div>
             </div>
 
             <div className="w-full h-full p-3 flex flex-col relative z-10">

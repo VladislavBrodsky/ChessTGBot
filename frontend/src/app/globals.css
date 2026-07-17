@@ -1261,7 +1261,7 @@ body {
   filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)) !important;
 }
 
-/* Primary arena entry: a quiet gold move marker over the shared obsidian shell. */
+/* Primary arena entry: emerald left-stripe signals the primary play action. */
 .play-chess-card-premium {
   position: relative;
   isolation: isolate;
@@ -1273,21 +1273,21 @@ body {
   transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
 }
 
-/* A clean silver/charcoal left accent — no colorful gradients. */
+/* Emerald left-stripe = primary action per brand rules. */
 .play-chess-card-premium::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(90deg, var(--text-gold) 0 3px, transparent 3px),
-    radial-gradient(circle at 14% 50%, rgba(245, 158, 11, 0.12), transparent 38%);
+    linear-gradient(90deg, #10b981 0 3px, transparent 3px),
+    radial-gradient(circle at 14% 50%, rgba(16, 185, 129, 0.1), transparent 38%);
   opacity: 1;
   pointer-events: none;
 }
 
 .play-chess-card-piece {
-  color: var(--text-gold);
+  color: #10b981;
   background: var(--bg-primary);
   border: 1px solid var(--border-muted);
   box-shadow: var(--shadow-inner-glow);
@@ -1295,13 +1295,13 @@ body {
 
 .play-chess-card-arrow {
   color: var(--bg-primary);
-  background: var(--text-gold);
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
 }
 
 .play-chess-card-premium:hover {
-  border-color: var(--text-gold) !important;
-  box-shadow: var(--shadow-premium), 0 0 0 1px rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: var(--shadow-premium), 0 0 0 1px rgba(16, 185, 129, 0.15) !important;
 }
 
 /* Arena funding and match setup use one calm premium action system. */
