@@ -221,7 +221,7 @@ export default function MarketplacePage() {
             <div className="flex w-full max-w-sm flex-col items-center space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
                 <header className="flex w-full flex-col items-center text-center">
                     <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
-                        <FaGem className="text-brand-gold" />
+                        <FaGem className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                         {t('title')}
                     </h1>
                     <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
@@ -243,7 +243,7 @@ export default function MarketplacePage() {
                                 </motion.span>
                             )}
                             </div>
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
                                 <FaGem size={20} />
                             </div>
                         </div>
@@ -252,7 +252,7 @@ export default function MarketplacePage() {
                                 <p className="text-xs leading-5 text-brand-muted">
                                     <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
                                 </p>
-                                <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-brand-gold hover:underline">
+                                <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-purple-500 hover:underline drop-shadow-sm">
                                     {ti('academy')}
                                 </Link>
                             </div>
@@ -312,18 +312,18 @@ export default function MarketplacePage() {
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="min-w-0">
                                         <h3 className="flex items-center gap-2 text-base font-black text-brand-primary">
-                                            <FaCrown className="text-brand-gold" />
+                                            <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                                             {item.name}
                                         </h3>
                                         <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                         </div>
-                                        <Badge variant="outline" className="shrink-0 border-brand-gold/30 bg-brand-gold/10 text-[10px] text-brand-gold">
+                                        <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
                                             {item.cost.toLocaleString()} XP
                                         </Badge>
                                     </div>
                                     <Button
                                         variant={affordable ? 'primary' : 'secondary'}
-                                        className={affordable ? 'mt-4 w-full bg-brand-gold text-brand-void hover:bg-brand-gold/90' : 'mt-4 w-full'}
+                                        className={affordable ? 'mt-4 w-full bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
                                         disabled={!affordable || loadingStats || Boolean(balanceError)}
                                         onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
                                     >
@@ -375,7 +375,7 @@ export default function MarketplacePage() {
                                                 variant={affordable ? 'primary' : 'secondary'}
                                                 size="sm"
                                                 disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-brand-gold text-brand-void hover:bg-brand-gold/90' : ''}`}
+                                                className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
                                             >
                                                 {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
                                             </Button>
