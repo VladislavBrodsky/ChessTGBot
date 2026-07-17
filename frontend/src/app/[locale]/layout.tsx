@@ -11,9 +11,10 @@ import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
 import AuthGuard from "@/components/AuthGuard";
 
-import { Inter, Roboto_Mono } from 'next/font/google';
+import { Outfit, Plus_Jakarta_Sans, Roboto_Mono } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-geist-sans' });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
+const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
 const robotoMono = Roboto_Mono({ subsets: ['latin'], variable: '--font-geist-mono' });
 
 export const metadata: Metadata = {
@@ -92,7 +93,7 @@ export default async function LocaleLayout({
                 />
             </head>
             <body
-                className={`${inter.variable} ${robotoMono.variable} antialiased`}
+                className={`${outfit.variable} ${plusJakarta.variable} ${robotoMono.variable} antialiased`}
                 suppressHydrationWarning
             >
                 <NextIntlClientProvider messages={messages}>

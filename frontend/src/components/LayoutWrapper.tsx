@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Onboarding from './Onboarding';
 import RegionPrompt from './RegionPrompt';
 import NotificationModal from './NotificationModal';
+import AnimatedBackground from './AnimatedBackground';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useNavbar } from '@/context/NavbarContext';
@@ -180,25 +181,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     return (
         <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
             {/* Ambient Starfield & Gradients */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                {!pathname.includes('/admin') && (
-                    <div 
-                        className="absolute inset-0"
-                        style={{
-                            background: `
-                                radial-gradient(circle at 78% 4%, var(--premium-orb-gold), transparent 30%),
-                                radial-gradient(circle at 10% 82%, var(--premium-orb-silver), transparent 28%),
-                                linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 86%, var(--bg-surface)), var(--bg-primary) 58%, color-mix(in srgb, var(--bg-primary) 92%, var(--text-gold) 8%))
-                            `
-                        }}
-                    />
-                )}
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
-                    backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
-                    backgroundSize: '48px 48px'
-                }} />
-                <div className="absolute inset-0 opacity-[0.01] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,.25)_50%),linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02),rgba(255,255,255,.06))] bg-size-[100%_2px,3px_100%]" />
-            </div>
+            {!pathname.includes('/admin') && <AnimatedBackground />}
 
             {/* Top-Right Header (Settings & Notifications) — only rendered on /home if not suppressed.
                 Home page passes hideHeaderControls and renders them inline instead, so this block

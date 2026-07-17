@@ -874,10 +874,10 @@ export default function PlayLobby() {
                         aria-label={tg('win_up_to')}
                         className="arena-win-summary relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border cursor-pointer hover:brightness-105 active:scale-95 transition-all duration-150"
                       >
-                        <span className="relative z-10 text-[10px] font-black text-brand-gold uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
+                        <span className="relative z-10 text-[10px] font-black text-brand-primary uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
                           <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')}
                         </span>
-                        <span className="relative z-10 text-[11px] font-black text-brand-gold tracking-tight leading-none">
+                        <span className="relative z-10 text-[11px] font-black text-brand-primary tracking-tight leading-none">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
                       </motion.button>
@@ -914,23 +914,23 @@ export default function PlayLobby() {
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(234,179,8,0.4)] ring-2 ring-yellow-400/30' : ''
                     }`}
                   >
-                    <span className={`absolute top-3 right-3 w-1.5 h-1.5 rounded-full ${hasSufficient ? 'bg-brand-gold' : 'bg-brand-void/60'}`} aria-hidden="true" />
+                    <span className={`absolute top-3 right-3 w-1.5 h-1.5 rounded-full ${hasSufficient ? 'bg-brand-gold' : 'bg-brand-primary/30'}`} aria-hidden="true" />
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 z-10 ${
                         hasSufficient
-                          ? 'bg-gradient-to-br from-amber-500/30 to-amber-500/10 border border-amber-500/40 shadow-[0_0_16px_rgba(245,158,11,0.3)]'
-                          : 'bg-brand-void/10 border border-brand-void/15'
+                          ? 'bg-gradient-to-br from-brand-gold/20 to-brand-gold/5 border border-brand-gold/30 shadow-[0_0_12px_rgba(234,179,8,0.2)]'
+                          : 'bg-brand-elevated border border-brand-border-opacity-10'
                       }`}
                     >
-                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-brand-gold' : 'text-brand-void'}`} />
+                      <FaChessKnight className={`text-[15px] drop-shadow-md ${hasSufficient ? 'text-brand-gold' : 'text-brand-primary/80'}`} />
                     </div>
                     <div className="flex flex-col min-w-0 z-10">
                       <span className={`text-sm font-black leading-none tracking-wide uppercase ${
-                        hasSufficient ? 'text-brand-gold' : 'text-brand-void'
+                        hasSufficient ? 'text-brand-gold' : 'text-brand-primary'
                       }`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
-                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-primary/50' : 'text-brand-void/70'}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-primary/50' : 'text-brand-primary/60'}`}>
                         {hasSufficient ? (
                           chosenWager > 0 ? (
                             <>

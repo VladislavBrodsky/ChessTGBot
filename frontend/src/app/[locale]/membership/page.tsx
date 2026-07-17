@@ -276,7 +276,7 @@ export default function MembershipPage() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3"
         >
-          <div className="w-16 h-16 rounded-[22px] bg-brand-gold text-brand-void flex items-center justify-center shadow-premium border border-brand-gold/30">
+          <div className="w-16 h-16 rounded-[22px] bg-brand-elevated text-brand-gold flex items-center justify-center border border-brand-border-opacity-20 shadow-sm">
             <IconCrown />
           </div>
           <div>
@@ -294,11 +294,11 @@ export default function MembershipPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center gap-3 shadow-premium"
+            className="w-full bg-brand-surface border border-brand-border-opacity-20 rounded-[20px] p-4 flex items-center gap-3 shadow-sm"
           >
-            <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">{tm('active_membership')}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">{tm('active_membership')}</span>
               <span className="text-xs font-bold text-brand-primary">
                 Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
@@ -313,13 +313,13 @@ export default function MembershipPage() {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('monthly'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'monthly'
-                ? "bg-brand-gold/10 border-brand-gold text-brand-primary shadow-premium"
-                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-gold/40"
+                ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
+                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-primary/30"
             }`}
           >
             {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && (
               <div className="absolute top-0 right-0">
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-primary/70">
                   Current Plan
                 </div>
               </div>
@@ -339,14 +339,14 @@ export default function MembershipPage() {
             onClick={() => { telegramHaptic('light'); setBillingPeriod('annual'); }}
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'annual'
-                ? "bg-brand-gold/10 border-brand-gold text-brand-primary shadow-premium"
-                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-gold/40"
+                ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
+                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-primary/30"
             }`}
           >
             {/* Badges */}
             <div className="absolute top-0 right-0 flex flex-col items-end">
               {stats?.is_premium && stats.premium_billing_period === 'annual' ? (
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-gold text-brand-void">
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-primary/70">
                   Current Plan
                 </div>
               ) : (
@@ -356,13 +356,13 @@ export default function MembershipPage() {
               )}
             </div>
 
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">{tm('annual')}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">{tm('annual')}</span>
             <div>
               <div className="flex items-end leading-none">
-                <span className="text-2xl font-black tracking-tighter text-brand-gold">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-xs font-black text-brand-gold/80 mb-0.5">/mo</span>
+                <span className="text-2xl font-black tracking-tighter text-brand-primary">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
+                <span className="text-xs font-black text-brand-muted mb-0.5">/mo</span>
               </div>
-              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-gold/80">
+              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-muted">
                 {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
               </span>
             </div>
@@ -374,9 +374,9 @@ export default function MembershipPage() {
           {FEATURES.map((f, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-4 py-3 bg-brand-surface border border-brand-border-opacity-20 rounded-[18px] hover:border-brand-gold/40 transition-colors group"
+              className="flex items-center gap-3 px-4 py-3 bg-brand-surface border border-brand-border-opacity-20 rounded-[18px] hover:border-brand-primary/30 transition-colors group"
             >
-              <div className="w-9 h-9 rounded-[12px] bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center text-brand-gold shrink-0 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-9 h-9 rounded-[12px] bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-gold shrink-0 group-hover:scale-105 transition-transform duration-300">
                 {f.icon}
               </div>
               <div className="flex flex-col flex-1 min-w-0">

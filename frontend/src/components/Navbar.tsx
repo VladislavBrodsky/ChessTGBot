@@ -7,14 +7,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaChessKing, FaChessKnight, FaChessQueen, FaChessPawn, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaStore, FaChessKnight, FaBookOpen, FaTrophy, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home',        icon: <FaChessKing />,      href: '/home',        key: 'nav_home' },
-    { name: 'Marketplace', icon: <FaChessQueen />,     href: '/marketplace', key: 'nav_marketplace' },
+    { name: 'Home',        icon: <FaHome />,           href: '/home',        key: 'nav_home' },
+    { name: 'Marketplace', icon: <FaStore />,          href: '/marketplace', key: 'nav_marketplace' },
     { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play', primary: true },
-    { name: 'Learn',       icon: <FaChessPawn />,      href: '/academy',     key: 'nav_learn' },
-    { name: 'Quests',      icon: <FaChessRook />,      href: '/challenges',  key: 'nav_quests' },
+    { name: 'Learn',       icon: <FaBookOpen />,       href: '/academy',     key: 'nav_learn' },
+    { name: 'Quests',      icon: <FaTrophy />,         href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
@@ -186,9 +186,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 paddingBottom: `calc(${isTelegramWeb ? '0px' : '12px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-0 bottom-0 z-50 w-full rounded-t-[32px] border-t px-2 pt-2 backdrop-blur-2xl"
+            className="app-bottom-nav fixed left-0 bottom-0 z-[100] w-full rounded-t-[32px] border-t border-white/10 bg-[#0a0a0a]/70 px-4 pt-2 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex justify-center"
         >
-            <ul className="grid w-full grid-cols-5 gap-0">
+            <ul className="grid w-full max-w-[420px] grid-cols-5 gap-1">
                 {localizedItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     const isPrimary = item.primary === true;
@@ -202,20 +202,23 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                             >
                                 <div className={`relative flex flex-col items-center justify-center transition-all duration-300 ${
                                     isPrimary 
-                                        ? 'min-h-[52px] -mt-3 mb-1 mx-1 rounded-2xl bg-gradient-to-b from-[#FBBF24] to-[#D97706] shadow-[0_8px_20px_rgba(245,158,11,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)]'
-                                        : `app-bottom-nav__button min-h-[44px] rounded-xl ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
+                                        ? 'min-h-[58px] -mt-5 mb-1 mx-0.5 rounded-[20px] bg-gradient-to-b from-[#FBBF24] to-[#D97706] shadow-[0_8px_20px_rgba(245,158,11,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] ring-1 ring-white/20'
+                                        : `app-bottom-nav__button min-h-[54px] rounded-2xl relative w-full ${isActive ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}`
                                 }`}>
-                                    <div className={`app-bottom-nav__icon flex items-center justify-center transition-transform duration-300 ${
+                                    {isActive && !isPrimary && (
+                                        <div className="absolute inset-0 bg-white/5 rounded-2xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]" />
+                                    )}
+                                    <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-300 relative z-10 ${
                                         isPrimary
-                                            ? 'text-[22px] text-[#17120A]'
-                                            : `text-[19px] ${isActive ? 'text-brand-gold -translate-y-0.5 scale-110' : ''}`
+                                            ? 'text-[26px] text-[#17120A]'
+                                            : `text-[22px] ${isActive ? 'text-brand-gold -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]' : ''}`
                                     }`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`app-bottom-nav__label max-w-full truncate text-[9px] font-bold tracking-[0.02em] transition-all duration-300 ${
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[11px] font-bold tracking-[0.02em] transition-all duration-300 relative z-10 ${
                                         isPrimary
-                                            ? 'text-[#17120A] mt-0.5'
-                                            : isActive ? 'text-brand-gold' : 'text-brand-muted'
+                                            ? 'text-[#17120A] mt-1'
+                                            : isActive ? 'text-brand-gold mt-0.5' : 'text-brand-muted mt-0.5'
                                     }`}>
                                         {item.label}
                                     </span>
