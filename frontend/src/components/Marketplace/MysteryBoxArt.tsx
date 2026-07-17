@@ -29,14 +29,13 @@ export default function MysteryBoxArt({ tier, size = 116 }: { tier: BoxTier; siz
             className="relative flex items-center justify-center"
         >
             <Image
-                src={`/boxes/${tier}-chess.jpg`}
+                src={`/boxes/${tier}-chess.webp`}
                 alt={`${tier} chess treasure box`}
                 width={size}
                 height={size}
                 className="w-full h-full object-contain relative z-10 pointer-events-none select-none drop-shadow-2xl"
+                priority
                 style={{
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 42%, transparent 70%)',
-                    maskImage: 'radial-gradient(circle at center, black 42%, transparent 70%)',
                     transform: 'scale(1.08)'
                 }}
             />
