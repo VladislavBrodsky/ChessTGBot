@@ -461,7 +461,7 @@ export default function AcademyPage() {
               <div className="grid grid-cols-10 gap-1.5 w-full">
                 {Array.from({ length: 100 }, (_, i) => {
                   const id = i + 1;
-                  const puzzleInfo = puzzles.find(p => p.id === id);
+                  const puzzleInfo = puzzles.find((p: any) => p.id === id);
                   const isCompleted = completedPuzzles.includes(id);
                   const isSequentialLocked = puzzleInfo ? puzzleInfo.is_sequential_locked : (id > 1);
                   const isPremiumLocked = puzzleInfo ? puzzleInfo.is_premium_locked : (id > 30);
@@ -534,7 +534,7 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {dynamicLessons.map((lesson, index) => {
+            {dynamicLessons.map((lesson: any, index: number) => {
               const isUnlocked = index === 0 || index === 1 || unlockedLessons.includes(lesson.slug);
               const isCompleted = completedLessons.includes(lesson.slug);
               
@@ -584,7 +584,7 @@ export default function AcademyPage() {
           </div>
           
           {/* Completed Tracks (Archive) */}
-          {dynamicLessons.some(lesson => completedLessons.includes(lesson.slug)) && (
+          {dynamicLessons.some((lesson: any) => completedLessons.includes(lesson.slug)) && (
             <div className="mt-6 border border-brand-border-opacity-10 rounded-2xl bg-brand-surface/30 overflow-hidden transition-all duration-300">
               <button 
                 onClick={() => setShowArchive(!showArchive)}
@@ -594,7 +594,7 @@ export default function AcademyPage() {
                   <FaCheckCircle className="text-emerald-500 text-sm" />
                   <span className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-80">Completed Tracks</span>
                   <span className="ml-2 text-[10px] font-bold bg-brand-primary/10 px-2 py-0.5 rounded-full text-brand-primary/60">
-                    {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).length}
+                    {dynamicLessons.filter((lesson: any) => completedLessons.includes(lesson.slug)).length}
                   </span>
                 </div>
                 <motion.div
@@ -615,7 +615,7 @@ export default function AcademyPage() {
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-2 grid grid-cols-1 gap-4 border-t border-brand-border-opacity-5">
-                      {dynamicLessons.filter(lesson => completedLessons.includes(lesson.slug)).map(lesson => (
+                      {dynamicLessons.filter((lesson: any) => completedLessons.includes(lesson.slug)).map((lesson: any) => (
                         <div key={lesson.slug} className="opacity-75 hover:opacity-100 transition-opacity">
                           <LessonCard
                             title={lesson.title}
