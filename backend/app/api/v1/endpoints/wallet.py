@@ -1747,18 +1747,53 @@ async def stripe_webhook(
             # Identify the refunded amount (charge.amount_refunded is in cents)
             amount_refunded = charge.get('amount_refunded', 0)
             if amount_refunded > 0:
+                # A card top-up credits the net amount (after the top-up fee),
+                # not the gross card charge.  Stripe reports a cumulative gross
+                # refund amount, so calculate the matching cumulative wallet
+                # debit and settle only the delta not seen in earlier events.
+                top_up_result = await db.execute(
+                    select(Transaction).filter(
+                        Transaction.id == tx_id,
+                        Transaction.user_id == user_id,
+                        Transaction.type == "deposit",
+                    ).with_for_update()
+                )
+                top_up_tx = top_up_result.scalars().first()
+                gross_charge = int(charge.get('amount', 0) or 0)
+                if not top_up_tx or gross_charge <= 0:
+                    logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, charge.get('id'))
+                    return {"status": "ignored", "message": "Top-up not found for refund."}
+
+                cumulative_wallet_debit = min(
+                    top_up_tx.amount,
+                    (amount_refunded * top_up_tx.amount + gross_charge // 2) // gross_charge,
+                )
+                refund_prefix = f"refund_{charge.get('id', '')}_"
+                prior_refund_result = await db.execute(
+                    select(func.coalesce(func.sum(Transaction.amount), 0)).where(
+                        Transaction.user_id == user_id,
+                        Transaction.type == "refund",
+                        Transaction.status == "completed",
+                        Transaction.reference_id.like(f"{refund_prefix}%"),
+                    )
+                )
+                already_debited = -int(prior_refund_result.scalar() or 0)
+                debit_delta = cumulative_wallet_debit - already_debited
+                if debit_delta <= 0:
+                    return {"status": "ignored", "message": "Refund already processed."}
+
                 user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                 user = user_result.scalars().first()
                 if user:
-                    user.balance -= amount_refunded
+                    user.balance -= debit_delta
                     
                     refund_tx = Transaction(
                         user_id=user_id,
                         type="refund",
-                        amount=-amount_refunded,
+                        amount=-debit_delta,
                         fee=0,
                         status="completed",
-                        reference_id=f"refund_{charge.get('id', '')}"
+                        reference_id=f"{refund_prefix}{amount_refunded}"
                     )
                     db.add(refund_tx)
                     db.add(user)
@@ -1787,23 +1822,33 @@ async def stripe_webhook(
                 user_id_str = charge.get('metadata', {}).get('user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
+                    dispute_ref = f"dispute_{dispute.get('id', '')}"
+                    prior_dispute = await db.execute(
+                        select(Transaction.id).where(Transaction.reference_id == dispute_ref)
+                    )
+                    if prior_dispute.scalar_one_or_none() is not None:
+                        return {"status": "ignored", "message": "Dispute already processed."}
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
                     if user:
                         # Freeze account completely due to dispute / chargeback
                         user.is_active = False
                         
-                        # Deduct the disputed amount but prevent negative balances
+                        # Do not create a ledger entry larger than the actual
+                        # wallet adjustment.  We freeze the account when a user
+                        # has already spent the top-up instead of inventing an
+                        # untracked negative balance.
                         dispute_amount = dispute.get('amount', 0)
-                        user.balance = max(0, user.balance - dispute_amount)
+                        wallet_debit = min(user.balance, dispute_amount)
+                        user.balance -= wallet_debit
                         
                         penalty_tx = Transaction(
                             user_id=user_id,
                             type="chargeback",
-                            amount=-dispute_amount,
+                            amount=-wallet_debit,
                             fee=0,
                             status="completed",
-                            reference_id=f"dispute_{dispute.get('id', '')}"
+                            reference_id=dispute_ref
                         )
                         db.add(penalty_tx)
                         db.add(user)

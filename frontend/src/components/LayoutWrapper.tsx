@@ -179,8 +179,20 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
     return (
         <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
-            {/* Ambient Starfield */}
+            {/* Ambient Starfield & Gradients */}
             <div className="fixed inset-0 pointer-events-none z-0">
+                {!pathname.includes('/admin') && (
+                    <div 
+                        className="absolute inset-0"
+                        style={{
+                            background: `
+                                radial-gradient(circle at 78% 4%, var(--premium-orb-gold), transparent 30%),
+                                radial-gradient(circle at 10% 82%, var(--premium-orb-silver), transparent 28%),
+                                linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 86%, var(--bg-surface)), var(--bg-primary) 58%, color-mix(in srgb, var(--bg-primary) 92%, var(--text-gold) 8%))
+                            `
+                        }}
+                    />
+                )}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
                     backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
                     backgroundSize: '48px 48px'
@@ -214,7 +226,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
             {/* Content Container */}
             <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
-                    // Desktop: sidebar is 72px wide; top padding only
                     ? 'md:pl-[72px] pt-6 pb-8'
                     : isTelegramWeb
                         ? 'pt-[calc(28px+var(--app-safe-top))] pb-[calc(150px+var(--app-safe-bottom))]'

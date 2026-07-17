@@ -11,7 +11,7 @@ BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
     "referral_commission", "subscription_commission",
-    "deposit_reversal", "ledger_adjustment"
+    "deposit_reversal", "ledger_adjustment", "chargeback"
 ]
 
 class LedgerAuditService:

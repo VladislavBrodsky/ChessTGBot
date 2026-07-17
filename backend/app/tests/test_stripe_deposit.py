@@ -295,3 +295,73 @@ async def test_deposit_reference_is_unique_per_user_at_database_level(db):
     with pytest.raises(IntegrityError):
         await db.commit()
     await db.rollback()
+
+
+@pytest.mark.asyncio
+async def test_card_refund_reverses_only_the_net_wallet_credit_once(db, monkeypatch):
+    user = _user(89012, 950)
+    top_up = Transaction(
+        id=701, user_id=89012, type="deposit", amount=950, fee=50,
+        status="completed", reference_id="cs_refund",
+    )
+    db.add_all([user, top_up])
+    await db.commit()
+
+    event = {
+        "type": "charge.refunded",
+        "data": {"object": {
+            "id": "ch_refund", "amount": 1000, "amount_refunded": 1000,
+            "metadata": {"tx_id": "701", "user_id": "89012"},
+        }},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+        first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+        second = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(user)
+    assert first["status"] == "success"
+    assert second["status"] == "ignored"
+    assert user.balance == 0
+    rows = await db.execute(select(Transaction).filter(Transaction.type == "refund"))
+    refunds = rows.scalars().all()
+    assert len(refunds) == 1
+    assert refunds[0].amount == -950
+
+
+@pytest.mark.asyncio
+async def test_chargeback_records_only_the_wallet_value_actually_removed(db, monkeypatch):
+    user = _user(90123, 300)
+    db.add(user)
+    await db.commit()
+
+    event = {
+        "type": "charge.dispute.created",
+        "data": {"object": {"id": "dp_901", "charge": "ch_901", "amount": 1000}},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+    charge = {"metadata": {"user_id": "90123"}}
+
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("stripe.Charge.retrieve", return_value=charge), \
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+        first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+        second = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(user)
+    assert first["status"] == "success"
+    assert second["status"] == "ignored"
+    assert user.balance == 0
+    assert user.is_active is False
+    rows = await db.execute(select(Transaction).filter(Transaction.reference_id == "dispute_dp_901"))
+    assert rows.scalars().one().amount == -300

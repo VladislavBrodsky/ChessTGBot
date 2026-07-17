@@ -177,17 +177,16 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
             // animation avoids a visible slide/fade on every route change.
             initial={false}
             animate={{
-                x: "-50%",
                 y: hide ? 112 : 0,
                 opacity: hide ? 0 : 1
             }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             style={{
                 pointerEvents: hide ? 'none' : 'auto',
-                bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
+                paddingBottom: `calc(${isTelegramWeb ? '0px' : '12px'} + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[390px] rounded-[22px] border px-1 py-1 backdrop-blur-xl"
+            className="app-bottom-nav fixed left-0 bottom-0 z-50 w-full rounded-t-[32px] border-t px-2 pt-2 backdrop-blur-2xl"
         >
             <ul className="grid w-full grid-cols-5 gap-0">
                 {localizedItems.map((item) => {
@@ -199,24 +198,24 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
-                                className="block rounded-[14px] focus-visible:ring-2 focus-visible:ring-brand-gold"
+                                className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-brand-gold outline-none"
                             >
-                                <div className={`app-bottom-nav__button relative flex min-h-[40px] flex-col items-center justify-center gap-0.5 rounded-[14px] border px-1 transition-all duration-150 ${
-                                    isPrimary
-                                        ? `${isActive ? 'app-bottom-nav__primary app-bottom-nav__item--active text-brand-gold' : 'text-brand-gold hover:text-brand-gold'}`
-                                        : `app-bottom-nav__item ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
+                                <div className={`relative flex flex-col items-center justify-center transition-all duration-300 ${
+                                    isPrimary 
+                                        ? 'min-h-[52px] -mt-3 mb-1 mx-1 rounded-2xl bg-gradient-to-b from-[#FBBF24] to-[#D97706] shadow-[0_8px_20px_rgba(245,158,11,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)]'
+                                        : `app-bottom-nav__button min-h-[44px] rounded-xl ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'app-bottom-nav__item--inactive hover:text-brand-primary'}`
                                 }`}>
-                                    <div className={`app-bottom-nav__icon flex items-center justify-center text-[19px] ${
+                                    <div className={`app-bottom-nav__icon flex items-center justify-center transition-transform duration-300 ${
                                         isPrimary
-                                            ? (isActive ? 'text-[21px] text-brand-gold' : 'text-[20px] text-brand-gold/80')
-                                            : (isActive ? "-translate-y-px text-brand-gold" : "")
+                                            ? 'text-[22px] text-[#17120A]'
+                                            : `text-[19px] ${isActive ? 'text-brand-gold -translate-y-0.5 scale-110' : ''}`
                                     }`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`app-bottom-nav__label max-w-full truncate text-[8px] font-bold leading-none tracking-[0.01em] ${
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[9px] font-bold tracking-[0.02em] transition-all duration-300 ${
                                         isPrimary
-                                            ? (isActive ? 'text-brand-primary' : 'text-brand-muted')
-                                            : (isActive ? 'text-brand-primary' : '')
+                                            ? 'text-[#17120A] mt-0.5'
+                                            : isActive ? 'text-brand-gold' : 'text-brand-muted'
                                     }`}>
                                         {item.label}
                                     </span>

@@ -267,6 +267,21 @@ async def disconnect(sid):
         print(f"Error on socket disconnect: {e}")
 
 @sio.event
+@ws_correlation('leave_room')
+async def leave_room(sid, data):
+    """Stop delivering a previous game's events to a still-connected client."""
+    room = (data or {}).get('room')
+    if not room:
+        return
+
+    await sio.leave_room(sid, room)
+    session = await sio.get_session(sid)
+    if session.get('game_id') == room:
+        await sio.save_session(sid, {**session, 'game_id': None})
+    logger.info("Socket %s left room %s", sid, room)
+
+
+@sio.event
 @ws_correlation('join_room')
 async def join_room(sid, data):
     """

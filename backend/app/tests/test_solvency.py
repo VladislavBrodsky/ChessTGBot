@@ -107,6 +107,24 @@ async def test_external_stripe_subscription_revenue_does_not_change_wallet_recon
     assert s["internal_reconciled"] is True
 
 
+async def test_chargeback_uses_the_actual_wallet_debit_in_reconciliation(db):
+    # A disputed card top-up may have been partly spent.  The account is frozen
+    # separately, but the balance ledger must record only what was actually
+    # removed from the playable wallet.
+    db.add(_user(1, 0))
+    db.add_all([
+        _tx(1, "deposit", 1000),
+        _tx(1, "game_wager", -700),
+        _tx(1, "chargeback", -300),
+    ])
+    await db.commit()
+
+    s = await SolvencyService.get_ledger_summary(db)
+    assert s["ledger_user_sum_cents"] == 0
+    assert s["total_liabilities_cents"] == 0
+    assert s["internal_reconciled"] is True
+
+
 async def test_pending_transactions_ignored(db):
     db.add_all([_user(1, 500)])
     db.add_all([
