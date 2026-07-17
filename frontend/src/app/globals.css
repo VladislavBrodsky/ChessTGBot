@@ -366,7 +366,7 @@ body {
   background: var(--color-nav-surface) !important;
   border-color: var(--color-nav-border) !important;
   box-shadow: var(--shadow-nav) !important;
-  overflow: hidden;
+  overflow: visible;
   isolation: isolate;
 }
 

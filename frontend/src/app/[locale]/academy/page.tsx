@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { createPortal } from 'react-dom';
 import { useNavbar } from '@/context/NavbarContext';
+import useSWR from 'swr';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
@@ -40,19 +41,31 @@ export default function AcademyPage() {
   const t = useTranslations('Academy');
   const router = useRouter();
 
-  const [stats, setStats] = useState<any>(null);
-  const [unlockedLessons, setUnlockedLessons] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [puzzles, setPuzzles] = useState<any[]>([]);
-  const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([]);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const fetcher = (url: string) => apiFetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+  });
+  const postFetcher = (url: string) => apiFetch(url, { method: "POST" }).then((res) => {
+    if (!res.ok) throw new Error("Failed to post fetch");
+    return res.json();
+  });
+
+  const { data: stats, mutate: mutateStats } = useSWR("/api/v1/users/sync", postFetcher, { revalidateOnFocus: false });
+  const { data: dynamicLessons, mutate: mutateLessons } = useSWR("/api/v1/content/lessons", fetcher);
+  const { data: unlockedLessons, mutate: mutateUnlocked } = useSWR("/api/v1/gamification/academy/unlocked-lessons", fetcher);
+  const { data: completedLessons, mutate: mutateCompleted } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
+  const { data: puzzles, mutate: mutatePuzzles } = useSWR("/api/v1/gamification/academy/puzzles", fetcher);
+
+  const loading = !stats || !dynamicLessons || !unlockedLessons || !completedLessons || !puzzles;
+
+  const completedPuzzles = puzzles ? puzzles.filter((p: any) => p.is_solved).map((p: any) => p.id) : [];
+
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const { pushHide, popHide } = useNavbar();
 
-  const [dynamicLessons, setDynamicLessons] = useState<any[]>([]);
 
   const triggerConfetti = () => {
     setShowConfetti(true);
@@ -90,63 +103,13 @@ export default function AcademyPage() {
     const band = LEVEL_THEMES.find(b => id >= b.range[0] && id <= b.range[1]);
     return band || { theme: `Level ${id}`, emoji: '♟️', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
   };
-  const nextPuzzle = puzzles.find(p => !p.is_solved);
+  const nextPuzzle = puzzles ? puzzles.find((p: any) => !p.is_solved) : undefined;
   const nextToSolveId = nextPuzzle?.id;
-  const allSolved = puzzles.length > 0 && !nextPuzzle;
-
-  const fetchData = async () => {
-    try {
-      const [statsRes, contentLessonsRes, lessonsRes, completedLessonsRes, puzzlesRes] = await Promise.all([
-        apiFetch("/api/v1/users/sync", { method: "POST" }),
-        apiFetch("/api/v1/content/lessons"),
-        apiFetch("/api/v1/gamification/academy/unlocked-lessons"),
-        apiFetch("/api/v1/gamification/academy/completed-lessons"),
-        apiFetch("/api/v1/gamification/academy/puzzles"),
-      ]);
-
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        setStats(statsData);
-      }
-
-      if (contentLessonsRes.ok) {
-        const cLessons = await contentLessonsRes.json();
-        setDynamicLessons(cLessons);
-      }
-
-      if (lessonsRes.ok) {
-        const lessonsData = await lessonsRes.json();
-        if (Array.isArray(lessonsData)) {
-          setUnlockedLessons(lessonsData);
-        }
-      }
-
-      if (completedLessonsRes.ok) {
-        const completedData = await completedLessonsRes.json();
-        if (Array.isArray(completedData)) {
-          setCompletedLessons(completedData);
-        }
-      }
-
-      if (puzzlesRes.ok) {
-        const puzzlesData = await puzzlesRes.json();
-        if (Array.isArray(puzzlesData)) {
-          setPuzzles(puzzlesData);
-          const solvedIds = puzzlesData.filter((p: any) => p.is_solved).map((p: any) => p.id);
-          setCompletedPuzzles(solvedIds);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to fetch academy details", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const allSolved = puzzles && puzzles.length > 0 && !nextPuzzle;
 
   const [quoteIdx, setQuoteIdx] = useState(0);
 
   useEffect(() => {
-    fetchData();
     setQuoteIdx(Math.floor(Math.random() * CHESS_QUOTES.length));
   }, []);
 
@@ -190,11 +153,13 @@ export default function AcademyPage() {
             method: "POST"
           });
           const data = await res.json();
-          if (res.ok && data.status === "success") {
-            triggerConfetti();
-            telegramAlert(`Level ${id} unlocked successfully!`);
-            fetchData();
-          } else {
+            if (res.ok && data.status === "success") {
+              triggerConfetti();
+              telegramAlert(`Level ${id} unlocked successfully!`);
+              mutateStats();
+              mutateUnlocked();
+              mutatePuzzles();
+            } else {
             telegramAlert(data.detail || "Failed to unlock level");
           }
         } catch (e) {
@@ -222,7 +187,8 @@ export default function AcademyPage() {
         triggerConfetti();
         telegramAlert("Upgrade successful! You are now a Premium member.");
         setShowPremiumPromo(false);
-        fetchData();
+        mutateStats();
+        mutatePuzzles();
       } else {
         const err = await res.json();
         telegramAlert(err.detail || "Failed to upgrade");
@@ -244,7 +210,8 @@ export default function AcademyPage() {
         triggerConfetti();
         telegramAlert("Subscription successful! You are now a Premium member.");
         setShowPremiumPromo(false);
-        fetchData();
+        mutateStats();
+        mutatePuzzles();
       } else {
         const err = await res.json();
         telegramAlert(err.detail || "Failed to subscribe");

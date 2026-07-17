@@ -4,8 +4,10 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronRight, FaChevronLeft, FaCheck } from "react-icons/fa";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
 import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
+
+const Chessboard = dynamic(() => import('react-chessboard').then(mod => mod.Chessboard), { ssr: false });
 
 export type LessonStepType = 'text' | 'video' | 'interactive_board';
 
