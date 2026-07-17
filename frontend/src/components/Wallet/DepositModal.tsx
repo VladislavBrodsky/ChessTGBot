@@ -626,7 +626,7 @@ export default function DepositModal({
           {cardEnabled && (
             <div className="relative flex p-1 rounded-xl bg-brand-void/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-inner overflow-hidden">
               <div 
-                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-brand-primary shadow-[0_0_12px_rgba(255,215,0,0.15)] transition-all duration-300 ease-out"
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-brand-gold shadow-[0_0_12px_rgba(255,215,0,0.25)] transition-all duration-300 ease-out"
                 style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
               />
               {(['crypto', 'card'] as const).map((tab) => (
@@ -754,7 +754,7 @@ export default function DepositModal({
               <button
                 type="button"
                 onClick={() => tonConnectUI.openModal()}
-                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaWallet size={11} />
                 <span>{walletAddress ? "Reconnect Wallet App" : "Connect Wallet to Top Up"}</span>
@@ -763,7 +763,7 @@ export default function DepositModal({
               <button
                 onClick={handleWeb3Deposit}
                 disabled={processing}
-                className="w-full py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-brand-primary-hover transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {processing ? (
                   <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />

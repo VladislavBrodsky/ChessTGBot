@@ -203,11 +203,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 <div className={`relative flex flex-col items-center justify-center transition-all duration-300 ${
                                     isPrimary 
                                         ? 'min-h-[58px] -mt-5 mb-1 mx-0.5 rounded-[20px] bg-gradient-to-b from-[#FBBF24] to-[#D97706] shadow-[0_8px_20px_rgba(245,158,11,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] ring-1 ring-white/20'
-                                        : `app-bottom-nav__button min-h-[54px] rounded-2xl relative w-full ${isActive ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}`
+                                        : `app-bottom-nav__button min-h-[54px] rounded-2xl relative w-full ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}`
                                 }`}>
-                                    {isActive && !isPrimary && (
-                                        <div className="absolute inset-0 bg-white/5 rounded-2xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]" />
-                                    )}
                                     <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-300 relative z-10 ${
                                         isPrimary
                                             ? 'text-[26px] text-[#17120A]'

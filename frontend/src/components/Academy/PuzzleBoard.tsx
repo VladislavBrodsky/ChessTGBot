@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { Chess } from "chess.js";
-import ChessBoardComponent from "@/components/game/ChessBoard";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLightbulb, FaUndo, FaFlag } from "react-icons/fa";
 import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
+
+const ChessBoardComponent = dynamic(() => import('@/components/game/ChessBoard'), { ssr: false });
 
 interface PuzzleBoardProps {
   initialFen: string;
@@ -41,10 +43,16 @@ export default function PuzzleBoard({
   const [showHintText, setShowHintText] = useState(false);
   const [dynamicHintText, setDynamicHintText] = useState(hintText || "");
   const [dynamicSuccessExplanation, setDynamicSuccessExplanation] = useState(successExplanation || "");
+  const [shake, setShake] = useState(false);
   const safeSuccessExplanation = useMemo(
     () => sanitizeRichContent(dynamicSuccessExplanation),
     [dynamicSuccessExplanation]
   );
+
+  const triggerShake = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+  };
 
   function safeGameMutate(modify: (g: Chess) => void) {
     setGame((g) => {
@@ -80,10 +88,14 @@ export default function PuzzleBoard({
       const tempGame = new Chess(game.fen(), { skipValidation: true });
       moveResult = tempGame.move(move);
     } catch {
+      triggerShake();
       return false;
     }
 
-    if (!moveResult) return false;
+    if (!moveResult) {
+      triggerShake();
+      return false;
+    }
 
     // Convert move to UCI for comparison
     const uciMove = moveResult.from + moveResult.to + (moveResult.promotion && moveResult.promotion !== 'q' ? moveResult.promotion : '');
@@ -266,7 +278,11 @@ export default function PuzzleBoard({
 
   return (
     <div className="flex flex-col items-center gap-6 w-full">
-      <div className={`w-full max-w-[400px] aspect-square relative p-1 rounded-3xl transition-all duration-300 ${status === 'correct' ? 'bg-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.3)]' : status === 'wrong' ? 'bg-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]' : ''}`}>
+      <motion.div 
+        animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.4 }}
+        className={`w-full max-w-[400px] aspect-square relative p-1 rounded-3xl transition-all duration-300 ${status === 'correct' ? 'bg-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.3)]' : status === 'wrong' ? 'bg-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]' : ''}`}
+      >
         <ChessBoardComponent
           fen={game.fen()}
           onMove={onMove}
@@ -276,7 +292,14 @@ export default function PuzzleBoard({
           customDarkSquareStyle={{ backgroundColor: '#7b9fb6' }}
           customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
         />
-      </div>
+        {shake && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div className="bg-red-500 text-white font-black uppercase text-sm px-4 py-2 rounded-xl shadow-lg border border-red-400">
+              Illegal Move!
+            </div>
+          </div>
+        )}
+      </motion.div>
 
       <div className="flex flex-col items-center">
         <div className="flex gap-4">

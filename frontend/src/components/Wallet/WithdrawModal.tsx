@@ -27,6 +27,7 @@ export default function WithdrawModal({
   const [withdrawAddress, setWithdrawAddress] = useState<string>(initialWithdrawAddress);
   const [processing, setProcessing] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>( "");
+  const [pendingConfirmation, setPendingConfirmation] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [checked1, setChecked1] = useState<boolean>(false);
   const [checked2, setChecked2] = useState<boolean>(false);
@@ -66,6 +67,7 @@ export default function WithdrawModal({
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
+    setPendingConfirmation(false);
 
     try {
       const res = await apiFetch("/api/v1/wallet/withdraw", {
@@ -80,12 +82,12 @@ export default function WithdrawModal({
         const data = await res.json();
         if (data.status === 'pending_confirmation') {
           // Funds are held until the user taps Confirm in the bot chat.
-          setSuccessMessage(tw('withdraw_pending_confirmation'));
+          setPendingConfirmation(true);
           onSuccess();
           setTimeout(() => {
             onClose();
-            setSuccessMessage("");
-          }, 6000);
+            setPendingConfirmation(false);
+          }, 8000);
         } else {
           setSuccessMessage(tw('withdraw_success_sim', { amount: `$${amt.toFixed(2)}` }));
           onSuccess();
@@ -138,7 +140,7 @@ export default function WithdrawModal({
 
           <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-10">
             <span className="text-brand-primary opacity-60">{tw('available_balance')}</span>
-            <span className="text-sm font-black text-brand-primary">${(balance / 100).toFixed(2)}</span>
+            <span className="text-sm font-black text-brand-gold">${(balance / 100).toFixed(2)}</span>
           </div>
 
           {/* Input amount */}
@@ -153,7 +155,7 @@ export default function WithdrawModal({
                 type="number"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 pl-8 pr-4 text-sm text-brand-primary font-black focus:outline-none focus:border-brand-primary/50 transition-all"
+                className="w-full bg-brand-void border border-brand-gold/20 rounded-xl py-3 pl-8 pr-4 text-sm text-brand-gold font-black focus:outline-none focus:border-brand-gold/60 transition-all shadow-inner"
                 placeholder={tw('amount_placeholder')}
                 min="10"
               />
@@ -167,7 +169,7 @@ export default function WithdrawModal({
               type="text"
               value={withdrawAddress}
               onChange={(e) => setWithdrawAddress(e.target.value)}
-              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-brand-primary/50 transition-all truncate"
+              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-brand-gold/50 transition-all truncate shadow-inner"
               placeholder={tw('target_placeholder')}
             />
           </div>
@@ -221,13 +223,22 @@ export default function WithdrawModal({
             </div>
           )}
 
+          {pendingConfirmation && (
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-xl text-center space-y-2 shadow-premium">
+              <div className="text-brand-gold text-[11px] font-black uppercase tracking-widest animate-pulse">Action Required</div>
+              <p className="text-[10px] font-bold text-brand-primary/80 leading-relaxed">
+                Check your Telegram DMs with the bot. You must tap <strong>Confirm</strong> to release the funds.
+              </p>
+            </motion.div>
+          )}
+
           {successMessage && <div className="p-2.5 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
           {errorMessage && <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
 
           <button
             onClick={handleWithdrawSubmit}
-            disabled={processing || parseFloat(withdrawAmount) * 100 > balance || !checked1 || !checked2}
-            className="w-full mt-2 py-3 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all disabled:opacity-50"
+            disabled={processing || pendingConfirmation || parseFloat(withdrawAmount) * 100 > balance || !checked1 || !checked2}
+            className="w-full mt-2 py-3 rounded-xl border border-brand-gold/20 bg-brand-gold text-brand-void text-[11px] font-black uppercase tracking-widest hover:brightness-110 shadow-premium transition-all disabled:opacity-50"
           >
             {processing ? tw('signing_tx') : tw('request_withdraw')}
           </button>

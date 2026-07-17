@@ -197,7 +197,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         <div className="absolute inset-0 bg-amber-400/20 blur-xl rounded-full z-0" />
       )}
       
-      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${isCurrent ? 'text-brand-gold' : 'text-brand-muted'}`}>Day {day}</span>
+      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${isCurrent ? 'text-emerald-500' : 'text-brand-muted'}`}>Day {day}</span>
       
       <div className="relative z-10 flex flex-col items-center my-1 h-8 justify-center">
         {isPast ? (
@@ -207,9 +207,9 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         ) : isBig ? (
           <FaGift className={`text-3xl ${isCurrent ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-bounce' : 'text-amber-500/40'}`} />
         ) : (
-          <div className={`flex flex-col items-center ${isCurrent ? 'text-brand-gold' : 'text-brand-primary'}`}>
+          <div className={`flex flex-col items-center ${isCurrent ? 'text-emerald-500' : 'text-brand-primary'}`}>
             <span className={`font-black ${isCurrent ? 'text-xl drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]' : 'text-lg opacity-80'}`}>{reward}</span>
-            <span className={`text-[8px] font-bold ${isCurrent ? 'text-brand-gold/80' : 'text-brand-muted'}`}>XP</span>
+            <span className={`text-[8px] font-bold ${isCurrent ? 'text-emerald-500/80' : 'text-brand-muted'}`}>XP</span>
           </div>
         )}
       </div>

@@ -81,17 +81,17 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 {wallet ? (
                     <button
                         onClick={handleTopUpClick}
-                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-opacity-10 text-brand-primary shadow-sm"
                         title={`Connected: ${getShortAddress(wallet.account.address)}`}
                     >
-                        <FaWallet size={10} className="shrink-0" />
+                        <FaWallet size={10} className="shrink-0 text-brand-gold" />
                         <span className="truncate">{tw('top_up')}</span>
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
                     </button>
                 ) : (
                     <button
                         onClick={handleTopUpClick}
-                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-gold/10 text-brand-gold border border-brand-gold/20 shadow-premium"
                     >
                         <FaWallet size={10} />
                         <span>{tw('top_up')}</span>
@@ -105,7 +105,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
         <div className="w-full h-full">
             <motion.div
                 whileHover={{ scale: 1.01 }}
-                className="glass-panel p-1 h-full rounded-2xl border-brand-border-opacity-10 bg-brand-surface flex items-center justify-between overflow-hidden relative shadow-sm"
+                className="glass-panel p-1 h-full rounded-2xl border-brand-gold/10 bg-brand-surface flex items-center justify-between relative shadow-premium overflow-visible"
             >
                 {/* Custom styling wrapper for TonConnectButton */}
                 <div className="w-full flex items-center justify-between pl-2 pr-1 py-0.5 min-w-0">
@@ -127,7 +127,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                         onClick={wallet ? handleDisconnect : handleTopUpClick}
                         className={wallet 
                           ? "w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                          : "py-1 px-2 rounded-lg bg-brand-primary text-brand-void text-[10px] font-black uppercase tracking-wider hover:bg-brand-primary-hover active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                          : "py-1 px-2 rounded-lg bg-brand-gold text-brand-void text-[10px] font-black uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
                         {wallet ? <FaTimes size={9} /> : tw('top_up')}

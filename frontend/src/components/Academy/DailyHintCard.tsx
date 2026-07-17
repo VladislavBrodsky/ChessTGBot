@@ -84,11 +84,11 @@ export default function DailyHintCard() {
 
         {/* BACK - Ultra Premium Reward State */}
         <div 
-          className={`absolute inset-0 bg-brand-void bg-[var(--cyber-card-bg)] border border-brand-gold/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow ${isFlipped ? 'z-10' : 'z-0'}`}
+          className={`absolute inset-0 bg-brand-void bg-[var(--cyber-card-bg)] border border-emerald-500/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow ${isFlipped ? 'z-10' : 'z-0'}`}
           style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
           {/* Golden Glows */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
 
           {/* Subtle Grid Overlay */}
@@ -101,8 +101,8 @@ export default function DailyHintCard() {
               transition={{ type: "spring", delay: 0.15, stiffness: 200 }}
               className="relative shrink-0"
             >
-              <div className="absolute inset-0 bg-brand-gold/20 rounded-full blur-md" />
-              <FaCheckCircle className="text-[40px] text-brand-gold drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] relative z-10" />
+              <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md" />
+              <FaCheckCircle className="text-[40px] text-emerald-500 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] relative z-10" />
             </motion.div>
             
             <div className="flex flex-col gap-1.5 flex-1">
@@ -113,7 +113,7 @@ export default function DailyHintCard() {
                 initial={{ opacity: 0, x: 10 }}
                 animate={isFlipped ? { opacity: 1, x: 0 } : { opacity: 0, x: 10 }}
                 transition={{ delay: 0.3 }}
-                className="text-[9px] font-black uppercase tracking-[0.25em] text-brand-gold drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
+                className="text-[9px] font-black uppercase tracking-[0.25em] text-emerald-500 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
               >
                 +10 XP <span className="text-brand-primary/40 normal-case font-normal tracking-normal text-[8px]">(Rewarded)</span>
               </motion.p>

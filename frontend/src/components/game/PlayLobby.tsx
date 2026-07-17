@@ -872,12 +872,12 @@ export default function PlayLobby() {
                           setShowRakeInfo(true);
                         }}
                         aria-label={tg('win_up_to')}
-                        className="arena-win-summary relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border cursor-pointer hover:brightness-105 active:scale-95 transition-all duration-150"
+                        className="relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 cursor-pointer hover:brightness-110 active:scale-95 transition-all duration-150 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                       >
-                        <span className="relative z-10 text-[10px] font-black text-brand-primary uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                          <FaFire className="text-brand-gold text-[10px]" /> {tg('win_up_to')}
+                        <span className="relative z-10 text-[10px] font-black text-emerald-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5 drop-shadow-md">
+                          <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')}
                         </span>
-                        <span className="relative z-10 text-[11px] font-black text-brand-primary tracking-tight leading-none">
+                        <span className="relative z-10 text-[11px] font-black text-emerald-400 tracking-tight leading-none drop-shadow-md">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
                       </motion.button>
@@ -962,19 +962,19 @@ export default function PlayLobby() {
                   whileTap={!isCreating ? { scale: 0.98 } : {}}
                   onClick={triggerPlayVsComputer}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-brand-surface border border-brand-border-opacity-20 hover:border-brand-primary/35 transition-all group"
+                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/5 border border-emerald-500/40 hover:border-emerald-500/60 transition-all group shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                 >
-                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-brand-primary/35" aria-hidden="true" />
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" aria-hidden="true" />
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-brand-elevated border border-brand-border-opacity-10 text-brand-primary/80 group-hover:text-brand-primary transition-colors"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 group-hover:text-emerald-400 transition-colors"
                   >
                     <FaRobot className="text-[15px] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-brand-primary tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-emerald-500 tracking-wide uppercase drop-shadow-md">
                       TRAIN
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-emerald-500">
                       AGAINST A.I.
                     </span>
                   </div>
@@ -986,19 +986,19 @@ export default function PlayLobby() {
                    whileTap={!isCreating ? { scale: 0.98 } : {}}
                    onClick={playVsFriend}
                    disabled={isCreating}
-                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-brand-surface border border-brand-border-opacity-20 hover:border-brand-primary/35 transition-all group"
+                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
                  >
-                   <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-brand-primary/35" aria-hidden="true" />
+                   <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" aria-hidden="true" />
                    <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-brand-elevated border border-brand-border-opacity-10 text-brand-primary/80 group-hover:text-brand-primary transition-colors"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-purple-500/10 border border-purple-500/20 text-purple-500 group-hover:text-purple-400 transition-colors"
                    >
                      <FaShareAlt className="text-[14px] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-brand-primary tracking-wide uppercase">
+                    <span className="text-sm font-black leading-none text-purple-500 tracking-wide uppercase drop-shadow-md">
                       PLAY
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-purple-500">
                       WITH FRIEND
                     </span>
                   </div>

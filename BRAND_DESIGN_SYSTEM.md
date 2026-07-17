@@ -39,17 +39,15 @@ Chess cues should be restrained and meaningful. Use rank, board, piece, opening,
 
 ### 1.2 Theme policy
 
-**Obsidian Chess is the canonical default experience.** Its visual language is black/obsidian surfaces, disciplined white typography, gold achievement emphasis, and silver progression or secured-state emphasis.
+**Obsidian Chess is the canonical default experience.** Its visual language is black/obsidian surfaces, disciplined white typography, and vibrant Web3 accents (Emerald, Purple, Blue) for achievement and progression.
 
 Theme variants may change token values, but they must not change structural, accessibility, interaction, or safe-area rules.
 
 | Theme | Intended role | Accent rule |
 | --- | --- | --- |
-| Default dark / Obsidian Chess | Primary production identity | Gold for achievement/action, silver for progression/secured states |
+| Default dark / Obsidian Chess | Primary production identity | Web3 vibrant colors (Emerald/Purple) for achievement/action/premium, silver for progression |
 | Light | Accessibility and environmental preference | Preserve the same semantic roles and hierarchy; do not invert meanings |
-| Nebula (`data-theme='nebula'`) | Optional expressive theme | Purple/cyan treatment is allowed only inside this theme |
-
-Do not introduce purple into default pages to make them feel “premium.” Purple cyber treatments belong to the existing optional Nebula theme. New default work should read as obsidian, white, gold, and silver before any optional glow is considered.
+| Nebula (`data-theme='nebula'`) | Optional expressive theme | Deep neon cyber treatments |
 
 ### 1.3 Color and token rules
 
@@ -66,25 +64,25 @@ Core existing tokens and their intended meanings:
 | Quiet border | `--border-muted`, `--color-brand-border`, `border-brand-border` | Separation, card edges, control outlines |
 | Primary text | `--text-primary`, `--color-brand-primary`, `text-brand-primary` | Essential content and high-emphasis labels |
 | Muted text | `--text-muted`, `--color-brand-muted`, `text-brand-muted` | Supporting copy; never the only carrier of critical information |
-| Gold | `--text-gold`, `--color-brand-gold`, `text-brand-gold` | Achievement, rank one, selected primary action, reward, important progress |
+| Gold/Yellow | `--text-gold`, `--color-brand-gold`, `text-brand-gold` | **Warnings, alarms, and critical system messages only.** Do not use for achievements or primary actions. |
 | Arena funding action | `--gradient-arena-action`, `--arena-action-foreground`, `--arena-action-shadow`, `--arena-panel-gradient`, `--arena-selection-gradient` | The single primary funding/play action in the Arena; use the documented gradient rather than a flat orange fill, while its surrounding setup controls remain quiet and token-based |
 | Admin command center | `--admin-bg`, `--admin-surface`, `--admin-border`, `--admin-text`, `--admin-muted`, `--admin-accent-*` | Operational admin surfaces that intentionally stay dark across themes for contrast, chart legibility, and consistent scroll backgrounds |
 | Silver | `--accent-silver`, silver text/border utilities where present | Progression, secured/locked systems, neutral premium elevation |
-| Emerald | `emerald-500` plus `--color-emerald-opacity-10` / `--color-emerald-opacity-20` | Success, confirmed, live/connected when a status also has text/icon |
+| Emerald | `emerald-500` plus `--color-emerald-opacity-10` / `--color-emerald-opacity-20` | Primary actions (Play, Top Up), positive confirmations, active states, success, confirmed. |
+| Purple | `purple-500` plus `--color-purple-opacity-10` | Premium features, Memberships, Marketplace items, 'Play with Friend', digital goods. |
+| Blue | `blue-500` plus `--color-blue-opacity-10` | Informational accents, secondary actions. |
 | Amber | `amber-500` plus `--color-amber-opacity-10` | Attention, warning, limited time, pending action |
 | Rose | `rose-500` plus `--color-rose-opacity-10` / `--color-rose-opacity-20` | Destructive action, failure, danger |
-| Cyan | `cyan-500` plus `--color-cyan-opacity-10` | Informational or optional Nebula support; not a default achievement replacement |
+| Cyan | `cyan-500` plus `--color-cyan-opacity-10` | Informational or optional Nebula support |
 
 Use color as an emphasis system, not as decoration:
 
-- **Gold** means earned status, an active primary choice, a reward, or the most important action in a local context.
+- **Emerald** means an active primary choice, a reward, the most important action in a local context, or a currently healthy/live state.
+- **Purple** means premium status, a marketplace item, or a special feature.
 - **Silver** means progression, a protected/secured state, a secondary premium system, or a neutral ranked state.
-- **Emerald** means success or a currently healthy/live state.
-- **Amber** means attention is needed; it is not a substitute for error.
+- **Gold/Amber** means attention is needed, a warning, or an alarm; it is not a substitute for error, and must NEVER be used for positive achievements.
 - **Rose** means a destructive or failed state and must be paired with clear copy.
 - **White** carries the main hierarchy. A screen should remain intelligible in grayscale.
-
-Do not use gold, silver, emerald, amber, rose, cyan, and purple as equal accents on one surface. One primary emphasis and one contextual status color is normally enough.
 
 ### 1.4 Typography
 
@@ -263,7 +261,7 @@ if (error) {
 Leaderboards are a chess podium, not a generic table.
 
 - Establish rank, player, competitive signal, and ELO in the first viewport.
-- Gold is reserved for first place or the primary leader. Silver belongs to second/progression; bronze/amber is contextual for third.
+- Emerald or Purple is reserved for first place or the primary leader. Silver belongs to second/progression; bronze is contextual for third.
 - Use a durable identity treatment (avatar, fallback initials, verified/online state if available) without allowing imagery to dominate the row.
 - Make score alignment stable; use tabular numerals when it helps scanning.
 - Explain ties, season, refresh cadence, and ranking rules in concise supporting UI, not dense permanent copy.
@@ -275,11 +273,11 @@ Leaderboards are a chess podium, not a generic table.
 Progress must answer: **where am I, what is next, and what action moves me forward?**
 
 - Make the current level/achievement the focal object.
-- Use a gold fill for earned/active achievement progress and silver for neutral/secured progress. The unfilled track remains dark and quiet.
+- Use an emerald or purple fill for earned/active achievement progress and silver for neutral/secured progress. The unfilled track remains dark and quiet.
 - Always pair the bar with textual values such as current XP, target XP, and percentage or remaining XP. Color cannot be the only progress signal.
 - Use the shared `frontend/src/lib/xpProgress.ts` helper for every XP/level view. It mirrors the backend’s 350-XP level curve and handles the intentional high-watermark level after XP is spent; never recreate a level curve in a page or component.
 - Reserve a bounded bar height and avoid animated shimmer loops. On value change, a short transform/opacity transition is enough.
-- Use the same semantic treatment for locked rewards: silver/quiet for locked, gold for earned/selectable, emerald for claimed/success.
+- Use the same semantic treatment for locked rewards: silver/quiet for locked, emerald/purple for earned/selectable, emerald for claimed/success.
 
 ### 2.8 Marketplace, academy, and chess-specific content
 
@@ -304,8 +302,8 @@ Bottom navigation is a product anchor and must use a single semantic chess-piece
 Rules:
 
 - Use the existing vector icon system (currently `react-icons/fa`) consistently. Do not mix a chess piece with a generic gamepad, gem, graduation cap, trophy, or emoji in the same navigation system.
-- Keep Play as the centered primary destination. It may use the one compact gold focal treatment in the bar; the other destinations stay calm and comparable.
-- The active destination uses the Obsidian Chess active treatment: clear contrast plus gold emphasis. Do not rely on gold alone; preserve active surface/label distinction.
+- Keep Play as the centered primary destination. It may use a compact emerald/purple focal treatment in the bar; the other destinations stay calm and comparable.
+- The active destination uses the Obsidian Chess active treatment: clear contrast plus emerald/purple emphasis. Do not rely on color alone; preserve active surface/label distinction.
 - Primary mobile destinations have a 44px default touch target, including safe-area clearance.
 - Labels remain visible for primary destinations. Do not hide them only to fit decorative icons.
 - The navigation stays available on dashboard pages. Full-screen overlays cover it with the approved overlay layer; they do not alter global navbar visibility through ad hoc CSS.
@@ -501,9 +499,9 @@ Loading skeletons should not impersonate final text too precisely, flash aggress
 | Use `Card`, `Button`, and `Badge` before building a custom equivalent | Copy component styling into feature files |
 | Use `--app-safe-bottom` for fixed bottom UI | Hard-code iOS/Telegram bottom padding values |
 | Use the approved z-index scale | Add `z-[9999]` to “fix” a stacking bug |
-| Use gold for a focused achievement or action | Paint every card, label, and border gold |
+| Use emerald or purple for a focused achievement or action | Paint every card, label, and border with neon |
 | Use silver for progression/secured states | Treat silver as a faint, unreadable text color |
-| Keep default UI obsidian/white/gold/silver | Mix default gold with purple cyber gradients |
+| Keep default UI obsidian/white/emerald/purple/silver | Use yellow or gold for anything other than warnings/errors |
 | Use chess-piece navigation semantics | Substitute generic icons for primary chess destinations |
 | Give icon controls labels and 44px targets | Use unlabeled 20px clickable SVGs |
 | Build error/empty/loading states | Leave a blank panel while a request is pending |
