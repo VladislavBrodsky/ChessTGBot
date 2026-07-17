@@ -13,7 +13,6 @@ import ReferralDashboard from "@/components/ReferralDashboard";
 import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import NoiseGradient from "@/components/ui/NoiseGradient";
 
 // SVG Elo history chart component
 function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
@@ -172,9 +171,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <LayoutWrapper className="w-full premium-liquid-mesh-container min-h-screen relative overflow-x-hidden" hideHeaderControls>
-      <NoiseGradient opacity={0.15} />
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 relative z-10 pt-4 pb-12">
+    <LayoutWrapper className="w-full" hideHeaderControls>
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 pb-12">
 
  {/* Profile Header */}
  <div className="w-full flex flex-col items-center text-center">

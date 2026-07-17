@@ -89,7 +89,7 @@ export default function WalletPage() {
 
   return (
     <LayoutWrapper className="w-full">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-6">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-6 pb-12">
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">
@@ -149,14 +149,15 @@ export default function WalletPage() {
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full py-2.5 px-4 rounded-xl border border-brand-border-opacity-5 bg-brand-surface/40 flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest shadow-inner">
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
+        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-widest relative overflow-hidden">
+          <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
+          <span className="flex items-center gap-1.5 relative z-10">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             {tw('deposit_fee')} <strong className="text-emerald-500 dark:text-emerald-400 font-black">5%</strong>
           </span>
-          <span className="opacity-20">•</span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/40" />
+          <span className="opacity-30 relative z-10">•</span>
+          <span className="flex items-center gap-1.5 relative z-10">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
             {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">$0.20</strong>
           </span>
         </div>

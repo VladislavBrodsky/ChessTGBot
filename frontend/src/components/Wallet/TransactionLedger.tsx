@@ -68,9 +68,17 @@ function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Tran
   const areaD = `${pathD} L ${pts[pts.length - 1].x},${HEIGHT - PAD} L ${pts[0].x},${HEIGHT - PAD} Z`;
 
   return (
-    <div className="w-full rounded-2xl border border-brand-border-opacity-5 bg-brand-void/35 overflow-hidden shadow-inner-glow mt-1 mb-2 p-3 space-y-2 relative">
-      <div className="absolute -top-12 -left-12 w-28 h-28 rounded-full bg-purple-500/[0.03] blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-12 -right-12 w-28 h-28 rounded-full bg-cyan-500/[0.03] blur-2xl pointer-events-none" />
+    <div className="w-full rounded-2xl border border-brand-border-opacity-10 bg-brand-void/35 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl mt-1 mb-2 p-3 space-y-2 relative">
+      <motion.div 
+        animate={{ opacity: [0.03, 0.08, 0.03], scale: [1, 1.1, 1] }} 
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-12 -left-12 w-28 h-28 rounded-full bg-purple-500/20 blur-2xl pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ opacity: [0.03, 0.08, 0.03], scale: [1, 1.15, 1] }} 
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute -bottom-12 -right-12 w-28 h-28 rounded-full bg-cyan-500/20 blur-2xl pointer-events-none" 
+      />
       
       <div className="flex justify-between items-center px-1">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
@@ -162,13 +170,35 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
             const formattedAmt = `$${(Math.abs(tx.amount) / 100).toFixed(2)}`;
             const formattedFee = tx.fee > 0 ? `($${(tx.fee / 100).toFixed(2)} fee)` : "";
             
+            const rowGlow = isPositive
+              ? "hover:border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(16,185,129,0.1)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.2)]"
+              : isZero
+                ? "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md"
+                : "hover:border-rose-500/30 bg-gradient-to-r from-rose-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(244,63,94,0.1)] hover:shadow-[0_8px_24px_rgba(244,63,94,0.2)]";
+
             return (
               <motion.div 
                 key={tx.id}
                 whileHover={{ scale: 1.015, y: -1 }}
-                className="w-full"
+                className={`w-full relative overflow-hidden rounded-xl border border-brand-border-opacity-10 transition-all ${rowGlow}`}
               >
-                <Card variant="glass" className="w-full p-3 border-brand-border-opacity-5 flex items-center justify-between shadow-sm hover:shadow-md transition-all select-none">
+                {/* Ambient glow indicators */}
+                {isPositive && !isZero && (
+                  <motion.div 
+                    animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
+                  />
+                )}
+                {!isPositive && !isZero && (
+                  <motion.div 
+                    animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-0 right-0 w-24 h-24 bg-rose-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
+                  />
+                )}
+
+                <Card variant="glass" className="w-full p-3 flex items-center justify-between border-transparent bg-transparent relative z-10 select-none">
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs shrink-0 border border-brand-border-opacity-5 shadow-inner ${
                     tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'

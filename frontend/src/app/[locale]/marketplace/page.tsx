@@ -218,11 +218,10 @@ export default function MarketplacePage() {
 
     return (
         <LayoutWrapper className="w-full px-4 md:px-6">
-            <div className="premium-liquid-mesh-container w-full h-full relative isolate">
-                {/* Subtle ambient glow behind the main content area */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
-                
-                <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-5 md:max-w-xl lg:max-w-3xl relative z-10">
+            {/* Subtle ambient glow behind the main content area */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-purple-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+            
+            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
                     <header className="flex w-full flex-col items-center text-center relative">
                         <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -left-4 w-12 h-12 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
                         <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
@@ -394,7 +393,6 @@ export default function MarketplacePage() {
                             </div>
                         )}
                     </section>
-                </div>
             </div>
 
             <UnboxingModal

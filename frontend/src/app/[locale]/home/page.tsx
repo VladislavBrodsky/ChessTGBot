@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import NoiseGradient from "@/components/ui/NoiseGradient";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
@@ -310,22 +309,21 @@ export default function Home() {
    className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
   >
    <motion.div
-    whileHover={{ y: -2 }}
-    whileTap={{ scale: 0.985 }}
-    className="play-chess-card-premium min-h-[96px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
-   >
-    <NoiseGradient />
-    <div className="play-chess-card-piece relative z-10 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center">
-     <FaChessKnight className="text-2xl" aria-hidden="true" />
-    </div>
-    <div className="relative z-10 min-w-0 flex-1 text-left">
-     <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500 mb-1.5">{t('play')}</span>
-     <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
-    </div>
-    <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">
-     <FaArrowRight className="text-sm rtl:rotate-180" aria-hidden="true" />
-    </div>
-   </motion.div>
+     whileHover={{ y: -2 }}
+     whileTap={{ scale: 0.985 }}
+     className="play-chess-card-premium min-h-[96px] w-full px-5 py-4 flex items-center gap-4 cursor-pointer"
+    >
+     <div className="play-chess-card-piece relative z-10 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center">
+      <FaChessKnight className="text-2xl" aria-hidden="true" />
+     </div>
+     <div className="relative z-10 min-w-0 flex-1 text-left">
+      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-amber-500 mb-1.5">{t('play')}</span>
+      <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
+     </div>
+     <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">
+      <FaArrowRight className="text-sm rtl:rotate-180" aria-hidden="true" />
+     </div>
+    </motion.div>
   </Link>
 
   <div className="grid grid-cols-2 gap-3">

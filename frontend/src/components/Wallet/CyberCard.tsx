@@ -22,8 +22,16 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
       className="w-full relative overflow-hidden rounded-3xl p-6 glass-panel border border-brand-border-opacity-10 bg-cyber-card shadow-premium flex flex-col justify-between h-48 select-none"
     >
       {/* Ambient glowing blobs */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-8 -mt-8 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" />
+      <motion.div 
+        animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.1, 1] }} 
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl -mr-8 -mt-8 pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ opacity: [0.05, 0.15, 0.05], scale: [1, 1.15, 1] }} 
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" 
+      />
 
       {/* Card Top */}
       <div className="flex justify-between items-start z-10">
