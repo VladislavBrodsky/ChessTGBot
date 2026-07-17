@@ -305,7 +305,7 @@ type Tab = typeof TABS[number];
 function AccessDenied() {
   const router = useRouter();
   return (
-    <div className="premium-liquid-mesh-container min-h-screen flex flex-col items-center justify-center text-brand-primary font-sans p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center text-brand-primary font-sans p-4">
       <div className="premium-liquid-mesh-blob1" />
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

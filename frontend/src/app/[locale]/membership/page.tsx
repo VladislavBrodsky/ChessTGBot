@@ -13,7 +13,7 @@ import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
-import NoiseGradient from "@/components/ui/NoiseGradient";
+import { BiSupport } from 'react-icons/bi';
 import Link from "next/link";
 
 const stripEmojis = (str: string): string => {
@@ -425,7 +425,6 @@ export default function MembershipPage() {
               </>
             ) : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? (
               <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <NoiseGradient opacity={0.15} />
                 <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
                   You're on the best plan!
                 </span>
@@ -450,7 +449,6 @@ export default function MembershipPage() {
               </motion.button>
             ) : (
               <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <NoiseGradient opacity={0.15} />
                 <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
                   Active via In-App Balance
                 </span>

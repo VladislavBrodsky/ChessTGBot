@@ -4,7 +4,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
-import NoiseGradient from '@/components/ui/NoiseGradient';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
@@ -914,7 +913,6 @@ export default function PlayLobby() {
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(16,185,129,0.4)] ring-2 ring-emerald-400/30' : ''
                     }`}
                   >
-                    {hasSufficient && !isCreating && <NoiseGradient />}
                     <span className={`absolute top-4 right-4 w-2 h-2 rounded-full z-10 ${hasSufficient ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)]' : 'bg-brand-primary/30'}`} aria-hidden="true" />
                     <div
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 z-10 ${
