@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 import LayoutWrapper from "@/components/LayoutWrapper";
+import MysteryBoxPromo from '@/components/Marketplace/MysteryBoxPromo';
+import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
 import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown } from 'react-icons/fa';
@@ -551,6 +553,13 @@ export default function AcademyPage() {
 
         {/* Mastery Tracks Grid */}
         <div className="space-y-6">
+          <AcademyProgressCard 
+            completedCount={completedLessons.length}
+            totalCount={lessonsList.length}
+            totalXp={completedLessons.length * 50}
+            streak={stats?.study_streak || 0}
+          />
+          
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
             <FaChessKnight className="text-brand-primary opacity-40 text-xl" />
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('mastery_tracks')}</h3>

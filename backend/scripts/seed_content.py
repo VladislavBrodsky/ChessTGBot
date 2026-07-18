@@ -16,43 +16,35 @@ AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 async def seed_content():
     async with AsyncSessionLocal() as db:
         # Seed Lessons
-        lessons = [
-            {
-                "slug": "piece-values",
-                "title": "Piece Values",
-                "description": "Learn the relative values of each chess piece to make better trades.",
-                "difficulty": "Beginner",
-                "order_index": 1,
-                "xp_reward": 50,
-                "steps": [
-                    {"order_index": 1, "content": "A pawn is worth 1 point. Knights and Bishops are worth 3 points.", "fen": None},
-                    {"order_index": 2, "content": "A rook is worth 5 points, and a queen is worth 9. The king's value is infinite!", "fen": None}
-                ]
-            },
-            {
-                "slug": "forks",
-                "title": "Forks",
-                "description": "Attack two pieces at once to gain a material advantage.",
-                "difficulty": "Intermediate",
-                "order_index": 2,
-                "xp_reward": 100,
-                "steps": [
-                    {"order_index": 1, "content": "A fork happens when a single piece attacks two or more of the opponent's pieces simultaneously.", "fen": "8/8/8/3N4/8/2q1k3/8/8 w - - 0 1"},
-                    {"order_index": 2, "content": "Knights are especially famous for their forks, often attacking a king and a queen.", "fen": None}
-                ]
-            }
-        ]
+        import importlib.util
+        alembic_path = os.path.join(backend_dir, "alembic", "versions", "c7d20b3f9e14_seed_academy_content_and_gamification.py")
+        spec = importlib.util.spec_from_file_location("seed_gamification", alembic_path)
+        seed_gamification = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(seed_gamification)
+        
+        lessons = seed_gamification.LESSONS
 
         for lesson_data in lessons:
             res = await db.execute(select(Lesson).where(Lesson.slug == lesson_data["slug"]))
             existing_lesson = res.scalars().first()
+            steps_data = lesson_data.pop("steps")
+            
             if not existing_lesson:
-                steps_data = lesson_data.pop("steps")
                 lesson = Lesson(**lesson_data)
                 db.add(lesson)
                 await db.flush() # get lesson.id
                 for step_data in steps_data:
                     step = LessonStep(lesson_id=lesson.id, **step_data)
+                    db.add(step)
+            else:
+                # Update existing lesson
+                for key, value in lesson_data.items():
+                    setattr(existing_lesson, key, value)
+                
+                # Update steps (simplest is to delete and recreate)
+                await db.execute(LessonStep.__table__.delete().where(LessonStep.lesson_id == existing_lesson.id))
+                for step_data in steps_data:
+                    step = LessonStep(lesson_id=existing_lesson.id, **step_data)
                     db.add(step)
 
         # Seed Puzzles
