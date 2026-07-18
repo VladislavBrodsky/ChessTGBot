@@ -60,7 +60,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
             const tg = w.Telegram?.WebApp;
             const isTMA = !!tg?.initData;
-            const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
+            // localStorage can throw a SecurityError inside Telegram Web's cross-origin
+            // (third-party) iframe when the browser blocks third-party storage. Never let
+            // that crash the render — a Telegram session is identified by initData anyway.
+            let hasWebAuth = false;
+            try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
 
             if (isTMA || hasWebAuth) {
                 setAuthState('authed');
