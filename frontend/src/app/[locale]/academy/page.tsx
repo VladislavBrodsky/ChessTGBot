@@ -556,71 +556,27 @@ export default function AcademyPage() {
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('mastery_tracks')}</h3>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {lessonsList.map((lesson) => {
               const originalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
               const isCompleted = completedLessons.includes(lesson.slug);
               const isUnlocked = isCompleted || originalIndex === 0 || originalIndex === 1 || unlockedLessons.includes(lesson.slug);
               
               return (
-                <div 
+                <LessonCard
                   key={lesson.slug}
+                  title={lesson.title}
+                  description={lesson.description}
+                  progress={isCompleted ? 100 : 0}
+                  locked={!isUnlocked}
+                  difficulty={lesson.difficulty}
+                  duration={`${lesson.xp_reward} XP`}
                   onClick={() => {
                     if (isUnlocked) {
                       router.push(`/${locale}/academy/lesson/${lesson.slug}`);
                     }
                   }}
-                  className={`w-full p-5 rounded-3xl border border-white/5 bg-gradient-to-br from-brand-surface to-[#121215] shadow-premium relative overflow-hidden group cursor-pointer transition-all duration-300 ${isUnlocked ? 'hover:border-emerald-500/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] hover:-translate-y-1' : 'opacity-70 grayscale'}`}
-                >
-                  <div className="absolute inset-0 bg-brand-void/20 pointer-events-none" />
-                  {isUnlocked && (
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none transition-all duration-500 group-hover:bg-emerald-500/20" />
-                  )}
-                  
-                  <div className="relative z-10 flex justify-between items-start">
-                    <div className="flex gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isUnlocked ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 text-emerald-400 border border-emerald-500/20' : 'bg-brand-primary/5 text-brand-primary/30 border border-brand-primary/10'}`}>
-                        <FaBrain className="text-lg drop-shadow-md" />
-                      </div>
-                      <div>
-                        <h3 className={`font-black uppercase text-sm tracking-tight ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-primary/80' : 'text-brand-primary/60'}`}>
-                          {lesson.title}
-                        </h3>
-                        <p className={`text-xs mt-1.5 leading-relaxed ${isUnlocked ? 'text-brand-primary/70' : 'text-brand-primary/40'}`}>
-                          {lesson.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="relative z-10 flex items-center gap-4 mt-4 ml-14">
-                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-sm ${
-                      lesson.difficulty === 'Beginner' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' :
-                      lesson.difficulty === 'Intermediate' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' :
-                      lesson.difficulty === 'Advanced' ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30' :
-                      'bg-purple-500/15 text-purple-400 border border-purple-500/30'
-                    }`}>
-                      {lesson.difficulty}
-                    </span>
-                    
-                    <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-widest flex items-center gap-1.5">
-                      <FaCheckCircle className={isCompleted ? 'text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'text-brand-primary/20'} /> 
-                      {lesson.xp_reward} XP
-                    </span>
-                  </div>
-                  {!isUnlocked && !isCompleted && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-brand-void/40 backdrop-blur-[2px] rounded-3xl z-20">
-                      <div className="bg-brand-surface/90 px-4 py-2.5 rounded-xl border border-brand-primary/10 flex items-center gap-2 shadow-xl">
-                        <FaLock className="text-brand-primary/40 text-sm mb-0.5" />
-                        <span className="text-[11px] font-black text-brand-primary/40 uppercase tracking-widest">Locked</span>
-                      </div>
-                    </div>
-                  )}
-                  {isCompleted && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/20 rounded-3xl z-20 pointer-events-none">
-                    </div>
-                  )}
-                </div>
+                />
               );
             })}
           </div>

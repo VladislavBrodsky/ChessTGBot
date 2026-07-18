@@ -23,21 +23,32 @@ const FLOAT: Record<BoxTier, { y: number[]; dur: number }> = {
  * the chests' own dark bodies (dark-on-dark can't be keyed), leaving broken,
  * washed-out cutouts. Fills its (relatively positioned) parent.
  */
-export default function MysteryBoxArt({ tier }: { tier: BoxTier }) {
+export default function MysteryBoxArt({ 
+    tier, 
+    className, 
+    style,
+    variant
+}: { 
+    tier: BoxTier; 
+    className?: string; 
+    style?: React.CSSProperties;
+    variant?: string;
+}) {
     const { y, dur } = FLOAT[tier];
 
     return (
         <motion.div
             animate={{ y }}
             transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-0 z-10"
+            className={`absolute inset-0 z-10 ${className || ''}`}
+            style={style}
         >
             <Image
-                src={`/boxes/${tier}-chess.jpg`}
+                src={`/boxes/${tier}-chess.webp`}
                 alt={`${tier} chess treasure box`}
                 fill
                 sizes="220px"
-                className="object-cover object-center pointer-events-none select-none"
+                className="object-contain pointer-events-none select-none drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)]"
                 priority
             />
         </motion.div>
