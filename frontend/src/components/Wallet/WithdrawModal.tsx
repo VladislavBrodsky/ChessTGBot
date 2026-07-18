@@ -155,7 +155,7 @@ export default function WithdrawModal({
                 type="number"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full bg-brand-void border border-emerald-500/20 rounded-xl py-3 pl-8 pr-4 text-sm text-emerald-500 font-black focus:outline-none focus:border-emerald-500/60 transition-all shadow-inner"
+                className="w-full bg-brand-void border border-emerald-500/20 rounded-xl py-3 pl-8 pr-4 text-[16px] text-emerald-500 font-black focus:outline-none focus:border-emerald-500/60 transition-all shadow-inner"
                 placeholder={tw('amount_placeholder')}
                 min="10"
               />
@@ -169,7 +169,7 @@ export default function WithdrawModal({
               type="text"
               value={withdrawAddress}
               onChange={(e) => setWithdrawAddress(e.target.value)}
-              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[11px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-emerald-500/50 transition-all truncate shadow-inner"
+              className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-xl py-3 px-3.5 text-[16px] text-brand-primary font-bold font-mono tracking-wider focus:outline-none focus:border-emerald-500/50 transition-all truncate shadow-inner"
               placeholder={tw('target_placeholder')}
             />
           </div>

@@ -714,7 +714,7 @@ export default function DepositModal({
                     value={depositAmount}
                     disabled={processing}
                     onChange={(e) => setDepositAmount(e.target.value)}
-                    className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-xs text-brand-primary font-black focus:outline-none focus:border-brand-primary"
+                    className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-[16px] text-brand-primary font-black focus:outline-none focus:border-brand-primary"
                     placeholder="10.00"
                     min="1"
                   />

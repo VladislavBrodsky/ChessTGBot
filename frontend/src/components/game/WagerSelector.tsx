@@ -117,7 +117,7 @@ export default function WagerSelector({
             type="number"
             value={customWagerInput}
             onChange={(e) => setCustomWagerInput(e.target.value)}
-            className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-xs font-black focus:outline-none shadow-inner tracking-wider"
+            className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-[16px] font-black focus:outline-none shadow-inner tracking-wider"
             placeholder={tg('enter_amount')}
           />
         </motion.div>

@@ -97,7 +97,7 @@ export default function LinkWalletModal({
               type="text"
               value={connectAddressInput}
               onChange={(e) => setConnectAddressInput(e.target.value)}
-              className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-bg-text-brand-muted text-xs font-bold focus:outline-none"
+              className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-bg-text-brand-muted text-[16px] font-bold focus:outline-none"
               placeholder={tw('ton_placeholder')}
             />
           </div>
