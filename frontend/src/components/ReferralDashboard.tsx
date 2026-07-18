@@ -174,26 +174,26 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       purple: {
         activeBg: 'border-purple-500/40 bg-gradient-to-br from-purple-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(168,85,247,0.12)]',
         inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.25)] text-purple-400',
-        activeText: 'text-purple-400',
+        activeIcon: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.25)] text-purple-600 dark:text-purple-400',
+        activeText: 'text-purple-600 dark:text-purple-400',
       },
       emerald: {
         activeBg: 'border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(16,185,129,0.12)]',
         inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-emerald-500/30 hover:bg-gradient-to-br hover:from-emerald-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-emerald-400',
-        activeText: 'text-emerald-400',
+        activeIcon: 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-emerald-600 dark:text-emerald-400',
+        activeText: 'text-emerald-600 dark:text-emerald-400',
       },
       blue: {
         activeBg: 'border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(59,130,246,0.12)]',
         inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-blue-500/30 hover:bg-gradient-to-br hover:from-blue-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.25)] text-blue-400',
-        activeText: 'text-blue-400',
+        activeIcon: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.25)] text-blue-600 dark:text-blue-400',
+        activeText: 'text-blue-600 dark:text-blue-400',
       },
       amber: {
         activeBg: 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(245,158,11,0.12)]',
         inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-amber-500/30 hover:bg-gradient-to-br hover:from-amber-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.25)] text-amber-400',
-        activeText: 'text-amber-400',
+        activeIcon: 'bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.25)] text-amber-600 dark:text-amber-400',
+        activeText: 'text-amber-600 dark:text-amber-400',
       },
     }[color as 'purple' | 'emerald' | 'blue' | 'amber'];
   
@@ -204,10 +204,10 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
   const activeTabColor = tabs.find(t => t.id === activeTab)?.color || 'emerald';
   const detailStyles = {
-    purple: { text: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-    emerald: { text: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
-    blue: { text: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-    amber: { text: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+    purple: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+    emerald: { text: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+    blue: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+    amber: { text: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
   }[activeTabColor as 'purple' | 'emerald' | 'blue' | 'amber'];
 
   return (
@@ -375,7 +375,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       </motion.div>
 
       {/* Invite link: Web3 Premium Action Area */}
-      <Card variant="solid" className="relative w-full border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-brand-surface/40 shadow-[0_8px_32px_rgba(168,85,247,0.08)] overflow-hidden">
+      <div className="relative w-full rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-50/50 to-purple-500/5 dark:from-purple-500/10 dark:to-brand-surface/40 shadow-sm overflow-hidden mt-2">
         {/* Ambient glow in the background */}
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-purple-500/15 rounded-full blur-[64px] pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-[48px] pointer-events-none" />
@@ -384,15 +384,15 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           
           <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col">
-              <p className="text-[10px] font-black text-purple-400 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
+              <p className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
                 {t('your_link')}
-                <Badge variant="amber" className="border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]">VIP</Badge>
+                <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm">VIP</span>
               </p>
               <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Share to earn 15%</p>
             </div>
-            <Badge variant="amber" className="border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)] bg-amber-500/10">
+            <div className="px-2 py-1 rounded-lg border border-purple-500/30 bg-purple-500/10 text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest shadow-sm">
               +50 XP
-            </Badge>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -400,28 +400,27 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               type="button"
               onClick={handleCopy}
               aria-label={`${t('copy')} ${t('your_link')}`}
-              className="min-h-11 flex-1 bg-brand-void/50 border border-purple-500/20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-purple-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-[inset_0_2px_8px_rgba(0,0,0,0.2)]"
+              className="min-h-11 flex-1 bg-white dark:bg-brand-void/50 border border-purple-500/20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-purple-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-inner"
             >
-              <span className="font-mono text-[10px] font-bold text-purple-200 tracking-wider truncate">
+              <span className="font-mono text-[10px] font-bold text-purple-700 dark:text-purple-300 tracking-wider truncate">
                 {inviteLink}
               </span>
             </button>
             
-            <Button
+            <button
               type="button"
               onClick={handleCopy}
-              size="md"
-              className={`shrink-0 font-black text-[10px] uppercase tracking-wider transition-all ${copied ? 'bg-purple-500/20 border-purple-500/40 text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.15)]'}`}
+              className={`shrink-0 h-11 px-4 flex items-center justify-center gap-1.5 font-black text-[10px] uppercase tracking-wider rounded-xl transition-all ${copied ? 'bg-purple-500/20 border border-purple-500/40 text-purple-700 dark:text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/30 text-purple-700 dark:text-purple-400 hover:bg-purple-500/30 shadow-sm'}`}
             >
               {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
               {copied ? t('copied') : t('copy')}
-            </Button>
+            </button>
 
             <button
               type="button"
               onClick={handleShare}
               aria-label={`Share ${t('your_link')}`}
-              className="shrink-0 w-11 h-11 bg-brand-void/50 border border-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.1)]"
+              className="shrink-0 w-11 h-11 bg-white dark:bg-brand-void/50 border border-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
             >
               <FaShareAlt size={14} />
             </button>
@@ -432,13 +431,13 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             size="md"
             onClick={() => setShowQr(!showQr)}
             aria-expanded={showQr}
-            className="w-full mt-2 border-purple-500/20 bg-brand-void/30 text-[10px] text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
+            className="w-full mt-2 border-purple-500/20 bg-white dark:bg-brand-void/30 text-[10px] !text-purple-600 dark:!text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
             leftIcon={<FaQrcode size={12} />}
           >
             {showQr ? "Hide QR Code" : "Show QR Code"}
           </Button>
         </div>
-      </Card>
+      </div>
 
       {/* Styled Inline QR Code Card - Collapsible */}
       <AnimatePresence>
