@@ -4,7 +4,7 @@ import React from 'react';
 import DailyCheckinModal from '@/components/DailyCheckinModal';
 
 // apiFetch: return a claimable status, then a successful claim.
-const apiFetch = jest.fn((url: string) => {
+const apiFetch = jest.fn((url: string, _opts?: unknown) => {
   if (url.includes('/daily-checkin/status')) {
     return Promise.resolve({
       ok: true,
