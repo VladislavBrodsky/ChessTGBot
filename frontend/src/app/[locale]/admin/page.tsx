@@ -280,7 +280,7 @@ function Pagination({ page, pages, onPage }: { page: number; pages: number; onPa
           onClick={() => onPage(p)}
           className={`w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all ${
             p === page
-              ? 'bg-purple-600 text-white shadow-[0_0_12px_rgba(147,51,234,0.5)]'
+              ? 'bg-brand-primary text-white shadow-[0_0_12px_var(--color-brand-primary)]'
               : 'bg-white/5 hover:bg-white/10 border border-white/5 text-brand-muted'
           }`}
         >{p}</button>
@@ -417,7 +417,7 @@ function UsersTab() {
             onChange={e => setSearchInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1); } }}
             placeholder="Search name, username or Telegram ID…"
-            className="w-full pl-9 pr-4 bg-[#0A0A0A]/60 backdrop-blur-xl border border-purple-500/30 rounded-xl py-2.5 text-white text-sm outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all"
+            className="w-full pl-9 pr-4 bg-[#0A0A0A]/60 backdrop-blur-xl border border-brand-primary/30 rounded-xl py-2.5 text-white text-sm outline-none focus:border-brand-primary focus:shadow-[0_0_15px_var(--color-brand-primary)] transition-all"
           />
         </div>
         <button
@@ -437,7 +437,7 @@ function UsersTab() {
         <p className="text-[11px] text-brand-muted">
           {loading ? 'Loading…' : total > 0 ? `${fmt(total)} users found` : 'No results'}
         </p>
-        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
+        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />}
       </div>
 
       {/* Table */}
@@ -453,7 +453,7 @@ function UsersTab() {
           <tbody>
             {loading && users.length === 0 ? (
               <tr><td colSpan={7} className="text-center py-12 text-brand-muted">
-                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                <div className="w-6 h-6 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto mb-2" />
                 Loading users…
               </td></tr>
             ) : users.length === 0 ? (
@@ -461,15 +461,15 @@ function UsersTab() {
             ) : users.map(u => (
               <tr
                 key={u.telegram_id}
-                className="border-b border-white/5 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                className="border-b border-white/5 hover:bg-brand-primary/10 transition-colors cursor-pointer group"
                 onClick={() => openUser(u)}
               >
                 <td className="px-4 py-3">
-                  <div className="font-bold text-white group-hover:text-purple-300 transition-colors">{u.first_name} {u.last_name || ''}</div>
+                  <div className="font-bold text-white group-hover:text-brand-primary transition-colors">{u.first_name} {u.last_name || ''}</div>
                   <div className="text-[10px] text-brand-muted mt-0.5">{u.username ? `@${u.username}` : `#${u.telegram_id}`}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="font-black text-purple-400 text-sm">{u.elo}</span>
+                  <span className="font-black text-brand-primary text-sm">{u.elo}</span>
                 </td>
                 <td className="px-4 py-3 text-brand-muted">
                   <span className="text-green-500">{u.wins}</span>/<span className="text-red-500">{u.losses}</span>/<span className="text-blue-400">{u.draws}</span>
@@ -478,17 +478,17 @@ function UsersTab() {
                   {cents(u.balance_cents)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="bg-purple-500/15 text-purple-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-purple-500/20">L{u.level}</span>
+                  <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-[10px] font-black border border-brand-primary/20">L{u.level}</span>
                 </td>
                 <td className="px-4 py-3">
                   {u.is_premium ? (
-                    <span className="bg-purple-500/15 text-purple-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-purple-500/20">⭐ {u.premium_tier || 'PRO'}</span>
+                    <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-[10px] font-black border border-brand-primary/20">⭐ {u.premium_tier || 'PRO'}</span>
                   ) : (
                     <span className="text-brand-muted text-[10px]">Standard</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-purple-400/60 group-hover:text-purple-400 text-[11px] font-bold transition-colors">→</span>
+                  <span className="text-brand-primary/60 group-hover:text-brand-primary text-[11px] font-bold transition-colors">→</span>
                 </td>
               </tr>
             ))}
@@ -519,7 +519,7 @@ function UsersTab() {
               {/* Modal Header */}
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl font-black text-purple-400">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-xl font-black text-brand-primary">
                     {selectedUser.first_name[0]}
                   </div>
                   <div>
@@ -568,7 +568,7 @@ function UsersTab() {
                   {selectedUser.referral_code && (
                     <div className="bg-white/3 border border-white/5 rounded-xl p-3">
                       <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Referral Code</p>
-                      <p className="text-[11px] font-mono text-purple-400 font-bold">{selectedUser.referral_code}</p>
+                      <p className="text-[11px] font-mono text-brand-primary font-bold">{selectedUser.referral_code}</p>
                     </div>
                   )}
                 </div>
@@ -640,7 +640,7 @@ function TransactionsTab() {
         <button
           onClick={() => { setTypeFilter(''); setPage(1); }}
           className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
-            !typeFilter ? 'bg-purple-600 text-white border-purple-500' : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
+            !typeFilter ? 'bg-brand-primary text-white border-brand-primary' : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
           }`}
         >All Types</button>
         {TX_TYPES.map(t => (
@@ -710,7 +710,7 @@ function TransactionsTab() {
           <tbody>
             {loading && !data ? (
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">
-                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                <div className="w-6 h-6 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto mb-2" />
                 Loading…
               </td></tr>
             ) : initialLoadFailed ? (
@@ -728,7 +728,7 @@ function TransactionsTab() {
                       type="button"
                       onClick={() => { void retryTransactions(); }}
                       disabled={isValidating}
-                      className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white transition-colors hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white transition-colors hover:bg-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <FaArrowsRotate className={isValidating ? 'animate-spin' : ''} />
                       {isValidating ? 'Retrying…' : 'Retry'}
@@ -767,7 +767,7 @@ function TransactionsTab() {
                 <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px] max-w-[100px] truncate">
                   {tx.reference_id ? (
                     tx.reference_id.length > 20
-                      ? <a href={`https://tonviewer.com/transaction/${tx.reference_id}`} target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors" onClick={e => e.stopPropagation()}>
+                      ? <a href={`https://tonviewer.com/transaction/${tx.reference_id}`} target="_blank" rel="noreferrer" className="text-brand-primary hover:text-brand-primary transition-colors" onClick={e => e.stopPropagation()}>
                           {tx.reference_id.slice(0, 10)}…
                         </a>
                       : tx.reference_id
@@ -810,7 +810,7 @@ function GamesTab() {
         <p className="text-[11px] text-brand-muted">
           {total > 0 ? `${fmt(total)} online games total` : 'No games yet'}
         </p>
-        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
+        {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />}
       </div>
       <div className="glass-panel overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
@@ -824,7 +824,7 @@ function GamesTab() {
           <tbody>
             {loading && games.length === 0 ? (
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">
-                <div className="w-6 h-6 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-2" />
+                <div className="w-6 h-6 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto mb-2" />
                 Loading games…
               </td></tr>
             ) : games.length === 0 ? (
@@ -922,7 +922,7 @@ function BroadcastsTab() {
     <div>
       {/* Composer */}
       <div className="glass-panel p-6 mb-6">
-        <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-purple-400">
+        <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-brand-primary">
           📢 New Broadcast
         </h3>
 
@@ -937,7 +937,7 @@ function BroadcastsTab() {
                 onClick={() => setAudience(a.value)}
                 className={`px-4 py-2 rounded-xl text-xs transition-all ${
                   audience === a.value 
-                    ? 'bg-purple-600 text-white shadow-neon font-bold' 
+                    ? 'bg-brand-primary text-white shadow-neon font-bold' 
                     : 'bg-white/5 border border-white/10 text-brand-primary hover:bg-white/10'
                 }`}
               >
@@ -956,7 +956,7 @@ function BroadcastsTab() {
             onChange={e => setMessage(e.target.value)}
             placeholder="Write your broadcast message here…"
             rows={5}
-            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-brand-primary text-sm resize-y outline-none focus:border-purple-500 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-brand-primary text-sm resize-y outline-none focus:border-brand-primary transition-colors"
           />
           <p className="text-[10px] text-brand-muted mt-1">{message.length} characters</p>
         </div>
@@ -1122,7 +1122,7 @@ function SystemTab() {
           <button
             onClick={() => fetchStatus()}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-brand-primary/20 border border-brand-primary/40 text-brand-primary hover:bg-brand-primary/30 transition-all disabled:opacity-50"
           >
             <FaArrowsRotate className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
@@ -1131,7 +1131,7 @@ function SystemTab() {
 
       {loading && !data && (
         <div className="text-center py-16 text-brand-muted">
-          <FaServer className="text-4xl mx-auto mb-4 animate-pulse text-purple-400" />
+          <FaServer className="text-4xl mx-auto mb-4 animate-pulse text-brand-primary" />
           <p>Running system diagnostics…</p>
         </div>
       )}
