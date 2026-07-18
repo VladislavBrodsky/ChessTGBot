@@ -125,7 +125,7 @@ export default function Home() {
       className="w-full"
     >
       <Card variant="glass" className="w-full p-5 border-brand-border-opacity-10 shadow-premium flex flex-col items-center text-center space-y-3">
-        <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">
+        <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
           {t('load_failed')}
         </span>
         <Button
@@ -228,7 +228,7 @@ export default function Home() {
                 }}
               />
             ) : null}
-            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${hasPhoto ? 'hidden' : ''}`}>
+            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-muted ${hasPhoto ? 'hidden' : ''}`}>
               {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
             </div>
           </>
@@ -244,7 +244,7 @@ export default function Home() {
       <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
       {`${stats.first_name} ${stats.last_name || ""}`.trim()}
       </h2>
-      <span className="text-[11px] font-black text-brand-primary opacity-50 tracking-widest uppercase leading-none">
+      <span className="text-[11px] font-black text-brand-muted tracking-widest uppercase leading-none">
       {stats.elo || 1000} {t('elo')}
       </span>
       </div>
@@ -257,7 +257,7 @@ export default function Home() {
       whileTap={{ scale: 0.96 }}
       className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
       >
-      <FaWallet className="text-[10px] text-brand-primary opacity-60" />
+      <FaWallet className="text-[10px] text-brand-muted" />
       <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
       {/* Never present a failed balance fetch as "$0.00" */}
       {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
@@ -276,22 +276,22 @@ export default function Home() {
       {/* Compact Stats Row */}
       <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('win_rate')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('win_rate')}</span>
       <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || '0.0'}%</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('current_streak')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('current_streak')}</span>
       <div className="flex items-center gap-1 justify-center">
       <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
       {(stats.current_streak?.count ?? 0) > 0 && stats.current_streak?.type !== 'none' && (
-      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : stats.current_streak?.type === 'draw' ? 'text-brand-muted' : 'text-brand-primary opacity-45'}`}>
+      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : stats.current_streak?.type === 'draw' ? 'text-brand-muted' : 'text-brand-muted'}`}>
       {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : stats.current_streak?.type === 'draw' ? (t('draws')?.[0] || 'D') : (t('losses')?.[0] || 'L')}
       </span>
       )}
       </div>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
       <span className="text-xs font-black text-brand-primary">{(stats.games_played ?? 0).toLocaleString(locale)}</span>
       </div>
       </div>
@@ -358,8 +358,8 @@ export default function Home() {
  {/* Global Leaderboard Panel */}
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
- <FaListOl className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('leaderboard')}</h3>
+ <FaListOl className="text-brand-muted text-xs" />
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">{t('leaderboard')}</h3>
  </div>
  <Leaderboard />
  </div>
@@ -367,8 +367,8 @@ export default function Home() {
  {/* Cyber News Panel */}
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
- <FaNewspaper className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('latest_updates')}</h3>
+ <FaNewspaper className="text-brand-muted text-xs" />
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">{t('latest_updates')}</h3>
  </div>
  <NewsSection />
  </div>
@@ -377,7 +377,7 @@ export default function Home() {
  <footer className="flex flex-col items-center py-6 select-none pointer-events-none opacity-5 w-full">
  <div className="flex items-center gap-4 w-full px-8">
  <div className="h-px flex-1 bg-linear-to-r from-transparent to-brand-border-opacity-20" />
- <span className="text-[10px] font-black tracking-[1.5em] uppercase text-brand-primary opacity-30 shrink-0">ANTIGRAVITY</span>
+ <span className="text-[10px] font-black tracking-[1.5em] uppercase text-brand-muted shrink-0">ANTIGRAVITY</span>
  <div className="h-px flex-1 bg-linear-to-l from-transparent to-brand-border-opacity-20" />
  </div>
  </footer>

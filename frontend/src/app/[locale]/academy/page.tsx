@@ -335,7 +335,7 @@ export default function AcademyPage() {
             {t('title')}
           </motion.div>
           <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-primary opacity-30">{t('subtitle')}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-muted">{t('subtitle')}</span>
 
           {stats && (
             <div className="flex flex-col items-center gap-3">
@@ -388,7 +388,7 @@ export default function AcademyPage() {
           className="w-full text-center px-6 py-4 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 cursor-pointer hover:bg-brand-void/50 transition-all group"
         >
           <p className="text-xs font-semibold text-brand-primary/80 italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">— {CHESS_QUOTES[quoteIdx].author}</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
         </motion.div>
 
         {/* Hint of the Day */}
@@ -438,7 +438,7 @@ export default function AcademyPage() {
                   : t('mate_in_2')
               }
             </h2>
-            <p className="text-xs text-brand-primary opacity-60 font-medium mb-6 leading-relaxed">
+            <p className="text-xs text-brand-muted font-medium mb-6 leading-relaxed">
               {allSolved
                 ? t('all_levels_congrats')
                 : nextPuzzle
@@ -465,8 +465,8 @@ export default function AcademyPage() {
         {/* 100 Levels Tactics Grid */}
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-            <FaChessRook className="text-brand-primary opacity-40 text-xl" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('tactics_grid')}</h3>
+            <FaChessRook className="text-brand-muted text-xl" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">{t('tactics_grid')}</h3>
           </div>
           <div className="rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
             {/* Backlight Orbs */}
@@ -476,7 +476,7 @@ export default function AcademyPage() {
             {/* Progress Header */}
             <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/60 flex items-center gap-1.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted flex items-center gap-1.5">
                   <FaBrain className="text-brand-primary/50 text-[10px]" /> {t('tactics_grid')}
                 </span>
                 <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
@@ -565,8 +565,8 @@ export default function AcademyPage() {
         <div className="space-y-6">
           
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-            <FaChessKnight className="text-brand-primary opacity-40 text-xl" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('mastery_tracks')}</h3>
+            <FaChessKnight className="text-brand-muted text-xl" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">{t('mastery_tracks')}</h3>
           </div>
 
           {/* Category-grouped lessons */}
@@ -603,7 +603,7 @@ export default function AcademyPage() {
                       <h4 className="text-xs font-black uppercase tracking-widest text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-brand-primary/50">{completedInCat}/{catLessons.length}</span>
+                      <span className="text-[10px] font-bold text-brand-muted">{completedInCat}/{catLessons.length}</span>
                       {catProgress === 100 && <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">✓ Done</span>}
                     </div>
                   </div>
@@ -648,8 +648,8 @@ export default function AcademyPage() {
         {stats && (
           <div className="opacity-90 mt-8">
             <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-              <FaTrophy className="text-brand-primary opacity-60 text-xl" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-80 text-center">Next Milestone</h3>
+              <FaTrophy className="text-brand-muted text-xl" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">Next Milestone</h3>
             </div>
             
             <div className="w-full p-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden shadow-sm">
@@ -657,11 +657,11 @@ export default function AcademyPage() {
               
               <div className="flex justify-between items-end mb-3 relative z-10">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary/50 mb-1">Current Title</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-1">Current Title</p>
                   <p className="text-sm font-black text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary/70 mb-1">Next Level</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-1">Next Level</p>
                   <p className="text-sm font-black text-emerald-400">{xpProgress!.isLevelSecured ? 'Level secured' : `Level ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
@@ -677,7 +677,7 @@ export default function AcademyPage() {
               </div>
               
               <div className="text-center relative z-10 mt-3">
-                <p className="text-[10px] font-bold text-brand-primary/60">
+                <p className="text-[10px] font-bold text-brand-muted">
                   {xpProgress!.isLevelSecured
                     ? 'This level is secured. Earn XP to continue toward your next crown.'
                     : <>You need <span className="text-emerald-400 font-black">{xpProgress!.nextLevelXp - stats.xp} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!</>}
@@ -721,7 +721,7 @@ export default function AcademyPage() {
           <h2 className="text-xl font-black uppercase tracking-widest mb-1 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent drop-shadow">
             {t('unlock_grid')}
           </h2>
-          <p className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em] mb-6">
             {t('level_premium_req')}
           </p>
         </div>
@@ -743,9 +743,9 @@ export default function AcademyPage() {
             </li>
           </ul>
           <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-          <div className="flex justify-between items-center text-[10px] text-brand-primary/50 uppercase tracking-widest bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
+          <div className="flex justify-between items-center text-[10px] text-brand-muted uppercase tracking-widest bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
             <span className="flex items-center gap-1"><FaTrophy className="text-emerald-500 text-[10px]" /> {stats?.xp || 0} XP</span>
-            <span className="flex items-center gap-1"><FaWallet className="text-brand-primary/40 text-[10px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
+            <span className="flex items-center gap-1"><FaWallet className="text-brand-muted text-[10px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
           </div>
         </div>
       
@@ -757,7 +757,7 @@ export default function AcademyPage() {
             className="w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
           >
             <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
-            <span className="text-[10px] font-bold text-brand-primary/50">{t('free_unlock_path')}</span>
+            <span className="text-[10px] font-bold text-brand-muted">{t('free_unlock_path')}</span>
           </motion.button>
           
           <motion.button
@@ -828,7 +828,7 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{band.emoji}</span>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">
                       {isCompleted ? '✅ Solved' : isPremLocked ? '👑 Premium Required' : isXpLocked ? '🔒 XP Required' : isSeqLocked ? '🔒 Sequential Lock' : '▶ Available'}
                     </p>
                     <h3 className="text-lg font-black tracking-tight text-brand-primary uppercase leading-none">
@@ -873,7 +873,7 @@ export default function AcademyPage() {
               {/* CTAs */}
               <div className="space-y-2 pt-1">
                 {isSeqLocked && (
-                  <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-[10px] font-black uppercase tracking-widest text-brand-primary/30">
+                  <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-[10px] font-black uppercase tracking-widest text-brand-muted">
                     🔒 Complete Level {id - 1} first
                   </div>
                 )}
@@ -911,7 +911,7 @@ export default function AcademyPage() {
                 )}
                 <button
                   onClick={() => setSelectedLevel(null)}
-                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-primary/40 hover:text-brand-primary/70 transition-colors"
+                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-muted hover:text-brand-primary/90 transition-colors"
                 >
                   {t('cancel')}
                 </button>
