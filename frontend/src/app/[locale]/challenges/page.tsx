@@ -224,7 +224,7 @@ export default function ChallengesPage() {
                     ease: "easeInOut",
                     delay: i * 0.7
                   }}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]"
+                  className="absolute w-1.5 h-1.5 rounded-full bg-brand-primary/40 shadow-[0_0_8px_rgba(0,0,0,0.2)]"
                   style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
                 />
               ))}
@@ -266,7 +266,7 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(59,130,246,0.06)]"
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent shadow-[0_4px_24px_rgba(59,130,246,0.06)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
@@ -300,7 +300,7 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(16,185,129,0.05)]"
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent shadow-[0_4px_24px_rgba(16,185,129,0.05)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
@@ -402,7 +402,7 @@ export default function ChallengesPage() {
                         onClick={() => handleClaim(task.task_id)}
                         className="animate-pulse bg-emerald-500 text-brand-void hover:bg-emerald-400 border-none shadow-[0_0_15px_rgba(16,185,129,0.4)]"
                       >
-                        {claimingId === task.task_id ? '...' : `Claim XP`}
+                        {claimingId === task.task_id ? '...' : t.has('claim_xp_btn') ? t('claim_xp_btn') : 'Claim XP'}
                       </Button>
                     ) : task.claimed ? (
                       <Badge variant="secondary" className="opacity-40">{t('claimed_status')}</Badge>
@@ -428,8 +428,8 @@ export default function ChallengesPage() {
                             window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                           }}
                         >
-                          Invite Friend
-                        </Button>
+                           Invite Friend
+                         </Button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-end">
