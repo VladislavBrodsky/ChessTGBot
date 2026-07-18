@@ -213,7 +213,7 @@ export default function ProfilePage() {
  {stats && stats.study_streak > 0 && (
     <div className="flex items-center gap-1.5 mb-4 text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
         <FaFire className="text-sm" />
-        <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t('day_streak') || 'Day Streak'}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
     </div>
  )}
  
