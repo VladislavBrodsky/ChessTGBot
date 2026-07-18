@@ -14,6 +14,7 @@
   --color-brand-primary: var(--text-primary);
   --color-brand-muted: var(--text-muted);
   --color-brand-gold: var(--text-gold);
+  --color-brand-success: var(--brand-success);
 
   --color-brand-border-opacity-5: var(--color-border-opacity-5);
   --color-brand-border-opacity-10: var(--color-border-opacity-10);
@@ -80,6 +81,7 @@
   --text-primary: #FFFFFF;
   --text-muted: #71767B;
   --text-gold: #FBBF24;
+  --brand-success: #10B981;
 
   --color-brand-void: #000000;
   --color-brand-surface: #0A0A0A;
