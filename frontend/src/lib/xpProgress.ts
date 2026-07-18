@@ -34,8 +34,8 @@ export function getXPProgress(xp: number, recordedLevel?: number): XPProgress {
     // If they spent XP and dropped below their current level tier (debt),
     // clamp the visual percentage to 0% so it's not misleading, but return 
     // their total XP so the UI can display exact deficit.
-    const currentLevelProgress = isLevelSecured ? safeXp : progressInTier;
-    const progressPercentage = Math.max(0, (progressInTier / XP_PER_LEVEL) * 100);
+    const currentLevelProgress = isLevelSecured ? XP_PER_LEVEL : progressInTier;
+    const progressPercentage = isLevelSecured ? 100 : Math.max(0, (progressInTier / XP_PER_LEVEL) * 100);
 
     return {
         displayedLevel,

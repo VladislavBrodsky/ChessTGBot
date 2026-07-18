@@ -92,7 +92,10 @@ class E2EClient:
         await self.sio.connect(
             url,
             auth={"initData": _init_data(user_id, name)},
-            headers={"X-Forwarded-For": ip},
+            headers={
+                "X-Forwarded-For": ip,
+                "Origin": "http://127.0.0.1:3000"
+            },
             transports=["websocket"],
             wait_timeout=WHITE_TIMEOUT,
         )
