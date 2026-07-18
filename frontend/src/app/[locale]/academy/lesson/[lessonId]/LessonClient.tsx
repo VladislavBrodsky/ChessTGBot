@@ -113,14 +113,14 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
 
   if (completed) {
    return (
-   <LayoutWrapper className="pt-6 relative">
+   <LayoutWrapper className="relative w-full">
    <div className="w-full h-full min-h-[70vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto z-10">
   <motion.div
   initial={{ scale: 0.9, opacity: 0, y: 20 }}
   animate={{ scale: 1, opacity: 1, y: 0 }}
   className="w-full relative overflow-hidden group"
   >
-  <div className="glass-panel p-8 md:p-12 rounded-[32px] border border-brand-border-opacity-10 bg-brand-surface shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10">
+  <div className="glass-panel p-6 md:p-10 rounded-[32px] border border-brand-border-opacity-10 bg-brand-surface shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10 overflow-hidden">
     <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/30" />
     
@@ -162,7 +162,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   }
 
   return (
-  <LayoutWrapper className="pt-6">
+  <LayoutWrapper className="w-full">
   <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
  {/* Header */}
  <div className="flex items-center gap-4 mb-6">

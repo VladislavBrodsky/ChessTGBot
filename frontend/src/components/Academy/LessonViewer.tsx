@@ -88,13 +88,13 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
  {(currentStep.type === 'text' || (currentStep.type === 'interactive_board' && !hasInteractiveSolution)) && (
    <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-6 md:gap-8`}>
-      <div className="flex-1 p-8 md:p-10 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[300px] relative overflow-hidden group">
+      <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[160px] relative overflow-hidden group">
         <div className="absolute inset-0 bg-brand-void/10 pointer-events-none" />
         {/* Decorative subtle background glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/20" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
         
-        <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed text-[15px]">
+        <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed text-[14px]">
           <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
         </div>
         
