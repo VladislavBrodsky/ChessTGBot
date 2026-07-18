@@ -6,7 +6,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
-import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown } from 'react-icons/fa';
+import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
@@ -88,6 +88,7 @@ export default function AcademyPage() {
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showCompletedCat, setShowCompletedCat] = useState<Record<string, boolean>>({});
   const { pushHide, popHide } = useNavbar();
 
 
@@ -593,6 +594,12 @@ export default function AcademyPage() {
               const completedInCat = catLessons.filter(l => (completedLessons as string[]).includes(l.slug)).length;
               const catProgress = Math.round((completedInCat / catLessons.length) * 100);
 
+              const isExpanded = !!showCompletedCat[cat.id];
+              const visibleLessons = catLessons.filter(l => {
+                const isCompleted = (completedLessons as string[]).includes(l.slug);
+                return !isCompleted || isExpanded;
+              });
+
               return (
                 <div key={cat.id} className="mb-8">
                   {/* Category header */}
@@ -607,15 +614,32 @@ export default function AcademyPage() {
                     </div>
                   </div>
                   {/* Category progress bar */}
-                  <div className="w-full h-1 bg-brand-primary/10 rounded-full overflow-hidden mb-4 mx-1">
+                  <div className="w-full h-1 bg-brand-primary/10 rounded-full overflow-hidden mb-2 mx-1">
                     <div 
                       className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-gradient-to-r from-brand-primary/50 to-brand-primary/30'}`}
                       style={{ width: `${catProgress}%` }}
                     />
                   </div>
+                  
+                  {/* Toggle Show Completed Button */}
+                  {completedInCat > 0 && (
+                    <div className="flex justify-end mb-4 px-1">
+                      <button 
+                        onClick={() => setShowCompletedCat(prev => ({...prev, [cat.id]: !prev[cat.id]}))}
+                        className="text-[10px] font-bold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
+                      >
+                        {isExpanded ? (
+                          <><span>Hide Completed</span><FaChevronUp className="text-[8px]"/></>
+                        ) : (
+                          <><span>Show Completed ({completedInCat})</span><FaChevronDown className="text-[8px]"/></>
+                        )}
+                      </button>
+                    </div>
+                  )}
+
                   {/* Lessons grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {catLessons.map((lesson, idx) => {
+                    {visibleLessons.map((lesson, idx) => {
                       // Find global index for unlock logic
                       const globalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
                       const isCompleted = (completedLessons as string[]).includes(lesson.slug);

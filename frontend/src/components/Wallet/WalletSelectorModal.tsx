@@ -6,6 +6,7 @@ import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
 import { copyToClipboard } from "@/lib/clipboard";
+import { createPortal } from "react-dom";
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
 interface WalletSelectorModalProps {
@@ -133,7 +134,7 @@ export default function WalletSelectorModal({
     }
   };
 
-  return (
+  const content = (
     <div className="bottom-drawer-backdrop z-[100]">
       {/* Backdrop */}
       <motion.div
@@ -394,4 +395,6 @@ export default function WalletSelectorModal({
       </motion.div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
 }

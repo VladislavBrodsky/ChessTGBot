@@ -56,7 +56,9 @@ export default function ArenaBanner() {
       const res = await apiFetch('/api/v1/arena/status');
       if (!res.ok) return;
       const data: ArenaStatus = await res.json();
-      serverOffsetRef.current = new Date(data.server_now).getTime() - Date.now();
+      if (serverOffsetRef.current === 0) {
+        serverOffsetRef.current = new Date(data.server_now).getTime() - Date.now();
+      }
       setArena(data);
       setJoined(data.in_pool);
     } catch {
@@ -100,7 +102,17 @@ export default function ArenaBanner() {
     getSocket().emit('leave_arena', {});
   };
 
-  if (!arena) return null;
+  if (!arena) {
+    return (
+      <div className="w-full min-h-[68px] mb-1 p-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface opacity-50 animate-pulse flex items-center gap-3">
+        <div className="w-11 h-11 shrink-0 rounded-xl bg-brand-elevated border border-brand-border-opacity-10" />
+        <div className="flex flex-col flex-1 gap-2">
+          <div className="w-24 h-3 bg-brand-elevated rounded" />
+          <div className="w-32 h-2.5 bg-brand-elevated rounded" />
+        </div>
+      </div>
+    );
+  }
 
   const serverNow = nowMs + serverOffsetRef.current;
   const startsIn = new Date(arena.starts_at).getTime() - serverNow;

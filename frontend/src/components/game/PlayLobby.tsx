@@ -592,34 +592,40 @@ export default function PlayLobby() {
         </header>
 
         {/* Wallet actions come before the event: funding is the prerequisite to playing. */}
-        {matchmakingState === 'idle' && (
-          <section
-            aria-label={tg('cyber_balance')}
-            className="arena-wallet-rail grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border p-1.5"
-          >
-            <div className="min-w-0 pe-1.5">
-              <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
-            </div>
-
-            <Link
-              href={`/${locale}/wallet`}
-              className="arena-wallet-balance group flex min-h-[44px] min-w-0 items-center gap-2 border-s ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
+        <AnimatePresence mode="wait">
+          {matchmakingState === 'idle' && (
+            <motion.section
+              key="wallet-rail"
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: 'hidden' }}
+              aria-label={tg('cyber_balance')}
+              className="arena-wallet-rail grid w-full grid-cols-[1.08fr_1fr] items-stretch rounded-2xl border p-1.5"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-emerald-500 transition-colors group-hover:border-emerald-500/30">
-                <FaWallet size={11} aria-hidden="true" />
-              </span>
-              <span className="flex min-w-0 flex-col">
-                <span className="truncate text-[9px] font-black uppercase leading-none tracking-[0.14em] text-brand-muted">
-                  {tg('cyber_balance')}
+              <div className="min-w-0 pe-1.5">
+                <WalletConnect minimal onTopUp={() => setShowDepositDrawer(true)} />
+              </div>
+
+              <Link
+                href={`/${locale}/wallet`}
+                className="arena-wallet-balance group flex min-h-[44px] min-w-0 items-center gap-2 border-s ps-3 pe-2 transition-colors hover:bg-brand-elevated/60 focus-visible:rounded-xl"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand-border-opacity-10 bg-brand-elevated text-emerald-500 transition-colors group-hover:border-emerald-500/30">
+                  <FaWallet size={11} aria-hidden="true" />
                 </span>
-                <span className={`mt-1 truncate text-sm font-black leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
-                  {/* Never present a failed balance fetch as "$0.00" */}
-                  {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate text-[9px] font-black uppercase leading-none tracking-[0.14em] text-brand-muted">
+                    {tg('cyber_balance')}
+                  </span>
+                  <span className={`mt-1 truncate text-sm font-black leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+                    {/* Never present a failed balance fetch as "$0.00" */}
+                    {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
+                  </span>
                 </span>
-              </span>
-            </Link>
-          </section>
-        )}
+              </Link>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Daily Arena event banner — schedule, live join, standings */}
         <ArenaBanner />

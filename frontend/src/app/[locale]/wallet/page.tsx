@@ -89,7 +89,7 @@ export default function WalletPage() {
 
   return (
     <LayoutWrapper className="w-full">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-6 pb-12">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12">
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">
@@ -101,10 +101,12 @@ export default function WalletPage() {
         </div>
 
         {/* HOLOGRAPHIC CYBER-CARD */}
-        <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={fetchWalletData} />
+        <div className="w-full mt-6">
+          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={fetchWalletData} />
+        </div>
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
-        <div className="w-full grid grid-cols-3 gap-2.5">
+        <div className="w-full grid grid-cols-3 gap-2.5 mt-6">
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -149,21 +151,31 @@ export default function WalletPage() {
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-premium backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
-          <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
-          <span className="flex items-center gap-1.5 relative z-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-success shadow-neon" />
-            {tw('deposit_fee')} <strong className="text-brand-success font-black">5%</strong>
-          </span>
-          <span className="opacity-30 relative z-10">•</span>
-          <span className="flex items-center gap-1.5 relative z-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-neon" />
-            {tw('withdraw_fee')} <strong className="text-brand-primary font-black">$0.20</strong>
-          </span>
+        <div className="w-full mt-6">
+          <Card variant="glass" className="w-full p-3 border-brand-border-opacity-10 shadow-sm flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
+            <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
+            <span className="flex items-center gap-1.5 relative z-10">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-success shadow-neon" />
+              {tw('deposit_fee')} <strong className="text-brand-success font-black">5%</strong>
+            </span>
+            <span className="opacity-30 relative z-10">•</span>
+            <span className="flex items-center gap-1.5 relative z-10">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-neon" />
+              {tw('withdraw_fee')} <strong className="text-brand-primary font-black">$0.20</strong>
+            </span>
+          </Card>
         </div>
 
-        {/* TRANSACTION LEDGER SECTION */}
-        <TransactionLedger loading={loading} transactions={transactions} balance={balance} error={txError} onRetry={fetchWalletData} />
+        {/* TRANSACTION LEDGER */}
+        <div className="w-full mt-6">
+          <TransactionLedger 
+            loading={loading}
+            transactions={transactions}
+            balance={balance}
+            error={txError}
+            onRetry={fetchWalletData}
+          />
+        </div>
 
         <AnimatePresence>
           {activeModal === 'deposit' && (

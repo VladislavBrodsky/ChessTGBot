@@ -19,7 +19,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full relative overflow-hidden rounded-3xl p-6 glass-panel border border-brand-border-opacity-10 bg-cyber-card shadow-premium flex flex-col justify-between h-48 select-none"
+      className="w-full relative overflow-hidden rounded-3xl p-5 glass-panel border border-brand-border-opacity-10 bg-cyber-card shadow-premium flex flex-col justify-between min-h-[140px] select-none"
     >
       {/* Ambient glowing blobs */}
       <motion.div 

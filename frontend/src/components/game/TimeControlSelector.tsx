@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaClock } from 'react-icons/fa';
+import { FaStopwatch } from 'react-icons/fa';
 import { telegramHaptic } from "@/lib/telegram";
 import { motion } from 'framer-motion';
 
@@ -20,7 +20,7 @@ export default function TimeControlSelector({
     <section className="px-4 pt-3 pb-4" aria-labelledby="time-selector-title">
       <div className="flex justify-center items-center mb-3">
         <span id="time-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
-          <FaClock className="text-brand-muted" size={9} />
+          <FaStopwatch className="text-brand-muted" size={9} />
           {tg('time_control')}
         </span>
       </div>

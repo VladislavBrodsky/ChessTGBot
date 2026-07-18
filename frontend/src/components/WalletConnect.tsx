@@ -73,7 +73,20 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
         return `${address.slice(0, 4)}...${address.slice(-4)}`;
     };
 
-    if (!mounted) return null;
+    if (!mounted) {
+        if (minimal) {
+            return (
+                <div className="w-full min-w-0">
+                    <div className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl bg-brand-surface border border-brand-border-opacity-10 opacity-50 animate-pulse" />
+                </div>
+            );
+        }
+        return (
+            <div className="w-full h-full min-h-[48px]">
+                <div className="glass-panel p-1 h-full w-full rounded-2xl border-brand-border-opacity-10 bg-brand-surface opacity-50 animate-pulse" />
+            </div>
+        );
+    }
 
     if (minimal) {
         return (

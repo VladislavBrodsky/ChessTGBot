@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
+import { createPortal } from "react-dom";
 
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 
@@ -107,7 +108,7 @@ export default function WithdrawModal({
     }
   };
 
-  return (
+  const content = (
     <div className="bottom-drawer-backdrop z-[100]">
       {/* Backdrop */}
       <motion.div
@@ -246,4 +247,6 @@ export default function WithdrawModal({
       </motion.div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
 }

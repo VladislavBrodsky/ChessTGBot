@@ -163,7 +163,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
           {tw('no_entries')}
         </Card>
       ) : (
-        <div className="w-full flex flex-col space-y-2 max-h-72 overflow-y-auto">
+        <div className="w-full flex flex-col space-y-2">
           {transactions.map((tx) => {
             const isPositive = tx.amount > 0;
             const isZero = tx.amount === 0;
@@ -173,7 +173,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
             const rowGlow = isPositive
               ? "hover:border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(16,185,129,0.1)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.2)]"
               : isZero
-                ? "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md"
+                ? "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
                 : "hover:border-rose-500/30 bg-gradient-to-r from-rose-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(244,63,94,0.1)] hover:shadow-[0_8px_24px_rgba(244,63,94,0.2)]";
 
             return (
