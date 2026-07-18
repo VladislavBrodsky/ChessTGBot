@@ -341,7 +341,7 @@ export default function ChessBoardComponent({
             {/* Subtle Metallic Outer Glow */}
             <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30 pointer-events-none"></div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
+            <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
                 <div className="rounded-xl overflow-hidden w-full h-full">
                     <Chessboard
                         options={{

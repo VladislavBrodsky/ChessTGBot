@@ -48,7 +48,7 @@ export default function MysteryBoxArt({
                 alt={`${tier} chess treasure box`}
                 fill
                 sizes="220px"
-                className="object-contain pointer-events-none select-none drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)]"
+                className="object-contain p-3 pointer-events-none select-none drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
                 priority
             />
         </motion.div>

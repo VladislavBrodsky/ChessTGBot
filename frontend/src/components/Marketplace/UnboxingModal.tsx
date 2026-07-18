@@ -87,7 +87,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
             {isOpen && tier && (
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--color-brand-overlay)] backdrop-blur-xl"
                 >
                     {/* Tier ambient glow */}
                     <div className="absolute inset-0 pointer-events-none"
@@ -147,7 +147,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
                                         boxShadow: intensity >= 2 ? `0 0 32px rgba(${cfg.theme.rgb},0.35)` : undefined,
                                     }}
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center mb-3" style={{ color: cfg.theme.accent }}>
+                                    <div className="w-16 h-16 rounded-2xl bg-[var(--color-brand-surface)] opacity-90 border border-white/10 flex items-center justify-center mb-3" style={{ color: cfg.theme.accent }}>
                                         {icon}
                                     </div>
                                     <span className="text-[9px] font-black uppercase tracking-widest text-white/50">{kindLabel}</span>

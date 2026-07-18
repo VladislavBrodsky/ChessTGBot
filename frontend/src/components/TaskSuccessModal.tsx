@@ -65,7 +65,7 @@ export default function TaskSuccessModal() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop"
           >
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" style={{ touchAction: 'none' }} onClick={handleClose} />
+            <div className="absolute inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md" style={{ touchAction: 'none' }} onClick={handleClose} />
             {typeof window !== 'undefined' && (
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <Confetti

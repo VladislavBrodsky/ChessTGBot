@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "Jogos Jogados",
     "current_streak": "Sequência Atual",
+    "day_streak": "Dias consecutivos",
     "best_streak": "Melhor Sequência",
     "wins": "VITÓRIAS",
     "losses": "DERROTAS",
@@ -64,7 +65,8 @@
     "nav_settings": "Configurações",
     "nav_profile": "Perfil",
     "nav_logout": "Sair",
-    "nav_marketplace": "Mercado"
+    "nav_marketplace": "Mercado",
+    "draws": "Empates"
   },
   "Marketplace": {
     "title": "Mercado",
@@ -213,7 +215,8 @@
     "daily_play_human_desc": "Jogue uma partida contra uma pessoa real.",
     "daily_play_human_inst": "Use o matchmaking ou o Registro de Duelos para jogar contra um humano.",
     "daily_login_desc": "Abra o app hoje.",
-    "daily_login_inst": "A tarefa é concluída automaticamente."
+    "daily_login_inst": "A tarefa é concluída automaticamente.",
+    "level": "Nível"
   },
   "Academy": {
     "title": "Academia",

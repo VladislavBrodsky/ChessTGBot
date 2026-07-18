@@ -138,6 +138,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const activeCount = stats?.active_referrals ?? 0;
   const totalEarnings = stats?.total_earnings_usdt ?? 0;
 
+  const tabs = [
     {
       id: 'total' as const,
       label: t('total_label'),

@@ -128,7 +128,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4 modal-backdrop"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4 modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
@@ -154,7 +154,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
 
         {/* Content Slider */}
         <div className="relative flex-grow w-full flex flex-col justify-center items-center text-center py-2 sm:py-4">
-          <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlide}
               custom={direction}

@@ -409,7 +409,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Board Container */}
         <div className="w-full relative z-20 flex justify-center px-1">
           <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
-            <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-black p-1">
+            <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1">
               <Chessboard
                 options={{
                   position: fens[currentStep],

@@ -59,7 +59,7 @@ export default function MysteryBoxDetailsSheet({
     }, [onClose]);
 
     const content = (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 p-3 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-[var(--color-brand-overlay)] p-3 backdrop-blur-sm">
             <button
                 type="button"
                 aria-label={t('back')}

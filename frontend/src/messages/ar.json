@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "المباريات الملعوبة",
     "current_streak": "السلسلة الحالية",
+    "day_streak": "أيام متتالية",
     "best_streak": "أفضل سلسلة",
     "wins": "انتصارات",
     "losses": "خسائر",
@@ -28,7 +29,6 @@
     "daily_tasks": "المهام اليومية",
     "friends": "الأصدقاء",
     "leaderboard": "لائحة المتصدرين",
-    "welcome": "أهلاً بك، {name}",
     "back": "رجوع",
     "latest_updates": "Latest Updates",
     "referral_commission": "Referral Commission",
@@ -65,7 +65,8 @@
     "nav_settings": "الإعدادات",
     "nav_profile": "الملف الشخصي",
     "nav_logout": "تسجيل الخروج",
-    "nav_marketplace": "المتجر"
+    "nav_marketplace": "المتجر",
+    "draws": "تعادل"
   },
   "Marketplace": {
     "title": "المتجر",
@@ -214,7 +215,8 @@
     "daily_play_human_desc": "العب مباراة ضد شخص حقيقي.",
     "daily_play_human_inst": "استخدم المطابقة أو سجل المبارزات للعب ضد إنسان.",
     "daily_login_desc": "افتح التطبيق اليوم.",
-    "daily_login_inst": "تكتمل المهمة تلقائيًا."
+    "daily_login_inst": "تكتمل المهمة تلقائيًا.",
+    "level": "مستوى"
   },
   "Academy": {
     "title": "الأكاديمية",

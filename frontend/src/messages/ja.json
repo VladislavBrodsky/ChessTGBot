@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "プレイ済みのゲーム",
     "current_streak": "現在の連勝",
+    "day_streak": "連続日数",
     "best_streak": "最高連勝",
     "wins": "勝利",
     "losses": "敗北",
@@ -64,7 +65,8 @@
     "nav_settings": "設定",
     "nav_profile": "プロフィール",
     "nav_logout": "ログアウト",
-    "nav_marketplace": "市場"
+    "nav_marketplace": "市場",
+    "draws": "引き分け"
   },
   "Marketplace": {
     "title": "マーケット",
@@ -213,7 +215,8 @@
     "daily_play_human_desc": "実際の人間と対局する。",
     "daily_play_human_inst": "マッチングまたはデュエル記録から人間と対局しましょう。",
     "daily_login_desc": "今日アプリを開く。",
-    "daily_login_inst": "タスクは自動的に完了します。"
+    "daily_login_inst": "タスクは自動的に完了します。",
+    "level": "レベル"
   },
   "Academy": {
     "title": "アカデミー",

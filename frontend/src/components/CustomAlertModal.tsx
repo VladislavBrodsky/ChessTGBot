@@ -83,7 +83,7 @@ export default function CustomAlertModal() {
         >
           {/* Backdrop layer with visual overlay & scroll-lock */}
           <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+            className="absolute inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md" 
             style={{ touchAction: 'none' }} 
             onClick={() => modal.type === 'alert' && handleClose(true)} 
           />

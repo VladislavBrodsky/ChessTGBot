@@ -38,7 +38,7 @@ export default function IncomingRematchDrawer({
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={onDecline}
-        className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+        className="absolute inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md" 
         style={{ touchAction: 'none' }}
       />
       

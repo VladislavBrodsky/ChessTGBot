@@ -542,7 +542,7 @@ export default function MembershipPage() {
         {showSuccess && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4"
           >
             {showConfetti && typeof window !== 'undefined' && (
               <Confetti
@@ -582,7 +582,7 @@ export default function MembershipPage() {
         {showInsufficient && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4"
           >
             <motion.div
               initial={{ scale: 0.92, y: 20, opacity: 0 }}
