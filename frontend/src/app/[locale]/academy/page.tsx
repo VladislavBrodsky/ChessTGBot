@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 import LayoutWrapper from "@/components/LayoutWrapper";
-import MysteryBoxPromo from '@/components/Marketplace/MysteryBoxPromo';
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
