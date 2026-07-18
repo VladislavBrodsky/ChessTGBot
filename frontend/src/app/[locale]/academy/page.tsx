@@ -557,10 +557,11 @@ export default function AcademyPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {lessonsList.map((lesson) => {
-              const originalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
+            {lessonsList.map((lesson, originalIndex) => {
               const isCompleted = completedLessons.includes(lesson.slug);
-              const isUnlocked = isCompleted || originalIndex === 0 || originalIndex === 1 || unlockedLessons.includes(lesson.slug);
+              // Unlock logic: first two always unlocked. A lesson is also unlocked if the user has completed it, OR if they completed the immediately preceding lesson, OR if they bought it.
+              const previousCompleted = originalIndex > 0 ? completedLessons.includes(lessonsList[originalIndex - 1].slug) : true;
+              const isUnlocked = isCompleted || originalIndex === 0 || originalIndex === 1 || previousCompleted || unlockedLessons.includes(lesson.slug);
               
               return (
                 <LessonCard
