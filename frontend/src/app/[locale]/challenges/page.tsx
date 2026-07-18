@@ -250,7 +250,11 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-brand-elevated text-brand-primary border-[var(--color-brand-border)] shadow-sm' : 'bg-yellow-400/10 text-purple-500 border-yellow-300/20 shadow-sm'}`}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                levelSecured
+                  ? 'bg-brand-elevated text-brand-muted border-brand-border-opacity-20 shadow-sm'
+                  : 'bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm'
+              }`}
             >
               {levelSecured && <FaCheckCircle size={10} />}
               {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}
@@ -369,27 +373,42 @@ export default function ChallengesPage() {
                     className={`p-4 ${task.completed && !task.claimed ? 'border-brand-border-opacity-20 bg-brand-bg-opacity-5' : 'border-brand-border-opacity-10'} transition-all shadow-sm`}
                   >
                     <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${task.completed ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-5 text-brand-primary opacity-40 border border-brand-border-opacity-10'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm border transition-colors ${
+                        task.completed
+                          ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
+                          : 'bg-brand-elevated text-brand-muted border-brand-border-opacity-10'
+                      }`}>
                         {task.completed ? <FaCheckCircle /> : <FaStar />}
                       </div>
-                      <div>
+                      <div className="flex flex-col min-w-0">
                         <h4 className="text-xs font-bold text-brand-primary mb-0.5 uppercase tracking-wide">
                           {t(task.title_key)}
                         </h4>
-                        <p className="text-[10px] text-brand-primary opacity-50 mb-1 leading-snug max-w-[180px]">
+                        <p className="text-[10px] text-brand-muted mb-1 leading-snug max-w-[180px]">
                           {t(`${task.title_key}_desc`)}
                         </p>
                         {t.has(`${task.title_key}_inst`) && (
-                          <p className="text-[9px] text-blue-400 font-bold mb-2 leading-snug max-w-[180px] drop-shadow-glow">
+                          <p className="text-[9px] text-blue-500 dark:text-blue-400 font-bold mb-2 leading-snug max-w-[180px]">
                             👉 {t(`${task.title_key}_inst`)}
                           </p>
                         )}
                         <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">
-                            <div className={`h-full transition-all duration-500 ${task.progress >= task.target_count ? 'bg-emerald-500' : 'bg-brand-primary'}`} style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }} />
+                          <div className="h-1 w-16 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10">
+                            <div
+                              className={`h-full transition-all duration-700 rounded-full ${
+                                task.progress >= task.target_count
+                                  ? 'bg-gradient-to-r from-emerald-400 to-teal-400'
+                                  : 'bg-gradient-to-r from-brand-primary/60 to-brand-primary/40'
+                              }`}
+                              style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
+                            />
                           </div>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${task.progress >= task.target_count ? 'text-emerald-500 opacity-80' : 'text-brand-primary opacity-40'}`}>{task.progress}/{task.target_count}</span>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                            task.progress >= task.target_count
+                              ? 'text-emerald-500'
+                              : 'text-brand-muted'
+                          }`}>{task.progress}/{task.target_count}</span>
                         </div>
                       </div>
                     </div>
@@ -450,10 +469,10 @@ export default function ChallengesPage() {
           <div className="w-full mb-12">
             <button 
               onClick={() => setShowArchive(!showArchive)}
-              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-primary/60 hover:bg-brand-surface/40 transition-colors"
+              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-muted hover:bg-brand-surface/40 hover:text-brand-primary transition-colors"
             >
-              <span>{t('completed_missions') || 'Archive'}</span>
-              <span className="text-brand-primary/40">{showArchive ? '▲' : '▼'}</span>
+              <span>{t.has('completed_missions') ? t('completed_missions') : 'Archive'}</span>
+              <span className="text-brand-muted text-[10px]">{showArchive ? '▲' : '▼'} {tasks.filter(t => t.claimed).length}</span>
             </button>
 
             {showArchive && (
