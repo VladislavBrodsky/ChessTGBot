@@ -1,0 +1,479 @@
+{"level": "INFO", "timestamp": "2026-07-18 12:19:55,988", "name": "app.core.socket", "message": "[Socket] Initialized AsyncRedisManager with configured Redis service"}
+============================= test session starts ==============================
+platform darwin -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/grandmaestro/Developer/ChessTGBot/backend
+configfile: pytest.ini
+plugins: anyio-4.10.0, asyncio-1.3.0, Faker-40.1.2, cov-7.0.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 1 item
+
+tests/test_socket_e2e.py INFO:     Started server process [8479]
+INFO:     Uvicorn running on http://127.0.0.1:58117 (Press CTRL+C to quit)
+FINFO:     Shutting down
+INFO:     Finished server process [8479]
+
+
+=================================== FAILURES ===================================
+_______________ test_two_clients_match_play_checkmate_and_settle _______________
+
+self = <aiohttp.connector.TCPConnector object at 0x10b613620>, addr_infos = []
+req = <aiohttp.client_reqrep.ClientRequest object at 0x10b918050>
+timeout = ClientTimeout(total=300, connect=None, sock_read=None, sock_connect=30, ceil_threshold=5)
+client_error = <class 'aiohttp.client_exceptions.ClientConnectorError'>
+args = (functools.partial(<class 'aiohttp.client_proto.ResponseHandler'>, loop=<_UnixSelectorEventLoop running=False closed=False debug=False>),)
+kwargs = {'server_hostname': None, 'ssl': None}
+
+    async def _wrap_create_connection(
+        self,
+        *args: Any,
+        addr_infos: List[AddrInfoType],
+        req: ClientRequest,
+        timeout: "ClientTimeout",
+        client_error: Type[Exception] = ClientConnectorError,
+        **kwargs: Any,
+    ) -> Tuple[asyncio.Transport, ResponseHandler]:
+        try:
+            async with ceil_timeout(
+                timeout.sock_connect, ceil_threshold=timeout.ceil_threshold
+            ):
+>               sock = await aiohappyeyeballs.start_connection(
+                    addr_infos=addr_infos,
+                    local_addr_infos=self._local_addr_infos,
+                    happy_eyeballs_delay=self._happy_eyeballs_delay,
+                    interleave=self._interleave,
+                    loop=self._loop,
+                    socket_factory=self._socket_factory,
+                )
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:1298: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohappyeyeballs/impl.py:122: in start_connection
+    raise first_exception
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohappyeyeballs/impl.py:73: in start_connection
+    sock = await _connect_sock(
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohappyeyeballs/impl.py:208: in _connect_sock
+    await loop.sock_connect(sock, address)
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/selector_events.py:641: in sock_connect
+    return await fut
+           ^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_UnixSelectorEventLoop running=False closed=False debug=False>
+fut = None, sock = <socket.socket [closed] fd=-1, family=2, type=1, proto=6>
+address = ('127.0.0.1', 58117)
+
+    def _sock_connect(self, fut, sock, address):
+        fd = sock.fileno()
+        try:
+>           sock.connect(address)
+E           PermissionError: [Errno 1] Operation not permitted
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/selector_events.py:649: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+self = <engineio.async_client.AsyncClient object at 0x10b612ba0>
+url = 'http://127.0.0.1:58117'
+headers = {'Origin': 'http://127.0.0.1:3000', 'X-Forwarded-For': '203.0.113.10'}
+engineio_path = 'socket.io'
+
+    async def _connect_websocket(self, url, headers, engineio_path):
+        """Establish or upgrade to a WebSocket connection with the server."""
+        if aiohttp is None:  # pragma: no cover
+            self.logger.error('aiohttp package not installed')
+            return False
+        websocket_url = self._get_engineio_url(url, engineio_path,
+                                               'websocket')
+        if self.sid:
+            self.logger.info(
+                'Attempting WebSocket upgrade to ' + websocket_url)
+            upgrade = True
+            websocket_url += '&sid=' + self.sid
+        else:
+            upgrade = False
+            self.base_url = websocket_url
+            self.logger.info(
+                'Attempting WebSocket connection to ' + websocket_url)
+    
+        if self.http is None or self.http.closed:  # pragma: no cover
+            self.http = aiohttp.ClientSession()
+    
+        # extract any new cookies passed in a header so that they can also be
+        # sent the the WebSocket route
+        for header, value in headers.items():
+            if header.lower() == 'cookie':
+                ck = SimpleCookie(headers[header])
+                self.http.cookie_jar.update_cookies(
+                    {k: m.value for k, m in ck.items()})
+                del headers[header]
+                break
+    
+        extra_options = {
+            'timeout': aiohttp.ClientWSTimeout(ws_close=self.request_timeout)}
+        if not self.ssl_verify:
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            extra_options['ssl'] = ssl_context
+    
+        # combine internally generated options with the ones supplied by the
+        # caller. The caller's options take precedence.
+        headers.update(self.websocket_extra_options.pop('headers', {}))
+        extra_options['headers'] = headers
+        extra_options.update(self.websocket_extra_options)
+    
+        try:
+>           ws = await self.http.ws_connect(
+                websocket_url + self._get_url_timestamp(), **extra_options)
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/engineio/async_client.py:348: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/client.py:1076: in _ws_connect
+    resp = await self.request(
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/client.py:779: in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/client.py:734: in _connect_and_send_request
+    conn = await self._connector.connect(
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:672: in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:1239: in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:1611: in _create_direct_connection
+    raise last_exc
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:1580: in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <aiohttp.connector.TCPConnector object at 0x10b613620>, addr_infos = []
+req = <aiohttp.client_reqrep.ClientRequest object at 0x10b918050>
+timeout = ClientTimeout(total=300, connect=None, sock_read=None, sock_connect=30, ceil_threshold=5)
+client_error = <class 'aiohttp.client_exceptions.ClientConnectorError'>
+args = (functools.partial(<class 'aiohttp.client_proto.ResponseHandler'>, loop=<_UnixSelectorEventLoop running=False closed=False debug=False>),)
+kwargs = {'server_hostname': None, 'ssl': None}
+
+    async def _wrap_create_connection(
+        self,
+        *args: Any,
+        addr_infos: List[AddrInfoType],
+        req: ClientRequest,
+        timeout: "ClientTimeout",
+        client_error: Type[Exception] = ClientConnectorError,
+        **kwargs: Any,
+    ) -> Tuple[asyncio.Transport, ResponseHandler]:
+        try:
+            async with ceil_timeout(
+                timeout.sock_connect, ceil_threshold=timeout.ceil_threshold
+            ):
+                sock = await aiohappyeyeballs.start_connection(
+                    addr_infos=addr_infos,
+                    local_addr_infos=self._local_addr_infos,
+                    happy_eyeballs_delay=self._happy_eyeballs_delay,
+                    interleave=self._interleave,
+                    loop=self._loop,
+                    socket_factory=self._socket_factory,
+                )
+                # Add ssl_shutdown_timeout for Python 3.11+ when SSL is used
+                if (
+                    kwargs.get("ssl")
+                    and self._ssl_shutdown_timeout
+                    and sys.version_info >= (3, 11)
+                ):
+                    kwargs["ssl_shutdown_timeout"] = self._ssl_shutdown_timeout
+                return await self._loop.create_connection(*args, **kwargs, sock=sock)
+        except cert_errors as exc:
+            raise ClientConnectorCertificateError(req.connection_key, exc) from exc
+        except ssl_errors as exc:
+            raise ClientConnectorSSLError(req.connection_key, exc) from exc
+        except OSError as exc:
+            if exc.errno is None and isinstance(exc, asyncio.TimeoutError):
+                raise
+>           raise client_error(req.connection_key, exc) from exc
+E           aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host 127.0.0.1:58117 ssl:default [Operation not permitted]
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiohttp/connector.py:1321: ClientConnectorError
+
+During handling of the above exception, another exception occurred:
+
+self = <socketio.async_client.AsyncClient object at 0x10b612a50>
+url = 'http://127.0.0.1:58117'
+headers = {'Origin': 'http://127.0.0.1:3000', 'X-Forwarded-For': '203.0.113.10'}
+auth = {'initData': 'user=%7B%22id%22%3A881001%2C%22first_name%22%3A%22E2E-A%22%2C%22username%22%3A%22E2E-A%22%7D'}
+transports = ['websocket'], namespaces = ['/'], socketio_path = 'socket.io'
+wait = True, wait_timeout = 20, retry = False
+
+    async def connect(self, url, headers={}, auth=None, transports=None,
+                      namespaces=None, socketio_path='socket.io', wait=True,
+                      wait_timeout=1, retry=False):
+        """Connect to a Socket.IO server.
+    
+        :param url: The URL of the Socket.IO server. It can include custom
+                    query string parameters if required by the server. If a
+                    function is provided, the client will invoke it to obtain
+                    the URL each time a connection or reconnection is
+                    attempted.
+        :param headers: A dictionary with custom headers to send with the
+                        connection request. If a function is provided, the
+                        client will invoke it to obtain the headers dictionary
+                        each time a connection or reconnection is attempted.
+        :param auth: Authentication data passed to the server with the
+                     connection request, normally a dictionary with one or
+                     more string key/value pairs. If a function is provided,
+                     the client will invoke it to obtain the authentication
+                     data each time a connection or reconnection is attempted.
+        :param transports: The list of allowed transports. Valid transports
+                           are ``'polling'`` and ``'websocket'``. If not
+                           given, the polling transport is connected first,
+                           then an upgrade to websocket is attempted.
+        :param namespaces: The namespaces to connect as a string or list of
+                           strings. If not given, the namespaces that have
+                           registered event handlers are connected.
+        :param socketio_path: The endpoint where the Socket.IO server is
+                              installed. The default value is appropriate for
+                              most cases.
+        :param wait: if set to ``True`` (the default) the call only returns
+                     when all the namespaces are connected. If set to
+                     ``False``, the call returns as soon as the Engine.IO
+                     transport is connected, and the namespaces will connect
+                     in the background.
+        :param wait_timeout: How long the client should wait for the
+                             connection. The default is 1 second. This
+                             argument is only considered when ``wait`` is set
+                             to ``True``.
+        :param retry: Apply the reconnection logic if the initial connection
+                      attempt fails. The default is ``False``.
+    
+        Note: this method is a coroutine.
+    
+        Example usage::
+    
+            sio = socketio.AsyncClient()
+            await sio.connect('http://localhost:5000')
+        """
+        if self.connected:
+            raise exceptions.ConnectionError('Already connected')
+    
+        self.connection_url = url
+        self.connection_headers = headers
+        self.connection_auth = auth
+        self.connection_transports = transports
+        self.connection_namespaces = namespaces
+        self.socketio_path = socketio_path
+    
+        if namespaces is None:
+            namespaces = list(set(self.handlers.keys()).union(
+                set(self.namespace_handlers.keys())))
+            if '*' in namespaces:
+                namespaces.remove('*')
+            if len(namespaces) == 0:
+                namespaces = ['/']
+        elif isinstance(namespaces, str):
+            namespaces = [namespaces]
+        self.connection_namespaces = namespaces
+        self.namespaces = {}
+        self.failed_namespaces = []
+        if self._connect_event is None:
+            self._connect_event = self.eio.create_event()
+        else:
+            self._connect_event.clear()
+        real_url = await self._get_real_value(self.connection_url)
+        real_headers = await self._get_real_value(self.connection_headers)
+        try:
+>           await self.eio.connect(real_url, headers=real_headers,
+                                   transports=transports,
+                                   engineio_path=socketio_path)
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/socketio/async_client.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/engineio/async_client.py:132: in connect
+    return await getattr(self, '_connect_' + self.transports[0])(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <engineio.async_client.AsyncClient object at 0x10b612ba0>
+url = 'http://127.0.0.1:58117'
+headers = {'Origin': 'http://127.0.0.1:3000', 'X-Forwarded-For': '203.0.113.10'}
+engineio_path = 'socket.io'
+
+    async def _connect_websocket(self, url, headers, engineio_path):
+        """Establish or upgrade to a WebSocket connection with the server."""
+        if aiohttp is None:  # pragma: no cover
+            self.logger.error('aiohttp package not installed')
+            return False
+        websocket_url = self._get_engineio_url(url, engineio_path,
+                                               'websocket')
+        if self.sid:
+            self.logger.info(
+                'Attempting WebSocket upgrade to ' + websocket_url)
+            upgrade = True
+            websocket_url += '&sid=' + self.sid
+        else:
+            upgrade = False
+            self.base_url = websocket_url
+            self.logger.info(
+                'Attempting WebSocket connection to ' + websocket_url)
+    
+        if self.http is None or self.http.closed:  # pragma: no cover
+            self.http = aiohttp.ClientSession()
+    
+        # extract any new cookies passed in a header so that they can also be
+        # sent the the WebSocket route
+        for header, value in headers.items():
+            if header.lower() == 'cookie':
+                ck = SimpleCookie(headers[header])
+                self.http.cookie_jar.update_cookies(
+                    {k: m.value for k, m in ck.items()})
+                del headers[header]
+                break
+    
+        extra_options = {
+            'timeout': aiohttp.ClientWSTimeout(ws_close=self.request_timeout)}
+        if not self.ssl_verify:
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            extra_options['ssl'] = ssl_context
+    
+        # combine internally generated options with the ones supplied by the
+        # caller. The caller's options take precedence.
+        headers.update(self.websocket_extra_options.pop('headers', {}))
+        extra_options['headers'] = headers
+        extra_options.update(self.websocket_extra_options)
+    
+        try:
+            ws = await self.http.ws_connect(
+                websocket_url + self._get_url_timestamp(), **extra_options)
+        except (aiohttp.client_exceptions.WSServerHandshakeError,
+                aiohttp.client_exceptions.ServerConnectionError,
+                aiohttp.client_exceptions.ClientConnectionError):
+            if upgrade:
+                self.logger.warning(
+                    'WebSocket upgrade failed: connection error')
+                return False
+            else:
+>               raise exceptions.ConnectionError('Connection error')
+E               engineio.exceptions.ConnectionError: Connection error
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/engineio/async_client.py:358: ConnectionError
+
+The above exception was the direct cause of the following exception:
+
+socket_server = {'factory': async_sessionmaker(class_='AsyncSession', bind=<sqlalchemy.ext.asyncio.engine.AsyncEngine object at 0x10b4af190>, autoflush=True, expire_on_commit=False), 'url': 'http://127.0.0.1:58117'}
+
+    async def test_two_clients_match_play_checkmate_and_settle(socket_server):
+        url, factory = socket_server["url"], socket_server["factory"]
+        await _seed_players(factory)
+    
+        client_a, client_b = E2EClient(), E2EClient()
+>       await client_a.connect(url, PLAYER_A, "E2E-A", ip="203.0.113.10")
+
+tests/test_socket_e2e.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_socket_e2e.py:92: in connect
+    await self.sio.connect(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socketio.async_client.AsyncClient object at 0x10b612a50>
+url = 'http://127.0.0.1:58117'
+headers = {'Origin': 'http://127.0.0.1:3000', 'X-Forwarded-For': '203.0.113.10'}
+auth = {'initData': 'user=%7B%22id%22%3A881001%2C%22first_name%22%3A%22E2E-A%22%2C%22username%22%3A%22E2E-A%22%7D'}
+transports = ['websocket'], namespaces = ['/'], socketio_path = 'socket.io'
+wait = True, wait_timeout = 20, retry = False
+
+    async def connect(self, url, headers={}, auth=None, transports=None,
+                      namespaces=None, socketio_path='socket.io', wait=True,
+                      wait_timeout=1, retry=False):
+        """Connect to a Socket.IO server.
+    
+        :param url: The URL of the Socket.IO server. It can include custom
+                    query string parameters if required by the server. If a
+                    function is provided, the client will invoke it to obtain
+                    the URL each time a connection or reconnection is
+                    attempted.
+        :param headers: A dictionary with custom headers to send with the
+                        connection request. If a function is provided, the
+                        client will invoke it to obtain the headers dictionary
+                        each time a connection or reconnection is attempted.
+        :param auth: Authentication data passed to the server with the
+                     connection request, normally a dictionary with one or
+                     more string key/value pairs. If a function is provided,
+                     the client will invoke it to obtain the authentication
+                     data each time a connection or reconnection is attempted.
+        :param transports: The list of allowed transports. Valid transports
+                           are ``'polling'`` and ``'websocket'``. If not
+                           given, the polling transport is connected first,
+                           then an upgrade to websocket is attempted.
+        :param namespaces: The namespaces to connect as a string or list of
+                           strings. If not given, the namespaces that have
+                           registered event handlers are connected.
+        :param socketio_path: The endpoint where the Socket.IO server is
+                              installed. The default value is appropriate for
+                              most cases.
+        :param wait: if set to ``True`` (the default) the call only returns
+                     when all the namespaces are connected. If set to
+                     ``False``, the call returns as soon as the Engine.IO
+                     transport is connected, and the namespaces will connect
+                     in the background.
+        :param wait_timeout: How long the client should wait for the
+                             connection. The default is 1 second. This
+                             argument is only considered when ``wait`` is set
+                             to ``True``.
+        :param retry: Apply the reconnection logic if the initial connection
+                      attempt fails. The default is ``False``.
+    
+        Note: this method is a coroutine.
+    
+        Example usage::
+    
+            sio = socketio.AsyncClient()
+            await sio.connect('http://localhost:5000')
+        """
+        if self.connected:
+            raise exceptions.ConnectionError('Already connected')
+    
+        self.connection_url = url
+        self.connection_headers = headers
+        self.connection_auth = auth
+        self.connection_transports = transports
+        self.connection_namespaces = namespaces
+        self.socketio_path = socketio_path
+    
+        if namespaces is None:
+            namespaces = list(set(self.handlers.keys()).union(
+                set(self.namespace_handlers.keys())))
+            if '*' in namespaces:
+                namespaces.remove('*')
+            if len(namespaces) == 0:
+                namespaces = ['/']
+        elif isinstance(namespaces, str):
+            namespaces = [namespaces]
+        self.connection_namespaces = namespaces
+        self.namespaces = {}
+        self.failed_namespaces = []
+        if self._connect_event is None:
+            self._connect_event = self.eio.create_event()
+        else:
+            self._connect_event.clear()
+        real_url = await self._get_real_value(self.connection_url)
+        real_headers = await self._get_real_value(self.connection_headers)
+        try:
+            await self.eio.connect(real_url, headers=real_headers,
+                                   transports=transports,
+                                   engineio_path=socketio_path)
+        except engineio.exceptions.ConnectionError as exc:
+            for n in self.connection_namespaces:
+                await self._trigger_event(
+                    'connect_error', n,
+                    exc.args[1] if len(exc.args) > 1 else exc.args[0])
+            if retry:  # pragma: no cover
+                await self._handle_reconnect()
+                if self.eio.state == 'connected':
+                    return
+>           raise exceptions.ConnectionError(exc.args[0]) from exc
+E           socketio.exceptions.ConnectionError: Connection error
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/socketio/async_client.py:164: ConnectionError
+=========================== short test summary info ============================
+FAILED tests/test_socket_e2e.py::test_two_clients_match_play_checkmate_and_settle
+============================== 1 failed in 0.40s ===============================
