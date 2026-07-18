@@ -388,7 +388,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                 {t('your_link')}
                 <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm">VIP</span>
               </p>
-              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Share to earn 15%</p>
+              <p className="text-[10px] font-bold text-purple-600/70 dark:text-purple-300/70 uppercase tracking-widest">Share to earn 15%</p>
             </div>
             <div className="px-2 py-1 rounded-lg border border-purple-500/30 bg-purple-500/10 text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest shadow-sm">
               +50 XP
