@@ -370,6 +370,16 @@ export default function AcademyPage() {
           )}
         </div>
 
+        {/* Academy Progress Card — prominent, right below header */}
+        {stats && (
+          <AcademyProgressCard 
+            completedCount={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length}
+            totalCount={lessonsList.length}
+            totalXp={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length * 50}
+            streak={stats?.study_streak || 0}
+          />
+        )}
+
         {/* Motivational Quote */}
         <motion.div 
           initial={{ opacity: 0 }}
@@ -553,12 +563,6 @@ export default function AcademyPage() {
 
         {/* Mastery Tracks Grid */}
         <div className="space-y-6">
-          <AcademyProgressCard 
-            completedCount={completedLessons.length}
-            totalCount={lessonsList.length}
-            totalXp={completedLessons.length * 50}
-            streak={stats?.study_streak || 0}
-          />
           
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
             <FaChessKnight className="text-brand-primary opacity-40 text-xl" />
