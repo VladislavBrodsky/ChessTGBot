@@ -155,12 +155,15 @@ export default function DailyCheckinModal() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleClaim}
-                disabled={claiming || !status.can_claim_today}
+                // Once the reward is claimed the button becomes "Come back tomorrow"
+                // and must DISMISS the modal — otherwise (with "Skip for now" also
+                // hidden below) there is no way to close it and the user is trapped.
+                onClick={status.can_claim_today ? handleClaim : closeModal}
+                disabled={claiming}
                 className={`min-h-12 w-full rounded-2xl py-4 font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
                   ${status.can_claim_today && !claiming
                     ? "bg-gradient-to-r from-emerald-500 to-emerald-400 text-emerald-950 cursor-pointer shadow-[0_0_30px_rgba(16,185,129,0.3)]"
-                    : "bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-muted cursor-not-allowed"
+                    : `bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-muted ${claiming ? "cursor-not-allowed" : "cursor-pointer"}`
                   }`}
               >
                 <span className="relative z-10">{claiming ? "Claiming..." : status.can_claim_today ? "Claim Reward" : "Come back tomorrow"}</span>
