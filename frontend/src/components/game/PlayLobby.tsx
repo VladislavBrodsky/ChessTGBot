@@ -64,15 +64,12 @@ export default function PlayLobby() {
   const scrollToWager = () => {
     telegramHaptic('light');
     if (wagerScrollRef.current) {
-      const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]');
-      if (activeEl) {
-        activeEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
+      const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
+      if (activeEl && activeEl.parentElement) {
+        activeEl.parentElement.scrollTo({
+          left: activeEl.offsetLeft - activeEl.parentElement.offsetWidth / 2 + activeEl.offsetWidth / 2,
+          behavior: 'smooth'
         });
-      } else {
-        wagerScrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   };
@@ -80,15 +77,12 @@ export default function PlayLobby() {
   const scrollToTimeControl = () => {
     telegramHaptic('light');
     if (timeScrollRef.current) {
-      const activeEl = timeScrollRef.current.querySelector('[data-active="true"]');
-      if (activeEl) {
-        activeEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
+      const activeEl = timeScrollRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
+      if (activeEl && activeEl.parentElement) {
+        activeEl.parentElement.scrollTo({
+          left: activeEl.offsetLeft - activeEl.parentElement.offsetWidth / 2 + activeEl.offsetWidth / 2,
+          behavior: 'smooth'
         });
-      } else {
-        timeScrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   };
@@ -113,24 +107,19 @@ export default function PlayLobby() {
   // Center default items instantly on mount
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (wagerScrollRef.current) {
-        const activeEl = wagerScrollRef.current.querySelector('[data-active="true"]');
+      const centerEl = (container: HTMLDivElement | null) => {
+        if (!container) return;
+        const activeEl = container.querySelector('[data-active="true"]') as HTMLElement | null;
         if (activeEl) {
-          activeEl.scrollIntoView({
-            block: 'nearest',
-            inline: 'center'
+          container.scrollTo({
+            left: activeEl.offsetLeft - container.offsetWidth / 2 + activeEl.offsetWidth / 2,
+            behavior: 'auto'
           });
         }
-      }
-      if (timeScrollRef.current) {
-        const activeEl = timeScrollRef.current.querySelector('[data-active="true"]');
-        if (activeEl) {
-          activeEl.scrollIntoView({
-            block: 'nearest',
-            inline: 'center'
-          });
-        }
-      }
+      };
+      
+      centerEl(wagerScrollRef.current);
+      centerEl(timeScrollRef.current);
     }, 100);
     return () => clearTimeout(timer);
   }, []);

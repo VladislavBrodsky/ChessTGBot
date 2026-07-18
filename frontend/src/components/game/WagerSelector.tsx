@@ -60,11 +60,13 @@ export default function WagerSelector({
                   setSelectedWager(opt.val);
                   setIsCustomWager(false);
                   telegramHaptic('light');
-                  e.currentTarget.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                  });
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.scrollTo({
+                      left: e.currentTarget.offsetLeft - parent.offsetWidth / 2 + e.currentTarget.offsetWidth / 2,
+                      behavior: 'smooth'
+                    });
+                  }
                 }}
                 className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   isSelected
@@ -87,11 +89,13 @@ export default function WagerSelector({
             onClick={(e) => {
               setIsCustomWager(true);
               telegramHaptic('light');
-              e.currentTarget.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest',
-                inline: 'center'
-              });
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.scrollTo({
+                  left: e.currentTarget.offsetLeft - parent.offsetWidth / 2 + e.currentTarget.offsetWidth / 2,
+                  behavior: 'smooth'
+                });
+              }
             }}
             className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               isCustomWager

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChessPawn } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import { telegramHaptic } from "@/lib/telegram";
 import { motion } from 'framer-motion';
 
@@ -20,7 +20,7 @@ export default function TimeControlSelector({
     <section className="px-4 pt-3 pb-4" aria-labelledby="time-selector-title">
       <div className="flex justify-center items-center mb-3">
         <span id="time-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
-          <FaChessPawn className="text-brand-muted" size={9} />
+          <FaClock className="text-brand-muted" size={9} />
           {tg('time_control')}
         </span>
       </div>
@@ -48,11 +48,13 @@ export default function TimeControlSelector({
                 onClick={(e) => {
                   setTimeControl(opt.val);
                   telegramHaptic('light');
-                  e.currentTarget.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                  });
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.scrollTo({
+                      left: e.currentTarget.offsetLeft - parent.offsetWidth / 2 + e.currentTarget.offsetWidth / 2,
+                      behavior: 'smooth'
+                    });
+                  }
                 }}
                 className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                   isSelected
