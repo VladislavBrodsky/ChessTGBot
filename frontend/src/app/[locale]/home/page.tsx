@@ -40,7 +40,7 @@ export default function Home() {
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
  const displayName = stats
    ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
-   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : 'Combatant');
+   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : (t.has('combatant') ? t('combatant') : 'Combatant'));
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -99,7 +99,7 @@ export default function Home() {
         className="relative w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
       >
         <FiBell size={16} />
-        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-danger shadow-premium" />
       </button>
       <Link
         href={`/${locale}/settings`}
@@ -235,7 +235,7 @@ export default function Home() {
         );
       })()}
       {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-primary/40 bg-gradient-to-br from-purple-400/20 to-purple-600/20 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.3)] backdrop-blur-md">
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-gold/40 bg-gradient-to-br from-brand-gold/10 to-brand-gold/20 text-brand-gold shadow-premium backdrop-blur-md">
       <FaStar />
       </div>
       )}
@@ -258,7 +258,7 @@ export default function Home() {
       className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
       >
       <FaWallet className="text-[10px] text-brand-muted" />
-      <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
+      <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-brand-danger' : 'text-brand-primary'}`}>
       {/* Never present a failed balance fetch as "$0.00" */}
       {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
       </span>
@@ -306,7 +306,7 @@ export default function Home() {
   <Link
    href={`/${locale}/game`}
    onClick={() => telegramHaptic('medium')}
-   className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
+   className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
   >
    <motion.div
      whileHover={{ y: -2 }}
@@ -317,7 +317,7 @@ export default function Home() {
       <FaChessKnight className="text-2xl" aria-hidden="true" />
      </div>
      <div className="relative z-10 min-w-0 flex-1 text-left">
-      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500 mb-1.5">{t('play')}</span>
+      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-brand-primary mb-1.5">{t('play')}</span>
       <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
      </div>
      <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">

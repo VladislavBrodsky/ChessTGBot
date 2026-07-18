@@ -60,7 +60,7 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
   const areaD = `${pathD} L ${pts[pts.length - 1].x},${HEIGHT - PAD} L ${pts[0].x},${HEIGHT - PAD} Z`;
 
   const isPositiveTrend = history[history.length - 1] >= history[0];
-  const strokeColor = isPositiveTrend ? "#10b981" : "#f43f5e"; // Emerald if up, Rose if down
+  const strokeColor = isPositiveTrend ? "var(--color-brand-success)" : "var(--color-brand-danger)"; // Emerald if up, Rose if down
 
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full drop-shadow-sm" style={{ height: HEIGHT }}>
@@ -197,8 +197,8 @@ export default function ProfilePage() {
  </div>
   {/* Premium overlay badge */}
   {stats?.is_premium ? (
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-purple-500/30 bg-gradient-to-br from-purple-500/20 to-purple-700/20 text-purple-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(168,85,247,0.25)] backdrop-blur-md">
-      👑 PREMIUM
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/30 bg-gradient-to-br from-brand-gold/20 to-brand-gold/40 text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon backdrop-blur-md">
+      {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
     </div>
   ) : (
     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-primary/30 bg-gradient-to-br from-brand-surface to-brand-void text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(255,255,255,0.05)] backdrop-blur-md">
@@ -207,11 +207,11 @@ export default function ProfilePage() {
   )}
  </div>
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
- {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : "Combatant")}
+ {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
  </h1>
  
  {stats && stats.study_streak > 0 && (
-    <div className="flex items-center gap-1.5 mb-4 text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
+    <div className="flex items-center gap-1.5 mb-4 text-brand-gold bg-brand-gold/10 px-3 py-1 rounded-full border border-brand-gold/20 shadow-neon">
         <FaFire className="text-sm" />
         <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
     </div>
@@ -226,13 +226,13 @@ export default function ProfilePage() {
   <div className="w-full grid grid-cols-2 gap-3">
     {/* ELO & Rank Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-premium backdrop-blur-xl">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-12 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-16 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-24" />
       </Card>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-premium backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
         <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
@@ -245,13 +245,13 @@ export default function ProfilePage() {
 
     {/* Games Played & Total Score Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-premium backdrop-blur-xl">
         <div className="h-2 bg-brand-primary opacity-10 rounded w-16 mb-2" />
         <div className="h-6 bg-brand-primary opacity-15 rounded w-12 mb-2" />
         <div className="h-1.5 bg-brand-primary opacity-5 rounded w-20" />
       </Card>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-premium backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
         <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
@@ -263,7 +263,7 @@ export default function ProfilePage() {
 
   {/* Visual W - D - L Breakdown Bar */}
   {!stats ? (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl animate-pulse space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl animate-pulse space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-24" />
         <div className="h-2.5 bg-brand-primary opacity-10 rounded w-12" />
@@ -276,19 +276,19 @@ export default function ProfilePage() {
       </div>
     </Card>
   ) : (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl space-y-3.5">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{labels.breakdown}</span>
-        <span className="text-[10px] font-black text-emerald-500 dark:text-emerald-400 uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
+        <span className="text-[10px] font-black text-brand-success text-brand-success uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
       </div>
 
       {/* Segmented Progress Bar */}
       <div className="w-full h-2.5 rounded-full overflow-hidden flex bg-brand-elevated border border-brand-border-opacity-10">
         {stats.games_played > 0 ? (
           <>
-            <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${stats.win_rate}%` }} title={`Wins: ${stats.win_rate}%`} />
-            <div className="h-full bg-slate-300 dark:bg-slate-500 transition-all duration-700" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
-            <div className="h-full bg-rose-500 transition-all duration-700" style={{ width: `${stats.loss_rate}%` }} title={`Losses: ${stats.loss_rate}%`} />
+            <div className="h-full bg-brand-success transition-all duration-700" style={{ width: `${stats.win_rate}%` }} title={`Wins: ${stats.win_rate}%`} />
+            <div className="h-full bg-slate-300 bg-brand-surface transition-all duration-700" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
+            <div className="h-full bg-brand-danger transition-all duration-700" style={{ width: `${stats.loss_rate}%` }} title={`Losses: ${stats.loss_rate}%`} />
           </>
         ) : (
           <div className="h-full bg-brand-elevated w-full" />
@@ -298,7 +298,7 @@ export default function ProfilePage() {
       {/* Metric readouts */}
       <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">{labels.wins}</span>
+          <span className="text-[10px] font-black uppercase text-brand-success tracking-widest">{labels.wins}</span>
           <span className="text-xs font-black text-brand-primary mt-0.5">{stats.wins || 0}</span>
           <span className="text-[10px] font-bold text-brand-muted">({stats.win_rate?.toFixed(0) || 0}%)</span>
         </div>
@@ -308,7 +308,7 @@ export default function ProfilePage() {
           <span className="text-[10px] font-bold text-brand-muted">({stats.draw_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase text-rose-500 tracking-widest">{labels.losses}</span>
+          <span className="text-[10px] font-black uppercase text-brand-danger tracking-widest">{labels.losses}</span>
           <span className="text-xs font-black text-brand-primary mt-0.5">{stats.losses || 0}</span>
           <span className="text-[10px] font-bold text-brand-muted">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
@@ -318,7 +318,7 @@ export default function ProfilePage() {
 
   {/* ELO History Chart */}
   {stats && (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl space-y-2">
+    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl space-y-2">
       <div className="flex justify-between items-center px-1 mb-2">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">Rating Trajectory</span>
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Last 10 Games</span>
@@ -338,10 +338,10 @@ export default function ProfilePage() {
      <div className="grid grid-cols-2 gap-3">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
-         <Card variant="glass" className="p-4 border-purple-500/30 shadow-[0_8px_32px_rgba(168,85,247,0.15)] bg-gradient-to-br from-purple-500/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
+         <Card variant="glass" className="p-4 border-brand-primary/30 shadow-premium bg-gradient-to-br from-brand-primary/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
            <div className="absolute -right-4 -top-4 text-6xl opacity-10">🚀</div>
            <span className="text-[10px] font-black text-purple-400/80 uppercase tracking-widest mb-2">Active Booster</span>
-           <span className="text-2xl font-black text-purple-400 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]">
+           <span className="text-2xl font-black text-brand-primary drop-shadow-md">
              {stats.xp_multiplier}x XP
            </span>
            {stats.multiplier_expires_at && (
@@ -353,7 +353,7 @@ export default function ProfilePage() {
        )}
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
-         <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex flex-col items-center text-center justify-center">
+         <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl flex flex-col items-center text-center justify-center">
            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Cosmetics Owned</span>
            <span className="text-2xl font-black text-brand-primary">
              {unlockedItems.length}
@@ -393,9 +393,9 @@ export default function ProfilePage() {
          const isWin = game.result === 'win';
          const isLoss = game.result === 'loss';
          const badgeColor = isWin 
-           ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.25)]" 
+           ? "border-emerald-500/30 bg-brand-success/15 text-brand-success shadow-[0_0_12px_rgba(16,185,129,0.25)]" 
            : isLoss 
-             ? "border-red-500/30 bg-red-500/15 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.25)]" 
+             ? "border-red-500/30 bg-red-500/15 text-brand-danger shadow-[0_0_12px_rgba(239,68,68,0.25)]" 
              : "border-brand-primary/20 bg-brand-primary/10 text-brand-muted";
          
          const rowGlow = isWin
@@ -417,7 +417,7 @@ export default function ProfilePage() {
                <motion.div 
                  animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                 className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
+                 className="absolute top-0 right-0 w-24 h-24 bg-brand-success/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
                />
              )}
              {isLoss && (
@@ -434,7 +434,7 @@ export default function ProfilePage() {
                </div>
                <div className="flex flex-col">
                  <span className="text-xs font-black text-brand-primary uppercase tracking-tight">
-                   vs {game.opponent?.name || "AI Engine"}
+                   vs {game.opponent?.name || "{t.has('ai_engine') ? t('ai_engine') : 'AI Engine'}"}
                  </span>
                  <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em]">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
@@ -448,7 +448,7 @@ export default function ProfilePage() {
                    {game.result}
                  </span>
                  <span className={`text-[10px] font-black mt-1.5 drop-shadow-sm ${
-                    game.elo_change > 0 ? 'text-emerald-500 dark:text-emerald-400' : game.elo_change < 0 ? 'text-rose-500' : 'text-brand-muted'
+                    game.elo_change > 0 ? 'text-brand-success text-brand-success' : game.elo_change < 0 ? 'text-brand-danger' : 'text-brand-muted'
                   }`}>
                     {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                   </span>

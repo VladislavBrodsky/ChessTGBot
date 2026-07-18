@@ -88,38 +88,23 @@ export default function SettingsPage() {
 
  {/* Standalone Glowing Premium Card */}
  <Link href={`/${locale}/membership`} className="w-full block mb-6">
- <div className="w-full glass-panel bg-brand-surface border border-purple-500/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-purple-500/60 transition-all duration-300 shadow-sm">
- <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-500 text-sm shrink-0">
- <svg
-   viewBox="0 0 24 24"
-   fill="none"
-   stroke="currentColor"
-   strokeWidth="1.8"
-   strokeLinecap="round"
-   strokeLinejoin="round"
-   className="w-5 h-5"
- >
-   <path d="M12 2v3M10.5 3.5h3" />
-   <path d="M9 8.5c1.2-1.5 2.8-1.5 4 0" />
-   <path d="M7 10h10v1.5c0 1.2-1.5 2-3 2H10c-1.5 0-3-.8-3-2V10z" />
-   <path d="M9.5 13.5v2.5h5v-2.5" />
-   <path d="M8 17.5h8" />
-   <path d="M6.5 20.5h11" />
- </svg>
+ <div className="w-full glass-panel bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-brand-gold/60 transition-all duration-300 shadow-sm">
+ <div className="flex items-center gap-3.5">
+ <div className="w-9 h-9 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center text-brand-gold text-sm shrink-0">
+ <FaGem />
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-black text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
  {t('premium_membership')}
- <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500 text-white tracking-wide">PRO</span>
+ <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-wide">PRO</span>
  </span>
- <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest leading-none opacity-80">
+ <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest leading-none opacity-80">
  {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
  </span>
  </div>
  </div>
- <div className="w-7 h-7 rounded-full border border-purple-500/25 bg-purple-500/10 flex items-center justify-center shrink-0">
- <FaArrowLeft className="rotate-180 text-[10px] text-purple-500" />
+ <div className="w-7 h-7 rounded-full border border-brand-gold/25 bg-brand-gold/10 flex items-center justify-center shrink-0">
+ <FaArrowLeft className="rotate-180 text-[10px] text-brand-gold" />
  </div>
  </div>
  </Link>
@@ -151,15 +136,11 @@ export default function SettingsPage() {
  aria-checked={theme === 'dark'}
  aria-label={t('luminance_mode')}
  onClick={handleThemeToggle}
- className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- theme === 'dark' ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
+ theme === 'dark' ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
- <motion.div
- layout
- transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className="w-5 h-5 rounded-full bg-white shadow-sm"
- />
+ <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
  </button>
  </div>
 
@@ -183,15 +164,11 @@ export default function SettingsPage() {
  aria-checked={reducedMotion}
  aria-label={t('reduce_motion')}
  onClick={handleReducedMotionToggle}
- className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- reducedMotion ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
+ reducedMotion ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
- <motion.div
- layout
- transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className="w-5 h-5 rounded-full bg-white shadow-sm"
- />
+ <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
  </button>
  </div>
 
@@ -215,15 +192,11 @@ export default function SettingsPage() {
  aria-checked={soundEnabled}
  aria-label={t('audio_protocol')}
  onClick={handleSoundToggle}
- className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- soundEnabled ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
+ soundEnabled ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
- <motion.div
- layout
- transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className="w-5 h-5 rounded-full bg-white shadow-sm"
- />
+ <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
  </button>
  </div>
 
@@ -247,15 +220,11 @@ export default function SettingsPage() {
  aria-checked={arenaAlerts}
  aria-label={t('arena_alerts')}
  onClick={handleArenaAlertsToggle}
- className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 flex items-center cursor-pointer ${
- arenaAlerts ? 'bg-emerald-500 justify-end' : 'bg-brand-bg-opacity-10 justify-start'
+ className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
+ arenaAlerts ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
  }`}
  >
- <motion.div
- layout
- transition={{ type: "spring", stiffness: 500, damping: 30 }}
- className="w-5 h-5 rounded-full bg-white shadow-sm"
- />
+ <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
  </button>
  </div>
  </div>
@@ -301,27 +270,27 @@ export default function SettingsPage() {
 
   {/* Admin Command Center Card */}
   {isAdmin && (
-    <div className="w-full mt-3 glass-panel rounded-2xl border border-red-500/20 bg-brand-surface shadow-sm overflow-hidden animate-pulse-slow">
-      <Link href={`/${locale}/admin`} className="w-full block">
-        <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 opacity-80 shadow-[0_0_15px_rgba(239,68,68,0.25)] shrink-0">
-              <FaShieldAlt className="text-sm" />
+    <div className="w-full mt-3 glass-panel rounded-2xl border border-brand-danger/20 bg-brand-surface shadow-sm overflow-hidden animate-pulse-slow">
+      <Link href={`/${locale}/admin`} className="flex items-center justify-between p-3.5 hover:bg-brand-bg-opacity-5 transition-colors group">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-9 h-9 rounded-xl bg-brand-danger/10 flex items-center justify-center text-brand-danger opacity-80 shadow-neon shrink-0">
+              <FaShieldAlt />
             </div>
-            <div className="flex flex-col text-left">
-              <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1.5 flex items-center gap-2">
-                Command Center
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-red-500 text-white tracking-wide">ADMIN</span>
-              </span>
-              <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider leading-none">
-                Manage users, payouts & broadcasts
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-black text-brand-primary tracking-tight leading-tight">{t.has('command_center') ? t('command_center') : 'Command Center'}</span>
+              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-brand-danger text-brand-void tracking-wide">{t.has('admin') ? t('admin') : 'ADMIN'}</span>
+            </div>
+            <span className="text-[10px] font-bold text-brand-danger uppercase tracking-wider leading-none">
+              {t.has('manage_admin') ? t('manage_admin') : 'Manage users, payouts & broadcasts'}
               </span>
             </div>
           </div>
-                 <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 bg-brand-elevated flex items-center justify-center">
+          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 bg-brand-elevated flex items-center justify-center">
             <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
           </div>
-        </div>
       </Link>
     </div>
   )}
