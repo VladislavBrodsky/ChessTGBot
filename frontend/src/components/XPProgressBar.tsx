@@ -18,7 +18,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
     const userLevel = progress.displayedLevel;
 
     const progressText = levelSecured
-        ? 'Level secured'
+        ? `${progress.currentLevelProgress} / ${progress.nextLevelXp} XP`
         : `${progress.currentLevelProgress} / ${XP_PER_LEVEL} XP`;
 
     return (
@@ -41,7 +41,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 aria-valuemax={XP_PER_LEVEL}
                 aria-valuenow={progress.currentLevelProgress}
                 aria-valuetext={levelSecured
-                    ? `${levelLabel} ${userLevel} secured`
+                    ? `${progress.currentLevelProgress} of ${progress.nextLevelXp} XP toward ${levelLabel} ${userLevel + 1}`
                     : `${progress.currentLevelProgress} of ${XP_PER_LEVEL} XP toward ${levelLabel} ${userLevel + 1}`}
                 className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border"
             >
