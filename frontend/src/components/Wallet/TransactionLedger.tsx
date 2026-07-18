@@ -204,10 +204,10 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                     tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
                       ? 'bg-brand-bg-opacity-10 text-brand-primary opacity-80' :
                     tx.type === 'game_win' || tx.type === 'referral_commission' || tx.type === 'subscription_commission' || tx.type === 'refund' || tx.type === 'game_refund'
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                    tx.type === 'deposit' ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400' :
-                    tx.type === 'game_wager' || tx.type === 'game_rake' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' :
-                    'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                      ? 'bg-[var(--color-emerald-opacity-10)] text-emerald-500' :
+                    tx.type === 'deposit' ? 'bg-[var(--color-cyan-opacity-10)] text-cyan-500' :
+                    tx.type === 'game_wager' || tx.type === 'game_rake' ? 'bg-[var(--color-rose-opacity-10)] text-rose-500' :
+                    'bg-[var(--color-amber-opacity-10)] text-amber-500'
                   }`}>
                     {tx.type === 'game_against_ai' ? <FaRobot className="text-[13px]" /> :
                      tx.type === 'game_free_pvp' ? <FaGamepad className="text-[13px]" /> :
@@ -231,7 +231,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                   </div>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
-                  <span className={`text-[11px] font-black ${isZero ? 'text-brand-primary opacity-60' : isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                  <span className={`text-[11px] font-black ${isZero ? 'text-brand-primary opacity-60' : isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {isZero ? '' : isPositive ? '+' : '-'}{formattedAmt}
                   </span>
                   {tx.fee > 0 && (

@@ -38,7 +38,7 @@ export default function AnimatedBackground() {
       </svg>
       
       {/* Base Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
+      <div className="absolute inset-0 opacity-[0.05]" style={{
         backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
         backgroundSize: '48px 48px'
       }} />

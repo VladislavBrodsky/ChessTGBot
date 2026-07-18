@@ -754,11 +754,11 @@ export default function PlayLobby() {
 
               {/* Win Up To Pill (Viral/FOMO) */}
               {chosenWager > 0 && (
-                <div className="px-6 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/35 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse shrink-0">
-                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
+                <div className="px-6 py-2.5 rounded-full bg-[var(--color-emerald-opacity-10)] border border-emerald-500/35 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse shrink-0">
+                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
                     <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')}
                   </span>
-                  <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none">
+                  <span className="text-lg font-black text-emerald-500 tracking-tight leading-none">
                     ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                   </span>
                 </div>

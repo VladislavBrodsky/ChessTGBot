@@ -331,8 +331,10 @@ async def send_deposit_alert(
     Sends a telegram alert to all admins for a new deposit.
     """
     from app.services.telegram_bot import TelegramService
+    import html as html_mod
     
-    user_display = f"@{username}" if username else f"ID {telegram_id}"
+    safe_username = html_mod.escape(username) if username else None
+    user_display = f"@{safe_username}" if safe_username else f"ID {telegram_id}"
     date_time_str = format_alert_time()
     
     alert_text = (
@@ -363,9 +365,11 @@ async def send_premium_subscription_alert(
     Sends a telegram alert to all admins for a new Premium subscription.
     """
     from app.services.telegram_bot import TelegramService
+    import html as html_mod
     
     duration = "1 year" if billing_period == "annual" else "1 month"
-    user_display = f"@{username}" if username else f"ID {telegram_id}"
+    safe_username = html_mod.escape(username) if username else None
+    user_display = f"@{safe_username}" if safe_username else f"ID {telegram_id}"
     date_time_str = format_alert_time()
     
     alert_text = (

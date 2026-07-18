@@ -88,7 +88,7 @@ export default function AchievementsPage() {
             <p className="text-[10px] text-brand-primary/60 font-medium leading-tight mb-3 flex-1">{ach.description}</p>
             
             {ach.xp_reward > 0 && (
-              <div className="mt-auto inline-flex items-center gap-1 bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30">
+              <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
                 <span className="text-[9px] font-black uppercase">+{ach.xp_reward} XP</span>
               </div>
             )}

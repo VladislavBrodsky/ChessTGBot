@@ -112,7 +112,7 @@ export default function WalletPage() {
             className="w-full"
           >
             <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-cyan-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-cyan-opacity-10)] text-cyan-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaWallet className="text-xs" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
@@ -126,7 +126,7 @@ export default function WalletPage() {
             className="w-full"
           >
             <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-emerald-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-emerald-opacity-10)] text-emerald-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowDown className="text-xs" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
@@ -140,7 +140,7 @@ export default function WalletPage() {
             className="w-full"
           >
             <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-rose-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-rose-opacity-10)] text-rose-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowUp className="text-xs" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
@@ -153,12 +153,12 @@ export default function WalletPage() {
           <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
           <span className="flex items-center gap-1.5 relative z-10">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            {tw('deposit_fee')} <strong className="text-emerald-500 dark:text-emerald-400 font-black">5%</strong>
+            {tw('deposit_fee')} <strong className="text-emerald-500 font-black">5%</strong>
           </span>
           <span className="opacity-30 relative z-10">•</span>
           <span className="flex items-center gap-1.5 relative z-10">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-            {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">$0.20</strong>
+            {tw('withdraw_fee')} <strong className="text-cyan-500 font-black">$0.20</strong>
           </span>
         </div>
 

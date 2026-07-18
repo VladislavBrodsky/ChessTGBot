@@ -104,14 +104,14 @@ export default function ThemeShopPage() {
     <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight flex items-center justify-center gap-3">
-          <FaPalette className="text-amber-500" /> Theme Shop
+          <FaPalette className="text-purple-500" /> Theme Shop
         </h1>
         <p className="text-sm font-bold text-brand-primary opacity-60 tracking-widest uppercase">
           Customize your board
         </p>
         <div className="inline-flex items-center gap-2 bg-brand-surface border border-brand-border-opacity-20 px-4 py-2 rounded-full mt-4">
           <span className="text-xs font-black uppercase text-brand-primary/60">Your Balance:</span>
-          <span className="text-sm font-black text-amber-400">{userXp} XP</span>
+          <span className="text-sm font-black text-emerald-400">{userXp} XP</span>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function ThemeShopPage() {
             key={theme.id}
             className={`relative p-4 rounded-2xl border flex items-center justify-between transition-all ${
               theme.owned 
-                ? 'glass-panel border-amber-500/30 bg-amber-500/5' 
+                ? 'glass-panel border-purple-500/30 bg-purple-500/5' 
                 : 'glass-panel border-brand-border-opacity-10 bg-brand-surface'
             }`}
           >
@@ -149,7 +149,7 @@ export default function ThemeShopPage() {
                   onClick={() => handleBuy(theme)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl font-black uppercase text-xs transition-all ${
                     userXp >= theme.price_xp 
-                      ? 'bg-amber-500 text-slate-900 hover:bg-amber-400' 
+                      ? 'bg-purple-500 text-white hover:bg-purple-400' 
                       : 'bg-brand-surface border border-brand-border-opacity-20 text-brand-primary/40 cursor-not-allowed'
                   }`}
                 >

@@ -57,7 +57,7 @@ export default function IncomingRematchDrawer({
 
         {/* Text Headers */}
         <div className="space-y-1.5 w-full">
-          <h3 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
+          <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em]">
             {tg('rematch_dialog_title')}
           </h3>
           <p className="text-[12px] font-bold text-brand-primary leading-relaxed px-1">
@@ -75,7 +75,7 @@ export default function IncomingRematchDrawer({
               ${((incomingRematch.wager) / 100).toFixed(2)} USDT
             </span>
             {incomingRematch.double_stakes && (
-              <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block mt-0.5 animate-pulse">
+              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest block mt-0.5 animate-pulse">
                 {tg('double_stakes_active')}
               </span>
             )}
@@ -97,7 +97,7 @@ export default function IncomingRematchDrawer({
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={onDecline}
-            className="flex-1 py-3 rounded-xl border border-red-500/20 dark:border-red-500/25 bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+            className="flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
           >
             <FaTimes className="text-[10px]" />
             <span>{tg('reject')}</span>

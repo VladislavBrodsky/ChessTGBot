@@ -37,7 +37,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
     secondary: 'bg-brand-surface text-brand-primary hover:bg-brand-elevated border border-brand-border-opacity-10',
     glass: 'glass-button', // uses the CSS class
     action: 'action-button', // uses the CSS class
-    premium: 'premium-liquid-button', // uses the CSS class
+    solid: 'bg-brand-surface border border-brand-border-opacity-10 shadow-sm text-brand-primary hover:bg-brand-surface/80',
+    premium: 'bg-purple-500 text-white hover:bg-purple-600 shadow-premium',
+    cyber: 'bg-cyber-card border border-brand-primary/20 text-brand-primary shadow-[0_0_15px_rgba(var(--color-brand-primary),0.1)] hover:shadow-[0_0_20px_rgba(var(--color-brand-primary),0.2)] hover:-translate-y-[1px]',
     outline: 'bg-transparent border border-brand-primary text-brand-primary hover:bg-brand-primary/10',
   };
 

@@ -186,7 +186,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(16px + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-4 right-4 z-[100] w-auto max-w-[420px] mx-auto rounded-[32px] border border-white/10 bg-[#0a0a0a]/70 px-2 py-2 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex justify-center"
+            className="app-bottom-nav fixed left-4 right-4 z-[100] w-auto max-w-[420px] mx-auto rounded-[28px] border border-brand-border-opacity-10 px-1.5 py-1.5 backdrop-blur-[24px] shadow-premium flex justify-center"
         >
             <ul className="grid w-full grid-cols-5 gap-1">
                 {localizedItems.map((item) => {
@@ -200,22 +200,24 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 aria-current={isActive ? 'page' : undefined}
                                 className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                             >
-                                <div className={`relative flex flex-col items-center justify-center transition-all duration-300 ${
-                                    isPrimary 
-                                        ? 'min-h-[58px] -mt-5 mb-1 mx-0.5 rounded-[20px] bg-gradient-to-b from-emerald-400 to-emerald-600 shadow-[0_8px_20px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] ring-1 ring-white/20'
-                                        : `app-bottom-nav__button min-h-[54px] rounded-2xl relative w-full ${isActive ? 'app-bottom-nav__item--active text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}`
+                                <div className={`app-bottom-nav__button relative flex flex-col items-center justify-center min-h-[50px] w-full rounded-[20px] transition-all duration-300 ${
+                                    isActive ? 'app-bottom-nav__item--active' : ''
                                 }`}>
                                     <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-300 relative z-10 ${
-                                        isPrimary
-                                            ? 'text-[26px] text-[#17120A]'
-                                            : `text-[22px] ${isActive ? 'text-emerald-500 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.5)]' : ''}`
-                                    }`}>
+                                        isActive 
+                                            ? 'text-emerald-500 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.4)]' 
+                                            : isPrimary 
+                                                ? 'text-emerald-500/80 scale-105' 
+                                                : 'text-brand-muted hover:text-brand-primary'
+                                    } text-[20px]`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`app-bottom-nav__label max-w-full truncate text-[11px] font-bold tracking-[0.02em] transition-all duration-300 relative z-10 ${
-                                        isPrimary
-                                            ? 'text-[#17120A] mt-1'
-                                            : isActive ? 'text-emerald-500 mt-0.5' : 'text-brand-muted mt-0.5'
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[10px] font-bold tracking-[0.02em] transition-all duration-300 relative z-10 mt-0.5 px-0.5 ${
+                                        isActive 
+                                            ? 'text-emerald-500' 
+                                            : isPrimary 
+                                                ? 'text-emerald-500/80' 
+                                                : 'text-brand-muted'
                                     }`}>
                                         {item.label}
                                     </span>

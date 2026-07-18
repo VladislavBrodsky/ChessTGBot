@@ -50,7 +50,7 @@ export default function LoginPage() {
             {/* ── Animated Background ── */}
             <div className="absolute inset-0 pointer-events-none">
                 {/* Grid */}
-                <div className="absolute inset-0 transition-opacity duration-500 opacity-30 dark:opacity-40" 
+                <div className="absolute inset-0 transition-opacity duration-500 opacity-40" 
                      style={{
                          backgroundImage: 'linear-gradient(var(--color-brand-border-opacity-10) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-border-opacity-10) 1px, transparent 1px)',
                          backgroundSize: '40px 40px',

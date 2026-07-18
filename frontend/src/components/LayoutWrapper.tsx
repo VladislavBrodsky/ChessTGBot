@@ -187,19 +187,19 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 Home page passes hideHeaderControls and renders them inline instead, so this block
                 is effectively a no-op on all pages. Kept here for any future page that opts in. */}
             {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
-                <div className="absolute top-[calc(24px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2.5">
+                <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
                     <button 
                         onClick={() => setShowNotifications(true)}
-                        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                        className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
-                        <FiBell size={18} />
+                        <FiBell size={16} />
                         {/* Notification indicator dot */}
-                        <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                     </button>
                     {!pathname.endsWith('/settings') && (
                         <Link href={`/${locale}/settings`}>
-                            <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
-                                <FiSettings size={18} />
+                            <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+                                <FiSettings size={16} />
                             </button>
                         </Link>
                     )}

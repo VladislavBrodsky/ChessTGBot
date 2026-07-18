@@ -106,7 +106,7 @@ export default function CustomAlertModal() {
             </div>
 
             <div className="space-y-1.5 w-full">
-              <h3 id="custom-alert-title" className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.2em]">
+              <h3 id="custom-alert-title" className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em]">
                 {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
               <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">

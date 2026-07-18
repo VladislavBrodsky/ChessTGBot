@@ -43,7 +43,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
           </span>
           <div className="flex items-center space-x-2">
             <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/10">
-              <FaCoins className="text-emerald-500 dark:text-emerald-400 text-[10px]" />
+              <FaCoins className="text-emerald-500 text-[10px]" />
             </div>
             <span className="text-[10px] font-black text-brand-primary opacity-90 uppercase tracking-widest">{tw('usdt_balance')}</span>
           </div>

@@ -38,10 +38,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const isAuthenticated = useCallback((): boolean => {
         if (typeof window === 'undefined') return false;
         const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-        // Runs during render; localStorage can throw inside Telegram Web's cross-origin
-        // (third-party) iframe when the browser blocks third-party storage.
-        let hasWebAuth = false;
-        try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
+        const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
         return isTMA || hasWebAuth;
     }, []);
 

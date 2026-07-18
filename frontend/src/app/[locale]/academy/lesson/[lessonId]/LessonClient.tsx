@@ -133,12 +133,12 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   
     {earnedXP && (
       <div className="flex justify-center mb-10">
-        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-gradient-to-br from-[#2a2210] to-[#1a150a] border border-amber-500/30 rounded-3xl shadow-[0_0_40px_rgba(245,158,11,0.2)] relative overflow-hidden">
-          <div className="absolute inset-0 bg-amber-500/10 pointer-events-none" />
-          <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
+        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-gradient-to-br from-emerald-950/40 to-emerald-950/20 border border-emerald-500/30 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.2)] relative overflow-hidden">
+          <div className="absolute inset-0 bg-emerald-500/10 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
           
-          <span className="text-amber-400 font-black text-4xl drop-shadow-[0_2px_10px_rgba(245,158,11,0.6)] relative z-10">+{earnedXP}</span>
-          <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
+          <span className="text-emerald-400 font-black text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.6)] relative z-10">+{earnedXP}</span>
+          <span className="text-[10px] text-emerald-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
         </div>
       </div>
     )}

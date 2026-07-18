@@ -14,14 +14,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 function getInitialTheme(): Theme {
     if (typeof window !== 'undefined') {
-        // localStorage can throw a SecurityError inside Telegram Web's cross-origin
-        // (third-party) iframe when the browser blocks third-party storage. This runs
-        // during render, so an unguarded throw would crash the entire app.
-        try {
-            const saved = localStorage.getItem('theme');
-            if (saved === 'light' || saved === 'dark') return saved;
-        } catch { /* storage blocked — fall through to system preference */ }
-
+        const saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') return saved;
+        
         // Fallback to system preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             return 'light';
@@ -57,9 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         
         const handleChange = (e: MediaQueryListEvent) => {
             // Only update theme if the user hasn't explicitly set a preference in localStorage
-            let hasExplicit = false;
-            try { hasExplicit = !!localStorage.getItem('theme'); } catch { /* storage blocked */ }
-            if (!hasExplicit) {
+            if (!localStorage.getItem('theme')) {
                 setThemeState(e.matches ? 'light' : 'dark');
             }
         };
@@ -76,7 +69,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const setTheme = (newTheme: Theme) => {
         setThemeState(newTheme);
-        try { localStorage.setItem('theme', newTheme); } catch { /* storage blocked in third-party iframe */ }
+        localStorage.setItem('theme', newTheme);
     };
 
     const toggleTheme = () => {
