@@ -373,19 +373,23 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           </Card>
       </motion.div>
 
-      {/* Invite link: one focused, calm action area. */}
-      <Card variant="solid" className="w-full border-emerald-500/30 shadow-premium">
-        <div className="p-4 space-y-4">
+      {/* Invite link: Web3 Premium Action Area */}
+      <Card variant="solid" className="relative w-full border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-brand-surface/40 shadow-[0_8px_32px_rgba(168,85,247,0.08)] overflow-hidden">
+        {/* Ambient glow in the background */}
+        <div className="absolute -top-16 -right-16 w-40 h-40 bg-purple-500/15 rounded-full blur-[64px] pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-[48px] pointer-events-none" />
+
+        <div className="p-4 space-y-4 relative z-10">
           
           <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col">
-              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
+              <p className="text-[10px] font-black text-purple-400 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
                 {t('your_link')}
-                <Badge variant="amber">VIP</Badge>
+                <Badge variant="amber" className="border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]">VIP</Badge>
               </p>
               <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Share to earn 15%</p>
             </div>
-            <Badge variant="amber">
+            <Badge variant="amber" className="border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)] bg-amber-500/10">
               +50 XP
             </Badge>
           </div>
@@ -395,9 +399,9 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               type="button"
               onClick={handleCopy}
               aria-label={`${t('copy')} ${t('your_link')}`}
-              className="min-h-11 flex-1 bg-brand-elevated border border-brand-border-opacity-20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-emerald-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+              className="min-h-11 flex-1 bg-brand-void/50 border border-purple-500/20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-purple-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-[inset_0_2px_8px_rgba(0,0,0,0.2)]"
             >
-              <span className="font-mono text-[10px] font-bold text-brand-primary tracking-wider truncate">
+              <span className="font-mono text-[10px] font-bold text-purple-200 tracking-wider truncate">
                 {inviteLink}
               </span>
             </button>
@@ -406,7 +410,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               type="button"
               onClick={handleCopy}
               size="md"
-              className={`shrink-0 font-black text-[10px] uppercase tracking-wider ${copied ? 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-500' : 'bg-emerald-500 text-brand-void hover:bg-emerald-500/90'}`}
+              className={`shrink-0 font-black text-[10px] uppercase tracking-wider transition-all ${copied ? 'bg-purple-500/20 border-purple-500/40 text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.15)]'}`}
             >
               {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
               {copied ? t('copied') : t('copy')}
@@ -416,7 +420,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               type="button"
               onClick={handleShare}
               aria-label={`Share ${t('your_link')}`}
-              className="shrink-0 w-11 h-11 bg-brand-surface border border-brand-border-opacity-20 text-emerald-500 rounded-xl flex items-center justify-center hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+              className="shrink-0 w-11 h-11 bg-brand-void/50 border border-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.1)]"
             >
               <FaShareAlt size={14} />
             </button>
@@ -427,7 +431,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             size="md"
             onClick={() => setShowQr(!showQr)}
             aria-expanded={showQr}
-            className="w-full mt-2 border-brand-border-opacity-20 bg-brand-elevated text-[10px] text-brand-primary uppercase tracking-widest hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-colors"
+            className="w-full mt-2 border-purple-500/20 bg-brand-void/30 text-[10px] text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
             leftIcon={<FaQrcode size={12} />}
           >
             {showQr ? "Hide QR Code" : "Show QR Code"}
@@ -445,14 +449,16 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
           >
-            <div className="rounded-[24px] border border-brand-border-opacity-20 bg-brand-surface p-5 flex flex-col items-center text-center space-y-4 shadow-sm mx-1">
-              <div className="space-y-1">
-                <h4 className="text-[12px] font-black text-brand-primary uppercase tracking-tight">FinChess Invite</h4>
+            <div className="relative rounded-[24px] border border-purple-500/30 bg-brand-void/50 p-5 flex flex-col items-center text-center space-y-4 shadow-[0_8px_32px_rgba(168,85,247,0.15)] mx-1 overflow-hidden">
+              <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/10 via-brand-void/0 to-brand-void/0 pointer-events-none" />
+              
+              <div className="space-y-1 relative z-10">
+                <h4 className="text-[12px] font-black text-purple-400 uppercase tracking-tight shadow-purple-500/20 drop-shadow-md">FinChess Invite</h4>
                 <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Wager • Play • Earn</p>
               </div>
 
               {/* Styled QR Image Wrapper */}
-              <div className="relative p-2.5 bg-white rounded-3xl border border-emerald-500/30 shadow-sm flex items-center justify-center shrink-0 w-48 h-48">
+              <div className="relative p-2.5 bg-white/95 rounded-3xl border border-purple-500/40 shadow-[0_0_24px_rgba(168,85,247,0.2)] flex items-center justify-center shrink-0 w-48 h-48 z-10">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
                   alt="Referral QR Code" 
@@ -460,14 +466,14 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                 />
                 
                 {/* Central logo overlay (Framer Users icon) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-white rounded-full border-2 border-emerald-500/30 flex items-center justify-center shadow-md">
-                  <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
-                    <FaUsers size={12} className="text-emerald-500" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full border-[3px] border-purple-500/30 flex items-center justify-center shadow-lg">
+                  <div className="w-7 h-7 bg-purple-500/10 rounded-full flex items-center justify-center border border-purple-500/20">
+                    <FaUsers size={12} className="text-purple-600" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-10">
                 <p className="text-[10px] font-bold text-brand-muted uppercase leading-normal px-2 max-w-[240px] mx-auto">
                   Show this code to your friend in person. They can scan it with their phone camera to join your network.
                 </p>
