@@ -144,27 +144,71 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       label: t('total_label'),
       icon: <FaUsers />,
       value: loading ? <div className="h-4 w-10 bg-current/20 animate-pulse rounded" /> : totalCount.toString(),
+      color: 'purple',
     },
     {
       id: 'active' as const,
       label: t('active_label'),
       icon: <FaBolt />,
       value: loading ? <div className="h-4 w-8 bg-current/20 animate-pulse rounded" /> : activeCount.toString(),
+      color: 'emerald',
     },
     {
       id: 'rate' as const,
       label: 'RATE',
       icon: <span className="font-extrabold text-[12px] leading-none">%</span>,
       value: '15%',
+      color: 'blue',
     },
     {
       id: 'earnings' as const,
       label: 'EARNED',
       icon: <UsdtLogo className="text-[16px]" />,
       value: loading ? <div className="h-4 w-12 bg-current/20 animate-pulse rounded" /> : `${totalEarnings.toFixed(2)}`,
-
+      color: 'amber',
     },
   ];
+
+  const getColorClasses = (color: string, isActive: boolean) => {
+    const styles = {
+      purple: {
+        activeBg: 'border-purple-500/40 bg-gradient-to-br from-purple-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(168,85,247,0.12)]',
+        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500/5 hover:to-brand-surface/20',
+        activeIcon: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.25)] text-purple-600 dark:text-purple-400',
+        activeText: 'text-purple-600 dark:text-purple-400',
+      },
+      emerald: {
+        activeBg: 'border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(16,185,129,0.12)]',
+        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-emerald-500/30 hover:bg-gradient-to-br hover:from-emerald-500/5 hover:to-brand-surface/20',
+        activeIcon: 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-emerald-600 dark:text-emerald-400',
+        activeText: 'text-emerald-600 dark:text-emerald-400',
+      },
+      blue: {
+        activeBg: 'border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(59,130,246,0.12)]',
+        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-blue-500/30 hover:bg-gradient-to-br hover:from-blue-500/5 hover:to-brand-surface/20',
+        activeIcon: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.25)] text-blue-600 dark:text-blue-400',
+        activeText: 'text-blue-600 dark:text-blue-400',
+      },
+      amber: {
+        activeBg: 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(245,158,11,0.12)]',
+        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-amber-500/30 hover:bg-gradient-to-br hover:from-amber-500/5 hover:to-brand-surface/20',
+        activeIcon: 'bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.25)] text-amber-600 dark:text-amber-400',
+        activeText: 'text-amber-600 dark:text-amber-400',
+      },
+    }[color as 'purple' | 'emerald' | 'blue' | 'amber'];
+  
+    return isActive
+      ? { bg: styles.activeBg, icon: styles.activeIcon, text: styles.activeText }
+      : { bg: styles.inactiveBg, icon: 'bg-brand-elevated border-brand-border-opacity-20 text-brand-muted', text: 'text-brand-muted' };
+  };
+
+  const activeTabColor = tabs.find(t => t.id === activeTab)?.color || 'emerald';
+  const detailStyles = {
+    purple: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+    emerald: { text: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+    blue: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+    amber: { text: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+  }[activeTabColor as 'purple' | 'emerald' | 'blue' | 'amber'];
 
   return (
     <div className="w-full space-y-4">
@@ -176,38 +220,41 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
         </Badge>
       </div>
 
-      {/* One consistent metric family; selection is gold, not a new color per card. */}
+      {/* Web3 Metric Family */}
       <div className="grid grid-cols-2 gap-3">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
+          const colors = getColorClasses(tab.color, isActive);
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               aria-pressed={isActive}
-              className={`min-h-24 rounded-2xl p-4 flex items-center gap-3 border transition-colors duration-200 text-left w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500
-                ${isActive
-                  ? 'border-emerald-500 bg-emerald-500/10 shadow-sm'
-                  : 'border-brand-border-opacity-20 bg-brand-surface hover:border-emerald-500/40 hover:bg-brand-elevated'
-                }`}
+              className={`relative min-h-24 rounded-2xl p-4 flex items-center gap-3 border transition-colors duration-200 text-left w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 overflow-hidden
+                ${colors.bg}`}
             >
+              {/* Glowing Indicator Dot */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${colors.text}`}
+                  style={{ backgroundColor: 'currentColor' }}
+                />
+              )}
+
               {/* Icon Container */}
               <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-colors ${
-                  isActive
-                    ? 'bg-emerald-500 text-brand-void border-emerald-500'
-                    : 'bg-brand-elevated border-brand-border-opacity-20 text-brand-muted'
-                }`}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-colors ${colors.icon}`}
               >
                 {tab.icon}
               </div>
 
               {/* Value / Label */}
-              <div className="flex flex-col min-w-0">
+              <div className="flex flex-col min-w-0 z-10">
                 <span className="text-xl font-black leading-none text-brand-primary">
                   {tab.value}
                 </span>
-                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isActive ? 'text-emerald-500' : 'text-brand-muted'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 ${colors.text}`}>
                   {tab.label}
                 </span>
               </div>
@@ -230,11 +277,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{t('total_desc_label')}</p>
-                  <p className="text-xl font-black text-emerald-500 leading-none mt-1">{loading ? '…' : totalCount}</p>
+                  <p className={`text-xl font-black ${detailStyles.text} leading-none mt-1`}>{loading ? '…' : totalCount}</p>
                   <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">{t('total_sublabel')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <FaUsers className="text-emerald-500 text-lg" />
+                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${detailStyles.bg}`}>
+                  <FaUsers className={`${detailStyles.text} text-lg`} />
                 </div>
               </div>
               <p className="text-[10px] text-brand-muted font-medium leading-relaxed">
@@ -248,11 +295,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{t('active_desc_label')}</p>
-                  <p className="text-xl font-black text-emerald-500 leading-none mt-1">{loading ? '…' : activeCount}</p>
+                  <p className={`text-xl font-black ${detailStyles.text} leading-none mt-1`}>{loading ? '…' : activeCount}</p>
                   <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">{t('active_sublabel')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <FaBolt className="text-emerald-500 text-lg" />
+                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${detailStyles.bg}`}>
+                  <FaBolt className={`${detailStyles.text} text-lg`} />
                 </div>
               </div>
               {/* Active ratio bar */}
@@ -267,7 +314,7 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                       initial={false}
                       animate={{ width: `${Math.round(((stats?.active_referrals ?? 0) / (stats?.total_referrals ?? 1)) * 100)}%` }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="h-full bg-emerald-500 rounded-full"
+                      className={`h-full rounded-full bg-current ${detailStyles.text}`}
                     />
                   </div>
                 </div>
@@ -283,11 +330,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Share Commission Rate</p>
-                  <p className="text-xl font-black text-emerald-500 leading-none mt-1">15% Lifetime</p>
+                  <p className={`text-xl font-black ${detailStyles.text} leading-none mt-1`}>15% Lifetime</p>
                   <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">Of Platform Rake Fee</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <span className="text-emerald-500 text-lg font-black">%</span>
+                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${detailStyles.bg}`}>
+                  <span className={`${detailStyles.text} text-lg font-black`}>%</span>
                 </div>
               </div>
               <p className="text-[10px] text-brand-muted font-medium leading-relaxed">
@@ -301,13 +348,13 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{t('earnings_desc_label')}</p>
-                  <p className="text-xl font-black text-emerald-500 leading-none mt-1">
+                  <p className={`text-xl font-black ${detailStyles.text} leading-none mt-1`}>
                     ${loading ? '0.00' : (stats?.total_earnings_usdt ?? 0).toFixed(2)}
                   </p>
                   <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">USDT {t('total_earned')}</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <FaDollarSign className="text-emerald-500 text-lg" />
+                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${detailStyles.bg}`}>
+                  <FaDollarSign className={`${detailStyles.text} text-lg`} />
                 </div>
               </div>
               {/* SVG Chart */}
@@ -327,21 +374,25 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           </Card>
       </motion.div>
 
-      {/* Invite link: one focused, calm action area. */}
-      <Card variant="solid" className="w-full border-emerald-500/30 shadow-premium">
-        <div className="p-4 space-y-4">
+      {/* Invite link: Web3 Premium Action Area */}
+      <div className="relative w-full rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-50/50 to-purple-500/5 dark:from-purple-500/10 dark:to-brand-surface/40 shadow-sm overflow-hidden mt-2">
+        {/* Ambient glow in the background */}
+        <div className="absolute -top-16 -right-16 w-40 h-40 bg-purple-500/15 rounded-full blur-[64px] pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-[48px] pointer-events-none" />
+
+        <div className="p-4 space-y-4 relative z-10">
           
           <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col">
-              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
+              <p className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
                 {t('your_link')}
-                <Badge variant="amber">VIP</Badge>
+                <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm">VIP</span>
               </p>
               <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Share to earn 15%</p>
             </div>
-            <Badge variant="amber">
+            <div className="px-2 py-1 rounded-lg border border-purple-500/30 bg-purple-500/10 text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest shadow-sm">
               +50 XP
-            </Badge>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -349,28 +400,27 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               type="button"
               onClick={handleCopy}
               aria-label={`${t('copy')} ${t('your_link')}`}
-              className="min-h-11 flex-1 bg-brand-elevated border border-brand-border-opacity-20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-emerald-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+              className="min-h-11 flex-1 bg-white dark:bg-brand-void/50 border border-purple-500/20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-purple-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-inner"
             >
-              <span className="font-mono text-[10px] font-bold text-brand-primary tracking-wider truncate">
+              <span className="font-mono text-[10px] font-bold text-purple-700 dark:text-purple-300 tracking-wider truncate">
                 {inviteLink}
               </span>
             </button>
             
-            <Button
+            <button
               type="button"
               onClick={handleCopy}
-              size="md"
-              className={`shrink-0 font-black text-[10px] uppercase tracking-wider ${copied ? 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-500' : 'bg-emerald-500 text-brand-void hover:bg-emerald-500/90'}`}
+              className={`shrink-0 h-11 px-4 flex items-center justify-center gap-1.5 font-black text-[10px] uppercase tracking-wider rounded-xl transition-all ${copied ? 'bg-purple-500/20 border border-purple-500/40 text-purple-700 dark:text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/30 text-purple-700 dark:text-purple-400 hover:bg-purple-500/30 shadow-sm'}`}
             >
               {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
               {copied ? t('copied') : t('copy')}
-            </Button>
+            </button>
 
             <button
               type="button"
               onClick={handleShare}
               aria-label={`Share ${t('your_link')}`}
-              className="shrink-0 w-11 h-11 bg-brand-surface border border-brand-border-opacity-20 text-emerald-500 rounded-xl flex items-center justify-center hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+              className="shrink-0 w-11 h-11 bg-white dark:bg-brand-void/50 border border-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
             >
               <FaShareAlt size={14} />
             </button>
@@ -381,13 +431,13 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             size="md"
             onClick={() => setShowQr(!showQr)}
             aria-expanded={showQr}
-            className="w-full mt-2 border-brand-border-opacity-20 bg-brand-elevated text-[10px] text-brand-primary uppercase tracking-widest hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-colors"
+            className="w-full mt-2 border-purple-500/20 bg-white dark:bg-brand-void/30 text-[10px] !text-purple-600 dark:!text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
             leftIcon={<FaQrcode size={12} />}
           >
             {showQr ? "Hide QR Code" : "Show QR Code"}
           </Button>
         </div>
-      </Card>
+      </div>
 
       {/* Styled Inline QR Code Card - Collapsible */}
       <AnimatePresence>
@@ -399,14 +449,16 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
           >
-            <div className="rounded-[24px] border border-brand-border-opacity-20 bg-brand-surface p-5 flex flex-col items-center text-center space-y-4 shadow-sm mx-1">
-              <div className="space-y-1">
-                <h4 className="text-[12px] font-black text-brand-primary uppercase tracking-tight">FinChess Invite</h4>
+            <div className="relative rounded-[24px] border border-purple-500/30 bg-brand-void/50 p-5 flex flex-col items-center text-center space-y-4 shadow-[0_8px_32px_rgba(168,85,247,0.15)] mx-1 overflow-hidden">
+              <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/10 via-brand-void/0 to-brand-void/0 pointer-events-none" />
+              
+              <div className="space-y-1 relative z-10">
+                <h4 className="text-[12px] font-black text-purple-400 uppercase tracking-tight shadow-purple-500/20 drop-shadow-md">FinChess Invite</h4>
                 <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Wager • Play • Earn</p>
               </div>
 
               {/* Styled QR Image Wrapper */}
-              <div className="relative p-2.5 bg-white rounded-3xl border border-emerald-500/30 shadow-sm flex items-center justify-center shrink-0 w-48 h-48">
+              <div className="relative p-2.5 bg-white/95 rounded-3xl border border-purple-500/40 shadow-[0_0_24px_rgba(168,85,247,0.2)] flex items-center justify-center shrink-0 w-48 h-48 z-10">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
                   alt="Referral QR Code" 
@@ -414,14 +466,14 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
                 />
                 
                 {/* Central logo overlay (Framer Users icon) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 bg-white rounded-full border-2 border-emerald-500/30 flex items-center justify-center shadow-md">
-                  <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
-                    <FaUsers size={12} className="text-emerald-500" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full border-[3px] border-purple-500/30 flex items-center justify-center shadow-lg">
+                  <div className="w-7 h-7 bg-purple-500/10 rounded-full flex items-center justify-center border border-purple-500/20">
+                    <FaUsers size={12} className="text-purple-600" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-10">
                 <p className="text-[10px] font-bold text-brand-muted uppercase leading-normal px-2 max-w-[240px] mx-auto">
                   Show this code to your friend in person. They can scan it with their phone camera to join your network.
                 </p>

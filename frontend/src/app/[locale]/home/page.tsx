@@ -40,7 +40,7 @@ export default function Home() {
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
  const displayName = stats
    ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
-   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : 'Combatant');
+   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : (t.has('combatant') ? t('combatant') : 'Combatant'));
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -96,17 +96,17 @@ export default function Home() {
         type="button"
         onClick={() => setShowNotifications(true)}
         aria-label="Notifications"
-        className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/70 hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
+        className="relative w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
       >
-        <FiBell size={18} />
-        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+        <FiBell size={16} />
+        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-danger shadow-premium" />
       </button>
       <Link
         href={`/${locale}/settings`}
         aria-label={t('nav_settings')}
-        className="w-11 h-11 flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/70 hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95"
+        className="w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95"
       >
-          <FiSettings size={18} />
+          <FiSettings size={16} />
       </Link>
       </div>
     </div>
@@ -125,7 +125,7 @@ export default function Home() {
       className="w-full"
     >
       <Card variant="glass" className="w-full p-5 border-brand-border-opacity-10 shadow-premium flex flex-col items-center text-center space-y-3">
-        <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-60">
+        <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
           {t('load_failed')}
         </span>
         <Button
@@ -228,14 +228,14 @@ export default function Home() {
                 }}
               />
             ) : null}
-            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-primary opacity-30 ${hasPhoto ? 'hidden' : ''}`}>
+            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-muted ${hasPhoto ? 'hidden' : ''}`}>
               {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
             </div>
           </>
         );
       })()}
       {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-primary/40 bg-gradient-to-br from-purple-400/20 to-purple-600/20 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.3)] backdrop-blur-md">
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-gold/40 bg-gradient-to-br from-brand-gold/10 to-brand-gold/20 text-brand-gold shadow-premium backdrop-blur-md">
       <FaStar />
       </div>
       )}
@@ -244,7 +244,7 @@ export default function Home() {
       <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
       {`${stats.first_name} ${stats.last_name || ""}`.trim()}
       </h2>
-      <span className="text-[11px] font-black text-brand-primary opacity-50 tracking-widest uppercase leading-none">
+      <span className="text-[11px] font-black text-brand-muted tracking-widest uppercase leading-none">
       {stats.elo || 1000} {t('elo')}
       </span>
       </div>
@@ -257,8 +257,8 @@ export default function Home() {
       whileTap={{ scale: 0.96 }}
       className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-brand-border-opacity-10 bg-brand-void hover:bg-brand-bg-opacity-5 transition-all cursor-pointer shadow-sm"
       >
-      <FaWallet className="text-[10px] text-brand-primary opacity-60" />
-      <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-amber-500' : 'text-brand-primary'}`}>
+      <FaWallet className="text-[10px] text-brand-muted" />
+      <span className={`text-[10px] font-black uppercase tracking-wider ${balanceError ? 'text-brand-danger' : 'text-brand-primary'}`}>
       {/* Never present a failed balance fetch as "$0.00" */}
       {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
       </span>
@@ -276,22 +276,22 @@ export default function Home() {
       {/* Compact Stats Row */}
       <div className="grid grid-cols-3 divide-x divide-brand-border-opacity-10 text-center relative z-10">
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('win_rate')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('win_rate')}</span>
       <span className="text-xs font-black text-brand-primary">{stats.win_rate?.toFixed(1) || '0.0'}%</span>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('current_streak')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('current_streak')}</span>
       <div className="flex items-center gap-1 justify-center">
       <span className="text-xs font-black text-brand-primary">{stats.current_streak?.count || 0}</span>
       {(stats.current_streak?.count ?? 0) > 0 && stats.current_streak?.type !== 'none' && (
-      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : stats.current_streak?.type === 'draw' ? 'text-gray-400' : 'text-brand-primary opacity-45'}`}>
+      <span className={`text-[10px] font-black uppercase tracking-wider ${stats.current_streak?.type === 'win' ? 'text-brand-primary' : stats.current_streak?.type === 'draw' ? 'text-brand-muted' : 'text-brand-muted'}`}>
       {stats.current_streak?.type === 'win' ? (t('wins')?.[0] || 'W') : stats.current_streak?.type === 'draw' ? (t('draws')?.[0] || 'D') : (t('losses')?.[0] || 'L')}
       </span>
       )}
       </div>
       </div>
       <div className="flex flex-col items-center">
-      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
+      <span className="min-h-5 flex items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-widest leading-tight mb-1.5">{t('games_played')}</span>
       <span className="text-xs font-black text-brand-primary">{(stats.games_played ?? 0).toLocaleString(locale)}</span>
       </div>
       </div>
@@ -306,7 +306,7 @@ export default function Home() {
   <Link
    href={`/${locale}/game`}
    onClick={() => telegramHaptic('medium')}
-   className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
+   className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void"
   >
    <motion.div
      whileHover={{ y: -2 }}
@@ -317,7 +317,7 @@ export default function Home() {
       <FaChessKnight className="text-2xl" aria-hidden="true" />
      </div>
      <div className="relative z-10 min-w-0 flex-1 text-left">
-      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500 mb-1.5">{t('play')}</span>
+      <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-brand-primary mb-1.5">{t('play')}</span>
       <span className="block text-xl font-black tracking-tight text-brand-primary leading-none">{t('execute_matchmaking')}</span>
      </div>
      <div className="play-chess-card-arrow relative z-10 w-11 h-11 shrink-0 rounded-xl flex items-center justify-center">
@@ -334,7 +334,7 @@ export default function Home() {
      className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
     >
      <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
-      <FaGraduationCap className="text-lg text-brand-primary/80" />
+      <FaGraduationCap className="text-lg text-brand-muted" />
      </div>
      <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('academy')}</span>
     </motion.div>
@@ -347,7 +347,7 @@ export default function Home() {
      className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
     >
      <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
-      <FaTrophy className="text-base text-brand-primary/80" />
+      <FaTrophy className="text-base text-brand-muted" />
      </div>
      <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('daily_tasks')}</span>
     </motion.div>
@@ -358,8 +358,8 @@ export default function Home() {
  {/* Global Leaderboard Panel */}
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
- <FaListOl className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('leaderboard')}</h3>
+ <FaListOl className="text-brand-muted text-xs" />
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">{t('leaderboard')}</h3>
  </div>
  <Leaderboard />
  </div>
@@ -367,8 +367,8 @@ export default function Home() {
  {/* Cyber News Panel */}
  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
- <FaNewspaper className="text-brand-primary opacity-40 text-xs" />
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-40">{t('latest_updates')}</h3>
+ <FaNewspaper className="text-brand-muted text-xs" />
+ <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">{t('latest_updates')}</h3>
  </div>
  <NewsSection />
  </div>
@@ -377,7 +377,7 @@ export default function Home() {
  <footer className="flex flex-col items-center py-6 select-none pointer-events-none opacity-5 w-full">
  <div className="flex items-center gap-4 w-full px-8">
  <div className="h-px flex-1 bg-linear-to-r from-transparent to-brand-border-opacity-20" />
- <span className="text-[10px] font-black tracking-[1.5em] uppercase text-brand-primary opacity-30 shrink-0">ANTIGRAVITY</span>
+ <span className="text-[10px] font-black tracking-[1.5em] uppercase text-brand-muted shrink-0">ANTIGRAVITY</span>
  <div className="h-px flex-1 bg-linear-to-l from-transparent to-brand-border-opacity-20" />
  </div>
  </footer>

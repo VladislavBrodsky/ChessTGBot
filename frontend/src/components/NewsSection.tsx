@@ -74,7 +74,7 @@ export default function NewsSection() {
                             </div>
 
                             <div className="flex items-center justify-between gap-4">
-                                <h4 className={`text-sm font-black transition-colors ${item.isHighlight ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-purple-400 to-brand-primary animate-pulse' : (isExpanded ? 'text-brand-primary' : 'text-brand-primary opacity-90 group-hover:text-brand-primary')}`}>
+                                <h4 className={`text-sm font-black transition-colors ${item.isHighlight ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-purple-400 to-brand-primary animate-pulse' : (isExpanded ? 'text-brand-primary' : 'text-brand-muted group-hover:text-brand-primary')}`}>
                                     {item.title}
                                 </h4>
                                 <motion.div
@@ -85,7 +85,7 @@ export default function NewsSection() {
                                 </motion.div>
                             </div>
 
-                            <p className={`text-[10px] font-medium leading-relaxed mt-1 ${item.isHighlight ? 'text-brand-primary opacity-60' : 'text-brand-primary opacity-40'}`}>
+                            <p className={`text-[10px] font-medium leading-relaxed mt-1 ${item.isHighlight ? 'text-brand-muted' : 'text-brand-muted'}`}>
                                 {item.desc}
                             </p>
 

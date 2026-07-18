@@ -88,7 +88,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       <LayoutWrapper className="w-full">
         <div className="flex h-[calc(100vh-var(--app-safe-top)-var(--app-safe-bottom))] items-center justify-center flex-col gap-4">
           <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-primary/60">
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-muted">
             INITIALIZING LESSON...
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4 px-6 text-center">
         <h2 className="text-xl font-black text-brand-primary uppercase tracking-widest">Signal Lost</h2>
-        <p className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
+        <p className="text-xs font-bold text-brand-muted uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
         <button 
           onClick={() => router.push(`/${locale}/academy`)} 
           className="px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-xs font-black uppercase tracking-widest text-brand-primary"
@@ -120,7 +120,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   animate={{ scale: 1, opacity: 1, y: 0 }}
   className="w-full relative overflow-hidden group"
   >
-  <div className="glass-panel p-8 md:p-12 rounded-[32px] border border-white/10 bg-gradient-to-br from-[#121814] to-[#0a0f0c] shadow-[0_0_50px_rgba(16,185,129,0.2)] relative z-10">
+  <div className="glass-panel p-8 md:p-12 rounded-[32px] border border-brand-border-opacity-10 bg-brand-surface shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10">
     <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/30" />
     
@@ -131,26 +131,24 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
     <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 mb-2 uppercase tracking-tight">LESSON COMPLETE!</h1>
     <p className="text-[11px] font-black text-emerald-400/80 mb-8 uppercase tracking-[0.2em]">You have mastered {lessonData.title}</p>
   
-    {earnedXP && (
       <div className="flex justify-center mb-10">
-        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-gradient-to-br from-[#2a2210] to-[#1a150a] border border-amber-500/30 rounded-3xl shadow-[0_0_40px_rgba(245,158,11,0.2)] relative overflow-hidden">
-          <div className="absolute inset-0 bg-amber-500/10 pointer-events-none" />
-          <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
+        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden">
+          <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
           
-          <span className="text-amber-400 font-black text-4xl drop-shadow-[0_2px_10px_rgba(245,158,11,0.6)] relative z-10">+{earnedXP}</span>
-          <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
+          <span className="text-emerald-500 font-black text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.3)] relative z-10">+{earnedXP}</span>
+          <span className="text-[10px] text-emerald-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
         </div>
       </div>
-    )}
   
     <div className="flex flex-col md:flex-row gap-4 justify-center w-full">
       <Link href={`/${locale}/academy`} className="flex-1 w-full">
-        <button className="w-full px-4 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs">
+        <button className="w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs">
           Back
         </button>
       </Link>
       <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full">
-        <button className="w-full px-4 py-4 bg-gradient-to-r from-[#2AABEE] to-[#229ED9] hover:from-[#35b5f8] hover:to-[#2AABEE] text-white font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.5)] transition-all text-xs flex items-center justify-center gap-3">
+        <button className="w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-xs flex items-center justify-center gap-3">
           <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
         </button>
       </a>
@@ -168,12 +166,12 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
  {/* Header */}
  <div className="flex items-center gap-4 mb-6">
- <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+ <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
  <FaArrowLeft />
  </Link>
  <div>
  <h1 className="text-xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{lessonData.title}</h1>
- <p className="text-[10px] text-brand-primary opacity-40 font-bold uppercase tracking-widest">{lessonData.track}</p>
+ <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest">{lessonData.track}</p>
  </div>
  </div>
 

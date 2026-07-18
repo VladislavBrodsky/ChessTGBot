@@ -64,7 +64,7 @@ export default function DailyHintCard() {
             <h3 className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400/90 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]">
               <FaLightbulb className="text-sm" /> Hint of the Day
             </h3>
-            <p className="text-[10px] font-bold text-brand-primary/40 uppercase tracking-[0.2em] flex items-center gap-1">
+            <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] flex items-center gap-1">
               Tap to reveal tip <span className="w-1 h-1 rounded-full bg-emerald-500/50" /> Earn XP
             </p>
           </div>
@@ -87,9 +87,9 @@ export default function DailyHintCard() {
           className={`absolute inset-0 bg-brand-void bg-[var(--cyber-card-bg)] border border-emerald-500/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow ${isFlipped ? 'z-10' : 'z-0'}`}
           style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
-          {/* Golden Glows */}
+          {/* Emerald Glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
 
           {/* Subtle Grid Overlay */}
           <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'linear-gradient(var(--color-brand-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-primary) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
@@ -106,7 +106,7 @@ export default function DailyHintCard() {
             </motion.div>
             
             <div className="flex flex-col gap-1.5 flex-1">
-              <p className="text-xs font-medium text-brand-primary/90 leading-relaxed drop-shadow-md italic">
+              <p className="text-xs font-medium text-brand-muted leading-relaxed drop-shadow-md italic">
                 "{hint}"
               </p>
               <motion.p 
@@ -115,7 +115,7 @@ export default function DailyHintCard() {
                 transition={{ delay: 0.3 }}
                 className="text-[9px] font-black uppercase tracking-[0.25em] text-emerald-500 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
               >
-                +10 XP <span className="text-brand-primary/40 normal-case font-normal tracking-normal text-[8px]">(Rewarded)</span>
+                +10 XP <span className="text-brand-muted normal-case font-normal tracking-normal text-[8px]">(Rewarded)</span>
               </motion.p>
             </div>
           </div>

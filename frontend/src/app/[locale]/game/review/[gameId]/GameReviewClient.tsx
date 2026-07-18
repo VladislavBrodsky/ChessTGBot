@@ -311,7 +311,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
       <LayoutWrapper className="justify-center items-center">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="w-10 h-10 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">
+          <span className="text-xs font-black text-brand-muted uppercase tracking-[0.2em]">
             Reconstructing Matrix...
           </span>
         </div>
@@ -326,7 +326,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           <span className="text-sm font-black text-rose-400 uppercase tracking-widest block mb-2">
             Link Failure
           </span>
-          <p className="text-xs text-brand-primary opacity-60 mb-6 uppercase tracking-wider">
+          <p className="text-xs text-brand-muted mb-6 uppercase tracking-wider">
             {error || "Unable to locate match history."}
           </p>
           <button
@@ -369,7 +369,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </motion.button>
         <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
           <FaGamepad className="text-[10px] text-brand-primary opacity-45" />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-muted uppercase">
             {gameData.game_type === 'computer' ? "A.I. Training" : "Duel Ledger"}
           </span>
         </div>
@@ -385,16 +385,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
               {gameData.black_player_id === -1 ? (
-                <FaRobot className="text-base text-brand-primary opacity-40" />
+                <FaRobot className="text-base text-brand-muted" />
               ) : (
-                <FaUser className="text-sm text-brand-primary opacity-30" />
+                <FaUser className="text-sm text-brand-muted" />
               )}
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
                 {gameData.black_name}
               </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
                 {gameData.black_elo_before} → {gameData.black_elo_after} ELO
               </span>
             </div>
@@ -409,7 +409,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Board Container */}
         <div className="w-full relative z-20 flex justify-center px-1">
           <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
-            <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-black p-1">
+            <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1">
               <Chessboard
                 options={{
                   position: fens[currentStep],
@@ -449,16 +449,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
               {gameData.white_player_id === -1 ? (
-                <FaRobot className="text-base text-brand-primary opacity-40" />
+                <FaRobot className="text-base text-brand-muted" />
               ) : (
-                <FaUser className="text-sm text-brand-primary opacity-30" />
+                <FaUser className="text-sm text-brand-muted" />
               )}
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
                 {gameData.white_name}
               </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
                 {gameData.white_elo_before} → {gameData.white_elo_after} ELO
               </span>
             </div>
@@ -476,14 +476,14 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             <button
               onClick={() => { setCurrentStep(0); setIsPlaying(false); }}
               disabled={currentStep === 0}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-primary opacity-60 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaFastBackward size={10} />
             </button>
             <button
               onClick={() => { setCurrentStep(prev => Math.max(0, prev - 1)); setIsPlaying(false); }}
               disabled={currentStep === 0}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-primary opacity-60 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaChevronLeft size={10} />
             </button>
@@ -510,14 +510,14 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             <button
               onClick={() => { setCurrentStep(prev => Math.min(totalSteps - 1, prev + 1)); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-primary opacity-60 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaChevronRight size={10} />
             </button>
             <button
               onClick={() => { setCurrentStep(totalSteps - 1); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-primary opacity-60 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaFastForward size={10} />
             </button>
@@ -525,7 +525,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </div>
 
         {/* Step Indicator */}
-        <div className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40">
+        <div className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
           Move {Math.floor((currentStep + 1) / 2)} / {Math.floor(sanMoves.length / 2)} ({currentStep} / {sanMoves.length} half-moves)
         </div>
 
@@ -535,7 +535,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
               A.I. Engine Review
             </span>
-            <p className="text-[10px] text-brand-primary opacity-60 uppercase tracking-wide">
+            <p className="text-[10px] text-brand-muted uppercase tracking-wide">
               Run engine analysis to evaluate move accuracy and discover blunders.
             </p>
             <button
@@ -558,7 +558,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                 style={{ width: `${analysisProgress}%` }}
               />
             </div>
-            <span className="text-[10px] font-black text-brand-primary opacity-60 uppercase tracking-widest">
+            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
               {analysisProgress}% Complete
             </span>
           </div>
@@ -657,10 +657,10 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Move History Log Panel */}
         <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-brand-border-opacity-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-40">
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
               Move Ledger
             </span>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-primary opacity-30">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-muted">
               <FaRegClock />
               <span>{new Date(gameData.ended_at).toLocaleDateString()}</span>
             </div>
@@ -668,7 +668,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
           <div className="max-h-[140px] overflow-y-auto pr-1 space-y-1.5 custom-scrollbar">
             {movePairs.length === 0 ? (
-              <span className="text-[10px] text-brand-primary opacity-30 uppercase block text-center py-4">
+              <span className="text-[10px] text-brand-muted uppercase block text-center py-4">
                 No moves played.
               </span>
             ) : (
@@ -682,14 +682,14 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
                   return (
                     <div key={pair.index} className="flex items-center text-xs font-mono py-0.5 border-b border-brand-border-opacity-5">
-                      <span className="text-brand-primary opacity-30 w-8">{pair.index}.</span>
+                      <span className="text-brand-muted w-8">{pair.index}.</span>
                       
                       <span
                         onClick={() => { setCurrentStep(whiteStepIdx); setIsPlaying(false); }}
                         className={`cursor-pointer px-1.5 py-0.5 rounded font-bold transition-all hover:bg-brand-void/50 ${
                           isWhiteActive 
                             ? 'bg-brand-primary text-brand-void font-black' 
-                            : 'text-brand-primary opacity-70 hover:opacity-100'
+                            : 'text-brand-muted hover:opacity-100'
                         }`}
                       >
                         {pair.white}
@@ -701,7 +701,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                           className={`cursor-pointer px-1.5 py-0.5 rounded font-bold transition-all ml-4 hover:bg-brand-void/50 ${
                             isBlackActive 
                               ? 'bg-brand-primary text-brand-void font-black' 
-                              : 'text-brand-primary opacity-70 hover:opacity-100'
+                              : 'text-brand-muted hover:opacity-100'
                           }`}
                         >
                           {pair.black}

@@ -270,14 +270,14 @@ export default function Leaderboard() {
       <button
          onClick={() => setActiveTab('arena')}
          aria-pressed={activeTab === 'arena'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'arena' ? 'text-white dark:text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
        >
          <FaGamepad size={10} /> Arena
        </button>
       <button
          onClick={() => setActiveTab('academy')}
          aria-pressed={activeTab === 'academy'}
-         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
+         className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-wider transition-colors rounded-xl z-10 ${activeTab === 'academy' ? 'text-white dark:text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
        >
          <FaBook size={10} /> Scholars
        </button>
@@ -285,7 +285,8 @@ export default function Leaderboard() {
          initial={false}
          animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
          transition={{ duration: 0.2, ease: 'easeOut' }}
-         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-brand-gold rounded-xl"
+         className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-xl shadow-md"
+         style={{ background: 'linear-gradient(135deg, #D97706 0%, #FBBF24 45%, #F59E0B 100%)' }}
        />
      </div>
 
@@ -374,21 +375,22 @@ export default function Leaderboard() {
 
                {/* Tab switcher inside modal */}
                <div className="px-4 pt-3 pb-0">
-                 <div className="flex bg-brand-elevated rounded-xl p-0.5 border border-brand-border-opacity-20 relative">
-                   <button onClick={() => setActiveTab('arena')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'arena' ? 'text-brand-void' : 'text-brand-muted'}`}>
-                     <FaGamepad size={9} /> Arena
-                   </button>
-                   <button onClick={() => setActiveTab('academy')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'academy' ? 'text-brand-void' : 'text-brand-muted'}`}>
-                     <FaBook size={9} /> Scholars
-                   </button>
-                   <motion.div
-                     initial={false}
-                     animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
-                     transition={{ duration: 0.2, ease: 'easeOut' }}
-                     className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] bg-brand-gold rounded-[9px]"
-                   />
-                 </div>
-               </div>
+                  <div className="flex bg-brand-elevated rounded-xl p-0.5 border border-brand-border-opacity-20 relative">
+                    <button onClick={() => setActiveTab('arena')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'arena' ? 'text-white dark:text-brand-void' : 'text-brand-muted'}`}>
+                      <FaGamepad size={9} /> Arena
+                    </button>
+                    <button onClick={() => setActiveTab('academy')} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors rounded-lg z-10 ${activeTab === 'academy' ? 'text-white dark:text-brand-void' : 'text-brand-muted'}`}>
+                      <FaBook size={9} /> Scholars
+                    </button>
+                    <motion.div
+                      initial={false}
+                      animate={{ x: activeTab === 'arena' ? '0%' : '100%' }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-[9px] shadow-md"
+                      style={{ background: 'linear-gradient(135deg, #D97706 0%, #FBBF24 45%, #F59E0B 100%)' }}
+                    />
+                  </div>
+                </div>
 
                {/* Scrollable list */}
                <div className="flex-1 overflow-y-auto px-4 py-3 scroll-smooth">

@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "Сыграно Игр",
     "current_streak": "Текущая Серия",
+    "day_streak": "Дней подряд",
     "best_streak": "Лучшая Серия",
     "wins": "ПОБЕДЫ",
     "losses": "ПОРАЖЕНИЯ",
@@ -64,7 +65,8 @@
     "nav_settings": "Настройки",
     "nav_profile": "Профиль",
     "nav_logout": "Выйти",
-    "nav_marketplace": "Маркетплейс"
+    "nav_marketplace": "Маркетплейс",
+    "draws": "Ничьи"
   },
   "Marketplace": {
     "title": "Маркет",
@@ -213,7 +215,8 @@
     "daily_play_human_desc": "Сыграйте матч против живого соперника.",
     "daily_play_human_inst": "Используйте подбор игры или Журнал дуэлей, чтобы сыграть с человеком.",
     "daily_login_desc": "Откройте приложение сегодня.",
-    "daily_login_inst": "Задание выполняется автоматически."
+    "daily_login_inst": "Задание выполняется автоматически.",
+    "level": "Уровень"
   },
   "Academy": {
     "title": "Академия",

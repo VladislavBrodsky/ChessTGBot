@@ -80,7 +80,7 @@ export default function RegionPrompt() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-sm p-4"
           onClick={dismiss}
         >
           <motion.div
@@ -101,7 +101,7 @@ export default function RegionPrompt() {
               <h2 id="region-prompt-title" className="text-base font-black uppercase tracking-wide text-brand-primary mt-2">
                 {t('title')}
               </h2>
-              <p className="text-[11px] font-bold text-brand-primary/50 mt-1.5 leading-relaxed">
+              <p className="text-[11px] font-bold text-brand-muted mt-1.5 leading-relaxed">
                 {t('subtitle')}
               </p>
             </div>
@@ -114,11 +114,11 @@ export default function RegionPrompt() {
                   disabled={!!saving}
                   className={`flex flex-col items-center gap-2 rounded-2xl border p-4 transition-all ${
                     saving === r.id
-                      ? 'border-amber-400/50 bg-amber-500/10'
+                      ? 'border-emerald-400/50 bg-emerald-500/10'
                       : 'border-brand-primary/10 bg-brand-bg-opacity-5 hover:border-brand-primary/30'
                   } ${saving && saving !== r.id ? 'opacity-40' : ''}`}
                 >
-                  <span className="text-xl text-brand-primary/70">{r.icon}</span>
+                  <span className="text-xl text-brand-muted">{r.icon}</span>
                   <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary text-center leading-tight">
                     {t(`region_${r.id}`)}
                   </span>
@@ -128,7 +128,7 @@ export default function RegionPrompt() {
 
             <button
               onClick={dismiss}
-              className="w-full mt-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-brand-primary/40 hover:text-brand-primary/70 transition-colors"
+              className="w-full mt-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-brand-muted transition-colors"
             >
               {t('skip')}
             </button>

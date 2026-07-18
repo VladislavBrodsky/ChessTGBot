@@ -171,7 +171,27 @@ TEMPLATE_PUZZLES = [
 ]
 
 for i in range(11, 101):
-    tpl = TEMPLATE_PUZZLES[i % len(TEMPLATE_PUZZLES)]
+    if 11 <= i <= 15:
+        tpl = TEMPLATE_PUZZLES[3] # Skewer
+    elif 16 <= i <= 20:
+        tpl = TEMPLATE_PUZZLES[2] # Knight Fork
+    elif 21 <= i <= 25:
+        tpl = TEMPLATE_PUZZLES[0] # Smothered Mate
+    elif 26 <= i <= 40:
+        tpl = TEMPLATE_PUZZLES[1] # Back Rank Mate
+    elif 41 <= i <= 50:
+        tpl = TEMPLATE_PUZZLES[4] # Royal Fork
+    elif 51 <= i <= 60:
+        tpl = TEMPLATE_PUZZLES[2] # Knight Fork
+    elif 61 <= i <= 70:
+        tpl = TEMPLATE_PUZZLES[5] # Promotion
+    elif 71 <= i <= 80:
+        tpl = TEMPLATE_PUZZLES[3] # Skewer
+    elif 81 <= i <= 90:
+        tpl = TEMPLATE_PUZZLES[0] # Smothered Mate
+    else:
+        tpl = TEMPLATE_PUZZLES[4] # Royal Fork
+
     CHESS_PUZZLES.append({
         "id": i,
         "title": f"{tpl['theme']} — Level {i}",

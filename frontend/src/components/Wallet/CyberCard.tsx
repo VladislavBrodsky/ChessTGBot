@@ -43,15 +43,15 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
           </span>
           <div className="flex items-center space-x-2">
             <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/10">
-              <FaCoins className="text-emerald-500 dark:text-emerald-400 text-[10px]" />
+              <FaCoins className="text-emerald-500 text-[10px]" />
             </div>
-            <span className="text-[10px] font-black text-brand-primary opacity-90 uppercase tracking-widest">{tw('usdt_balance')}</span>
+            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('usdt_balance')}</span>
           </div>
         </div>
 
         {/* Right Corner indicator (pulsing green dot if connected, red if not) */}
         <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 shadow-sm shrink-0">
-          <FaWallet size={11} className="text-brand-primary opacity-60" />
+          <FaWallet size={11} className="text-brand-muted" />
           <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${walletAddress ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'} animate-pulse`} />
         </div>
       </div>
@@ -65,8 +65,8 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
             aria-label={tw('balance_unavailable')}
           >
             <div className="flex items-baseline space-x-1.5">
-              <span className="text-4xl font-black text-brand-primary opacity-30 tracking-tighter leading-none">— .—</span>
-              <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">USDT</span>
+              <span className="text-4xl font-black text-brand-muted tracking-tighter leading-none">— .—</span>
+              <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">USDT</span>
             </div>
             <span className="flex items-center gap-1.5 text-[10px] font-black text-amber-500 uppercase tracking-widest">
               <FaRedoAlt className="text-[10px]" />
@@ -79,7 +79,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
             <h2 className="text-4xl font-black text-brand-primary tracking-tighter leading-none bg-clip-text">
               {(balance / 100).toFixed(2)}
             </h2>
-            <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none">USDT</span>
+            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">USDT</span>
           </div>
         )}
       </div>
@@ -88,11 +88,11 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
       <div className="flex justify-between items-center z-10 pt-3 border-t border-brand-border-opacity-5">
         <div className="flex items-center space-x-2">
           <span className={`w-1.5 h-1.5 rounded-full ${walletAddress ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0`} />
-          <span className="text-[10px] font-black text-brand-primary opacity-60 uppercase tracking-widest font-mono">
+          <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest font-mono">
             {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : tw('link_wallet_hint')}
           </span>
         </div>
-        <span className="text-[10px] font-black text-brand-primary opacity-20 uppercase tracking-widest">{tw('version')}</span>
+        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('version')}</span>
       </div>
     </motion.div>
   );

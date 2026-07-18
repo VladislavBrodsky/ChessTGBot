@@ -322,8 +322,8 @@ export default function PuzzleBoard({
             disabled={!hintsEnabled || status !== 'playing'}
             className={`p-4 rounded-xl transition-all ${
               hintsEnabled && status === 'playing'
-                ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.15)] cursor-pointer' 
-                : 'bg-brand-primary/5 text-brand-primary/30 cursor-not-allowed'
+                ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] cursor-pointer' 
+                : 'bg-brand-primary/5 text-brand-muted cursor-not-allowed'
             }`}
             title="Hint"
           >
@@ -342,7 +342,7 @@ export default function PuzzleBoard({
           )}
         </div>
         {hintsEnabled && !showHintText && status === 'playing' && (
-          <span className="text-[10px] font-bold text-amber-500/50 uppercase tracking-widest mt-2">
+          <span className="text-[10px] font-bold text-blue-500/50 uppercase tracking-widest mt-2">
             Hints available (Levels 1-10)
           </span>
         )}
@@ -356,7 +356,7 @@ export default function PuzzleBoard({
             exit={{ opacity: 0, height: 0 }}
             className="w-full text-center px-4 -mt-2"
           >
-            <div className="text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 inline-block">
+            <div className="text-xs font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 inline-block">
               <span className="font-bold uppercase tracking-wider block mb-1">Coach Hint:</span>
               {dynamicHintText}
             </div>
@@ -375,7 +375,7 @@ export default function PuzzleBoard({
             <h3 className="text-sm font-black uppercase tracking-widest">SOLVED</h3>
           </div>
           {dynamicSuccessExplanation ? (
-            <div className="text-xs font-medium text-brand-primary opacity-90 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
+            <div className="text-xs font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
               <span className="text-[10px] font-black uppercase text-green-400 mb-2 block tracking-widest">Grandmaster Explanation:</span>
               <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>

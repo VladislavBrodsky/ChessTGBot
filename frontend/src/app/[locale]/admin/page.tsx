@@ -306,11 +306,11 @@ function AccessDenied() {
   const router = useRouter();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-brand-primary font-sans p-4">
-      <div className="premium-liquid-mesh-blob1" />
+      
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="premium-neon-card p-8 text-center max-w-sm md:max-w-xl lg:max-w-3xl w-full"
+        className="glass-panel p-8 text-center max-w-sm md:max-w-xl lg:max-w-3xl w-full"
       >
         <div className="text-6xl mb-4">🚫</div>
         <h1 className="text-2xl font-black mb-2 text-rose-500 shadow-neon">Access Denied</h1>
@@ -441,7 +441,7 @@ function UsersTab() {
       </div>
 
       {/* Table */}
-      <div className="premium-neon-card overflow-x-auto p-1">
+      <div className="glass-panel overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -482,7 +482,7 @@ function UsersTab() {
                 </td>
                 <td className="px-4 py-3">
                   {u.is_premium ? (
-                    <span className="bg-amber-500/15 text-amber-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-amber-500/20">⭐ {u.premium_tier || 'PRO'}</span>
+                    <span className="bg-purple-500/15 text-purple-400 rounded-lg px-2.5 py-1 text-[10px] font-black border border-purple-500/20">⭐ {u.premium_tier || 'PRO'}</span>
                   ) : (
                     <span className="text-brand-muted text-[10px]">Standard</span>
                   )}
@@ -505,7 +505,7 @@ function UsersTab() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md flex items-center justify-center z-50 p-4"
             onClick={() => { setSelectedUser(null); setUserDetail(null); }}
           >
             <motion.div
@@ -514,7 +514,7 @@ function UsersTab() {
               exit={{ scale: 0.92, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="premium-neon-card p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto relative"
+              className="glass-panel p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto relative"
             >
               {/* Modal Header */}
               <div className="flex justify-between items-start mb-6">
@@ -698,7 +698,7 @@ function TransactionsTab() {
       )}
 
       {/* Table */}
-      <div className="premium-neon-card overflow-x-auto p-1">
+      <div className="glass-panel overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -812,7 +812,7 @@ function GamesTab() {
         </p>
         {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
       </div>
-      <div className="premium-neon-card overflow-x-auto p-1">
+      <div className="glass-panel overflow-x-auto p-1">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
@@ -921,7 +921,7 @@ function BroadcastsTab() {
   return (
     <div>
       {/* Composer */}
-      <div className="premium-neon-card p-6 mb-6">
+      <div className="glass-panel p-6 mb-6">
         <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-purple-400">
           📢 New Broadcast
         </h3>
@@ -999,7 +999,7 @@ function BroadcastsTab() {
           key={b.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="premium-neon-card p-5 mb-3"
+          className="glass-panel p-5 mb-3"
         >
           <div className="flex justify-between items-start mb-2">
             <div>
@@ -1076,7 +1076,7 @@ function SysCard({ icon, title, status, latency, rows }: {
 }) {
   const statusColor = status === 'online' ? '#22c55e' : status === 'offline' ? '#ef4444' : status === 'memory_fallback' || status === 'partial' ? '#f59e0b' : '#6b7280';
   return (
-    <div className="premium-neon-card p-5 flex flex-col gap-4" style={{ borderColor: `${statusColor}30` }}>
+    <div className="glass-panel p-5 flex flex-col gap-4" style={{ borderColor: `${statusColor}30` }}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: `${statusColor}18`, color: statusColor }}>
@@ -1228,7 +1228,7 @@ function SystemTab() {
       )}
 
       {sys?.ledger_audit?.mismatches && sys.ledger_audit.mismatches.length > 0 && (
-        <div className="premium-neon-card p-6 border-amber-500/30 bg-amber-950/5 mt-6">
+        <div className="glass-panel p-6 border-amber-500/30 bg-amber-950/5 mt-6">
           <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-amber-500 flex items-center gap-2">
             ⚠️ Ledger Anomalies Details
           </h3>

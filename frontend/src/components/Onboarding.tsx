@@ -24,32 +24,32 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       title: t('slide1_title'),
       subtitle: t('slide1_subtitle'),
       description: t('slide1_desc'),
-      icon: <FaChessKnight className="text-brand-primary text-6xl animate-pulse drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />,
-      gradient: "from-blue-600/25 to-cyan-500/10",
-      accentColor: "text-blue-400"
+      icon: <FaChessKnight className="text-brand-primary text-6xl drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />,
+      bgClass: "bg-[var(--color-brand-bg-opacity-10)]",
+      accentColor: "text-brand-primary"
     },
     {
       title: t('slide2_title'),
       subtitle: t('slide2_subtitle'),
       description: t('slide2_desc'),
-      icon: <FaWallet className="text-emerald-400 text-6xl drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />,
-      gradient: "from-emerald-600/25 to-teal-500/10",
-      accentColor: "text-emerald-400"
+      icon: <FaWallet className="text-emerald-500 text-6xl drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" />,
+      bgClass: "bg-[var(--color-brand-emerald-opacity-10)]",
+      accentColor: "text-emerald-500"
     },
     {
       title: t('slide3_title'),
       subtitle: t('slide3_subtitle'),
       description: t('slide3_desc'),
-      icon: <FaShareAlt className="text-amber-400 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />,
-      gradient: "from-amber-600/25 to-orange-500/10",
-      accentColor: "text-amber-400"
+      icon: <FaShareAlt className="text-blue-500 text-6xl drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]" />,
+      bgClass: "bg-blue-500/10",
+      accentColor: "text-blue-500"
     },
     {
       title: t('slide4_title'),
       subtitle: t('slide4_subtitle'),
       description: t('slide4_desc'),
-      icon: <FaCrown className="text-purple-500 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />,
-      gradient: "from-purple-500/15 to-purple-500/5",
+      icon: <FaCrown className="text-purple-500 text-6xl drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]" />,
+      bgClass: "bg-[var(--color-brand-purple-opacity-10)]",
       accentColor: "text-purple-500"
     }
   ];
@@ -128,7 +128,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4 modal-backdrop"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4 modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
@@ -177,7 +177,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               className="w-full flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing"
             >
               {/* Slide Icon */}
-              <div className={`mb-6 p-6 rounded-3xl bg-white/5 border border-white/10 shadow-inner flex items-center justify-center bg-gradient-to-br ${slides[currentSlide].gradient}`}>
+              <div className={`mb-6 p-6 rounded-3xl border border-brand-border shadow-[var(--shadow-inner-glow)] flex items-center justify-center ${slides[currentSlide].bgClass}`}>
                 {slides[currentSlide].icon}
               </div>
 
@@ -185,12 +185,12 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               <span className={`text-xs font-black tracking-[0.2em] uppercase mb-3 ${slides[currentSlide].accentColor}`}>
                 {slides[currentSlide].subtitle}
               </span>
-              <h2 id="onboarding-title" className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
+              <h2 id="onboarding-title" className="text-3xl font-black text-brand-primary tracking-tight mb-4 leading-tight">
                 {slides[currentSlide].title}
               </h2>
 
               {/* Description */}
-              <p id="onboarding-desc" className="text-slate-600 dark:text-slate-400 text-[15px] leading-relaxed max-w-[320px]">
+              <p id="onboarding-desc" className="text-brand-muted text-[15px] leading-relaxed max-w-[320px]">
                 {slides[currentSlide].description}
               </p>
             </motion.div>
@@ -213,8 +213,8 @@ export default function Onboarding({ onClose }: OnboardingProps) {
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-2.5 rounded-full transition-all duration-500 focus:outline-none ${
                   idx === currentSlide 
-                    ? 'w-10 bg-brand-primary shadow-[0_0_12px_rgba(99,102,241,0.6)]' 
-                    : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'
+                    ? 'w-10 bg-brand-primary shadow-[var(--shadow-neon)]' 
+                    : 'w-2.5 bg-brand-border hover:bg-brand-muted'
                 }`}
               />
             ))}
@@ -226,7 +226,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               <button
                 onClick={handleBack}
                 aria-label={t('back')}
-                className="glass-button flex items-center justify-center w-14 h-14 rounded-2xl transition-all active:scale-95 focus:outline-none flex-shrink-0"
+                className="glass-button flex items-center justify-center w-14 h-14 rounded-2xl active:scale-95 flex-shrink-0"
               >
                 <FaArrowLeft className="text-lg" />
               </button>
@@ -235,10 +235,10 @@ export default function Onboarding({ onClose }: OnboardingProps) {
             <button
               onClick={handleNext}
               aria-label={currentSlide === slides.length - 1 ? t('get_started') : t('next')}
-              className={`flex flex-1 items-center justify-center gap-2 px-6 h-14 rounded-2xl font-black text-sm tracking-[0.15em] uppercase shadow-lg transition-all active:scale-95 focus:outline-none ${
+              className={`flex flex-1 items-center justify-center gap-2 px-6 h-14 rounded-2xl font-black text-sm tracking-[0.15em] uppercase transition-all active:scale-95 focus:outline-none ${
                 currentSlide === slides.length - 1
-                  ? 'action-button bg-brand-primary text-white'
-                  : 'glass-button bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
+                  ? 'action-button'
+                  : 'glass-button'
               }`}
             >
               {currentSlide === slides.length - 1 ? (

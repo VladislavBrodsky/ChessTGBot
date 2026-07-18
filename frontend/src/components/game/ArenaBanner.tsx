@@ -133,7 +133,7 @@ export default function ArenaBanner() {
                 {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
-              <span className="text-[10px] font-bold text-brand-primary/50 uppercase tracking-wider mt-0.5">
+              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
                 {t('finished')} · {t('next_in')} {fmtCountdown(startsIn)}
               </span>
             ) : (
@@ -180,7 +180,7 @@ export default function ArenaBanner() {
           >
             <div className="p-3 rounded-2xl bg-brand-primary/5 border border-brand-primary/10 flex items-start gap-2.5">
               <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-brand-primary/40" />
-              <p className="text-[11px] font-medium text-brand-primary/70 leading-relaxed">
+              <p className="text-[11px] font-medium text-brand-muted leading-relaxed">
                 {t('waiting_hint')}
               </p>
             </div>
@@ -191,7 +191,7 @@ export default function ArenaBanner() {
       {isLive && arena.standings.length > 0 && (
         <div className="mt-4 flex flex-col gap-1.5">
           {arena.standings.slice(0, 3).map((row) => (
-            <div key={row.user_id} className={`flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-amber-500/15 border border-amber-500/30 text-amber-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-primary/70'}`}>
+            <div key={row.user_id} className={`flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-muted'}`}>
               <div className="flex items-center gap-2 truncate">
                 <span className="w-5 text-center text-[13px]">
                   {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `${row.rank}.`}
@@ -209,7 +209,7 @@ export default function ArenaBanner() {
             </div>
           ))}
           {arena.me && arena.me.rank > 3 && (
-            <div className="flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 mt-0.5">
+            <div className="flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mt-0.5">
               <div className="flex items-center gap-2 truncate">
                 <span className="w-5 text-center opacity-70 text-[11px]">{arena.me.rank}.</span>
                 <span className="truncate">{arena.me.name} <span className="opacity-60 font-medium">({t('you')})</span></span>

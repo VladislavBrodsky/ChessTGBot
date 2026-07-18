@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "खेले गए खेल",
     "current_streak": "वर्तमान लकीर",
+    "day_streak": "दिनों की लड़ी",
     "best_streak": "सर्वोत्तम लकीर",
     "wins": "जीत",
     "losses": "हार",
@@ -64,7 +65,8 @@
     "nav_settings": "सेटिंग्स",
     "nav_profile": "प्रोफ़ाइल",
     "nav_logout": "लॉग आउट",
-    "nav_marketplace": "मार्केटप्लेस"
+    "nav_marketplace": "मार्केटप्लेस",
+    "draws": "ड्रा"
   },
   "Marketplace": {
     "title": "मार्केटप्लेस",
@@ -213,7 +215,8 @@
     "daily_play_human_desc": "किसी असली इंसान के खिलाफ मैच खेलें।",
     "daily_play_human_inst": "इंसान से खेलने के लिए मैचमेकिंग या ड्यूल लेजर का उपयोग करें।",
     "daily_login_desc": "आज ऐप खोलें।",
-    "daily_login_inst": "कार्य अपने आप पूरा हो जाता है।"
+    "daily_login_inst": "कार्य अपने आप पूरा हो जाता है।",
+    "level": "स्तर"
   },
   "Academy": {
     "title": "अकादमी",

@@ -71,12 +71,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     )}
                 </div>
 
-                <div
-                    className="relative -mx-1 mt-1 mb-1 z-10 h-[118px] rounded-2xl overflow-hidden border border-white/5"
-                    style={{
-                        background: 'radial-gradient(120% 100% at 50% 30%, #202027 0%, #0c0c10 62%, #060607 100%)'
-                    }}
-                >
+                <div className="relative -mx-1 mt-1 mb-1 z-10 h-[118px] flex items-center justify-center">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                         <motion.div
                             animate={{ opacity: [0.12, 0.28, 0.12], scale: [1, 1.05, 1] }}

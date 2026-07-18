@@ -46,7 +46,7 @@ export default function LocaleError({
                 ⚠
             </div>
             <h2 className="text-lg font-black uppercase tracking-tight mb-2">Something went wrong</h2>
-            <p className="text-[11px] font-bold text-brand-primary opacity-40 uppercase tracking-widest max-w-[280px] mb-8">
+            <p className="text-[11px] font-bold text-brand-muted uppercase tracking-widest max-w-[280px] mb-8">
                 The app hit an unexpected error. Our team has been notified automatically.
             </p>
             <button

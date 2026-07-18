@@ -88,13 +88,13 @@ export default function LanguageSwitcher() {
                         <FaGlobe size={18} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest leading-none mb-1.5">{t('select') || 'Select Language'}</span>
+                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none mb-1.5">{t('select') || 'Select Language'}</span>
                         <span className="text-xs font-bold text-brand-primary">
                             {currentLang.flag} {currentLang.name}
                         </span>
                     </div>
                 </div>
-                <div className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest px-2">
+                <div className="text-[10px] font-bold text-brand-muted uppercase tracking-widest px-2">
                     {isPending ? 'Syncing...' : 'Change'}
                 </div>
             </button>
@@ -130,7 +130,7 @@ export default function LanguageSwitcher() {
                                 </span>
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="text-brand-primary opacity-40 hover:opacity-100 transition-opacity p-1 cursor-pointer"
+                                    className="text-brand-muted hover:opacity-100 transition-opacity p-1 cursor-pointer"
                                 >
                                     <FaTimes size={12} />
                                 </button>

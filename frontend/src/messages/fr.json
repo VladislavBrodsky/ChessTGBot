@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "Parties Jouées",
     "current_streak": "Série Actuelle",
+    "day_streak": "Jours consécutifs",
     "best_streak": "Meilleure Série",
     "wins": "VICTOIRES",
     "losses": "DÉFAITES",
@@ -28,7 +29,6 @@
     "daily_tasks": "Tâches Quotidiennes",
     "friends": "Amis",
     "leaderboard": "Classement",
-    "welcome": "Bienvenue, {name}",
     "back": "Retour",
     "latest_updates": "Latest Updates",
     "referral_commission": "Referral Commission",
@@ -65,7 +65,8 @@
     "nav_settings": "Paramètres",
     "nav_profile": "Profil",
     "nav_logout": "Déconnexion",
-    "nav_marketplace": "Marché"
+    "nav_marketplace": "Marché",
+    "draws": "Nuls"
   },
   "Marketplace": {
     "title": "Marché",
@@ -214,7 +215,8 @@
     "daily_play_human_desc": "Jouez une partie contre une personne réelle.",
     "daily_play_human_inst": "Utilisez le matchmaking ou le Registre des Duels pour jouer contre un humain.",
     "daily_login_desc": "Ouvrez l'appli aujourd'hui.",
-    "daily_login_inst": "La tâche se termine automatiquement."
+    "daily_login_inst": "La tâche se termine automatiquement.",
+    "level": "Niveau"
   },
   "Academy": {
     "title": "Académie",

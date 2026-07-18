@@ -20,7 +20,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(({
   
   const variantClasses = {
     primary: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
-    secondary: 'bg-brand-surface text-brand-primary opacity-60 border-brand-border-opacity-20',
+    secondary: 'bg-brand-surface text-brand-muted border-brand-border-opacity-20',
     outline: 'bg-transparent text-brand-primary border-brand-primary/30',
     amber: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
     emerald: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',

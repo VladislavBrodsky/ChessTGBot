@@ -186,7 +186,7 @@ export default function ChallengesPage() {
             {/* Level badge */}
             <div className="relative mb-5">
               <div
-                className="absolute inset-0 rounded-2xl bg-amber-500/10 pointer-events-none"
+                className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
                 style={{ filter: 'blur(8px)' }}
               />
               {/* Badge outer ring */}
@@ -197,7 +197,7 @@ export default function ChallengesPage() {
                 <div
                   className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
                 >
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 text-brand-primary">LEVEL</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">LEVEL</span>
                   <motion.span
                     key={userLevel}
                     initial={{ scale: 0.6, opacity: 0 }}
@@ -209,11 +209,22 @@ export default function ChallengesPage() {
                   </motion.span>
                 </div>
               </div>
-              {/* Quiet star markers */}
+              {/* Floating animated star markers */}
               {[{top:'-8px',right:'-6px'},{bottom:'-6px',left:'-4px'},{top:'4px',left:'-10px'}].map((pos, i) => (
-                <span
+                <motion.span
                   key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-amber-400"
+                  animate={{ 
+                    y: [0, -6, 0],
+                    opacity: [0.5, 1, 0.5],
+                    scale: [0.8, 1.2, 0.8]
+                  }}
+                  transition={{
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.7
+                  }}
+                  className="absolute w-1.5 h-1.5 rounded-full bg-brand-primary/40 shadow-[0_0_8px_rgba(0,0,0,0.2)]"
                   style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
                 />
               ))}
@@ -223,7 +234,7 @@ export default function ChallengesPage() {
               {t('grandmaster_rising')}
             </h1>
             <div className="flex items-center gap-2 mb-6">
-              {levelSecured && <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(217,119,6,0.28)] dark:text-slate-200 dark:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]" size={11} />}
+              {levelSecured && <FaCrown className="text-brand-gold drop-shadow-md" size={11} />}
               <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
                 {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
               </p>
@@ -239,7 +250,11 @@ export default function ChallengesPage() {
  
             {/* XP percentage pill */}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${levelSecured ? 'bg-brand-elevated text-brand-primary border-brand-border-opacity-20 shadow-[0_0_16px_rgba(15,23,42,0.06)] dark:bg-slate-100/10 dark:text-slate-100 dark:border-slate-200/25 dark:shadow-[0_0_16px_rgba(226,232,240,0.12)]' : 'bg-yellow-400/10 text-purple-500 border-yellow-300/20 shadow-[0_0_16px_rgba(250,204,21,0.1)]'}`}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                levelSecured
+                  ? 'bg-brand-elevated text-brand-muted border-brand-border-opacity-20 shadow-sm'
+                  : 'bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm'
+              }`}
             >
               {levelSecured && <FaCheckCircle size={10} />}
               {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}
@@ -255,17 +270,17 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-red-500/20 bg-gradient-to-br from-red-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(239,68,68,0.06)]"
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent shadow-[0_4px_24px_rgba(59,130,246,0.06)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500/80"
+              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-blue-500/80"
             />
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-500/20 to-red-500/5 border border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.15)]"
             >
-              <FaFire style={{ color: 'rgba(255,120,80,1)', fontSize: 16 }} />
+              <FaFire className="text-blue-400 text-base" />
             </div>
             <div className="flex flex-col min-w-0">
               <motion.span
@@ -277,7 +292,7 @@ export default function ChallengesPage() {
               >
                 {stats?.games_played ?? 0}
               </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
                 {t('battles')}
               </span>
             </div>
@@ -289,17 +304,17 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-brand-surface/30 shadow-[0_4px_24px_rgba(245,158,11,0.05)]"
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent shadow-[0_4px_24px_rgba(16,185,129,0.05)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-500/80"
+              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500/80"
             />
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
             >
-              <FaTrophy style={{ color: 'rgba(255,210,60,1)', fontSize: 15 }} />
+              <FaTrophy className="text-emerald-400 text-base" />
             </div>
             <div className="flex flex-col min-w-0">
               <motion.span
@@ -311,7 +326,7 @@ export default function ChallengesPage() {
               >
                 {stats?.elo ?? 1000}
               </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
                 {t('elo_rating')}
               </span>
             </div>
@@ -325,7 +340,7 @@ export default function ChallengesPage() {
 
         {/* Tasks Section */}
         <div className="w-full mb-8">
-          <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
+          <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
           <div className="space-y-3 w-full">
             {loading ? (
               <div className="w-full flex flex-col space-y-3">
@@ -343,7 +358,7 @@ export default function ChallengesPage() {
                 ))}
               </div>
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
-              <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+              <div className="text-center py-4 text-xs font-bold text-brand-muted uppercase tracking-widest">
                 {t('no_active_missions')}
               </div>
             ) : (
@@ -358,27 +373,42 @@ export default function ChallengesPage() {
                     className={`p-4 ${task.completed && !task.claimed ? 'border-brand-border-opacity-20 bg-brand-bg-opacity-5' : 'border-brand-border-opacity-10'} transition-all shadow-sm`}
                   >
                     <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${task.completed ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-5 text-brand-primary opacity-40 border border-brand-border-opacity-10'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm border transition-colors ${
+                        task.completed
+                          ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
+                          : 'bg-brand-elevated text-brand-muted border-brand-border-opacity-10'
+                      }`}>
                         {task.completed ? <FaCheckCircle /> : <FaStar />}
                       </div>
-                      <div>
+                      <div className="flex flex-col min-w-0">
                         <h4 className="text-xs font-bold text-brand-primary mb-0.5 uppercase tracking-wide">
                           {t(task.title_key)}
                         </h4>
-                        <p className="text-[10px] text-brand-primary opacity-50 mb-1 leading-snug max-w-[180px]">
+                        <p className="text-[10px] text-brand-muted mb-1 leading-snug max-w-[180px]">
                           {t(`${task.title_key}_desc`)}
                         </p>
                         {t.has(`${task.title_key}_inst`) && (
-                          <p className="text-[9px] text-amber-500/90 font-bold mb-2 leading-snug max-w-[180px] drop-shadow-glow">
+                          <p className="text-[9px] text-blue-500 dark:text-blue-400 font-bold mb-2 leading-snug max-w-[180px]">
                             👉 {t(`${task.title_key}_inst`)}
                           </p>
                         )}
                         <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-16 bg-brand-bg-opacity-5 rounded-full overflow-hidden border border-brand-border-opacity-5">
-                            <div className={`h-full transition-all duration-500 ${task.progress >= task.target_count ? 'bg-emerald-500' : 'bg-brand-primary'}`} style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }} />
+                          <div className="h-1 w-16 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10">
+                            <div
+                              className={`h-full transition-all duration-700 rounded-full ${
+                                task.progress >= task.target_count
+                                  ? 'bg-gradient-to-r from-emerald-400 to-teal-400'
+                                  : 'bg-gradient-to-r from-brand-primary/60 to-brand-primary/40'
+                              }`}
+                              style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
+                            />
                           </div>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${task.progress >= task.target_count ? 'text-emerald-500 opacity-80' : 'text-brand-primary opacity-40'}`}>{task.progress}/{task.target_count}</span>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                            task.progress >= task.target_count
+                              ? 'text-emerald-500'
+                              : 'text-brand-muted'
+                          }`}>{task.progress}/{task.target_count}</span>
                         </div>
                       </div>
                     </div>
@@ -391,7 +421,7 @@ export default function ChallengesPage() {
                         onClick={() => handleClaim(task.task_id)}
                         className="animate-pulse bg-emerald-500 text-brand-void hover:bg-emerald-400 border-none shadow-[0_0_15px_rgba(16,185,129,0.4)]"
                       >
-                        {claimingId === task.task_id ? '...' : `Claim XP`}
+                        {claimingId === task.task_id ? '...' : t.has('claim_xp_btn') ? t('claim_xp_btn') : 'Claim XP'}
                       </Button>
                     ) : task.claimed ? (
                       <Badge variant="secondary" className="opacity-40">{t('claimed_status')}</Badge>
@@ -417,13 +447,13 @@ export default function ChallengesPage() {
                             window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                           }}
                         >
-                          Invite Friend
-                        </Button>
+                           {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
+                         </Button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
-                        <span className="text-[10px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">{t('reward')}</span>
+                        <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wide">{t('reward')}</span>
                       </div>
                     )}
                   </div>
@@ -439,10 +469,10 @@ export default function ChallengesPage() {
           <div className="w-full mb-12">
             <button 
               onClick={() => setShowArchive(!showArchive)}
-              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-primary/60 hover:bg-brand-surface/40 transition-colors"
+              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-muted hover:bg-brand-surface/40 hover:text-brand-primary transition-colors"
             >
-              <span>{t('completed_missions') || 'Archive'}</span>
-              <span className="text-brand-primary/40">{showArchive ? '▲' : '▼'}</span>
+              <span>{t.has('completed_missions') ? t('completed_missions') : 'Archive'}</span>
+              <span className="text-brand-muted text-[10px]">{showArchive ? '▲' : '▼'} {tasks.filter(t => t.claimed).length}</span>
             </button>
 
             {showArchive && (
@@ -455,14 +485,14 @@ export default function ChallengesPage() {
                   <Card key={task.id} variant="glass" className="p-4 border-brand-border-opacity-5 bg-brand-surface/10 opacity-70">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-4">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm bg-brand-primary/10 text-brand-primary/40 border border-brand-border-opacity-5">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm bg-brand-primary/10 text-brand-muted border border-brand-border-opacity-5">
                           <FaCheckCircle />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-brand-primary/70 mb-0.5 uppercase tracking-wide line-through">
+                          <h4 className="text-xs font-bold text-brand-muted mb-0.5 uppercase tracking-wide line-through">
                             {t(task.title_key)}
                           </h4>
-                          <p className="text-[10px] text-brand-primary/40 mb-1 leading-snug">
+                          <p className="text-[10px] text-brand-muted mb-1 leading-snug">
                             {t(`${task.title_key}_desc`)}
                           </p>
                         </div>

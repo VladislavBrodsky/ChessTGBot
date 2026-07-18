@@ -98,14 +98,14 @@ function PuzzleContent() {
 
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+          <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
             <FaArrowLeft />
           </Link>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">
               {puzzle ? puzzle.title : "Tactical Level"}
             </h1>
-            <p className="text-xs text-brand-primary opacity-40 font-bold uppercase tracking-widest">
+            <p className="text-xs text-brand-muted font-bold uppercase tracking-widest">
               {puzzle ? puzzle.description : "Solve the puzzle"}
             </p>
           </div>
@@ -162,13 +162,13 @@ function PuzzleContent() {
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
             
             <h2 className="text-2xl font-black text-emerald-400 mb-2 uppercase tracking-tight">{t('excellent')}</h2>
-            <p className="text-xs font-bold text-brand-primary/60 uppercase tracking-widest mb-4">Level Completed Successfully</p>
+            <p className="text-xs font-bold text-brand-muted uppercase tracking-widest mb-4">Level Completed Successfully</p>
             
             {earnedXP && (
               <div className="flex justify-center gap-4 mb-6">
-                <div className="flex flex-col items-center p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[80px]">
-                  <span className="text-amber-400 font-black text-xl">+{earnedXP}</span>
-                  <span className="text-[9px] text-amber-400/60 font-black uppercase tracking-widest">XP</span>
+                <div className="flex flex-col items-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[80px]">
+                  <span className="text-emerald-400 font-black text-xl">+{earnedXP}</span>
+                  <span className="text-[9px] text-emerald-400/60 font-black uppercase tracking-widest">XP</span>
                 </div>
                 <div className="flex flex-col items-center p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl min-w-[80px]">
                   <span className="text-blue-400 font-black text-xl">+{earnedELO}</span>
@@ -179,7 +179,7 @@ function PuzzleContent() {
             
             <div className="flex gap-4 justify-center w-full mt-2">
               <Link href={`/${locale}/academy`} className="flex-1">
-                <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-opacity-10 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
+                <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-text-brand-muted font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
                   {t('continue')}
                 </button>
               </Link>
@@ -199,7 +199,7 @@ function PuzzleContent() {
 
 export default function PuzzlePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-primary opacity-20 font-black uppercase tracking-[0.5em] animate-pulse">Initializing Tactics...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-muted font-black uppercase tracking-[0.5em] animate-pulse">Initializing Tactics...</div>}>
       <PuzzleContent />
     </Suspense>
   );

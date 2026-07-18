@@ -295,7 +295,7 @@ class TelegramService:
                         try:
                             await GamificationService.process_referral(db, db_user, start_param)
                         except Exception as ref_err:
-                            logger.error(f"Error processing referral in start_command: {ref_err}")
+                            bot_errors_logger.error(f"Error processing referral in start_command: {ref_err}")
                 else:
                     # If the user has no DB language set yet, save the Telegram one
                     if not db_user.preferred_language or db_user.preferred_language == "en":
@@ -384,14 +384,12 @@ class TelegramService:
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
-            # Persistent blue menu button
-            try:
-                await context.bot.set_chat_menu_button(
-                    chat_id=user.id,
-                    menu_button=MenuButtonWebApp(text="♟️ Play-to-Earn", web_app=WebAppInfo(url=web_app_url))
-                )
-            except Exception as menu_error:
-                logger.warning(f"Could not set menu button: {menu_error}")
+            # Note: We do NOT use `set_chat_menu_button` here dynamically on /start.
+            # Doing so overrides the bot's default menu button (set via BotFather) and causes 
+            # severe UI desyncs/caching glitches in Telegram mobile clients where the menu button 
+            # requires a double-click or app restart to actually open the Web App.
+            # Telegram automatically passes `start_param` and `language_code` in `initDataUnsafe` 
+            # when the Web App opens, so we do not need to inject them into the menu button URL dynamically.
 
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -913,7 +911,7 @@ class TelegramService:
             await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML", reply_markup=keyboard)
             return True
         except Exception as e:
-            logger.error(f"❌ Failed to deliver withdrawal confirmation to {telegram_id}: {e}")
+            bot_errors_logger.error(f"❌ Failed to deliver withdrawal confirmation to {telegram_id}: {e}")
             return False
 
     @staticmethod
@@ -980,6 +978,6 @@ class TelegramService:
                 logger.info(f"Notification to {telegram_id} skipped: user has blocked the bot")
                 await cls.mark_user_blocked(telegram_id)
             except Exception as e:
-                logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
+                bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
         asyncio.create_task(_do_send())

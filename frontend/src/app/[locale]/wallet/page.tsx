@@ -93,11 +93,11 @@ export default function WalletPage() {
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">
-          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-primary opacity-60 hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
+          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-muted hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
             <FaChevronLeft className="text-xs" />
             <span>{t('back')}</span>
           </Link>
-          <span className="text-xs font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('title')}</span>
+          <span className="text-xs font-black text-brand-muted uppercase tracking-widest">{tw('title')}</span>
         </div>
 
         {/* HOLOGRAPHIC CYBER-CARD */}
@@ -111,11 +111,11 @@ export default function WalletPage() {
             onClick={() => { setActiveModal('connect'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-cyan-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center transition-all group-hover:scale-110">
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-primary/30 group">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-primary-opacity-10)] text-brand-primary flex items-center justify-center transition-all group-hover:scale-110">
                 <FaWallet className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('link_ton')}</span>
             </Card>
           </motion.button>
           
@@ -125,11 +125,11 @@ export default function WalletPage() {
             onClick={() => { setActiveModal('deposit'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-emerald-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all group-hover:scale-110">
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-success/30 group">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-success-opacity-10)] text-brand-success flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowDown className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('deposit')}</span>
             </Card>
           </motion.button>
           
@@ -139,26 +139,26 @@ export default function WalletPage() {
             onClick={() => { setActiveModal('withdraw'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-rose-500/30 group">
-              <div className="w-8 h-8 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all group-hover:scale-110">
+            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-danger/30 group">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-danger-opacity-10)] text-brand-danger flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowUp className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('withdraw')}</span>
             </Card>
           </motion.button>
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-widest relative overflow-hidden">
+        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-premium backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
           <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
           <span className="flex items-center gap-1.5 relative z-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            {tw('deposit_fee')} <strong className="text-emerald-500 dark:text-emerald-400 font-black">5%</strong>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-success shadow-neon" />
+            {tw('deposit_fee')} <strong className="text-brand-success font-black">5%</strong>
           </span>
           <span className="opacity-30 relative z-10">•</span>
           <span className="flex items-center gap-1.5 relative z-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-            {tw('withdraw_fee')} <strong className="text-cyan-500 dark:text-cyan-400 font-black">$0.20</strong>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-neon" />
+            {tw('withdraw_fee')} <strong className="text-brand-primary font-black">$0.20</strong>
           </span>
         </div>
 

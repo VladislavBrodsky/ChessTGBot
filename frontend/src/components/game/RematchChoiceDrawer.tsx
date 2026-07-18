@@ -55,7 +55,7 @@ export default function RematchChoiceDrawer({
           <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
             {tg('revenge_match')}
           </h2>
-          <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mb-6">
             {tg('invite_revenge_desc')}
           </p>
         </div>

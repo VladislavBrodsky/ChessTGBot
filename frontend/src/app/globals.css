@@ -9,6 +9,7 @@
   --color-brand-elevated: var(--color-brand-elevated);
   --color-brand-border: var(--color-brand-border);
   --color-brand-text-gray: var(--color-brand-text-gray);
+  --color-brand-overlay: var(--color-brand-overlay);
   
   --color-brand-primary: var(--text-primary);
   --color-brand-muted: var(--text-muted);
@@ -85,6 +86,7 @@
   --color-brand-elevated: #111111;
   --color-brand-border: #1F1F1F;
   --color-brand-text-gray: #71767B;
+  --color-brand-overlay: rgba(0, 0, 0, 0.8);
   --color-nav-surface: linear-gradient(135deg, rgba(12, 12, 12, 0.94) 0%, rgba(24, 22, 15, 0.92) 52%, rgba(8, 8, 8, 0.96) 100%);
   --color-nav-active: transparent;
   --color-nav-border: rgba(255, 255, 255, 0.14);
@@ -96,8 +98,8 @@
   --premium-surface-border: rgba(255, 255, 255, 0.12);
   --premium-orb-gold: rgba(251, 191, 36, 0.18);
   --premium-orb-silver: rgba(226, 232, 240, 0.10);
-  --progress-track-bg: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(226, 232, 240, 0.16), rgba(255, 255, 255, 0.06));
-  --progress-secured-fill: linear-gradient(90deg, #64748B 0%, #E2E8F0 32%, #FFFFFF 50%, #CBD5E1 68%, #64748B 100%);
+  --progress-track-bg: linear-gradient(90deg, rgba(245, 158, 11, 0.06), rgba(251, 191, 36, 0.16), rgba(245, 158, 11, 0.06));
+  --progress-secured-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
   --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
 
   --accent-silver: linear-gradient(180deg, #FFFFFF 0%, #A1A1A1 100%);
@@ -155,20 +157,21 @@
 }
 
 [data-theme='light'] {
-  --bg-primary: #F3F4F6;
+  --bg-primary: #F8FAFC;
   --bg-surface: #FFFFFF;
-  --bg-elevated: #FAFBFB;
-  --border-muted: rgba(0, 0, 0, 0.06);
-  --border-hover: rgba(0, 0, 0, 0.12);
+  --bg-elevated: #F1F5F9;
+  --border-muted: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(15, 23, 42, 0.12);
   --text-primary: #0F172A;
   --text-muted: #64748B;
-  --text-gold: #D97706;
+  --text-gold: #B8860B;
 
-  --color-brand-void: #F3F4F6;
+  --color-brand-void: #F8FAFC;
   --color-brand-surface: #FFFFFF;
-  --color-brand-elevated: #FAFBFB;
-  --color-brand-border: rgba(0, 0, 0, 0.06);
+  --color-brand-elevated: #F1F5F9;
+  --color-brand-border: rgba(15, 23, 42, 0.08);
   --color-brand-text-gray: #64748B;
+  --color-brand-overlay: rgba(15, 23, 42, 0.4);
   --color-nav-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 251, 244, 0.92) 48%, rgba(238, 242, 247, 0.88) 100%);
   --color-nav-active: transparent;
   --color-nav-border: rgba(15, 23, 42, 0.12);
@@ -180,8 +183,8 @@
   --premium-surface-border: rgba(15, 23, 42, 0.09);
   --premium-orb-gold: rgba(245, 158, 11, 0.20);
   --premium-orb-silver: rgba(100, 116, 139, 0.10);
-  --progress-track-bg: linear-gradient(90deg, rgba(15, 23, 42, 0.10), rgba(148, 163, 184, 0.30), rgba(15, 23, 42, 0.10));
-  --progress-secured-fill: linear-gradient(90deg, #64748B 0%, #CBD5E1 30%, #FFFFFF 50%, #94A3B8 72%, #475569 100%);
+  --progress-track-bg: linear-gradient(90deg, rgba(245, 158, 11, 0.10), rgba(251, 191, 36, 0.30), rgba(245, 158, 11, 0.10));
+  --progress-secured-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
   --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
 
   --accent-silver: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
@@ -216,9 +219,9 @@
   --color-rose-opacity-10: rgba(239, 68, 68, 0.08);
   --color-rose-opacity-20: rgba(239, 68, 68, 0.15);
   --color-emerald-opacity-10: rgba(16, 185, 129, 0.08);
-  --color-emerald-opacity-20: rgba(245, 158, 11, 0.15);
+  --color-emerald-opacity-20: rgba(16, 185, 129, 0.15);
   --color-cyan-opacity-10: rgba(6, 182, 212, 0.08);
-  --color-amber-opacity-10: rgba(16, 185, 129, 0.08);
+  --color-amber-opacity-10: rgba(245, 158, 11, 0.08);
 
   --cyber-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(15, 23, 42, 0.04) 100%);
 
@@ -228,7 +231,7 @@
   --gradient-color-3: #4338CA;
 
   --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
-  --shadow-premium: 0 8px 28px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --shadow-premium: 0 20px 40px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03);
   --shadow-inner-glow: inset 0 0 10px rgba(15, 23, 42, 0.04);
   --shadow-nav: 0 18px 42px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.98);
 
@@ -977,27 +980,6 @@ body {
   }
 }
 
-/* Premium Liquid Mesh Gradient Background for pages */
-.premium-liquid-mesh-container {
-  position: relative;
-  background-color: var(--bg-primary);
-  overflow: hidden;
-  z-index: 1;
-}
-
-.premium-liquid-mesh-blob1 {
-  position: absolute;
-  top: -20%;
-  left: -20%;
-  width: 90%;
-  height: 90%;
-  background: radial-gradient(circle, rgba(200, 200, 210, 0.04) 0%, transparent 70%);
-  filter: blur(80px);
-  will-change: transform;
-  pointer-events: none;
-  z-index: -1;
-}
-
 .premium-liquid-mesh-blob2 {
   position: absolute;
   bottom: -20%;
@@ -1208,57 +1190,6 @@ body {
   border: 1px solid rgb(var(--admin-accent-emerald) / 0.28);
   background: rgb(var(--admin-accent-emerald) / 0.1);
   color: rgb(var(--admin-accent-emerald));
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Force deep neon-dark theme rules inside premium mesh containers
-   to prevent light-theme blocks from breaking the aesthetic.
-   ────────────────────────────────────────────────────────────────────────── */
-.premium-liquid-mesh-container,
-[data-theme='light'] .premium-liquid-mesh-container {
-  --bg-primary: #000000 !important;
-  --bg-surface: #0A0A0A !important;
-  --bg-elevated: #111111 !important;
-  --border-muted: #1F1F1F !important;
-  --text-primary: #FFFFFF !important;
-  --text-muted: #A1A1A1 !important;
-  --text-gold: #FBBF24 !important;
-
-  --color-brand-void: #000000 !important;
-  --color-brand-surface: #0A0A0A !important;
-  --color-brand-elevated: #111111 !important;
-  --color-brand-border: #1F1F1F !important;
-  --color-brand-text-gray: #A1A1A1 !important;
-  
-  background-color: #080412 !important;
-}
-
-[data-theme='light'] .premium-liquid-mesh-container .premium-liquid-content,
-.premium-liquid-mesh-container .premium-liquid-content {
-  background: rgba(14, 8, 28, 0.95) !important;
-}
-
-[data-theme='light'] .premium-liquid-mesh-container .premium-liquid-border,
-.premium-liquid-mesh-container .premium-liquid-border {
-  background: #000000 !important;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4) !important;
-}
-
-[data-theme='light'] .premium-liquid-mesh-container .premium-neon-card,
-.premium-liquid-mesh-container .premium-neon-card {
-  background: rgba(14, 8, 28, 0.6) !important;
-  border: 1px solid rgba(168, 85, 247, 0.35) !important;
-  box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.1), 0 0 15px 0 rgba(168, 85, 247, 0.15) !important;
-}
-
-[data-theme='light'] .premium-liquid-mesh-container .premium-neon-text-glow,
-.premium-liquid-mesh-container .premium-neon-text-glow {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4) !important;
-}
-
-[data-theme='light'] .premium-liquid-mesh-container .premium-neon-icon-glow,
-.premium-liquid-mesh-container .premium-neon-icon-glow {
-  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)) !important;
 }
 
 /* Primary arena entry: emerald left-stripe signals the primary play action. */

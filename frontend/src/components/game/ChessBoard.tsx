@@ -294,7 +294,7 @@ export default function ChessBoardComponent({
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♛</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Queen</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Queen</span>
                             </motion.button>
                             
                             <motion.button
@@ -304,7 +304,7 @@ export default function ChessBoardComponent({
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♞</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Knight</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Knight</span>
                             </motion.button>
                             
                             <motion.button
@@ -314,7 +314,7 @@ export default function ChessBoardComponent({
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♜</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Rook</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Rook</span>
                             </motion.button>
                             
                             <motion.button
@@ -324,7 +324,7 @@ export default function ChessBoardComponent({
                                 className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♝</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-primary opacity-60">Bishop</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Bishop</span>
                             </motion.button>
                         </div>
                         
@@ -341,7 +341,7 @@ export default function ChessBoardComponent({
             {/* Subtle Metallic Outer Glow */}
             <div className="absolute -inset-[2px] bg-linear-to-b from-brand-border-opacity-20 to-transparent rounded-2xl blur-[1px] opacity-30 pointer-events-none"></div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-black p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
+            <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
                 <div className="rounded-xl overflow-hidden w-full h-full">
                     <Chessboard
                         options={{

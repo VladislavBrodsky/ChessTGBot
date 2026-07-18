@@ -270,7 +270,7 @@ export default function MarketplacePage() {
                     <AnimatePresence>
                         {recentWins.length > 0 && (
                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                                <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
+                                <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
                                 <div className="flex gap-2.5 overflow-x-auto pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                     {recentWins.map((w) => {
                                         const c = BOX_CONFIG[w.tier].theme;
@@ -330,7 +330,7 @@ export default function MarketplacePage() {
                                         </div>
                                         <Button
                                             variant={affordable ? 'primary' : 'secondary'}
-                                            className={affordable ? 'mt-4 w-full bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
+                                            className={affordable ? 'mt-4 w-full bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
                                             disabled={!affordable || loadingStats || Boolean(balanceError)}
                                             onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
                                         >
@@ -382,7 +382,7 @@ export default function MarketplacePage() {
                                                     variant={affordable ? 'primary' : 'secondary'}
                                                     size="sm"
                                                     disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                    className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
+                                                    className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
                                                 >
                                                     {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
                                                 </Button>

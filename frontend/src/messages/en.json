@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "Games Played",
     "current_streak": "Current Streak",
+    "day_streak": "Day Streak",
     "best_streak": "Best Streak",
     "wins": "WINS",
     "losses": "LOSSES",
@@ -64,7 +65,8 @@
     "nav_settings": "Settings",
     "nav_profile": "Profile",
     "nav_logout": "Logout",
-    "nav_marketplace": "Marketplace"
+    "nav_marketplace": "Marketplace",
+    "draws": "Draws"
   },
   "Marketplace": {
     "title": "Marketplace",
@@ -213,7 +215,8 @@
     "daily_play_human_desc": "Play a match against a real person.",
     "daily_play_human_inst": "Use Matchmaking or Duel Ledger to play a human.",
     "daily_login_desc": "Open the app today.",
-    "daily_login_inst": "Task completes automatically."
+    "daily_login_inst": "Task completes automatically.",
+    "level": "Level"
   },
   "Academy": {
     "title": "Academy",

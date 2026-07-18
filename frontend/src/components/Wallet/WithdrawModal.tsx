@@ -130,7 +130,7 @@ export default function WithdrawModal({
         <button
           onClick={onClose}
           disabled={processing}
-          className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary"
+          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary"
         >
           <FaTimes />
         </button>
@@ -139,18 +139,18 @@ export default function WithdrawModal({
           <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('withdraw_title')}</h3>
 
           <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider p-3 bg-brand-bg-opacity-5 rounded-xl border border-brand-border-opacity-10">
-            <span className="text-brand-primary opacity-60">{tw('available_balance')}</span>
+            <span className="text-brand-muted">{tw('available_balance')}</span>
             <span className="text-sm font-black text-emerald-500">${(balance / 100).toFixed(2)}</span>
           </div>
 
           {/* Input amount */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest flex items-center justify-between">
+            <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center justify-between">
               <span>{tw('withdraw_amount')}</span>
               <span className="text-[8px] opacity-60">Min. $10.00</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-brand-primary opacity-40 text-[11px] font-black font-mono">$</span>
+              <span className="absolute left-3 top-3.5 text-brand-muted text-[11px] font-black font-mono">$</span>
               <input
                 type="number"
                 value={withdrawAmount}
@@ -164,7 +164,7 @@ export default function WithdrawModal({
 
           {/* Input Target Wallet */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-[10px] font-black text-brand-primary opacity-50 uppercase tracking-widest">{tw('target_address')}</label>
+            <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('target_address')}</label>
             <input
               type="text"
               value={withdrawAddress}
@@ -176,7 +176,7 @@ export default function WithdrawModal({
 
           {/* Fee Breakdown Display */}
           {!isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
-            <div className="p-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 space-y-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-primary/60">
+            <div className="p-3 rounded-xl bg-brand-void border border-brand-border-opacity-10 space-y-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-muted">
               <div className="flex justify-between">
                 <span>Requested Amount:</span>
                 <span className="font-mono">${parseFloat(withdrawAmount).toFixed(2)}</span>
@@ -196,7 +196,7 @@ export default function WithdrawModal({
 
           {/* Safety Checklist */}
           <div className="flex flex-col space-y-2 pt-2">
-            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-muted uppercase tracking-widest cursor-pointer">
               <input 
                 type="checkbox" 
                 className="accent-brand-primary w-3 h-3" 
@@ -205,7 +205,7 @@ export default function WithdrawModal({
               />
               <span>{tw('check1')}</span>
             </label>
-            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-widest cursor-pointer">
+            <label className="flex items-center space-x-2 text-[10px] font-bold text-brand-muted uppercase tracking-widest cursor-pointer">
               <input 
                 type="checkbox" 
                 className="accent-brand-primary w-3 h-3" 
@@ -226,7 +226,7 @@ export default function WithdrawModal({
           {pendingConfirmation && (
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-2 shadow-premium">
               <div className="text-emerald-500 text-[11px] font-black uppercase tracking-widest animate-pulse">Action Required</div>
-              <p className="text-[10px] font-bold text-brand-primary/80 leading-relaxed">
+              <p className="text-[10px] font-bold text-brand-muted leading-relaxed">
                 Check your Telegram DMs with the bot. You must tap <strong>Confirm</strong> to release the funds.
               </p>
             </motion.div>

@@ -21,27 +21,13 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   const variantClasses = {
     glass: 'glass-panel',
     solid: 'bg-brand-surface border border-brand-border-opacity-10 shadow-sm',
-    premium: 'premium-liquid-content border border-transparent shadow-premium',
+    premium: 'bg-brand-surface border border-purple-500/20 shadow-premium relative overflow-hidden',
     cyber: 'bg-cyber-card border border-brand-primary/20 shadow-neon',
   };
 
   const interactiveClasses = interactive 
     ? 'cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
     : '';
-
-  if (variant === 'premium') {
-    return (
-      <div className={`premium-liquid-border ${interactive ? 'cursor-pointer' : ''} ${className}`}>
-        <div 
-          ref={ref}
-          className={`${baseClasses} ${variantClasses[variant]}`}
-          {...props}
-        >
-          {children}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div 

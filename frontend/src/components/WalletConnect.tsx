@@ -81,7 +81,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 {wallet ? (
                     <button
                         onClick={handleTopUpClick}
-                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-opacity-10 text-brand-primary shadow-sm"
+                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-text-brand-muted shadow-sm"
                         title={`Connected: ${getShortAddress(wallet.account.address)}`}
                     >
                         <FaWallet size={10} className="shrink-0 text-emerald-500" />
@@ -110,14 +110,14 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 {/* Custom styling wrapper for TonConnectButton */}
                 <div className="w-full flex items-center justify-between pl-2 pr-1 py-0.5 min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
-                        <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-10 text-brand-primary opacity-60'}`}>
+                        <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${wallet ? 'bg-brand-primary text-brand-void' : 'bg-brand-bg-opacity-10 text-brand-muted'}`}>
                             <FaWallet size={10} />
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
                                 {wallet ? tw('active') : tw('wallet')}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary/80 truncate">
+                            <span className="text-[10px] font-black uppercase tracking-wide text-brand-muted truncate">
                                 {wallet ? getShortAddress(wallet.account.address) : tw('unlinked')}
                             </span>
                         </div>

@@ -80,7 +80,7 @@ export default function FriendInviteDrawer({
           <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
             {tg('invite_link_title')}
           </h2>
-          <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mb-6">
             {tg('invite_link_desc')}
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function FriendInviteDrawer({
             type="text"
             value={inviteLink}
             onClick={(e) => (e.currentTarget as HTMLInputElement).select()}
-            className="w-full py-2.5 px-4 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[11px] font-mono text-brand-primary opacity-80 text-center select-all focus:outline-none focus:border-brand-primary/20 shadow-inner"
+            className="w-full py-2.5 px-4 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[11px] font-mono text-brand-muted text-center select-all focus:outline-none focus:border-brand-primary/20 shadow-inner"
           />
         </div>
         

@@ -1,7 +1,7 @@
 {
   "Index": {
     "title": "Ajedrez App",
-    "welcome": "Hola, {name}",
+    "welcome": "Bienvenido, {name}",
     "welcome_greeting": "Hola,",
     "subtitle": "Arena FinChess",
     "rating": "Puntuación",
@@ -10,6 +10,7 @@
     "xp": "XP",
     "games_played": "Partidas Jugadas",
     "current_streak": "Racha Actual",
+    "day_streak": "Racha de días",
     "best_streak": "Mejor Racha",
     "wins": "VICTORIAS",
     "losses": "DERROTAS",
@@ -28,7 +29,6 @@
     "daily_tasks": "Tareas Diarias",
     "friends": "Amigos",
     "leaderboard": "Clasificación",
-    "welcome": "Bienvenido, {name}",
     "back": "Atrás",
     "latest_updates": "Latest Updates",
     "referral_commission": "Referral Commission",
@@ -65,7 +65,8 @@
     "nav_settings": "Ajustes",
     "nav_profile": "Perfil",
     "nav_logout": "Cerrar sesión",
-    "nav_marketplace": "Mercado"
+    "nav_marketplace": "Mercado",
+    "draws": "Empates"
   },
   "Marketplace": {
     "title": "Mercado",
@@ -214,7 +215,8 @@
     "daily_play_human_desc": "Juega una partida contra una persona real.",
     "daily_play_human_inst": "Usa el emparejamiento o el Registro de Duelos para jugar contra un humano.",
     "daily_login_desc": "Abre la app hoy.",
-    "daily_login_inst": "La tarea se completa automáticamente."
+    "daily_login_inst": "La tarea se completa automáticamente.",
+    "level": "Nivel"
   },
   "Academy": {
     "title": "Academia",
