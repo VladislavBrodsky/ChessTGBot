@@ -51,13 +51,13 @@ export default function IncomingRematchDrawer({
         className="relative w-full max-w-[290px] bg-brand-surface border border-brand-border-opacity-10 rounded-3xl p-5 shadow-premium flex flex-col items-center text-center space-y-4 transform-gpu will-change-transform"
       >
         {/* Brand/Chess icon badge */}
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
-          <FaChessKnight className="text-amber-500 text-xl" />
+        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(16,185,129,0.08)]">
+          <FaChessKnight className="text-emerald-500 text-xl" />
         </div>
 
         {/* Text Headers */}
         <div className="space-y-1.5 w-full">
-          <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em]">
+          <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">
             {tg('rematch_dialog_title')}
           </h3>
           <p className="text-[12px] font-bold text-brand-primary leading-relaxed px-1">
@@ -75,7 +75,7 @@ export default function IncomingRematchDrawer({
               ${((incomingRematch.wager) / 100).toFixed(2)} USDT
             </span>
             {incomingRematch.double_stakes && (
-              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest block mt-0.5 animate-pulse">
+              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mt-0.5 animate-pulse">
                 {tg('double_stakes_active')}
               </span>
             )}

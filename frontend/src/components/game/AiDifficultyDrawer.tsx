@@ -157,13 +157,13 @@ export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreati
             disabled={isCreating}
             className={`w-full text-left rounded-2xl p-4 border transition-all duration-200 cursor-pointer flex items-start gap-3 bg-brand-surface ${
               selectedDifficulty === "medium" 
-                ? "border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.12)] bg-amber-500/5" 
+                ? "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.12)] bg-emerald-500/5" 
                 : "border-brand-border-opacity-10 hover:border-brand-border-opacity-20"
             }`}
           >
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
               selectedDifficulty === "medium"
-                ? "bg-amber-500/20 border-amber-500/30 text-amber-400"
+                ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
                 : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-50"
             }`}>
               <FaAward size={12} />

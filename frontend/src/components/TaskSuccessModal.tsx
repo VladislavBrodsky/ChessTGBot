@@ -88,18 +88,18 @@ export default function TaskSuccessModal() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="relative z-10 w-full max-w-[300px] bg-gradient-to-b from-brand-surface to-brand-bg border border-amber-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-premium flex flex-col items-center overflow-hidden transform-gpu will-change-transform"
+              className="relative z-10 w-full max-w-[300px] bg-gradient-to-b from-brand-surface to-brand-bg border border-emerald-500/30 rounded-[24px] p-6 text-center space-y-6 shadow-premium flex flex-col items-center overflow-hidden transform-gpu will-change-transform"
             >
-              {/* Gold Top Light Highlight */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+              {/* Top Light Highlight */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
 
-              <div className="w-16 h-16 rounded-[16px] bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shadow-[0_8px_24px_rgba(245,158,11,0.15)] mt-2">
-                <FaTrophy className="text-amber-400 text-3xl filter drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)]" />
+              <div className="w-16 h-16 rounded-[16px] bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shadow-[0_8px_24px_rgba(16,185,129,0.15)] mt-2">
+                <FaTrophy className="text-emerald-400 text-3xl filter drop-shadow-[0_2px_8px_rgba(16,185,129,0.4)]" />
               </div>
 
               {/* Title Header */}
               <div className="space-y-1">
-                <h2 id="task-success-title" className="text-[10px] font-black uppercase tracking-[0.3em] bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
+                <h2 id="task-success-title" className="text-[10px] font-black uppercase tracking-[0.3em] bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 bg-clip-text text-transparent">
                   Mission Completed
                 </h2>
                 <h3 className="text-sm font-black text-brand-primary uppercase tracking-wide px-2 mt-1 line-clamp-2">
@@ -108,11 +108,11 @@ export default function TaskSuccessModal() {
               </div>
 
               {/* Big Reward Glow Box */}
-              <div className="w-full py-4 px-3 rounded-2xl bg-amber-500/[0.04] border border-amber-500/10 flex flex-col items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.1),transparent_70%)]" />
-                <span className="text-[10px] font-black text-amber-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
+              <div className="w-full py-4 px-3 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/10 flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.1),transparent_70%)]" />
+                <span className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
                 <div className="flex items-center gap-1.5 z-10">
-                  <FaCoins className="text-amber-400 text-base" />
+                  <FaCoins className="text-emerald-400 text-base" />
                   <span className="text-2xl font-black text-brand-primary tracking-tight leading-none">
                     +{success.xpReward} XP
                   </span>
@@ -122,7 +122,7 @@ export default function TaskSuccessModal() {
               {/* Action Pulsing Button */}
               <button
                 onClick={handleClose}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-black text-[11px] font-black uppercase tracking-widest shadow-[0_4px_16px_rgba(245,158,11,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-black text-[11px] font-black uppercase tracking-widest shadow-[0_4px_16px_rgba(16,185,129,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
               >
                 AWESOME!
               </button>

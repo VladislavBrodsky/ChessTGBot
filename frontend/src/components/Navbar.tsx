@@ -186,7 +186,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(16px + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-4 right-4 z-[100] w-auto max-w-[420px] mx-auto rounded-[28px] border border-brand-border-opacity-10 px-1.5 py-1.5 backdrop-blur-[24px] shadow-premium flex justify-center"
+            className="app-bottom-nav fixed left-4 right-4 z-50 w-auto max-w-[420px] mx-auto rounded-[28px] border border-brand-border-opacity-10 px-1.5 py-1.5 backdrop-blur-[24px] shadow-premium flex justify-center"
         >
             <ul className="grid w-full grid-cols-5 gap-1">
                 {localizedItems.map((item) => {

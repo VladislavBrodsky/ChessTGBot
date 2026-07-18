@@ -197,7 +197,7 @@ export default function ProfilePage() {
  </div>
   {/* Premium overlay badge */}
   {stats?.is_premium ? (
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-amber-700/20 text-amber-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(251,191,36,0.25)] backdrop-blur-md">
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-purple-500/30 bg-gradient-to-br from-purple-500/20 to-purple-700/20 text-purple-400 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(168,85,247,0.25)] backdrop-blur-md">
       👑 PREMIUM
     </div>
   ) : (
@@ -338,14 +338,14 @@ export default function ProfilePage() {
      <div className="grid grid-cols-2 gap-3">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
-         <Card variant="glass" className="p-4 border-amber-500/30 shadow-[0_8px_32px_rgba(251,191,36,0.15)] bg-gradient-to-br from-amber-500/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
+         <Card variant="glass" className="p-4 border-purple-500/30 shadow-[0_8px_32px_rgba(168,85,247,0.15)] bg-gradient-to-br from-purple-500/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
            <div className="absolute -right-4 -top-4 text-6xl opacity-10">🚀</div>
-           <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-widest mb-2">Active Booster</span>
-           <span className="text-2xl font-black text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]">
+           <span className="text-[10px] font-black text-purple-400/80 uppercase tracking-widest mb-2">Active Booster</span>
+           <span className="text-2xl font-black text-purple-400 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]">
              {stats.xp_multiplier}x XP
            </span>
            {stats.multiplier_expires_at && (
-             <span className="text-[10px] text-amber-400/60 font-bold mt-2">
+             <span className="text-[10px] text-purple-400/60 font-bold mt-2">
                Expires: {new Date(stats.multiplier_expires_at).toLocaleDateString()}
              </span>
            )}

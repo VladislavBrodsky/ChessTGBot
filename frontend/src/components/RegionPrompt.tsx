@@ -114,7 +114,7 @@ export default function RegionPrompt() {
                   disabled={!!saving}
                   className={`flex flex-col items-center gap-2 rounded-2xl border p-4 transition-all ${
                     saving === r.id
-                      ? 'border-amber-400/50 bg-amber-500/10'
+                      ? 'border-emerald-400/50 bg-emerald-500/10'
                       : 'border-brand-primary/10 bg-brand-bg-opacity-5 hover:border-brand-primary/30'
                   } ${saving && saving !== r.id ? 'opacity-40' : ''}`}
                 >

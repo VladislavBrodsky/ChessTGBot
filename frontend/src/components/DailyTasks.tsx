@@ -139,7 +139,7 @@ export default function DailyTasks() {
                                             ${status === 'completed'
                                                 ? 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 opacity-60'
                                                 : status === 'claimable'
-                                                ? 'bg-gradient-to-r from-brand-surface to-amber-900/20 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                                                ? 'bg-gradient-to-r from-brand-surface to-emerald-900/20 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                                                 : 'bg-brand-surface border-brand-border-opacity-10'}
                                         `}
                                     >
@@ -147,7 +147,7 @@ export default function DailyTasks() {
                                             <div className={`
                                                 w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all duration-300
                                                 ${status === 'completed' ? 'bg-brand-bg-opacity-10 text-brand-primary' 
-                                                : status === 'claimable' ? 'bg-amber-500/20 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]'
+                                                : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
                                                 : 'bg-brand-bg-opacity-5 text-brand-primary opacity-60'}
                                             `}>
                                                 {status === 'completed' ? <FaCheck /> : <FaGift className={status === 'claimable' ? 'animate-pulse' : ''} />}
@@ -170,7 +170,7 @@ export default function DailyTasks() {
                                                 whileTap={{ scale: 0.95 }}
                                                 onClick={() => handleClaim(task.task_id)}
                                                 disabled={claimingId === task.task_id}
-                                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] text-[10px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] text-[10px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                             >
                                                 {claimingId === task.task_id ? '...' : t('claim')}
                                             </motion.button>

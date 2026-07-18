@@ -88,7 +88,7 @@ class Settings(BaseSettings):
     # Railway). Until the registrar DNS is corrected, the Railway subdomain
     # is the only reliable endpoint. Set WEBAPP_URL env var on Railway to
     # override once the custom domain DNS is fixed.
-    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://chesstgbot-frontend-production.up.railway.app")
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://web3chess.online")
     BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments

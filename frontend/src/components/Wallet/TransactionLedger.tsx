@@ -207,7 +207,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                       ? 'bg-[var(--color-emerald-opacity-10)] text-emerald-500' :
                     tx.type === 'deposit' ? 'bg-[var(--color-cyan-opacity-10)] text-cyan-500' :
                     tx.type === 'game_wager' || tx.type === 'game_rake' ? 'bg-[var(--color-rose-opacity-10)] text-rose-500' :
-                    'bg-[var(--color-amber-opacity-10)] text-amber-500'
+                    'bg-slate-500/10 text-slate-400'
                   }`}>
                     {tx.type === 'game_against_ai' ? <FaRobot className="text-[13px]" /> :
                      tx.type === 'game_free_pvp' ? <FaGamepad className="text-[13px]" /> :

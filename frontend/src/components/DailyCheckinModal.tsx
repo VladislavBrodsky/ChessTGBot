@@ -159,7 +159,7 @@ export default function DailyCheckinModal() {
                 disabled={claiming || !status.can_claim_today}
                 className={`min-h-12 w-full rounded-2xl py-4 font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group
                   ${status.can_claim_today && !claiming
-                    ? "bg-gradient-to-r from-amber-500 to-amber-400 text-amber-950 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-400 text-emerald-950 cursor-pointer shadow-[0_0_30px_rgba(16,185,129,0.3)]"
                     : "bg-brand-bg-opacity-5 border border-brand-border-opacity-10 text-brand-muted cursor-not-allowed"
                   }`}
               >
@@ -205,7 +205,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         ) : isFuture && !isBig ? (
           <FaLock className="text-brand-muted/40 text-lg" />
         ) : isBig ? (
-          <FaGift className={`text-3xl ${isCurrent ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-bounce' : 'text-amber-500/40'}`} />
+          <FaGift className={`text-3xl ${isCurrent ? 'text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.6)] animate-bounce' : 'text-emerald-500/40'}`} />
         ) : (
           <div className={`flex flex-col items-center ${isCurrent ? 'text-emerald-500' : 'text-brand-primary'}`}>
             <span className={`font-black ${isCurrent ? 'text-xl drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]' : 'text-lg opacity-80'}`}>{reward}</span>

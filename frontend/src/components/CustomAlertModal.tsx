@@ -101,12 +101,12 @@ export default function CustomAlertModal() {
             className="relative w-full max-w-[290px] bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] p-5 shadow-premium flex flex-col items-center text-center space-y-4 transform-gpu will-change-transform"
           >
             {/* Top Brand Circle */}
-            <div className="w-12 h-12 rounded-[16px] bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.08)]">
-              <FaChessKnight className="text-amber-500 text-xl" />
+            <div className="w-12 h-12 rounded-[16px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(59,130,246,0.08)]">
+              <FaChessKnight className="text-blue-500 text-xl" />
             </div>
 
             <div className="space-y-1.5 w-full">
-              <h3 id="custom-alert-title" className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em]">
+              <h3 id="custom-alert-title" className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">
                 {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
               <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">

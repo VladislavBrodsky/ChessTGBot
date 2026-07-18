@@ -166,9 +166,9 @@ function PuzzleContent() {
             
             {earnedXP && (
               <div className="flex justify-center gap-4 mb-6">
-                <div className="flex flex-col items-center p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[80px]">
-                  <span className="text-amber-400 font-black text-xl">+{earnedXP}</span>
-                  <span className="text-[9px] text-amber-400/60 font-black uppercase tracking-widest">XP</span>
+                <div className="flex flex-col items-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[80px]">
+                  <span className="text-emerald-400 font-black text-xl">+{earnedXP}</span>
+                  <span className="text-[9px] text-emerald-400/60 font-black uppercase tracking-widest">XP</span>
                 </div>
                 <div className="flex flex-col items-center p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl min-w-[80px]">
                   <span className="text-blue-400 font-black text-xl">+{earnedELO}</span>

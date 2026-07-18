@@ -87,9 +87,9 @@ export default function DailyHintCard() {
           className={`absolute inset-0 bg-brand-void bg-[var(--cyber-card-bg)] border border-emerald-500/30 rounded-2xl p-5 flex items-center justify-center overflow-hidden shadow-inner-glow ${isFlipped ? 'z-10' : 'z-0'}`}
           style={{ transform: "rotateY(180deg)", backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
-          {/* Golden Glows */}
+          {/* Emerald Glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
 
           {/* Subtle Grid Overlay */}
           <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'linear-gradient(var(--color-brand-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-primary) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />

@@ -92,7 +92,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
         <div className="absolute inset-0 bg-brand-void/40 pointer-events-none" />
         {/* Decorative subtle background glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/20" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
         
         <div className="relative z-10 prose prose-invert prose-brand max-w-none text-brand-primary/90 leading-relaxed text-[15px]">
           <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />

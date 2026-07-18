@@ -172,9 +172,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
     // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not
-    // hidden by game state. However, if a modal/drawer is open (isNavbarHiddenByContext),
-    // we MUST hide it so it doesn't bleed through backdrop blurs.
-    const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
+    // hidden by game state.
+    const shouldHideNavbar = showOnboarding || (
         !isMainNavbarPage && !!activeGameId
     );
 
