@@ -84,7 +84,6 @@ async def init_db():
     # Seed default tasks & achievements idempotently by ID
     async with AsyncSessionLocal() as session:
         from sqlalchemy import select
-        default_tasks = [
             Task(id=1, title_key="daily_win", description_key="Win a chess match today", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=True, icon="trophy"),
             Task(id=2, title_key="daily_play", description_key="Play 3 chess matches", xp_reward=30, task_type=TaskType.PLAY, target_count=3, is_daily=True, icon="gamepad"),
             Task(id=3, title_key="daily_login", description_key="Login to the app", xp_reward=10, task_type=TaskType.LOGIN, target_count=1, is_daily=True, icon="sync"),
@@ -98,6 +97,10 @@ async def init_db():
             Task(id=104, title_key="ach_refer_5", description_key="Network Builder: Invite 5 friends to FinChess", xp_reward=1000, task_type=TaskType.REFER, target_count=5, is_daily=False, icon="users"),
             Task(id=105, title_key="ach_refer_1", description_key="First Blood: Invite 1 friend to FinChess", xp_reward=200, task_type=TaskType.REFER, target_count=1, is_daily=False, icon="users"),
             Task(id=106, title_key="ach_refer_3", description_key="Socializer: Invite 3 friends to FinChess", xp_reward=500, task_type=TaskType.REFER, target_count=3, is_daily=False, icon="users"),
+            Task(id=107, title_key="ach_refer_10", description_key="Network Titan: Invite 10 friends to FinChess", xp_reward=2000, task_type=TaskType.REFER, target_count=10, is_daily=False, icon="users"),
+            Task(id=108, title_key="ach_refer_25", description_key="Viral Master: Invite 25 friends to FinChess", xp_reward=5000, task_type=TaskType.REFER, target_count=25, is_daily=False, icon="users"),
+            Task(id=109, title_key="ach_win_50", description_key="Champion: Win 50 chess matches", xp_reward=1000, task_type=TaskType.WIN, target_count=50, is_daily=False, icon="crown"),
+            Task(id=110, title_key="ach_play_100", description_key="Grandmaster: Play 100 chess matches", xp_reward=1500, task_type=TaskType.PLAY, target_count=100, is_daily=False, icon="star"),
             Task(id=201, title_key="join_channel", description_key="Subscribe to official channel @chess_hub", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
             Task(id=202, title_key="join_chat", description_key="Subscribe to official chat @chesshub_chat", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
             Task(id=203, title_key="add_to_home_screen", description_key="Add App to your Home Screen", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="home")

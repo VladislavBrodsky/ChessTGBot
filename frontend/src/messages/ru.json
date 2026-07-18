@@ -676,5 +676,15 @@
     "region_europe_africa": "Европа и Африка",
     "region_mena_sasia": "Ближний Восток и Южная Азия",
     "region_apac": "Восточная Азия и Тихий океан"
-  }
+  },
+  "ach_refer_10": "Network Titan",
+  "ach_refer_10_desc": "Invite 10 friends using your referral link.",
+  "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
+  "ach_refer_25": "Viral Master",
+  "ach_refer_25_desc": "Invite 25 friends using your referral link.",
+  "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
+  "ach_win_50": "Champion",
+  "ach_win_50_desc": "Win 50 matches in total.",
+  "ach_play_100": "Grandmaster",
+  "ach_play_100_desc": "Play 100 matches in total."
 }

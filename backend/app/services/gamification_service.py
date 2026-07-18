@@ -39,16 +39,25 @@ class GamificationService:
             user_task = user_tasks_map.get(task_def.id)
             
             if not user_task:
-                user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=0, completed=False, claimed=False)
+                progress = 1 if task_def.task_type == TaskType.LOGIN else 0
+                completed = progress >= task_def.target_count
+                user_task = UserTask(user_id=user_id, task_id=task_def.id, progress=progress, completed=completed, claimed=False)
                 db.add(user_task)
             else:
                 # Reset logic for daily tasks: if last updated on a previous UTC day, reset progress & completion
                 last_update = user_task.updated_at
                 now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
                 if not last_update or last_update.date() < now_utc.date():
-                    user_task.progress = 0
-                    user_task.completed = False
+                    progress = 1 if task_def.task_type == TaskType.LOGIN else 0
+                    completed = progress >= task_def.target_count
+                    user_task.progress = progress
+                    user_task.completed = completed
                     user_task.claimed = False
+                    user_task.updated_at = now_utc
+                    db.add(user_task)
+                elif task_def.task_type == TaskType.LOGIN and not user_task.completed:
+                    user_task.progress = 1
+                    user_task.completed = True
                     user_task.updated_at = now_utc
                     db.add(user_task)
             

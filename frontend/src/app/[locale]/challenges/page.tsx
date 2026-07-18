@@ -362,7 +362,20 @@ export default function ChallengesPage() {
                 {t('no_active_missions')}
               </div>
             ) : (
-              tasks.filter(t => !t.claimed).map((task) => (
+              [...tasks.filter(t => !t.claimed)].sort((a, b) => {
+                if (a.completed && !b.completed) return -1;
+                if (!a.completed && b.completed) return 1;
+                
+                const isSubA = ["join_channel", "join_chat", "add_to_home_screen"].includes(a.title_key);
+                const isSubB = ["join_channel", "join_chat", "add_to_home_screen"].includes(b.title_key);
+                if (isSubA && !isSubB) return -1;
+                if (!isSubA && isSubB) return 1;
+
+                if (a.title_key === "daily_login" && b.title_key !== "daily_login") return -1;
+                if (a.title_key !== "daily_login" && b.title_key === "daily_login") return 1;
+                
+                return 0;
+              }).map((task) => (
                 <motion.div
                   key={task.id}
                   whileHover={{ scale: 1.01 }}
