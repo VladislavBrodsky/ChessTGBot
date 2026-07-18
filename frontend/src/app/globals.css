@@ -37,6 +37,8 @@
   --shadow-inner-glow: var(--shadow-inner-glow);
 }
 
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-theme='nebula'], [data-theme='nebula'] *));
+
 :root {
   /*
    * Single source of truth for the bottom safe-area inset.
