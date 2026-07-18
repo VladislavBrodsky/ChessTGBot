@@ -54,12 +54,17 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 
                 {/* Progress Fill */}
                 <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progressPercentage}%` }}
-                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                    className={`absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 ${
-                        levelSecured ? 'app-progress-fill--secured' : 'app-progress-fill--gold'
-                    }`}
+                    initial={{ width: 0, opacity: 1 }}
+                    animate={
+                        levelSecured 
+                        ? { width: `${progressPercentage}%`, opacity: [0.8, 1, 0.8] } 
+                        : { width: `${progressPercentage}%`, opacity: 1 }
+                    }
+                    transition={{ 
+                        width: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
+                        opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--gold"
                 >
                     {/* Inner Shimmer sweep */}
                     <motion.div
@@ -73,12 +78,10 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 {/* Outer Shimmer sweep */}
                 <motion.div
                     animate={{ x: ['-100%', '300%'] }}
-                    transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.0 }}
+                    transition={{ duration: levelSecured ? 3.0 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.0 }}
                     className="absolute top-0 left-0 h-full w-1/3 pointer-events-none z-20"
                     style={{
-                        background: levelSecured
-                            ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)'
-                            : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)'
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)'
                     }}
                 />
             </div>
