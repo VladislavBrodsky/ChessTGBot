@@ -565,31 +565,79 @@ export default function AcademyPage() {
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary opacity-60 text-center">{t('mastery_tracks')}</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {lessonsList.map((lesson, originalIndex) => {
-              const isCompleted = completedLessons.includes(lesson.slug);
-              // Unlock logic: first two always unlocked. A lesson is also unlocked if the user has completed it, OR if they completed the immediately preceding lesson, OR if they bought it.
-              const previousCompleted = originalIndex > 0 ? completedLessons.includes(lessonsList[originalIndex - 1].slug) : true;
-              const isUnlocked = isCompleted || originalIndex === 0 || originalIndex === 1 || previousCompleted || unlockedLessons.includes(lesson.slug);
-              
+          {/* Category-grouped lessons */}
+          {(() => {
+            const LESSON_CATEGORIES = [
+              { id: 'fundamentals', label: '♟️ Fundamentals', emoji: '♟️', slugs: ['piece-values','the-chessboard-coordinates','the-mighty-pawns','the-noble-knights','the-swift-bishops','the-heavy-rooks','the-all-powerful-queen','the-king-check','checkmate-the-goal','castling','en-passant','pawn-promotion','stalemate-and-draws'] },
+              { id: 'openings', label: '🏁 Opening Principles', emoji: '🏁', slugs: ['the-3-opening-principles','e4-vs-d4-the-philosophy','the-italian-game','the-ruy-lopez-spanish','the-sicilian-defense','the-french-defense','the-caro-kann','the-queens-gambit','the-slav-defense','the-kings-indian-defense','the-nimzo-indian','the-english-opening','gambits-kings-gambit','gambits-evans-gambit','punishing-early-queen-moves','the-london-system','pawn-storms','greek-gift-sacrifice','development-imbalances','the-center-fork-trick','transpositions'] },
+              { id: 'tactics', label: '⚔️ Tactics & Combinations', emoji: '⚔️', slugs: ['forks','hanging-pieces','counting-defenders','scholars-mate','pins-absolute-relative','skewers','discovered-attacks','discovered-checks','double-checks','removing-the-defender','deflection','decoy-sacrifices','clearance-sacrifices','interference','x-ray-attacks','windmills','trapped-pieces','zwischenzug'] },
+              { id: 'mating_patterns', label: '👑 Mating Patterns', emoji: '👑', slugs: ['basic-mates-2-rooks','basic-mates-king-queen','basic-mates-king-rook','back-rank-mates','smothered-mates','anastasias-mate','arabian-mate','fools-mate-quick-traps'] },
+              { id: 'strategy', label: '🧠 Strategy & Positional Play', emoji: '🧠', slugs: ['good-vs-bad-bishops','outposts','the-bishop-pair','open-files-and-rooks','the-7th-rank','doubled-pawns','isolated-pawns-iqp','backward-pawns','passed-pawns','pawn-chains','space-advantage','prophylaxis','improving-the-worst-piece','the-center-classical','the-center-hypermodern','weak-color-complexes','minority-attacks','blockades'] },
+              { id: 'endgames', label: '🏆 Endgames', emoji: '🏆', slugs: ['centralizing-the-king','the-rule-of-the-square','key-squares-opposition','triangulation','zugzwang','philidor-position','lucena-position','vancura-position','bishop-vs-knight-endgames','opposite-colored-bishops','queen-vs-pawn-on-7th','pawn-breakthroughs'] },
+              { id: 'classics', label: '📖 Classic Games', emoji: '📖', slugs: ['the-immortal-game','the-evergreen-game','morphys-opera-house-game','the-game-of-the-century','kasparovs-immortal','carlsens-endgame-squeeze'] },
+              { id: 'mindset', label: '🧘 Chess Mindset', emoji: '🧘', slugs: ['psychological-chess','time-management','the-masters-mindset'] },
+            ];
+
+            // Build slug -> lesson map
+            const lessonBySlug = Object.fromEntries(lessonsList.map(l => [l.slug, l]));
+
+            return LESSON_CATEGORIES.map(cat => {
+              const catLessons = cat.slugs
+                .map(slug => lessonBySlug[slug])
+                .filter(Boolean);
+              if (catLessons.length === 0) return null;
+
+              const completedInCat = catLessons.filter(l => (completedLessons as string[]).includes(l.slug)).length;
+              const catProgress = Math.round((completedInCat / catLessons.length) * 100);
+
               return (
-                <LessonCard
-                  key={lesson.slug}
-                  title={lesson.title}
-                  description={lesson.description}
-                  progress={isCompleted ? 100 : 0}
-                  locked={!isUnlocked}
-                  difficulty={lesson.difficulty}
-                  duration={`${lesson.xp_reward} XP`}
-                  onClick={() => {
-                    if (isUnlocked) {
-                      router.push(`/${locale}/academy/lesson/${lesson.slug}`);
-                    }
-                  }}
-                />
+                <div key={cat.id} className="mb-8">
+                  {/* Category header */}
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{cat.emoji}</span>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-brand-primary/50">{completedInCat}/{catLessons.length}</span>
+                      {catProgress === 100 && <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">✓ Done</span>}
+                    </div>
+                  </div>
+                  {/* Category progress bar */}
+                  <div className="w-full h-1 bg-brand-primary/10 rounded-full overflow-hidden mb-4 mx-1">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-gradient-to-r from-brand-primary/50 to-brand-primary/30'}`}
+                      style={{ width: `${catProgress}%` }}
+                    />
+                  </div>
+                  {/* Lessons grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {catLessons.map((lesson, idx) => {
+                      // Find global index for unlock logic
+                      const globalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
+                      const isCompleted = (completedLessons as string[]).includes(lesson.slug);
+                      const previousCompleted = globalIndex > 0 ? (completedLessons as string[]).includes(lessonsList[globalIndex - 1].slug) : true;
+                      const isUnlocked = isCompleted || globalIndex === 0 || globalIndex === 1 || previousCompleted || (unlockedLessons as string[]).includes(lesson.slug);
+                      return (
+                        <LessonCard
+                          key={lesson.slug}
+                          title={lesson.title}
+                          description={lesson.description}
+                          progress={isCompleted ? 100 : 0}
+                          locked={!isUnlocked}
+                          difficulty={lesson.difficulty}
+                          duration={`${lesson.xp_reward} XP`}
+                          onClick={() => {
+                            if (isUnlocked) router.push(`/${locale}/academy/lesson/${lesson.slug}`);
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
               );
-            })}
-          </div>
+            });
+          })()}
         </div>
 
         {/* Next Milestone */}
