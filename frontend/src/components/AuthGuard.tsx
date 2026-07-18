@@ -4,6 +4,18 @@ import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
 
+const VALID_LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
+
+// How long to keep waiting for the Telegram SDK before concluding a visitor is NOT a
+// Telegram Mini App session. The SDK (telegram-web-app.js) loads asynchronously —
+// `beforeInteractive` is only honored in the root layout, and ours lives in the nested
+// [locale] layout — so on a cold launch window.Telegram.WebApp may not exist yet when
+// this guard first runs. Redirecting to /login during that window bounced real TMA users
+// to the login page and (because /login never called tg.ready() for them) left Telegram
+// showing its loading placeholder — the "app opens only on the second try" bug. We wait it
+// out instead of redirecting eagerly.
+const SDK_WAIT_MS = 2500;
+
 /**
  * AuthGuard wraps all protected pages.
  * It shows a fullscreen loading state while checking localStorage/TMA auth,
@@ -22,40 +34,74 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
+        const w = window as any;
+
         // Login page itself is always public
         if (pathname?.includes('/login')) {
             setAuthState('authed');
-            const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-            if (isTMA) {
-                (window as any).Telegram?.WebApp?.ready();
+            if (w.Telegram?.WebApp?.initData) {
+                w.Telegram.WebApp.ready();
             }
             return;
         }
 
-        const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-        const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
+        let cancelled = false;
+        const startedAt = Date.now();
 
-        if (isTMA || hasWebAuth) {
-            setAuthState('authed');
-            if (isTMA) {
-                // tg.ready() is delayed until AuthGuard completes verification
-                (window as any).Telegram?.WebApp?.ready();
+        const localeFromPath = () => {
+            const m = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
+            return m && VALID_LOCALES.includes(m[1]) ? m[1] : 'en';
+        };
+
+        // Returns true when a terminal decision was reached (stop polling),
+        // false when the Telegram SDK might still be loading (keep polling).
+        const resolve = (): boolean => {
+            if (cancelled || redirected.current) return true;
+
+            const tg = w.Telegram?.WebApp;
+            const isTMA = !!tg?.initData;
+            const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
+
+            if (isTMA || hasWebAuth) {
+                setAuthState('authed');
+                if (isTMA) {
+                    // tg.ready() is also called eagerly in TelegramInit; it is idempotent.
+                    try { tg.ready(); } catch { /* noop */ }
+                }
+                return true;
             }
-            return;
-        }
 
-        // Not authenticated — redirect immediately
-        if (!redirected.current) {
+            // Not authenticated yet. Decide whether the Telegram SDK might still be loading —
+            // if so, keep waiting rather than bouncing a real TMA session to /login.
+            //   - tg present  => the WebApp object has parsed the launch params; initData is
+            //                    final, so an empty initData means this is genuinely not a TMA.
+            //   - hash hint   => Telegram passes launch data via the URL hash before the SDK
+            //                    consumes it; its presence means a TMA launch is still in flight.
+            const sdkPresent = !!tg;
+            const telegramHash = /tgWebApp(Data|Platform|Version)/.test(w.location.hash || '');
+            const timedOut = Date.now() - startedAt >= SDK_WAIT_MS;
+
+            if (!timedOut && (!sdkPresent || telegramHash)) {
+                return false; // still possibly a TMA launch — wait for the SDK
+            }
+
+            // Genuinely unauthenticated — hard redirect once for an instant, flash-free bounce.
             redirected.current = true;
             setAuthState('redirecting');
+            window.location.replace(`/${localeFromPath()}/login`);
+            return true;
+        };
 
-            const localeMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
-            const validLocales = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
-            const locale = localeMatch && validLocales.includes(localeMatch[1]) ? localeMatch[1] : 'en';
+        if (resolve()) return;
 
-            // Use window.location for an instant, hard redirect — no flash
-            window.location.replace(`/${locale}/login`);
-        }
+        const interval = setInterval(() => {
+            if (resolve()) clearInterval(interval);
+        }, 100);
+
+        return () => {
+            cancelled = true;
+            clearInterval(interval);
+        };
     }, [pathname]);
 
     if (authState === 'checking' || authState === 'redirecting') {
