@@ -209,11 +209,22 @@ export default function ChallengesPage() {
                   </motion.span>
                 </div>
               </div>
-              {/* Quiet star markers */}
+              {/* Floating animated star markers */}
               {[{top:'-8px',right:'-6px'},{bottom:'-6px',left:'-4px'},{top:'4px',left:'-10px'}].map((pos, i) => (
-                <span
+                <motion.span
                   key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-purple-400"
+                  animate={{ 
+                    y: [0, -6, 0],
+                    opacity: [0.5, 1, 0.5],
+                    scale: [0.8, 1.2, 0.8]
+                  }}
+                  transition={{
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.7
+                  }}
+                  className="absolute w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]"
                   style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
                 />
               ))}
