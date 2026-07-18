@@ -323,7 +323,7 @@ export default function PuzzleBoard({
             className={`p-4 rounded-xl transition-all ${
               hintsEnabled && status === 'playing'
                 ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] cursor-pointer' 
-                : 'bg-brand-primary/5 text-brand-primary/30 cursor-not-allowed'
+                : 'bg-brand-primary/5 text-brand-muted cursor-not-allowed'
             }`}
             title="Hint"
           >
@@ -375,7 +375,7 @@ export default function PuzzleBoard({
             <h3 className="text-sm font-black uppercase tracking-widest">SOLVED</h3>
           </div>
           {dynamicSuccessExplanation ? (
-            <div className="text-xs font-medium text-brand-primary opacity-90 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
+            <div className="text-xs font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
               <span className="text-[10px] font-black uppercase text-green-400 mb-2 block tracking-widest">Grandmaster Explanation:</span>
               <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>

@@ -146,7 +146,7 @@ export default function MatchOverModal({
           <h2 className={`text-xl ${theme.titleClass}`}>
             {matchResultLabel}
           </h2>
-          <p className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-[0.25em]">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.25em]">
             {tg('verification_complete')}
           </p>
         </div>
@@ -168,11 +168,11 @@ export default function MatchOverModal({
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">{tg('net_payout')}</span>
             <div className="flex flex-col items-end">
-              <span className={`text-xs font-black tracking-wider font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-primary opacity-60'}`}>
+              <span className={`text-xs font-black tracking-wider font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-muted'}`}>
                 {netPayout > 0 ? `+$${animatedPayout.toFixed(2)}` : '$0.00'} USDT
               </span>
               {wagerAmount > 0 && isWin && (
-                <span className="text-[10px] text-brand-primary opacity-30 uppercase tracking-widest mt-0.5">
+                <span className="text-[10px] text-brand-muted uppercase tracking-widest mt-0.5">
                   {tg('platform_rake')} (3%)
                 </span>
               )}
@@ -197,7 +197,7 @@ export default function MatchOverModal({
         {/* Buttons / Actions */}
         <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
-            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border-opacity-10 text-brand-primary animate-pulse select-none">
+            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border-text-brand-muted animate-pulse select-none">
               <span>{isBotGame ? tg('creating_match') : tg('pending_opponent')}</span>
             </div>
           ) : (
@@ -218,7 +218,7 @@ export default function MatchOverModal({
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
               >
-                <FaRedo size={10} className="text-brand-primary opacity-60" />
+                <FaRedo size={10} className="text-brand-muted" />
                 <span>{tg('to_lobby')}</span>
               </motion.button>
             </Link>
@@ -229,7 +229,7 @@ export default function MatchOverModal({
               onClick={onShareGame}
               className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
             >
-              <FaShareAlt size={10} className="text-brand-primary opacity-60" />
+              <FaShareAlt size={10} className="text-brand-muted" />
               <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>
             </motion.button>
           </div>

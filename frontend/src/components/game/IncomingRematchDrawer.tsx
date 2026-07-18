@@ -68,7 +68,7 @@ export default function IncomingRematchDrawer({
         {/* Proposed Wager & Settings Detail Box */}
         <div className="w-full bg-brand-bg-opacity-5 rounded-2xl py-3.5 px-4 border border-brand-border-opacity-10 text-center shadow-inner-glow space-y-3">
           <div>
-            <span className="text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest block mb-0.5">
+            <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest block mb-0.5">
               {tg('proposed_wager')}
             </span>
             <span className="text-lg font-black text-brand-primary">
@@ -81,7 +81,7 @@ export default function IncomingRematchDrawer({
             )}
           </div>
           <div className="border-t border-brand-border-opacity-10 pt-2.5 flex items-center justify-between px-2">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-brand-muted uppercase tracking-widest">
               <FaRegClock className="text-[10px]" />
               <span>Time Control</span>
             </div>

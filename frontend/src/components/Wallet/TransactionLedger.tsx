@@ -132,11 +132,11 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
   return (
     <div className="w-full flex flex-col space-y-3 pt-2">
       <div className="flex items-center justify-between px-1">
-        <div className="flex items-center space-x-2 text-brand-primary opacity-80">
+        <div className="flex items-center space-x-2 text-brand-muted">
           <FaHistory className="text-xs" />
           <h3 className="text-xs font-black uppercase tracking-widest">{tw('ledger')}</h3>
         </div>
-        <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest">{tw('sorted_recent')}</span>
+        <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{tw('sorted_recent')}</span>
       </div>
 
       {!loading && transactions.length > 0 && (
@@ -147,7 +147,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
         <TransactionSkeleton />
       ) : error ? (
         <Card variant="glass" className="w-full p-8 text-center space-y-3">
-          <p className="text-xs font-bold text-brand-primary opacity-50 uppercase tracking-widest">{tw('tx_load_failed')}</p>
+          <p className="text-xs font-bold text-brand-muted uppercase tracking-widest">{tw('tx_load_failed')}</p>
           {onRetry && (
             <Button
               variant="outline"
@@ -159,7 +159,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
           )}
         </Card>
       ) : transactions.length === 0 ? (
-        <Card variant="glass" className="w-full p-8 text-center text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+        <Card variant="glass" className="w-full p-8 text-center text-xs font-bold text-brand-muted uppercase tracking-widest">
           {tw('no_entries')}
         </Card>
       ) : (
@@ -202,7 +202,7 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs shrink-0 border border-brand-border-opacity-5 shadow-inner ${
                     tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
-                      ? 'bg-brand-bg-opacity-10 text-brand-primary opacity-80' :
+                      ? 'bg-brand-bg-opacity-10 text-brand-muted' :
                     tx.type === 'game_win' || tx.type === 'referral_commission' || tx.type === 'subscription_commission' || tx.type === 'refund' || tx.type === 'game_refund'
                       ? 'bg-[var(--color-emerald-opacity-10)] text-emerald-500' :
                     tx.type === 'deposit' ? 'bg-[var(--color-cyan-opacity-10)] text-cyan-500' :
@@ -231,11 +231,11 @@ export default function TransactionLedger({ loading, transactions, balance = 0, 
                   </div>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
-                  <span className={`text-[11px] font-black ${isZero ? 'text-brand-primary opacity-60' : isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  <span className={`text-[11px] font-black ${isZero ? 'text-brand-muted' : isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {isZero ? '' : isPositive ? '+' : '-'}{formattedAmt}
                   </span>
                   {tx.fee > 0 && (
-                    <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mt-0.5">
+                    <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">
                       {formattedFee}
                     </span>
                   )}

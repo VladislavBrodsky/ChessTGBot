@@ -65,7 +65,7 @@ export default function AchievementsPage() {
     <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight">Achievements</h1>
-        <p className="text-sm font-bold text-brand-primary opacity-60 tracking-widest uppercase">
+        <p className="text-sm font-bold text-brand-muted tracking-widest uppercase">
           Unlocked {unlockedCount} / {achievements.length}
         </p>
       </div>
@@ -85,7 +85,7 @@ export default function AchievementsPage() {
             </div>
             
             <h3 className="text-sm font-black text-brand-primary uppercase mb-1">{ach.title}</h3>
-            <p className="text-[10px] text-brand-primary/60 font-medium leading-tight mb-3 flex-1">{ach.description}</p>
+            <p className="text-[10px] text-brand-muted font-medium leading-tight mb-3 flex-1">{ach.description}</p>
             
             {ach.xp_reward > 0 && (
               <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">

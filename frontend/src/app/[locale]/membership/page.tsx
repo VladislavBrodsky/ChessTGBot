@@ -315,12 +315,12 @@ export default function MembershipPage() {
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'monthly'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
-                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-primary/30"
+                : "bg-brand-surface border-brand-border-text-brand-muted hover:border-brand-primary/30"
             }`}
           >
             {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && (
               <div className="absolute top-0 right-0">
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-primary/70">
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
                   Current Plan
                 </div>
               </div>
@@ -341,13 +341,13 @@ export default function MembershipPage() {
             className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
               billingPeriod === 'annual'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
-                : "bg-brand-surface border-brand-border-opacity-20 text-brand-primary hover:border-brand-primary/30"
+                : "bg-brand-surface border-brand-border-text-brand-muted hover:border-brand-primary/30"
             }`}
           >
             {/* Badges */}
             <div className="absolute top-0 right-0 flex flex-col items-end">
               {stats?.is_premium && stats.premium_billing_period === 'annual' ? (
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-primary/70">
+                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
                   Current Plan
                 </div>
               ) : (
@@ -564,7 +564,7 @@ export default function MembershipPage() {
                 <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('success_title'))}</h2>
                 <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
               </div>
-              <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
+              <p className="text-[11px] text-brand-muted px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
               <button
                 onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}
                 className="w-full py-4 rounded-2xl bg-purple-500 text-white font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
@@ -598,7 +598,7 @@ export default function MembershipPage() {
               </div>
               <div className="space-y-1.5">
                 <h2 className="text-lg font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('insufficient_title'))}</h2>
-                <p className="text-[11px] text-brand-primary opacity-50 px-2 leading-relaxed">
+                <p className="text-[11px] text-brand-muted px-2 leading-relaxed">
                   {tm('insufficient_desc', {
                     cost: (cost / 100).toFixed(2),
                     balance: (walletBalance / 100).toFixed(2)
@@ -614,7 +614,7 @@ export default function MembershipPage() {
                 </button>
                 <button
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); }}
-                  className="w-full py-3.5 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-60 font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                  className="w-full py-3.5 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 text-brand-muted font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_cancel_btn')}
                 </button>

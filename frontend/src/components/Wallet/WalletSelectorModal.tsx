@@ -177,7 +177,7 @@ export default function WalletSelectorModal({
           <div className="text-center pt-1">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <span
-                className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 text-brand-primary"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted"
               >
                 Web3 · TON Connect
               </span>
@@ -221,7 +221,7 @@ export default function WalletSelectorModal({
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 text-brand-primary">
+                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-muted">
                       Connected · GRAM Network
                     </span>
                     <span className="text-[13px] font-black font-mono truncate text-brand-primary">
@@ -238,7 +238,7 @@ export default function WalletSelectorModal({
                     ) : (
                       <FaCopy
                         size={11}
-                        className="text-brand-primary opacity-40"
+                        className="text-brand-muted"
                       />
                     )}
                   </button>

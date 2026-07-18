@@ -197,7 +197,7 @@ export default function ChallengesPage() {
                 <div
                   className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
                 >
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 text-brand-primary">LEVEL</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">LEVEL</span>
                   <motion.span
                     key={userLevel}
                     initial={{ scale: 0.6, opacity: 0 }}
@@ -292,7 +292,7 @@ export default function ChallengesPage() {
               >
                 {stats?.games_played ?? 0}
               </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
                 {t('battles')}
               </span>
             </div>
@@ -326,7 +326,7 @@ export default function ChallengesPage() {
               >
                 {stats?.elo ?? 1000}
               </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 opacity-50 text-brand-primary">
+              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
                 {t('elo_rating')}
               </span>
             </div>
@@ -340,7 +340,7 @@ export default function ChallengesPage() {
 
         {/* Tasks Section */}
         <div className="w-full mb-8">
-          <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
+          <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
           <div className="space-y-3 w-full">
             {loading ? (
               <div className="w-full flex flex-col space-y-3">
@@ -358,7 +358,7 @@ export default function ChallengesPage() {
                 ))}
               </div>
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
-              <div className="text-center py-4 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+              <div className="text-center py-4 text-xs font-bold text-brand-muted uppercase tracking-widest">
                 {t('no_active_missions')}
               </div>
             ) : (
@@ -453,7 +453,7 @@ export default function ChallengesPage() {
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-xs font-black text-brand-primary">{task.xp_reward} XP</span>
-                        <span className="text-[10px] text-brand-primary opacity-30 font-bold uppercase tracking-wide">{t('reward')}</span>
+                        <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wide">{t('reward')}</span>
                       </div>
                     )}
                   </div>
@@ -485,14 +485,14 @@ export default function ChallengesPage() {
                   <Card key={task.id} variant="glass" className="p-4 border-brand-border-opacity-5 bg-brand-surface/10 opacity-70">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-4">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm bg-brand-primary/10 text-brand-primary/40 border border-brand-border-opacity-5">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm bg-brand-primary/10 text-brand-muted border border-brand-border-opacity-5">
                           <FaCheckCircle />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-brand-primary/70 mb-0.5 uppercase tracking-wide line-through">
+                          <h4 className="text-xs font-bold text-brand-muted mb-0.5 uppercase tracking-wide line-through">
                             {t(task.title_key)}
                           </h4>
-                          <p className="text-[10px] text-brand-primary/40 mb-1 leading-snug">
+                          <p className="text-[10px] text-brand-muted mb-1 leading-snug">
                             {t(`${task.title_key}_desc`)}
                           </p>
                         </div>

@@ -79,7 +79,7 @@ export default function LessonCard({
             {difficulty}
           </span>
           {locked ? (
-            <FaLock className="text-brand-primary/20 text-xs" />
+            <FaLock className="text-brand-muted text-xs" />
           ) : isCompleted ? (
             <div className="flex items-center gap-1 text-[9px] font-black text-emerald-500 uppercase tracking-widest">
               <FaCheckCircle className="text-sm text-emerald-400" />
@@ -97,7 +97,7 @@ export default function LessonCard({
         </h3>
 
         {/* Description */}
-        <p className="text-[11px] text-brand-primary/60 font-medium leading-relaxed line-clamp-2 flex-1 mb-3">
+        <p className="text-[11px] text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3">
           {description}
         </p>
 
@@ -120,14 +120,14 @@ export default function LessonCard({
           {/* Status row */}
           <div className="flex justify-between items-center">
             <span className={`text-[10px] font-black uppercase tracking-wide ${
-              isCompleted ? "text-emerald-400" : "text-brand-primary/40"
+              isCompleted ? "text-emerald-400" : "text-brand-muted"
             }`}>
               {isCompleted ? "Completed ✓" : "Start learning"}
             </span>
             {!locked && (
               <motion.span
                 whileHover={{ x: 2 }}
-                className="flex items-center gap-1 text-[10px] font-black text-brand-primary/50 hover:text-brand-primary transition-colors"
+                className="flex items-center gap-1 text-[10px] font-black text-brand-muted hover:text-brand-primary transition-colors"
               >
                 {isCompleted ? "Review" : "Start"}
                 <FaChevronRight size={6} />

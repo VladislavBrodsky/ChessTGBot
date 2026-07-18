@@ -169,7 +169,7 @@ export default function DailyCheckinModal() {
               {status.can_claim_today && (
                 <button 
                   onClick={closeModal}
-                  className="mt-4 min-h-11 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest hover:opacity-100 transition-opacity"
+                  className="mt-4 min-h-11 text-[10px] font-bold text-brand-muted uppercase tracking-widest hover:opacity-100 transition-opacity"
                 >
                   Skip for now
                 </button>

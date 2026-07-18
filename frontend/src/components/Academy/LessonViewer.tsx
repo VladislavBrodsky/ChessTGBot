@@ -151,7 +151,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
   {hasInteractiveSolution && (
     <div className="glass-panel p-4 md:p-6 rounded-3xl border border-brand-border-opacity-10 w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5">
-      <div className="text-sm md:text-base font-medium text-brand-primary opacity-90 mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: safeStepContent }} />
+      <div className="text-sm md:text-base font-medium text-brand-muted mb-6 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: safeStepContent }} />
       <PuzzleBoard
         initialFen={currentStep.fen || "start"}
         solution={currentStep.solution || []}
@@ -175,12 +175,12 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  <button
  onClick={handlePrev}
  disabled={currentStepIndex === 0}
- className={`p-3 rounded-full border border-brand-border-opacity-20 text-brand-primary transition-colors ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-brand-bg-opacity-10'}`}
+ className={`p-3 rounded-full border border-brand-border-text-brand-muted transition-colors ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-brand-bg-opacity-10'}`}
  >
  <FaChevronLeft />
  </button>
 
- <div className="text-xs font-bold uppercase tracking-widest text-brand-primary opacity-40">
+ <div className="text-xs font-bold uppercase tracking-widest text-brand-muted">
  Step {currentStepIndex + 1} of {steps.length}
  </div>
 
@@ -191,7 +191,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
  flex items-center gap-2 px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all
  ${stepComplete
  ? "bg-brand-primary text-brand-void hover:bg-white cursor-pointer shadow-premium"
- : "bg-brand-bg-opacity-5 text-brand-primary opacity-20 cursor-not-allowed"
+ : "bg-brand-bg-opacity-5 text-brand-muted cursor-not-allowed"
  }
  `}
  >

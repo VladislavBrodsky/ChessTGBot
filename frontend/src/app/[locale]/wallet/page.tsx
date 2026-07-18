@@ -93,11 +93,11 @@ export default function WalletPage() {
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">
-          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-primary opacity-60 hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
+          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-muted hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
             <FaChevronLeft className="text-xs" />
             <span>{t('back')}</span>
           </Link>
-          <span className="text-xs font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('title')}</span>
+          <span className="text-xs font-black text-brand-muted uppercase tracking-widest">{tw('title')}</span>
         </div>
 
         {/* HOLOGRAPHIC CYBER-CARD */}
@@ -115,7 +115,7 @@ export default function WalletPage() {
               <div className="w-8 h-8 rounded-xl bg-[var(--color-cyan-opacity-10)] text-cyan-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaWallet className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('link_ton')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('link_ton')}</span>
             </Card>
           </motion.button>
           
@@ -129,7 +129,7 @@ export default function WalletPage() {
               <div className="w-8 h-8 rounded-xl bg-[var(--color-emerald-opacity-10)] text-emerald-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowDown className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('deposit')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('deposit')}</span>
             </Card>
           </motion.button>
           
@@ -143,13 +143,13 @@ export default function WalletPage() {
               <div className="w-8 h-8 rounded-xl bg-[var(--color-rose-opacity-10)] text-rose-500 flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowUp className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-80">{tw('withdraw')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('withdraw')}</span>
             </Card>
           </motion.button>
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-primary opacity-80 uppercase tracking-widest relative overflow-hidden">
+        <div className="w-full py-3 px-4 rounded-xl border border-brand-border-opacity-10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
           <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
           <span className="flex items-center gap-1.5 relative z-10">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />

@@ -27,8 +27,8 @@ export default function TierComparison() {
    <div className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] overflow-hidden shadow-sm">
    {/* Table Header */}
    <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-10 bg-purple-500/5">
-   <div className="col-span-4 text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('capability')}</div>
-   <div className="col-span-1 text-center text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-widest">{tc('base')}</div>
+   <div className="col-span-4 text-[10px] font-black uppercase text-brand-muted tracking-widest">{tc('capability')}</div>
+   <div className="col-span-1 text-center text-[10px] font-black uppercase text-brand-muted tracking-widest">{tc('base')}</div>
    <div className="col-span-1 text-center text-[10px] font-black uppercase text-purple-500 tracking-widest">{tc('elite')}</div>
    </div>
 
@@ -46,7 +46,7 @@ export default function TierComparison() {
    <div className="text-brand-primary opacity-25 group-hover:opacity-60 transition-colors">
    {row.icon}
    </div>
-   <span className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-tight">
+   <span className="text-[10px] font-bold text-brand-muted uppercase tracking-tight">
    {row.feature}
    </span>
    </div>
@@ -54,14 +54,14 @@ export default function TierComparison() {
    {row.basic ? (
    <FaCheck className="text-brand-primary opacity-35" fontSize={10} />
    ) : (
-   <FaTimes className="text-brand-primary opacity-20" fontSize={10} />
+   <FaTimes className="text-brand-muted" fontSize={10} />
    )}
    </div>
    <div className="col-span-1 flex justify-center">
    {row.premium ? (
    <FaCheck className="text-purple-500" fontSize={10} />
    ) : (
-   <FaTimes className="text-brand-primary opacity-20" fontSize={10} />
+   <FaTimes className="text-brand-muted" fontSize={10} />
    )}
    </div>
    </motion.div>

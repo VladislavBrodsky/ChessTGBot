@@ -192,7 +192,7 @@ export default function ProfilePage() {
    onError={() => setPhotoError(true)}
  />
  ) : (
- <FaChessKing className="text-4xl text-brand-primary opacity-40 drop-shadow-md" />
+ <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
  )}
  </div>
   {/* Premium overlay badge */}
@@ -201,7 +201,7 @@ export default function ProfilePage() {
       👑 PREMIUM
     </div>
   ) : (
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-primary/30 bg-gradient-to-br from-brand-surface to-brand-void text-brand-primary/80 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(255,255,255,0.05)] backdrop-blur-md">
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-primary/30 bg-gradient-to-br from-brand-surface to-brand-void text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(255,255,255,0.05)] backdrop-blur-md">
       {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
     </div>
   )}
@@ -235,7 +235,7 @@ export default function ProfilePage() {
       <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
-        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
           <span>{labels.global_rank} #{stats.global_rank || 1}</span>
           <span>•</span>
           <span>{stats.percentile?.toFixed(0) || 100}%</span>
@@ -254,7 +254,7 @@ export default function ProfilePage() {
       <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
-        <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-primary/50 uppercase tracking-wider">
+        <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
           <span>{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} PTS</span>
         </div>
       </Card>
@@ -321,7 +321,7 @@ export default function ProfilePage() {
     <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl space-y-2">
       <div className="flex justify-between items-center px-1 mb-2">
         <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">Rating Trajectory</span>
-        <span className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest">Last 10 Games</span>
+        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Last 10 Games</span>
       </div>
       <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
     </Card>
@@ -354,11 +354,11 @@ export default function ProfilePage() {
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
          <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl flex flex-col items-center text-center justify-center">
-           <span className="text-[10px] font-black text-brand-primary/60 uppercase tracking-widest mb-1">Cosmetics Owned</span>
+           <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Cosmetics Owned</span>
            <span className="text-2xl font-black text-brand-primary">
              {unlockedItems.length}
            </span>
-           <span className="text-[9px] font-bold text-brand-primary/40 uppercase tracking-widest mt-1">Profile Styles</span>
+           <span className="text-[9px] font-bold text-brand-muted uppercase tracking-widest mt-1">Profile Styles</span>
          </Card>
        )}
      </div>
@@ -396,7 +396,7 @@ export default function ProfilePage() {
            ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.25)]" 
            : isLoss 
              ? "border-red-500/30 bg-red-500/15 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.25)]" 
-             : "border-brand-primary/20 bg-brand-primary/10 text-brand-primary opacity-60";
+             : "border-brand-primary/20 bg-brand-primary/10 text-brand-muted";
          
          const rowGlow = isWin
            ? "hover:border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(16,185,129,0.1)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.2)]"
@@ -430,13 +430,13 @@ export default function ProfilePage() {
 
              <div className="flex items-center gap-3 relative z-10">
                <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
-                 <FaChessPawn className="text-brand-primary opacity-40 drop-shadow-sm" />
+                 <FaChessPawn className="text-brand-muted drop-shadow-sm" />
                </div>
                <div className="flex flex-col">
                  <span className="text-xs font-black text-brand-primary uppercase tracking-tight">
                    vs {game.opponent?.name || "AI Engine"}
                  </span>
-                 <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                 <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em]">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
                  </span>
                </div>
@@ -453,7 +453,7 @@ export default function ProfilePage() {
                     {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                   </span>
                </div>
-               <span className="text-brand-primary opacity-30 text-xs">▶</span>
+               <span className="text-brand-muted text-xs">▶</span>
              </div>
            </motion.div>
          );
@@ -461,10 +461,10 @@ export default function ProfilePage() {
      </div>
    ) : (
       <Card variant="glass" className="p-6 border-brand-border-opacity-10 text-center">
-        <span className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-1">
+        <span className="text-xs font-bold text-brand-muted uppercase tracking-widest block mb-1">
           {t('no_games_logged')}
         </span>
-        <span className="text-[10px] font-medium text-brand-primary opacity-20 uppercase tracking-widest">
+        <span className="text-[10px] font-medium text-brand-muted uppercase tracking-widest">
           {t('initiate_combat')}
         </span>
       </Card>

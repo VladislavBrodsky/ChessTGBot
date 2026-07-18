@@ -106,11 +106,11 @@ export default function ThemeShopPage() {
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight flex items-center justify-center gap-3">
           <FaPalette className="text-purple-500" /> Theme Shop
         </h1>
-        <p className="text-sm font-bold text-brand-primary opacity-60 tracking-widest uppercase">
+        <p className="text-sm font-bold text-brand-muted tracking-widest uppercase">
           Customize your board
         </p>
         <div className="inline-flex items-center gap-2 bg-brand-surface border border-brand-border-opacity-20 px-4 py-2 rounded-full mt-4">
-          <span className="text-xs font-black uppercase text-brand-primary/60">Your Balance:</span>
+          <span className="text-xs font-black uppercase text-brand-muted">Your Balance:</span>
           <span className="text-sm font-black text-emerald-400">{userXp} XP</span>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function ThemeShopPage() {
           >
             <div className="flex-1">
               <h3 className="text-base font-black text-brand-primary uppercase mb-1">{theme.name}</h3>
-              <p className="text-xs text-brand-primary/60 font-medium leading-tight">{theme.description}</p>
+              <p className="text-xs text-brand-muted font-medium leading-tight">{theme.description}</p>
             </div>
             
             <div className="ml-4 flex-shrink-0">
@@ -150,7 +150,7 @@ export default function ThemeShopPage() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl font-black uppercase text-xs transition-all ${
                     userXp >= theme.price_xp 
                       ? 'bg-purple-500 text-white hover:bg-purple-400' 
-                      : 'bg-brand-surface border border-brand-border-opacity-20 text-brand-primary/40 cursor-not-allowed'
+                      : 'bg-brand-surface border border-brand-border-opacity-20 text-brand-muted cursor-not-allowed'
                   }`}
                 >
                   <FaLock /> {theme.price_xp} XP

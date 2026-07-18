@@ -666,7 +666,7 @@ export default function PlayLobby() {
                   <span className="text-[10px] font-black text-brand-primary truncate max-w-[80px]">
                     {tgUser?.first_name || tg('you_label')}
                   </span>
-                  <span className="text-[10px] font-bold text-brand-primary/50">
+                  <span className="text-[10px] font-bold text-brand-muted">
                     {stats?.elo || 1000} ELO
                   </span>
                 </div>
@@ -742,12 +742,12 @@ export default function PlayLobby() {
               </div>
 
               <div className="flex flex-col space-y-1">
-                <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tg('searching_matchmaker')}</span>
+                <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tg('searching_matchmaker')}</span>
                 <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
-                <span className="text-2xl font-black text-brand-primary opacity-80 tracking-tighter">
+                <span className="text-2xl font-black text-brand-muted tracking-tighter">
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
-                <span className="text-[10px] font-extrabold text-brand-primary opacity-30 uppercase tracking-[0.2em] mt-1">
+                <span className="text-[10px] font-extrabold text-brand-muted uppercase tracking-[0.2em] mt-1">
                   {tg('est_wait')}
                 </span>
               </div>
@@ -765,7 +765,7 @@ export default function PlayLobby() {
               )}
 
               <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
-                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
+                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
                 <span className="text-sm font-black text-brand-primary">
                   ${(chosenWager / 100).toFixed(2)} USDT
                 </span>
@@ -857,7 +857,7 @@ export default function PlayLobby() {
                         onClick={scrollToWager}
                         className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
+                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                           <FaWallet className="text-brand-primary/45 text-[10px]" /> {tg('stake')}
                         </span>
                         <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
@@ -887,7 +887,7 @@ export default function PlayLobby() {
                         onClick={scrollToTimeControl}
                         className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[10px] font-black text-brand-primary/40 uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
+                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
                           <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
                         </span>
                         <span className="text-[11px] font-black text-emerald-500 uppercase">
@@ -929,7 +929,7 @@ export default function PlayLobby() {
                       }`}>
                         {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
-                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-primary/50' : 'text-brand-primary/60'}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-muted' : 'text-brand-muted'}`}>
                         {hasSufficient ? (
                           chosenWager > 0 ? (
                             <>
@@ -1008,7 +1008,7 @@ export default function PlayLobby() {
               {stats?.recent_games && stats.recent_games.length > 0 && (
                 <div className="w-full space-y-3 pt-2">
                   <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
-                    <FaChessPawn className="text-brand-primary opacity-40 text-[10px]" />
+                    <FaChessPawn className="text-brand-muted text-[10px]" />
                     <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-45">{t('recent_activity')}</h3>
                   </div>
                   <div className="space-y-2.5">
@@ -1036,7 +1036,7 @@ export default function PlayLobby() {
                                 <FaFlag className="text-xs" />
                               </div>
                             ) : (
-                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-surface to-brand-void border border-brand-border-opacity-15 text-brand-primary opacity-60 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-surface to-brand-void border border-brand-border-opacity-15 text-brand-muted shrink-0 group-hover:scale-105 transition-transform duration-300">
                                 <FaHandshake className="text-xs" />
                               </div>
                             )}
@@ -1044,15 +1044,15 @@ export default function PlayLobby() {
                             <div className="flex flex-col justify-center">
                               <div className="flex items-center gap-1.5 mb-1">
                                 {isAi ? (
-                                  <FaRobot className="text-[10px] text-brand-primary opacity-40 shrink-0" />
+                                  <FaRobot className="text-[10px] text-brand-muted shrink-0" />
                                 ) : (
-                                  <FaChessKnight className="text-[10px] text-brand-primary opacity-40 shrink-0" />
+                                  <FaChessKnight className="text-[10px] text-brand-muted shrink-0" />
                                 )}
                                 <span className="text-xs font-black text-brand-primary tracking-tight leading-none group-hover:text-white transition-colors duration-200">
                                   {t('vs')} {getOpponentName(game.opponent.name)}
                                 </span>
                               </div>
-                              <span className="text-[10px] font-black text-brand-primary opacity-30 uppercase tracking-widest leading-none">
+                              <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">
                                 {game.opponent.elo} {t('elo')}
                               </span>
                             </div>
@@ -1069,7 +1069,7 @@ export default function PlayLobby() {
                                 - {Math.abs(game.elo_change)} ELO
                               </div>
                             ) : (
-                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-primary opacity-40 uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-muted uppercase tracking-wider">
                                 0 ELO
                               </div>
                             )}
@@ -1082,7 +1082,7 @@ export default function PlayLobby() {
                                 e.stopPropagation();
                                 handleShareResult(game);
                               }}
-                              className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center hover:border-brand-primary/45 hover:bg-brand-primary/5 transition-all text-brand-primary opacity-50 hover:opacity-100 cursor-pointer shadow-sm shrink-0"
+                              className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center hover:border-brand-primary/45 hover:bg-brand-primary/5 transition-all text-brand-muted hover:opacity-100 cursor-pointer shadow-sm shrink-0"
                             >
                               <FaShareAlt size={10} />
                             </motion.button>

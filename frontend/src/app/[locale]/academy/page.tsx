@@ -345,7 +345,7 @@ export default function AcademyPage() {
                 className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 w-full max-w-sm ${
                   stats.is_premium
                     ? 'bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)] animate-pulse'
-                    : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-primary opacity-80'
+                    : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-muted'
                 }`}
               >
                 <span>{stats.is_premium ? '👑 Premium' : 'Regular'}</span>
@@ -387,7 +387,7 @@ export default function AcademyPage() {
           onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
           className="w-full text-center px-6 py-4 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 cursor-pointer hover:bg-brand-void/50 transition-all group"
         >
-          <p className="text-xs font-semibold text-brand-primary/80 italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
+          <p className="text-xs font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
         </motion.div>
 
@@ -477,7 +477,7 @@ export default function AcademyPage() {
             <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted flex items-center gap-1.5">
-                  <FaBrain className="text-brand-primary/50 text-[10px]" /> {t('tactics_grid')}
+                  <FaBrain className="text-brand-muted text-[10px]" /> {t('tactics_grid')}
                 </span>
                 <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
                   {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
@@ -510,8 +510,8 @@ export default function AcademyPage() {
                     bgClass = "tc-solved font-bold hover:scale-105";
                     statusMark = <FaCheckCircle className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
                   } else if (isSequentialLocked) {
-                    bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-primary/20 cursor-not-allowed";
-                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-brand-primary/10" />;
+                    bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-muted cursor-not-allowed";
+                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-brand-muted" />;
                   } else if (isPremiumLocked) {
                     bgClass = "tc-locked hover-shake";
                     statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-purple-500/60" />;
@@ -728,7 +728,7 @@ export default function AcademyPage() {
       
         <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-premium relative z-10">
           <p className="text-center font-black text-purple-400 text-xs uppercase tracking-widest mb-1">{t('premium_perks')}</p>
-          <ul className="space-y-2.5 text-[11px] text-brand-primary/80">
+          <ul className="space-y-2.5 text-[11px] text-brand-muted">
             <li className="flex items-start gap-2.5">
               <span className="text-purple-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
               <span className="leading-tight">{t('perk_li1')}</span>
@@ -775,7 +775,7 @@ export default function AcademyPage() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowPremiumPromo(false)}
-            className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-primary/60 hover:text-brand-primary/95 transition-all"
+            className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary/95 transition-all"
           >
             <span>{t('cancel')}</span>
           </motion.button>
@@ -836,7 +836,7 @@ export default function AcademyPage() {
                     </h3>
                   </div>
                 </div>
-                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-primary/60' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-primary/30'}`}>
+                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-muted' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-muted'}`}>
                   #{id} / 100
                 </span>
               </div>
@@ -847,7 +847,7 @@ export default function AcademyPage() {
               </div>
 
               {/* Description */}
-              <p className="text-sm text-brand-primary/70 leading-relaxed font-medium">
+              <p className="text-sm text-brand-muted leading-relaxed font-medium">
                 {band.desc}
               </p>
 
@@ -911,7 +911,7 @@ export default function AcademyPage() {
                 )}
                 <button
                   onClick={() => setSelectedLevel(null)}
-                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-muted hover:text-brand-primary/90 transition-colors"
+                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-muted hover:text-brand-muted transition-colors"
                 >
                   {t('cancel')}
                 </button>

@@ -119,7 +119,7 @@ export default function CustomAlertModal() {
                 <>
                   <button
                     onClick={() => handleClose(false)}
-                    className="flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-primary/60 hover:bg-brand-primary/5 hover:text-brand-primary/80 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+                    className="flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-muted hover:bg-brand-primary/5 hover:text-brand-muted text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
                   >
                     {t('cancel')}
                   </button>

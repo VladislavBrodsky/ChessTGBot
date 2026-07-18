@@ -86,11 +86,11 @@ function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: PlayerAvat
   }, [userId]);
 
   if (isBot) {
-    return <FaRobot className="text-xl text-brand-primary opacity-40" />;
+    return <FaRobot className="text-xl text-brand-muted" />;
   }
 
   if (!userId || hasError) {
-    return <span className={textClassName || "text-xl font-bold text-brand-primary opacity-20"}>{fallbackText}</span>;
+    return <span className={textClassName || "text-xl font-bold text-brand-muted"}>{fallbackText}</span>;
   }
 
   return (
@@ -688,7 +688,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   // Match Over Logic Labels
   let matchResultLabel = tg('protocol_draw');
-  let resultColor = "text-brand-primary opacity-60"; 
+  let resultColor = "text-brand-muted"; 
   let eloChange = "+0";
   let netPayout = gameState?.wager_amount || 0;
   
@@ -700,12 +700,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     
     if (isAborted) {
       matchResultLabel = tg('match_aborted');
-      resultColor = "text-brand-primary opacity-50";
+      resultColor = "text-brand-muted";
       eloChange = "+0";
       netPayout = gameState.wager_amount;
     } else if (isDraw) {
       matchResultLabel = tg('protocol_draw');
-      resultColor = "text-brand-primary opacity-60";
+      resultColor = "text-brand-muted";
       
       if (gameState.white_player_id === userId) {
         const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
@@ -739,7 +739,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       } else {
         matchResultLabel = tg('tactical_defeat');
       }
-      resultColor = "text-brand-primary opacity-80";
+      resultColor = "text-brand-muted";
       
       if (gameState.white_player_id === userId) {
         const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
@@ -766,7 +766,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               <FaChessKnight className="text-xl text-brand-primary animate-bounce" />
             </div>
           </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-primary opacity-40 animate-pulse">
+          <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-muted animate-pulse">
             {tg('synchronizing_arena')}
           </span>
         </div>
@@ -795,7 +795,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all cursor-pointer ${
                 autoPromote 
                   ? 'bg-brand-primary/20 border-brand-primary text-brand-primary' 
-                  : 'bg-brand-surface border-brand-border-opacity-10 text-brand-primary opacity-60'
+                  : 'bg-brand-surface border-brand-border-opacity-10 text-brand-muted'
               }`}
             >
               <span className="text-[10px] font-black uppercase tracking-wider">
@@ -808,7 +808,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
         <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
           <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-primary opacity-60 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-muted uppercase">
             {isConnected ? tg('active_sync') : tg('isolated')}
           </span>
         </div>
@@ -889,7 +889,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             {/* Match details card */}
             <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
               <div className="flex flex-col items-start text-left">
-                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
                   {tg('wager_tier')}
                 </span>
                 <span className="text-xs font-black text-emerald-400">
@@ -899,7 +899,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 </span>
               </div>
               <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
-                <span className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-1">
+                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
                   {tg('time_control')}
                 </span>
                 <span className="text-xs font-black text-amber-400 uppercase">
@@ -913,12 +913,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             {/* Share link widget */}
             <div className="w-full space-y-3">
               <div className="relative w-full flex items-center bg-brand-void/80 border border-brand-border-opacity-10 rounded-xl px-3.5 py-3 shadow-inner-glow overflow-hidden">
-                <span className="text-[10px] font-mono text-brand-primary opacity-50 truncate select-all pr-8 w-full text-left">
+                <span className="text-[10px] font-mono text-brand-muted truncate select-all pr-8 w-full text-left">
                   {inviteLink}
                 </span>
                 <button
                   onClick={handleCopyInvite}
-                  className="absolute right-2 text-brand-primary opacity-50 hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
+                  className="absolute right-2 text-brand-muted hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
                 >
                   {copied ? <FaCheck className="text-emerald-400 text-[11px]" /> : <FaCopy className="text-[11px]" />}
                 </button>
@@ -952,7 +952,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           </div>
           
           <div className="w-full text-center px-4">
-            <p className="text-[10px] font-semibold text-brand-primary opacity-30 uppercase tracking-wider leading-relaxed">
+            <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider leading-relaxed">
               {tg('waiting_keep_open')}
             </p>
           </div>
@@ -990,7 +990,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                   </span>
                 </span>
               ) : (
-                <span className="text-[10px] font-medium text-brand-primary opacity-30 uppercase tracking-[0.2em]">
+                <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
                   {isBotGame 
                     ? tg('ai_engine') 
                     : `ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
@@ -1001,7 +1001,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
             opponentTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
             opponentTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
-            'bg-brand-void/40 border-brand-border-opacity-10 text-brand-primary opacity-85'
+            'bg-brand-void/40 border-brand-border-text-brand-muted opacity-85'
           }`}>
             <span className="text-sm font-black tracking-tighter font-mono">
               {formatTime(opponentTime)}
@@ -1025,7 +1025,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         {/* Move History log */}
         {gameState?.move_history && gameState.move_history.length > 0 && (
           <div className="w-full overflow-hidden px-1">
-            <div className="flex items-center space-x-2 text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
+            <div className="flex items-center space-x-2 text-[10px] font-black uppercase text-brand-muted tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
               <span>{tg('move_history')}</span>
             </div>
             <div 
@@ -1075,7 +1075,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </span>
               ) : (
-                <span className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-[0.2em]">
+                <span className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
                   MASTER • ELO {(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}
                 </span>
               )}
@@ -1084,7 +1084,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
             myTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
             myTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
-            'bg-brand-void/40 border-brand-border-opacity-10 text-brand-primary'
+            'bg-brand-void/40 border-brand-border-text-brand-muted'
           }`}>
             <span className="text-sm font-black tracking-tighter font-mono">
               {formatTime(myTime)}
@@ -1195,7 +1195,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setConfirmConfig(null)}
-                  className="w-full bg-brand-bg-opacity-10 border border-brand-border-opacity-20 text-brand-primary py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+                  className="w-full bg-brand-bg-opacity-10 border border-brand-border-text-brand-muted py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
                 >
                   <span>{confirmConfig.cancelText}</span>
                 </motion.button>
@@ -1256,7 +1256,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               {tg('game_crashed')}
             </h2>
             
-            <p className="text-xs text-brand-primary opacity-60 leading-relaxed px-2">
+            <p className="text-xs text-brand-muted leading-relaxed px-2">
               {tg('game_crashed_desc')}
             </p>
             

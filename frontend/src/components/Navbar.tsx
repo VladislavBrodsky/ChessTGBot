@@ -119,7 +119,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                                 className="absolute -left-px top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r bg-emerald-500"
                                             />
                                         )}
-                                        <span className={`text-lg transition-colors ${isActive ? 'text-emerald-500' : 'text-brand-primary/30 group-hover:text-brand-primary/60'}`}>
+                                        <span className={`text-lg transition-colors ${isActive ? 'text-emerald-500' : 'text-brand-muted group-hover:text-brand-muted'}`}>
                                             {item.icon}
                                         </span>
 

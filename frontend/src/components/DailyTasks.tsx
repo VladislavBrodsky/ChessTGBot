@@ -88,7 +88,7 @@ export default function DailyTasks() {
         <div className="w-full space-y-4">
             <div className="flex items-center gap-2 mb-2">
                 <FaTrophy className="text-brand-primary text-xs" />
-                <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-60 tracking-[0.2em]">
+                <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.2em]">
                     {t('daily_missions')}
                 </h3>
             </div>
@@ -112,7 +112,7 @@ export default function DailyTasks() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="text-center py-8 text-xs font-bold text-brand-primary opacity-30 uppercase tracking-widest"
+                            className="text-center py-8 text-xs font-bold text-brand-muted uppercase tracking-widest"
                         >
                             {t('no_missions')}
                         </motion.div>
@@ -146,9 +146,9 @@ export default function DailyTasks() {
                                         <div className="flex items-center gap-3">
                                             <div className={`
                                                 w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all duration-300
-                                                ${status === 'completed' ? 'bg-brand-bg-opacity-10 text-brand-primary' 
+                                                ${status === 'completed' ? 'bg-brand-bg-text-brand-muted' 
                                                 : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
-                                                : 'bg-brand-bg-opacity-5 text-brand-primary opacity-60'}
+                                                : 'bg-brand-bg-opacity-5 text-brand-muted'}
                                             `}>
                                                 {status === 'completed' ? <FaCheck /> : <FaGift className={status === 'claimable' ? 'animate-pulse' : ''} />}
                                             </div>
@@ -156,7 +156,7 @@ export default function DailyTasks() {
                                                 <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide">
                                                     {t(task.title_key)}
                                                 </h4>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-wider mt-1">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-1">
                                                     <span>+{task.xp_reward} XP</span>
                                                     <span>•</span>
                                                     <span>{task.progress} / {task.target_count}</span>

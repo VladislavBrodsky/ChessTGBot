@@ -270,7 +270,7 @@ export default function MarketplacePage() {
                     <AnimatePresence>
                         {recentWins.length > 0 && (
                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                                <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-40 tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
+                                <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
                                 <div className="flex gap-2.5 overflow-x-auto pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                     {recentWins.map((w) => {
                                         const c = BOX_CONFIG[w.tier].theme;

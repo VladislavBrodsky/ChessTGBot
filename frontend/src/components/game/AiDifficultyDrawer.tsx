@@ -135,7 +135,7 @@ export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreati
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
               selectedDifficulty === "easy"
                 ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-50"
+                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
             }`}>
               <FaGamepad size={13} />
             </div>
@@ -164,7 +164,7 @@ export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreati
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
               selectedDifficulty === "medium"
                 ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-50"
+                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
             }`}>
               <FaAward size={12} />
             </div>
@@ -193,7 +193,7 @@ export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreati
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
               selectedDifficulty === "hard"
                 ? "bg-rose-500/20 border-rose-500/30 text-rose-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-primary opacity-50"
+                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
             }`}>
               <FaRobot size={12} />
             </div>

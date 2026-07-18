@@ -45,12 +45,12 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
           <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
             {tg('platform_commission')}
           </h2>
-          <p className="text-[10px] font-bold text-brand-primary opacity-40 uppercase tracking-[0.2em] mb-6">
+          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mb-6">
             {tg('sustain_ecosystem')}
           </p>
         </div>
         
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-primary/80 leading-relaxed">
+        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-muted leading-relaxed">
           <p>
             {tg('rake_desc1')}
           </p>
@@ -58,10 +58,10 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
             {tg('rake_desc2')}
           </p>
           <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-          <p className="text-[10px] text-brand-primary/50 uppercase tracking-wider">
+          <p className="text-[10px] text-brand-muted uppercase tracking-wider">
             {tg('where_rake_goes')}
           </p>
-          <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-primary/60">
+          <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-muted">
             <li>{tg('rake_li1')}</li>
             <li>{tg('rake_li2')}</li>
             <li>{tg('rake_li3')}</li>

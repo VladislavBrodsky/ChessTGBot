@@ -35,7 +35,7 @@ export default function GamePage() {
   const tg = useTranslations('Game');
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center text-brand-primary opacity-20 font-black uppercase tracking-[0.5em] animate-pulse">
+      <div className="min-h-screen flex items-center justify-center text-brand-muted font-black uppercase tracking-[0.5em] animate-pulse">
         {tg('initializing_board')}
       </div>
     }>

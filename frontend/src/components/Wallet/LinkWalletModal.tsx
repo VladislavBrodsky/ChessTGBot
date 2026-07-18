@@ -80,24 +80,24 @@ export default function LinkWalletModal({
         <button
           onClick={onClose}
           disabled={processing}
-          className="absolute top-4 right-4 text-brand-primary opacity-40 hover:text-brand-primary"
+          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary"
         >
           <FaTimes />
         </button>
 
         <div className="space-y-4">
           <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('connect_title')}</h3>
-          <p className="text-[10px] font-bold text-brand-primary opacity-60 uppercase tracking-wider text-center">
+          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-wider text-center">
             {tw('connect_desc')}
           </p>
 
           <div className="flex flex-col space-y-1">
-            <label className="text-[10px] font-black text-brand-primary opacity-40 uppercase tracking-widest">{tw('ton_address')}</label>
+            <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('ton_address')}</label>
             <input
               type="text"
               value={connectAddressInput}
               onChange={(e) => setConnectAddressInput(e.target.value)}
-              className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-bg-opacity-20 text-brand-primary text-xs font-bold focus:outline-none"
+              className="cyber-input w-full p-2.5 rounded-lg border border-brand-border-opacity-20 bg-brand-bg-text-brand-muted text-xs font-bold focus:outline-none"
               placeholder={tw('ton_placeholder')}
             />
           </div>

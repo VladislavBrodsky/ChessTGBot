@@ -37,7 +37,7 @@ export default function LoginPage() {
             <div className="fixed inset-0 flex items-center justify-center bg-brand-bg">
                 <div className="flex flex-col items-center gap-4">
                     <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
-                    <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-primary/60">
+                    <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-muted">
                         Authenticating...
                     </p>
                 </div>
@@ -79,7 +79,7 @@ export default function LoginPage() {
             ].map(({ Icon, delay, x, y, size }, i) => (
                 <motion.div
                     key={i}
-                    className="absolute pointer-events-none text-brand-primary/20"
+                    className="absolute pointer-events-none text-brand-muted"
                     style={{ left: x, top: y }}
                     animate={{ y: [0, -16, 0] }}
                     transition={{ duration: 6 + i, delay, repeat: Infinity, ease: 'easeInOut' }}
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
                             {/* Title */}
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500 text-brand-primary/80">
+                                <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500 text-brand-muted">
                                     {t('secure_web_portal')}
                                 </p>
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none transition-all duration-500 bg-gradient-to-br from-brand-primary to-emerald-500 bg-clip-text text-transparent drop-shadow-sm">
@@ -125,7 +125,7 @@ export default function LoginPage() {
                                 </h1>
                             </div>
 
-                            <p className="text-sm max-w-[260px] leading-relaxed transition-colors duration-500 text-brand-primary/60">
+                            <p className="text-sm max-w-[260px] leading-relaxed transition-colors duration-500 text-brand-muted">
                                 {t('premium_desc')}
                             </p>
 
@@ -141,8 +141,8 @@ export default function LoginPage() {
 
                             {/* Security badge */}
                             <div className="flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-10">
-                                <FaLock size={10} className="text-brand-primary/80" />
-                                <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-500 text-brand-primary/80">
+                                <FaLock size={10} className="text-brand-muted" />
+                                <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-500 text-brand-muted">
                                     {t('secure_auth')}
                                 </span>
                             </div>
@@ -155,13 +155,13 @@ export default function LoginPage() {
 
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-px bg-gradient-to-r from-transparent to-brand-primary/40" />
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500 text-brand-primary/60">
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500 text-brand-muted">
                                     {t('play_on_mobile')}
                                 </p>
                                 <div className="w-8 h-px bg-gradient-to-l from-transparent to-brand-primary/40" />
                             </div>
 
-                            <p className="text-sm max-w-[220px] leading-relaxed transition-colors duration-500 text-brand-primary/50">
+                            <p className="text-sm max-w-[220px] leading-relaxed transition-colors duration-500 text-brand-muted">
                                 {t('scan_qr')}
                             </p>
 
@@ -185,7 +185,7 @@ export default function LoginPage() {
                                 rel="noopener noreferrer"
                                 whileHover={{ scale: 1.04 }}
                                 whileTap={{ scale: 0.97 }}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-20 text-brand-primary hover:bg-brand-primary/10 shadow-sm"
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-500 bg-brand-bg-opacity-5 border border-brand-border-text-brand-muted hover:bg-brand-primary/10 shadow-sm"
                             >
                                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
                                 {t('open_in_telegram')}
@@ -199,10 +199,10 @@ export default function LoginPage() {
                                     { label: 'Prize Pool', value: '$4.2K' },
                                 ].map(({ label, value }) => (
                                     <div key={label} className="flex flex-col items-center">
-                                        <span className="text-sm font-black transition-colors duration-500 text-brand-primary/90">
+                                        <span className="text-sm font-black transition-colors duration-500 text-brand-muted">
                                             {value}
                                         </span>
-                                        <span className="text-[10px] uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-primary/40">
+                                        <span className="text-[10px] uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-muted">
                                             {label}
                                         </span>
                                     </div>
@@ -213,7 +213,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer note */}
-                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-primary/30">
+                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-muted">
                     Chess Mat Bot · Powered by Telegram · Web3 Decentralized
                 </p>
             </motion.div>

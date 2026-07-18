@@ -88,7 +88,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       <LayoutWrapper className="w-full">
         <div className="flex h-[calc(100vh-var(--app-safe-top)-var(--app-safe-bottom))] items-center justify-center flex-col gap-4">
           <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-primary/60">
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-muted">
             INITIALIZING LESSON...
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4 px-6 text-center">
         <h2 className="text-xl font-black text-brand-primary uppercase tracking-widest">Signal Lost</h2>
-        <p className="text-xs font-bold text-brand-primary opacity-40 uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
+        <p className="text-xs font-bold text-brand-muted uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
         <button 
           onClick={() => router.push(`/${locale}/academy`)} 
           className="px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-xs font-black uppercase tracking-widest text-brand-primary"
@@ -166,12 +166,12 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
  {/* Header */}
  <div className="flex items-center gap-4 mb-6">
- <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-primary opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+ <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
  <FaArrowLeft />
  </Link>
  <div>
  <h1 className="text-xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{lessonData.title}</h1>
- <p className="text-[10px] text-brand-primary opacity-40 font-bold uppercase tracking-widest">{lessonData.track}</p>
+ <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest">{lessonData.track}</p>
  </div>
  </div>
 

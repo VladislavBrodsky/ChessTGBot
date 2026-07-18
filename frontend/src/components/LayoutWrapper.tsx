@@ -189,7 +189,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
                     <button 
                         onClick={() => setShowNotifications(true)}
-                        className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                        className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
                         <FiBell size={15} />
                         {/* Notification indicator dot */}
@@ -197,7 +197,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                     </button>
                     {!pathname.endsWith('/settings') && (
                         <Link href={`/${locale}/settings`}>
-                            <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
+                            <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
                                 <FiSettings size={15} />
                             </button>
                         </Link>
