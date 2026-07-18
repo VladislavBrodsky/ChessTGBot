@@ -186,7 +186,7 @@ export default function ChallengesPage() {
             {/* Level badge */}
             <div className="relative mb-5">
               <div
-                className="absolute inset-0 rounded-2xl bg-purple-500/10 pointer-events-none"
+                className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
                 style={{ filter: 'blur(8px)' }}
               />
               {/* Badge outer ring */}
@@ -234,7 +234,7 @@ export default function ChallengesPage() {
               {t('grandmaster_rising')}
             </h1>
             <div className="flex items-center gap-2 mb-6">
-              {levelSecured && <FaCrown className="text-purple-500 drop-shadow-md" size={11} />}
+              {levelSecured && <FaCrown className="text-brand-gold drop-shadow-md" size={11} />}
               <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
                 {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
               </p>
@@ -447,7 +447,7 @@ export default function ChallengesPage() {
                             window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                           }}
                         >
-                           Invite Friend
+                           {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
                          </Button>
                       </div>
                     ) : (
