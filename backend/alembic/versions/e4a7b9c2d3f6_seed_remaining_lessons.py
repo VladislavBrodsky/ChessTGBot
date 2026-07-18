@@ -48,6 +48,7 @@ lesson_steps_t = sa.table(
     sa.column('order_index', sa.Integer),
     sa.column('content', sa.String),
     sa.column('step_type', sa.String),
+    sa.column('fen', sa.String),
 )
 
 
