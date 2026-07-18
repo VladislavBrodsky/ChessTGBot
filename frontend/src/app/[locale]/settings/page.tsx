@@ -81,7 +81,7 @@ export default function SettingsPage() {
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1.5 whitespace-nowrap leading-none">
  {t('title')}
  </h1>
- <p className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-[0.2em] leading-none mt-1">
+ <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] leading-none mt-1">
  {t('subtitle')}
  </p>
  </div>
@@ -126,7 +126,7 @@ export default function SettingsPage() {
 
  {/* Section: General */}
  <div className="w-full space-y-2.5 mb-6">
- <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+ <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full">
  {t('visual_matrix')}
  </h3>
  <div className="w-full glass-panel rounded-2xl border border-brand-border-opacity-10 bg-brand-surface divide-y divide-brand-border-opacity-10 shadow-sm overflow-hidden">
@@ -134,14 +134,14 @@ export default function SettingsPage() {
  {/* Theme row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
  {theme === 'dark' ? <FaMoon /> : <FaSun />}
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('luminance_mode')}
  </span>
- <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-muted tracking-widest uppercase">
  {theme === 'dark' ? t('deep_void') : t('solar_flare')}
  </span>
  </div>
@@ -166,14 +166,14 @@ export default function SettingsPage() {
  {/* Reduce motion row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
  <FaUniversalAccess />
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('reduce_motion')}
  </span>
- <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-muted tracking-widest uppercase">
  {reducedMotion ? t('reduce_motion_on') : t('reduce_motion_off')}
  </span>
  </div>
@@ -198,14 +198,14 @@ export default function SettingsPage() {
  {/* Sound effects row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
  <FaVolumeUp />
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('audio_protocol')}
  </span>
- <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-muted tracking-widest uppercase">
  {soundEnabled ? t('active_sync') : t('muted')}
  </span>
  </div>
@@ -230,14 +230,14 @@ export default function SettingsPage() {
  {/* Arena alerts row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
  <FaTrophy />
  </div>
  <div className="flex flex-col text-left">
  <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
  {t('arena_alerts')}
  </span>
- <span className="text-[10px] font-bold text-brand-primary opacity-30 tracking-widest uppercase">
+ <span className="text-[10px] font-bold text-brand-muted tracking-widest uppercase">
  {arenaAlerts ? t('arena_alerts_on') : t('arena_alerts_off')}
  </span>
  </div>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
 
  {/* Section: Language */}
  <div className="w-full space-y-2.5 mb-6">
- <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+ <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full">
  {t('language_matrix')}
  </h3>
  <LanguageSwitcher />
@@ -271,7 +271,7 @@ export default function SettingsPage() {
 
   {/* Section: Account & Web3 */}
   <div className="w-full space-y-3 mb-6">
-  <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em] text-center w-full">
+  <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full">
   {t('account_section')}
   </h3>
   
@@ -280,14 +280,14 @@ export default function SettingsPage() {
   <Link href={`/${locale}/wallet`} className="w-full block">
   <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
   <div className="flex items-center gap-3">
-  <div className="w-9 h-9 rounded-xl bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60">
+  <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
   <FaWallet />
   </div>
   <div className="flex flex-col text-left">
   <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1 flex items-center">
   {t('ton_wallet')}
   </span>
-  <span className="text-[10px] font-bold text-brand-primary opacity-30 uppercase tracking-widest">
+  <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">
   {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
   </span>
   </div>
@@ -318,7 +318,7 @@ export default function SettingsPage() {
               </span>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
+                 <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 bg-brand-elevated flex items-center justify-center">
             <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
           </div>
         </div>
@@ -330,7 +330,7 @@ export default function SettingsPage() {
   {/* Section: FAQ */}
   <div className="w-full space-y-3 mb-6">
     <div className="w-full text-center flex flex-col items-center mt-4 mb-1">
-      <h3 className="text-[10px] font-black uppercase text-brand-primary opacity-30 tracking-[0.3em]">
+      <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em]">
         {t('faq_title')}
       </h3>
     </div>
@@ -346,7 +346,7 @@ export default function SettingsPage() {
             className="w-full p-4 flex items-center justify-between text-left hover:bg-brand-bg-opacity-5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3 pr-2">
-              <div className="w-6 h-6 rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-brand-primary opacity-60 shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10 shrink-0">
                 <FaQuestionCircle className="text-xs" />
               </div>
               <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-tight">
@@ -356,7 +356,7 @@ export default function SettingsPage() {
             <motion.div
               animate={{ rotate: openFaq === index ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="text-brand-primary opacity-30 shrink-0"
+              className="text-brand-muted shrink-0"
             >
               <FaChevronDown className="text-xs" />
             </motion.div>
@@ -368,7 +368,7 @@ export default function SettingsPage() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 pl-[45px] text-[10px] font-medium text-brand-primary opacity-50 leading-relaxed text-left uppercase tracking-wide">
+            <div className="px-4 pb-4 pl-[45px] text-[10px] font-medium text-brand-muted leading-relaxed text-left uppercase tracking-wide">
               {t(item.a)}
             </div>
           </motion.div>
