@@ -330,7 +330,7 @@ export default function MarketplacePage() {
                                         </div>
                                         <Button
                                             variant={affordable ? 'primary' : 'secondary'}
-                                            className={affordable ? 'mt-4 w-full bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
+                                            className={affordable ? 'mt-4 w-full bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
                                             disabled={!affordable || loadingStats || Boolean(balanceError)}
                                             onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
                                         >
@@ -382,7 +382,7 @@ export default function MarketplacePage() {
                                                     variant={affordable ? 'primary' : 'secondary'}
                                                     size="sm"
                                                     disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                    className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
+                                                    className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
                                                 >
                                                     {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
                                                 </Button>

@@ -191,14 +191,14 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                         onClick={() => setShowNotifications(true)}
                         className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
-                        <FiBell size={16} />
+                        <FiBell size={15} />
                         {/* Notification indicator dot */}
-                        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                     </button>
                     {!pathname.endsWith('/settings') && (
                         <Link href={`/${locale}/settings`}>
                             <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-primary/80 hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
-                                <FiSettings size={16} />
+                                <FiSettings size={15} />
                             </button>
                         </Link>
                     )}

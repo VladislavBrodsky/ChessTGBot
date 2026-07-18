@@ -32,7 +32,7 @@ export default function LessonCard({
  ${locked
  ? "bg-brand-surface border-brand-border-opacity-5 opacity-60 cursor-not-allowed"
  : progress >= 100
- ? "bg-gradient-to-br from-emerald-900/10 to-brand-surface border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/20 cursor-pointer hover:border-emerald-500/50 hover:shadow-[0_0_25px_rgba(16,185,129,0.25)]"
+ ? "bg-gradient-to-br from-emerald-500/8 to-brand-surface border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/20 cursor-pointer hover:border-emerald-500/50 hover:shadow-[0_0_25px_rgba(16,185,129,0.25)]"
  : "glass-panel border-brand-border-opacity-10 bg-brand-surface cursor-pointer hover:bg-brand-bg-opacity-5"
  }
  `}
@@ -49,7 +49,7 @@ export default function LessonCard({
  {locked ? (
  <FaLock className="text-brand-primary opacity-30" />
  ) : progress >= 100 ? (
- <FaCheckCircle className="text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded-full animate-pulse" />
+ <FaCheckCircle className="text-emerald-400" />
  ) : (
  <div className="text-[10px] font-bold text-brand-primary opacity-40">{duration}</div>
  )}
@@ -61,24 +61,24 @@ export default function LessonCard({
 
   <div className="mt-4">
     {/* Progress Bar */}
-    <div className="w-full h-1.5 bg-brand-void/50 rounded-full overflow-hidden mb-2 border border-brand-border-opacity-5">
+    <div className="w-full h-1.5 bg-brand-border-opacity-10 rounded-full overflow-hidden mb-2 border border-brand-border-opacity-5">
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${progress}%` }}
         className={`h-full rounded-full bg-gradient-to-r ${
           progress >= 100 
-            ? 'from-emerald-400 to-teal-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' 
-            : 'from-brand-primary to-cyan-400 shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+            ? 'from-emerald-400 to-teal-500' 
+            : 'from-brand-primary to-cyan-400'
         }`}
       />
     </div>
     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider">
       <span className={progress >= 100 ? 'text-emerald-400' : 'text-brand-primary/55'}>
-        {progress}% Completed
+        {progress >= 100 ? 'Completed ✓' : `${progress}% done`}
       </span>
       {!locked && (
         <span className="flex items-center gap-1 text-brand-primary hover:text-brand-primary/80 transition-colors">
-          Start <FaPlay size={7} />
+          Start <FaPlay size={7} className="text-brand-primary" />
         </span>
       )}
     </div>
