@@ -207,6 +207,16 @@
     "ach_refer_3_inst": "'आमंत्रित करें' पर टैप कर अपना लिंक शेयर करें। 3 खिलाड़ी जोड़ें।",
     "ach_refer_5_desc": "अपने रेफ़रल लिंक से 5 दोस्तों को आमंत्रित करें।",
     "ach_refer_5_inst": "'आमंत्रित करें' पर टैप कर अपना लिंक शेयर करें। 5 खिलाड़ी जोड़ें।",
+    "ach_refer_10": "Network Titan",
+    "ach_refer_10_desc": "Invite 10 friends using your referral link.",
+    "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
+    "ach_refer_25": "Viral Master",
+    "ach_refer_25_desc": "Invite 25 friends using your referral link.",
+    "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
+    "ach_win_50": "Champion",
+    "ach_win_50_desc": "Win 50 matches in total.",
+    "ach_play_100": "Grandmaster",
+    "ach_play_100_desc": "Play 100 matches in total.",
     "completed_missions": "पूरे किए गए मिशन",
     "daily_win_desc": "किसी भी गेम मोड में अपने प्रतिद्वंद्वी को हराएँ।",
     "daily_win_inst": "बॉट या इंसान के खिलाफ खेलें और जीतें।",
@@ -676,15 +686,5 @@
     "region_europe_africa": "यूरोप और अफ्रीका",
     "region_mena_sasia": "मध्य पूर्व और दक्षिण एशिया",
     "region_apac": "पूर्वी एशिया और प्रशांत"
-  },
-  "ach_refer_10": "Network Titan",
-  "ach_refer_10_desc": "Invite 10 friends using your referral link.",
-  "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
-  "ach_refer_25": "Viral Master",
-  "ach_refer_25_desc": "Invite 25 friends using your referral link.",
-  "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
-  "ach_win_50": "Champion",
-  "ach_win_50_desc": "Win 50 matches in total.",
-  "ach_play_100": "Grandmaster",
-  "ach_play_100_desc": "Play 100 matches in total."
+  }
 }

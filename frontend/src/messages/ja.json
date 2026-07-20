@@ -207,6 +207,16 @@
     "ach_refer_3_inst": "「招待」をタップしてリンクを共有し、プレイヤーを3人集めましょう。",
     "ach_refer_5_desc": "紹介リンクで友達を5人招待する。",
     "ach_refer_5_inst": "「招待」をタップしてリンクを共有し、プレイヤーを5人集めましょう。",
+    "ach_refer_10": "Network Titan",
+    "ach_refer_10_desc": "Invite 10 friends using your referral link.",
+    "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
+    "ach_refer_25": "Viral Master",
+    "ach_refer_25_desc": "Invite 25 friends using your referral link.",
+    "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
+    "ach_win_50": "Champion",
+    "ach_win_50_desc": "Win 50 matches in total.",
+    "ach_play_100": "Grandmaster",
+    "ach_play_100_desc": "Play 100 matches in total.",
     "completed_missions": "完了したミッション",
     "daily_win_desc": "任意のモードで対戦相手に勝利する。",
     "daily_win_inst": "ボットまたは人間と対局して勝ちましょう。",
@@ -676,15 +686,5 @@
     "region_europe_africa": "ヨーロッパ・アフリカ",
     "region_mena_sasia": "中東・南アジア",
     "region_apac": "東アジア・太平洋"
-  },
-  "ach_refer_10": "Network Titan",
-  "ach_refer_10_desc": "Invite 10 friends using your referral link.",
-  "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
-  "ach_refer_25": "Viral Master",
-  "ach_refer_25_desc": "Invite 25 friends using your referral link.",
-  "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
-  "ach_win_50": "Champion",
-  "ach_win_50_desc": "Win 50 matches in total.",
-  "ach_play_100": "Grandmaster",
-  "ach_play_100_desc": "Play 100 matches in total."
+  }
 }

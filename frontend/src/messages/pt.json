@@ -207,6 +207,16 @@
     "ach_refer_3_inst": "Toque em 'Convidar' para compartilhar seu link. Recrute 3 jogadores.",
     "ach_refer_5_desc": "Convide 5 amigos usando seu link de indicação.",
     "ach_refer_5_inst": "Toque em 'Convidar' para compartilhar seu link. Recrute 5 jogadores.",
+    "ach_refer_10": "Network Titan",
+    "ach_refer_10_desc": "Invite 10 friends using your referral link.",
+    "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
+    "ach_refer_25": "Viral Master",
+    "ach_refer_25_desc": "Invite 25 friends using your referral link.",
+    "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
+    "ach_win_50": "Champion",
+    "ach_win_50_desc": "Win 50 matches in total.",
+    "ach_play_100": "Grandmaster",
+    "ach_play_100_desc": "Play 100 matches in total.",
     "completed_missions": "Missões Concluídas",
     "daily_win_desc": "Derrote seu adversário em qualquer modo de jogo.",
     "daily_win_inst": "Jogue uma partida contra bot ou humano e vença.",
@@ -676,15 +686,5 @@
     "region_europe_africa": "Europa e África",
     "region_mena_sasia": "Oriente Médio e Sul da Ásia",
     "region_apac": "Ásia Oriental e Pacífico"
-  },
-  "ach_refer_10": "Network Titan",
-  "ach_refer_10_desc": "Invite 10 friends using your referral link.",
-  "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
-  "ach_refer_25": "Viral Master",
-  "ach_refer_25_desc": "Invite 25 friends using your referral link.",
-  "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
-  "ach_win_50": "Champion",
-  "ach_win_50_desc": "Win 50 matches in total.",
-  "ach_play_100": "Grandmaster",
-  "ach_play_100_desc": "Play 100 matches in total."
+  }
 }
