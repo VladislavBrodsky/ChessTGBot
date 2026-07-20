@@ -378,10 +378,13 @@ async def get_user_avatar(telegram_id: int, request: Request):
                         return _serve_cached(file_path)
         except Exception as e:
             import logging
-            from app.core.alerts import is_transient_telegram_error
-            if is_transient_telegram_error(e):
-                # Momentary Telegram API outage (timeout / 502) — the stale
-                # cache fallback below covers the user; no admin alert.
+            from app.core.alerts import is_transient_telegram_error, is_benign_telegram_file_error
+            # A momentary Telegram API outage (timeout / 502) OR a benign
+            # "Wrong file_id or the file is temporarily unavailable" BadRequest
+            # (Telegram briefly loses an avatar file_id it just handed us) are
+            # both self-healing and covered by the stale-cache fallback below —
+            # so they log at WARNING and must not page admins.
+            if is_transient_telegram_error(e) or is_benign_telegram_file_error(e):
                 logging.getLogger(__name__).warning(f"Transient Telegram API error fetching avatar for {telegram_id}: {e}")
             else:
                 logging.getLogger(__name__).error(f"Failed to fetch/cache avatar for {telegram_id}: {e}")

@@ -9,7 +9,7 @@ import httpx
 import pytest
 from telegram import error as tg_error
 
-from app.core.alerts import is_transient_telegram_error
+from app.core.alerts import is_transient_telegram_error, is_benign_telegram_file_error
 
 
 @pytest.mark.parametrize("exc", [
@@ -33,3 +33,24 @@ def test_transient_errors_do_not_alert(exc):
 ])
 def test_real_errors_still_alert(exc):
     assert is_transient_telegram_error(exc) is False
+
+
+@pytest.mark.parametrize("exc", [
+    tg_error.BadRequest("Wrong file_id or the file is temporarily unavailable"),
+    tg_error.BadRequest("File is temporarily unavailable"),
+])
+def test_benign_file_errors_recognized(exc):
+    # These are BadRequests (so is_transient_telegram_error stays False) but the
+    # avatar endpoint must not page admins for them — the stale-cache fallback
+    # covers the user. Regression for the recurring "Failed to fetch/cache
+    # avatar ... Wrong file_id or the file is temporarily unavailable" alert.
+    assert is_transient_telegram_error(exc) is False
+    assert is_benign_telegram_file_error(exc) is True
+
+
+@pytest.mark.parametrize("exc", [
+    tg_error.BadRequest("chat not found"),
+    ValueError("disk full"),
+])
+def test_non_file_errors_are_not_benign(exc):
+    assert is_benign_telegram_file_error(exc) is False

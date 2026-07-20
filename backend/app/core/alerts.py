@@ -73,6 +73,17 @@ def is_transient_telegram_error(exc: BaseException) -> bool:
         return False
     return isinstance(exc, (tg_error.NetworkError, tg_error.RetryAfter, httpx.TransportError))
 
+def is_benign_telegram_file_error(exc: BaseException) -> bool:
+    """True for Telegram file-fetch BadRequests that are transient/benign and
+    must not page admins — notably "Wrong file_id or the file is temporarily
+    unavailable", which Telegram returns when a just-obtained file_id (e.g. an
+    avatar photo) briefly vanishes on its side. It is a BadRequest, so
+    is_transient_telegram_error deliberately excludes it; callers that have a
+    cache/None fallback should treat it as WARNING instead of ERROR.
+    """
+    msg = str(exc).lower()
+    return "temporarily unavailable" in msg or "wrong file_id" in msg
+
 def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
     global _sent_alerts_cache
@@ -264,11 +275,17 @@ class TelegramAlertHandler(logging.Handler):
     """Logging handler that routes ERROR and CRITICAL logs to Telegram admins with rate-limiting."""
     def emit(self, record):
         try:
-            # Prevent infinite logging loops by ignoring HTTP client, socket connection, or bot errors
-            if (record.name.startswith("app.services.telegram_bot") or 
-                record.name.startswith("urllib3") or 
-                record.name.startswith("httpx") or 
-                record.name.startswith("socketio")):
+            # Prevent infinite logging loops and benign transport noise by
+            # ignoring HTTP client, socket connection, or bot errors.
+            # `engineio` is Socket.IO's transport layer: it logs benign
+            # client-disconnect races ("Session is disconnected", "Invalid
+            # session") once at ERROR via _log_error_once. Those are not
+            # actionable backend faults, so filter them like `socketio`.
+            if (record.name.startswith("app.services.telegram_bot") or
+                record.name.startswith("urllib3") or
+                record.name.startswith("httpx") or
+                record.name.startswith("socketio") or
+                record.name.startswith("engineio")):
                 return
             
             

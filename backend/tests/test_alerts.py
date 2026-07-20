@@ -96,6 +96,34 @@ async def asyncio_sleep_helper():
     # Helper to allow async loop tasks to execute
     await pytest.importorskip("asyncio").sleep(0.05)
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("logger_name", ["engineio", "engineio.server", "socketio"])
+async def test_transport_layer_loggers_are_filtered(logger_name):
+    """Socket.IO's engineio transport logs benign client-disconnect races
+    ("Session is disconnected", "Invalid session") once at ERROR. Those, like
+    socketio's own errors, must never page admins. Regression for the recurring
+    "'Session is disconnected' <sid> (further occurrences ...)" CORE API alert.
+    """
+    from app.core.alerts import clear_alerts_cache
+    from app.services.session_manager import SessionManager
+    SessionManager._use_memory = True
+    clear_alerts_cache()
+
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    alert_handler = TelegramAlertHandler()
+    alert_handler.setLevel(logging.ERROR)
+    logger.addHandler(alert_handler)
+    try:
+        with patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_send:
+            logger.error("'Session is disconnected' _omKBtpF8LbkZBdmAAAk "
+                         "(further occurrences of this error will be logged with level INFO)")
+            await asyncio_sleep_helper()
+            assert mock_send.call_count == 0
+    finally:
+        logger.removeHandler(alert_handler)
+
 def test_system_for_logger_attribution():
     """Logger names map to the named alert systems; unknown loggers fall back to Core API."""
     from app.core.alerts import system_for_logger
