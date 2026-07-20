@@ -19,25 +19,52 @@ export interface XPProgress {
 
 export function getXPProgress(xp: number, recordedLevel?: number): XPProgress {
     const safeXp = Number.isFinite(xp) ? Math.max(0, Math.floor(xp)) : 0;
-    const earnedLevel = Math.floor(safeXp / XP_PER_LEVEL) + 1;
+    
+    // Calculate earnedLevel and cumulative start XP of that level
+    let earnedLevel = 1;
+    let cumulativeXp = 0;
+    while (true) {
+        const nextLevelCost = 350 + (earnedLevel - 1) * 50;
+        if (cumulativeXp + nextLevelCost > safeXp) {
+            break;
+        }
+        cumulativeXp += nextLevelCost;
+        earnedLevel += 1;
+    }
+    
     const safeRecordedLevel = Number.isFinite(recordedLevel)
         ? Math.max(1, Math.floor(recordedLevel as number))
         : 1;
     const displayedLevel = Math.max(safeRecordedLevel, earnedLevel);
     const isLevelSecured = displayedLevel > earnedLevel;
-    const nextLevelXp = displayedLevel * XP_PER_LEVEL;
-    
-    // Calculate progress within the current tier
-    const tierStartXp = (displayedLevel - 1) * XP_PER_LEVEL;
-    const progressInTier = safeXp - tierStartXp;
-    
-    // If they spent XP and dropped below their current level tier (debt),
-    // return their real current total XP for currentLevelProgress and compute
-    // progress toward nextLevelXp so the UI displays their actual score and real progress.
-    const currentLevelProgress = isLevelSecured ? safeXp : Math.max(0, progressInTier);
-    const progressPercentage = isLevelSecured
-        ? Math.min(100, Math.max(0, (safeXp / nextLevelXp) * 100))
-        : Math.min(100, Math.max(0, (currentLevelProgress / XP_PER_LEVEL) * 100));
+
+    // Calculate next level cost and start XP for the displayed level
+    let displayedLevelStartXp = 0;
+    for (let i = 1; i < displayedLevel; i++) {
+        displayedLevelStartXp += 350 + (i - 1) * 50;
+    }
+    const displayedLevelCost = 350 + (displayedLevel - 1) * 50;
+    const nextLevelXp = displayedLevelStartXp + displayedLevelCost;
+
+    if (isLevelSecured) {
+        // High watermark level secured after spending XP
+        const currentLevelProgress = safeXp;
+        const progressPercentage = Math.min(100, Math.max(0, (safeXp / nextLevelXp) * 100));
+
+        return {
+            displayedLevel,
+            earnedLevel,
+            currentLevelProgress,
+            nextLevelXp,
+            progressPercentage,
+            isLevelSecured: true,
+        };
+    }
+
+    // Normal progression within current tier
+    const progressInTier = safeXp - displayedLevelStartXp;
+    const currentLevelProgress = Math.max(0, progressInTier);
+    const progressPercentage = Math.min(100, Math.max(0, (currentLevelProgress / displayedLevelCost) * 100));
 
     return {
         displayedLevel,
@@ -45,6 +72,6 @@ export function getXPProgress(xp: number, recordedLevel?: number): XPProgress {
         currentLevelProgress,
         nextLevelXp,
         progressPercentage,
-        isLevelSecured,
+        isLevelSecured: false,
     };
 }

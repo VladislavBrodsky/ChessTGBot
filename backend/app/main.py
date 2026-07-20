@@ -245,7 +245,7 @@ async def lifespan(app: FastAPI):
     try:
         from app.core.database import AsyncSessionLocal
         from app.models.user import User as UserModel
-        from app.services.gamification_service import XP_PER_LEVEL
+        from app.services.gamification_service import _xp_to_level
         from sqlalchemy import select as sa_select
 
         if not engine.url.drivername.startswith("sqlite"):
@@ -265,7 +265,7 @@ async def lifespan(app: FastAPI):
                     
                     fixed_in_batch = 0
                     for u in users:
-                        correct_level = max(1, int(u.xp // XP_PER_LEVEL) + 1)
+                        correct_level = _xp_to_level(u.xp)
                         if correct_level > u.level:
                             u.level = correct_level
                             fixed_in_batch += 1

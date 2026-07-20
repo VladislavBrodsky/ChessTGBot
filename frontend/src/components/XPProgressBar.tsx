@@ -17,9 +17,11 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
     const levelSecured = progress.isLevelSecured;
     const userLevel = progress.displayedLevel;
 
+    const currentLevelCost = 350 + (userLevel - 1) * 50;
+
     const progressText = levelSecured
         ? `${progress.currentLevelProgress} / ${progress.nextLevelXp} XP`
-        : `${progress.currentLevelProgress} / ${XP_PER_LEVEL} XP`;
+        : `${progress.currentLevelProgress} / ${currentLevelCost} XP`;
 
     return (
         <div className={`w-full flex flex-col gap-1.5 ${className}`}>
@@ -38,11 +40,11 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 role="progressbar"
                 aria-label={`${levelLabel} ${userLevel} progress`}
                 aria-valuemin={0}
-                aria-valuemax={XP_PER_LEVEL}
+                aria-valuemax={levelSecured ? progress.nextLevelXp : currentLevelCost}
                 aria-valuenow={progress.currentLevelProgress}
                 aria-valuetext={levelSecured
                     ? `${progress.currentLevelProgress} of ${progress.nextLevelXp} XP toward ${levelLabel} ${userLevel + 1}`
-                    : `${progress.currentLevelProgress} of ${XP_PER_LEVEL} XP toward ${levelLabel} ${userLevel + 1}`}
+                    : `${progress.currentLevelProgress} of ${currentLevelCost} XP toward ${levelLabel} ${userLevel + 1}`}
                 className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border"
             >
                 {levelSecured && (

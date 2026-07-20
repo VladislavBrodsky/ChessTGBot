@@ -10,8 +10,18 @@ XP_PER_LEVEL = 350
 
 
 def _xp_to_level(xp: int) -> int:
-    """Canonical formula: 1 level per 350 XP, minimum level 1."""
-    return max(1, int(xp // XP_PER_LEVEL) + 1)
+    """Canonical formula: progressive escalating curve. L cost is 350 + (L-1)*50."""
+    if xp <= 0:
+        return 1
+    level = 1
+    cumulative = 0
+    while True:
+        next_xp = 350 + (level - 1) * 50
+        if cumulative + next_xp > xp:
+            break
+        cumulative += next_xp
+        level += 1
+    return level
 
 
 class GamificationService:

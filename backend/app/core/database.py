@@ -93,30 +93,44 @@ async def init_db():
             # resource. Progress ticks in game_service settle for PvP games only.
             Task(id=4, title_key="daily_play_human", description_key="Play a match against a human opponent", xp_reward=60, task_type=TaskType.PLAY_HUMAN, target_count=1, is_daily=True, icon="users"),
             Task(id=101, title_key="ach_first_win", description_key="First Blood: Win your first chess match", xp_reward=50, task_type=TaskType.WIN, target_count=1, is_daily=False, icon="award"),
-            Task(id=102, title_key="ach_win_10", description_key="Novice Victor: Win 10 chess matches", xp_reward=150, task_type=TaskType.WIN, target_count=10, is_daily=False, icon="shield"),
-            Task(id=103, title_key="ach_play_25", description_key="Chess Enthusiast: Play 25 chess matches", xp_reward=250, task_type=TaskType.PLAY, target_count=25, is_daily=False, icon="book"),
-            Task(id=104, title_key="ach_refer_5", description_key="Network Builder: Invite 5 friends to FinChess", xp_reward=1000, task_type=TaskType.REFER, target_count=5, is_daily=False, icon="users"),
-            Task(id=105, title_key="ach_refer_1", description_key="First Blood: Invite 1 friend to FinChess", xp_reward=200, task_type=TaskType.REFER, target_count=1, is_daily=False, icon="users"),
-            Task(id=106, title_key="ach_refer_3", description_key="Socializer: Invite 3 friends to FinChess", xp_reward=500, task_type=TaskType.REFER, target_count=3, is_daily=False, icon="users"),
-            Task(id=107, title_key="ach_refer_10", description_key="Network Titan: Invite 10 friends to FinChess", xp_reward=2000, task_type=TaskType.REFER, target_count=10, is_daily=False, icon="users"),
-            Task(id=108, title_key="ach_refer_25", description_key="Viral Master: Invite 25 friends to FinChess", xp_reward=5000, task_type=TaskType.REFER, target_count=25, is_daily=False, icon="users"),
-            Task(id=109, title_key="ach_win_50", description_key="Champion: Win 50 chess matches", xp_reward=1000, task_type=TaskType.WIN, target_count=50, is_daily=False, icon="crown"),
-            Task(id=110, title_key="ach_play_100", description_key="Grandmaster: Play 100 chess matches", xp_reward=1500, task_type=TaskType.PLAY, target_count=100, is_daily=False, icon="star"),
+            Task(id=102, title_key="ach_win_10", description_key="Novice Victor: Win 10 chess matches", xp_reward=100, task_type=TaskType.WIN, target_count=10, is_daily=False, icon="shield"),
+            Task(id=103, title_key="ach_play_25", description_key="Chess Enthusiast: Play 25 chess matches", xp_reward=200, task_type=TaskType.PLAY, target_count=25, is_daily=False, icon="book"),
+            Task(id=104, title_key="ach_refer_5", description_key="Network Builder: Invite 5 friends to FinChess", xp_reward=500, task_type=TaskType.REFER, target_count=5, is_daily=False, icon="users"),
+            Task(id=105, title_key="ach_refer_1", description_key="First Blood: Invite 1 friend to FinChess", xp_reward=150, task_type=TaskType.REFER, target_count=1, is_daily=False, icon="users"),
+            Task(id=106, title_key="ach_refer_3", description_key="Socializer: Invite 3 friends to FinChess", xp_reward=300, task_type=TaskType.REFER, target_count=3, is_daily=False, icon="users"),
+            Task(id=107, title_key="ach_refer_10", description_key="Network Titan: Invite 10 friends to FinChess", xp_reward=1000, task_type=TaskType.REFER, target_count=10, is_daily=False, icon="users"),
+            Task(id=108, title_key="ach_refer_25", description_key="Viral Master: Invite 25 friends to FinChess", xp_reward=2000, task_type=TaskType.REFER, target_count=25, is_daily=False, icon="users"),
+            Task(id=109, title_key="ach_win_50", description_key="Champion: Win 50 chess matches", xp_reward=500, task_type=TaskType.WIN, target_count=50, is_daily=False, icon="crown"),
+            Task(id=110, title_key="ach_play_100", description_key="Grandmaster: Play 100 chess matches", xp_reward=750, task_type=TaskType.PLAY, target_count=100, is_daily=False, icon="star"),
             Task(id=201, title_key="join_channel", description_key="Subscribe to official channel @chess_hub", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
             Task(id=202, title_key="join_chat", description_key="Subscribe to official chat @chesshub_chat", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
             Task(id=203, title_key="add_to_home_screen", description_key="Add App to your Home Screen", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="home")
         ]
         
         seeded = 0
+        updated = 0
         for task in default_tasks:
             result = await session.execute(select(Task).where(Task.id == task.id))
-            if not result.scalars().first():
+            existing_task = result.scalars().first()
+            if not existing_task:
                 session.add(task)
                 seeded += 1
+            else:
+                if existing_task.xp_reward != task.xp_reward or existing_task.target_count != task.target_count:
+                    existing_task.xp_reward = task.xp_reward
+                    existing_task.target_count = task.target_count
+                    existing_task.title_key = task.title_key
+                    existing_task.description_key = task.description_key
+                    existing_task.task_type = task.task_type
+                    existing_task.is_daily = task.is_daily
+                    existing_task.icon = task.icon
+                    session.add(existing_task)
+                    updated += 1
                 
-        if seeded > 0:
+        if seeded > 0 or updated > 0:
             await session.commit()
             logger.info(
-                "Database seeding: %s default tasks/achievements seeded successfully.",
+                "Database seeding: %s default tasks seeded, %s updated successfully.",
                 seeded,
+                updated,
             )
