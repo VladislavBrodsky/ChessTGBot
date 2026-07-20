@@ -12,12 +12,13 @@ describe('getXPProgress', () => {
         });
     });
 
-    it('keeps an earned high-watermark level visibly secured after XP is spent', () => {
+    it('keeps an earned high-watermark level visibly secured after XP is spent and shows real XP score', () => {
         expect(getXPProgress(3926, 41)).toMatchObject({
             displayedLevel: 41,
             earnedLevel: 12,
-            currentLevelProgress: XP_PER_LEVEL,
-            progressPercentage: 100,
+            currentLevelProgress: 3926,
+            nextLevelXp: 14350,
+            progressPercentage: (3926 / 14350) * 100,
             isLevelSecured: true,
         });
     });
