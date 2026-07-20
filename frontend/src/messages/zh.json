@@ -207,6 +207,16 @@
     "ach_refer_3_inst": "点击「邀请」分享你的链接，招募 3 名玩家。",
     "ach_refer_5_desc": "使用你的邀请链接邀请 5 位好友。",
     "ach_refer_5_inst": "点击「邀请」分享你的链接，招募 5 名玩家。",
+    "ach_refer_10": "Network Titan",
+    "ach_refer_10_desc": "Invite 10 friends using your referral link.",
+    "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
+    "ach_refer_25": "Viral Master",
+    "ach_refer_25_desc": "Invite 25 friends using your referral link.",
+    "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
+    "ach_win_50": "Champion",
+    "ach_win_50_desc": "Win 50 matches in total.",
+    "ach_play_100": "Grandmaster",
+    "ach_play_100_desc": "Play 100 matches in total.",
     "completed_missions": "已完成任务",
     "daily_win_desc": "在任意模式中击败你的对手。",
     "daily_win_inst": "与机器人或真人对局并获胜。",
@@ -676,15 +686,5 @@
     "region_europe_africa": "欧洲和非洲",
     "region_mena_sasia": "中东和南亚",
     "region_apac": "东亚和太平洋"
-  },
-  "ach_refer_10": "Network Titan",
-  "ach_refer_10_desc": "Invite 10 friends using your referral link.",
-  "ach_refer_10_inst": "Tap 'Invite' to share your link. Recruit 10 players.",
-  "ach_refer_25": "Viral Master",
-  "ach_refer_25_desc": "Invite 25 friends using your referral link.",
-  "ach_refer_25_inst": "Tap 'Invite' to share your link. Recruit 25 players.",
-  "ach_win_50": "Champion",
-  "ach_win_50_desc": "Win 50 matches in total.",
-  "ach_play_100": "Grandmaster",
-  "ach_play_100_desc": "Play 100 matches in total."
+  }
 }

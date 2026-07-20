@@ -172,8 +172,13 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
     // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not
-    // hidden by game state.
-    const shouldHideNavbar = showOnboarding || (
+    // hidden by game state. However, when a bottom-sheet drawer / modal opts into
+    // `useNavbarHideWhileMounted()` (isNavbarHiddenByContext), we MUST hide the navbar:
+    // its fixed bottom position otherwise overlaps the drawer's primary action button
+    // and silently swallows taps on it. This context hide is driven by React's component
+    // lifecycle (push on mount / pop on unmount), so it cannot be orphaned or leave the
+    // user stranded — see NavbarContext.useNavbarHideWhileMounted.
+    const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
         !isMainNavbarPage && !!activeGameId
     );
 
