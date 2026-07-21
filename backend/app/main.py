@@ -127,6 +127,7 @@ async def start_withdrawal_confirmation_sweeper():
     are never stranded when the user ignores the Confirm DM), and pages
     Treasury for payouts stuck mid-execution after a crash/redeploy."""
     from app.services.withdrawal_confirmation import expire_stale_confirmations, alert_stuck_payouts
+    from app.services.withdrawal_reconciliation import reconcile_nonterminal_withdrawals
     while True:
         try:
             await asyncio.sleep(300)
@@ -136,6 +137,7 @@ async def start_withdrawal_confirmation_sweeper():
             stuck = await alert_stuck_payouts()
             if stuck:
                 logger.warning(f"Withdrawal-confirmation sweeper flagged {stuck} stuck payout(s).")
+            await reconcile_nonterminal_withdrawals()
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -199,6 +201,10 @@ async def lifespan(app: FastAPI):
     # Start background ledger audit reconciliation
     from app.services.ledger_audit import start_ledger_audit_loop
     asyncio.create_task(start_ledger_audit_loop())
+
+    # Recover paid/expired Stripe Checkout sessions that missed webhook delivery.
+    from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
+    asyncio.create_task(start_stripe_reconciliation_loop())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop

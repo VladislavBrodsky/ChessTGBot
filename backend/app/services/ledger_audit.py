@@ -11,7 +11,7 @@ BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
     "referral_commission", "subscription_commission",
-    "deposit_reversal", "ledger_adjustment", "chargeback"
+    "deposit_reversal", "ledger_adjustment", "chargeback", "withdrawal_refund"
 ]
 
 class LedgerAuditService:
@@ -54,7 +54,7 @@ async def start_ledger_audit_loop():
             async with AsyncSessionLocal() as db:
                 mismatches = await LedgerAuditService.run_audit(db)
                 if mismatches:
-                    from app.core.alerts import send_admin_alert
+                    from app.core.alerts import send_alert_with_redis_rate_limit
                     mismatch_lines = []
                     for telegram_id, first_name, profile_bal, ledger_bal in mismatches:
                         diff = profile_bal - ledger_bal
@@ -72,11 +72,15 @@ async def start_ledger_audit_loop():
                         )
                     
                     alert_text = (
-                        "🚨 <b>LEDGER RECONCILIATION ANOMALY DETECTED!</b>\n\n"
+                        "<b>Ledger reconciliation anomaly detected</b>\n\n"
                         "The following users have mismatched database profile balances vs. transaction ledger totals:\n\n" +
                         "\n\n".join(mismatch_lines)
                     )
-                    await send_admin_alert(alert_text, system="treasury")
+                    await send_alert_with_redis_rate_limit(
+                        "ledger_audit:balance_mismatch",
+                        alert_text,
+                        system="treasury",
+                    )
                 else:
                     logger.info("✅ Ledger reconciliation audit run: 0 anomalies detected.")
         except Exception as e:

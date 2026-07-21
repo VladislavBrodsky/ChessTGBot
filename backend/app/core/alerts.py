@@ -35,6 +35,8 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.client", "game_client"),
     ("app.services.deposit_crawler", "treasury"),
     ("app.services.withdrawal_crawler", "treasury"),
+    ("app.services.withdrawal_reconciliation", "treasury"),
+    ("app.services.stripe_reconciliation", "treasury"),
     ("app.services.solvency_service", "treasury"),
     ("app.services.ledger_audit", "treasury"),
     ("app.services.payout_service", "treasury"),

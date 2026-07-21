@@ -700,6 +700,14 @@ async def reject_withdrawal(
 
     # The status transition and balance credit deliberately share one commit.
     await user_crud.atomic_credit(db, tx.user_id, refund, commit=False)
+    db.add(Transaction(
+        user_id=tx.user_id,
+        type="withdrawal_refund",
+        amount=refund,
+        fee=0,
+        status="completed",
+        reference_id=f"withdrawal_refund:{tx.id}",
+    ))
     await db.commit()
     logger.info(
         "[TRANSACTION] withdrawal rejected tx_id=%s user_id=%s admin_id=%s refunded_cents=%s",

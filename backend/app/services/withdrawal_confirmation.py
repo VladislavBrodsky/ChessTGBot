@@ -79,6 +79,14 @@ async def _refund(db, tx: Transaction, final_reference: str) -> None:
     """Credit the held amount back. Caller must have claimed the tx already."""
     from app.crud import user as user_crud
     await user_crud.atomic_credit(db, tx.user_id, -tx.amount, commit=False)
+    db.add(Transaction(
+        user_id=tx.user_id,
+        type="withdrawal_refund",
+        amount=-tx.amount,
+        fee=0,
+        status="completed",
+        reference_id=f"withdrawal_refund:{tx.id}",
+    ))
     tx.reference_id = final_reference
     db.add(tx)
     await db.commit()

@@ -10,6 +10,7 @@ from app.core.database import get_db, get_read_db  # noqa: E402
 from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit  # noqa: E402
 from app.models.user import User  # noqa: E402
 from app.models.transaction import Transaction  # noqa: E402
+from app.models.stripe_event import StripeWebhookEvent  # noqa: E402
 from app.crud import user as user_crud  # noqa: E402
 from pydantic import BaseModel, ConfigDict  # noqa: E402
 from typing import List, Optional  # noqa: E402
@@ -1427,6 +1428,41 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
     return False
 
 
+def _stripe_event_identity(event) -> tuple[str, str | None]:
+    """Use Stripe's event id, with a legacy-safe fallback for old test payloads."""
+    payload = event.get("data", {}).get("object", {})
+    object_id = payload.get("id")
+    event_id = event.get("id") or f"legacy:{event.get('type', 'unknown')}:{object_id or 'unknown'}"
+    return str(event_id)[:255], str(object_id)[:255] if object_id else None
+
+
+async def _claim_stripe_event(db: AsyncSession, event) -> bool:
+    """Claim a Stripe event in the same database transaction as its effects."""
+    event_id, object_id = _stripe_event_identity(event)
+    existing = await db.execute(
+        select(StripeWebhookEvent.id).where(StripeWebhookEvent.event_id == event_id)
+    )
+    if existing.scalar_one_or_none() is not None:
+        logger.info("Ignoring duplicate Stripe event %s", event_id)
+        return False
+    try:
+        db.add(
+            StripeWebhookEvent(
+                event_id=event_id,
+                event_type=str(event.get("type", "unknown"))[:100],
+                object_id=object_id,
+            )
+        )
+        await db.flush()
+    except IntegrityError:
+        # The unique index closes the small race between the pre-check and the
+        # insert. No balance mutation has occurred at this point.
+        await db.rollback()
+        logger.info("Ignoring duplicate Stripe event %s", event_id)
+        return False
+    return True
+
+
 @router.get("/stripe/verify-session", response_model=StripeVerifyResponse)
 async def stripe_verify_session(
     session_id: str,
@@ -1681,6 +1717,9 @@ async def stripe_webhook(
         raise HTTPException(status_code=400, detail="Invalid payload.")
     except stripe.error.SignatureVerificationError:
         raise HTTPException(status_code=400, detail="Invalid signature.")
+
+    if not await _claim_stripe_event(db, event):
+        return {"status": "ignored", "message": "Stripe event already processed."}
         
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
@@ -1715,6 +1754,7 @@ async def stripe_webhook(
                     # Stripe actually collected the first subscription payment.
                     db.add(user)
                     await db.commit()
+            await db.commit()
             return {"status": "success", "message": "Subscription mapped; awaiting paid invoice."}
 
         # Handle One-Time Wallet Top-ups
@@ -1730,6 +1770,7 @@ async def stripe_webhook(
             if credited:
                 return {"status": "success", "message": "Transaction credited successfully."}
             else:
+                await db.commit()
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
     elif event['type'] == 'checkout.session.expired':
@@ -1791,6 +1832,7 @@ async def stripe_webhook(
                 already_debited = -int(prior_refund_result.scalar() or 0)
                 debit_delta = cumulative_wallet_debit - already_debited
                 if debit_delta <= 0:
+                    await db.commit()
                     return {"status": "ignored", "message": "Refund already processed."}
 
                 user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
@@ -1838,6 +1880,7 @@ async def stripe_webhook(
                         select(Transaction.id).where(Transaction.reference_id == dispute_ref)
                     )
                     if prior_dispute.scalar_one_or_none() is not None:
+                        await db.commit()
                         return {"status": "ignored", "message": "Dispute already processed."}
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
@@ -1880,7 +1923,8 @@ async def stripe_webhook(
                         return {"status": "success", "message": "Account frozen due to dispute."}
             except Exception as e:
                 logger.error(f"Failed to process dispute: {e}")
-                pass
+                await db.rollback()
+                raise HTTPException(status_code=500, detail="Stripe dispute processing failed; please retry.") from e
 
     elif event['type'] == 'invoice.payment_succeeded':
         invoice = event['data']['object']
@@ -1914,6 +1958,7 @@ async def stripe_webhook(
                         select(Transaction).filter(Transaction.reference_id == invoice_ref)
                     )
                     if prior_invoice.scalars().first():
+                        await db.commit()
                         return {"status": "ignored", "message": "Subscription invoice already processed."}
 
                     user.is_premium = True
@@ -1952,7 +1997,11 @@ async def stripe_webhook(
                         )
                         db.add(sub_tx)
                     
-                    await db.commit()
+                    try:
+                        await db.commit()
+                    except IntegrityError:
+                        await db.rollback()
+                        return {"status": "ignored", "message": "Subscription invoice already processed."}
                     
                     try:
                         from app.services.telegram_bot import TelegramService
@@ -1981,6 +2030,8 @@ async def stripe_webhook(
                     return {"status": "success", "message": "Subscription activated."}
             except Exception as e:
                 logger.error(f"Failed to process subscription payment: {e}")
+                await db.rollback()
+                raise HTTPException(status_code=500, detail="Stripe invoice processing failed; please retry.") from e
 
     elif event['type'] == 'invoice.payment_failed':
         invoice = event['data']['object']
@@ -2036,4 +2087,5 @@ async def stripe_webhook(
             except Exception as e:
                 logger.error(f"Failed to process subscription deletion: {e}")
 
+    await db.commit()
     return {"status": "success", "message": "Event received."}

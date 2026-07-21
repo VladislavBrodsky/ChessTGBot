@@ -117,10 +117,17 @@ async def test_confirmation_delivery_failure_refunds_with_failed_ledger_row(tmp_
 
         async with sessions() as db:
             user = (await db.execute(select(User).where(User.telegram_id == 881003))).scalars().one()
-            tx = (await db.execute(select(Transaction).where(Transaction.user_id == 881003))).scalars().one()
+            tx = (await db.execute(
+                select(Transaction).where(Transaction.user_id == 881003, Transaction.type == "withdrawal")
+            )).scalars().one()
+            refund_tx = (await db.execute(
+                select(Transaction).where(Transaction.user_id == 881003, Transaction.type == "withdrawal_refund")
+            )).scalars().one()
             assert user.balance == 2_000
             assert tx.status == "failed"
             assert tx.reference_id == "confirmation_undeliverable"
+            assert refund_tx.amount == 1_000
+            assert refund_tx.reference_id == f"withdrawal_refund:{tx.id}"
     finally:
         await engine.dispose()
 
@@ -153,10 +160,17 @@ async def test_pre_broadcast_failure_refunds_with_failed_ledger_row(tmp_path):
 
         async with sessions() as db:
             user = (await db.execute(select(User).where(User.telegram_id == 881004))).scalars().one()
-            tx = (await db.execute(select(Transaction).where(Transaction.user_id == 881004))).scalars().one()
+            tx = (await db.execute(
+                select(Transaction).where(Transaction.user_id == 881004, Transaction.type == "withdrawal")
+            )).scalars().one()
+            refund_tx = (await db.execute(
+                select(Transaction).where(Transaction.user_id == 881004, Transaction.type == "withdrawal_refund")
+            )).scalars().one()
             assert user.balance == 2_000
             assert tx.status == "failed"
             assert tx.reference_id == "payout_failed_before_broadcast"
+            assert refund_tx.amount == 1_000
+            assert refund_tx.reference_id == f"withdrawal_refund:{tx.id}"
     finally:
         await engine.dispose()
 

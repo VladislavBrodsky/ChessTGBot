@@ -140,6 +140,14 @@ async def fail_and_refund_withdrawal(
 
     tx = (await db.execute(select(Transaction).where(Transaction.id == tx_id))).scalars().one()
     await user_crud.atomic_credit(db, tx.user_id, -tx.amount, commit=False)
+    db.add(Transaction(
+        user_id=tx.user_id,
+        type="withdrawal_refund",
+        amount=-tx.amount,
+        fee=0,
+        status="completed",
+        reference_id=f"withdrawal_refund:{tx.id}",
+    ))
     try:
         new_balance = await db.scalar(select(User.balance).where(User.telegram_id == tx.user_id))
         await db.commit()

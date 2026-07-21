@@ -195,6 +195,14 @@ async def process_withdrawal_failure(tx_id: int, reason: str):
         
         # Credit balance atomically and mark transaction as failed
         await user_crud.atomic_credit(db, tx.user_id, refund_amount, commit=False)
+        db.add(Transaction(
+            user_id=tx.user_id,
+            type="withdrawal_refund",
+            amount=refund_amount,
+            fee=0,
+            status="completed",
+            reference_id=f"withdrawal_refund:{tx.id}",
+        ))
         tx.status = "failed"
         db.add(tx)
         await db.commit()
