@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 PENDING_STATUS = "pending_confirmation"
 REF_PREFIX = "pending_confirmation:"
+REVIEW_REF_PREFIX = "pending_review:"
 
 # callback_data prefixes (Telegram caps callback_data at 64 bytes)
 CONFIRM_ACTION = "wdc"
@@ -245,7 +246,7 @@ async def alert_stuck_payouts() -> int:
         for tx in stuck:
             amount = -tx.amount
             address = ""
-            if tx.reference_id and tx.reference_id.startswith(REF_PREFIX):
+            if tx.reference_id and tx.reference_id.startswith((REF_PREFIX, REVIEW_REF_PREFIX)):
                 address = tx.reference_id.split(":", 1)[1]
             age_min = int((_now_naive_utc() - tx.created_at).total_seconds() // 60) if tx.created_at else -1
             try:
