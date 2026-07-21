@@ -2008,6 +2008,11 @@ async def stripe_webhook(
                         await db.rollback()
                         return {"status": "ignored", "message": "Subscription invoice already processed."}
                     
+                    # Distribute referral commissions on Stripe subscription payment
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    await ReferralCommissionService.distribute_subscription_commissions(db, user.id, amount_paid)
+                    await db.commit()
+                    
                     try:
                         from app.services.telegram_bot import TelegramService
                         await TelegramService.send_notification(

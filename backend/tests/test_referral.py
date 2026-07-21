@@ -329,9 +329,9 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     db_session.add(ref_1_p)
     await db_session.commit()
 
-    # Distribute wager commissions (Wager = 10000 cents / $100.00)
+    # Distribute wager commissions (Bid = 10000 cents, Pot = 20000 cents / $200.00)
     # Since referrers are Level 1 (Recruit), only r1 (L1) gets commission:
-    # L1 (r1) gets 2.0% of 10000 = 200 cents
+    # L1 (r1) gets 2.0% of 20000 pot = 400 cents
     wager = 10000
     deduction = await ReferralCommissionService.distribute_wager_commissions(db_session, "test_game_comm", player.id, wager, is_winner=True)
     await db_session.commit()
@@ -340,10 +340,10 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    assert r1.balance == 200
+    assert r1.balance == 400
     assert r2.balance == 0
     assert r3.balance == 0
-    assert deduction == 200
+    assert deduction == 400
 
     # Verify transaction entries
     txs_result = await db_session.execute(
@@ -351,7 +351,7 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
     )
     txs = txs_result.scalars().all()
     assert len(txs) == 1
-    assert txs[0].amount == 200
+    assert txs[0].amount == 400
     assert txs[0].user_id == r1.telegram_id
 
 
@@ -398,10 +398,10 @@ async def test_three_tier_referral_commission_non_premium_skipped(db_session: As
     await db_session.refresh(r2)
     await db_session.refresh(r3)
 
-    assert r1.balance == 200
+    assert r1.balance == 400
     assert r2.balance == 0
     assert r3.balance == 0
-    assert deduction == 200
+    assert deduction == 400
 
     # Verify transaction entries
     txs_result = await db_session.execute(
@@ -867,19 +867,19 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
     await db_session.refresh(r5)
     await db_session.refresh(r6)
 
-    # L1 (r1) gets Elite L1 = 0.7% of 100000 = 700 cents
-    assert r1.balance == 700
-    # L2 (r2) gets Elite L2 = 0.4% of 100000 = 400 cents
-    assert r2.balance == 400
-    # L3 (r3) gets Elite L3 = 0.3% of 100000 = 300 cents
-    assert r3.balance == 300
+    # L1 (r1) gets Elite L1 = 0.7% of 200000 pot = 1400 cents
+    assert r1.balance == 1400
+    # L2 (r2) gets Elite L2 = 0.4% of 200000 pot = 800 cents
+    assert r2.balance == 800
+    # L3 (r3) gets Elite L3 = 0.3% of 200000 pot = 600 cents
+    assert r3.balance == 600
     # L4 (r4) is Pawn, so L4 is not supported on Pawn tier (only L1-L2) -> gets 0
     assert r4.balance == 0
     # L5 (r5) is Recruit, so L5 is not supported on Recruit tier (only L1) -> gets 0
     assert r5.balance == 0
     # L6 (r6) is Free, so skipped
     assert r6.balance == 0
-    assert total_dist == 1400
+    assert total_dist == 2800
 
     # 2. Test L4-L6 deep commissions with Premium referrers
     r1_p = User(telegram_id=600001, first_name="R1_P", is_premium=True, xp=800, level=5, balance=0)
@@ -914,19 +914,19 @@ async def test_xp_tier_escalating_commission(db_session: AsyncSession):
     await db_session.refresh(r5_p)
     await db_session.refresh(r6_p)
 
-    # L1 (r1_p): Recruit, L1 = 2% of 100000 = 2000 cents
-    assert r1_p.balance == 2000
-    # L2 (r2_p): Pawn, L2 = 0% of 100000 = 0 cents
+    # L1 (r1_p): Recruit, L1 = 2% of 200000 pot = 4000 cents
+    assert r1_p.balance == 4000
+    # L2 (r2_p): Pawn, L2 = 0% of 200000 pot = 0 cents
     assert r2_p.balance == 0
-    # L3 (r3_p): Knight, L3 = 0% of 100000 = 0 cents
+    # L3 (r3_p): Knight, L3 = 0% of 200000 pot = 0 cents
     assert r3_p.balance == 0
-    # L4 (r4_p): Master, L4 = 0% of 100000 = 0 cents
+    # L4 (r4_p): Master, L4 = 0% of 200000 pot = 0 cents
     assert r4_p.balance == 0
-    # L5 (r5_p): Elite, L5 = 0% of 100000 = 0 cents
+    # L5 (r5_p): Elite, L5 = 0% of 200000 pot = 0 cents
     assert r5_p.balance == 0
-    # L6 (r6_p): Elite, L6 = 0% of 100000 = 0 cents
+    # L6 (r6_p): Elite, L6 = 0% of 200000 pot = 0 cents
     assert r6_p.balance == 0
-    assert total_dist_p == 2000
+    assert total_dist_p == 4000
 
 
 @pytest.mark.asyncio

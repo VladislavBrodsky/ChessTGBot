@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 USER_BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
-    "referral_commission", "subscription_commission",
+    "referral_commission", "subscription_commission", "referral_commission_leakage",
     "deposit_reversal", "ledger_adjustment", "chargeback",
 ]
 PLATFORM_REVENUE_TYPES = ["deposit_fee", "game_rake"]

@@ -28,10 +28,8 @@ enforces freshness on PRs).
 
 ## 3. Money-Flow Correctness — A−
 
-- **Stripe card deposits have a known stuck-`pending` mode with no automated
-  reconciliation.** `stripe_sweeper.py` exists but appears to be run by hand.
-  "Harden deposit and subscription settlement" landed 2026-07-15 — verify it
-  actually closed this; if not, add a scheduled reconciliation sweep.
+- **Stripe card deposits automated reconciliation** — closed 2026-07-21 via
+  `stripe_reconciliation.py` service integrated into `main.py` lifespan background tasks.
 - **Money ops are still partly manual.** One-off scripts live inside `app/`
   (`one_time_refund_kirill.py`, `process_payouts_backlog.py`,
   `sync_all_historical_deposits.py`, `stripe_sweeper.py`, `wallet_diagnostic.py`)

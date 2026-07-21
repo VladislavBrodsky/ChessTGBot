@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
-    "referral_commission", "subscription_commission",
+    "referral_commission", "subscription_commission", "referral_commission_leakage",
     "deposit_reversal", "ledger_adjustment", "chargeback", "withdrawal_refund"
 ]
 

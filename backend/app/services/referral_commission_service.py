@@ -164,15 +164,48 @@ class ReferralCommissionService:
         return result.scalar() or 0
 
     @staticmethod
+    async def _get_admin_leakage_recipient(db: AsyncSession) -> User | None:
+        """
+        Retrieves the admin user account for receiving commission leakage.
+        First looks up @uslincoln by username, then falls back to admin_telegram_ids.
+        """
+        from sqlalchemy import func
+        from app.core.config import get_settings
+
+        # 1. Search for @uslincoln by username (case-insensitive)
+        result = await db.execute(
+            select(User).where(func.lower(User.username) == "uslincoln").with_for_update()
+        )
+        admin_user = result.scalars().first()
+        if admin_user:
+            return admin_user
+
+        # 2. Fallback to the primary admin in config settings
+        settings = get_settings()
+        admin_ids = settings.admin_telegram_ids
+        if admin_ids:
+            primary_admin_id = next(iter(admin_ids))
+            res2 = await db.execute(
+                select(User).where(User.telegram_id == primary_admin_id).with_for_update()
+            )
+            return res2.scalars().first()
+
+        return None
+
+    @staticmethod
     async def distribute_wager_commissions(db: AsyncSession, game_id: str, player_id: int, bid_amount: int, is_winner: bool) -> int:
         """
         Distributes referral commissions based on a player's wager (2% referral pool).
         Splits the commission up to 6 levels deep according to referrer tiers and premium status.
         Sends engaging success or FOMO (Premium / Level Up) notifications.
+        Any unallocated commission leakage is credited to admin account @uslincoln.
         Returns the total commission distributed in cents.
         """
         if not is_winner or bid_amount <= 0:
             return 0
+
+        pot = 2 * bid_amount
+        total_pool = int(pot * 0.02)
 
         # Fetch the player's info to personalize notifications
         player_result = await db.execute(select(User).where(User.id == player_id))
@@ -184,122 +217,139 @@ class ReferralCommissionService:
 
         # Fetch referrer chain up to 6 levels
         chain = await ReferralCommissionService.get_referrer_chain(db, player_id, levels=6)
-        if not chain:
-            return 0
-
-        # The split rates are determined by the direct referrer's tier (chain[0])
-        direct_referrer = chain[0]
-        direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
-        rates = direct_tier_info["rates"]
-
         total_distributed = 0
 
-        for idx, referrer in enumerate(chain):
-            depth = idx + 1
-            tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
-            rate = rates.get(depth, 0.0)
+        if chain:
+            # The split rates are determined by the direct referrer's tier (chain[0])
+            direct_referrer = chain[0]
+            direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
+            rates = direct_tier_info["rates"]
 
-            # Determine eligibility based on referrer's own tier
-            referrer_rates = tier_info["rates"]
-            is_tier_eligible = referrer_rates.get(depth, 0.0) > 0.0
+            for idx, referrer in enumerate(chain):
+                depth = idx + 1
+                tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
+                rate = rates.get(depth, 0.0)
 
-            is_premium_eligible = (depth <= 3) or referrer.is_premium_active
-            has_tier_rate = rate > 0.0
+                # Determine eligibility based on referrer's own tier
+                referrer_rates = tier_info["rates"]
+                is_tier_eligible = referrer_rates.get(depth, 0.0) > 0.0
 
-            if is_premium_eligible and is_tier_eligible and has_tier_rate:
-                # Calculate and award commission
-                commission = int(bid_amount * rate)
-                if commission > 0:
-                    referrer.balance += commission
-                    db.add(referrer)
+                is_premium_eligible = (depth <= 3) or referrer.is_premium_active
+                has_tier_rate = rate > 0.0
 
-                    # Create commission transaction ledger entry
-                    tx = Transaction(
-                        user_id=referrer.telegram_id,
-                        type="referral_commission",
-                        amount=commission,
-                        fee=0,
-                        reference_id=f"ref_{game_id}",
-                        status="completed"
-                    )
-                    db.add(tx)
-                    await db.flush()  # Flush so transaction is in DB before querying sum
+                if is_premium_eligible and is_tier_eligible and has_tier_rate:
+                    # Calculate and award commission based on 2% pot referral pool
+                    commission = int(pot * rate)
+                    if commission > 0:
+                        referrer.balance += commission
+                        db.add(referrer)
 
-                    total_distributed += commission
-                    logger.info(f"Awarded L{depth} commission of {commission} cents to User {referrer.id}")
-
-                    # Fetch cumulative stats for notification
-                    cum_earnings = await ReferralCommissionService.get_cumulative_earnings(db, referrer.telegram_id)
-                    ref_count = await ReferralCommissionService.get_referral_count(db, referrer.id)
-
-                    # Send victory or played notification
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        tier_emoji = tier_info["emoji"]
-                        tier_name = tier_info["name"]
-
-                        if is_winner:
-                            msg = (
-                                f"🏆 <b>Your Recruit Secured a Victory!</b>\n\n"
-                                f"• <b>Player:</b> {player_display} (L{depth})\n"
-                                f"• <b>Match ID:</b> <code>{game_id}</code>\n"
-                                f"• <b>Your Cut ({rate * 100:.2f}%):</b> +${commission / 100:.3f} USDT\n"
-                                f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
-                                f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
-                                f"<i>Passive income is flowing in! Keep sharing your link. ♟️💸</i>"
-                            )
-                        else:
-                            msg = (
-                                f"♟️ <b>Referral Match Played!</b>\n\n"
-                                f"• <b>Player:</b> {player_display} (L{depth})\n"
-                                f"• <b>Match ID:</b> <code>{game_id}</code>\n"
-                                f"• <b>Your Cut ({rate * 100:.2f}%):</b> +${commission / 100:.3f} USDT\n"
-                                f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
-                                f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
-                                f"<i>Passive income earned from your recruit's battle! ♟️⚡</i>"
-                            )
-                        await TelegramService.send_notification(referrer.telegram_id, msg)
-                    except Exception as e:
-                        logger.error(f"Failed to send commission notification to {referrer.telegram_id}: {e}")
-
-            elif not is_premium_eligible and has_tier_rate:
-                # Premium FOMO: tier supports this level, but referrer is not Premium
-                potential_commission = int(bid_amount * rate)
-                if potential_commission > 0:
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        msg = (
-                            f"👑 <b>Missed Premium Commission!</b>\n\n"
-                            f"Your L{depth} recruit {player_display} just completed a match.\n"
-                            f"• <b>Match ID:</b> <code>{game_id}</code>\n"
-                            f"• <b>Wager Bid:</b> ${bid_amount / 100:.2f} USDT\n"
-                            f"• <b>You Missed:</b> +${potential_commission / 100:.3f} USDT\n\n"
-                            f"<i>Upgrade to 👑 <b>Chess Premium</b> to unlock commissions for Level 4-6 referrals!</i>"
+                        # Create commission transaction ledger entry
+                        tx = Transaction(
+                            user_id=referrer.telegram_id,
+                            type="referral_commission",
+                            amount=commission,
+                            fee=0,
+                            reference_id=f"ref_{game_id}",
+                            status="completed"
                         )
-                        await TelegramService.send_notification(referrer.telegram_id, msg)
-                    except Exception as e:
-                        logger.error(f"Failed to send Premium FOMO to {referrer.telegram_id}: {e}")
+                        db.add(tx)
+                        await db.flush()  # Flush so transaction is in DB before querying sum
 
-            elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
-                # Level Up FOMO: the pool supports this level, but referrer's own tier does not!
-                if depth in ReferralCommissionService.DEPTH_REQUIREMENTS:
-                    req = ReferralCommissionService.DEPTH_REQUIREMENTS[depth]
-                    potential_commission = int(bid_amount * req["rate"])
+                        total_distributed += commission
+                        logger.info(f"Awarded L{depth} commission of {commission} cents to User {referrer.id}")
+
+                        # Fetch cumulative stats for notification
+                        cum_earnings = await ReferralCommissionService.get_cumulative_earnings(db, referrer.telegram_id)
+                        ref_count = await ReferralCommissionService.get_referral_count(db, referrer.id)
+
+                        # Send victory or played notification
+                        try:
+                            from app.services.telegram_bot import TelegramService
+                            tier_emoji = tier_info["emoji"]
+                            tier_name = tier_info["name"]
+
+                            if is_winner:
+                                msg = (
+                                    f"🏆 <b>Your Recruit Secured a Victory!</b>\n\n"
+                                    f"• <b>Player:</b> {player_display} (L{depth})\n"
+                                    f"• <b>Match ID:</b> <code>{game_id}</code>\n"
+                                    f"• <b>Your Cut ({rate * 100:.2f}%):</b> +${commission / 100:.2f} USDT\n"
+                                    f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
+                                    f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
+                                    f"<i>Passive income is flowing in! Keep sharing your link. ♟️💸</i>"
+                                )
+                            else:
+                                msg = (
+                                    f"♟️ <b>Referral Match Played!</b>\n\n"
+                                    f"• <b>Player:</b> {player_display} (L{depth})\n"
+                                    f"• <b>Match ID:</b> <code>{game_id}</code>\n"
+                                    f"• <b>Your Cut ({rate * 100:.2f}%):</b> +${commission / 100:.2f} USDT\n"
+                                    f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
+                                    f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
+                                    f"<i>Passive income earned from your recruit's battle! ♟️⚡</i>"
+                                )
+                            await TelegramService.send_notification(referrer.telegram_id, msg)
+                        except Exception as e:
+                            logger.error(f"Failed to send commission notification to {referrer.telegram_id}: {e}")
+
+                elif not is_premium_eligible and has_tier_rate:
+                    # Premium FOMO: tier supports this level, but referrer is not Premium
+                    potential_commission = int(pot * rate)
                     if potential_commission > 0:
                         try:
                             from app.services.telegram_bot import TelegramService
                             msg = (
-                                f"📈 <b>Level Up to Unlock Level {depth} Commissions!</b>\n\n"
+                                f"👑 <b>Missed Premium Commission!</b>\n\n"
                                 f"Your L{depth} recruit {player_display} just completed a match.\n"
                                 f"• <b>Match ID:</b> <code>{game_id}</code>\n"
                                 f"• <b>Wager Bid:</b> ${bid_amount / 100:.2f} USDT\n"
-                                f"• <b>Potential Cut:</b> +${potential_commission / 100:.3f} USDT\n"
-                                f"• <b>Your Current Tier:</b> {tier_info['emoji']} {tier_info['name']}\n\n"
-                                f"<i>Reach <b>{req['tier']} Tier (Level {req['level']})</b> to unlock this passive income! ♟️🚀</i>"
+                                f"• <b>You Missed:</b> +${potential_commission / 100:.2f} USDT\n\n"
+                                f"<i>Upgrade to 👑 <b>Chess Premium</b> to unlock commissions for Level 4-6 referrals!</i>"
                             )
                             await TelegramService.send_notification(referrer.telegram_id, msg)
                         except Exception as e:
-                            logger.error(f"Failed to send Level Up FOMO to {referrer.telegram_id}: {e}")
+                            logger.error(f"Failed to send Premium FOMO to {referrer.telegram_id}: {e}")
+
+                elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
+                    # Level Up FOMO: the pool supports this level, but referrer's own tier does not!
+                    if depth in ReferralCommissionService.DEPTH_REQUIREMENTS:
+                        req = ReferralCommissionService.DEPTH_REQUIREMENTS[depth]
+                        potential_commission = int(pot * req["rate"])
+                        if potential_commission > 0:
+                            try:
+                                from app.services.telegram_bot import TelegramService
+                                msg = (
+                                    f"📈 <b>Level Up to Unlock Level {depth} Commissions!</b>\n\n"
+                                    f"Your L{depth} recruit {player_display} just completed a match.\n"
+                                    f"• <b>Match ID:</b> <code>{game_id}</code>\n"
+                                    f"• <b>Wager Bid:</b> ${bid_amount / 100:.2f} USDT\n"
+                                    f"• <b>Potential Cut:</b> +${potential_commission / 100:.2f} USDT\n"
+                                    f"• <b>Your Current Tier:</b> {tier_info['emoji']} {tier_info['name']}\n\n"
+                                    f"<i>Reach <b>{req['tier']} Tier (Level {req['level']})</b> to unlock this passive income! ♟️🚀</i>"
+                                )
+                                await TelegramService.send_notification(referrer.telegram_id, msg)
+                            except Exception as e:
+                                logger.error(f"Failed to send Level Up FOMO to {referrer.telegram_id}: {e}")
+
+        # Any unallocated commission pool (leakage) is credited to admin @uslincoln
+        leakage = max(0, total_pool - total_distributed)
+        if leakage > 0:
+            admin_user = await ReferralCommissionService._get_admin_leakage_recipient(db)
+            if admin_user:
+                admin_user.balance += leakage
+                db.add(admin_user)
+                tx_leak = Transaction(
+                    user_id=admin_user.telegram_id,
+                    type="referral_commission_leakage",
+                    amount=leakage,
+                    fee=0,
+                    reference_id=f"leak_{game_id}",
+                    status="completed"
+                )
+                db.add(tx_leak)
+                await db.flush()
+                logger.info(f"Credited wager referral commission leakage of {leakage} cents to admin User {admin_user.id} (@uslincoln).")
 
         return total_distributed
 
@@ -309,11 +359,13 @@ class ReferralCommissionService:
         Distributes referral commissions based on a user's Premium subscription purchase (up to 30% pool).
         Splits the commission up to 6 levels deep.
         Referrers with Premium get up to 6 levels; referrers without Premium get up to 3 levels.
-        Sends Telegram notifications and FOMO alerts.
+        Any unallocated commission leakage is credited to admin account @uslincoln.
         Returns the total commission distributed in cents.
         """
         if price <= 0:
             return 0
+
+        total_pool = int(price * 0.30)
 
         # Fetch the subscriber info to personalize notifications
         subscriber_res = await db.execute(select(User).where(User.id == subscriber_id))
@@ -325,110 +377,128 @@ class ReferralCommissionService:
 
         # Fetch referrer chain up to 6 levels
         chain = await ReferralCommissionService.get_referrer_chain(db, subscriber_id, levels=6)
-        if not chain:
-            return 0
-            
-        # The split rates are determined by the direct referrer's tier (chain[0])
-        direct_referrer = chain[0]
-        direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
-        rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[direct_tier_info["name"]]
-
         total_distributed = 0
 
-        for idx, referrer in enumerate(chain):
-            depth = idx + 1
-            tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
-            
-            # Use subscription rate matrix from direct referrer's tier
-            rate = rates.get(depth, 0.0)
+        if chain:
+            # The split rates are determined by the direct referrer's tier (chain[0])
+            direct_referrer = chain[0]
+            direct_tier_info = ReferralCommissionService.get_commission_tier(direct_referrer.level)
+            rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[direct_tier_info["name"]]
 
-            # Determine eligibility based on referrer's own tier
-            referrer_sub_rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[tier_info["name"]]
-            is_tier_eligible = referrer_sub_rates.get(depth, 0.0) > 0.0
+            for idx, referrer in enumerate(chain):
+                depth = idx + 1
+                tier_info = ReferralCommissionService.get_commission_tier(referrer.level)
 
-            # Determine eligibility: Premium referrers get up to 6 levels, Free referrers get up to 3 levels
-            is_premium_eligible = (depth <= 3) or referrer.is_premium_active
-            has_tier_rate = rate > 0.0
+                # Use subscription rate matrix from direct referrer's tier
+                rate = rates.get(depth, 0.0)
 
-            if is_premium_eligible and is_tier_eligible and has_tier_rate:
-                # Calculate and award commission
-                commission = int(price * rate)
-                if commission > 0:
-                    referrer.balance += commission
-                    db.add(referrer)
+                # Determine eligibility based on referrer's own tier
+                referrer_sub_rates = ReferralCommissionService.SUBSCRIPTION_TIER_RATES[tier_info["name"]]
+                is_tier_eligible = referrer_sub_rates.get(depth, 0.0) > 0.0
 
-                    # Create commission transaction ledger entry
-                    tx = Transaction(
-                        user_id=referrer.telegram_id,
-                        type="subscription_commission",
-                        amount=commission,
-                        fee=0,
-                        reference_id=f"sub_commission_{subscriber_id}",
-                        status="completed"
-                    )
-                    db.add(tx)
-                    await db.flush()
+                # Determine eligibility: Premium referrers get up to 6 levels, Free referrers get up to 3 levels
+                is_premium_eligible = (depth <= 3) or referrer.is_premium_active
+                has_tier_rate = rate > 0.0
 
-                    total_distributed += commission
-                    logger.info(f"Awarded L{depth} Premium subscription commission of {commission} cents to User {referrer.id}")
+                if is_premium_eligible and is_tier_eligible and has_tier_rate:
+                    # Calculate and award commission
+                    commission = int(price * rate)
+                    if commission > 0:
+                        referrer.balance += commission
+                        db.add(referrer)
 
-                    # Fetch stats for notification
-                    cum_earnings = await ReferralCommissionService.get_cumulative_earnings(db, referrer.telegram_id)
-                    ref_count = await ReferralCommissionService.get_referral_count(db, referrer.id)
-
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        tier_emoji = tier_info["emoji"]
-                        tier_name = tier_info["name"]
-
-                        msg = (
-                            f"👑 <b>New Premium Upgrade in Your Network!</b>\n\n"
-                            f"• <b>Subscriber:</b> {subscriber_display} (L{depth})\n"
-                            f"• <b>Upgrade Price:</b> ${price / 100:.2f} USDT\n"
-                            f"• <b>Your Cut ({rate * 100:.1f}%):</b> +${commission / 100:.2f} USDT\n"
-                            f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
-                            f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
-                            f"<i>Thank them for leveling up! Your network is growing! ♟️🚀🔥</i>"
+                        # Create commission transaction ledger entry
+                        tx = Transaction(
+                            user_id=referrer.telegram_id,
+                            type="subscription_commission",
+                            amount=commission,
+                            fee=0,
+                            reference_id=f"sub_commission_{subscriber_id}",
+                            status="completed"
                         )
-                        await TelegramService.send_notification(referrer.telegram_id, msg)
-                    except Exception as e:
-                        logger.error(f"Failed to send subscription commission notification to {referrer.telegram_id}: {e}")
+                        db.add(tx)
+                        await db.flush()
 
-            elif not is_premium_eligible and has_tier_rate:
-                # Premium FOMO: referrer is not Premium but depth is 4-6
-                potential_commission = int(price * rate)
-                if potential_commission > 0:
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        msg = (
-                            f"👑 <b>Missed Premium Upgrade Commission!</b>\n\n"
-                            f"Your L{depth} recruit {subscriber_display} just upgraded to Chess Premium.\n"
-                            f"• <b>Upgrade Price:</b> ${price / 100:.2f} USDT\n"
-                            f"• <b>You Missed:</b> +${potential_commission / 100:.2f} USDT\n\n"
-                            f"<i>Upgrade to 👑 <b>Chess Premium</b> to unlock commissions for Level 4-6 referrals!</i>"
-                        )
-                        await TelegramService.send_notification(referrer.telegram_id, msg)
-                    except Exception as e:
-                        logger.error(f"Failed to send Premium subscription FOMO to {referrer.telegram_id}: {e}")
+                        total_distributed += commission
+                        logger.info(f"Awarded L{depth} Premium subscription commission of {commission} cents to User {referrer.id}")
 
-            elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
-                # Level Up FOMO: current tier doesn't support depth d, but a higher tier does
-                if depth in ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS:
-                    req = ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS[depth]
-                    potential_commission = int(price * req["rate"])
+                        # Fetch stats for notification
+                        cum_earnings = await ReferralCommissionService.get_cumulative_earnings(db, referrer.telegram_id)
+                        ref_count = await ReferralCommissionService.get_referral_count(db, referrer.id)
+
+                        try:
+                            from app.services.telegram_bot import TelegramService
+                            tier_emoji = tier_info["emoji"]
+                            tier_name = tier_info["name"]
+
+                            msg = (
+                                f"👑 <b>New Premium Upgrade in Your Network!</b>\n\n"
+                                f"• <b>Subscriber:</b> {subscriber_display} (L{depth})\n"
+                                f"• <b>Upgrade Price:</b> ${price / 100:.2f} USDT\n"
+                                f"• <b>Your Cut ({rate * 100:.1f}%):</b> +${commission / 100:.2f} USDT\n"
+                                f"• <b>Your Tier:</b> {tier_emoji} {tier_name}\n\n"
+                                f"📊 <b>Your Network:</b> {ref_count} recruits | ${cum_earnings / 100:.2f} USDT earned\n\n"
+                                f"<i>Thank them for leveling up! Your network is growing! ♟️🚀🔥</i>"
+                            )
+                            await TelegramService.send_notification(referrer.telegram_id, msg)
+                        except Exception as e:
+                            logger.error(f"Failed to send subscription commission notification to {referrer.telegram_id}: {e}")
+
+                elif not is_premium_eligible and has_tier_rate:
+                    # Premium FOMO: referrer is not Premium but depth is 4-6
+                    potential_commission = int(price * rate)
                     if potential_commission > 0:
                         try:
                             from app.services.telegram_bot import TelegramService
                             msg = (
-                                f"📈 <b>Level Up to Unlock Level {depth} Subscription Commissions!</b>\n\n"
+                                f"👑 <b>Missed Premium Upgrade Commission!</b>\n\n"
                                 f"Your L{depth} recruit {subscriber_display} just upgraded to Chess Premium.\n"
                                 f"• <b>Upgrade Price:</b> ${price / 100:.2f} USDT\n"
-                                f"• <b>Potential Cut:</b> +${potential_commission / 100:.2f} USDT\n"
-                                f"• <b>Your Current Tier:</b> {tier_info['emoji']} {tier_info['name']}\n\n"
-                                f"<i>Reach <b>{req['tier']} Tier (Level {req['level']})</b> to unlock this passive income! ♟️🚀</i>"
+                                f"• <b>You Missed:</b> +${potential_commission / 100:.2f} USDT\n\n"
+                                f"<i>Upgrade to 👑 <b>Chess Premium</b> to unlock commissions for Level 4-6 referrals!</i>"
                             )
                             await TelegramService.send_notification(referrer.telegram_id, msg)
                         except Exception as e:
-                            logger.error(f"Failed to send subscription Level Up FOMO to {referrer.telegram_id}: {e}")
+                            logger.error(f"Failed to send Premium subscription FOMO to {referrer.telegram_id}: {e}")
+
+                elif is_premium_eligible and has_tier_rate and not is_tier_eligible:
+                    # Level Up FOMO: current tier doesn't support depth d, but a higher tier does
+                    if depth in ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS:
+                        req = ReferralCommissionService.SUBSCRIPTION_DEPTH_REQUIREMENTS[depth]
+                        potential_commission = int(price * req["rate"])
+                        if potential_commission > 0:
+                            try:
+                                from app.services.telegram_bot import TelegramService
+                                msg = (
+                                    f"📈 <b>Level Up to Unlock Level {depth} Subscription Commissions!</b>\n\n"
+                                    f"Your L{depth} recruit {subscriber_display} just upgraded to Chess Premium.\n"
+                                    f"• <b>Upgrade Price:</b> ${price / 100:.2f} USDT\n"
+                                    f"• <b>Potential Cut:</b> +${potential_commission / 100:.2f} USDT\n"
+                                    f"• <b>Your Current Tier:</b> {tier_info['emoji']} {tier_info['name']}\n\n"
+                                    f"<i>Reach <b>{req['tier']} Tier (Level {req['level']})</b> to unlock this passive income! ♟️🚀</i>"
+                                )
+                                await TelegramService.send_notification(referrer.telegram_id, msg)
+                            except Exception as e:
+                                logger.error(f"Failed to send subscription Level Up FOMO to {referrer.telegram_id}: {e}")
+
+        # Any unallocated subscription commission pool (leakage) is credited to admin @uslincoln
+        leakage = max(0, total_pool - total_distributed)
+        if leakage > 0:
+            admin_user = await ReferralCommissionService._get_admin_leakage_recipient(db)
+            if admin_user:
+                admin_user.balance += leakage
+                db.add(admin_user)
+                tx_leak = Transaction(
+                    user_id=admin_user.telegram_id,
+                    type="referral_commission_leakage",
+                    amount=leakage,
+                    fee=0,
+                    reference_id=f"sub_leak_{subscriber_id}_{price}",
+                    status="completed"
+                )
+                db.add(tx_leak)
+                await db.flush()
+                logger.info(f"Credited subscription commission leakage of {leakage} cents to admin User {admin_user.id} (@uslincoln).")
 
         return total_distributed
+

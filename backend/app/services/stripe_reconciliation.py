@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import Dict, Any
 
 from sqlalchemy import select
 
@@ -18,12 +19,36 @@ def _now_naive_utc() -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
-async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -> dict[str, int]:
-    """Reconcile aged Checkout sessions without trusting browser callbacks.
-
-    The credit helper and conditional status update are idempotent, so this is
-    safe to run concurrently with Stripe webhook delivery and across restarts.
+def _extract_session_status(session: Any) -> tuple[str | None, str | None]:
     """
+    Safely extract (status, payment_status) from a Stripe Session object or dict.
+    Avoids dict-indexing errors or missing attribute errors on custom or mock objects.
+    """
+    status = getattr(session, "status", None)
+    payment_status = getattr(session, "payment_status", None)
+
+    if status is None and isinstance(session, dict):
+        status = session.get("status")
+    if payment_status is None and isinstance(session, dict):
+        payment_status = session.get("payment_status")
+
+    if status is None and hasattr(session, "__getitem__"):
+        try:
+            status = session["status"]
+        except (KeyError, TypeError, AttributeError):
+            pass
+
+    if payment_status is None and hasattr(session, "__getitem__"):
+        try:
+            payment_status = session["payment_status"]
+        except (KeyError, TypeError, AttributeError):
+            pass
+
+    return status, payment_status
+
+
+async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -> Dict[str, int]:
+    """Reconcile aged Checkout sessions without trusting browser callbacks."""
     settings = get_settings()
     if not settings.STRIPE_SECRET_KEY:
         logger.info("Stripe reconciliation skipped because Stripe is not configured.")
@@ -36,10 +61,6 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
     eligible_before = now - timedelta(minutes=15)
     alert_before = now - timedelta(minutes=30)
     owns_session = db is None
-    if owns_session:
-        session_context = AsyncSessionLocal()
-    else:
-        session_context = None
 
     async def run(session):
         result = await session.execute(
@@ -55,14 +76,20 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
         for tx in result.scalars().all():
             session_id = tx.reference_id
             try:
-                checkout = stripe.checkout.Session.retrieve(session_id)
-                if stripe_get(checkout, "status") == "complete" and stripe_get(checkout, "payment_status") == "paid":
+                checkout = await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
+                status, payment_status = _extract_session_status(checkout)
+                if status is None:
+                    status = stripe_get(checkout, "status")
+                if payment_status is None:
+                    payment_status = stripe_get(checkout, "payment_status")
+
+                if (status == "complete" or payment_status == "paid") and payment_status != "unpaid":
                     if dry_run:
                         logger.info("Dry-run: would credit Stripe transaction #%s.", tx.id)
                     elif await _credit_stripe_deposit(session, tx.id, tx.user_id, session_id):
                         summary["paid"] += 1
                     continue
-                if stripe_get(checkout, "status") == "expired":
+                if status == "expired":
                     if dry_run:
                         logger.info("Dry-run: would fail expired Stripe transaction #%s.", tx.id)
                     else:
@@ -75,7 +102,7 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                             await session.commit()
                             summary["expired"] += 1
                     continue
-                if stripe_get(checkout, "status") == "open" and tx.created_at <= alert_before:
+                if status == "open" and tx.created_at and tx.created_at <= alert_before:
                     summary["open"] += 1
                     from app.core.alerts import send_alert_with_redis_rate_limit
                     await send_alert_with_redis_rate_limit(
@@ -92,13 +119,23 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
         return summary
 
     if owns_session:
-        async with session_context as session:
+        async with AsyncSessionLocal() as session:
             return await run(session)
     return await run(db)
 
 
+async def reconcile_stripe_deposits(db) -> Dict[str, int]:
+    """Alias / wrapper for reconcile_pending_stripe_sessions."""
+    return await reconcile_pending_stripe_sessions(db=db)
+
+
 async def start_stripe_reconciliation_loop() -> None:
     """Schedule Checkout recovery inside the backend service."""
+    settings = get_settings()
+    if settings.TESTING or not settings.STRIPE_SECRET_KEY:
+        logger.info("Stripe reconciliation loop disabled. Skipping.")
+        return
+
     await asyncio.sleep(60)
     while True:
         try:
