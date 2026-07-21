@@ -249,13 +249,34 @@ export default function DepositModal({
         payloadBase64 = commentCell.toBoc().toString('base64');
         attachedTon = amountUnits.toString();
       } else {
+        // Pre-check user's on-chain USDT balance to prevent submitting transfers without enough tokens
+        try {
+          const balRes = await apiFetch(`/api/v1/wallet/onchain-balances?user_address=${wallet.account.address}`);
+          if (balRes.ok) {
+            const balData = await balRes.json();
+            const usdtUnits = balData?.usdt_units ?? 0;
+            const usdtBalance = usdtUnits / 1e6;
+            if (usdtBalance < tokensNeeded) {
+              throw new Error(`Insufficient USDT balance in your wallet. You have ${usdtBalance.toFixed(2)} USDT, but ${tokensNeeded.toFixed(2)} USDT is required for this deposit. Please add USDT or swap TON to USDT.`);
+            }
+          }
+        } catch (balErr: any) {
+          if (balErr.message && balErr.message.includes("Insufficient USDT")) {
+            throw balErr;
+          }
+          // proceed if onchain balance lookup fails transiently
+        }
+
         // Resolve Jetton wallet address from backend
         const jettonWalletRes = await apiFetch(`/api/v1/wallet/jetton-wallet?user_address=${wallet.account.address}&jetton_master=${selectedCurrencyObj.master}`);
         if (!jettonWalletRes.ok) {
-          throw new Error("Failed to resolve Jetton Wallet address. Do you have enough gas or tokens?");
+          throw new Error("Failed to resolve USDT Jetton Wallet address. Please try again or use the manual direct transfer option below.");
         }
         const jettonWalletData = await jettonWalletRes.json();
         targetAddress = jettonWalletData.jetton_wallet_address;
+        if (!targetAddress) {
+          throw new Error("Could not resolve USDT Jetton Wallet destination address.");
+        }
 
         // Construct standard Jetton transfer payload
         const transferPayload = beginCell()

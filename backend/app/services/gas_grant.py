@@ -47,6 +47,12 @@ async def fetch_onchain_balances(address: str) -> tuple[int, int]:
     """Returns (ton_balance_nanoton, usdt_balance_units) for an address via
     TonAPI. Public chain data; raises on connectivity failure.
     """
+    try:
+        from app.api.v1.endpoints.wallet import convert_ton_address_to_hex
+        address = convert_ton_address_to_hex(address)
+    except Exception:
+        pass
+
     settings = get_settings()
     headers = {}
     if settings.TON_API_KEY:

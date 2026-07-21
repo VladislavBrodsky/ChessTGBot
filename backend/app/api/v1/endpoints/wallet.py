@@ -956,30 +956,42 @@ async def get_jetton_wallet(
 ):
     from app.core.config import get_settings
     settings = get_settings()
-    
     import httpx
-    # Use runGetMethod to deterministically calculate the Jetton wallet address
-    # This avoids 404 errors if the user has never held the token before.
-    url = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address?args={user_address}"
+    
+    try:
+        raw_user = convert_ton_address_to_hex(user_address)
+    except Exception:
+        raw_user = user_address
+
     headers = {}
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
+    url1 = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address?args={raw_user}"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(url, headers=headers)
+            res = await client.get(url1, headers=headers)
             if res.status_code == 200:
                 data = res.json()
                 if data.get("success") and "decoded" in data:
                     jetton_wallet = data["decoded"].get("jetton_wallet_address", "")
                     if jetton_wallet:
-                        # Convert to friendly address format
-                        friendly = convert_raw_to_friendly(jetton_wallet)
-                        return {"jetton_wallet_address": friendly}
+                        return {"jetton_wallet_address": convert_raw_to_friendly(jetton_wallet)}
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning(f"Failed to fetch jetton wallet from TonAPI: {e}")
-        
+        logger.warning(f"Failed to fetch jetton wallet via runGetMethod: {e}")
+
+    url2 = f"https://tonapi.io/v2/accounts/{raw_user}/jettons/{jetton_master}"
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url2, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                jw = data.get("wallet_address", {}).get("address")
+                if jw:
+                    return {"jetton_wallet_address": convert_raw_to_friendly(jw)}
+    except Exception as e:
+        logger.warning(f"Failed to fetch jetton wallet via accounts endpoint: {e}")
+
     raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
 
 
