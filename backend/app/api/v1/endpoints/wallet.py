@@ -343,6 +343,14 @@ async def withdraw_funds(
     """
     from app.core.config import get_settings
     settings = get_settings()
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
+
+    if not payout_readiness.ready:
+        raise HTTPException(
+            status_code=503,
+            detail="Withdrawals are temporarily unavailable. Your balance has not been charged.",
+        )
 
     if request.amount < 1000:
         raise HTTPException(status_code=400, detail="Minimum withdrawal amount is $10.00 USDT")
@@ -495,7 +503,7 @@ async def withdraw_funds(
     tx_hash = None
     is_real = False
 
-    if settings.PAYOUT_MNEMONIC:
+    if payout_readiness.mode == "real":
         try:
             from app.services.payout_service import execute_usdt_payout, BlockchainBroadcastError
             tx_hash = await execute_usdt_payout(request.address, transfer_amount_cents)
@@ -524,7 +532,7 @@ async def withdraw_funds(
             logger.error(f"On-chain payout failed before broadcast: {payout_err}")
             raise HTTPException(status_code=500, detail=f"On-chain payout transfer failed: {payout_err}")
     else:
-        logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
+        logger.info("Using simulated payout in %s mode", settings.ENV)
         tx_hash = f"mock_{request.address[:6]}_{request.amount}"
 
     status = "pending" if is_real else "completed"

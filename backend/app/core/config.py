@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_USERNAME: str = os.getenv("TELEGRAM_BOT_USERNAME") or "FinChess_bot"
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
     PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""
+    # Production withdrawals are opt-in. Development and tests can use the
+    # deterministic mock path, but a production process must never do so.
+    PAYOUTS_ENABLED: bool = (os.getenv("PAYOUTS_ENABLED", "false").lower() == "true")
 
     @property
     def admin_telegram_ids(self) -> set[int]:
@@ -135,6 +138,18 @@ class Settings(BaseSettings):
     WITHDRAWAL_CONFIRMATION_ENABLED: bool = (os.getenv("WITHDRAWAL_CONFIRMATION_ENABLED", "true").lower() != "false")
     WITHDRAWAL_CONFIRMATION_TTL_SECONDS: int = int(os.getenv("WITHDRAWAL_CONFIRMATION_TTL_SECONDS", "1800"))
 
+    @property
+    def payout_configuration_error(self) -> str | None:
+        """Return a non-secret reason a real payout configuration is invalid."""
+        words = [word for word in self.PAYOUT_MNEMONIC.strip().split() if word]
+        if len(words) not in (12, 24):
+            return "invalid_payout_mnemonic"
+        if not self.MASTER_WALLET_ADDRESS:
+            return "missing_master_wallet_address"
+        if not self.USDT_MASTER:
+            return "missing_usdt_master_address"
+        return None
+
     # Sybil / account-farming resistance. Referral signup bonuses mint real
     # USDT balance, so they are the farmable surface:
     # - a referrer banks at most N signup bonuses per rolling 24h (excess
@@ -196,4 +211,8 @@ def get_settings():
             raise ValueError("SECRET_KEY environment variable must be set in production!")
         if not settings.WEBHOOK_SECRET or settings.WEBHOOK_SECRET == "dev_webhook_secret":
             raise ValueError("WEBHOOK_SECRET must be set to a secure custom value in production!")
+        if settings.PAYOUTS_ENABLED and settings.payout_configuration_error:
+            raise ValueError(
+                f"Payouts are enabled but configuration is invalid: {settings.payout_configuration_error}"
+            )
     return settings

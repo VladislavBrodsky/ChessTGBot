@@ -556,6 +556,8 @@ async def approve_withdrawal(
         release_payout_claim,
     )
     settings = get_settings()
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
 
     res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
     tx = res.scalars().first()
@@ -566,6 +568,8 @@ async def approve_withdrawal(
 
     if not tx.reference_id or not tx.reference_id.startswith(REVIEW_REFERENCE_PREFIX):
         raise HTTPException(status_code=400, detail="Withdrawal is missing its destination address")
+    if not payout_readiness.ready:
+        raise HTTPException(status_code=503, detail="Withdrawals are temporarily unavailable; this request remains pending review")
     address = tx.reference_id.split(":", 1)[1]
 
     amount = -tx.amount                    # positive requested amount
@@ -582,7 +586,7 @@ async def approve_withdrawal(
 
     tx_hash = None
     is_real = False
-    if settings.PAYOUT_MNEMONIC:
+    if payout_readiness.mode == "real":
         try:
             from app.services.payout_service import BlockchainBroadcastError, execute_usdt_payout
             tx_hash = await execute_usdt_payout(address, transfer_amount_cents)
@@ -1117,7 +1121,8 @@ async def get_system_status(
     # ── 4. Web3 / Wallets ─────────────────────────────────────────────────────
     ton_api_configured = bool(settings.TON_API_KEY)
     ton_console_configured = bool(settings.TON_CONSOLE_TOKEN)
-    payout_configured = bool(settings.PAYOUT_MNEMONIC)
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
 
     # Try to get master wallet balance via TON API
     master_balance_nano: int | None = None
@@ -1145,7 +1150,9 @@ async def get_system_status(
         "status": ton_api_status,
         "ton_api_configured": ton_api_configured,
         "ton_console_configured": ton_console_configured,
-        "payout_mnemonic_configured": payout_configured,
+        "payout_ready": payout_readiness.ready,
+        "payout_mode": payout_readiness.mode,
+        "payout_unavailable_reason": payout_readiness.reason,
         "master_wallet_address": settings.MASTER_WALLET_ADDRESS,
         "company_wallet_address": settings.COMPANY_WALLET_ADDRESS,
         "master_wallet_balance_ton": master_balance_ton,
