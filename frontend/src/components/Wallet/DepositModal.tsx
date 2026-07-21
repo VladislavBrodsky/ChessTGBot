@@ -267,15 +267,31 @@ export default function DepositModal({
           // proceed if onchain balance lookup fails transiently
         }
 
-        // Resolve Jetton wallet address from backend
-        const jettonWalletRes = await apiFetch(`/api/v1/wallet/jetton-wallet?user_address=${wallet.account.address}&jetton_master=${selectedCurrencyObj.master}`);
-        if (!jettonWalletRes.ok) {
-          throw new Error("Failed to resolve USDT Jetton Wallet address. Please try again or use the manual direct transfer option below.");
+        // Resolve Jetton wallet address from backend with client-side fallback
+        try {
+          const jettonWalletRes = await apiFetch(`/api/v1/wallet/jetton-wallet?user_address=${wallet.account.address}&jetton_master=${selectedCurrencyObj.master}`);
+          if (jettonWalletRes.ok) {
+            const jettonWalletData = await jettonWalletRes.json();
+            targetAddress = jettonWalletData.jetton_wallet_address;
+          }
+        } catch (fetchErr) {
+          console.warn("Backend jetton-wallet resolution failed, attempting fallback:", fetchErr);
         }
-        const jettonWalletData = await jettonWalletRes.json();
-        targetAddress = jettonWalletData.jetton_wallet_address;
+
         if (!targetAddress) {
-          throw new Error("Could not resolve USDT Jetton Wallet destination address.");
+          try {
+            const clientRes = await fetch(`https://tonapi.io/v2/blockchain/accounts/${selectedCurrencyObj.master}/methods/get_wallet_address?args=${wallet.account.address}`);
+            if (clientRes.ok) {
+              const clientData = await clientRes.json();
+              targetAddress = clientData?.decoded?.jetton_wallet_address || "";
+            }
+          } catch (cErr) {
+            console.warn("Client fallback for jetton-wallet resolution failed:", cErr);
+          }
+        }
+
+        if (!targetAddress) {
+          throw new Error("Failed to resolve USDT Jetton Wallet address. Please try again or use the manual direct transfer option below.");
         }
 
         // Construct standard Jetton transfer payload
