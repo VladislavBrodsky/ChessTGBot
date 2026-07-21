@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
@@ -18,6 +19,28 @@ from typing import List, Optional  # noqa: E402
 from datetime import datetime, timezone, timedelta  # noqa: E402
 
 router = APIRouter()
+
+
+def _extract_subscription_price_id(sub_obj) -> str | None:
+    if not sub_obj:
+        return None
+    items = stripe_get(sub_obj, "items", {})
+    data = stripe_get(items, "data", [])
+    if data and len(data) > 0:
+        first_item = data[0]
+        price = stripe_get(first_item, "price", {})
+        return stripe_get(price, "id")
+    return None
+
+
+def _extract_subscription_item_id(sub_obj) -> str | None:
+    if not sub_obj:
+        return None
+    items = stripe_get(sub_obj, "items", {})
+    data = stripe_get(items, "data", [])
+    if data and len(data) > 0:
+        return stripe_get(data[0], "id")
+    return None
 
 import base64  # noqa: E402
 
@@ -1318,8 +1341,9 @@ async def stripe_create_session(
         redirect_path = "/" + redirect_path
 
     try:
-        # Create Stripe Checkout Session
-        checkout_session = stripe.checkout.Session.create(
+        # Create Stripe Checkout Session off the main event loop
+        checkout_session = await asyncio.to_thread(
+            stripe.checkout.Session.create,
             payment_method_types=['card'],
             line_items=[
                 {
@@ -1488,7 +1512,7 @@ async def stripe_verify_session(
         if settings.STRIPE_SECRET_KEY:
             stripe.api_key = settings.STRIPE_SECRET_KEY
             try:
-                session = stripe.checkout.Session.retrieve(session_id)
+                session = await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
                 if stripe_get(session, "payment_status") == "paid":
                     await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
                     await db.refresh(tx)
@@ -1577,7 +1601,8 @@ async def create_stripe_subscription(
 
         # Retries/double taps must return the same Checkout Session rather than
         # create parallel subscriptions for the same account and plan.
-        checkout_session = stripe.checkout.Session.create(
+        checkout_session = await asyncio.to_thread(
+            stripe.checkout.Session.create,
             **session_kwargs,
             idempotency_key=f"premium_checkout_{current_user.telegram_id}_{billing_period}",
         )
@@ -1628,11 +1653,14 @@ async def upgrade_stripe_subscription(
 
     try:
         # Retrieve current subscription to get the current item ID
-        sub = stripe.Subscription.retrieve(current_user.stripe_subscription_id)
-        current_item_id = sub["items"]["data"][0]["id"]
+        sub = await asyncio.to_thread(stripe.Subscription.retrieve, current_user.stripe_subscription_id)
+        current_item_id = _extract_subscription_item_id(sub)
+        if not current_item_id:
+            raise HTTPException(status_code=400, detail="Invalid Stripe subscription items.")
 
         # Modify the subscription — Stripe automatically creates proration credits/charges
-        stripe.Subscription.modify(
+        await asyncio.to_thread(
+            stripe.Subscription.modify,
             current_user.stripe_subscription_id,
             cancel_at_period_end=False,
             proration_behavior="create_prorations",
@@ -1685,7 +1713,8 @@ async def create_stripe_portal(
         redirect_path = "/" + redirect_path
 
     try:
-        portal_session = stripe.billing_portal.Session.create(
+        portal_session = await asyncio.to_thread(
+            stripe.billing_portal.Session.create,
             customer=current_user.stripe_customer_id,
             return_url=f"{settings.WEBAPP_URL}{redirect_path}"
         )
@@ -1742,8 +1771,8 @@ async def stripe_webhook(
 
                     # Determine billing period from the price ID in the subscription line items
                     try:
-                        sub_obj = stripe.Subscription.retrieve(subscription_id)
-                        price_id = sub_obj["items"]["data"][0]["price"]["id"]
+                        sub_obj = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+                        price_id = _extract_subscription_price_id(sub_obj)
                         if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
                             user.premium_billing_period = "annual"
                         else:
@@ -1876,7 +1905,7 @@ async def stripe_webhook(
         if charge_id:
             # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
             try:
-                charge = stripe.Charge.retrieve(charge_id)
+                charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
                 user_id_str = stripe_get(stripe_get(charge, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
@@ -1937,7 +1966,7 @@ async def stripe_webhook(
         
         if subscription_id:
             try:
-                subscription = stripe.Subscription.retrieve(subscription_id)
+                subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
                 user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id') or stripe_get(stripe_get(invoice, 'metadata', {}), 'user_id')
                 
                 user = None
@@ -1976,7 +2005,7 @@ async def stripe_webhook(
                     # valid subscription period.
                     starts_at = max(now, user.premium_expires_at) if user.premium_expires_at else now
                     
-                    price_id = subscription["items"]["data"][0]["price"]["id"]
+                    price_id = _extract_subscription_price_id(subscription)
                     if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
                         user.premium_expires_at = starts_at + timedelta(days=365)
                         user.premium_billing_period = "annual"
@@ -2049,7 +2078,7 @@ async def stripe_webhook(
         
         if subscription_id:
             try:
-                subscription = stripe.Subscription.retrieve(subscription_id)
+                subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
                 user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
@@ -2069,33 +2098,42 @@ async def stripe_webhook(
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
         user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
-        
-        if user_id_str:
-            try:
-                user_id = int(user_id_str)
-                user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
-                user = user_result.scalars().first()
-                
-                if user:
-                    user.is_premium = False
-                    user.premium_expires_at = None
-                    user.stripe_subscription_id = None
-                    db.add(user)
-                    await db.commit()
-                    
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        await TelegramService.send_notification(
-                            user_id,
-                            "<b>ℹ️ Subscription Cancelled</b>\n\n"
-                            "Your Premium subscription has been cancelled or expired. You have been moved to the free tier."
-                        )
-                    except Exception:
-                        pass
-                    
-                    return {"status": "success", "message": "Subscription cancelled."}
-            except Exception as e:
-                logger.error(f"Failed to process subscription deletion: {e}")
+        try:
+            user = None
+            if user_id_str:
+                try:
+                    user_id = int(user_id_str)
+                    user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                    user = user_result.scalars().first()
+                except Exception:
+                    pass
+
+            if not user:
+                customer_id = stripe_get(subscription, 'customer')
+                if customer_id:
+                    user_result = await db.execute(select(User).filter(User.stripe_customer_id == customer_id).with_for_update())
+                    user = user_result.scalars().first()
+
+            if user:
+                user.is_premium = False
+                user.premium_expires_at = None
+                user.stripe_subscription_id = None
+                db.add(user)
+                await db.commit()
+
+                try:
+                    from app.services.telegram_bot import TelegramService
+                    await TelegramService.send_notification(
+                        user.telegram_id,
+                        "<b>ℹ️ Subscription Cancelled</b>\n\n"
+                        "Your Premium subscription has been cancelled or expired. You have been moved to the free tier."
+                    )
+                except Exception:
+                    pass
+
+                return {"status": "success", "message": "Subscription cancelled."}
+        except Exception as e:
+            logger.error(f"Failed to process subscription deletion: {e}")
 
     await db.commit()
     return {"status": "success", "message": "Event received."}
