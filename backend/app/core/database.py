@@ -69,6 +69,7 @@ async def init_db():
     from app.models.gamification import Task, TaskType
     from app.models.broadcast import Broadcast  # noqa: F401 — registers table with Base
     from app.models.telemetry import TelemetryDailyRollup, TelemetryLog  # noqa: F401
+    from app.models.stripe_event import StripeWebhookEvent  # noqa: F401
     
     is_sqlite = engine.url.drivername.startswith("sqlite")
     if is_sqlite:

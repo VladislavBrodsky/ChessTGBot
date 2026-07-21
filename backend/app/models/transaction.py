@@ -39,6 +39,13 @@ class Transaction(Base):
             postgresql_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
             sqlite_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
         ),
+        Index(
+            "uq_transactions_stripe_subscription_invoice",
+            "reference_id",
+            unique=True,
+            postgresql_where=text("type = 'stripe_subscription_payment' AND reference_id IS NOT NULL"),
+            sqlite_where=text("type = 'stripe_subscription_payment' AND reference_id IS NOT NULL"),
+        ),
     )
 
 # Update the User class to back-populate if needed, but let's register this relationship cleanly.
