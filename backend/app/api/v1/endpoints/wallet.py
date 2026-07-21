@@ -359,52 +359,57 @@ async def withdraw_funds(
     except Exception:
         pass
 
-    # Velocity control: enforce a rolling-24h per-user withdrawal cap BEFORE
-    # debiting. Payouts are instant and irreversible, so this bounds how much a
-    # stolen session can move — including via many small withdrawals.
-    from app.services.withdrawal_policy import exceeds_daily_cap, remaining_daily_allowance_cents, needs_manual_review
-    since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=24)
-    recent_res = await db.execute(
-        select(func.coalesce(func.sum(Transaction.amount), 0)).where(
-            Transaction.user_id == current_user.telegram_id,
-            Transaction.type == "withdrawal",
-            Transaction.status != "failed",
-            Transaction.created_at >= since,
-        )
-    )
-    # Withdrawal amounts are stored negative; negate the sum to get the total out.
-    withdrawn_24h = -int(recent_res.scalar() or 0)
-    if exceeds_daily_cap(withdrawn_24h, request.amount, settings.WITHDRAWAL_DAILY_CAP_CENTS):
-        remaining = remaining_daily_allowance_cents(withdrawn_24h, settings.WITHDRAWAL_DAILY_CAP_CENTS)
-        raise HTTPException(
-            status_code=400,
-            detail=f"Daily withdrawal limit reached. You can withdraw up to ${remaining / 100:.2f} more within 24 hours.",
-        )
-
-    # Atomically debit — returns None if insufficient funds
-    updated_user = await user_crud.atomic_debit(db, current_user.telegram_id, request.amount)
-    if not updated_user:
-        raise HTTPException(status_code=400, detail="Insufficient funds in balance")
-
     # Flat $0.20 fee if amount is 20 cents or more; otherwise 0 fee to allow small test withdrawals
     fee = 20 if request.amount >= 20 else 0
     transfer_amount_cents = request.amount - fee
 
+    from app.services.withdrawal_policy import needs_manual_review
+    from app.services.withdrawal_confirmation import PENDING_STATUS, REF_PREFIX
+    from app.services.withdrawal_creation import (
+        DailyWithdrawalCapExceeded,
+        InsufficientWithdrawalBalance,
+        create_withdrawal,
+    )
+
+    review_required = needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+    confirmation_required = settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN
+    if review_required:
+        initial_status = "pending_review"
+        initial_reference = f"pending_review:{request.address}"
+    elif confirmation_required:
+        initial_status = PENDING_STATUS
+        initial_reference = f"{REF_PREFIX}{request.address}"
+    else:
+        # A direct payout is not called until this processing row is committed.
+        initial_status = "processing_payout"
+        initial_reference = f"processing_payout:{request.address}"
+
+    try:
+        created = await create_withdrawal(
+            db,
+            user_id=current_user.telegram_id,
+            amount_cents=request.amount,
+            fee_cents=fee,
+            status=initial_status,
+            reference_id=initial_reference,
+            daily_cap_cents=settings.WITHDRAWAL_DAILY_CAP_CENTS,
+        )
+    except DailyWithdrawalCapExceeded as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Daily withdrawal limit reached. You can withdraw up to ${exc.remaining_cents / 100:.2f} more within 24 hours.",
+        )
+    except InsufficientWithdrawalBalance:
+        raise HTTPException(status_code=400, detail="Insufficient funds in balance")
+
+    updated_user = created.user
+    new_balance = created.new_balance
+
     # Large withdrawals are HELD for manual admin approval rather than auto-paid.
     # Funds are already debited (held); the destination address is stashed in
     # reference_id so an admin can execute the payout later via /admin/withdrawals.
-    if needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS):
-        tx_review = Transaction(
-            user_id=updated_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=fee,
-            status="pending_review",
-            reference_id=f"pending_review:{request.address}",
-        )
-        db.add(tx_review)
-        await db.commit()
-        await db.refresh(tx_review)
+    if review_required:
+        tx_review = created.transaction
         logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | reference_id={tx_review.reference_id} | status=pending_review")
 
         # Alert admins to review (reuses the rate-limited alert infra).
@@ -437,28 +442,19 @@ async def withdraw_funds(
         except Exception:
             pass
 
-        return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=updated_user.balance)
+        return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=new_balance)
 
     # Second factor: hold the (already debited) withdrawal until the OWNER
     # confirms it from their own Telegram account via an inline keyboard. A
     # stolen initData session can reach this endpoint but cannot tap a button
     # in the victim's private bot chat. Without a bot token (dev/tests) the
     # legacy auto-pay path below still applies.
-    if settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN:
-        from app.services.withdrawal_confirmation import PENDING_STATUS, REF_PREFIX, confirmation_nonce
+    if confirmation_required:
+        from app.services.withdrawal_confirmation import confirmation_nonce
+        from app.services.withdrawal_creation import fail_and_refund_withdrawal
         from app.services.telegram_bot import TelegramService
 
-        tx_hold = Transaction(
-            user_id=updated_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=fee,
-            status=PENDING_STATUS,
-            reference_id=f"{REF_PREFIX}{request.address}",
-        )
-        db.add(tx_hold)
-        await db.commit()
-        await db.refresh(tx_hold)
+        tx_hold = created.transaction
         logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | status={PENDING_STATUS}")
 
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
@@ -480,17 +476,21 @@ async def withdraw_funds(
         if not delivered:
             # The second factor can't reach the user; refund immediately
             # instead of stranding the held funds until expiry.
-            updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
-            tx_hold.status = "failed"
-            tx_hold.reference_id = "confirmation_undeliverable"
-            db.add(tx_hold)
-            await db.commit()
+            refunded_balance = await fail_and_refund_withdrawal(
+                db,
+                tx_hold.id,
+                expected_status=PENDING_STATUS,
+                reference_id="confirmation_undeliverable",
+            )
+            if refunded_balance is None:
+                logger.error("Withdrawal confirmation delivery failed after tx %s left pending state", tx_hold.id)
+                raise HTTPException(status_code=409, detail="Withdrawal state changed while confirmation delivery failed")
             raise HTTPException(
                 status_code=503,
                 detail="Could not deliver the withdrawal confirmation to your Telegram chat. Open the bot chat and try again.",
             )
 
-        return WithdrawResponse(status=PENDING_STATUS, amount=request.amount, new_balance=updated_user.balance)
+        return WithdrawResponse(status=PENDING_STATUS, amount=request.amount, new_balance=new_balance)
 
     tx_hash = None
     is_real = False
@@ -508,26 +508,29 @@ async def withdraw_funds(
             logger.warning(f"On-chain payout broadcast failed/timed out: {broadcast_err}. Saving as pending withdrawal.")
         except Exception as payout_err:
             # Safe to refund: failure occurred before broadcast
-            await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
+            from app.services.withdrawal_creation import fail_and_refund_withdrawal
+            refunded_balance = await fail_and_refund_withdrawal(
+                db,
+                created.transaction.id,
+                expected_status="processing_payout",
+                reference_id="payout_failed_before_broadcast",
+            )
+            if refunded_balance is None:
+                logger.critical(
+                    "Pre-broadcast withdrawal failure could not reclaim processing tx %s",
+                    created.transaction.id,
+                )
+                raise HTTPException(status_code=409, detail="Withdrawal state changed during payout failure recovery")
             logger.error(f"On-chain payout failed before broadcast: {payout_err}")
             raise HTTPException(status_code=500, detail=f"On-chain payout transfer failed: {payout_err}")
     else:
         logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
         tx_hash = f"mock_{request.address[:6]}_{request.amount}"
 
-    # Log transaction
     status = "pending" if is_real else "completed"
-    tx_withdraw = Transaction(
-        user_id=updated_user.telegram_id,
-        type="withdrawal",
-        amount=-request.amount,
-        fee=fee,
-        status=status,
-        reference_id=tx_hash
-    )
-    db.add(tx_withdraw)
-    await db.commit()
-    await db.refresh(tx_withdraw)
+    from app.services.withdrawal_creation import set_payout_result
+    tx_withdraw = created.transaction
+    await set_payout_result(db, tx_withdraw.id, status=status, reference_id=tx_hash)
     logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_withdraw.reference_id} | status={status}")
 
     # Send automated Telegram Bot notifications
@@ -552,7 +555,7 @@ async def withdraw_funds(
                 f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination Wallet:</b> {link_display}\n"
                 f"• <b>Status:</b> Processing (Pending On-Chain Confirmation) 🟡\n\n"
-                f"<i>Your funds have been broadcasted to the blockchain. You will receive another notification once confirmed on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+                f"<i>Your funds have been broadcasted to the blockchain. You will receive another notification once confirmed on-chain! Platform Balance: {new_balance / 100:.2f} USDT.</i>"
             )
         else:
             notification_text = (
@@ -562,7 +565,7 @@ async def withdraw_funds(
                 f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination Wallet:</b> {link_display}\n"
                 f"• <b>Status:</b> Completed Successfully 🟢\n\n"
-                f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+                f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {new_balance / 100:.2f} USDT.</i>"
             )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
         
@@ -587,7 +590,7 @@ async def withdraw_funds(
     return WithdrawResponse(
         status=status,
         amount=request.amount,
-        new_balance=updated_user.balance
+        new_balance=new_balance
     )
 
 
