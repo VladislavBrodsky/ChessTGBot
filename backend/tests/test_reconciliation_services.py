@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+import stripe
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -35,7 +36,10 @@ async def test_stripe_reconciliation_dry_run_never_mutates_pending_deposit(monke
             await db.commit()
             from app.core.config import get_settings
             monkeypatch.setattr(get_settings(), "STRIPE_SECRET_KEY", "sk_test_mock")
-            checkout = {"status": "complete", "payment_status": "paid"}
+            checkout = stripe.checkout.Session.construct_from(
+                {"id": "cs_dry_run", "status": "complete", "payment_status": "paid"},
+                "sk_test_mock",
+            )
             with patch("stripe.checkout.Session.retrieve", return_value=checkout):
                 await reconcile_pending_stripe_sessions(db, dry_run=True)
             await db.refresh(user)

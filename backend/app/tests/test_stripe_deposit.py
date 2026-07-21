@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+import stripe
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -122,6 +123,7 @@ async def test_stripe_webhook_success(db, monkeypatch):
             }
         }
     }
+    mock_event = stripe.Event.construct_from(mock_event, "sk_test_mock")
 
     # Mock request and construct_event
     mock_request = MagicMock()

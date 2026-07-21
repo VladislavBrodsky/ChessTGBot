@@ -11,6 +11,7 @@ from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limi
 from app.models.user import User  # noqa: E402
 from app.models.transaction import Transaction  # noqa: E402
 from app.models.stripe_event import StripeWebhookEvent  # noqa: E402
+from app.services.stripe_compat import stripe_get  # noqa: E402
 from app.crud import user as user_crud  # noqa: E402
 from pydantic import BaseModel, ConfigDict  # noqa: E402
 from typing import List, Optional  # noqa: E402
@@ -1430,9 +1431,10 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
 
 def _stripe_event_identity(event) -> tuple[str, str | None]:
     """Use Stripe's event id, with a legacy-safe fallback for old test payloads."""
-    payload = event.get("data", {}).get("object", {})
-    object_id = payload.get("id")
-    event_id = event.get("id") or f"legacy:{event.get('type', 'unknown')}:{object_id or 'unknown'}"
+    payload = stripe_get(stripe_get(event, "data", {}), "object", {})
+    object_id = stripe_get(payload, "id")
+    event_type = stripe_get(event, "type", "unknown")
+    event_id = stripe_get(event, "id") or f"legacy:{event_type}:{object_id or 'unknown'}"
     return str(event_id)[:255], str(object_id)[:255] if object_id else None
 
 
@@ -1449,7 +1451,7 @@ async def _claim_stripe_event(db: AsyncSession, event) -> bool:
         db.add(
             StripeWebhookEvent(
                 event_id=event_id,
-                event_type=str(event.get("type", "unknown"))[:100],
+                event_type=str(stripe_get(event, "type", "unknown"))[:100],
                 object_id=object_id,
             )
         )
@@ -1487,7 +1489,7 @@ async def stripe_verify_session(
             stripe.api_key = settings.STRIPE_SECRET_KEY
             try:
                 session = stripe.checkout.Session.retrieve(session_id)
-                if session.get("payment_status") == "paid":
+                if stripe_get(session, "payment_status") == "paid":
                     await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
                     await db.refresh(tx)
             except Exception as e:
@@ -1725,10 +1727,10 @@ async def stripe_webhook(
         session = event['data']['object']
         
         # Handle Subscriptions
-        if session.get('mode') == 'subscription':
-            client_reference_id = session.get('client_reference_id')
-            customer_id = session.get('customer')
-            subscription_id = session.get('subscription')
+        if stripe_get(session, 'mode') == 'subscription':
+            client_reference_id = stripe_get(session, 'client_reference_id')
+            customer_id = stripe_get(session, 'customer')
+            subscription_id = stripe_get(session, 'subscription')
 
             if client_reference_id and customer_id and subscription_id:
                 user_id = int(client_reference_id)
@@ -1758,14 +1760,15 @@ async def stripe_webhook(
             return {"status": "success", "message": "Subscription mapped; awaiting paid invoice."}
 
         # Handle One-Time Wallet Top-ups
-        tx_id_str = session.get('metadata', {}).get('tx_id')
-        user_id_str = session.get('metadata', {}).get('user_id')
+        metadata = stripe_get(session, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
-            credited = await _credit_stripe_deposit(db, tx_id, user_id, session.get('id', ''))
+            credited = await _credit_stripe_deposit(db, tx_id, user_id, stripe_get(session, 'id', ''))
             
             if credited:
                 return {"status": "success", "message": "Transaction credited successfully."}
@@ -1775,8 +1778,9 @@ async def stripe_webhook(
                 
     elif event['type'] == 'checkout.session.expired':
         session = event['data']['object']
-        tx_id_str = session.get('metadata', {}).get('tx_id')
-        user_id_str = session.get('metadata', {}).get('user_id')
+        metadata = stripe_get(session, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             tx_result = await db.execute(select(Transaction).filter(Transaction.id == tx_id).with_for_update())
@@ -1789,15 +1793,16 @@ async def stripe_webhook(
 
     elif event['type'] == 'charge.refunded':
         charge = event['data']['object']
-        tx_id_str = charge.get('metadata', {}).get('tx_id')
-        user_id_str = charge.get('metadata', {}).get('user_id')
+        metadata = stripe_get(charge, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
             # Identify the refunded amount (charge.amount_refunded is in cents)
-            amount_refunded = charge.get('amount_refunded', 0)
+            amount_refunded = stripe_get(charge, 'amount_refunded', 0)
             if amount_refunded > 0:
                 # A card top-up credits the net amount (after the top-up fee),
                 # not the gross card charge.  Stripe reports a cumulative gross
@@ -1811,16 +1816,16 @@ async def stripe_webhook(
                     ).with_for_update()
                 )
                 top_up_tx = top_up_result.scalars().first()
-                gross_charge = int(charge.get('amount', 0) or 0)
+                gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
                 if not top_up_tx or gross_charge <= 0:
-                    logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, charge.get('id'))
+                    logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, stripe_get(charge, 'id'))
                     return {"status": "ignored", "message": "Top-up not found for refund."}
 
                 cumulative_wallet_debit = min(
                     top_up_tx.amount,
                     (amount_refunded * top_up_tx.amount + gross_charge // 2) // gross_charge,
                 )
-                refund_prefix = f"refund_{charge.get('id', '')}_"
+                refund_prefix = f"refund_{stripe_get(charge, 'id', '')}_"
                 prior_refund_result = await db.execute(
                     select(func.coalesce(func.sum(Transaction.amount), 0)).where(
                         Transaction.user_id == user_id,
@@ -1867,15 +1872,15 @@ async def stripe_webhook(
 
     elif event['type'] == 'charge.dispute.created':
         dispute = event['data']['object']
-        charge_id = dispute.get('charge')
+        charge_id = stripe_get(dispute, 'charge')
         if charge_id:
             # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
             try:
                 charge = stripe.Charge.retrieve(charge_id)
-                user_id_str = charge.get('metadata', {}).get('user_id')
+                user_id_str = stripe_get(stripe_get(charge, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
-                    dispute_ref = f"dispute_{dispute.get('id', '')}"
+                    dispute_ref = f"dispute_{stripe_get(dispute, 'id', '')}"
                     prior_dispute = await db.execute(
                         select(Transaction.id).where(Transaction.reference_id == dispute_ref)
                     )
@@ -1892,7 +1897,7 @@ async def stripe_webhook(
                         # wallet adjustment.  We freeze the account when a user
                         # has already spent the top-up instead of inventing an
                         # untracked negative balance.
-                        dispute_amount = dispute.get('amount', 0)
+                        dispute_amount = stripe_get(dispute, 'amount', 0)
                         wallet_debit = min(user.balance, dispute_amount)
                         user.balance -= wallet_debit
                         
@@ -1907,7 +1912,7 @@ async def stripe_webhook(
                         db.add(penalty_tx)
                         db.add(user)
                         await db.commit()
-                        logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {dispute.get('id')})")
+                        logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {stripe_get(dispute, 'id')})")
                         
                         try:
                             from app.services.telegram_bot import TelegramService
@@ -1928,12 +1933,12 @@ async def stripe_webhook(
 
     elif event['type'] == 'invoice.payment_succeeded':
         invoice = event['data']['object']
-        subscription_id = invoice.get('subscription')
+        subscription_id = stripe_get(invoice, 'subscription')
         
         if subscription_id:
             try:
                 subscription = stripe.Subscription.retrieve(subscription_id)
-                user_id_str = subscription.get('metadata', {}).get('user_id') or invoice.get('metadata', {}).get('user_id')
+                user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id') or stripe_get(stripe_get(invoice, 'metadata', {}), 'user_id')
                 
                 user = None
                 if user_id_str:
@@ -1941,7 +1946,7 @@ async def stripe_webhook(
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
                 else:
-                    customer_id = subscription.get('customer')
+                    customer_id = stripe_get(subscription, 'customer')
                     user_result = await db.execute(select(User).filter(User.stripe_customer_id == customer_id).with_for_update())
                     user = user_result.scalars().first()
                     if user:
@@ -1950,7 +1955,7 @@ async def stripe_webhook(
                         logger.error("Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
                 
                 if user:
-                    invoice_ref = f"sub_{invoice.get('id', '')}"
+                    invoice_ref = f"sub_{stripe_get(invoice, 'id', '')}"
                     # Stripe can retry the same event.  Do not extend access or
                     # create another accounting row for an invoice we already
                     # settled.
@@ -1962,7 +1967,7 @@ async def stripe_webhook(
                         return {"status": "ignored", "message": "Subscription invoice already processed."}
 
                     user.is_premium = True
-                    user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
+                    user.premium_tier = stripe_get(stripe_get(subscription, 'metadata', {}), 'tier', 'premium')
                     
                     from datetime import datetime, timezone, timedelta
                     now = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -1982,7 +1987,7 @@ async def stripe_webhook(
                     db.add(user)
                         
                     # Add transaction ledger entry for subscription payment
-                    amount_paid = invoice.get('amount_paid', 0)
+                    amount_paid = stripe_get(invoice, 'amount_paid', 0)
                     if amount_paid > 0:
                         sub_tx = Transaction(
                             user_id=user_id,
@@ -2022,7 +2027,7 @@ async def stripe_webhook(
                             telegram_id=user_id,
                             billing_period=user.premium_billing_period,
                             amount=amount_paid / 100.0,
-                            tx_id=invoice.get('id', '')
+                            tx_id=stripe_get(invoice, 'id', '')
                         )
                     except Exception as e:
                         logger.warning(f"Failed to send admin subscription alert: {e}")
@@ -2035,12 +2040,12 @@ async def stripe_webhook(
 
     elif event['type'] == 'invoice.payment_failed':
         invoice = event['data']['object']
-        subscription_id = invoice.get('subscription')
+        subscription_id = stripe_get(invoice, 'subscription')
         
         if subscription_id:
             try:
                 subscription = stripe.Subscription.retrieve(subscription_id)
-                user_id_str = subscription.get('metadata', {}).get('user_id')
+                user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
                     try:
@@ -2058,7 +2063,7 @@ async def stripe_webhook(
 
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
-        user_id_str = subscription.get('metadata', {}).get('user_id')
+        user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
         
         if user_id_str:
             try:
