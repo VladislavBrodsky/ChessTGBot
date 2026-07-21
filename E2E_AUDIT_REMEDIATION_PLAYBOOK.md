@@ -116,16 +116,12 @@ Severity definitions:
 
 Release order:
 
-1. Complete MF-01 through MF-04.
-2. Complete SEC-01 and SEC-02.
-3. Add the critical concurrency and failure-injection tests from TEST-01.
-4. Deploy to staging and complete DEP-02 verification.
-5. Complete the browser, accessibility, localization, and performance packages.
-6. Enable blocking CI only after existing warnings and environment assumptions
+1. Complete SEC-01 and SEC-02.
+2. Add the critical concurrency and failure-injection tests from TEST-01.
+3. Deploy to staging and complete DEP-02 verification.
+4. Complete the browser, accessibility, localization, and performance packages.
+5. Enable blocking CI only after existing warnings and environment assumptions
    are resolved.
-
-No production release involving withdrawals should proceed while MF-01, MF-02,
-or MF-03 remains open.
 
 ## 5. Work Package Ownership
 
@@ -133,7 +129,6 @@ Models may work in parallel only when their ownership surfaces do not overlap.
 
 | Track | Packages | Primary ownership |
 |---|---|---|
-| Money backend | MF-01 to MF-04 | `wallet.py`, `admin.py`, withdrawal services, transaction migrations/tests |
 | Security backend | SEC-01 to SEC-04 | security/config/middleware and security tests |
 | Frontend auth/i18n | UI-01, L10N-01 | login page, login widget, locale messages |
 | Frontend application | UI-02 to UI-04, PERF-01 | home/layout/game/wallet components and frontend tests |
@@ -141,174 +136,7 @@ Models may work in parallel only when their ownership surfaces do not overlap.
 | Delivery | DEP-01 to DEP-03, TEST-01 | CI, dependency locks, Playwright, runbooks |
 | Observability | OBS-01 to OBS-03 | telemetry, metrics, alert controls, dashboards/runbooks |
 
-Do not assign two models to `wallet.py` or `admin.py` concurrently. MF-01 through
-MF-03 should be implemented on one branch in sequence because they share status
-transitions and transaction semantics.
-
-## 6. Money-Flow Correctness
-
-### MF-01 - Make Manual Withdrawal Approval Single-Execution [P0]
-
-Problem:
-
-`backend/app/api/v1/endpoints/admin.py` reads a `pending_review` transaction,
-executes the payout, and only then changes its status. Two approvals can execute
-the same payout. The handler also catches all payout exceptions as retryable and
-does not distinguish a known pre-broadcast failure from an uncertain broadcast.
-
-Primary files:
-
-- `backend/app/api/v1/endpoints/admin.py`
-- `backend/app/services/withdrawal_confirmation.py`
-- `backend/app/services/payout_service.py`
-- `backend/app/services/withdrawal_crawler.py`
-- `backend/tests/test_payouts_logs.py`
-- New focused concurrency tests under `backend/tests/`
-
-Required implementation:
-
-1. Add a reusable conditional claim transition:
-   `pending_review -> processing_payout`.
-2. Perform the claim with a conditional SQL `UPDATE` and verify `rowcount == 1`.
-3. Commit the claim before calling the blockchain payout service.
-4. Return a conflict/already-processing response when the claim loses a race.
-5. On a confirmed pre-broadcast failure, conditionally move
-   `processing_payout -> pending_review` so an admin can retry.
-6. On `BlockchainBroadcastError`, never reset to `pending_review` and never
-   refund. Persist `pending` plus the message hash when available so the crawler
-   can reconcile it.
-7. If a process dies while the row is `processing_payout`, use the existing stuck
-   payout alert path. Do not automatically retry.
-8. Make rejection a conditional `pending_review -> failed` transition and put
-   the refund in the same database transaction as the status change.
-9. Record the approving/rejecting admin and timestamp in durable audit data. A
-   migration with explicit columns is preferred over encoding new metadata into
-   `reference_id`.
-
-Acceptance criteria:
-
-- Twenty concurrent approval attempts execute the payout mock exactly once.
-- A second approval receives a deterministic already-processing/completed result.
-- A broadcast timeout cannot put the row back into a retryable approval state.
-- Concurrent approve and reject operations result in exactly one terminal owner.
-- Every transition is visible in structured transaction logs and the admin audit
-  response.
-
-Required tests:
-
-- Concurrent double approval.
-- Approve versus reject race.
-- Failure before broadcast.
-- Failure during/after broadcast with and without a message hash.
-- Process restart while `processing_payout`.
-- Admin identity and timestamp persistence.
-
-### MF-02 - Make Withdrawal Creation Atomic and Serialize the Daily Cap [P1]
-
-Problem:
-
-`wallet.py` calls `atomic_debit(..., commit=True)` before creating the withdrawal
-transaction. A crash can debit the user without a ledger row. The rolling cap is
-calculated before the debit without a lock, so concurrent requests can all pass
-the cap check.
-
-Primary files:
-
-- `backend/app/api/v1/endpoints/wallet.py`
-- `backend/app/crud/user.py`
-- `backend/app/models/transaction.py`
-- `backend/tests/test_withdrawal_limits.py`
-- `backend/tests/test_withdrawal_confirmation.py`
-
-Required implementation:
-
-1. Start one database transaction for cap check, debit, and ledger creation.
-2. Lock the user's row before calculating the 24-hour total. This serializes
-   withdrawals for one user without globally serializing all users.
-3. Recalculate the cap while holding that lock.
-4. Debit with `commit=False`.
-5. Add the correct `pending_review` or `pending_confirmation` ledger row.
-6. Commit once.
-7. Roll back the complete operation on any failure before commit.
-8. Send bot messages and alerts only after the durable commit.
-9. If confirmation delivery fails, refund and mark failed in one database
-   transaction.
-10. Keep cents as integers and preserve the existing fee semantics.
-
-Acceptance criteria:
-
-- No successful debit exists without a withdrawal ledger row.
-- A forced exception after debit but before commit leaves balance unchanged.
-- Concurrent requests cannot exceed the configured rolling cap.
-- Insufficient funds still cannot produce a negative balance.
-- Notification failure cannot erase the ledger or strand funds.
-
-Required tests:
-
-- Failure injection between debit and ledger insertion.
-- Failure injection during commit.
-- Three concurrent withdrawals just below the cap.
-- Concurrent insufficient-funds attempts.
-- Confirmation-delivery failure atomic refund.
-
-### MF-03 - Fail Closed When Payout Credentials Are Missing [P1]
-
-Problem:
-
-When `PAYOUT_MNEMONIC` is absent, production paths can generate a `mock_*` hash
-and mark a withdrawal completed without sending money.
-
-Primary files:
-
-- `backend/app/core/config.py`
-- `backend/app/api/v1/endpoints/wallet.py`
-- `backend/app/services/withdrawal_confirmation.py`
-- `backend/app/api/v1/endpoints/admin.py`
-- Production boot/config tests
-
-Required implementation:
-
-1. Add an explicit payout mode or enable flag. Production must default to
-   disabled/fail-closed, never mock.
-2. Permit mock payouts only when `TESTING` is true or `ENV == "development"`.
-3. Validate production configuration at startup. If withdrawals are enabled,
-   require a valid payout credential and required wallet configuration.
-4. Reject a new withdrawal before debiting when payouts are unavailable.
-5. If an already-held withdrawal is confirmed while payouts are unavailable,
-   leave it held and return a retryable service-unavailable response.
-6. Expose payout readiness in the authenticated admin health endpoint without
-   exposing secrets.
-
-Acceptance criteria:
-
-- No production branch can create a `mock_*` transaction.
-- Production startup or withdrawal readiness fails clearly when credentials are
-  absent.
-- Development and tests retain deterministic mock behavior.
-- No secret value appears in logs, health responses, or exceptions.
-
-### MF-04 - Strengthen Ledger and Reconciliation Guarantees [P1/P2]
-
-Required work:
-
-- Preserve the deposit partial unique index and atomic credit plus ledger commit.
-- Add a unique idempotency identity for each Stripe event or invoice that can
-  affect balance/subscription state.
-- Schedule Stripe pending-session reconciliation instead of relying on a manual
-  script.
-- Move one-off money scripts from `backend/app/` into an `ops/` or `scripts/`
-  area with dry-run mode, explicit confirmation, and a runbook.
-- Add reconciliation for every non-terminal withdrawal status.
-- Make ledger-audit discrepancies page Treasury with a stable fingerprint.
-
-Acceptance criteria:
-
-- Replaying each supported webhook produces no additional balance change.
-- Recovery jobs are idempotent and safe across restarts.
-- Every balance mutation maps to a durable ledger/reference identity.
-- Manual scripts default to dry run and cannot target production accidentally.
-
-## 7. Security
+## 6. Security
 
 ### SEC-01 - Remove Hardcoded Admin Fallbacks [P1]
 
@@ -405,7 +233,7 @@ Acceptance criteria:
 - Production headers are present on HTML and API responses as appropriate.
 - A web credential is not readable from JavaScript after the session migration.
 
-## 8. UI/UX and Accessibility
+## 7. UI/UX and Accessibility
 
 ### UI-01 - Repair Production Telegram Web Login [P2]
 
@@ -495,7 +323,7 @@ Required work:
   effective mobile touch target where practical.
 - Preserve the successful 390x844 no-overflow result and bottom safe-area spacing.
 
-## 9. Performance
+## 8. Performance
 
 ### PERF-01 - Stop the Wallet Balance Request Loop [P1/P2]
 
@@ -550,7 +378,7 @@ Suggested initial budgets:
 - Server move acknowledgement p95 under 250 ms excluding client network RTT.
 - Error rate below 1 percent during the agreed load profile.
 
-## 10. Localization and RTL
+## 9. Localization and RTL
 
 ### L10N-01 - Remove Remaining Hardcoded Login Strings [P2]
 
@@ -587,7 +415,7 @@ Required work:
   missing-message console errors.
 - Include at least Arabic RTL and German long-copy screenshots or layout checks.
 
-## 11. App Integrity
+## 10. App Integrity
 
 ### INT-01 - Preserve Server Authority and Expand Tamper Tests [P2]
 
@@ -634,7 +462,7 @@ Acceptance criteria:
 - Small samples do not trigger automatic restrictions.
 - The withdrawal gate is auditable and reversible by an authorized admin.
 
-## 12. Deployment and CI
+## 11. Deployment and CI
 
 ### DEP-01 - Make Dependency Resolution Reproducible [P2]
 
@@ -690,7 +518,7 @@ Required implementation:
 - Test Python 3.12, matching CI and production; optionally add 3.13 as an allowed
   experimental lane until async fixture compatibility is fixed.
 
-## 13. Observability
+## 12. Observability
 
 ### OBS-01 - Protect Client Error Ingestion [P2]
 
@@ -739,7 +567,7 @@ Required work:
 - Document exact production URLs and explicitly forbid the dead monolith URL.
 - Ensure public health errors do not expose internal hostnames or exception text.
 
-## 14. Engineering Excellence and Test Strategy
+## 13. Engineering Excellence and Test Strategy
 
 ### TEST-01 - Add Frontend Browser E2E to CI [P2]
 
@@ -798,7 +626,7 @@ After behavior is protected by tests:
 Do not combine this refactor with the first critical money fix. Stabilize behavior
 and tests first, then refactor in separate reviewable commits.
 
-## 15. Definition of Done by Pillar
+## 14. Definition of Done by Pillar
 
 ### UI/UX
 
@@ -852,7 +680,7 @@ and tests first, then refactor in separate reviewable commits.
 - Lint and typecheck are blocking.
 - High-risk modules are reduced only after behavior is protected.
 
-## 16. Standard Verification Commands
+## 15. Standard Verification Commands
 
 Run the relevant subset during development and the full set before handoff:
 
@@ -897,7 +725,7 @@ Expected results:
 - Arbitrary origins receive no credentialed CORS headers.
 - Hashed static assets retain immutable caching.
 
-## 17. Handoff Template for Each Model
+## 16. Handoff Template for Each Model
 
 Every implementing model should report:
 
@@ -913,4 +741,3 @@ Every implementing model should report:
 Do not mark a package complete only because the happy path works. The package is
 complete when its listed concurrency, failure, security, accessibility, and
 verification criteria are covered.
-
