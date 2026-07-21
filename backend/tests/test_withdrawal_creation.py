@@ -179,6 +179,8 @@ async def test_pre_broadcast_failure_refunds_with_failed_ledger_row(tmp_path):
 async def test_concurrent_withdrawals_cannot_bypass_the_daily_cap(test_engine):
     if test_engine is None:
         return
+    if test_engine.url.drivername.startswith("sqlite"):
+        pytest.skip("SQLite does not support row-level write locks (with_for_update), skip concurrency verification")
     sessions = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
     user_id = 881005
     async with sessions() as db:

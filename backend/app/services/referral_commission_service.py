@@ -1,3 +1,4 @@
+import html
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -213,7 +214,7 @@ class ReferralCommissionService:
         if not player:
             return 0
 
-        player_display = f"@{player.username}" if player.username else f"{player.first_name}"
+        player_display = f"@{html.escape(player.username)}" if player.username else html.escape(player.first_name or "")
 
         # Fetch referrer chain up to 6 levels
         chain = await ReferralCommissionService.get_referrer_chain(db, player_id, levels=6)
@@ -373,7 +374,7 @@ class ReferralCommissionService:
         if not subscriber:
             return 0
 
-        subscriber_display = f"@{subscriber.username}" if subscriber.username else f"{subscriber.first_name}"
+        subscriber_display = f"@{html.escape(subscriber.username)}" if subscriber.username else html.escape(subscriber.first_name or "")
 
         # Fetch referrer chain up to 6 levels
         chain = await ReferralCommissionService.get_referrer_chain(db, subscriber_id, levels=6)
