@@ -9,6 +9,7 @@ from app.api.v1.endpoints.wallet import _credit_stripe_deposit
 from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
 from app.models.transaction import Transaction
+from app.services.stripe_compat import stripe_get
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +56,13 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
             session_id = tx.reference_id
             try:
                 checkout = stripe.checkout.Session.retrieve(session_id)
-                if checkout.get("status") == "complete" and checkout.get("payment_status") == "paid":
+                if stripe_get(checkout, "status") == "complete" and stripe_get(checkout, "payment_status") == "paid":
                     if dry_run:
                         logger.info("Dry-run: would credit Stripe transaction #%s.", tx.id)
                     elif await _credit_stripe_deposit(session, tx.id, tx.user_id, session_id):
                         summary["paid"] += 1
                     continue
-                if checkout.get("status") == "expired":
+                if stripe_get(checkout, "status") == "expired":
                     if dry_run:
                         logger.info("Dry-run: would fail expired Stripe transaction #%s.", tx.id)
                     else:
@@ -74,7 +75,7 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                             await session.commit()
                             summary["expired"] += 1
                     continue
-                if checkout.get("status") == "open" and tx.created_at <= alert_before:
+                if stripe_get(checkout, "status") == "open" and tx.created_at <= alert_before:
                     summary["open"] += 1
                     from app.core.alerts import send_alert_with_redis_rate_limit
                     await send_alert_with_redis_rate_limit(
