@@ -680,13 +680,16 @@ async def subscribe_user(
     )
 
     # Telegram notification
-    from app.services.telegram_bot import TelegramService
-    await TelegramService.send_premium_welcome(
-        user_id=locked_user.telegram_id,
-        first_name=locked_user.first_name,
-        expires_at=expires_at,
-        lang=locked_user.preferred_language
-    )
+    try:
+        from app.services.telegram_bot import TelegramService
+        await TelegramService.send_premium_welcome(
+            user_id=locked_user.telegram_id,
+            first_name=locked_user.first_name,
+            expires_at=expires_at,
+            lang=locked_user.preferred_language
+        )
+    except Exception as notify_err:
+        logger.warning(f"Failed to send Telegram premium welcome: {notify_err}")
 
     # Distribute referral commissions on the net charged price
     from app.services.referral_commission_service import ReferralCommissionService

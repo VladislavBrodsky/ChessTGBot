@@ -6,7 +6,7 @@ from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master
+from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master, _split_web3_top_up
 from app.core.logger import exception_summary
 
 logger = logging.getLogger(__name__)
@@ -183,9 +183,8 @@ async def start_deposit_crawler():
                                         if existing_tx_result.scalars().first():
                                             continue
                                             
-                                        # Deduct 5% platform fee
-                                        credited_amount = int(round(amount_cents / 1.05))
-                                        fee = amount_cents - credited_amount
+                                        # Deduct 5% platform fee using shared helper
+                                        credited_amount, fee = _split_web3_top_up(amount_cents)
                                         
                                         user.balance += credited_amount
                                         db.add(user)
