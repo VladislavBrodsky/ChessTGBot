@@ -14,7 +14,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, or_, desc
+from sqlalchemy import select, func, or_, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_admin_user, get_db
@@ -507,8 +507,9 @@ async def get_solvency(
 # ---------------------------------------------------------------------------
 # Withdrawals at/above WITHDRAWAL_REVIEW_THRESHOLD_CENTS are debited (funds held)
 # and parked as status="pending_review" with the destination address stashed in
-# reference_id ("pending_review:<address>"). An admin approves (executes the
-# on-chain payout) or rejects (refunds the held balance).
+# reference_id ("pending_review:<address>"). An approval first claims the row
+# with a conditional update and commits it as processing_payout before it can
+# execute the irreversible on-chain payout.
 
 @router.get("/withdrawals/pending")
 async def list_pending_withdrawals(
@@ -547,38 +548,105 @@ async def approve_withdrawal(
 ):
     """Approve a held withdrawal: execute the on-chain payout and mark it sent."""
     from app.core.config import get_settings
+    from app.services.withdrawal_review import (
+        PENDING_REVIEW_STATUS,
+        PROCESSING_PAYOUT_STATUS,
+        REVIEW_REFERENCE_PREFIX,
+        claim_payout,
+        release_payout_claim,
+    )
     settings = get_settings()
 
     res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
     tx = res.scalars().first()
-    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
-        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+    if not tx or tx.type != "withdrawal":
+        raise HTTPException(status_code=404, detail="Withdrawal not found")
+    if tx.status != PENDING_REVIEW_STATUS:
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {tx.status}")
 
-    if not tx.reference_id or not tx.reference_id.startswith("pending_review:"):
+    if not tx.reference_id or not tx.reference_id.startswith(REVIEW_REFERENCE_PREFIX):
         raise HTTPException(status_code=400, detail="Withdrawal is missing its destination address")
     address = tx.reference_id.split(":", 1)[1]
 
     amount = -tx.amount                    # positive requested amount
     transfer_amount_cents = amount - (tx.fee or 0)
 
+    # Commit a conditional claim before touching the blockchain. This makes
+    # concurrent admin clicks, retries, and process-local duplicate requests
+    # observe the same durable owner state.
+    claimed, approved_at = await claim_payout(db, tx_id, _admin.telegram_id)
+    if not claimed:
+        res = await db.execute(select(Transaction.status).where(Transaction.id == tx_id))
+        current_status = res.scalar_one_or_none() or "unavailable"
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {current_status}")
+
     tx_hash = None
     is_real = False
     if settings.PAYOUT_MNEMONIC:
         try:
-            from app.services.payout_service import execute_usdt_payout
+            from app.services.payout_service import BlockchainBroadcastError, execute_usdt_payout
             tx_hash = await execute_usdt_payout(address, transfer_amount_cents)
             is_real = True
+        except BlockchainBroadcastError as broadcast_err:
+            # A timeout/error at broadcast time may still have reached the
+            # chain. Keep the withdrawal non-reviewable and let the crawler
+            # reconcile the persisted message hash when one is available.
+            tx_hash = broadcast_err.msg_hash or None
+            await db.execute(
+                update(Transaction)
+                .where(Transaction.id == tx_id, Transaction.status == PROCESSING_PAYOUT_STATUS)
+                .values(status="pending", reference_id=tx_hash)
+            )
+            await db.commit()
+            logger.warning(
+                "[TRANSACTION] withdrawal approval broadcast uncertain "
+                "tx_id=%s user_id=%s admin_id=%s reference_id=%s",
+                tx_id,
+                tx.user_id,
+                _admin.telegram_id,
+                tx_hash,
+            )
+            return {
+                "status": "approved_pending_reconciliation",
+                "tx_id": tx_id,
+                "reference_id": tx_hash,
+                "approved_by_admin_id": _admin.telegram_id,
+                "approved_at": approved_at.isoformat(),
+            }
         except Exception as payout_err:
-            # Leave held (still reviewable); surface the failure so the admin can retry/reject.
-            logger.error(f"Approved withdrawal payout failed for tx {tx_id}: {payout_err}")
-            raise HTTPException(status_code=500, detail=f"On-chain payout failed: {payout_err}")
+            # This is a known pre-broadcast failure. Release only our durable
+            # processing claim, never the user's held balance.
+            released = await release_payout_claim(db, tx_id)
+            logger.error(
+                "[TRANSACTION] withdrawal approval failed before broadcast "
+                "tx_id=%s user_id=%s admin_id=%s claim_released=%s error=%s",
+                tx_id,
+                tx.user_id,
+                _admin.telegram_id,
+                released,
+                payout_err,
+            )
+            raise HTTPException(status_code=502, detail="On-chain payout failed before broadcast; withdrawal remains pending review")
     else:
         tx_hash = f"mock_{address[:6]}_{amount}"
 
-    tx.status = "pending" if is_real else "completed"
-    tx.reference_id = tx_hash
-    db.add(tx)
+    await db.execute(
+        update(Transaction)
+        .where(Transaction.id == tx_id, Transaction.status == PROCESSING_PAYOUT_STATUS)
+        .values(status="pending" if is_real else "completed", reference_id=tx_hash)
+    )
     await db.commit()
+    logger.info(
+        "[TRANSACTION] withdrawal approved tx_id=%s user_id=%s admin_id=%s "
+        "amount_cents=%s fee_cents=%s reference_id=%s status=%s",
+        tx_id,
+        tx.user_id,
+        _admin.telegram_id,
+        amount,
+        tx.fee or 0,
+        tx_hash,
+        "pending" if is_real else "completed",
+    )
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -592,7 +660,13 @@ async def approve_withdrawal(
     except Exception:
         pass
 
-    return {"status": "approved", "tx_id": tx_id, "reference_id": tx_hash}
+    return {
+        "status": "approved",
+        "tx_id": tx_id,
+        "reference_id": tx_hash,
+        "approved_by_admin_id": _admin.telegram_id,
+        "approved_at": approved_at.isoformat(),
+    }
 
 
 @router.post("/withdrawals/{tx_id}/reject")
@@ -603,18 +677,33 @@ async def reject_withdrawal(
 ):
     """Reject a held withdrawal: refund the held balance to the user."""
     from app.crud import user as user_crud
+    from app.services.withdrawal_review import PENDING_REVIEW_STATUS, reject_pending_review
 
     res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
     tx = res.scalars().first()
-    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
-        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+    if not tx or tx.type != "withdrawal":
+        raise HTTPException(status_code=404, detail="Withdrawal not found")
+    if tx.status != PENDING_REVIEW_STATUS:
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {tx.status}")
 
     refund = -tx.amount                    # positive amount to return
+    rejected, rejected_at = await reject_pending_review(db, tx_id, _admin.telegram_id)
+    if not rejected:
+        await db.rollback()
+        res = await db.execute(select(Transaction.status).where(Transaction.id == tx_id))
+        current_status = res.scalar_one_or_none() or "unavailable"
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {current_status}")
+
+    # The status transition and balance credit deliberately share one commit.
     await user_crud.atomic_credit(db, tx.user_id, refund, commit=False)
-    tx.status = "failed"
-    tx.reference_id = "rejected"
-    db.add(tx)
     await db.commit()
+    logger.info(
+        "[TRANSACTION] withdrawal rejected tx_id=%s user_id=%s admin_id=%s refunded_cents=%s",
+        tx_id,
+        tx.user_id,
+        _admin.telegram_id,
+        refund,
+    )
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -627,7 +716,13 @@ async def reject_withdrawal(
     except Exception:
         pass
 
-    return {"status": "rejected", "tx_id": tx_id, "refunded_cents": refund}
+    return {
+        "status": "rejected",
+        "tx_id": tx_id,
+        "refunded_cents": refund,
+        "rejected_by_admin_id": _admin.telegram_id,
+        "rejected_at": rejected_at.isoformat(),
+    }
 
 
 # ---------------------------------------------------------------------------
