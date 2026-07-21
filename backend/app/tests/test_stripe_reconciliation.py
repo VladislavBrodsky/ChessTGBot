@@ -118,3 +118,43 @@ async def test_reconcile_expired_stripe_deposit(db, monkeypatch):
 
     await db.refresh(pending_tx)
     assert pending_tx.status == "failed"
+
+
+@pytest.mark.asyncio
+async def test_reconcile_aged_open_stripe_deposit(db, monkeypatch):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+
+    user = User(telegram_id=1003, first_name="TestUser3", balance=0, elo=1000)
+    aged_time = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=2)
+
+    pending_tx = Transaction(
+        id=503,
+        user_id=1003,
+        type="deposit",
+        amount=950,
+        fee=50,
+        status="pending",
+        reference_id="cs_test_open_aged",
+        created_at=aged_time
+    )
+
+    db.add(user)
+    db.add(pending_tx)
+    await db.commit()
+
+    mock_session = MagicMock()
+    mock_session.status = "open"
+    mock_session.payment_status = "unpaid"
+
+    with patch("stripe.checkout.Session.retrieve", return_value=mock_session), \
+         patch("stripe.checkout.Session.expire") as mock_expire:
+        stats = await reconcile_stripe_deposits(db)
+
+    assert stats["expired"] == 1
+    assert stats["errors"] == 0
+    mock_expire.assert_called_once_with("cs_test_open_aged")
+
+    await db.refresh(pending_tx)
+    assert pending_tx.status == "failed"
+

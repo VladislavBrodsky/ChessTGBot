@@ -102,20 +102,42 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                             await session.commit()
                             summary["expired"] += 1
                     continue
-                if status == "open" and tx.created_at and tx.created_at <= alert_before:
+                if status == "open":
                     summary["open"] += 1
-                    from app.core.alerts import send_alert_with_redis_rate_limit
-                    await send_alert_with_redis_rate_limit(
-                        f"stripe_open_checkout:{tx.id}",
-                        "<b>Stripe Checkout session remains open</b>\n\n"
-                        f"• <b>Transaction:</b> #{tx.id}\n"
-                        f"• <b>User:</b> <code>{tx.user_id}</code>\n"
-                        f"• <b>Session:</b> <code>{session_id}</code>",
-                        system="treasury",
-                    )
+                    # If open for > 1 hour, auto-expire session on Stripe and mark tx failed locally
+                    if tx.created_at and tx.created_at <= now - timedelta(hours=1):
+                        if dry_run:
+                            logger.info("Dry-run: would expire open Stripe transaction #%s.", tx.id)
+                        else:
+                            try:
+                                await asyncio.to_thread(stripe.checkout.Session.expire, session_id)
+                            except Exception as expire_err:
+                                logger.warning("Could not expire Stripe session %s: %s", session_id, expire_err)
+                            locked = await session.execute(
+                                select(Transaction).where(Transaction.id == tx.id).with_for_update()
+                            )
+                            current = locked.scalars().first()
+                            if current and current.status == "pending":
+                                current.status = "failed"
+                                await session.commit()
+                                summary["expired"] += 1
+                        continue
+
+                    # If open for between 30 mins and 1 hour, send a single alert (rate-limited for 24h)
+                    if tx.created_at and tx.created_at <= alert_before:
+                        from app.core.alerts import send_alert_with_redis_rate_limit
+                        await send_alert_with_redis_rate_limit(
+                            f"stripe_open_checkout:{tx.id}",
+                            "<b>Stripe Checkout session remains open</b>\n\n"
+                            f"• <b>Transaction:</b> #{tx.id}\n"
+                            f"• <b>User:</b> <code>{tx.user_id}</code>\n"
+                            f"• <b>Session:</b> <code>{session_id}</code>",
+                            system="treasury",
+                            ttl_seconds=86400,
+                        )
             except Exception as exc:
                 summary["errors"] += 1
-                logger.error("Stripe reconciliation failed for transaction #%s: %s", tx.id, exc)
+                logger.error("Stripe reconciliation failed for transaction #%s: %s", tx.id, exc, exc_info=True)
         return summary
 
     if owns_session:
