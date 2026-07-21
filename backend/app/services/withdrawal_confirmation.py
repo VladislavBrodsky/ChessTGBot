@@ -125,13 +125,22 @@ async def confirm_withdrawal(tx_id: int, from_user_id: int, nonce: str) -> tuple
         address = tx.reference_id.split(":", 1)[1]
         transfer_amount_cents = amount - (tx.fee or 0)
 
+        from app.services.payout_readiness import get_payout_readiness
+        payout_readiness = get_payout_readiness(settings)
+        if not payout_readiness.ready:
+            logger.warning("Withdrawal confirmation blocked for tx %s: %s", tx_id, payout_readiness.reason)
+            return (
+                "⚠️ <b>Withdrawals Temporarily Unavailable</b>\n\n"
+                "Your funds remain reserved. Please try confirming again later."
+            ), False
+
         # Claim before paying so a double tap / webhook retry can't pay twice.
         if not await _claim(db, tx_id, "processing_payout"):
             return "ℹ️ This withdrawal is already being processed.", True
 
         tx_hash = None
         is_real = False
-        if settings.PAYOUT_MNEMONIC:
+        if payout_readiness.mode == "real":
             try:
                 from app.services.payout_service import execute_usdt_payout, BlockchainBroadcastError
                 tx_hash = await execute_usdt_payout(address, transfer_amount_cents)

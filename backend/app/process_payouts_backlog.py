@@ -115,8 +115,10 @@ async def process_payouts_backlog(db=None):
     Can be passed an existing session, otherwise creates a new session.
     """
     settings = get_settings()
-    if not settings.PAYOUT_MNEMONIC:
-        logger.warning("Warning: PAYOUT_MNEMONIC is not configured. Payout backlog processing skipped.")
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
+    if not payout_readiness.ready or payout_readiness.mode != "real":
+        logger.warning("Payout backlog processing skipped: %s", payout_readiness.reason or payout_readiness.mode)
         return
 
     if db is None:

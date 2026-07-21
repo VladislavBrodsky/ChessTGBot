@@ -1183,7 +1183,12 @@ function SystemTab() {
             status={sys.web3?.status ?? 'unknown'}
             rows={[
               { label: 'TON API', value: sys.web3?.ton_api_configured ? '✅ Configured' : '❌ Missing' },
-              { label: 'Payout Mnemonic', value: sys.web3?.payout_mnemonic_configured ? '✅ Configured' : '❌ Missing' },
+              {
+                label: 'Payout readiness',
+                value: sys.web3?.payout_ready
+                  ? (sys.web3?.payout_mode === 'mock' ? '⚠ Mock (dev/test)' : '✅ Ready')
+                  : `❌ ${sys.web3?.payout_unavailable_reason ?? 'Unavailable'}`,
+              },
               { label: 'Deposit Pool Balance', value: sys.web3?.master_wallet_balance_ton != null ? `${sys.web3.master_wallet_balance_ton} TON` : 'N/A' },
               { label: 'Master Wallet', value: sys.web3?.master_wallet_address ? `${sys.web3.master_wallet_address.slice(0, 12)}…` : '—' },
             ]}
