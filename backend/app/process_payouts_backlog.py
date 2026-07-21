@@ -118,7 +118,7 @@ async def process_payouts_backlog(db=None):
     from app.services.payout_readiness import get_payout_readiness
     payout_readiness = get_payout_readiness(settings)
     if not payout_readiness.ready or payout_readiness.mode != "real":
-        logger.warning("Payout backlog processing skipped: %s", payout_readiness.reason or payout_readiness.mode)
+        logger.debug("Payout backlog processing skipped: %s", payout_readiness.reason or payout_readiness.mode)
         return
 
     if db is None:
@@ -135,8 +135,14 @@ async def start_payout_backlog_loop():
     
     while True:
         try:
-            logger.info("Executing automated payout backlog scan...")
-            await process_payouts_backlog()
+            settings = get_settings()
+            from app.services.payout_readiness import get_payout_readiness
+            payout_readiness = get_payout_readiness(settings)
+            if payout_readiness.ready and payout_readiness.mode == "real":
+                logger.info("Executing automated payout backlog scan...")
+                await process_payouts_backlog()
+            else:
+                logger.debug("Payout backlog scan skipped (payouts disabled).")
         except Exception as e:
             logger.error(f"Error in background payout backlog loop: {e}", exc_info=True)
             
