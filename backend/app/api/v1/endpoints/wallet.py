@@ -992,7 +992,21 @@ async def get_jetton_wallet(
     except Exception as e:
         logger.warning(f"Failed to fetch jetton wallet via accounts endpoint: {e}")
 
-    raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
+    url3 = f"https://toncenter.com/api/v3/jetton/wallets?owner_address={raw_user}&jetton_address={jetton_master}"
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url3, headers={"User-Agent": "Mozilla/5.0"})
+            if res.status_code == 200:
+                data = res.json()
+                wallets = data.get("jetton_wallets", [])
+                if wallets and isinstance(wallets, list):
+                    jw = wallets[0].get("address")
+                    if jw:
+                        return {"jetton_wallet_address": convert_raw_to_friendly(jw)}
+    except Exception as e:
+        logger.warning(f"Failed to fetch jetton wallet via Toncenter v3: {e}")
+
+    raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TON RPC providers.")
 
 
 @router.get("/onchain-balances", dependencies=[Depends(rate_limit(limit=20, window=60))])
