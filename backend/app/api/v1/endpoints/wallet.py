@@ -1058,6 +1058,11 @@ async def request_gas_grant(
     except GasGrantDenied as denied:
         raise HTTPException(status_code=denied.status_code, detail=denied.detail)
 
+    # A timeout may still land on-chain. Do not tell the user funds were sent
+    # until reconciliation confirms that external side effect.
+    if result["status"] != "sent":
+        return result
+
     try:
         from app.services.telegram_bot import TelegramService
         await TelegramService.send_notification(
