@@ -35,27 +35,45 @@ class RawCORSMiddleware:
     (like Socket.IO) or other middleware.
     """
     
-    ALLOWED_ORIGINS = {
-        "https://chesstgbot-frontend-production.up.railway.app",
-        "https://chesstgbot-backend-production.up.railway.app",
-        "https://web.telegram.org",
-        "https://telegram.org",
-    }
+    ALLOWED_METHODS = frozenset({"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"})
+    ALLOWED_HEADERS = frozenset({
+        "authorization",
+        "content-type",
+        "x-telegram-init-data",
+        "x-request-id",
+        "bypass-tunnel-reminder",
+    })
+    ALLOWED_HEADERS_VALUE = b"authorization, content-type, x-telegram-init-data, x-request-id, bypass-tunnel-reminder"
     
     def __init__(self, app):
         self.app = app
 
-    def _get_origin(self, scope):
-        """Extract the Origin header from ASGI scope headers."""
+    def _get_header(self, scope, name):
+        """Extract one lower-case header from an ASGI scope."""
         for key, value in scope.get("headers", []):
-            if key == b"origin":
+            if key == name:
                 return value.decode("latin-1")
         return None
 
+    def _get_origin(self, scope):
+        return self._get_header(scope, b"origin")
+
     def _is_allowed(self, origin):
-        """Allow designated origins, dynamic Railway subdomains, and localhost."""
+        """Allow only exact configured origins."""
         from app.core.security import is_allowed_cors_origin
         return is_allowed_cors_origin(origin)
+
+    @staticmethod
+    def _append_vary_origin(headers):
+        """Ensure caches distinguish CORS responses by Origin."""
+        for index, (key, value) in enumerate(headers):
+            if key.lower() == b"vary":
+                values = {item.strip().lower() for item in value.split(b",")}
+                if b"origin" not in values:
+                    headers[index] = (key, value + b", Origin")
+                return headers
+        headers.append((b"vary", b"Origin"))
+        return headers
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -75,6 +93,21 @@ class RawCORSMiddleware:
 
         # Handle OPTIONS preflight immediately
         if scope["method"] == "OPTIONS":
+            requested_method = self._get_header(scope, b"access-control-request-method")
+            requested_headers = self._get_header(scope, b"access-control-request-headers") or ""
+            requested_header_names = {
+                header.strip().lower()
+                for header in requested_headers.split(",")
+                if header.strip()
+            }
+            if requested_method not in self.ALLOWED_METHODS or not requested_header_names.issubset(self.ALLOWED_HEADERS):
+                await send({
+                    "type": "http.response.start",
+                    "status": 400,
+                    "headers": [(b"vary", b"Origin"), (b"content-length", b"0")],
+                })
+                await send({"type": "http.response.body", "body": b""})
+                return
             await send({
                 "type": "http.response.start",
                 "status": 200,
@@ -82,8 +115,9 @@ class RawCORSMiddleware:
                     (b"access-control-allow-origin", origin.encode()),
                     (b"access-control-allow-credentials", b"true"),
                     (b"access-control-allow-methods", b"GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"),
-                    (b"access-control-allow-headers", b"*"),
+                    (b"access-control-allow-headers", self.ALLOWED_HEADERS_VALUE),
                     (b"access-control-max-age", b"86400"),
+                    (b"vary", b"Origin"),
                     (b"content-length", b"0"),
                 ],
             })
@@ -104,6 +138,7 @@ class RawCORSMiddleware:
                 ]
                 headers.append((b"access-control-allow-origin", origin.encode()))
                 headers.append((b"access-control-allow-credentials", b"true"))
+                headers = self._append_vary_origin(headers)
                 message = {**message, "headers": headers}
             await send(message)
 

@@ -1,71 +1,123 @@
 import pytest
+from app.core.config import get_settings
 from app.core.security import is_allowed_cors_origin
 from httpx import AsyncClient
 
-def test_is_allowed_cors_origin_static():
-    # Hardcoded allowed origins
+
+def test_is_allowed_cors_origin_uses_exact_known_origins():
     assert is_allowed_cors_origin("https://web.telegram.org") is True
     assert is_allowed_cors_origin("https://telegram.org") is True
     assert is_allowed_cors_origin("https://chesstgbot-frontend-production.up.railway.app") is True
     assert is_allowed_cors_origin("https://chesstgbot-backend-production.up.railway.app") is True
 
-def test_is_allowed_cors_origin_localhost():
-    # Localhost configurations
-    assert is_allowed_cors_origin("http://localhost:3000") is True
-    assert is_allowed_cors_origin("http://localhost:5173") is True
-    assert is_allowed_cors_origin("http://127.0.0.1:8000") is True
-    # Non-localhost matching starts
-    assert is_allowed_cors_origin("http://localhost-malicious.com") is False
 
-def test_is_allowed_cors_origin_railway_dynamic():
-    # Dynamic Railway subdomains for chesstgbot
-    assert is_allowed_cors_origin("https://chesstgbot-pr-12.up.railway.app") is True
-    assert is_allowed_cors_origin("https://chesstgbot-staging.up.railway.app") is True
-    # Different Railway app should be blocked
-    assert is_allowed_cors_origin("https://otherapp.up.railway.app") is False
-    # Non-Railway domain containing chesstgbot should be blocked
-    assert is_allowed_cors_origin("https://chesstgbot.com") is False
+@pytest.mark.parametrize("origin", [
+    "https://evilchesstgbot.up.railway.app",
+    "https://chesstgbot-pr-12.up.railway.app",
+    "https://chesstgbot-frontend-production.up.railway.app.evil.example",
+    "https://evil.example/?origin=chesstgbot",
+    "https://chesstgbot.com",
+])
+def test_is_allowed_cors_origin_rejects_railway_lookalikes(origin):
+    assert is_allowed_cors_origin(origin) is False
 
-def test_is_allowed_cors_origin_settings(monkeypatch):
-    from app.core.config import get_settings
+
+def test_is_allowed_cors_origin_allows_configured_custom_origin(monkeypatch):
     settings = get_settings()
-    
-    # Save original settings
-    orig_webapp = settings.WEBAPP_URL
-    orig_backend = settings.BACKEND_URL
-    
-    try:
-        # Mock settings values
-        monkeypatch.setattr(settings, "WEBAPP_URL", "https://custom-webapp.com/")
-        monkeypatch.setattr(settings, "BACKEND_URL", "https://custom-backend.com")
-        
-        # Test trailing slash normalization and matching
-        assert is_allowed_cors_origin("https://custom-webapp.com") is True
-        assert is_allowed_cors_origin("https://custom-backend.com") is True
-        assert is_allowed_cors_origin("https://unrelated-domain.com") is False
-    finally:
-        settings.WEBAPP_URL = orig_webapp
-        settings.BACKEND_URL = orig_backend
+    monkeypatch.setattr(
+        settings,
+        "CORS_ALLOWED_ORIGINS",
+        "https://custom-webapp.example/, https://preview.example",
+    )
 
-def test_is_allowed_cors_origin_disallowed_and_none():
-    assert is_allowed_cors_origin(None) is False
-    assert is_allowed_cors_origin("") is False
-    assert is_allowed_cors_origin("https://malicious-site.com") is False
-    assert is_allowed_cors_origin("http://web.telegram.org") is False # Protocol mismatch
+    assert is_allowed_cors_origin("https://custom-webapp.example") is True
+    assert is_allowed_cors_origin("https://preview.example") is True
+    assert is_allowed_cors_origin("https://unrelated.example") is False
+
+
+def test_localhost_is_limited_to_development_and_testing(monkeypatch):
+    settings = get_settings()
+    assert is_allowed_cors_origin("http://localhost:3000") is True
+    assert is_allowed_cors_origin("http://127.0.0.1:8000") is True
+    assert is_allowed_cors_origin("http://localhost-malicious.example") is False
+
+    monkeypatch.setattr(settings, "TESTING", False)
+    monkeypatch.setattr(settings, "ENV", "production")
+    assert is_allowed_cors_origin("http://localhost:3000") is False
+    assert is_allowed_cors_origin("http://127.0.0.1:8000") is False
+
+
+@pytest.mark.parametrize("origin", [None, "", "http://web.telegram.org", "https://web.telegram.org/path"])
+def test_is_allowed_cors_origin_rejects_invalid_origins(origin):
+    assert is_allowed_cors_origin(origin) is False
+
 
 @pytest.mark.asyncio
-async def test_http_cors_middleware_allowed(client: AsyncClient):
-    # Test that HTTP CORS middleware allows authorized origins
-    headers = {"Origin": "https://web.telegram.org"}
-    response = await client.get("/api/v1/wallet/prices", headers=headers)
+async def test_http_cors_middleware_reflects_allowed_origin_and_varies(client: AsyncClient):
+    origin = "https://web.telegram.org"
+    response = await client.get("/api/v1/wallet/prices", headers={"Origin": origin})
+
     assert response.status_code == 200
-    assert response.headers.get("access-control-allow-origin") == "https://web.telegram.org"
+    assert response.headers.get("access-control-allow-origin") == origin
     assert response.headers.get("access-control-allow-credentials") == "true"
+    assert "origin" in response.headers.get("vary", "").lower()
+
 
 @pytest.mark.asyncio
-async def test_http_cors_middleware_disallowed(client: AsyncClient):
-    # Test that HTTP CORS middleware does not inject headers for unauthorized origins
-    headers = {"Origin": "https://malicious-site.com"}
-    response = await client.get("/api/v1/wallet/prices", headers=headers)
+async def test_http_cors_middleware_allows_configured_custom_origin(client: AsyncClient, monkeypatch):
+    settings = get_settings()
+    origin = "https://custom-webapp.example"
+    monkeypatch.setattr(settings, "CORS_ALLOWED_ORIGINS", origin)
+
+    response = await client.get("/api/v1/wallet/prices", headers={"Origin": origin})
+
     assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == origin
+
+
+@pytest.mark.asyncio
+async def test_http_cors_middleware_rejects_disallowed_origin(client: AsyncClient):
+    response = await client.get(
+        "/api/v1/wallet/prices",
+        headers={"Origin": "https://evilchesstgbot.up.railway.app"},
+    )
+
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
+
+
+@pytest.mark.asyncio
+async def test_preflight_uses_explicit_headers_and_agrees_with_regular_request(client: AsyncClient):
+    origin = "https://web.telegram.org"
+    response = await client.options(
+        "/api/v1/wallet/prices",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type, x-telegram-init-data, x-request-id",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == origin
+    assert response.headers.get("access-control-allow-credentials") == "true"
+    assert response.headers.get("access-control-allow-headers") == (
+        "authorization, content-type, x-telegram-init-data, x-request-id, bypass-tunnel-reminder"
+    )
+    assert response.headers.get("access-control-allow-headers") != "*"
+    assert "origin" in response.headers.get("vary", "").lower()
+
+
+@pytest.mark.asyncio
+async def test_preflight_rejects_headers_outside_allowlist(client: AsyncClient):
+    response = await client.options(
+        "/api/v1/wallet/prices",
+        headers={
+            "Origin": "https://web.telegram.org",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "x-untrusted-header",
+        },
+    )
+
+    assert response.status_code == 400
     assert "access-control-allow-origin" not in response.headers
