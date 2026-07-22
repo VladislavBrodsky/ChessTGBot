@@ -51,12 +51,10 @@ export default function WalletPage() {
   const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
   const [tgUser, setTgUser] = useState<any>(null);
 
-  const fetchWalletData = useCallback(async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
       setTxError(false);
-      await syncBalance();
-
       const txRes = await apiFetch("/api/v1/wallet/transactions");
       if (txRes.ok) {
         const txData = await txRes.json();
@@ -70,10 +68,20 @@ export default function WalletPage() {
     } finally {
       setLoading(false);
     }
-  }, [syncBalance]);
+  }, []);
+
+  const refreshWalletData = useCallback(async () => {
+    // Balance errors are surfaced by UserProvider; they must not prevent the
+    // independently useful transaction history from refreshing.
+    await Promise.allSettled([syncBalance(), fetchTransactions()]);
+  }, [syncBalance, fetchTransactions]);
 
   useEffect(() => {
-    fetchWalletData();
+    // UserProvider already starts the balance request for this SWR key. Calling
+    // syncBalance here used to revalidate it again on every callback identity
+    // change, causing an unbounded balance-request loop. Transaction history is
+    // independent and is the only wallet-specific request needed on mount.
+    fetchTransactions();
     if (typeof window !== 'undefined') {
       if (window.Telegram?.WebApp) {
         setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
@@ -85,7 +93,7 @@ export default function WalletPage() {
         setActiveModal('deposit');
       }
     }
-  }, [fetchWalletData]);
+  }, [fetchTransactions]);
 
   return (
     <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
@@ -102,7 +110,7 @@ export default function WalletPage() {
 
         {/* HOLOGRAPHIC CYBER-CARD */}
         <div className="w-full mt-6">
-          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={fetchWalletData} />
+          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={refreshWalletData} />
         </div>
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
@@ -173,7 +181,7 @@ export default function WalletPage() {
             transactions={transactions}
             balance={balance}
             error={txError}
-            onRetry={fetchWalletData}
+            onRetry={refreshWalletData}
           />
         </div>
 
@@ -181,7 +189,7 @@ export default function WalletPage() {
           {activeModal === 'deposit' && (
             <DepositModal
               onClose={() => setActiveModal('none')}
-              onSuccess={fetchWalletData}
+              onSuccess={refreshWalletData}
               walletAddress={walletAddress}
               tgUser={tgUser}
               tw={tw}
@@ -190,7 +198,7 @@ export default function WalletPage() {
           {activeModal === 'withdraw' && (
             <WithdrawModal
               onClose={() => setActiveModal('none')}
-              onSuccess={fetchWalletData}
+              onSuccess={refreshWalletData}
               balance={balance}
               initialWithdrawAddress={walletAddress}
               tw={tw}
@@ -199,7 +207,7 @@ export default function WalletPage() {
           {activeModal === 'connect' && (
             <WalletSelectorModal
               onClose={() => setActiveModal('none')}
-              onConnected={fetchWalletData}
+              onConnected={refreshWalletData}
               tw={tw}
             />
           )}
