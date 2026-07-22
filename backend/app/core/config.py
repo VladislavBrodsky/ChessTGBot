@@ -1,6 +1,14 @@
 import os
+import logging
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+
+logger = logging.getLogger(__name__)
+
+# These IDs are deliberately available only to local development and tests so
+# existing fixtures can exercise admin routes without production identities.
+_LOCAL_ADMIN_TELEGRAM_IDS = {1016749901, 716720099}
 
 class Settings(BaseSettings):
     ENV: str = "production"
@@ -57,27 +65,43 @@ class Settings(BaseSettings):
     PAYOUTS_ENABLED: bool = (os.getenv("PAYOUTS_ENABLED", "false").lower() == "true")
 
     @property
+    def is_development_or_testing(self) -> bool:
+        return self.TESTING or self.ENV.strip().lower() in {"development", "dev", "test"}
+
+    @property
     def admin_telegram_ids(self) -> set[int]:
-        raw = os.getenv("ADMIN_TELEGRAM_IDS")
-        ids = set()
-        if raw:
-            for part in raw.split(","):
-                part = part.strip()
-                if part.isdigit():
-                    ids.add(int(part))
-        else:
-            # Default fallback admins to prevent lockout
-            ids = {1016749901, 716720099}
-            
-        legacy = os.getenv("ADMIN_TELEGRAM_ID")
-        if legacy:
-            try:
-                val = int(legacy)
-                if val > 0:
-                    ids.add(val)
-            except ValueError:
-                pass
+        ids, _ = self._configured_admin_telegram_ids()
+        if not ids and self.is_development_or_testing:
+            return set(_LOCAL_ADMIN_TELEGRAM_IDS)
         return ids
+
+    def _configured_admin_telegram_ids(self) -> tuple[set[int], str | None]:
+        """Parse explicitly configured admin IDs without ever granting a fallback."""
+        ids: set[int] = set()
+        raw = os.getenv("ADMIN_TELEGRAM_IDS")
+        legacy = os.getenv("ADMIN_TELEGRAM_ID")
+
+        if raw is not None:
+            entries = [part.strip() for part in raw.split(",")]
+            if not entries or any(not entry or not entry.isdigit() or int(entry) <= 0 for entry in entries):
+                return set(), "malformed ADMIN_TELEGRAM_IDS"
+            ids.update(int(entry) for entry in entries)
+
+        if legacy is not None and legacy.strip():
+            legacy_value = legacy.strip()
+            if not legacy_value.isdigit() or int(legacy_value) <= 0:
+                return set(), "malformed ADMIN_TELEGRAM_ID"
+            ids.add(int(legacy_value))
+
+        if not ids:
+            return set(), "missing ADMIN_TELEGRAM_IDS"
+        return ids, None
+
+    @property
+    def admin_telegram_ids_configuration_error(self) -> str | None:
+        """Return a non-sensitive production configuration failure reason."""
+        _, error = self._configured_admin_telegram_ids()
+        return error
 
     # Security
     # In production, this MUST be set as an environment variable.
@@ -201,6 +225,17 @@ def get_settings():
     if "pytest" in sys.modules:
         settings.TESTING = True
         
+    # Admin access must be explicitly configured outside local development and
+    # tests. Never use fallback identities in a deployed environment.
+    if not settings.is_development_or_testing:
+        admin_configuration_error = settings.admin_telegram_ids_configuration_error
+        if admin_configuration_error:
+            raise ValueError(
+                "Administrator configuration is invalid: "
+                f"{admin_configuration_error}"
+            )
+        logger.info("Configured %d administrator account(s)", len(settings.admin_telegram_ids))
+
     # If not running in development or testing mode, enforce production security checks
     is_testing = settings.TESTING
     is_dev = settings.ENV == "development"
