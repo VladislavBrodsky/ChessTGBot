@@ -162,24 +162,33 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   }
 
   return (
-  <LayoutWrapper className="w-full">
-  <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
- {/* Header */}
- <div className="flex items-center gap-4 mb-6">
- <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
- <FaArrowLeft />
- </Link>
- <div>
- <h1 className="text-xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">{lessonData.title}</h1>
- <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest">{lessonData.track}</p>
- </div>
- </div>
+    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))] pb-[max(1rem,var(--app-safe-bottom))]">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4 pt-2">
+          <Link 
+            href={`/${locale}/academy`} 
+            className="html-back-button p-2.5 glass-panel rounded-xl text-brand-muted hover:text-brand-primary hover:bg-brand-surface/80 transition-all cursor-pointer border border-brand-border-opacity-10 shrink-0"
+          >
+            <FaArrowLeft size={14} />
+          </Link>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base md:text-lg font-black tracking-tight text-brand-primary uppercase truncate leading-snug">
+              {lessonData.title}
+            </h1>
+            {lessonData.track && (
+              <p className="text-[9px] text-emerald-400 font-bold uppercase tracking-[0.2em] truncate">
+                {lessonData.track}
+              </p>
+            )}
+          </div>
+        </div>
 
-      <LessonViewer
-        steps={lessonData.steps}
-        onComplete={handleComplete}
-      />
- </div>
- </LayoutWrapper>
- );
+        <LessonViewer
+          steps={lessonData.steps}
+          onComplete={handleComplete}
+        />
+      </div>
+    </LayoutWrapper>
+  );
 }
