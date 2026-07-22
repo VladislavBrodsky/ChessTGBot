@@ -232,15 +232,16 @@ export default function MarketplacePage() {
             {/* Ambient background light */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             
-            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-4 md:max-w-xl lg:max-w-3xl">
-                    <header className="flex w-full flex-col items-center text-center relative pt-2">
-                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-2 left-1/2 -translate-x-1/2 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-                        <h1 className="flex items-center gap-2.5 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
+            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-2 md:max-w-xl lg:max-w-3xl">
+                    <header className="flex w-full flex-col items-center text-center relative pt-[calc(36px+var(--app-safe-top))] md:pt-4">
+                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
                             <FaGem className="text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
                             {t('title')}
                         </h1>
-                        <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
-                            {t('subtitle')}
+                        <p className="mt-2.5 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted flex flex-col items-center">
+                            <span>EXCHANGE XP TO UNLOCK</span>
+                            <span>PREMIUM REWARDS & THEMES</span>
                         </p>
                     </header>
 

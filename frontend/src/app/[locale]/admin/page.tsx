@@ -249,7 +249,7 @@ function KpiCard({
         <p className="admin-kpi-value text-lg sm:text-2xl font-black leading-none tracking-wide mb-1">
           {value}
         </p>
-        <p className="admin-kpi-label text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-[0.2em] font-black leading-tight break-words">
+        <p className="admin-kpi-label text-[10px] sm:text-[11px] uppercase tracking-wider font-black leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
           {label}
         </p>
         {sub && <p className="admin-kpi-sub text-[10px] sm:text-[11px] mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
@@ -357,7 +357,7 @@ function DashboardTab({ stats }: { stats: Stats }) {
         <KpiCard label="Deposits" value={cents(stats.total_deposits_cents)} icon={<FaArrowDown />} accent="emerald" />
         <KpiCard label="Withdrawals" value={cents(stats.total_withdrawals_cents)} icon={<FaArrowUp />} accent="orange" />
         <KpiCard label="Net Revenue" value={cents(stats.net_revenue_cents)} sub={`${cents(stats.total_fees_cents)} fees + ${cents(stats.platform_rake_cents)} rake`} icon={<FaChartLine />} accent="violet" />
-        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} direct`} icon={<FaLink />} accent="violet" />
+        <KpiCard label="Referrals" value={fmt(stats.total_referrals)} sub={`${fmt(stats.referral_levels.level_1)} referrers`} icon={<FaLink />} accent="violet" />
         <KpiCard label="Chargebacks" value={cents(stats.total_chargebacks_cents)} icon={<FaCircleXmark />} accent="rose" />
         <KpiCard label="Refunds" value={cents(stats.total_refunds_cents)} icon={<FaArrowsRotate />} accent="gold" />
         <KpiCard label="Blocked Users" value={fmt(stats.total_blocked_users)} sub={stats.total_users > 0 ? pct(stats.total_blocked_users / stats.total_users * 100) + ' of users' : '0%'} icon={<FaBan />} accent="rose" />
@@ -609,10 +609,26 @@ function UsersTab() {
 
 // ─── Transactions Tab ─────────────────────────────────────────────────────────
 
+// ─── Transactions Tab ─────────────────────────────────────────────────────────
+
+interface PendingWithdrawal {
+  id: number;
+  user_id: number;
+  amount_cents: number;
+  amount_usd: number;
+  fee_cents: number;
+  destination_address: string;
+  created_at: string | null;
+}
+
 function TransactionsTab() {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+  const { data: pendingData, mutate: refreshPending } = useSWRFetch('/api/v1/admin/withdrawals/pending');
+  const pendingWithdrawals: PendingWithdrawal[] = pendingData?.pending || [];
 
   const params = new URLSearchParams({ page: String(page), limit: '25' });
   if (typeFilter) params.set('type', typeFilter);
@@ -629,12 +645,75 @@ function TransactionsTab() {
   const total = data?.total || 0;
   const initialLoadFailed = Boolean(error) && !data;
 
+  const handleWithdrawalAction = async (txId: number, action: 'approve' | 'reject') => {
+    setActionLoading(txId);
+    try {
+      const res = await apiFetch(`/api/v1/admin/withdrawals/${txId}/${action}`, { method: 'POST' });
+      if (res.ok) {
+        await Promise.all([refreshPending(), retryTransactions()]);
+      }
+    } catch (e) {
+      console.error(`Failed to ${action} withdrawal ${txId}`, e);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const pages = Math.max(1, Math.ceil(total / 25));
   const TX_TYPES = ['deposit', 'withdrawal', 'game_wager', 'game_win', 'game_rake', 'referral_commission', 'subscription', 'deposit_fee', 'chargeback', 'refund'];
   const STATUSES = ['completed', 'pending', 'failed'];
 
   return (
     <div>
+      {/* Pending Withdrawals Review Panel */}
+      {pendingWithdrawals.length > 0 && (
+        <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-950/20 p-5 backdrop-blur-md">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <FaTriangleExclamation className="text-amber-400 text-base" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-amber-300">
+                Pending Withdrawal Reviews ({pendingWithdrawals.length})
+              </h3>
+            </div>
+            <span className="text-[10px] text-amber-400/80 font-mono uppercase tracking-wider">Velocity Guard Active</span>
+          </div>
+
+          <div className="space-y-3">
+            {pendingWithdrawals.map(pw => (
+              <div key={pw.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-brand-muted">#{pw.id}</span>
+                    <span className="font-bold text-white">User #{pw.user_id}</span>
+                    <span className="font-black text-amber-400">${pw.amount_usd.toFixed(2)} USDT</span>
+                  </div>
+                  <div className="text-[10px] text-brand-muted font-mono mt-1 truncate max-w-xs sm:max-w-md">
+                    To: {pw.destination_address || 'Unspecified'}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                  <button
+                    onClick={() => handleWithdrawalAction(pw.id, 'approve')}
+                    disabled={actionLoading === pw.id}
+                    className="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50"
+                  >
+                    {actionLoading === pw.id ? 'Processing…' : '✓ Approve'}
+                  </button>
+                  <button
+                    onClick={() => handleWithdrawalAction(pw.id, 'reject')}
+                    disabled={actionLoading === pw.id}
+                    className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50"
+                  >
+                    {actionLoading === pw.id ? 'Processing…' : '✕ Reject'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filter Pills */}
       <div className="flex flex-wrap gap-2 mb-5">
         <button

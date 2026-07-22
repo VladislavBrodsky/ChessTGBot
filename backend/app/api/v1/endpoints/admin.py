@@ -98,7 +98,7 @@ async def get_stats(
     )
     total_blocked_users: int = blocked_res.scalar_one() or 0
 
-    # ── Activity (users who played a game or made a transaction in window) ──
+    # ── Activity (users active via games, transactions, signups, or check-ins) ──
     async def _active_users(since: datetime) -> int:
         q_union = (
             select(GameHistory.white_player_id.label("player_id"))
@@ -111,6 +111,24 @@ async def get_stats(
                 .where(
                     GameHistory.game_type == "online",
                     GameHistory.created_at >= since,
+                )
+            )
+            .union(
+                select(Transaction.user_id.label("player_id"))
+                .where(
+                    Transaction.created_at >= since,
+                )
+            )
+            .union(
+                select(User.id.label("player_id"))
+                .where(
+                    User.created_at >= since,
+                )
+            )
+            .union(
+                select(User.id.label("player_id"))
+                .where(
+                    User.last_checkin_date >= since.date(),
                 )
             )
         )
@@ -202,11 +220,16 @@ async def get_stats(
     )
     games_res = await db.execute(games_stmt)
     
-    # Daily revenue
+    # Daily revenue (fees + rake)
     rev_stmt = (
         select(
             func.date(Transaction.created_at).label("date"),
-            func.coalesce(func.sum(Transaction.fee), 0).label("total_cents")
+            func.coalesce(
+                func.sum(
+                    Transaction.fee + func.case((Transaction.type == "game_rake", func.abs(Transaction.amount)), else_=0)
+                ),
+                0,
+            ).label("total_cents")
         )
         .where(
             Transaction.status == "completed",

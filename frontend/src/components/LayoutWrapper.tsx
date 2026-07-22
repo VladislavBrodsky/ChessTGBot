@@ -128,7 +128,16 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
         const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
         const hasActiveGame = !!activeGameId || !!urlGameId;
-        const shouldShow = !isHomePage && !hasActiveGame;
+        const isMainTab = 
+            pathname.endsWith('/home') || 
+            pathname.endsWith('/settings') || 
+            pathname.endsWith('/profile') || 
+            pathname.endsWith('/wallet') || 
+            pathname.endsWith('/challenges') || 
+            pathname.endsWith('/marketplace') ||
+            (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
+        
+        const shouldShow = !isMainTab && !hasActiveGame;
 
         const handleBackClick = () => {
             if (pathname.includes('/admin')) {
@@ -169,6 +178,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         pathname.endsWith('/profile') || 
         pathname.endsWith('/wallet') || 
         pathname.endsWith('/challenges') || 
+        pathname.endsWith('/marketplace') || 
         (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
 
     // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not

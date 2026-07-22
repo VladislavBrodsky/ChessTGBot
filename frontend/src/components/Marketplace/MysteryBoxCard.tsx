@@ -105,8 +105,8 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     onClick={onUnbox}
                     className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
                         locked
-                            ? 'bg-brand-bg-opacity-5 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed'
-                            : 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.25)] hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-[0.98] cursor-pointer'
+                            ? 'bg-brand-elevated/80 text-brand-muted border border-brand-border-opacity-20 cursor-not-allowed shadow-inner'
+                            : 'bg-amber-500 text-brand-void font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] active:scale-[0.98] cursor-pointer'
                     }`}
                 >
                     <span className="relative z-10 flex items-center justify-center gap-1.5">
