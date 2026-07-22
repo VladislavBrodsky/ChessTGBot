@@ -18,18 +18,21 @@ class Settings(BaseSettings):
     VERSION: str = "1.7.0"
     API_V1_STR: str = "/api/v1"
     
-    # CORS
+    # CORS exact-origin allowlist
     # NOTE: The effective CORS policy is enforced by RawCORSMiddleware in
     # app/main.py, which uses an explicit allowlist and never emits a "*" origin.
     # This list is retained for reference/tooling only. Do NOT add "*" here — if
     # this ever gets wired to a credentialed CORSMiddleware, a wildcard origin
     # with credentials would be a serious vulnerability.
-    BACKEND_CORS_ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "https://chesstgbot-production.up.railway.app",
-        "https://web.telegram.org",
-        "https://telegram.org",
-    ]
+    CORS_ALLOWED_ORIGINS: str = os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        ",".join([
+            "https://chesstgbot-frontend-production.up.railway.app",
+            "https://chesstgbot-backend-production.up.railway.app",
+            "https://web.telegram.org",
+            "https://telegram.org",
+        ]),
+    )
 
     # Daily Arena: start time (UTC "HH:MM") and window length in minutes
     # Four daily arena windows, 6h apart, so every region gets one landing in

@@ -4,7 +4,7 @@ import ipaddress
 import json
 import time
 from collections.abc import Mapping
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 from fastapi import HTTPException
 from app.core.config import get_settings
 
@@ -242,42 +242,59 @@ def parse_init_data_unverified(init_data: str) -> dict:
         return {}
 
 
-def is_allowed_cors_origin(origin: str | None) -> bool:
-    """
-    Checks if a given origin is allowed under the application CORS policy.
-    Matches allowed hardcoded origins, dynamic Railway preview/production subdomains,
-    localhost for development, and the URLs specified in app configuration settings.
-    """
-    if not origin:
-        return False
-        
-    allowed_origins = {
-        "https://chesstgbot-frontend-production.up.railway.app",
-        "https://chesstgbot-backend-production.up.railway.app",
-        "https://web3chess.online",
-        "https://www.web3chess.online",
-        "https://api.web3chess.online",
-        "https://web.telegram.org",
-        "https://telegram.org",
+def _normalise_cors_origin(value: object) -> str | None:
+    """Return a canonical scheme/host/port origin, rejecting URL fragments."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError:
+        return None
+
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        return None
+
+    host = parsed.hostname.lower().rstrip(".")
+    if ":" in host:
+        host = f"[{host}]"
+    if port is None or (parsed.scheme == "https" and port == 443) or (parsed.scheme == "http" and port == 80):
+        return f"{parsed.scheme}://{host}"
+    return f"{parsed.scheme}://{host}:{port}"
+
+
+def _configured_cors_origins() -> set[str]:
+    """Read only exact origins from deployment configuration."""
+    configured = [
+        *settings.CORS_ALLOWED_ORIGINS.split(","),
+        settings.WEBAPP_URL,
+        settings.BACKEND_URL,
+    ]
+    return {
+        origin
+        for value in configured
+        if (origin := _normalise_cors_origin(value.strip() if isinstance(value, str) else value))
     }
-    
-    if origin in allowed_origins:
-        return True
-        
-    # Allow localhost origins for local development
-    if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
-        return True
-        
-    # Dynamically allow any Railway chesstgbot subdomain (preview deploys etc.)
-    if origin.endswith(".up.railway.app") and "chesstgbot" in origin:
-        return True
-        
-    # Allow origins matching configured settings URLs
-    if settings.WEBAPP_URL and origin == settings.WEBAPP_URL.rstrip("/"):
-        return True
-    if settings.BACKEND_URL and origin == settings.BACKEND_URL.rstrip("/"):
-        return True
-        
-    return False
+
+
+def is_allowed_cors_origin(origin: str | None) -> bool:
+    """Allow exact configured origins and local origins only outside production."""
+    normalised_origin = _normalise_cors_origin(origin)
+    if not normalised_origin or normalised_origin != origin:
+        return False
+
+    parsed = urlsplit(normalised_origin)
+    if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+        return settings.is_development_or_testing
+
+    return normalised_origin in _configured_cors_origins()
 
 
