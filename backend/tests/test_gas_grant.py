@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import get_settings
 from app.models.transaction import Transaction
 from app.services.gas_grant import grant_gas, GasGrantDenied, GRANT_TX_TYPE
+from app.services.payout_service import BlockchainBroadcastError
 
 settings = get_settings()
 
@@ -77,6 +78,61 @@ async def test_grant_success_records_transaction(db_session: AsyncSession, monke
     assert tx is not None
     assert tx.amount == 0                          # never touches platform balance
     assert tx.reference_id == f"gas_grant:{WALLET}:grant_hash_1"
+
+
+@pytest.mark.asyncio
+async def test_known_pre_broadcast_failure_creates_no_grant_and_allows_retry(db_session: AsyncSession, monkeypatch):
+    """A transfer that definitely did not broadcast must be safely retryable."""
+    if hasattr(db_session, "users"):
+        return
+    _enable(monkeypatch)
+
+    with patch("app.services.gas_grant.fetch_onchain_balances", new_callable=AsyncMock, return_value=_eligible_balances()), \
+         patch("app.services.payout_service.execute_ton_transfer", new_callable=AsyncMock, side_effect=RuntimeError("RPC unavailable")):
+        with pytest.raises(GasGrantDenied) as exc:
+            await grant_gas(db_session, 661008, WALLET)
+    assert exc.value.status_code == 502
+
+    failed_rows = (await db_session.execute(
+        select(Transaction).where(Transaction.user_id == 661008, Transaction.type == GRANT_TX_TYPE)
+    )).scalars().all()
+    assert failed_rows == []
+
+    with patch("app.services.gas_grant.fetch_onchain_balances", new_callable=AsyncMock, return_value=_eligible_balances()), \
+         patch("app.services.payout_service.execute_ton_transfer", new_callable=AsyncMock, return_value="retry_hash") as send:
+        result = await grant_gas(db_session, 661008, WALLET)
+    assert result["status"] == "sent"
+    send.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_uncertain_broadcast_is_durable_and_not_retried(db_session: AsyncSession, monkeypatch):
+    """A timeout may have reached the chain, so a retry must not send again."""
+    if hasattr(db_session, "users"):
+        return
+    _enable(monkeypatch)
+
+    with patch("app.services.gas_grant.fetch_onchain_balances", new_callable=AsyncMock, return_value=_eligible_balances()), \
+         patch(
+             "app.services.payout_service.execute_ton_transfer",
+             new_callable=AsyncMock,
+             side_effect=BlockchainBroadcastError("timeout", "uncertain_grant_hash"),
+         ):
+        result = await grant_gas(db_session, 661009, WALLET)
+    assert result["message_hash"] == "uncertain_grant_hash"
+
+    tx = (await db_session.execute(
+        select(Transaction).where(Transaction.user_id == 661009, Transaction.type == GRANT_TX_TYPE)
+    )).scalars().one()
+    assert tx.reference_id == f"gas_grant:{WALLET}:uncertain_grant_hash"
+
+    with patch("app.services.gas_grant.fetch_onchain_balances", new_callable=AsyncMock) as balances, \
+         patch("app.services.payout_service.execute_ton_transfer", new_callable=AsyncMock) as send:
+        with pytest.raises(GasGrantDenied) as exc:
+            await grant_gas(db_session, 661009, WALLET)
+    assert "already received" in exc.value.detail
+    balances.assert_not_awaited()
+    send.assert_not_awaited()
 
 
 @pytest.mark.asyncio
