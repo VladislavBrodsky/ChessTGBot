@@ -957,6 +957,16 @@ async def get_jetton_wallet(
     from app.core.config import get_settings
     settings = get_settings()
     import httpx
+
+    # This resolver is part of the platform deposit flow.  Keep it aligned
+    # with settlement policy: only the configured USDT master is supported.
+    # Otherwise callers could receive a valid wallet address for an asset the
+    # verifier will deliberately never credit.
+    if not _is_usdt_master(jetton_master):
+        raise HTTPException(
+            status_code=400,
+            detail="Only the configured USDT jetton is supported for deposits.",
+        )
     
     try:
         raw_user = convert_ton_address_to_hex(user_address)
@@ -967,10 +977,10 @@ async def get_jetton_wallet(
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
-    url1 = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address?args={raw_user}"
+    url1 = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(url1, headers=headers)
+            res = await client.get(url1, headers=headers, params={"args": raw_user})
             if res.status_code == 200:
                 data = res.json()
                 if data.get("success") and "decoded" in data:
@@ -992,10 +1002,17 @@ async def get_jetton_wallet(
     except Exception as e:
         logger.warning(f"Failed to fetch jetton wallet via accounts endpoint: {e}")
 
-    url3 = f"https://toncenter.com/api/v3/jetton/wallets?owner_address={raw_user}&jetton_address={jetton_master}"
+    url3 = "https://toncenter.com/api/v3/jetton/wallets"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(url3, headers={"User-Agent": "Mozilla/5.0"})
+            res = await client.get(
+                url3,
+                headers={"User-Agent": "Mozilla/5.0"},
+                params={
+                    "owner_address": raw_user,
+                    "jetton_address": jetton_master,
+                },
+            )
             if res.status_code == 200:
                 data = res.json()
                 wallets = data.get("jetton_wallets", [])

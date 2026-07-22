@@ -5,12 +5,14 @@ import json
 import time
 import httpx
 from urllib.parse import quote
+from fastapi import HTTPException
 from app.models.transaction import Transaction
 from app.crud import user as user_crud
 from app.api.v1.endpoints.wallet import (
     _split_web3_top_up,
     convert_ton_address_to_hex,
-    convert_raw_to_friendly
+    convert_raw_to_friendly,
+    get_jetton_wallet,
 )
 from sqlalchemy.future import select
 
@@ -34,6 +36,56 @@ def test_address_converters():
 )
 def test_split_web3_top_up(received_cents, credited_cents, fee_cents):
     assert _split_web3_top_up(received_cents) == (credited_cents, fee_cents)
+
+
+@pytest.mark.asyncio
+async def test_jetton_wallet_uses_raw_owner_and_toncenter_failover(monkeypatch):
+    """The resolver must be USDT-only and send provider-safe raw addresses."""
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    user_address = settings.MASTER_WALLET_ADDRESS
+    raw_user = convert_ton_address_to_hex(user_address)
+    raw_jetton_wallet = "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83"
+    calls = []
+
+    class MockResponse:
+        def __init__(self, status_code, json_data):
+            self.status_code = status_code
+            self._json_data = json_data
+
+        def json(self):
+            return self._json_data
+
+    async def mock_get(_self, url, **kwargs):
+        calls.append((str(url), kwargs))
+        if "toncenter.com" in str(url):
+            return MockResponse(200, {"jetton_wallets": [{"address": raw_jetton_wallet}]})
+        return MockResponse(404, {})
+
+    monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
+
+    resolved = await get_jetton_wallet(user_address, settings.USDT_MASTER)
+
+    assert resolved["jetton_wallet_address"] == convert_raw_to_friendly(raw_jetton_wallet)
+    assert calls[0][1]["params"] == {"args": raw_user}
+    assert raw_user in calls[1][0]
+    assert calls[2][1]["params"] == {
+        "owner_address": raw_user,
+        "jetton_address": settings.USDT_MASTER,
+    }
+
+
+@pytest.mark.asyncio
+async def test_jetton_wallet_rejects_non_usdt_master():
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    with pytest.raises(HTTPException) as exc_info:
+        await get_jetton_wallet(settings.MASTER_WALLET_ADDRESS, "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c")
+
+    assert exc_info.value.status_code == 400
+    assert "USDT" in exc_info.value.detail
 
 
 @pytest.mark.asyncio

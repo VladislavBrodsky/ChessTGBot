@@ -40,6 +40,19 @@ def test_extract_session_status_safe():
     assert status == "expired"
     assert payment_status == "unpaid"
 
+    # Modern Stripe SDK objects can be mapping-like without implementing
+    # ``dict.get``. The alert was caused by assuming otherwise.
+    class ItemOnlyStripeObject:
+        def __getitem__(self, key):
+            return {"status": "open", "payment_status": "unpaid"}[key]
+
+        def get(self, *_args, **_kwargs):
+            raise AssertionError("Stripe SDK objects must not be accessed with .get()")
+
+    status, payment_status = _extract_session_status(ItemOnlyStripeObject())
+    assert status == "open"
+    assert payment_status == "unpaid"
+
 
 @pytest.mark.asyncio
 async def test_reconcile_paid_stripe_deposit(db, monkeypatch):
