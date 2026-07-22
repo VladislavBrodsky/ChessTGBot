@@ -14,7 +14,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, or_, desc, update, union, case
+from sqlalchemy import select, func, or_, desc, update, union, union_all, case
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_admin_user, get_db
@@ -193,17 +193,19 @@ async def get_stats(
 
     # ── Daily activity & revenue charts (last 14 days) ─────────────────────────
     # Daily activity (online games + transactions + new signups)
-    act_union = (
-        select(func.date(GameHistory.created_at).label("date"), GameHistory.white_player_id.label("uid"))
-        .where(GameHistory.game_type == "online", GameHistory.created_at >= ago_14d)
-        .union_all(
-            select(func.date(Transaction.created_at).label("date"), Transaction.user_id.label("uid"))
-            .where(Transaction.created_at >= ago_14d)
-        )
-        .union_all(
-            select(func.date(User.created_at).label("date"), User.id.label("uid"))
-            .where(User.created_at >= ago_14d)
-        )
+    act_union = union_all(
+        select(
+            func.date(GameHistory.created_at).label("date"),
+            GameHistory.white_player_id.label("uid"),
+        ).where(GameHistory.game_type == "online", GameHistory.created_at >= ago_14d),
+        select(
+            func.date(Transaction.created_at).label("date"),
+            Transaction.user_id.label("uid"),
+        ).where(Transaction.created_at >= ago_14d),
+        select(
+            func.date(User.created_at).label("date"),
+            User.id.label("uid"),
+        ).where(User.created_at >= ago_14d),
     )
     act_subq = act_union.subquery()
     act_stmt = select(act_subq.c.date, func.count(act_subq.c.uid).label("count")).group_by(act_subq.c.date)
