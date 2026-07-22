@@ -14,7 +14,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, or_, desc, update, union
+from sqlalchemy import select, func, or_, desc, update, union, case
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_admin_user, get_db
@@ -212,7 +212,7 @@ async def get_stats(
             func.date(Transaction.created_at).label("date"),
             func.coalesce(
                 func.sum(
-                    Transaction.fee + func.case((Transaction.type == "game_rake", func.abs(Transaction.amount)), else_=0)
+                    Transaction.fee + case((Transaction.type == "game_rake", func.abs(Transaction.amount)), else_=0)
                 ),
                 0,
             ).label("total_cents")
