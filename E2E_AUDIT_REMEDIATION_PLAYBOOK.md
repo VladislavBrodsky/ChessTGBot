@@ -1,8 +1,8 @@
 # ChessTGBot E2E Audit Remediation Playbook
 
-Last updated: 2026-07-21
+Last updated: 2026-07-22
 
-Status: Open remediation plan
+Status: Remaining remediation plan
 
 Audience: Coding agents and engineers implementing follow-up work from the
 2026-07-21 end-to-end audit.
@@ -116,11 +116,11 @@ Severity definitions:
 
 Release order:
 
-1. Complete SEC-01 and SEC-02.
-2. Add the critical concurrency and failure-injection tests from TEST-01.
-3. Deploy to staging and complete DEP-02 verification.
-4. Complete the browser, accessibility, localization, and performance packages.
-5. Enable blocking CI only after existing warnings and environment assumptions
+1. Complete the remaining money failure and concurrency coverage in TEST-02.
+2. Deploy to staging and complete DEP-02 verification.
+3. Complete the remaining browser, accessibility, localization, and performance
+   packages.
+4. Enable blocking CI only after existing warnings and environment assumptions
    are resolved.
 
 ## 5. Work Package Ownership
@@ -129,88 +129,15 @@ Models may work in parallel only when their ownership surfaces do not overlap.
 
 | Track | Packages | Primary ownership |
 |---|---|---|
-| Security backend | SEC-01 to SEC-04 | security/config/middleware and security tests |
+| Security backend | SEC-04 | security/config/middleware and security tests |
 | Frontend auth/i18n | UI-01, L10N-01 | login page, login widget, locale messages |
-| Frontend application | UI-02 to UI-04, PERF-01 | home/layout/game/wallet components and frontend tests |
+| Frontend application | UI-02 to UI-04 | home/layout/game/wallet components and frontend tests |
 | Integrity | INT-01, INT-02 | game analysis, review policy, anti-cheat tests |
 | Delivery | DEP-01 to DEP-03, TEST-01 | CI, dependency locks, Playwright, runbooks |
-| Observability | OBS-01 to OBS-03 | telemetry, metrics, alert controls, dashboards/runbooks |
+| Money test coverage | TEST-02 | balance-mutation failure and concurrency tests |
+| Observability | OBS-02 to OBS-03 | telemetry, metrics, alert controls, dashboards/runbooks |
 
 ## 6. Security
-
-### SEC-01 - Remove Hardcoded Admin Fallbacks [P1]
-
-Problem:
-
-`Settings.admin_telegram_ids` grants admin access to two hardcoded IDs when the
-environment variable is missing.
-
-Required implementation:
-
-- Remove hardcoded production fallback identities.
-- Require `ADMIN_TELEGRAM_IDS` in production and fail startup if it is empty or
-  malformed.
-- Continue accepting the legacy single ID only when explicitly configured.
-- Keep development/test defaults isolated behind `TESTING` or development mode.
-- Log only the number of configured administrators, never the identifiers.
-
-Acceptance criteria:
-
-- Missing admin configuration cannot grant any production user admin access.
-- Production startup rejects an empty admin set.
-- Non-admin and missing-auth tests cover every admin route.
-
-### SEC-02 - Trust Client IPs Only Through a Verified Proxy Boundary [P1/P2]
-
-Problem:
-
-Rate limits, signup clustering, referral Sybil checks, and matchmaking collusion
-use the first client-provided `X-Forwarded-For` value. This is spoofable unless
-the edge strips or rewrites incoming values.
-
-Required implementation:
-
-1. Confirm Railway's actual trusted client-IP header and proxy behavior.
-2. Centralize HTTP and Socket.IO IP extraction in one helper.
-3. Honor forwarded headers only when the direct peer is a trusted proxy or when
-   using a Railway-specific header guaranteed by the platform.
-4. Reject invalid, oversized, or non-IP header values.
-5. Keep raw addresses out of durable logs and storage; retain salted hashes.
-6. Add tests for spoofed first-hop values, multiple proxy hops, IPv6, missing
-   headers, and direct local development.
-
-Acceptance criteria:
-
-- A public client cannot choose the hash used for rate limiting or collusion.
-- HTTP and WebSocket paths derive the same trusted identity.
-- Legitimate users behind shared NAT are not counted as failed-auth attempts
-  unless their validation actually fails.
-
-### SEC-03 - Replace Broad Railway CORS Matching With Explicit Origins [P2]
-
-Problem:
-
-Production reflected credentialed CORS headers for
-`https://evilchesstgbot.up.railway.app` because any Railway hostname containing
-`chesstgbot` is allowed.
-
-Required implementation:
-
-- Replace substring matching with an explicit environment-driven allowlist.
-- If preview deployments are required, provision exact paired origins at deploy
-  time rather than matching arbitrary public Railway names.
-- Keep localhost only in development/test mode.
-- Preserve `Vary: Origin` on reflected responses.
-- Use an explicit header allowlist rather than `Access-Control-Allow-Headers: *`
-  when credentials are enabled.
-
-Required tests:
-
-- Production frontend origin accepted.
-- Custom production domain accepted when configured.
-- Arbitrary Railway origin rejected.
-- Lookalike host and suffix-confusion origins rejected.
-- Preflight and regular responses agree.
 
 ### SEC-04 - Add Browser Security Headers and Reduce Credential Exposure [P2]
 
@@ -324,40 +251,6 @@ Required work:
 - Preserve the successful 390x844 no-overflow result and bottom safe-area spacing.
 
 ## 8. Performance
-
-### PERF-01 - Stop the Wallet Balance Request Loop [P1/P2]
-
-Problem:
-
-The local wallet journey produced repeated `/api/v1/wallet/balance` requests at
-very high frequency. The likely loop is the wallet page effect depending on a
-changing `syncBalance` callback while that effect itself triggers SWR mutation.
-
-Primary files:
-
-- `frontend/src/context/UserContext.tsx`
-- `frontend/src/hooks/useSWRFetch.ts`
-- `frontend/src/app/[locale]/wallet/page.tsx`
-
-Required implementation:
-
-1. Reproduce with an automated request counter before changing code.
-2. Confirm whether SWR's bound `mutate` identity or provider rerenders are the
-   trigger.
-3. Stabilize keys, options, provider values, and callback identities.
-4. Avoid calling `syncBalance` on mount if the provider already initiated the
-   same request; fetch transaction history independently.
-5. Keep explicit refresh after successful deposit, withdrawal, or wallet link.
-6. Add a regression test that renders the wallet for several state updates and
-   enforces a bounded request count.
-
-Acceptance criteria:
-
-- Initial wallet load performs at most one balance request and one transaction
-  history request, excluding an explicitly documented React development probe.
-- An idle wallet performs zero polling requests unless a configured refresh is
-  deliberately added.
-- A successful mutation causes one deliberate revalidation.
 
 ### PERF-02 - Establish Load and Latency Budgets [P2]
 
@@ -520,23 +413,6 @@ Required implementation:
 
 ## 12. Observability
 
-### OBS-01 - Protect Client Error Ingestion [P2]
-
-Problem:
-
-`/api/v1/client-log` is intentionally available before full app startup but can
-generate admin alerts. Its rate limit uses the direct request peer rather than
-the centralized trusted client-IP helper.
-
-Required implementation:
-
-- Route client-log IP extraction through SEC-02's trusted helper.
-- Bound request size, number of entries, message length, and accepted levels.
-- Prefer authenticated reports when valid `initData` is available.
-- For unauthenticated startup crashes, sample aggressively and separate them
-  from paging alerts until correlated across multiple clients.
-- Never accept arbitrary HTML into Telegram alerts without escaping.
-
 ### OBS-02 - Add Metrics and SLO Signals [P2]
 
 Minimum metrics:
@@ -569,34 +445,30 @@ Required work:
 
 ## 13. Engineering Excellence and Test Strategy
 
-### TEST-01 - Add Frontend Browser E2E to CI [P2]
+### TEST-01 - Complete Remaining Frontend Browser E2E Coverage [P2]
 
-The repository currently has no frontend Playwright/Cypress E2E gate.
+Playwright now runs in CI with deterministic local test identity support. It
+covers protected-route redirects, login fallback, mobile and desktop dashboard
+rendering, Arabic login RTL, and bounded wallet balance requests.
 
-Required setup:
+Required remaining journeys:
 
-- Add Playwright using a local Next.js server and isolated backend database.
-- Create a test-only signed or explicitly test-mode Telegram identity path that
-  cannot activate in production.
-- Keep all E2E data local and deterministic.
-- Capture traces/screenshots only on failure to control artifact size.
+1. First-run dialog queue.
+2. Game lobby and AI difficulty selection.
+3. Start an AI game, make one legal move, receive an AI reply, resign, and view
+   the result.
+4. Deposit and withdrawal forms validate locally without executing an external
+   payment.
+5. Arabic dashboard RTL smoke.
+6. Keyboard-only chessboard move.
 
-Required critical journeys:
+Keep all E2E data local and deterministic. Capture traces and screenshots only
+on failure to control artifact size.
 
-1. Unauthenticated protected route redirects to locale login.
-2. Desktop login widget configuration and fallback state.
-3. First-run dialog queue.
-4. Dashboard at mobile and desktop widths.
-5. Game lobby and AI difficulty selection.
-6. Start AI game, make one legal move, receive AI reply, resign, and view result.
-7. Wallet load with bounded request count.
-8. Deposit/withdraw forms validate locally without executing external payment.
-9. Arabic login/dashboard RTL smoke.
-10. Keyboard-only chessboard move.
+### TEST-02 - Complete Money Failure and Concurrency Matrix [P0/P1]
 
-### TEST-02 - Add Money Failure and Concurrency Matrix [P0/P1]
-
-For every balance-changing operation, test:
+Initial marketplace and gas-grant coverage is in place. Complete the matrix for
+every remaining balance-changing operation:
 
 - duplicate request;
 - concurrent request;
@@ -609,7 +481,7 @@ For every balance-changing operation, test:
 - retry after terminal completion;
 - audit-log completeness.
 
-This matrix applies to deposits, withdrawals, admin approval/rejection, wager
+This applies to deposits, withdrawals, admin approval/rejection, wager
 lock/refund, game settlement, Stripe refunds/disputes, referral commissions,
 marketplace purchases, gas grants, and XP-to-value paths.
 
@@ -661,7 +533,6 @@ and tests first, then refactor in separate reviewable commits.
 
 ### Performance
 
-- Wallet request amplification is eliminated.
 - Load budgets and capacity assumptions are measured and documented.
 
 ### Localization and RTL
@@ -672,11 +543,9 @@ and tests first, then refactor in separate reviewable commits.
 ### Observability
 
 - Metrics, external probes, build identity, and incident runbooks exist.
-- Alert ingestion is rate-limited, escaped, and resistant to public abuse.
 
 ### Engineering Excellence
 
-- Frontend browser E2E and money concurrency/failure matrices run in CI.
 - Lint and typecheck are blocking.
 - High-risk modules are reduced only after behavior is protected.
 
