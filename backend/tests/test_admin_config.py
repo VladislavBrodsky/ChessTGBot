@@ -6,18 +6,11 @@ import sys
 
 import pytest
 
-from app.core.config import Settings, get_settings
+from app.core.config import Settings
 
 
 def _settings() -> Settings:
     return Settings(ENV="production", TESTING=False)
-
-
-@pytest.fixture(autouse=True)
-def clear_settings_cache():
-    get_settings.cache_clear()
-    yield
-    get_settings.cache_clear()
 
 
 def test_production_rejects_missing_admin_configuration(monkeypatch):
