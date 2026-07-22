@@ -86,6 +86,11 @@ def is_benign_telegram_file_error(exc: BaseException) -> bool:
     msg = str(exc).lower()
     return "temporarily unavailable" in msg or "wrong file_id" in msg
 
+
+def is_benign_telegram_avatar_error(exc: BaseException) -> bool:
+    """True when Telegram reports that an avatar owner is no longer accessible."""
+    return "user not found" in str(exc).lower()
+
 def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
     global _sent_alerts_cache

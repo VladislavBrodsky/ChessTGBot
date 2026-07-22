@@ -13,6 +13,7 @@ from unittest.mock import patch, AsyncMock, MagicMock
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from telegram import error as tg_error
 
 from app.api.v1.endpoints.users import get_user_avatar
 
@@ -54,6 +55,24 @@ def test_no_avatar_is_negative_cached(client):
     # Telegram was queried once; the second render short-circuited on the marker.
     assert bot.get_user_profile_photos.await_count == 1
     assert (tmp / "static_avatars" / "12345.none").exists()
+
+
+def test_missing_telegram_user_is_negative_cached(client):
+    tc, tmp = client
+    bot = MagicMock()
+    bot.get_user_profile_photos = AsyncMock(
+        side_effect=tg_error.BadRequest("User not found")
+    )
+    application = MagicMock()
+    application.bot = bot
+
+    with patch("app.services.telegram_bot.TelegramService.application", application):
+        r1 = tc.get("/avatar/6842281287")
+        r2 = tc.get("/avatar/6842281287")
+
+    assert r1.status_code == 404 and r2.status_code == 404
+    assert bot.get_user_profile_photos.await_count == 1
+    assert (tmp / "static_avatars" / "6842281287.none").exists()
 
 
 def test_marker_cleared_and_photo_served_when_avatar_appears(client):
