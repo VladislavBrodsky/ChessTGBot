@@ -14,7 +14,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, or_, desc, update
+from sqlalchemy import select, func, or_, desc, update, union
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_admin_user, get_db
@@ -100,38 +100,24 @@ async def get_stats(
 
     # ── Activity (users active via games, transactions, signups, or check-ins) ──
     async def _active_users(since: datetime) -> int:
-        q_union = (
-            select(GameHistory.white_player_id.label("player_id"))
-            .where(
-                GameHistory.game_type == "online",
-                GameHistory.created_at >= since,
-            )
-            .union(
-                select(GameHistory.black_player_id.label("player_id"))
-                .where(
-                    GameHistory.game_type == "online",
-                    GameHistory.created_at >= since,
-                )
-            )
-            .union(
-                select(Transaction.user_id.label("player_id"))
-                .where(
-                    Transaction.created_at >= since,
-                )
-            )
-            .union(
-                select(User.id.label("player_id"))
-                .where(
-                    User.created_at >= since,
-                )
-            )
-            .union(
-                select(User.id.label("player_id"))
-                .where(
-                    User.last_checkin_date >= since.date(),
-                )
-            )
+        q1 = select(GameHistory.white_player_id.label("player_id")).where(
+            GameHistory.game_type == "online",
+            GameHistory.created_at >= since,
         )
+        q2 = select(GameHistory.black_player_id.label("player_id")).where(
+            GameHistory.game_type == "online",
+            GameHistory.created_at >= since,
+        )
+        q3 = select(Transaction.user_id.label("player_id")).where(
+            Transaction.created_at >= since,
+        )
+        q4 = select(User.id.label("player_id")).where(
+            User.created_at >= since,
+        )
+        q5 = select(User.id.label("player_id")).where(
+            User.last_checkin_date >= since,
+        )
+        q_union = union(q1, q2, q3, q4, q5)
         subq = q_union.subquery()
         q_count = select(func.count(subq.c.player_id))
         r = await db.execute(q_count)
