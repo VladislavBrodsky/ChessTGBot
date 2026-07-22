@@ -1355,11 +1355,11 @@ function SystemTab() {
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('Dashboard');
-  const { data: stats, isLoading: loading, error } = useSWRFetch('/api/v1/admin/stats');
+  const { data: stats, isLoading: loading, error, mutate: retryStats } = useSWRFetch('/api/v1/admin/stats');
   const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
-    if (error && error.status === 403) {
+    if (error && (error.status === 403 || error.status === 401)) {
       setAccessDenied(true);
     }
   }, [error]);
@@ -1421,11 +1421,25 @@ export default function AdminPage() {
           >
             {loading && activeTab === 'Dashboard' ? (
               <div className="text-center py-16 text-brand-muted">
-                <div className="text-[32px] mb-3">⏳</div>
+                <div className="w-8 h-8 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto mb-3" />
                 <p>Loading dashboard…</p>
               </div>
             ) : activeTab === 'Dashboard' && stats ? (
               <DashboardTab stats={stats} />
+            ) : activeTab === 'Dashboard' && error ? (
+              <div className="glass-panel p-8 text-center max-w-lg mx-auto my-8 border border-red-500/20 bg-red-500/5">
+                <div className="text-4xl mb-3">⚠️</div>
+                <h3 className="text-lg font-black text-white mb-2">Couldn&apos;t load metrics</h3>
+                <p className="text-xs text-brand-muted mb-4">
+                  {error.info?.message || error.message || 'An error occurred while connecting to the admin stats API.'}
+                </p>
+                <button
+                  onClick={() => { void retryStats(); }}
+                  className="action-button px-6 py-2.5 text-xs font-black uppercase tracking-wider"
+                >
+                  Retry Loading
+                </button>
+              </div>
             ) : activeTab === 'Users' ? (
               <UsersTab />
             ) : activeTab === 'Transactions' ? (

@@ -60,11 +60,11 @@ export function useNavbarHide() {
  * guarantees the cleanup runs whenever the component unmounts, however that
  * happens.
  */
-export function useNavbarHideWhileMounted() {
+export function useNavbarHideWhileMounted(active: boolean = true) {
     const { pushHide, popHide } = useNavbar();
     useEffect(() => {
+        if (!active) return;
         pushHide();
         return () => popHide();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [active, pushHide, popHide]);
 }
