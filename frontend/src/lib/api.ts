@@ -1,3 +1,5 @@
+import { E2E_TEST_INIT_DATA, hasE2ETestIdentity } from '@/lib/e2eTestMode';
+
 interface ReadCacheEntry {
   response: Response;
   expiresAt: number;
@@ -65,6 +67,8 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
   if (typeof window !== "undefined") {
     if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
       initData = (window.Telegram.WebApp as any).initData;
+    } else if (hasE2ETestIdentity()) {
+      initData = E2E_TEST_INIT_DATA;
     } else {
       initData = localStorage.getItem('telegram_web_auth') || "";
     }
