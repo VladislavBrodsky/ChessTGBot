@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useCallback, useMemo } from 'react';
 // apiFetch removed since we useSWRFetch
 import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
 
 interface UserContextType {
     walletBalance: number;
@@ -53,7 +54,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         // (third-party) iframe when the browser blocks third-party storage.
         let hasWebAuth = false;
         try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
-        return isTMA || hasWebAuth;
+        return isTMA || hasWebAuth || hasE2ETestIdentity();
     }, []);
 
     const authenticated = isAuthenticated();
