@@ -107,6 +107,11 @@ class Settings(BaseSettings):
     # In production, this MUST be set as an environment variable.
     SECRET_KEY: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
+    # Railway routes public traffic through its edge before it reaches a
+    # service.  Its documented proxy range is 100.0.0.0/8; this setting exists
+    # so a future ingress can be added explicitly rather than trusting headers
+    # from every direct client.
+    TRUSTED_PROXY_CIDRS: str = os.getenv("TRUSTED_PROXY_CIDRS", "100.0.0.0/8")
 
     # Deployment
     # This URL should be the production URL of your app.

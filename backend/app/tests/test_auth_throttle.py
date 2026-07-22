@@ -1,7 +1,7 @@
 """Tests for the IP-keyed failed-auth throttle and request IP extraction (2b).
 
 These lock in the login/auth abuse protection:
- - extract_client_ip_from_request honours X-Forwarded-For (Railway proxy)
+ - client identity honours Railway's X-Real-IP only at a trusted edge
  - register_auth_failure / auth_ip_is_blocked block an IP only after enough
    FAILED attempts, never affect a different IP, and no-op on a null ip_hash
 Pure unit tests: no DB, no network, no running server. Unique per-run ip_hashes
@@ -48,22 +48,64 @@ class _FakeRequest:
         self.client = _FakeClient(client_host) if client_host else None
 
 
-def test_request_ip_prefers_forwarded_for_first_hop():
+def test_request_ip_ignores_spoofed_forwarded_headers_from_direct_peer():
     req = _FakeRequest(
         headers={"x-forwarded-for": "203.0.113.7, 10.0.0.1", "x-real-ip": "9.9.9.9"},
-        client_host="10.0.0.1",
+        client_host="198.51.100.10",
     )
-    assert security.extract_client_ip_from_request(req) == "203.0.113.7"
+    assert security.extract_client_ip_from_request(req) == "198.51.100.10"
 
 
-def test_request_ip_falls_back_to_real_ip_then_client():
+def test_request_ip_uses_railway_real_ip_and_ignores_multiple_forwarded_hops():
     assert security.extract_client_ip_from_request(
-        _FakeRequest(headers={"x-real-ip": "198.51.100.9"}, client_host="10.0.0.1")
-    ) == "198.51.100.9"
+        _FakeRequest(
+            headers={
+                "x-railway-edge": "edge",
+                "x-real-ip": "2001:db8::7",
+                "x-forwarded-for": "6.6.6.6, 100.1.2.3",
+            },
+            client_host="100.1.2.3",
+        )
+    ) == "2001:db8::7"
+
+
+@pytest.mark.parametrize("real_ip", ["not-an-ip", "1.2.3.4, 5.6.7.8", "1" * 129])
+def test_request_ip_rejects_invalid_railway_header(real_ip):
     assert security.extract_client_ip_from_request(
-        _FakeRequest(client_host="192.0.2.5")
-    ) == "192.0.2.5"
+        _FakeRequest(
+            headers={"x-railway-edge": "edge", "x-real-ip": real_ip},
+            client_host="100.1.2.3",
+        )
+    ) is None
+
+
+def test_request_ip_falls_back_to_direct_peer_and_handles_ipv6():
+    assert security.extract_client_ip_from_request(
+        _FakeRequest(headers={"x-real-ip": "198.51.100.9"}, client_host="::1")
+    ) == "::1"
     assert security.extract_client_ip_from_request(_FakeRequest()) is None
+
+
+def test_production_does_not_trust_a_local_client_claiming_to_be_railway(monkeypatch):
+    monkeypatch.setattr(security.settings, "TESTING", False)
+    monkeypatch.setattr(security.settings, "ENV", "production")
+    request = _FakeRequest(
+        headers={"x-railway-edge": "forged", "x-real-ip": "203.0.113.7"},
+        client_host="127.0.0.1",
+    )
+    assert security.extract_client_ip_from_request(request) == "127.0.0.1"
+
+
+def test_socket_and_http_use_the_same_trusted_identity():
+    headers = {"x-railway-edge": "edge", "x-real-ip": "203.0.113.7"}
+    request = _FakeRequest(headers=headers, client_host="100.2.3.4")
+    environ = {
+        "REMOTE_ADDR": "100.2.3.4",
+        "HTTP_X_RAILWAY_EDGE": "edge",
+        "HTTP_X_REAL_IP": "203.0.113.7",
+        "HTTP_X_FORWARDED_FOR": "6.6.6.6, 100.2.3.4",
+    }
+    assert security.extract_client_ip(environ) == security.extract_client_ip_from_request(request)
 
 
 @pytest.mark.asyncio

@@ -95,7 +95,8 @@ class E2EClient:
                     url,
                     auth={"initData": _init_data(user_id, name)},
                     headers={
-                        "X-Forwarded-For": ip,
+                        "X-Railway-Edge": "test-edge",
+                        "X-Real-IP": ip,
                         "Origin": "http://127.0.0.1:3000"
                     },
                     transports=["websocket", "polling"],

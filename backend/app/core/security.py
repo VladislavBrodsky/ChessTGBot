@@ -1,7 +1,9 @@
 import hmac
 import hashlib
+import ipaddress
 import json
 import time
+from collections.abc import Mapping
 from urllib.parse import unquote
 from fastapi import HTTPException
 from app.core.config import get_settings
@@ -13,53 +15,86 @@ settings = get_settings()
 # initData string authenticates as its user forever (indefinite replay). 24h is a
 # generous window that still bounds the value of a leaked string.
 INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
+MAX_CLIENT_IP_HEADER_LENGTH = 128
+
+
+def _normalise_ip(value: object) -> str | None:
+    """Return a canonical IP address, rejecting non-IP and oversized values."""
+    if not isinstance(value, str) or not value or len(value) > MAX_CLIENT_IP_HEADER_LENGTH:
+        return None
+    try:
+        return str(ipaddress.ip_address(value.strip()))
+    except ValueError:
+        return None
+
+
+def _trusted_proxy_networks() -> tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...]:
+    """Read the explicit proxy boundary; malformed configuration fails closed."""
+    networks = []
+    for cidr in settings.TRUSTED_PROXY_CIDRS.split(","):
+        try:
+            networks.append(ipaddress.ip_network(cidr.strip()))
+        except ValueError:
+            continue
+    # Test servers are loopback-only. Requiring the Railway marker as well keeps
+    # direct local requests untrusted while allowing realistic edge simulation.
+    if settings.is_development_or_testing:
+        networks.append(ipaddress.ip_network("127.0.0.0/8"))
+        networks.append(ipaddress.ip_network("::1/128"))
+    return tuple(networks)
+
+
+def _is_trusted_railway_proxy(peer_ip: str, headers: Mapping[str, object]) -> bool:
+    """Whether this peer is a Railway edge proxy allowed to supply X-Real-IP."""
+    if not headers.get("x-railway-edge"):
+        return False
+    try:
+        address = ipaddress.ip_address(peer_ip)
+    except ValueError:
+        return False
+    return any(address in network for network in _trusted_proxy_networks())
+
+
+def _extract_trusted_client_ip(peer: object, headers: Mapping[str, object]) -> str | None:
+    """Resolve one client identity without ever trusting generic forwarded hops."""
+    peer_ip = _normalise_ip(peer)
+    if not peer_ip:
+        return None
+
+    if not _is_trusted_railway_proxy(peer_ip, headers):
+        return peer_ip
+
+    # Railway documents X-Real-IP as the original remote address. Do not use
+    # X-Forwarded-For: a client-controlled first hop made rate-limit and Sybil
+    # identities spoofable before SEC-02.
+    return _normalise_ip(headers.get("x-real-ip"))
 
 
 def extract_client_ip(environ: dict) -> str | None:
-    """
-    Best-effort client IP from a Socket.IO ASGI `environ`. In production the app
-    sits behind the Railway edge proxy, so the real client IP is the first hop of
-    X-Forwarded-For; REMOTE_ADDR / the ASGI client tuple would just be the proxy.
-    """
+    """Resolve a Socket.IO client IP using the same trusted boundary as HTTP."""
     if not environ:
         return None
-    xff = environ.get("HTTP_X_FORWARDED_FOR")
-    if xff:
-        # "client, proxy1, proxy2" -> client
-        first = xff.split(",")[0].strip()
-        if first:
-            return first
-    real_ip = environ.get("HTTP_X_REAL_IP")
-    if real_ip:
-        return real_ip.strip()
-    remote = environ.get("REMOTE_ADDR")
-    if remote:
-        return remote
+    peer = environ.get("REMOTE_ADDR")
     scope = environ.get("asgi.scope") or {}
     client = scope.get("client")
-    if client and len(client) >= 1:
-        return client[0]
-    return None
+    if not peer and client and len(client) >= 1:
+        peer = client[0]
+    return _extract_trusted_client_ip(peer, {
+        "x-real-ip": environ.get("HTTP_X_REAL_IP"),
+        "x-railway-edge": environ.get("HTTP_X_RAILWAY_EDGE"),
+    })
 
 
 def extract_client_ip_from_request(request) -> str | None:
-    """
-    Best-effort client IP from a Starlette/FastAPI Request. Same rationale as
-    extract_client_ip(): behind the Railway edge proxy the real client is the
-    first hop of X-Forwarded-For; request.client would just be the proxy.
-    """
+    """Resolve an HTTP client IP using the same trusted boundary as Socket.IO."""
     if request is None:
         return None
     try:
-        xff = request.headers.get("x-forwarded-for")
-        if xff:
-            first = xff.split(",")[0].strip()
-            if first:
-                return first
-        real_ip = request.headers.get("x-real-ip")
-        if real_ip:
-            return real_ip.strip()
-        return request.client.host if request.client else None
+        peer = request.client.host if request.client else None
+        return _extract_trusted_client_ip(peer, {
+            "x-real-ip": request.headers.get("x-real-ip"),
+            "x-railway-edge": request.headers.get("x-railway-edge"),
+        })
     except Exception:
         return None
 

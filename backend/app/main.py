@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from app.core.config import get_settings
+from app.core.security import extract_client_ip_from_request, hash_ip
 import os
 import asyncio
 import logging
@@ -526,8 +527,8 @@ def create_application() -> FastAPI:
     async def client_log(request: Request):
         from fastapi.responses import JSONResponse
 
-        ip = request.client.host if request.client else "unknown"
-        if not await check_client_log_rate_limit(ip):
+        ip_hash = hash_ip(extract_client_ip_from_request(request)) or "unknown"
+        if not await check_client_log_rate_limit(ip_hash):
             return JSONResponse(
                 status_code=429,
                 content={"status": "error", "detail": "Rate limit exceeded. Please slow down."}
