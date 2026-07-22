@@ -6,6 +6,7 @@ from app.models.transaction import Transaction
 from app.models.xp_transaction import XpTransaction
 from app.models.arena import Arena, ArenaPlayer
 from app.models.telemetry import TelemetryDailyRollup, TelemetryLog
+from app.models.money_operation import MoneyOperationClaim
 
 __all__ = [
     "User",
@@ -20,6 +21,7 @@ __all__ = [
     "ArenaPlayer",
     "TelemetryLog",
     "TelemetryDailyRollup",
+    "MoneyOperationClaim",
     "SolvedPuzzle",
     "UnlockedPuzzle",
     "Achievement",

@@ -356,6 +356,57 @@ async def test_three_tier_referral_commission(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
+async def test_wager_referral_commission_retry_is_a_no_op(db_session: AsyncSession):
+    """A recovered game-settlement worker must not pay a referrer twice."""
+    if hasattr(db_session, "users"):
+        return
+
+    from app.models.money_operation import MoneyOperationClaim
+    from app.models.transaction import Transaction
+    from app.services.referral_commission_service import ReferralCommissionService
+
+    referrer = User(telegram_id=410001, first_name="Referrer", balance=0)
+    player = User(telegram_id=410002, first_name="Player", balance=0)
+    db_session.add_all([referrer, player])
+    await db_session.commit()
+    await db_session.refresh(referrer)
+    await db_session.refresh(player)
+    db_session.add(Referral(referrer_id=referrer.id, referred_user_id=player.id))
+    await db_session.commit()
+
+    game_id = "retry_safe_referral_game"
+    first = await ReferralCommissionService.distribute_wager_commissions(
+        db_session, game_id, player.id, 10_000, is_winner=True
+    )
+    await db_session.commit()
+    second = await ReferralCommissionService.distribute_wager_commissions(
+        db_session, game_id, player.id, 10_000, is_winner=True
+    )
+    await db_session.commit()
+
+    await db_session.refresh(referrer)
+    ledger = (await db_session.execute(
+        select(Transaction).where(
+            Transaction.user_id == referrer.telegram_id,
+            Transaction.type == "referral_commission",
+            Transaction.reference_id == f"ref_{game_id}",
+        )
+    )).scalars().all()
+    claims = (await db_session.execute(
+        select(MoneyOperationClaim).where(
+            MoneyOperationClaim.operation_type == "wager_referral_commission",
+            MoneyOperationClaim.reference_id == game_id,
+        )
+    )).scalars().all()
+
+    assert first == 400
+    assert second == 0
+    assert referrer.balance == 400
+    assert len(ledger) == 1
+    assert len(claims) == 1
+
+
+@pytest.mark.asyncio
 async def test_three_tier_referral_commission_non_premium_skipped(db_session: AsyncSession):
     # Skip if using mock session
     if hasattr(db_session, "users"):
