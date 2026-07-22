@@ -26,7 +26,9 @@ export default function UnboxConfirmSheet({
     onConfirm,
     onCancel,
 }: UnboxConfirmSheetProps) {
-    useNavbarHideWhileMounted();
+    // This component remains mounted while closed, so only claim the navbar
+    // hide slot while its full-screen sheet is actually open.
+    useNavbarHideWhileMounted(isOpen);
     const t = useTranslations('Marketplace');
     const dialogRef = useRef<HTMLDivElement>(null);
 
