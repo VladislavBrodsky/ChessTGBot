@@ -191,20 +191,23 @@ async def get_stats(
     )
     level_1 = level_1_res.scalar_one() or 0
 
-    # ── Optimized Daily signup / revenue chart (last 14 days) ──────────────────
-    # Daily signups (proxy: game activity)
-    games_stmt = (
-        select(
-            func.date(GameHistory.created_at).label("date"),
-            func.count(GameHistory.id).label("count")
+    # ── Daily activity & revenue charts (last 14 days) ─────────────────────────
+    # Daily activity (online games + transactions + new signups)
+    act_union = (
+        select(func.date(GameHistory.created_at).label("date"), GameHistory.white_player_id.label("uid"))
+        .where(GameHistory.game_type == "online", GameHistory.created_at >= ago_14d)
+        .union_all(
+            select(func.date(Transaction.created_at).label("date"), Transaction.user_id.label("uid"))
+            .where(Transaction.created_at >= ago_14d)
         )
-        .where(
-            GameHistory.game_type == "online",
-            GameHistory.created_at >= ago_14d
+        .union_all(
+            select(func.date(User.created_at).label("date"), User.id.label("uid"))
+            .where(User.created_at >= ago_14d)
         )
-        .group_by(func.date(GameHistory.created_at))
     )
-    games_res = await db.execute(games_stmt)
+    act_subq = act_union.subquery()
+    act_stmt = select(act_subq.c.date, func.count(act_subq.c.uid).label("count")).group_by(act_subq.c.date)
+    games_res = await db.execute(act_stmt)
     
     # Daily revenue (fees + rake)
     rev_stmt = (

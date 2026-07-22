@@ -184,19 +184,20 @@ function BarChart({
           return (
             <div
               key={i}
-              className="flex-1 relative group cursor-default"
+              className="flex-1 relative group cursor-pointer"
               style={{ height: 72, display: 'flex', alignItems: 'flex-end' }}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
+              onClick={() => setHovered(hovered === i ? null : i)}
             >
               {hovered === i && (
-                <div className="admin-chart-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded-lg px-2 py-1 text-[10px] whitespace-nowrap z-10 pointer-events-none">
+                <div className="admin-chart-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded-lg px-2 py-1 text-[10px] whitespace-nowrap z-10 pointer-events-none shadow-lg">
                   <div className="font-bold">{d.date.slice(5)}</div>
                   <div className="admin-chart-total">{valueKey.includes('cents') ? cents(values[i]) : fmt(values[i])}</div>
                 </div>
               )}
               <div
-                className={`w-full rounded-t-[3px] transition-all duration-200 ${hovered === i ? 'admin-chart-bar-active' : 'admin-chart-bar'}`}
+                className={`w-full rounded-t-[3px] transition-all duration-200 ${hovered === i ? 'admin-chart-bar-active brightness-125 scale-x-110' : 'admin-chart-bar'}`}
                 style={{
                   height: h,
                 }}
@@ -1419,7 +1420,7 @@ export default function AdminPage() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
           >
-            {loading && activeTab === 'Dashboard' ? (
+            {loading && !error && activeTab === 'Dashboard' ? (
               <div className="text-center py-16 text-brand-muted">
                 <div className="w-8 h-8 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto mb-3" />
                 <p>Loading dashboard…</p>
