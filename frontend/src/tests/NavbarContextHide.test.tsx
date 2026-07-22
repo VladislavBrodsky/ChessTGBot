@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { NavbarProvider, useNavbarHideWhileMounted } from '@/context/NavbarContext';
+import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 
 // Regression guard: a commit once dropped the `isNavbarHiddenByContext` term from
 // LayoutWrapper's `shouldHideNavbar`, leaving the NavbarContext read orphaned. That
@@ -73,6 +74,25 @@ describe('LayoutWrapper navbar-hide wiring', () => {
     );
     await waitFor(() =>
       expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'true'),
+    );
+  });
+
+  it('keeps the navbar visible while the marketplace confirmation sheet is closed', async () => {
+    render(
+      <NavbarProvider>
+        <LayoutWrapper>
+          <UnboxConfirmSheet
+            isOpen={false}
+            tier={null}
+            userXP={0}
+            onConfirm={jest.fn()}
+            onCancel={jest.fn()}
+          />
+        </LayoutWrapper>
+      </NavbarProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'false'),
     );
   });
 });
