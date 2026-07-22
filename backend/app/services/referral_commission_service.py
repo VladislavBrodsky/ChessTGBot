@@ -214,6 +214,37 @@ class ReferralCommissionService:
         if not player:
             return 0
 
+        # A game settlement can be retried after a worker restart or a socket
+        # reconnect.  The individual ledger entries have several recipients,
+        # so they cannot safely provide one operation-wide uniqueness key.
+        # Claim the logical settlement before changing any balances instead.
+        from sqlalchemy.exc import IntegrityError
+        from app.models.money_operation import MoneyOperationClaim
+
+        claim_type = "wager_referral_commission"
+        already_claimed = await db.execute(
+            select(MoneyOperationClaim.id).where(
+                MoneyOperationClaim.operation_type == claim_type,
+                MoneyOperationClaim.reference_id == game_id,
+            )
+        )
+        if already_claimed.scalar_one_or_none() is not None:
+            logger.info("Referral commissions already settled for game %s", game_id)
+            return 0
+
+        try:
+            # A savepoint keeps a concurrent unique-key collision from
+            # invalidating the caller's larger game-settlement transaction.
+            async with db.begin_nested():
+                db.add(MoneyOperationClaim(
+                    operation_type=claim_type,
+                    reference_id=game_id,
+                ))
+                await db.flush()
+        except IntegrityError:
+            logger.info("Referral commissions already claimed concurrently for game %s", game_id)
+            return 0
+
         player_display = f"@{html.escape(player.username)}" if player.username else html.escape(player.first_name or "")
 
         # Fetch referrer chain up to 6 levels

@@ -116,11 +116,10 @@ Severity definitions:
 
 Release order:
 
-1. Complete the remaining money failure and concurrency coverage in TEST-02.
-2. Deploy to staging and complete DEP-02 verification.
-3. Complete the remaining browser, accessibility, localization, and performance
+1. Deploy to staging and complete DEP-02 verification.
+2. Complete the remaining browser, accessibility, localization, and performance
    packages.
-4. Enable blocking CI only after existing warnings and environment assumptions
+3. Enable blocking CI only after existing warnings and environment assumptions
    are resolved.
 
 ## 5. Work Package Ownership
@@ -133,8 +132,7 @@ Models may work in parallel only when their ownership surfaces do not overlap.
 | Frontend auth/i18n | UI-01, L10N-01 | login page, login widget, locale messages |
 | Frontend application | UI-02 to UI-04 | home/layout/game/wallet components and frontend tests |
 | Integrity | INT-01, INT-02 | game analysis, review policy, anti-cheat tests |
-| Delivery | DEP-01 to DEP-03, TEST-01 | CI, dependency locks, Playwright, runbooks |
-| Money test coverage | TEST-02 | balance-mutation failure and concurrency tests |
+| Delivery | DEP-01 to DEP-03 | CI, dependency locks, runbooks |
 | Observability | OBS-02 to OBS-03 | telemetry, metrics, alert controls, dashboards/runbooks |
 
 ## 6. Security
@@ -444,46 +442,6 @@ Required work:
 - Ensure public health errors do not expose internal hostnames or exception text.
 
 ## 13. Engineering Excellence and Test Strategy
-
-### TEST-01 - Complete Remaining Frontend Browser E2E Coverage [P2]
-
-Playwright now runs in CI with deterministic local test identity support. It
-covers protected-route redirects, login fallback, mobile and desktop dashboard
-rendering, Arabic login RTL, and bounded wallet balance requests.
-
-Required remaining journeys:
-
-1. First-run dialog queue.
-2. Game lobby and AI difficulty selection.
-3. Start an AI game, make one legal move, receive an AI reply, resign, and view
-   the result.
-4. Deposit and withdrawal forms validate locally without executing an external
-   payment.
-5. Arabic dashboard RTL smoke.
-6. Keyboard-only chessboard move.
-
-Keep all E2E data local and deterministic. Capture traces and screenshots only
-on failure to control artifact size.
-
-### TEST-02 - Complete Money Failure and Concurrency Matrix [P0/P1]
-
-Initial marketplace and gas-grant coverage is in place. Complete the matrix for
-every remaining balance-changing operation:
-
-- duplicate request;
-- concurrent request;
-- exception before DB mutation;
-- exception between mutations;
-- commit failure;
-- external timeout before broadcast;
-- uncertain broadcast;
-- process restart/reconciliation;
-- retry after terminal completion;
-- audit-log completeness.
-
-This applies to deposits, withdrawals, admin approval/rejection, wager
-lock/refund, game settlement, Stripe refunds/disputes, referral commissions,
-marketplace purchases, gas grants, and XP-to-value paths.
 
 ### ENG-01 - Reduce High-Risk Module Size [P3]
 

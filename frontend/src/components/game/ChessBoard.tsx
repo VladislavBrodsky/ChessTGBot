@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
-import { useState, useEffect, type CSSProperties } from "react";
+import { useState, useEffect, type CSSProperties, type KeyboardEvent } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
@@ -87,6 +87,7 @@ export default function ChessBoardComponent({
 
     const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+    const [keyboardMove, setKeyboardMove] = useState("");
     const [prevFen, setPrevFen] = useState<string | null>(null);
     const [lastMoveSquares, setLastMoveSquares] = useState<string[]>([]);
 
@@ -181,6 +182,26 @@ export default function ChessBoardComponent({
         }
     }
 
+    function handleKeyboardMove(event: KeyboardEvent<HTMLDivElement>) {
+        if (event.key === "Escape") {
+            setKeyboardMove("");
+            setSelectedSquare(null);
+            return;
+        }
+
+        if (!/^[a-h1-8]$/i.test(event.key)) return;
+
+        event.preventDefault();
+        const nextMove = `${keyboardMove}${event.key.toLowerCase()}`.slice(-4);
+        setKeyboardMove(nextMove);
+        if (nextMove.length !== 4) return;
+
+        const [from, to] = [nextMove.slice(0, 2), nextMove.slice(2, 4)];
+        setKeyboardMove("");
+        const moveResult = onMove({ from, to });
+        if (moveResult) telegramHaptic('light');
+    }
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             setWindowDimension({ width: window.innerWidth, height: window.innerHeight });
@@ -273,7 +294,14 @@ export default function ChessBoardComponent({
 
 
     return (
-        <div className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700">
+        <div
+            data-testid="live-chessboard"
+            className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary"
+            role="group"
+            tabIndex={0}
+            aria-label="Chessboard. Type a source square and destination square, for example e2e4, to make a move. Press Escape to clear the current entry."
+            onKeyDown={handleKeyboardMove}
+        >
             {showConfetti && <div className="fixed inset-0 pointer-events-none z-50">
                 <Confetti width={windowDimension.width} height={windowDimension.height} recycle={false} numberOfPieces={500} gravity={0.3} />
             </div>}

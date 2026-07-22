@@ -60,16 +60,13 @@ export default function Onboarding({ onClose }: OnboardingProps) {
   }, [onClose]);
 
   const handleNext = useCallback(() => {
-    setCurrentSlide((prev) => {
-      if (prev < slides.length - 1) {
-        setDirection(1);
-        return prev + 1;
-      } else {
-        handleComplete();
-        return prev;
-      }
-    });
-  }, [slides.length, handleComplete]);
+    if (currentSlide === slides.length - 1) {
+      handleComplete();
+      return;
+    }
+    setDirection(1);
+    setCurrentSlide((prev) => prev + 1);
+  }, [currentSlide, slides.length, handleComplete]);
 
   const handleBack = useCallback(() => {
     setCurrentSlide((prev) => {
