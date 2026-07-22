@@ -88,8 +88,8 @@ export default function WalletPage() {
   }, [fetchWalletData]);
 
   return (
-    <LayoutWrapper className="w-full">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12">
+    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12 pt-2">
       
         {/* Header Back Link */}
         <div className="w-full flex items-center justify-between">

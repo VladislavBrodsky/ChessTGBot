@@ -61,6 +61,8 @@ const IconCrown = () => (
   </svg>
 );
 
+import VIPConfirmSheet from "@/components/Membership/VIPConfirmSheet";
+
 export default function MembershipPage() {
   const locale = useLocale();
   const t = useTranslations('Index');
@@ -90,6 +92,7 @@ export default function MembershipPage() {
   const [windowDimensions, setWindowDimensions] = useState({ width: 400, height: 600 });
   const [submitting, setSubmitting] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [confirmingXpUpgrade, setConfirmingXpUpgrade] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -107,25 +110,39 @@ export default function MembershipPage() {
 
   const cost = billingPeriod === 'annual' ? ANNUAL_CENTS : MONTHLY_CENTS;
 
-  const handleXpUpgrade = async () => {
+  const handleXpUpgrade = () => {
     const currentXp = stats?.xp || 0;
     if (currentXp < 5000) {
       telegramHaptic('error');
       telegramAlert(tm('xp_upgrade_alert', { xp: currentXp }));
       return;
     }
-    telegramConfirm(tm('xp_upgrade_confirm', { xp: currentXp }), async (ok) => {
-      if (!ok) return;
-      try {
-        const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", { method: "POST" });
-        const data = await res.json();
-        if (res.ok && data.status === "success") {
-          telegramHaptic('success'); setShowSuccess(true); setShowConfetti(true); syncStats();
-        } else {
-          telegramHaptic('error'); telegramAlert(data.detail || tm('failed_xp_upgrade'));
-        }
-      } catch { telegramHaptic('error'); telegramAlert(tm('upgrade_failed')); }
-    });
+    setConfirmingXpUpgrade(true);
+  };
+
+  const handleConfirmXpUpgrade = async () => {
+    setSubmitting(true);
+    try {
+      const res = await apiFetch("/api/v1/gamification/premium/upgrade-with-xp", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.status === "success") {
+        telegramHaptic('success');
+        setShowSuccess(true);
+        setShowConfetti(true);
+        setConfirmingXpUpgrade(false);
+        syncStats();
+      } else {
+        telegramHaptic('error');
+        telegramAlert(data.detail || tm('failed_xp_upgrade'));
+        setConfirmingXpUpgrade(false);
+      }
+    } catch {
+      telegramHaptic('error');
+      telegramAlert(tm('upgrade_failed'));
+      setConfirmingXpUpgrade(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleManageSubscription = async () => {
@@ -638,6 +655,18 @@ export default function MembershipPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* ── VIP XP Upgrade Confirmation Sheet ────────────────────── */}
+      <VIPConfirmSheet
+        isOpen={confirmingXpUpgrade}
+        title="XP VIP PASS UPGRADE"
+        description="Unlock 30 days of VIP Membership benefits using your accumulated XP!"
+        costText="5,000 XP"
+        balanceText={`${(stats?.xp || 0).toLocaleString()} XP`}
+        loading={submitting}
+        onConfirm={handleConfirmXpUpgrade}
+        onCancel={() => setConfirmingXpUpgrade(false)}
+      />
     </LayoutWrapper>
   );
 }

@@ -17,11 +17,15 @@ interface Theme {
   owned: boolean;
 }
 
+import ThemeConfirmSheet from "@/components/Academy/ThemeConfirmSheet";
+
 export default function ThemeShopPage() {
   const [themes, setThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(true);
   const [userXp, setUserXp] = useState(0);
   const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
+  const [confirmingTheme, setConfirmingTheme] = useState<Theme | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -54,38 +58,48 @@ export default function ThemeShopPage() {
       telegramHaptic('error');
       return;
     }
+    setConfirmingTheme(theme);
+  };
 
-    telegramConfirm(`Unlock ${theme.name} for ${theme.price_xp} XP?`, async (confirmed) => {
-      if (!confirmed) return;
-      telegramHaptic('medium');
+  const handleConfirmBuy = async () => {
+    if (!confirmingTheme) return;
+    const theme = confirmingTheme;
+    telegramHaptic('medium');
+    setPurchasing(true);
+    
+    try {
+      const res = await apiFetch('/api/v1/gamification/themes/buy', {
+        method: 'POST',
+        body: JSON.stringify({ theme_code: theme.code })
+      });
       
-      try {
-        const res = await apiFetch('/api/v1/gamification/themes/buy', {
-          method: 'POST',
-          body: JSON.stringify({ theme_code: theme.code })
-        });
-        
-        if (res.ok) {
-          telegramHaptic('success');
-          setThemes(themes.map(t => t.code === theme.code ? { ...t, owned: true } : t));
-          setUserXp(prev => prev - theme.price_xp);
+      if (res.ok) {
+        telegramHaptic('success');
+        setThemes(themes.map(t => t.code === theme.code ? { ...t, owned: true } : t));
+        setUserXp(prev => prev - theme.price_xp);
+        setConfirmingTheme(null);
+        if (typeof window !== 'undefined' && 'Audio' in window) {
           new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio blocked', e));
-        } else {
-          telegramHaptic('error');
-          const data = await res.json();
-          telegramAlert(data.detail || "Failed to purchase theme");
         }
-      } catch (e) {
-        console.error(e);
+      } else {
         telegramHaptic('error');
+        const data = await res.json();
+        telegramAlert(data.detail || "Failed to purchase theme");
+        setConfirmingTheme(null);
       }
-    });
+    } catch (e) {
+      console.error(e);
+      telegramHaptic('error');
+      setConfirmingTheme(null);
+    } finally {
+      setPurchasing(false);
+    }
   };
 
   if (loading) {
     return (
-      <LayoutWrapper className="pb-32 px-4 md:px-6">
-        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-6 pt-6" role="status" aria-label="Loading board themes">
+      <LayoutWrapper className="pb-32 px-4 md:px-6 pt-[max(1rem,var(--app-safe-top))]">
+        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-6 pt-2" role="status" aria-label="Loading board themes">
           <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
           <div className="mx-auto h-3 w-32 rounded-full bg-brand-bg-opacity-5" />
           <div className="mx-auto h-9 w-36 rounded-full bg-brand-bg-opacity-10" />
@@ -100,8 +114,8 @@ export default function ThemeShopPage() {
   }
 
   return (
-    <LayoutWrapper className="pb-32 px-4 md:px-6">
-    <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
+    <LayoutWrapper className="pb-32 px-4 md:px-6 pt-[max(1rem,var(--app-safe-top))]">
+    <div className="pt-2 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight flex items-center justify-center gap-3">
           <FaPalette className="text-purple-500" /> Theme Shop
@@ -111,7 +125,7 @@ export default function ThemeShopPage() {
         </p>
         <div className="inline-flex items-center gap-2 bg-brand-surface border border-brand-border-opacity-20 px-4 py-2 rounded-full mt-4">
           <span className="text-xs font-black uppercase text-brand-muted">Your Balance:</span>
-          <span className="text-sm font-black text-emerald-400">{userXp} XP</span>
+          <span className="text-sm font-black text-amber-400">{userXp.toLocaleString()} XP</span>
         </div>
       </div>
 
@@ -161,6 +175,17 @@ export default function ThemeShopPage() {
         ))}
       </div>
     </div>
+
+    <ThemeConfirmSheet
+      isOpen={Boolean(confirmingTheme)}
+      themeName={confirmingTheme?.name || ''}
+      themeDescription={confirmingTheme?.description}
+      priceXP={confirmingTheme?.price_xp || 0}
+      userXP={userXp}
+      loading={purchasing}
+      onConfirm={handleConfirmBuy}
+      onCancel={() => setConfirmingTheme(null)}
+    />
     </LayoutWrapper>
   );
 }
