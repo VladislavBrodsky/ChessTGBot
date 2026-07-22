@@ -194,7 +194,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     );
 
     return (
-        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
+        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-clip ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
             {/* Ambient Starfield & Gradients */}
             {!pathname.includes('/admin') && <AnimatedBackground />}
 
