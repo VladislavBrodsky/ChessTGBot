@@ -19,10 +19,12 @@ if TEST_DATABASE_URL.startswith("postgresql://"):
     TEST_DATABASE_URL = TEST_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 # When REQUIRE_REAL_DB=1 (set in CI), the suite must run against a reachable real
-# database. Any failure to connect/create the schema becomes a hard, loud error
-# with setup guidance instead of silently degrading to the in-memory MockAsyncSession
+# engine. Any failure to connect/create the schema becomes a hard, loud error with
+# setup guidance instead of silently degrading to the in-memory MockAsyncSession
 # below — which validates almost nothing about real DB semantics (atomicity,
-# constraints, row-level locks, ledger correctness). See DEP-03.
+# constraints, ledger correctness). CI points DATABASE_URL at a sqlite file; a full
+# asyncpg/Postgres run is a tracked follow-up (the async fixtures share a connection
+# across the ASGI client and test coroutine, which asyncpg rejects). See DEP-03.
 REQUIRE_REAL_DB = os.getenv("REQUIRE_REAL_DB") == "1"
 
 
@@ -31,8 +33,8 @@ def _real_db_required_error(detail: str) -> RuntimeError:
         "REQUIRE_REAL_DB=1 but no real test database is usable: "
         f"{detail}\n"
         f"TEST_DATABASE_URL={TEST_DATABASE_URL!r}\n"
-        "Set DATABASE_URL to a reachable Postgres and ensure the '<db>_test' "
-        "database exists (CI creates 'chess_db_test' in the postgres service). "
+        "Set DATABASE_URL to a reachable database whose '<db>_test' schema can be "
+        "created (CI uses a sqlite file). "
         "Unset REQUIRE_REAL_DB to allow the local mock-session fallback."
     )
 

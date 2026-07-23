@@ -9,7 +9,7 @@ import Confetti from "react-confetti";
 import TierComparison from "@/components/TierComparison";
 import { apiFetch } from "@/lib/api";
 import { useLocale, useTranslations } from 'next-intl';
-import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
+import { telegramAlert, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';

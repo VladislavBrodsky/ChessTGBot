@@ -81,12 +81,16 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    # Postgres backs both the migration gate and pytest. Previously pytest had no
-    # DATABASE_URL, so settings fell back to the production Postgres default,
-    # 'chess_db_test' was unreachable, and conftest silently degraded the WHOLE
-    # suite to an in-memory MockAsyncSession (validating ~nothing about real DB
-    # semantics). REQUIRE_REAL_DB below now makes that fallback a hard failure and
-    # the Pytest step targets this service. See DEP-03.
+    # Scratch Postgres for the migration gate only. pytest runs on an explicit
+    # sqlite file (deterministic, and a REAL engine — not the in-memory
+    # MockAsyncSession). Previously pytest had no DATABASE_URL, so settings fell
+    # back to the production Postgres default, 'chess_db_test' was unreachable, and
+    # conftest silently degraded the WHOLE suite to the mock (validating ~nothing).
+    # REQUIRE_REAL_DB below now makes that silent mock fallback a hard failure.
+    # Running the full suite against asyncpg/Postgres is deferred: the async test
+    # fixtures share a connection across the ASGI client and the test coroutine,
+    # which aiosqlite tolerates but asyncpg rejects ("another operation is in
+    # progress"). That conftest overhaul is tracked as DEP-03 follow-up. See DEP-03.
     services:
       postgres:
         image: postgres:16
@@ -131,20 +135,12 @@ jobs:
           WEBHOOK_SECRET: ci-dummy-webhook-secret
           ADMIN_TELEGRAM_IDS: "999999"
         run: python -m alembic upgrade head
-      # conftest derives the test DB as DATABASE_URL + "_test", so create
-      # 'chess_db_test' in the service. psql is preinstalled on ubuntu-latest.
-      - name: Create test database
-        env:
-          PGPASSWORD: postgres
-        run: psql -h localhost -U postgres -d postgres -c "CREATE DATABASE chess_db_test;"
-      # Run against the real Postgres service. REQUIRE_REAL_DB turns conftest's
-      # silent MockAsyncSession fallback into a hard failure, so a DB that is
-      # unreachable/misconfigured fails CI loudly instead of testing a mock. This
-      # also lets the Postgres-only arena-targeting and row-lock concurrency tests
-      # actually execute here.
+      # Deterministic sqlite (a real engine, not the mock). REQUIRE_REAL_DB turns
+      # conftest's silent MockAsyncSession fallback into a hard failure, so if the
+      # engine can't be created the suite fails loudly instead of testing a mock.
       - name: Pytest
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/chess_db
+          DATABASE_URL: sqlite+aiosqlite:///./ci_test.db
           REQUIRE_REAL_DB: "1"
         run: python -m pytest
 
