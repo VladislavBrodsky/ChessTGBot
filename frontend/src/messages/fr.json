@@ -409,6 +409,7 @@
     "thinking": "Réfléchit",
     "your_turn": "À vous de jouer",
     "creating_match": "Création de la partie...",
+    "revenge_failed": "Impossible de lancer la revanche. Réessayez.",
     "pending_opponent": "En attente de l'adversaire...",
     "to_lobby": "Au lobby",
     "xp_reward": "Récompense XP"

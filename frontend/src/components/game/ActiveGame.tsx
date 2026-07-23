@@ -18,6 +18,7 @@ import { useAudio } from '@/hooks/useAudio';
 import { useChessClock } from '@/hooks/useChessClock';
 import { useNavbarHide } from '@/context/NavbarContext';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
+import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
@@ -185,6 +186,21 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const isWhite = gameState ? gameState.white_player_id === userId : true;
   const opponentId = isWhite ? gameState?.black_player_id : gameState?.white_player_id;
+
+  // Bot-revenge guards. startBotGameRevenge is a fire-and-forget create+navigate;
+  // without these a slow/failed create strands the modal in "creating match..."
+  // and a late resolution can router.push() after the user already left (e.g.
+  // tapped "To Lobby"), yanking them back into a game.
+  const revengeInFlightRef = useRef(false);
+  const revengeAbortRef = useRef<AbortController | null>(null);
+  const isUnmountedRef = useRef(false);
+  useEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+      // Cancel any in-flight revenge create so it can't navigate post-unmount.
+      revengeAbortRef.current?.abort();
+    };
+  }, []);
 
   const gameStateRef = useRef(gameState);
   const userIdRef = useRef(userId);
@@ -497,19 +513,43 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   };
 
   const startBotGameRevenge = async () => {
+    // Ignore repeat taps while a create is already in flight.
+    if (revengeInFlightRef.current) return;
+    revengeInFlightRef.current = true;
     setRematchStatus('waiting');
+
+    // Bound the wait: on a slow mobile connection the raw fetch could hang for
+    // ~20s. Abort sooner so the user gets a retryable error instead of a modal
+    // stuck forever on "creating match...".
+    const controller = new AbortController();
+    revengeAbortRef.current = controller;
+    const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+
     try {
-      const timeControl = gameState?.time_control_seconds || 600;
-      const difficulty = gameState?.difficulty || "medium";
-      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}&difficulty=${difficulty}`, {
-        method: "POST"
-      });
-      if (!res.ok) throw new Error("Backend error");
-      const data = await res.json();
-      router.push(`/${locale}/game?id=${data.game_id}`);
-    } catch {
-      console.error("Failed to create computer game");
-      setRematchStatus('idle');
+      const result = await requestBotRevengeGame(
+        {
+          timeControl: gameState?.time_control_seconds || 600,
+          difficulty: gameState?.difficulty || "medium",
+        },
+        { signal: controller.signal },
+      );
+      // The user may have left (To Lobby) while the create was in flight — the
+      // component is unmounted and its AbortController fired. Do not navigate or
+      // set state: that would yank them out of wherever they went.
+      if (isUnmountedRef.current) return;
+      if (result.ok) {
+        // Leave rematchStatus='waiting'; this instance unmounts as the new game
+        // mounts (the page keys ActiveGame by gameId).
+        router.push(`/${locale}/game?id=${result.gameId}`);
+      } else {
+        console.error("Failed to create computer revenge game");
+        revengeInFlightRef.current = false;
+        setRematchStatus('idle');
+        setGameNotice({ type: 'error', message: tg('revenge_failed') });
+        telegramHaptic('error');
+      }
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   };
 

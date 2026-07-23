@@ -409,6 +409,7 @@
     "thinking": "Denkt nach",
     "your_turn": "Du bist am Zug",
     "creating_match": "Partie wird erstellt...",
+    "revenge_failed": "Revanche konnte nicht gestartet werden. Bitte erneut versuchen.",
     "pending_opponent": "Warte auf Gegner...",
     "to_lobby": "Zur Lobby",
     "xp_reward": "XP-Belohnung"

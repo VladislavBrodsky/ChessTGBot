@@ -409,6 +409,7 @@
     "thinking": "Думает",
     "your_turn": "Ваш ход",
     "creating_match": "Создание дуэли...",
+    "revenge_failed": "Не удалось начать реванш. Попробуйте снова.",
     "pending_opponent": "Ожидание соперника...",
     "to_lobby": "В лобби",
     "xp_reward": "Опыт"

@@ -409,6 +409,7 @@
     "thinking": "思考中",
     "your_turn": "あなたの番",
     "creating_match": "マッチ作成中...",
+    "revenge_failed": "リベンジマッチを開始できませんでした。もう一度お試しください。",
     "pending_opponent": "対戦相手を待機中...",
     "to_lobby": "ロビーへ",
     "xp_reward": "XP報酬"

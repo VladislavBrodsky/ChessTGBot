@@ -409,6 +409,7 @@
     "thinking": "Thinking",
     "your_turn": "Your turn",
     "creating_match": "Creating Match...",
+    "revenge_failed": "Could not start revenge match. Please try again.",
     "pending_opponent": "Pending Opponent...",
     "to_lobby": "To Lobby",
     "xp_reward": "XP Reward"
