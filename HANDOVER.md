@@ -1,4 +1,4 @@
-# ChessTGBot — Gap Register (updated 2026-07-16)
+# ChessTGBot — Gap Register (updated 2026-07-20)
 
 Nine-pillar assessment of the app, reduced to **gaps only** — what is missing,
 weak, or risky per pillar. Strengths are omitted by design; this is a worklist,
@@ -25,16 +25,11 @@ enforces freshness on PRs).
 1. **Web-login `initData` persists in `localStorage`** (`frontend/src/lib/api.ts`)
    — any XSS becomes a 24-hour credential theft. Raises the stakes on the HTML-
    escaping discipline.
-2. **Rate limits are in-memory dicts** (`backend/app/api/v1/deps.py`) — they
-   reset on every deploy (deploys are frequent) and will not survive going
-   multi-replica.
 
 ## 3. Money-Flow Correctness — A−
 
-- **Stripe card deposits have a known stuck-`pending` mode with no automated
-  reconciliation.** `stripe_sweeper.py` exists but appears to be run by hand.
-  "Harden deposit and subscription settlement" landed 2026-07-15 — verify it
-  actually closed this; if not, add a scheduled reconciliation sweep.
+- **Stripe card deposits automated reconciliation** — closed 2026-07-21 via
+  `stripe_reconciliation.py` service integrated into `main.py` lifespan background tasks.
 - **Money ops are still partly manual.** One-off scripts live inside `app/`
   (`one_time_refund_kirill.py`, `process_payouts_backlog.py`,
   `sync_all_historical_deposits.py`, `stripe_sweeper.py`, `wallet_diagnostic.py`)
@@ -77,8 +72,6 @@ enforces freshness on PRs).
   countdowns in `PlayLobby.tsx`, `ArenaBanner.tsx`, `DepositModal.tsx`,
   `SeasonalCountdown.tsx`, admin page). Fine at hundreds of users, additive at
   thousands — the Socket.IO push channel already exists for most of it.
-- **Avatar 404s re-fetch every render** with no negative caching
-  (`/api/v1/users/avatar/{id}` — heavy in the logs).
 - **The single-instance in-memory state caps scaling to "bigger box"** until
   refactored — acceptable, but undocumented as a limit.
 - **No load testing evident** — the limits will be met in production first.
@@ -117,7 +110,7 @@ enforces freshness on PRs).
 
 ---
 
-## Priority — top five actions
+## Priority — top four actions
 
 1. **Post-hoc engine-cheat screening on wagered games**, gating large
    withdrawals (App Integrity). Protects the fairness of the money loop.
@@ -127,7 +120,6 @@ enforces freshness on PRs).
    of `initData` or reduce lifetime to avoid credential theft risk from XSS.
 4. **Dedicated payout hot wallet / separate float** (Money-Flow). Move payout
    keys off the main server's environment or implement a signature service to reduce wallet-drain risk.
-5. **Move rate limits from in-memory to Redis** (Security). In-memory rate limits reset on every deploy and block horizontal scaling.
 
 ---
 

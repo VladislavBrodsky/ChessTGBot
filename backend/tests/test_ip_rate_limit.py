@@ -21,7 +21,8 @@ async def test_ip_rate_limit_on_sync(client, db_session):
             "/api/v1/users/sync",
             headers={
                 "X-Telegram-Init-Data": init_data,
-                "x-forwarded-for": "1.2.3.4"
+                "x-railway-edge": "edge",
+                "x-real-ip": "1.2.3.4",
             }
         )
         assert response.status_code == 200, f"Request {i+1} failed"
@@ -31,7 +32,8 @@ async def test_ip_rate_limit_on_sync(client, db_session):
         "/api/v1/users/sync",
         headers={
             "X-Telegram-Init-Data": init_data,
-            "x-forwarded-for": "1.2.3.4"
+            "x-railway-edge": "edge",
+            "x-real-ip": "1.2.3.4",
         }
     )
     assert response_429.status_code == 429
@@ -42,7 +44,8 @@ async def test_ip_rate_limit_on_sync(client, db_session):
         "/api/v1/users/sync",
         headers={
             "X-Telegram-Init-Data": init_data,
-            "x-forwarded-for": "5.6.7.8"
+            "x-railway-edge": "edge",
+            "x-real-ip": "5.6.7.8",
         }
     )
     assert response_diff_ip.status_code == 200

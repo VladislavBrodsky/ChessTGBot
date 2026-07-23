@@ -334,17 +334,36 @@ class TelegramService:
             if user.last_name:
                 name += f" {html_mod.escape(user.last_name)}"
 
-            # ── XP progress bar (8 blocks, 350 XP per level) ──────────────
-            xp_per_level = TelegramService.XP_PER_LEVEL
-            earned_level = max(1, int(user_xp // xp_per_level) + 1)
-            # Marketplace spending can lower the available XP balance after a
-            # level has been earned. The level itself remains secured, so the
-            # welcome bar must stay complete instead of implying lost progress.
+            # ── XP progress bar (8 blocks, progressive level curve) ──────────────
+            safe_xp = max(0, int(user_xp)) if user_xp is not None else 0
+            earned_level = 1
+            cumulative_xp = 0
+            while True:
+                next_level_cost = 350 + (earned_level - 1) * 50
+                if cumulative_xp + next_level_cost > safe_xp:
+                    break
+                cumulative_xp += next_level_cost
+                earned_level += 1
+
             level_secured = user_level > earned_level
-            xp_in_level = xp_per_level if level_secured else user_xp % xp_per_level
-            filled = round((xp_in_level / xp_per_level) * 8)
-            bar = "█" * filled + "░" * (8 - filled)
-            xp_to_next = 0 if level_secured else xp_per_level - xp_in_level
+            
+            # Calculate next level cost and start XP for the displayed level
+            displayed_level_start_xp = 0
+            for i in range(1, user_level):
+                displayed_level_start_xp += 350 + (i - 1) * 50
+            displayed_level_cost = 350 + (user_level - 1) * 50
+            next_level_xp = displayed_level_start_xp + displayed_level_cost
+
+            if level_secured:
+                progress_ratio = safe_xp / next_level_xp
+                xp_to_next = next_level_xp - safe_xp
+            else:
+                progress_in_tier = safe_xp - displayed_level_start_xp
+                progress_ratio = max(0.0, progress_in_tier / displayed_level_cost)
+                xp_to_next = displayed_level_cost - progress_in_tier
+
+            filled = round(progress_ratio * 8)
+            bar = "█" * min(8, max(0, filled)) + "░" * (8 - min(8, max(0, filled)))
             level_lbl = msgs.get("level_label", "LVL")
             xp_lbl = msgs.get("xp_label", "XP")
 

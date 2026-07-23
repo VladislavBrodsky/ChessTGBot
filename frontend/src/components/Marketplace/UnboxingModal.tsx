@@ -104,64 +104,80 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
 
                         {state === 'shaking' && (
                             <div className="space-y-8 flex flex-col items-center">
-                                <span id="unboxing-title" role="status" aria-live="polite" className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">{t('unboxing')}</span>
+                                <span id="unboxing-title" role="status" aria-live="polite" className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-muted">{t('unboxing')}</span>
                                 <motion.div
-                                    animate={{ x: [-8, 8, -8, 8, 0], y: [-4, 4, -4, 4, 0], rotate: [-3, 3, -3, 3, 0], scale: [1, 1.03, 1] }}
+                                    animate={{ x: [-8, 8, -8, 8, 0], y: [-4, 4, -4, 4, 0], rotate: [-3, 3, -3, 3, 0], scale: [1, 1.05, 1] }}
                                     transition={{ duration: 0.55, repeat: 1, ease: 'easeInOut' }}
-                                    className="w-36 h-36 rounded-3xl border flex items-center justify-center"
-                                    style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.4), rgba(0,0,0,0.6))`, borderColor: `rgba(${cfg.theme.rgb},0.4)` }}
+                                    className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl relative"
+                                    style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.25), rgba(11,15,23,0.9))`, borderColor: `rgba(${cfg.theme.rgb},0.4)` }}
                                 >
-                                    <span className="text-5xl font-black" style={{ color: cfg.theme.accent }}>?</span>
+                                    <span className="text-5xl font-black font-serif" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
                                 </motion.div>
                                 <div className="h-6" />
                             </div>
                         )}
 
                         {state === 'flash' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-white z-50" />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1.05 }}
+                                transition={{ duration: 0.2 }}
+                                className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl"
+                                style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.4), rgba(11,15,23,0.95))`, borderColor: cfg.theme.accent }}
+                            >
+                                <span className="text-5xl font-black font-serif animate-ping" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
+                            </motion.div>
                         )}
 
                         {state === 'reveal' && (
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0, scale: 0.85 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-                                className="space-y-6 flex flex-col items-center w-full relative"
+                                className="space-y-6 flex flex-col items-center w-full relative z-10"
                             >
-                                {/* Confetti */}
+                                {/* Confetti particles */}
                                 {confetti.map((c) => (
-                                    <motion.span key={c.id}
+                                    <motion.span
+                                        key={c.id}
                                         initial={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
                                         animate={{ opacity: 0, x: c.x, y: c.y, rotate: c.rotate }}
                                         transition={{ duration: 1.4, delay: c.delay, ease: 'easeOut' }}
                                         className="absolute left-1/2 top-1/3 rounded-sm pointer-events-none"
-                                        style={{ width: c.size, height: c.size, background: c.color }} />
+                                        style={{ width: c.size, height: c.size, background: c.color }}
+                                    />
                                 ))}
 
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: cfg.theme.accent }}>{t('you_unlocked')}</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] drop-shadow" style={{ color: cfg.theme.accent }}>
+                                    {t('you_unlocked')}
+                                </span>
 
                                 <motion.div
-                                    className="w-48 h-48 rounded-[32px] border flex flex-col items-center justify-center p-4 relative overflow-hidden"
+                                    className="w-48 h-48 rounded-[32px] border flex flex-col items-center justify-center p-4 relative overflow-hidden shadow-2xl"
                                     style={{
-                                        background: `linear-gradient(180deg, rgba(${cfg.theme.rgb},0.18), rgba(0,0,0,0.9))`,
-                                        borderColor: `rgba(${cfg.theme.rgb},0.35)`,
-                                        boxShadow: intensity >= 2 ? `0 0 32px rgba(${cfg.theme.rgb},0.35)` : undefined,
+                                        background: `linear-gradient(180deg, rgba(${cfg.theme.rgb},0.2), rgba(11,15,23,0.95))`,
+                                        borderColor: `rgba(${cfg.theme.rgb},0.4)`,
+                                        boxShadow: `0 0 40px rgba(${cfg.theme.rgb},0.25)`,
                                     }}
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-[var(--color-brand-surface)] opacity-90 border border-white/10 flex items-center justify-center mb-3" style={{ color: cfg.theme.accent }}>
+                                    <div className="w-16 h-16 rounded-2xl bg-brand-surface opacity-95 border border-white/10 flex items-center justify-center mb-3 shadow-inner" style={{ color: cfg.theme.accent }}>
                                         {icon}
                                     </div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/50">{kindLabel}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-muted">{kindLabel}</span>
                                 </motion.div>
 
-                                <div className="space-y-2">
-                                    <h2 id="unboxing-title" className="text-xl font-black uppercase tracking-wider text-white leading-tight">{prizeName}</h2>
-                                    <p className="text-xs text-white/50">{t('added_to_inventory')}</p>
+                                <div className="space-y-1">
+                                    <h2 id="unboxing-title" className="text-xl font-black uppercase tracking-wider text-brand-primary leading-tight">
+                                        {prizeName}
+                                    </h2>
+                                    <p className="text-xs text-brand-muted font-medium">{t('added_to_inventory')}</p>
                                 </div>
 
                                 <motion.button
-                                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={onClose}
-                                    className="px-8 py-3 rounded-full text-black text-xs font-black uppercase tracking-widest shadow-premium cursor-pointer flex items-center gap-2"
+                                    className="px-8 py-3 rounded-full text-slate-950 text-xs font-black uppercase tracking-widest shadow-premium cursor-pointer flex items-center gap-2"
                                     style={{ background: `linear-gradient(90deg, ${cfg.theme.accent}, ${cfg.theme.glow})` }}
                                 >
                                     <FiCheck size={14} />

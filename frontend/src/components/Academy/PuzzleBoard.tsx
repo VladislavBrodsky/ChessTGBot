@@ -300,8 +300,8 @@ export default function PuzzleBoard({
           orientation={orientation}
           customSquareStyles={customSquareStyles}
           customArrows={finalArrows.length > 0 ? finalArrows : undefined}
-          customDarkSquareStyle={{ backgroundColor: '#7b9fb6' }}
-          customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
+          customDarkSquareStyle={{ backgroundColor: '#18181b' }}
+          customLightSquareStyle={{ backgroundColor: '#52525b' }}
         />
         {shake && (
           <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -342,7 +342,7 @@ export default function PuzzleBoard({
           )}
         </div>
         {hintsEnabled && !showHintText && status === 'playing' && (
-          <span className="text-[10px] font-bold text-blue-500/50 uppercase tracking-widest mt-2">
+          <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-2">
             Hints available (Levels 1-10)
           </span>
         )}
@@ -356,7 +356,7 @@ export default function PuzzleBoard({
             exit={{ opacity: 0, height: 0 }}
             className="w-full text-center px-4 -mt-2"
           >
-            <div className="text-xs font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 inline-block">
+            <div className="text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 inline-block">
               <span className="font-bold uppercase tracking-wider block mb-1">Coach Hint:</span>
               {dynamicHintText}
             </div>

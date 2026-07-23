@@ -56,9 +56,11 @@ export default function TelegramInit() {
                 console.warn('Failed to request fullscreen', e);
             }
 
-            // Disable vertical swipes to prevent accidental close on swipe down (Bot API 7.7+).
+            // This is a mobile-only gesture. Telegram Web applies the host setting to
+            // the embedded page too, which prevents normal mouse-wheel scrolling.
+            const isMobileTelegram = tg.platform === 'ios' || tg.platform === 'android';
             try {
-                tg.disableVerticalSwipes?.();
+                if (isMobileTelegram) tg.disableVerticalSwipes?.();
             } catch (e) {
                 console.warn('Failed to disable vertical swipes', e);
             }

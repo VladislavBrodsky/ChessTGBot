@@ -1,5 +1,7 @@
 import pytest
 import pytest_asyncio
+import stripe
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
@@ -9,6 +11,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from app.core.database import Base
 from app.models.user import User
 from app.models.transaction import Transaction
+from app.models.stripe_event import StripeWebhookEvent
 from app.core.config import get_settings
 from app.api.v1.endpoints.wallet import (
     stripe_create_session,
@@ -108,6 +111,7 @@ async def test_stripe_webhook_success(db, monkeypatch):
 
     # Mock stripe event
     mock_event = {
+        "id": "evt_topup_999",
         "type": "checkout.session.completed",
         "data": {
             "object": {
@@ -119,6 +123,7 @@ async def test_stripe_webhook_success(db, monkeypatch):
             }
         }
     }
+    mock_event = stripe.Event.construct_from(mock_event, "sk_test_mock")
 
     # Mock request and construct_event
     mock_request = MagicMock()
@@ -168,6 +173,50 @@ async def test_stripe_webhook_success(db, monkeypatch):
             assert "User: ID 12345" in msg
             assert "Amount: $10.50" in msg
             assert "Transaction ID: cs_test_webhook" in msg
+
+
+@pytest.mark.asyncio
+async def test_stripe_webhook_event_replay_is_a_noop(db, monkeypatch):
+    user = _user(445566, 0)
+    pending_tx = Transaction(
+        user_id=user.telegram_id,
+        type="deposit",
+        amount=1_000,
+        fee=50,
+        status="pending",
+        reference_id="cs_event_replay",
+    )
+    db.add_all([user, pending_tx])
+    await db.commit()
+
+    event = {
+        "id": "evt_replay_once",
+        "type": "checkout.session.completed",
+        "data": {"object": {"id": "cs_event_replay", "metadata": {
+            "tx_id": str(pending_tx.id), "user_id": str(user.telegram_id),
+        }}},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+        first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+        second = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(user)
+    await db.refresh(pending_tx)
+    receipts = (await db.execute(select(StripeWebhookEvent))).scalars().all()
+    fees = (await db.execute(select(Transaction).where(Transaction.type == "deposit_fee"))).scalars().all()
+    assert first["status"] == "success"
+    assert second["status"] == "ignored"
+    assert user.balance == 1_000
+    assert pending_tx.status == "completed"
+    assert len(receipts) == 1
+    assert len(fees) == 1
 
 
 @pytest.mark.asyncio
@@ -260,6 +309,73 @@ async def test_paid_subscription_invoice_activates_once_and_stays_out_of_wallet_
         assert "User: ID 56789" in msg
         assert "Amount: $9.99" in msg
         assert "Transaction ID: in_567" in msg
+
+
+@pytest.mark.asyncio
+async def test_distinct_stripe_events_cannot_settle_one_invoice_twice(db, monkeypatch):
+    user = _user(56790, 0)
+    user.stripe_customer_id = "cus_56790"
+    db.add(user)
+    await db.commit()
+
+    event = {
+        "id": "evt_invoice_first",
+        "type": "invoice.payment_succeeded",
+        "data": {"object": {"id": "in_same_invoice", "subscription": "sub_same", "amount_paid": 999}},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    subscription = {
+        "metadata": {"user_id": str(user.telegram_id), "tier": "premium"},
+        "items": {"data": [{"price": {"id": "price_monthly"}}]},
+    }
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+    monkeypatch.setattr(settings, "STRIPE_MONTHLY_PRICE_ID", "price_monthly")
+
+    with patch("stripe.Webhook.construct_event", side_effect=[event, {**event, "id": "evt_invoice_second"}]), \
+         patch("stripe.Subscription.retrieve", return_value=subscription), \
+         patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock):
+        first = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+        second = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(user)
+    entries = (await db.execute(
+        select(Transaction).where(Transaction.reference_id == "sub_in_same_invoice")
+    )).scalars().all()
+    receipts = (await db.execute(select(StripeWebhookEvent))).scalars().all()
+    assert first["status"] == "success"
+    assert second["status"] == "ignored"
+    assert user.is_premium is True
+    assert len(entries) == 1
+    assert len(receipts) == 2
+
+
+@pytest.mark.asyncio
+async def test_failed_invoice_processing_does_not_consume_webhook_receipt(db, monkeypatch):
+    user = _user(56791, 0)
+    db.add(user)
+    await db.commit()
+    event = {
+        "id": "evt_invoice_retryable",
+        "type": "invoice.payment_succeeded",
+        "data": {"object": {"id": "in_retryable", "subscription": "sub_retryable", "amount_paid": 999}},
+    }
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+
+    with patch("stripe.Webhook.construct_event", return_value=event), \
+         patch("stripe.Subscription.retrieve", side_effect=RuntimeError("Stripe unavailable")):
+        with pytest.raises(HTTPException) as exc:
+            await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    receipts = (await db.execute(select(StripeWebhookEvent))).scalars().all()
+    assert exc.value.status_code == 500
+    assert receipts == []
 
 
 @pytest.mark.asyncio

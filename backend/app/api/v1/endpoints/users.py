@@ -327,8 +327,15 @@ async def get_user_avatar(telegram_id: int, request: Request):
     avatar_dir = "static_avatars"
     os.makedirs(avatar_dir, exist_ok=True)
     file_path = os.path.join(avatar_dir, f"{telegram_id}.jpg")
+    # Negative-cache sentinel: touched when Telegram confirms the user has no
+    # profile photo, so we don't re-hit the Bot API on every render. Filesystem
+    # based to match the positive cache above (both are per-instance and rebuild
+    # cheaply after a redeploy).
+    none_path = os.path.join(avatar_dir, f"{telegram_id}.none")
 
     CACHE_SECONDS = 604800  # 7 days — avatars rarely change
+    NEGATIVE_CACHE_SECONDS = 3600  # 1 hour — how long a "no avatar" result sticks
+    NOT_FOUND_BROWSER_SECONDS = 300  # 5 min — let clients cache the 404 briefly
 
     def _build_etag(path: str) -> str:
         """Generate a stable ETag from file mtime + size."""
@@ -350,6 +357,27 @@ async def get_user_avatar(telegram_id: int, request: Request):
             "ETag": etag,
         })
 
+    def _not_found() -> Response:
+        # Cacheable 404 so a re-rendering client stops re-requesting a missing
+        # avatar every frame. Short max-age keeps recovery quick once the user
+        # sets a photo.
+        return Response(status_code=404, headers={
+            "Cache-Control": f"public, max-age={NOT_FOUND_BROWSER_SECONDS}",
+        })
+
+    def _mark_no_avatar() -> None:
+        try:
+            with open(none_path, "w"):
+                pass
+        except OSError:
+            pass
+
+    def _clear_no_avatar() -> None:
+        try:
+            os.remove(none_path)
+        except OSError:
+            pass
+
     # Fast path: serve cached version if it exists (regardless of age — ETag handles freshness)
     if os.path.exists(file_path):
         try:
@@ -358,6 +386,18 @@ async def get_user_avatar(telegram_id: int, request: Request):
             if time.time() - mtime < 86400:
                 return _serve_cached(file_path)
         except Exception:
+            pass
+
+    # Negative cache: if we recently confirmed this user has no avatar, skip the
+    # Telegram round-trip entirely. Serving a stale positive cache (if one somehow
+    # exists) still wins over a 404.
+    if os.path.exists(none_path):
+        try:
+            if time.time() - os.path.getmtime(none_path) < NEGATIVE_CACHE_SECONDS:
+                if os.path.exists(file_path):
+                    return _serve_cached(file_path)
+                return _not_found()
+        except OSError:
             pass
 
     # Slow path: fetch from Telegram Bot API and cache locally
@@ -375,16 +415,31 @@ async def get_user_avatar(telegram_id: int, request: Request):
                         with open(file_path, "wb") as f:
                             f.write(res.content)
                         os.utime(file_path, None)
+                        # Photo is back — drop any stale "no avatar" marker.
+                        _clear_no_avatar()
                         return _serve_cached(file_path)
+            else:
+                # Telegram definitively reports no profile photo. Remember it so
+                # every subsequent render doesn't re-hit the Bot API.
+                _mark_no_avatar()
         except Exception as e:
             import logging
-            from app.core.alerts import is_transient_telegram_error, is_benign_telegram_file_error
+            from app.core.alerts import (
+                is_benign_telegram_avatar_error,
+                is_benign_telegram_file_error,
+                is_transient_telegram_error,
+            )
             # A momentary Telegram API outage (timeout / 502) OR a benign
             # "Wrong file_id or the file is temporarily unavailable" BadRequest
             # (Telegram briefly loses an avatar file_id it just handed us) are
             # both self-healing and covered by the stale-cache fallback below —
             # so they log at WARNING and must not page admins.
-            if is_transient_telegram_error(e) or is_benign_telegram_file_error(e):
+            if is_benign_telegram_avatar_error(e):
+                _mark_no_avatar()
+                logging.getLogger(__name__).warning(
+                    f"Avatar unavailable for {telegram_id}: {e}"
+                )
+            elif is_transient_telegram_error(e) or is_benign_telegram_file_error(e):
                 logging.getLogger(__name__).warning(f"Transient Telegram API error fetching avatar for {telegram_id}: {e}")
             else:
                 logging.getLogger(__name__).error(f"Failed to fetch/cache avatar for {telegram_id}: {e}")
@@ -393,7 +448,7 @@ async def get_user_avatar(telegram_id: int, request: Request):
     if os.path.exists(file_path):
         return _serve_cached(file_path)
 
-    raise HTTPException(status_code=404, detail="Avatar not found")
+    return _not_found()
 
 @router.get("/{telegram_id}", response_model=UserStats)
 async def get_user_stats(
@@ -634,13 +689,16 @@ async def subscribe_user(
     )
 
     # Telegram notification
-    from app.services.telegram_bot import TelegramService
-    await TelegramService.send_premium_welcome(
-        user_id=locked_user.telegram_id,
-        first_name=locked_user.first_name,
-        expires_at=expires_at,
-        lang=locked_user.preferred_language
-    )
+    try:
+        from app.services.telegram_bot import TelegramService
+        await TelegramService.send_premium_welcome(
+            user_id=locked_user.telegram_id,
+            first_name=locked_user.first_name,
+            expires_at=expires_at,
+            lang=locked_user.preferred_language
+        )
+    except Exception as notify_err:
+        logger.warning(f"Failed to send Telegram premium welcome: {notify_err}")
 
     # Distribute referral commissions on the net charged price
     from app.services.referral_commission_service import ReferralCommissionService

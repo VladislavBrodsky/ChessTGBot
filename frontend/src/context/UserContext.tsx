@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 // apiFetch removed since we useSWRFetch
 import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
 
 interface UserContextType {
     walletBalance: number;
@@ -34,6 +35,17 @@ const UserContext = createContext<UserContextType>({
     statsError: false,
 });
 
+const BALANCE_SWR_OPTIONS = {
+    revalidateOnFocus: false,
+    dedupingInterval: 30_000,
+};
+
+const STATS_SWR_KEY: any[] = ['/api/v1/users/sync', {}];
+const STATS_SWR_OPTIONS = {
+    revalidateOnFocus: false,
+    dedupingInterval: 60_000,
+};
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const isAuthenticated = useCallback((): boolean => {
         if (typeof window === 'undefined') return false;
@@ -42,23 +54,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         // (third-party) iframe when the browser blocks third-party storage.
         let hasWebAuth = false;
         try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
-        return isTMA || hasWebAuth;
+        return isTMA || hasWebAuth || hasE2ETestIdentity();
     }, []);
 
+    const authenticated = isAuthenticated();
     const { data: balanceData, error: balanceSWR_Error, isLoading: loadingBalance, mutate: syncBalance } = useSWRFetch(
-        isAuthenticated() ? '/api/v1/wallet/balance' : null,
-        {
-            revalidateOnFocus: false,
-            dedupingInterval: 30_000,
-        }
+        authenticated ? '/api/v1/wallet/balance' : null,
+        BALANCE_SWR_OPTIONS,
     );
 
     const { data: statsData, error: statsSWR_Error, isLoading: loadingStats, mutate: syncStats } = useSWRFetch(
-        isAuthenticated() ? ['/api/v1/users/sync', {}] : null,
-        {
-            revalidateOnFocus: false,
-            dedupingInterval: 60_000,
-        }
+        authenticated ? STATS_SWR_KEY : null,
+        STATS_SWR_OPTIONS,
     );
 
     const walletBalance = balanceData?.balance || 0;
@@ -80,8 +87,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         return data || null;
     }, [syncStats]);
 
-    return (
-        <UserContext.Provider value={{
+    const value = useMemo(() => ({
             walletBalance,
             walletAddress,
             stats,
@@ -91,7 +97,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             loadingStats,
             balanceError,
             statsError,
-        }}>
+        }), [
+            walletBalance,
+            walletAddress,
+            stats,
+            syncBalanceWrapper,
+            syncStatsWrapper,
+            loadingBalance,
+            loadingStats,
+            balanceError,
+            statsError,
+        ]);
+
+    return (
+        <UserContext.Provider value={value}>
             {children}
         </UserContext.Provider>
     );

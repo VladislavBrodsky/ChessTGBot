@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { getXPProgress, XP_PER_LEVEL } from '@/lib/xpProgress';
+import { getXPProgress } from '@/lib/xpProgress';
+import { FaLock } from 'react-icons/fa';
 
 interface XPProgressBarProps {
     xp: number;
@@ -13,21 +14,30 @@ interface XPProgressBarProps {
 export default function XPProgressBar({ xp, level, levelLabel = 'Level', className = '' }: XPProgressBarProps) {
     const progress = getXPProgress(xp, level);
     
-    const progressPercentage = progress.progressPercentage;
+    const progressPercentage = Math.min(100, Math.max(0, progress.progressPercentage));
     const levelSecured = progress.isLevelSecured;
     const userLevel = progress.displayedLevel;
 
+    const currentLevelCost = 350 + (userLevel - 1) * 50;
+
     const progressText = levelSecured
-        ? `${progress.currentLevelProgress} / ${progress.nextLevelXp} XP`
-        : `${progress.currentLevelProgress} / ${XP_PER_LEVEL} XP`;
+        ? `${progress.currentLevelProgress.toLocaleString()} / ${progress.nextLevelXp.toLocaleString()} XP`
+        : `${progress.currentLevelProgress.toLocaleString()} / ${currentLevelCost.toLocaleString()} XP`;
 
     return (
         <div className={`w-full flex flex-col gap-1.5 ${className}`}>
             {/* Label and Progress text */}
-            <div className="flex justify-between items-end px-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
-                    {levelLabel} {userLevel}
-                </span>
+            <div className="flex justify-between items-center px-1">
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
+                        {levelLabel} {userLevel}
+                    </span>
+                    {levelSecured && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-400/10 border border-slate-400/20 text-[9px] font-black uppercase tracking-wider text-slate-300">
+                            <FaLock size={8} /> SECURED
+                        </span>
+                    )}
+                </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted tabular-nums">
                     {progressText}
                 </span>
@@ -38,52 +48,39 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 role="progressbar"
                 aria-label={`${levelLabel} ${userLevel} progress`}
                 aria-valuemin={0}
-                aria-valuemax={XP_PER_LEVEL}
+                aria-valuemax={levelSecured ? progress.nextLevelXp : currentLevelCost}
                 aria-valuenow={progress.currentLevelProgress}
                 aria-valuetext={levelSecured
                     ? `${progress.currentLevelProgress} of ${progress.nextLevelXp} XP toward ${levelLabel} ${userLevel + 1}`
-                    : `${progress.currentLevelProgress} of ${XP_PER_LEVEL} XP toward ${levelLabel} ${userLevel + 1}`}
-                className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border"
+                    : `${progress.currentLevelProgress} of ${currentLevelCost} XP toward ${levelLabel} ${userLevel + 1}`}
+                className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border border-brand-border-opacity-10 shadow-inner"
             >
                 {levelSecured && (
                     <div 
                         aria-hidden="true" 
-                        className="absolute inset-[2px] rounded-full border border-brand-border-opacity-20 pointer-events-none z-20" 
+                        className="absolute inset-[1px] rounded-full border border-slate-300/30 pointer-events-none z-20" 
                     />
                 )}
                 
                 {/* Progress Fill */}
                 <motion.div
-                    initial={{ width: 0, opacity: 1 }}
-                    animate={
-                        levelSecured 
-                        ? { width: `${progressPercentage}%`, opacity: [0.8, 1, 0.8] } 
-                        : { width: `${progressPercentage}%`, opacity: 1 }
-                    }
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercentage}%` }}
                     transition={{ 
-                        width: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
-                        opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                        width: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
                     }}
-                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--gold"
+                    className={`absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 ${
+                        levelSecured ? 'app-progress-fill--secured' : 'app-progress-fill--gold'
+                    }`}
                 >
-                    {/* Inner Shimmer sweep */}
+                    {/* Single Ambient Shimmer sweep */}
                     <motion.div
                         aria-hidden="true"
-                        animate={{ x: ['-120%', '320%'] }}
-                        transition={{ duration: levelSecured ? 3.6 : 2.5, repeat: Infinity, ease: 'linear', delay: 0.5 }}
-                        className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12"
+                        animate={{ x: ['-100%', '300%'] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+                        className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 pointer-events-none"
                     />
                 </motion.div>
-                
-                {/* Outer Shimmer sweep */}
-                <motion.div
-                    animate={{ x: ['-100%', '300%'] }}
-                    transition={{ duration: levelSecured ? 3.0 : 2.5, repeat: Infinity, ease: 'linear', delay: 1.0 }}
-                    className="absolute top-0 left-0 h-full w-1/3 pointer-events-none z-20"
-                    style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)'
-                    }}
-                />
             </div>
         </div>
     );

@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 PENDING_STATUS = "pending_confirmation"
 REF_PREFIX = "pending_confirmation:"
+REVIEW_REF_PREFIX = "pending_review:"
 
 # callback_data prefixes (Telegram caps callback_data at 64 bytes)
 CONFIRM_ACTION = "wdc"
@@ -78,6 +79,14 @@ async def _refund(db, tx: Transaction, final_reference: str) -> None:
     """Credit the held amount back. Caller must have claimed the tx already."""
     from app.crud import user as user_crud
     await user_crud.atomic_credit(db, tx.user_id, -tx.amount, commit=False)
+    db.add(Transaction(
+        user_id=tx.user_id,
+        type="withdrawal_refund",
+        amount=-tx.amount,
+        fee=0,
+        status="completed",
+        reference_id=f"withdrawal_refund:{tx.id}",
+    ))
     tx.reference_id = final_reference
     db.add(tx)
     await db.commit()
@@ -124,13 +133,22 @@ async def confirm_withdrawal(tx_id: int, from_user_id: int, nonce: str) -> tuple
         address = tx.reference_id.split(":", 1)[1]
         transfer_amount_cents = amount - (tx.fee or 0)
 
+        from app.services.payout_readiness import get_payout_readiness
+        payout_readiness = get_payout_readiness(settings)
+        if not payout_readiness.ready:
+            logger.warning("Withdrawal confirmation blocked for tx %s: %s", tx_id, payout_readiness.reason)
+            return (
+                "⚠️ <b>Withdrawals Temporarily Unavailable</b>\n\n"
+                "Your funds remain reserved. Please try confirming again later."
+            ), False
+
         # Claim before paying so a double tap / webhook retry can't pay twice.
         if not await _claim(db, tx_id, "processing_payout"):
             return "ℹ️ This withdrawal is already being processed.", True
 
         tx_hash = None
         is_real = False
-        if settings.PAYOUT_MNEMONIC:
+        if payout_readiness.mode == "real":
             try:
                 from app.services.payout_service import execute_usdt_payout, BlockchainBroadcastError
                 tx_hash = await execute_usdt_payout(address, transfer_amount_cents)
@@ -245,7 +263,7 @@ async def alert_stuck_payouts() -> int:
         for tx in stuck:
             amount = -tx.amount
             address = ""
-            if tx.reference_id and tx.reference_id.startswith(REF_PREFIX):
+            if tx.reference_id and tx.reference_id.startswith((REF_PREFIX, REVIEW_REF_PREFIX)):
                 address = tx.reference_id.split(":", 1)[1]
             age_min = int((_now_naive_utc() - tx.created_at).total_seconds() // 60) if tx.created_at else -1
             try:

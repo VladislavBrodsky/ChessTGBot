@@ -9,6 +9,9 @@ const createJestConfig = nextJest({
 const customJestConfig = {
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     testEnvironment: 'jest-environment-jsdom',
+    // Browser E2E specs run separately via Playwright (`npm run test:e2e`).
+    // Keep Jest from collecting them as jsdom unit tests.
+    testPathIgnorePatterns: ['<rootDir>/e2e/'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
     },

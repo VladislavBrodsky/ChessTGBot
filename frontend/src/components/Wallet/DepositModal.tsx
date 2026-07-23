@@ -243,26 +243,71 @@ export default function DepositModal({
         payloadBase64 = commentCell.toBoc().toString('base64');
         attachedTon = amountUnits.toString();
       } else {
-        // Resolve Jetton wallet address from backend
-        const jettonWalletRes = await apiFetch(`/api/v1/wallet/jetton-wallet?user_address=${wallet.account.address}&jetton_master=${selectedCurrencyObj.master}`);
-        if (!jettonWalletRes.ok) {
-          throw new Error("Failed to resolve Jetton Wallet address. Do you have enough gas or tokens?");
+        // Pre-check user's on-chain USDT balance to prevent submitting transfers without enough tokens
+        try {
+        const balRes = await apiFetch(`/api/v1/wallet/onchain-balances?user_address=${encodeURIComponent(wallet.account.address)}`);
+        if (balRes.ok) {
+          const balData = await balRes.json();
+          const usdtUnits = balData?.usdt_units ?? 0;
+          const usdtBalance = usdtUnits / 1e6;
+          if (usdtBalance < tokensNeeded) {
+            throw new Error(`Insufficient USDT balance in your wallet. You have ${usdtBalance.toFixed(2)} USDT, but ${tokensNeeded.toFixed(2)} USDT is required for this deposit. Please add USDT or swap TON to USDT.`);
+          }
         }
-        const jettonWalletData = await jettonWalletRes.json();
-        targetAddress = jettonWalletData.jetton_wallet_address;
+        } catch (balErr: any) {
+          if (balErr.message && balErr.message.includes("Insufficient USDT")) {
+            throw balErr;
+          }
+          // proceed if onchain balance lookup fails transiently
+        }
+
+        // Resolve Jetton wallet address from backend with client-side fallback
+        try {
+        const jettonWalletRes = await apiFetch(
+          `/api/v1/wallet/jetton-wallet?user_address=${encodeURIComponent(wallet.account.address)}&jetton_master=${encodeURIComponent(selectedCurrencyObj.master)}`,
+        );
+        if (jettonWalletRes.ok) {
+          const jettonWalletData = await jettonWalletRes.json();
+          targetAddress = jettonWalletData.jetton_wallet_address;
+        }
+        } catch (fetchErr) {
+          console.warn("Backend jetton-wallet resolution failed, attempting fallback:", fetchErr);
+        }
+
+        if (!targetAddress) {
+          try {
+          const rawWalletAddress = Address.parse(wallet.account.address).toRawString();
+          const clientRes = await fetch(
+            `https://tonapi.io/v2/blockchain/accounts/${selectedCurrencyObj.master}/methods/get_wallet_address?args=${encodeURIComponent(rawWalletAddress)}`,
+          );
+          if (clientRes.ok) {
+            const clientData = await clientRes.json();
+            const resolvedAddress = clientData?.decoded?.jetton_wallet_address;
+            if (resolvedAddress) {
+              targetAddress = Address.parse(resolvedAddress).toString({ urlSafe: true, bounceable: true });
+            }
+          }
+          } catch (cErr) {
+            console.warn("Client fallback for jetton-wallet resolution failed:", cErr);
+          }
+        }
+
+        if (!targetAddress) {
+          throw new Error("Failed to resolve USDT Jetton Wallet address. Please try again or use the manual direct transfer option below.");
+        }
 
         // Construct standard Jetton transfer payload
         const transferPayload = beginCell()
-          .storeUint(0x0f8a7ea5, 32) // opcode
-          .storeUint(0, 64) // query_id
-          .storeCoins(amountUnits) // amount
-          .storeAddress(Address.parse(masterWallet)) // destination
-          .storeAddress(Address.parse(wallet.account.address)) // response_destination
-          .storeBit(0) // custom_payload
-          .storeCoins(BigInt(50000000)) // forward_ton_amount (0.05 TON)
-          .storeBit(1) // forward_payload in reference
-          .storeRef(commentCell)
-          .endCell();
+        .storeUint(0x0f8a7ea5, 32) // opcode
+        .storeUint(0, 64) // query_id
+        .storeCoins(amountUnits) // amount
+        .storeAddress(Address.parse(masterWallet)) // destination
+        .storeAddress(Address.parse(wallet.account.address)) // response_destination
+        .storeBit(0) // custom_payload
+        .storeCoins(BigInt(50000000)) // forward_ton_amount (0.05 TON)
+        .storeBit(1) // forward_payload in reference
+        .storeRef(commentCell)
+        .endCell();
 
         payloadBase64 = transferPayload.toBoc().toString('base64');
       }

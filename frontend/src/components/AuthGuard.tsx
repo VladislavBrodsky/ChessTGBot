@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
+import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
 
 const VALID_LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
 
@@ -66,7 +67,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             let hasWebAuth = false;
             try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
 
-            if (isTMA || hasWebAuth) {
+            if (isTMA || hasWebAuth || hasE2ETestIdentity()) {
                 setAuthState('authed');
                 if (isTMA) {
                     // tg.ready() is also called eagerly in TelegramInit; it is idempotent.

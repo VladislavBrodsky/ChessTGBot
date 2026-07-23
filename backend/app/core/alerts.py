@@ -35,6 +35,8 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.client", "game_client"),
     ("app.services.deposit_crawler", "treasury"),
     ("app.services.withdrawal_crawler", "treasury"),
+    ("app.services.withdrawal_reconciliation", "treasury"),
+    ("app.services.stripe_reconciliation", "treasury"),
     ("app.services.solvency_service", "treasury"),
     ("app.services.ledger_audit", "treasury"),
     ("app.services.payout_service", "treasury"),
@@ -83,6 +85,11 @@ def is_benign_telegram_file_error(exc: BaseException) -> bool:
     """
     msg = str(exc).lower()
     return "temporarily unavailable" in msg or "wrong file_id" in msg
+
+
+def is_benign_telegram_avatar_error(exc: BaseException) -> bool:
+    """True when Telegram reports that an avatar owner is no longer accessible."""
+    return "user not found" in str(exc).lower()
 
 def clear_alerts_cache():
     """Utility function to clear the alerts rate limit cache, primarily for unit tests."""
@@ -229,12 +236,13 @@ async def send_admin_alert(text: str, timestamp: float = None, system: str = Non
                 # Print directly to stdout/stderr to avoid circular logging loops
                 print(f"[Alerts] Failed to send system alert to {admin_id}: {e}")
 
-async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, timestamp: float = None, system: str = None):
+async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, timestamp: float = None, system: str = None, ttl_seconds: int = None):
     """Checks the rate limit in Redis (or in-memory fallback) and sends alert if permitted."""
     from app.services.session_manager import SessionManager
     session_mgr = SessionManager()
     
     now = time.time()
+    limit_seconds = ttl_seconds if ttl_seconds is not None else RATE_LIMIT_SECONDS
     
     # 1. Try to check rate limit in Redis first to survive container restarts
     use_redis = session_mgr.redis and not session_mgr._use_memory
@@ -245,26 +253,26 @@ async def send_alert_with_redis_rate_limit(fingerprint: str, message: str, times
             if last_sent_str:
                 try:
                     last_sent = float(last_sent_str)
-                    if now - last_sent < RATE_LIMIT_SECONDS:
+                    if now - last_sent < limit_seconds:
                         return  # Throttled!
                 except ValueError:
                     pass
             
             # Update Redis key with TTL
-            await session_mgr.redis.set(redis_key, str(now), ex=RATE_LIMIT_SECONDS)
+            await session_mgr.redis.set(redis_key, str(now), ex=limit_seconds)
         except Exception as redis_err:
             print(f"[Alerts] Redis rate limit check failed: {redis_err}")
             # Fallback to in-memory
             if fingerprint in _sent_alerts_cache:
                 last_sent = _sent_alerts_cache[fingerprint]
-                if now - last_sent < RATE_LIMIT_SECONDS:
+                if now - last_sent < limit_seconds:
                     return
             _sent_alerts_cache[fingerprint] = now
     else:
         # Fallback to in-memory
         if fingerprint in _sent_alerts_cache:
             last_sent = _sent_alerts_cache[fingerprint]
-            if now - last_sent < RATE_LIMIT_SECONDS:
+            if now - last_sent < limit_seconds:
                 return
         _sent_alerts_cache[fingerprint] = now
 

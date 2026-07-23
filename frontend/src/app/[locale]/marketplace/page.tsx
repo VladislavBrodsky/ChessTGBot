@@ -15,6 +15,7 @@ import { FaGem, FaCrown } from 'react-icons/fa';
 import { FiBox } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
+import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 import { BOX_CONFIG, BOX_ORDER, type BoxTier } from '@/components/Marketplace/boxConfig';
 
 interface BoardTheme {
@@ -64,6 +65,8 @@ export default function MarketplacePage() {
     const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
 
     const [selectedTier, setSelectedTier] = useState<BoxTier | null>(null);
+    const [confirmingTier, setConfirmingTier] = useState<BoxTier | null>(null);
+    const [unboxingLoading, setUnboxingLoading] = useState(false);
     const [isUnboxingOpen, setIsUnboxingOpen] = useState(false);
     const [serverPrizeName, setServerPrizeName] = useState<string | null>(null);
     const [serverPrizeType, setServerPrizeType] = useState<string | null>(null);
@@ -105,7 +108,7 @@ export default function MarketplacePage() {
         setActiveThemeCode(themeCode);
     };
 
-    const handleOpenBox = async (tier: BoxTier) => {
+    const handleOpenBox = (tier: BoxTier) => {
         telegramHaptic('light');
         const cost = BOX_CONFIG[tier].costXP;
         if (userXP < cost) {
@@ -113,32 +116,40 @@ export default function MarketplacePage() {
             telegramAlert(t('insufficient_xp'));
             return;
         }
+        setConfirmingTier(tier);
+    };
 
-        telegramConfirm(t('confirm_unbox', { name: BOX_CONFIG[tier].name, amount: cost.toLocaleString() }), async (ok) => {
-            if (!ok) return;
-            try {
-                const res = await apiFetch('/api/v1/marketplace/unbox', {
-                    method: 'POST',
-                    body: JSON.stringify({ tier, currency: 'xp' }),
-                });
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    telegramHaptic('error');
-                    telegramAlert(errData.detail || t('unbox_failed'));
-                    return;
-                }
-                const data = await res.json();
-                setServerPrizeName(data.prize_name);
-                setServerPrizeType(data.prize_type);
-                setSelectedTier(tier);
-                setIsUnboxingOpen(true);
-                pushRecentWin({ name: data.prize_name, type: data.prize_type, tier, at: Date.now() });
-                syncStats?.();
-            } catch {
+    const handleConfirmUnbox = async () => {
+        if (!confirmingTier) return;
+        const tier = confirmingTier;
+        try {
+            setUnboxingLoading(true);
+            const res = await apiFetch('/api/v1/marketplace/unbox', {
+                method: 'POST',
+                body: JSON.stringify({ tier, currency: 'xp' }),
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
                 telegramHaptic('error');
-                telegramAlert(t('network_error'));
+                telegramAlert(errData.detail || t('unbox_failed'));
+                setConfirmingTier(null);
+                return;
             }
-        });
+            const data = await res.json();
+            setServerPrizeName(data.prize_name);
+            setServerPrizeType(data.prize_type);
+            setSelectedTier(tier);
+            setConfirmingTier(null);
+            setIsUnboxingOpen(true);
+            pushRecentWin({ name: data.prize_name, type: data.prize_type, tier, at: Date.now() });
+            syncStats?.();
+        } catch {
+            telegramHaptic('error');
+            telegramAlert(t('network_error'));
+            setConfirmingTier(null);
+        } finally {
+            setUnboxingLoading(false);
+        }
     };
 
     const handleUnboxClose = () => {
@@ -215,26 +226,27 @@ export default function MarketplacePage() {
     };
 
     return (
-        <LayoutWrapper className="w-full px-4 md:px-6">
-            {/* Subtle ambient glow behind the main content area */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-purple-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+        <LayoutWrapper className="w-full px-4 md:px-6 pt-[max(1rem,var(--app-safe-top))] pb-[max(1rem,var(--app-safe-bottom))]">
+            {/* Ambient background light */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             
-            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-5 md:max-w-xl lg:max-w-3xl">
-                    <header className="flex w-full flex-col items-center text-center relative">
-                        <motion.div animate={{ opacity: [0.7, 1, 0.7] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -left-4 w-12 h-12 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
-                        <h1 className="flex items-center gap-2 text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
-                            <FaGem className="text-purple-500 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
+            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-2 md:max-w-xl lg:max-w-3xl">
+                    <header className="flex w-full flex-col items-center text-center relative pt-[calc(36px+var(--app-safe-top))] md:pt-4">
+                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
+                            <FaGem className="text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
                             {t('title')}
                         </h1>
-                        <p className="mt-3 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted">
-                            {t('subtitle')}
+                        <p className="mt-2.5 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted flex flex-col items-center">
+                            <span>EXCHANGE XP TO UNLOCK</span>
+                            <span>PREMIUM REWARDS & THEMES</span>
                         </p>
                     </header>
 
                     <div className="w-full">
                         <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-5 shadow-premium overflow-hidden relative">
                             {/* Inner ambient light for XP card */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
                             <div className="flex items-center justify-between gap-4 relative z-10">
                                 <div className="space-y-1 text-left">
                                 <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>
@@ -242,13 +254,13 @@ export default function MarketplacePage() {
                                     <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
                                 ) : (
                                     <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                        className="mt-2 block text-3xl font-black leading-none tabular-nums text-brand-primary drop-shadow-sm">
+                                        className="mt-2 block text-3xl font-black leading-none tabular-nums text-amber-400 drop-shadow-sm">
                                         {userXP.toLocaleString()} XP
                                     </motion.span>
                                 )}
                                 </div>
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10 text-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
-                                    <FaGem size={20} className="drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
+                                    <FaGem size={20} className="drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                                 </div>
                             </div>
                             {nextBox && !loadingStats && (
@@ -256,7 +268,7 @@ export default function MarketplacePage() {
                                     <p className="text-xs leading-5 text-brand-muted">
                                         <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
                                     </p>
-                                    <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-purple-500 hover:text-purple-400 transition-colors drop-shadow-[0_0_5px_rgba(168,85,247,0.3)]">
+                                    <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-amber-400 hover:text-amber-300 transition-colors drop-shadow-[0_0_5px_rgba(245,158,11,0.3)]">
                                         {ti('academy')}
                                     </Link>
                                 </div>
@@ -392,6 +404,15 @@ export default function MarketplacePage() {
                         )}
                     </section>
             </div>
+
+            <UnboxConfirmSheet
+                isOpen={Boolean(confirmingTier)}
+                tier={confirmingTier}
+                userXP={userXP}
+                loading={unboxingLoading}
+                onConfirm={handleConfirmUnbox}
+                onCancel={() => setConfirmingTier(null)}
+            />
 
             <UnboxingModal
                 isOpen={isUnboxingOpen}

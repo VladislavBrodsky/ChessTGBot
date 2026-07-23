@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
@@ -10,12 +11,36 @@ from app.core.database import get_db, get_read_db  # noqa: E402
 from app.api.v1.deps import get_current_user, get_current_telegram_id, rate_limit  # noqa: E402
 from app.models.user import User  # noqa: E402
 from app.models.transaction import Transaction  # noqa: E402
+from app.models.stripe_event import StripeWebhookEvent  # noqa: E402
+from app.services.stripe_compat import stripe_get  # noqa: E402
 from app.crud import user as user_crud  # noqa: E402
 from pydantic import BaseModel, ConfigDict  # noqa: E402
 from typing import List, Optional  # noqa: E402
 from datetime import datetime, timezone, timedelta  # noqa: E402
 
 router = APIRouter()
+
+
+def _extract_subscription_price_id(sub_obj) -> str | None:
+    if not sub_obj:
+        return None
+    items = stripe_get(sub_obj, "items", {})
+    data = stripe_get(items, "data", [])
+    if data and len(data) > 0:
+        first_item = data[0]
+        price = stripe_get(first_item, "price", {})
+        return stripe_get(price, "id")
+    return None
+
+
+def _extract_subscription_item_id(sub_obj) -> str | None:
+    if not sub_obj:
+        return None
+    items = stripe_get(sub_obj, "items", {})
+    data = stripe_get(items, "data", [])
+    if data and len(data) > 0:
+        return stripe_get(data[0], "id")
+    return None
 
 import base64  # noqa: E402
 
@@ -343,6 +368,14 @@ async def withdraw_funds(
     """
     from app.core.config import get_settings
     settings = get_settings()
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
+
+    if not payout_readiness.ready:
+        raise HTTPException(
+            status_code=503,
+            detail="Withdrawals are temporarily unavailable. Your balance has not been charged.",
+        )
 
     if request.amount < 1000:
         raise HTTPException(status_code=400, detail="Minimum withdrawal amount is $10.00 USDT")
@@ -359,52 +392,57 @@ async def withdraw_funds(
     except Exception:
         pass
 
-    # Velocity control: enforce a rolling-24h per-user withdrawal cap BEFORE
-    # debiting. Payouts are instant and irreversible, so this bounds how much a
-    # stolen session can move — including via many small withdrawals.
-    from app.services.withdrawal_policy import exceeds_daily_cap, remaining_daily_allowance_cents, needs_manual_review
-    since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=24)
-    recent_res = await db.execute(
-        select(func.coalesce(func.sum(Transaction.amount), 0)).where(
-            Transaction.user_id == current_user.telegram_id,
-            Transaction.type == "withdrawal",
-            Transaction.status != "failed",
-            Transaction.created_at >= since,
-        )
-    )
-    # Withdrawal amounts are stored negative; negate the sum to get the total out.
-    withdrawn_24h = -int(recent_res.scalar() or 0)
-    if exceeds_daily_cap(withdrawn_24h, request.amount, settings.WITHDRAWAL_DAILY_CAP_CENTS):
-        remaining = remaining_daily_allowance_cents(withdrawn_24h, settings.WITHDRAWAL_DAILY_CAP_CENTS)
-        raise HTTPException(
-            status_code=400,
-            detail=f"Daily withdrawal limit reached. You can withdraw up to ${remaining / 100:.2f} more within 24 hours.",
-        )
-
-    # Atomically debit — returns None if insufficient funds
-    updated_user = await user_crud.atomic_debit(db, current_user.telegram_id, request.amount)
-    if not updated_user:
-        raise HTTPException(status_code=400, detail="Insufficient funds in balance")
-
     # Flat $0.20 fee if amount is 20 cents or more; otherwise 0 fee to allow small test withdrawals
     fee = 20 if request.amount >= 20 else 0
     transfer_amount_cents = request.amount - fee
 
+    from app.services.withdrawal_policy import needs_manual_review
+    from app.services.withdrawal_confirmation import PENDING_STATUS, REF_PREFIX
+    from app.services.withdrawal_creation import (
+        DailyWithdrawalCapExceeded,
+        InsufficientWithdrawalBalance,
+        create_withdrawal,
+    )
+
+    review_required = needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+    confirmation_required = settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN
+    if review_required:
+        initial_status = "pending_review"
+        initial_reference = f"pending_review:{request.address}"
+    elif confirmation_required:
+        initial_status = PENDING_STATUS
+        initial_reference = f"{REF_PREFIX}{request.address}"
+    else:
+        # A direct payout is not called until this processing row is committed.
+        initial_status = "processing_payout"
+        initial_reference = f"processing_payout:{request.address}"
+
+    try:
+        created = await create_withdrawal(
+            db,
+            user_id=current_user.telegram_id,
+            amount_cents=request.amount,
+            fee_cents=fee,
+            status=initial_status,
+            reference_id=initial_reference,
+            daily_cap_cents=settings.WITHDRAWAL_DAILY_CAP_CENTS,
+        )
+    except DailyWithdrawalCapExceeded as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Daily withdrawal limit reached. You can withdraw up to ${exc.remaining_cents / 100:.2f} more within 24 hours.",
+        )
+    except InsufficientWithdrawalBalance:
+        raise HTTPException(status_code=400, detail="Insufficient funds in balance")
+
+    updated_user = created.user
+    new_balance = created.new_balance
+
     # Large withdrawals are HELD for manual admin approval rather than auto-paid.
     # Funds are already debited (held); the destination address is stashed in
     # reference_id so an admin can execute the payout later via /admin/withdrawals.
-    if needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS):
-        tx_review = Transaction(
-            user_id=updated_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=fee,
-            status="pending_review",
-            reference_id=f"pending_review:{request.address}",
-        )
-        db.add(tx_review)
-        await db.commit()
-        await db.refresh(tx_review)
+    if review_required:
+        tx_review = created.transaction
         logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | reference_id={tx_review.reference_id} | status=pending_review")
 
         # Alert admins to review (reuses the rate-limited alert infra).
@@ -437,28 +475,19 @@ async def withdraw_funds(
         except Exception:
             pass
 
-        return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=updated_user.balance)
+        return WithdrawResponse(status="pending_review", amount=request.amount, new_balance=new_balance)
 
     # Second factor: hold the (already debited) withdrawal until the OWNER
     # confirms it from their own Telegram account via an inline keyboard. A
     # stolen initData session can reach this endpoint but cannot tap a button
     # in the victim's private bot chat. Without a bot token (dev/tests) the
     # legacy auto-pay path below still applies.
-    if settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN:
-        from app.services.withdrawal_confirmation import PENDING_STATUS, REF_PREFIX, confirmation_nonce
+    if confirmation_required:
+        from app.services.withdrawal_confirmation import confirmation_nonce
+        from app.services.withdrawal_creation import fail_and_refund_withdrawal
         from app.services.telegram_bot import TelegramService
 
-        tx_hold = Transaction(
-            user_id=updated_user.telegram_id,
-            type="withdrawal",
-            amount=-request.amount,
-            fee=fee,
-            status=PENDING_STATUS,
-            reference_id=f"{REF_PREFIX}{request.address}",
-        )
-        db.add(tx_hold)
-        await db.commit()
-        await db.refresh(tx_hold)
+        tx_hold = created.transaction
         logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents | status={PENDING_STATUS}")
 
         dest_display = f"{request.address[:6]}...{request.address[-4:]}"
@@ -480,22 +509,26 @@ async def withdraw_funds(
         if not delivered:
             # The second factor can't reach the user; refund immediately
             # instead of stranding the held funds until expiry.
-            updated_user = await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
-            tx_hold.status = "failed"
-            tx_hold.reference_id = "confirmation_undeliverable"
-            db.add(tx_hold)
-            await db.commit()
+            refunded_balance = await fail_and_refund_withdrawal(
+                db,
+                tx_hold.id,
+                expected_status=PENDING_STATUS,
+                reference_id="confirmation_undeliverable",
+            )
+            if refunded_balance is None:
+                logger.error("Withdrawal confirmation delivery failed after tx %s left pending state", tx_hold.id)
+                raise HTTPException(status_code=409, detail="Withdrawal state changed while confirmation delivery failed")
             raise HTTPException(
                 status_code=503,
                 detail="Could not deliver the withdrawal confirmation to your Telegram chat. Open the bot chat and try again.",
             )
 
-        return WithdrawResponse(status=PENDING_STATUS, amount=request.amount, new_balance=updated_user.balance)
+        return WithdrawResponse(status=PENDING_STATUS, amount=request.amount, new_balance=new_balance)
 
     tx_hash = None
     is_real = False
 
-    if settings.PAYOUT_MNEMONIC:
+    if payout_readiness.mode == "real":
         try:
             from app.services.payout_service import execute_usdt_payout, BlockchainBroadcastError
             tx_hash = await execute_usdt_payout(request.address, transfer_amount_cents)
@@ -508,26 +541,29 @@ async def withdraw_funds(
             logger.warning(f"On-chain payout broadcast failed/timed out: {broadcast_err}. Saving as pending withdrawal.")
         except Exception as payout_err:
             # Safe to refund: failure occurred before broadcast
-            await user_crud.atomic_credit(db, current_user.telegram_id, request.amount)
+            from app.services.withdrawal_creation import fail_and_refund_withdrawal
+            refunded_balance = await fail_and_refund_withdrawal(
+                db,
+                created.transaction.id,
+                expected_status="processing_payout",
+                reference_id="payout_failed_before_broadcast",
+            )
+            if refunded_balance is None:
+                logger.critical(
+                    "Pre-broadcast withdrawal failure could not reclaim processing tx %s",
+                    created.transaction.id,
+                )
+                raise HTTPException(status_code=409, detail="Withdrawal state changed during payout failure recovery")
             logger.error(f"On-chain payout failed before broadcast: {payout_err}")
             raise HTTPException(status_code=500, detail=f"On-chain payout transfer failed: {payout_err}")
     else:
-        logger.warning("PAYOUT_MNEMONIC is not configured. Falling back to simulated/mock payout.")
+        logger.info("Using simulated payout in %s mode", settings.ENV)
         tx_hash = f"mock_{request.address[:6]}_{request.amount}"
 
-    # Log transaction
     status = "pending" if is_real else "completed"
-    tx_withdraw = Transaction(
-        user_id=updated_user.telegram_id,
-        type="withdrawal",
-        amount=-request.amount,
-        fee=fee,
-        status=status,
-        reference_id=tx_hash
-    )
-    db.add(tx_withdraw)
-    await db.commit()
-    await db.refresh(tx_withdraw)
+    from app.services.withdrawal_creation import set_payout_result
+    tx_withdraw = created.transaction
+    await set_payout_result(db, tx_withdraw.id, status=status, reference_id=tx_hash)
     logger.info(f"[TRANSACTION] user_id={current_user.telegram_id} | type=withdrawal | amount=-{request.amount} cents (-${request.amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_withdraw.reference_id} | status={status}")
 
     # Send automated Telegram Bot notifications
@@ -552,7 +588,7 @@ async def withdraw_funds(
                 f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination Wallet:</b> {link_display}\n"
                 f"• <b>Status:</b> Processing (Pending On-Chain Confirmation) 🟡\n\n"
-                f"<i>Your funds have been broadcasted to the blockchain. You will receive another notification once confirmed on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+                f"<i>Your funds have been broadcasted to the blockchain. You will receive another notification once confirmed on-chain! Platform Balance: {new_balance / 100:.2f} USDT.</i>"
             )
         else:
             notification_text = (
@@ -562,7 +598,7 @@ async def withdraw_funds(
                 f"• <b>Sent to Wallet:</b> ${transfer_amount_cents / 100:.2f} USDT\n"
                 f"• <b>Destination Wallet:</b> {link_display}\n"
                 f"• <b>Status:</b> Completed Successfully 🟢\n\n"
-                f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {updated_user.balance / 100:.2f} USDT.</i>"
+                f"<i>Your funds have been transferred successfully on-chain! Platform Balance: {new_balance / 100:.2f} USDT.</i>"
             )
         await TelegramService.send_notification(updated_user.telegram_id, notification_text)
         
@@ -587,7 +623,7 @@ async def withdraw_funds(
     return WithdrawResponse(
         status=status,
         amount=request.amount,
-        new_balance=updated_user.balance
+        new_balance=new_balance
     )
 
 
@@ -920,31 +956,74 @@ async def get_jetton_wallet(
 ):
     from app.core.config import get_settings
     settings = get_settings()
-    
     import httpx
-    # Use runGetMethod to deterministically calculate the Jetton wallet address
-    # This avoids 404 errors if the user has never held the token before.
-    url = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address?args={user_address}"
+
+    # This resolver is part of the platform deposit flow.  Keep it aligned
+    # with settlement policy: only the configured USDT master is supported.
+    # Otherwise callers could receive a valid wallet address for an asset the
+    # verifier will deliberately never credit.
+    if not _is_usdt_master(jetton_master):
+        raise HTTPException(
+            status_code=400,
+            detail="Only the configured USDT jetton is supported for deposits.",
+        )
+    
+    try:
+        raw_user = convert_ton_address_to_hex(user_address)
+    except Exception:
+        raw_user = user_address
+
     headers = {}
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
+    url1 = f"https://tonapi.io/v2/blockchain/accounts/{jetton_master}/methods/get_wallet_address"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(url, headers=headers)
+            res = await client.get(url1, headers=headers, params={"args": raw_user})
             if res.status_code == 200:
                 data = res.json()
                 if data.get("success") and "decoded" in data:
                     jetton_wallet = data["decoded"].get("jetton_wallet_address", "")
                     if jetton_wallet:
-                        # Convert to friendly address format
-                        friendly = convert_raw_to_friendly(jetton_wallet)
-                        return {"jetton_wallet_address": friendly}
+                        return {"jetton_wallet_address": convert_raw_to_friendly(jetton_wallet)}
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning(f"Failed to fetch jetton wallet from TonAPI: {e}")
-        
-    raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TonAPI")
+        logger.warning(f"Failed to fetch jetton wallet via runGetMethod: {e}")
+
+    url2 = f"https://tonapi.io/v2/accounts/{raw_user}/jettons/{jetton_master}"
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(url2, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                jw = data.get("wallet_address", {}).get("address")
+                if jw:
+                    return {"jetton_wallet_address": convert_raw_to_friendly(jw)}
+    except Exception as e:
+        logger.warning(f"Failed to fetch jetton wallet via accounts endpoint: {e}")
+
+    url3 = "https://toncenter.com/api/v3/jetton/wallets"
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(
+                url3,
+                headers={"User-Agent": "Mozilla/5.0"},
+                params={
+                    "owner_address": raw_user,
+                    "jetton_address": jetton_master,
+                },
+            )
+            if res.status_code == 200:
+                data = res.json()
+                wallets = data.get("jetton_wallets", [])
+                if wallets and isinstance(wallets, list):
+                    jw = wallets[0].get("address")
+                    if jw:
+                        return {"jetton_wallet_address": convert_raw_to_friendly(jw)}
+    except Exception as e:
+        logger.warning(f"Failed to fetch jetton wallet via Toncenter v3: {e}")
+
+    raise HTTPException(status_code=400, detail="Failed to resolve Jetton wallet address from TON RPC providers.")
 
 
 @router.get("/onchain-balances", dependencies=[Depends(rate_limit(limit=20, window=60))])
@@ -978,6 +1057,11 @@ async def request_gas_grant(
         result = await grant_gas(db, current_user.telegram_id, current_user.wallet_address)
     except GasGrantDenied as denied:
         raise HTTPException(status_code=denied.status_code, detail=denied.detail)
+
+    # A timeout may still land on-chain. Do not tell the user funds were sent
+    # until reconciliation confirms that external side effect.
+    if result["status"] != "sent":
+        return result
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -1305,8 +1389,9 @@ async def stripe_create_session(
         redirect_path = "/" + redirect_path
 
     try:
-        # Create Stripe Checkout Session
-        checkout_session = stripe.checkout.Session.create(
+        # Create Stripe Checkout Session off the main event loop
+        checkout_session = await asyncio.to_thread(
+            stripe.checkout.Session.create,
             payment_method_types=['card'],
             line_items=[
                 {
@@ -1416,6 +1501,42 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
     return False
 
 
+def _stripe_event_identity(event) -> tuple[str, str | None]:
+    """Use Stripe's event id, with a legacy-safe fallback for old test payloads."""
+    payload = stripe_get(stripe_get(event, "data", {}), "object", {})
+    object_id = stripe_get(payload, "id")
+    event_type = stripe_get(event, "type", "unknown")
+    event_id = stripe_get(event, "id") or f"legacy:{event_type}:{object_id or 'unknown'}"
+    return str(event_id)[:255], str(object_id)[:255] if object_id else None
+
+
+async def _claim_stripe_event(db: AsyncSession, event) -> bool:
+    """Claim a Stripe event in the same database transaction as its effects."""
+    event_id, object_id = _stripe_event_identity(event)
+    existing = await db.execute(
+        select(StripeWebhookEvent.id).where(StripeWebhookEvent.event_id == event_id)
+    )
+    if existing.scalar_one_or_none() is not None:
+        logger.info("Ignoring duplicate Stripe event %s", event_id)
+        return False
+    try:
+        db.add(
+            StripeWebhookEvent(
+                event_id=event_id,
+                event_type=str(stripe_get(event, "type", "unknown"))[:100],
+                object_id=object_id,
+            )
+        )
+        await db.flush()
+    except IntegrityError:
+        # The unique index closes the small race between the pre-check and the
+        # insert. No balance mutation has occurred at this point.
+        await db.rollback()
+        logger.info("Ignoring duplicate Stripe event %s", event_id)
+        return False
+    return True
+
+
 @router.get("/stripe/verify-session", response_model=StripeVerifyResponse)
 async def stripe_verify_session(
     session_id: str,
@@ -1439,8 +1560,8 @@ async def stripe_verify_session(
         if settings.STRIPE_SECRET_KEY:
             stripe.api_key = settings.STRIPE_SECRET_KEY
             try:
-                session = stripe.checkout.Session.retrieve(session_id)
-                if session.get("payment_status") == "paid":
+                session = await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
+                if stripe_get(session, "payment_status") == "paid":
                     await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
                     await db.refresh(tx)
             except Exception as e:
@@ -1528,7 +1649,8 @@ async def create_stripe_subscription(
 
         # Retries/double taps must return the same Checkout Session rather than
         # create parallel subscriptions for the same account and plan.
-        checkout_session = stripe.checkout.Session.create(
+        checkout_session = await asyncio.to_thread(
+            stripe.checkout.Session.create,
             **session_kwargs,
             idempotency_key=f"premium_checkout_{current_user.telegram_id}_{billing_period}",
         )
@@ -1579,11 +1701,14 @@ async def upgrade_stripe_subscription(
 
     try:
         # Retrieve current subscription to get the current item ID
-        sub = stripe.Subscription.retrieve(current_user.stripe_subscription_id)
-        current_item_id = sub["items"]["data"][0]["id"]
+        sub = await asyncio.to_thread(stripe.Subscription.retrieve, current_user.stripe_subscription_id)
+        current_item_id = _extract_subscription_item_id(sub)
+        if not current_item_id:
+            raise HTTPException(status_code=400, detail="Invalid Stripe subscription items.")
 
         # Modify the subscription — Stripe automatically creates proration credits/charges
-        stripe.Subscription.modify(
+        await asyncio.to_thread(
+            stripe.Subscription.modify,
             current_user.stripe_subscription_id,
             cancel_at_period_end=False,
             proration_behavior="create_prorations",
@@ -1636,7 +1761,8 @@ async def create_stripe_portal(
         redirect_path = "/" + redirect_path
 
     try:
-        portal_session = stripe.billing_portal.Session.create(
+        portal_session = await asyncio.to_thread(
+            stripe.billing_portal.Session.create,
             customer=current_user.stripe_customer_id,
             return_url=f"{settings.WEBAPP_URL}{redirect_path}"
         )
@@ -1670,15 +1796,18 @@ async def stripe_webhook(
         raise HTTPException(status_code=400, detail="Invalid payload.")
     except stripe.error.SignatureVerificationError:
         raise HTTPException(status_code=400, detail="Invalid signature.")
+
+    if not await _claim_stripe_event(db, event):
+        return {"status": "ignored", "message": "Stripe event already processed."}
         
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         
         # Handle Subscriptions
-        if session.get('mode') == 'subscription':
-            client_reference_id = session.get('client_reference_id')
-            customer_id = session.get('customer')
-            subscription_id = session.get('subscription')
+        if stripe_get(session, 'mode') == 'subscription':
+            client_reference_id = stripe_get(session, 'client_reference_id')
+            customer_id = stripe_get(session, 'customer')
+            subscription_id = stripe_get(session, 'subscription')
 
             if client_reference_id and customer_id and subscription_id:
                 user_id = int(client_reference_id)
@@ -1690,8 +1819,8 @@ async def stripe_webhook(
 
                     # Determine billing period from the price ID in the subscription line items
                     try:
-                        sub_obj = stripe.Subscription.retrieve(subscription_id)
-                        price_id = sub_obj["items"]["data"][0]["price"]["id"]
+                        sub_obj = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+                        price_id = _extract_subscription_price_id(sub_obj)
                         if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
                             user.premium_billing_period = "annual"
                         else:
@@ -1704,27 +1833,31 @@ async def stripe_webhook(
                     # Stripe actually collected the first subscription payment.
                     db.add(user)
                     await db.commit()
+            await db.commit()
             return {"status": "success", "message": "Subscription mapped; awaiting paid invoice."}
 
         # Handle One-Time Wallet Top-ups
-        tx_id_str = session.get('metadata', {}).get('tx_id')
-        user_id_str = session.get('metadata', {}).get('user_id')
+        metadata = stripe_get(session, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
-            credited = await _credit_stripe_deposit(db, tx_id, user_id, session.get('id', ''))
+            credited = await _credit_stripe_deposit(db, tx_id, user_id, stripe_get(session, 'id', ''))
             
             if credited:
                 return {"status": "success", "message": "Transaction credited successfully."}
             else:
+                await db.commit()
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
     elif event['type'] == 'checkout.session.expired':
         session = event['data']['object']
-        tx_id_str = session.get('metadata', {}).get('tx_id')
-        user_id_str = session.get('metadata', {}).get('user_id')
+        metadata = stripe_get(session, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             tx_result = await db.execute(select(Transaction).filter(Transaction.id == tx_id).with_for_update())
@@ -1737,15 +1870,16 @@ async def stripe_webhook(
 
     elif event['type'] == 'charge.refunded':
         charge = event['data']['object']
-        tx_id_str = charge.get('metadata', {}).get('tx_id')
-        user_id_str = charge.get('metadata', {}).get('user_id')
+        metadata = stripe_get(charge, 'metadata', {})
+        tx_id_str = stripe_get(metadata, 'tx_id')
+        user_id_str = stripe_get(metadata, 'user_id')
         
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
             # Identify the refunded amount (charge.amount_refunded is in cents)
-            amount_refunded = charge.get('amount_refunded', 0)
+            amount_refunded = stripe_get(charge, 'amount_refunded', 0)
             if amount_refunded > 0:
                 # A card top-up credits the net amount (after the top-up fee),
                 # not the gross card charge.  Stripe reports a cumulative gross
@@ -1759,16 +1893,16 @@ async def stripe_webhook(
                     ).with_for_update()
                 )
                 top_up_tx = top_up_result.scalars().first()
-                gross_charge = int(charge.get('amount', 0) or 0)
+                gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
                 if not top_up_tx or gross_charge <= 0:
-                    logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, charge.get('id'))
+                    logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, stripe_get(charge, 'id'))
                     return {"status": "ignored", "message": "Top-up not found for refund."}
 
                 cumulative_wallet_debit = min(
                     top_up_tx.amount,
                     (amount_refunded * top_up_tx.amount + gross_charge // 2) // gross_charge,
                 )
-                refund_prefix = f"refund_{charge.get('id', '')}_"
+                refund_prefix = f"refund_{stripe_get(charge, 'id', '')}_"
                 prior_refund_result = await db.execute(
                     select(func.coalesce(func.sum(Transaction.amount), 0)).where(
                         Transaction.user_id == user_id,
@@ -1780,6 +1914,7 @@ async def stripe_webhook(
                 already_debited = -int(prior_refund_result.scalar() or 0)
                 debit_delta = cumulative_wallet_debit - already_debited
                 if debit_delta <= 0:
+                    await db.commit()
                     return {"status": "ignored", "message": "Refund already processed."}
 
                 user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
@@ -1814,19 +1949,20 @@ async def stripe_webhook(
 
     elif event['type'] == 'charge.dispute.created':
         dispute = event['data']['object']
-        charge_id = dispute.get('charge')
+        charge_id = stripe_get(dispute, 'charge')
         if charge_id:
             # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
             try:
-                charge = stripe.Charge.retrieve(charge_id)
-                user_id_str = charge.get('metadata', {}).get('user_id')
+                charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
+                user_id_str = stripe_get(stripe_get(charge, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
-                    dispute_ref = f"dispute_{dispute.get('id', '')}"
+                    dispute_ref = f"dispute_{stripe_get(dispute, 'id', '')}"
                     prior_dispute = await db.execute(
                         select(Transaction.id).where(Transaction.reference_id == dispute_ref)
                     )
                     if prior_dispute.scalar_one_or_none() is not None:
+                        await db.commit()
                         return {"status": "ignored", "message": "Dispute already processed."}
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
@@ -1838,7 +1974,7 @@ async def stripe_webhook(
                         # wallet adjustment.  We freeze the account when a user
                         # has already spent the top-up instead of inventing an
                         # untracked negative balance.
-                        dispute_amount = dispute.get('amount', 0)
+                        dispute_amount = stripe_get(dispute, 'amount', 0)
                         wallet_debit = min(user.balance, dispute_amount)
                         user.balance -= wallet_debit
                         
@@ -1853,7 +1989,7 @@ async def stripe_webhook(
                         db.add(penalty_tx)
                         db.add(user)
                         await db.commit()
-                        logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {dispute.get('id')})")
+                        logger.critical(f"User {user_id} frozen due to Stripe chargeback (dispute {stripe_get(dispute, 'id')})")
                         
                         try:
                             from app.services.telegram_bot import TelegramService
@@ -1869,16 +2005,17 @@ async def stripe_webhook(
                         return {"status": "success", "message": "Account frozen due to dispute."}
             except Exception as e:
                 logger.error(f"Failed to process dispute: {e}")
-                pass
+                await db.rollback()
+                raise HTTPException(status_code=500, detail="Stripe dispute processing failed; please retry.") from e
 
     elif event['type'] == 'invoice.payment_succeeded':
         invoice = event['data']['object']
-        subscription_id = invoice.get('subscription')
+        subscription_id = stripe_get(invoice, 'subscription')
         
         if subscription_id:
             try:
-                subscription = stripe.Subscription.retrieve(subscription_id)
-                user_id_str = subscription.get('metadata', {}).get('user_id') or invoice.get('metadata', {}).get('user_id')
+                subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+                user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id') or stripe_get(stripe_get(invoice, 'metadata', {}), 'user_id')
                 
                 user = None
                 if user_id_str:
@@ -1886,7 +2023,7 @@ async def stripe_webhook(
                     user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
                     user = user_result.scalars().first()
                 else:
-                    customer_id = subscription.get('customer')
+                    customer_id = stripe_get(subscription, 'customer')
                     user_result = await db.execute(select(User).filter(User.stripe_customer_id == customer_id).with_for_update())
                     user = user_result.scalars().first()
                     if user:
@@ -1895,7 +2032,7 @@ async def stripe_webhook(
                         logger.error("Failed to process subscription payment: user_id missing in metadata and customer mapping failed.")
                 
                 if user:
-                    invoice_ref = f"sub_{invoice.get('id', '')}"
+                    invoice_ref = f"sub_{stripe_get(invoice, 'id', '')}"
                     # Stripe can retry the same event.  Do not extend access or
                     # create another accounting row for an invoice we already
                     # settled.
@@ -1903,10 +2040,11 @@ async def stripe_webhook(
                         select(Transaction).filter(Transaction.reference_id == invoice_ref)
                     )
                     if prior_invoice.scalars().first():
+                        await db.commit()
                         return {"status": "ignored", "message": "Subscription invoice already processed."}
 
                     user.is_premium = True
-                    user.premium_tier = subscription.get('metadata', {}).get('tier', 'premium')
+                    user.premium_tier = stripe_get(stripe_get(subscription, 'metadata', {}), 'tier', 'premium')
                     
                     from datetime import datetime, timezone, timedelta
                     now = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -1915,7 +2053,7 @@ async def stripe_webhook(
                     # valid subscription period.
                     starts_at = max(now, user.premium_expires_at) if user.premium_expires_at else now
                     
-                    price_id = subscription["items"]["data"][0]["price"]["id"]
+                    price_id = _extract_subscription_price_id(subscription)
                     if price_id == settings.STRIPE_ANNUAL_PRICE_ID:
                         user.premium_expires_at = starts_at + timedelta(days=365)
                         user.premium_billing_period = "annual"
@@ -1926,7 +2064,7 @@ async def stripe_webhook(
                     db.add(user)
                         
                     # Add transaction ledger entry for subscription payment
-                    amount_paid = invoice.get('amount_paid', 0)
+                    amount_paid = stripe_get(invoice, 'amount_paid', 0)
                     if amount_paid > 0:
                         sub_tx = Transaction(
                             user_id=user_id,
@@ -1941,6 +2079,15 @@ async def stripe_webhook(
                         )
                         db.add(sub_tx)
                     
+                    try:
+                        await db.commit()
+                    except IntegrityError:
+                        await db.rollback()
+                        return {"status": "ignored", "message": "Subscription invoice already processed."}
+                    
+                    # Distribute referral commissions on Stripe subscription payment
+                    from app.services.referral_commission_service import ReferralCommissionService
+                    await ReferralCommissionService.distribute_subscription_commissions(db, user.id, amount_paid)
                     await db.commit()
                     
                     try:
@@ -1962,7 +2109,7 @@ async def stripe_webhook(
                             telegram_id=user_id,
                             billing_period=user.premium_billing_period,
                             amount=amount_paid / 100.0,
-                            tx_id=invoice.get('id', '')
+                            tx_id=stripe_get(invoice, 'id', '')
                         )
                     except Exception as e:
                         logger.warning(f"Failed to send admin subscription alert: {e}")
@@ -1970,15 +2117,17 @@ async def stripe_webhook(
                     return {"status": "success", "message": "Subscription activated."}
             except Exception as e:
                 logger.error(f"Failed to process subscription payment: {e}")
+                await db.rollback()
+                raise HTTPException(status_code=500, detail="Stripe invoice processing failed; please retry.") from e
 
     elif event['type'] == 'invoice.payment_failed':
         invoice = event['data']['object']
-        subscription_id = invoice.get('subscription')
+        subscription_id = stripe_get(invoice, 'subscription')
         
         if subscription_id:
             try:
-                subscription = stripe.Subscription.retrieve(subscription_id)
-                user_id_str = subscription.get('metadata', {}).get('user_id')
+                subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+                user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
                 if user_id_str:
                     user_id = int(user_id_str)
                     try:
@@ -1996,33 +2145,43 @@ async def stripe_webhook(
 
     elif event['type'] == 'customer.subscription.deleted':
         subscription = event['data']['object']
-        user_id_str = subscription.get('metadata', {}).get('user_id')
-        
-        if user_id_str:
-            try:
-                user_id = int(user_id_str)
-                user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
-                user = user_result.scalars().first()
-                
-                if user:
-                    user.is_premium = False
-                    user.premium_expires_at = None
-                    user.stripe_subscription_id = None
-                    db.add(user)
-                    await db.commit()
-                    
-                    try:
-                        from app.services.telegram_bot import TelegramService
-                        await TelegramService.send_notification(
-                            user_id,
-                            "<b>ℹ️ Subscription Cancelled</b>\n\n"
-                            "Your Premium subscription has been cancelled or expired. You have been moved to the free tier."
-                        )
-                    except Exception:
-                        pass
-                    
-                    return {"status": "success", "message": "Subscription cancelled."}
-            except Exception as e:
-                logger.error(f"Failed to process subscription deletion: {e}")
+        user_id_str = stripe_get(stripe_get(subscription, 'metadata', {}), 'user_id')
+        try:
+            user = None
+            if user_id_str:
+                try:
+                    user_id = int(user_id_str)
+                    user_result = await db.execute(select(User).filter(User.telegram_id == user_id).with_for_update())
+                    user = user_result.scalars().first()
+                except Exception:
+                    pass
 
+            if not user:
+                customer_id = stripe_get(subscription, 'customer')
+                if customer_id:
+                    user_result = await db.execute(select(User).filter(User.stripe_customer_id == customer_id).with_for_update())
+                    user = user_result.scalars().first()
+
+            if user:
+                user.is_premium = False
+                user.premium_expires_at = None
+                user.stripe_subscription_id = None
+                db.add(user)
+                await db.commit()
+
+                try:
+                    from app.services.telegram_bot import TelegramService
+                    await TelegramService.send_notification(
+                        user.telegram_id,
+                        "<b>ℹ️ Subscription Cancelled</b>\n\n"
+                        "Your Premium subscription has been cancelled or expired. You have been moved to the free tier."
+                    )
+                except Exception:
+                    pass
+
+                return {"status": "success", "message": "Subscription cancelled."}
+        except Exception as e:
+            logger.error(f"Failed to process subscription deletion: {e}")
+
+    await db.commit()
     return {"status": "success", "message": "Event received."}

@@ -169,8 +169,8 @@ export default function ChallengesPage() {
   const { nextLevelXp, progressPercentage, isLevelSecured: levelSecured } = xpProgress;
 
   return (
-    <LayoutWrapper className="w-full">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto">
+    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
+      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto pt-2">
 
         {/* Level Progress Card — Ultra Premium */}
         <motion.div

@@ -137,6 +137,7 @@ Required page-shell behavior:
 
 - Use the app shell and `LayoutWrapper`; do not recreate safe-area and navbar behavior inside individual pages.
 - Respect `viewport-fit=cover` and the shared `--app-safe-bottom` variable. It combines Telegram and iOS inset values correctly with `max()`.
+- Keep one vertical document scroll chain. Page-level `html`, `body`, and the app shell may use `overflow-x: clip` to prevent horizontal bleed, but must not use `overflow-x: hidden` or suppress overscroll on intermediary containers; reserve vertical overscroll behavior for the document root.
 - Never hard-code a bottom inset such as `bottom-0 pb-4` for a fixed element that can meet iOS or Telegram chrome. Fixed bottom elements must incorporate `var(--app-safe-bottom)`.
 - Leave clearance for the fixed bottom navigation on dashboard pages. Do not hide the navbar conditionally to make room for an overlay; overlays sit above it.
 - Use centered content widths appropriate to the content: a narrow mobile feed often starts with `max-w-sm`, standard content with `max-w-xl`, and broad desktop content with `max-w-3xl`. Do not stretch a dense card list across an ultra-wide desktop just because space is available.

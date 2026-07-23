@@ -193,7 +193,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
         >
             <ul className="grid w-full grid-cols-5 gap-1">
                 {localizedItems.map((item) => {
-                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    const currentPath = (pathname || '').split('?')[0].replace(/\/$/, '');
+                    const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
                     const isPrimary = item.primary === true;
                     return (
                         <li key={item.href} className="min-w-0">

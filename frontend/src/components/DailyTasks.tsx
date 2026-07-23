@@ -6,6 +6,7 @@ import { FaCheck, FaGift, FaTrophy } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
+import { useUser } from '@/context/UserContext';
 import { triggerTaskSuccess } from '@/lib/telegram';
 
 const TaskSkeleton = () => (
@@ -27,6 +28,7 @@ const TaskSkeleton = () => (
 
 export default function DailyTasks() {
     const t = useTranslations('Gamification');
+    const { syncStats } = useUser();
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [claimingId, setClaimingId] = useState<number | null>(null);
@@ -63,6 +65,8 @@ export default function DailyTasks() {
                 method: "POST"
             });
             if (res.ok) {
+                // Sync user stats in real time so XP score & progress bar update immediately
+                syncStats();
                 if (task) {
                     let title = task.title_key;
                     try {

@@ -14,7 +14,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select, func, or_, desc
+from sqlalchemy import select, func, or_, desc, update, union, union_all, case
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_admin_user, get_db
@@ -98,22 +98,26 @@ async def get_stats(
     )
     total_blocked_users: int = blocked_res.scalar_one() or 0
 
-    # ── Activity (users who played a game or made a transaction in window) ──
+    # ── Activity (users active via games, transactions, signups, or check-ins) ──
     async def _active_users(since: datetime) -> int:
-        q_union = (
-            select(GameHistory.white_player_id.label("player_id"))
-            .where(
-                GameHistory.game_type == "online",
-                GameHistory.created_at >= since,
-            )
-            .union(
-                select(GameHistory.black_player_id.label("player_id"))
-                .where(
-                    GameHistory.game_type == "online",
-                    GameHistory.created_at >= since,
-                )
-            )
+        q1 = select(GameHistory.white_player_id.label("player_id")).where(
+            GameHistory.game_type == "online",
+            GameHistory.created_at >= since,
         )
+        q2 = select(GameHistory.black_player_id.label("player_id")).where(
+            GameHistory.game_type == "online",
+            GameHistory.created_at >= since,
+        )
+        q3 = select(Transaction.user_id.label("player_id")).where(
+            Transaction.created_at >= since,
+        )
+        q4 = select(User.id.label("player_id")).where(
+            User.created_at >= since,
+        )
+        q5 = select(User.id.label("player_id")).where(
+            User.last_checkin_date >= since,
+        )
+        q_union = union(q1, q2, q3, q4, q5)
         subq = q_union.subquery()
         q_count = select(func.count(subq.c.player_id))
         r = await db.execute(q_count)
@@ -187,26 +191,36 @@ async def get_stats(
     )
     level_1 = level_1_res.scalar_one() or 0
 
-    # ── Optimized Daily signup / revenue chart (last 14 days) ──────────────────
-    # Daily signups (proxy: game activity)
-    games_stmt = (
+    # ── Daily activity & revenue charts (last 14 days) ─────────────────────────
+    # Daily activity (online games + transactions + new signups)
+    act_union = union_all(
         select(
             func.date(GameHistory.created_at).label("date"),
-            func.count(GameHistory.id).label("count")
-        )
-        .where(
-            GameHistory.game_type == "online",
-            GameHistory.created_at >= ago_14d
-        )
-        .group_by(func.date(GameHistory.created_at))
+            GameHistory.white_player_id.label("uid"),
+        ).where(GameHistory.game_type == "online", GameHistory.created_at >= ago_14d),
+        select(
+            func.date(Transaction.created_at).label("date"),
+            Transaction.user_id.label("uid"),
+        ).where(Transaction.created_at >= ago_14d),
+        select(
+            func.date(User.created_at).label("date"),
+            User.id.label("uid"),
+        ).where(User.created_at >= ago_14d),
     )
-    games_res = await db.execute(games_stmt)
+    act_subq = act_union.subquery()
+    act_stmt = select(act_subq.c.date, func.count(act_subq.c.uid).label("count")).group_by(act_subq.c.date)
+    games_res = await db.execute(act_stmt)
     
-    # Daily revenue
+    # Daily revenue (fees + rake)
     rev_stmt = (
         select(
             func.date(Transaction.created_at).label("date"),
-            func.coalesce(func.sum(Transaction.fee), 0).label("total_cents")
+            func.coalesce(
+                func.sum(
+                    Transaction.fee + case((Transaction.type == "game_rake", func.abs(Transaction.amount)), else_=0)
+                ),
+                0,
+            ).label("total_cents")
         )
         .where(
             Transaction.status == "completed",
@@ -507,8 +521,9 @@ async def get_solvency(
 # ---------------------------------------------------------------------------
 # Withdrawals at/above WITHDRAWAL_REVIEW_THRESHOLD_CENTS are debited (funds held)
 # and parked as status="pending_review" with the destination address stashed in
-# reference_id ("pending_review:<address>"). An admin approves (executes the
-# on-chain payout) or rejects (refunds the held balance).
+# reference_id ("pending_review:<address>"). An approval first claims the row
+# with a conditional update and commits it as processing_payout before it can
+# execute the irreversible on-chain payout.
 
 @router.get("/withdrawals/pending")
 async def list_pending_withdrawals(
@@ -547,38 +562,109 @@ async def approve_withdrawal(
 ):
     """Approve a held withdrawal: execute the on-chain payout and mark it sent."""
     from app.core.config import get_settings
+    from app.services.withdrawal_review import (
+        PENDING_REVIEW_STATUS,
+        PROCESSING_PAYOUT_STATUS,
+        REVIEW_REFERENCE_PREFIX,
+        claim_payout,
+        release_payout_claim,
+    )
     settings = get_settings()
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
 
     res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
     tx = res.scalars().first()
-    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
-        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+    if not tx or tx.type != "withdrawal":
+        raise HTTPException(status_code=404, detail="Withdrawal not found")
+    if tx.status != PENDING_REVIEW_STATUS:
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {tx.status}")
 
-    if not tx.reference_id or not tx.reference_id.startswith("pending_review:"):
+    if not tx.reference_id or not tx.reference_id.startswith(REVIEW_REFERENCE_PREFIX):
         raise HTTPException(status_code=400, detail="Withdrawal is missing its destination address")
+    if not payout_readiness.ready:
+        raise HTTPException(status_code=503, detail="Withdrawals are temporarily unavailable; this request remains pending review")
     address = tx.reference_id.split(":", 1)[1]
 
     amount = -tx.amount                    # positive requested amount
     transfer_amount_cents = amount - (tx.fee or 0)
 
+    # Commit a conditional claim before touching the blockchain. This makes
+    # concurrent admin clicks, retries, and process-local duplicate requests
+    # observe the same durable owner state.
+    claimed, approved_at = await claim_payout(db, tx_id, _admin.telegram_id)
+    if not claimed:
+        res = await db.execute(select(Transaction.status).where(Transaction.id == tx_id))
+        current_status = res.scalar_one_or_none() or "unavailable"
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {current_status}")
+
     tx_hash = None
     is_real = False
-    if settings.PAYOUT_MNEMONIC:
+    if payout_readiness.mode == "real":
         try:
-            from app.services.payout_service import execute_usdt_payout
+            from app.services.payout_service import BlockchainBroadcastError, execute_usdt_payout
             tx_hash = await execute_usdt_payout(address, transfer_amount_cents)
             is_real = True
+        except BlockchainBroadcastError as broadcast_err:
+            # A timeout/error at broadcast time may still have reached the
+            # chain. Keep the withdrawal non-reviewable and let the crawler
+            # reconcile the persisted message hash when one is available.
+            tx_hash = broadcast_err.msg_hash or None
+            await db.execute(
+                update(Transaction)
+                .where(Transaction.id == tx_id, Transaction.status == PROCESSING_PAYOUT_STATUS)
+                .values(status="pending", reference_id=tx_hash)
+            )
+            await db.commit()
+            logger.warning(
+                "[TRANSACTION] withdrawal approval broadcast uncertain "
+                "tx_id=%s user_id=%s admin_id=%s reference_id=%s",
+                tx_id,
+                tx.user_id,
+                _admin.telegram_id,
+                tx_hash,
+            )
+            return {
+                "status": "approved_pending_reconciliation",
+                "tx_id": tx_id,
+                "reference_id": tx_hash,
+                "approved_by_admin_id": _admin.telegram_id,
+                "approved_at": approved_at.isoformat(),
+            }
         except Exception as payout_err:
-            # Leave held (still reviewable); surface the failure so the admin can retry/reject.
-            logger.error(f"Approved withdrawal payout failed for tx {tx_id}: {payout_err}")
-            raise HTTPException(status_code=500, detail=f"On-chain payout failed: {payout_err}")
+            # This is a known pre-broadcast failure. Release only our durable
+            # processing claim, never the user's held balance.
+            released = await release_payout_claim(db, tx_id)
+            logger.error(
+                "[TRANSACTION] withdrawal approval failed before broadcast "
+                "tx_id=%s user_id=%s admin_id=%s claim_released=%s error=%s",
+                tx_id,
+                tx.user_id,
+                _admin.telegram_id,
+                released,
+                payout_err,
+            )
+            raise HTTPException(status_code=502, detail="On-chain payout failed before broadcast; withdrawal remains pending review")
     else:
         tx_hash = f"mock_{address[:6]}_{amount}"
 
-    tx.status = "pending" if is_real else "completed"
-    tx.reference_id = tx_hash
-    db.add(tx)
+    await db.execute(
+        update(Transaction)
+        .where(Transaction.id == tx_id, Transaction.status == PROCESSING_PAYOUT_STATUS)
+        .values(status="pending" if is_real else "completed", reference_id=tx_hash)
+    )
     await db.commit()
+    logger.info(
+        "[TRANSACTION] withdrawal approved tx_id=%s user_id=%s admin_id=%s "
+        "amount_cents=%s fee_cents=%s reference_id=%s status=%s",
+        tx_id,
+        tx.user_id,
+        _admin.telegram_id,
+        amount,
+        tx.fee or 0,
+        tx_hash,
+        "pending" if is_real else "completed",
+    )
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -592,7 +678,13 @@ async def approve_withdrawal(
     except Exception:
         pass
 
-    return {"status": "approved", "tx_id": tx_id, "reference_id": tx_hash}
+    return {
+        "status": "approved",
+        "tx_id": tx_id,
+        "reference_id": tx_hash,
+        "approved_by_admin_id": _admin.telegram_id,
+        "approved_at": approved_at.isoformat(),
+    }
 
 
 @router.post("/withdrawals/{tx_id}/reject")
@@ -603,18 +695,41 @@ async def reject_withdrawal(
 ):
     """Reject a held withdrawal: refund the held balance to the user."""
     from app.crud import user as user_crud
+    from app.services.withdrawal_review import PENDING_REVIEW_STATUS, reject_pending_review
 
     res = await db.execute(select(Transaction).where(Transaction.id == tx_id))
     tx = res.scalars().first()
-    if not tx or tx.type != "withdrawal" or tx.status != "pending_review":
-        raise HTTPException(status_code=404, detail="No pending-review withdrawal with that id")
+    if not tx or tx.type != "withdrawal":
+        raise HTTPException(status_code=404, detail="Withdrawal not found")
+    if tx.status != PENDING_REVIEW_STATUS:
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {tx.status}")
 
     refund = -tx.amount                    # positive amount to return
+    rejected, rejected_at = await reject_pending_review(db, tx_id, _admin.telegram_id)
+    if not rejected:
+        await db.rollback()
+        res = await db.execute(select(Transaction.status).where(Transaction.id == tx_id))
+        current_status = res.scalar_one_or_none() or "unavailable"
+        raise HTTPException(status_code=409, detail=f"Withdrawal is already {current_status}")
+
+    # The status transition and balance credit deliberately share one commit.
     await user_crud.atomic_credit(db, tx.user_id, refund, commit=False)
-    tx.status = "failed"
-    tx.reference_id = "rejected"
-    db.add(tx)
+    db.add(Transaction(
+        user_id=tx.user_id,
+        type="withdrawal_refund",
+        amount=refund,
+        fee=0,
+        status="completed",
+        reference_id=f"withdrawal_refund:{tx.id}",
+    ))
     await db.commit()
+    logger.info(
+        "[TRANSACTION] withdrawal rejected tx_id=%s user_id=%s admin_id=%s refunded_cents=%s",
+        tx_id,
+        tx.user_id,
+        _admin.telegram_id,
+        refund,
+    )
 
     try:
         from app.services.telegram_bot import TelegramService
@@ -627,7 +742,13 @@ async def reject_withdrawal(
     except Exception:
         pass
 
-    return {"status": "rejected", "tx_id": tx_id, "refunded_cents": refund}
+    return {
+        "status": "rejected",
+        "tx_id": tx_id,
+        "refunded_cents": refund,
+        "rejected_by_admin_id": _admin.telegram_id,
+        "rejected_at": rejected_at.isoformat(),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1022,7 +1143,8 @@ async def get_system_status(
     # ── 4. Web3 / Wallets ─────────────────────────────────────────────────────
     ton_api_configured = bool(settings.TON_API_KEY)
     ton_console_configured = bool(settings.TON_CONSOLE_TOKEN)
-    payout_configured = bool(settings.PAYOUT_MNEMONIC)
+    from app.services.payout_readiness import get_payout_readiness
+    payout_readiness = get_payout_readiness(settings)
 
     # Try to get master wallet balance via TON API
     master_balance_nano: int | None = None
@@ -1050,7 +1172,9 @@ async def get_system_status(
         "status": ton_api_status,
         "ton_api_configured": ton_api_configured,
         "ton_console_configured": ton_console_configured,
-        "payout_mnemonic_configured": payout_configured,
+        "payout_ready": payout_readiness.ready,
+        "payout_mode": payout_readiness.mode,
+        "payout_unavailable_reason": payout_readiness.reason,
         "master_wallet_address": settings.MASTER_WALLET_ADDRESS,
         "company_wallet_address": settings.COMPANY_WALLET_ADDRESS,
         "master_wallet_balance_ton": master_balance_ton,

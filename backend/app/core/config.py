@@ -1,6 +1,14 @@
 import os
+import logging
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+
+logger = logging.getLogger(__name__)
+
+# These IDs are deliberately available only to local development and tests so
+# existing fixtures can exercise admin routes without production identities.
+_LOCAL_ADMIN_TELEGRAM_IDS = {1016749901, 716720099}
 
 class Settings(BaseSettings):
     ENV: str = "production"
@@ -10,18 +18,21 @@ class Settings(BaseSettings):
     VERSION: str = "1.7.0"
     API_V1_STR: str = "/api/v1"
     
-    # CORS
+    # CORS exact-origin allowlist
     # NOTE: The effective CORS policy is enforced by RawCORSMiddleware in
     # app/main.py, which uses an explicit allowlist and never emits a "*" origin.
     # This list is retained for reference/tooling only. Do NOT add "*" here — if
     # this ever gets wired to a credentialed CORSMiddleware, a wildcard origin
     # with credentials would be a serious vulnerability.
-    BACKEND_CORS_ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "https://chesstgbot-production.up.railway.app",
-        "https://web.telegram.org",
-        "https://telegram.org",
-    ]
+    CORS_ALLOWED_ORIGINS: str = os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        ",".join([
+            "https://chesstgbot-frontend-production.up.railway.app",
+            "https://chesstgbot-backend-production.up.railway.app",
+            "https://web.telegram.org",
+            "https://telegram.org",
+        ]),
+    )
 
     # Daily Arena: start time (UTC "HH:MM") and window length in minutes
     # Four daily arena windows, 6h apart, so every region gets one landing in
@@ -52,34 +63,58 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_USERNAME: str = os.getenv("TELEGRAM_BOT_USERNAME") or "FinChess_bot"
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
     PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""
+    # Production withdrawals are opt-in. Development and tests can use the
+    # deterministic mock path, but a production process must never do so.
+    PAYOUTS_ENABLED: bool = (os.getenv("PAYOUTS_ENABLED", "false").lower() == "true")
+
+    @property
+    def is_development_or_testing(self) -> bool:
+        return self.TESTING or self.ENV.strip().lower() in {"development", "dev", "test"}
 
     @property
     def admin_telegram_ids(self) -> set[int]:
-        raw = os.getenv("ADMIN_TELEGRAM_IDS")
-        ids = set()
-        if raw:
-            for part in raw.split(","):
-                part = part.strip()
-                if part.isdigit():
-                    ids.add(int(part))
-        else:
-            # Default fallback admins to prevent lockout
-            ids = {1016749901, 716720099}
-            
-        legacy = os.getenv("ADMIN_TELEGRAM_ID")
-        if legacy:
-            try:
-                val = int(legacy)
-                if val > 0:
-                    ids.add(val)
-            except ValueError:
-                pass
+        ids, _ = self._configured_admin_telegram_ids()
+        if not ids and self.is_development_or_testing:
+            return set(_LOCAL_ADMIN_TELEGRAM_IDS)
         return ids
+
+    def _configured_admin_telegram_ids(self) -> tuple[set[int], str | None]:
+        """Parse explicitly configured admin IDs without ever granting a fallback."""
+        ids: set[int] = set()
+        raw = os.getenv("ADMIN_TELEGRAM_IDS")
+        legacy = os.getenv("ADMIN_TELEGRAM_ID")
+
+        if raw is not None:
+            entries = [part.strip() for part in raw.split(",")]
+            if not entries or any(not entry or not entry.isdigit() or int(entry) <= 0 for entry in entries):
+                return set(), "malformed ADMIN_TELEGRAM_IDS"
+            ids.update(int(entry) for entry in entries)
+
+        if legacy is not None and legacy.strip():
+            legacy_value = legacy.strip()
+            if not legacy_value.isdigit() or int(legacy_value) <= 0:
+                return set(), "malformed ADMIN_TELEGRAM_ID"
+            ids.add(int(legacy_value))
+
+        if not ids:
+            return set(), "missing ADMIN_TELEGRAM_IDS"
+        return ids, None
+
+    @property
+    def admin_telegram_ids_configuration_error(self) -> str | None:
+        """Return a non-sensitive production configuration failure reason."""
+        _, error = self._configured_admin_telegram_ids()
+        return error
 
     # Security
     # In production, this MUST be set as an environment variable.
     SECRET_KEY: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
+    # Railway routes public traffic through its edge before it reaches a
+    # service.  Its documented proxy range is 100.0.0.0/8; this setting exists
+    # so a future ingress can be added explicitly rather than trusting headers
+    # from every direct client.
+    TRUSTED_PROXY_CIDRS: str = os.getenv("TRUSTED_PROXY_CIDRS", "100.0.0.0/8")
 
     # Deployment
     # This URL should be the production URL of your app.
@@ -135,6 +170,18 @@ class Settings(BaseSettings):
     WITHDRAWAL_CONFIRMATION_ENABLED: bool = (os.getenv("WITHDRAWAL_CONFIRMATION_ENABLED", "true").lower() != "false")
     WITHDRAWAL_CONFIRMATION_TTL_SECONDS: int = int(os.getenv("WITHDRAWAL_CONFIRMATION_TTL_SECONDS", "1800"))
 
+    @property
+    def payout_configuration_error(self) -> str | None:
+        """Return a non-secret reason a real payout configuration is invalid."""
+        words = [word for word in self.PAYOUT_MNEMONIC.strip().split() if word]
+        if len(words) not in (12, 24):
+            return "invalid_payout_mnemonic"
+        if not self.MASTER_WALLET_ADDRESS:
+            return "missing_master_wallet_address"
+        if not self.USDT_MASTER:
+            return "missing_usdt_master_address"
+        return None
+
     # Sybil / account-farming resistance. Referral signup bonuses mint real
     # USDT balance, so they are the farmable surface:
     # - a referrer banks at most N signup bonuses per rolling 24h (excess
@@ -186,6 +233,17 @@ def get_settings():
     if "pytest" in sys.modules:
         settings.TESTING = True
         
+    # Admin access must be explicitly configured outside local development and
+    # tests. Never use fallback identities in a deployed environment.
+    if not settings.is_development_or_testing:
+        admin_configuration_error = settings.admin_telegram_ids_configuration_error
+        if admin_configuration_error:
+            raise ValueError(
+                "Administrator configuration is invalid: "
+                f"{admin_configuration_error}"
+            )
+        logger.info("Configured %d administrator account(s)", len(settings.admin_telegram_ids))
+
     # If not running in development or testing mode, enforce production security checks
     is_testing = settings.TESTING
     is_dev = settings.ENV == "development"
@@ -196,4 +254,8 @@ def get_settings():
             raise ValueError("SECRET_KEY environment variable must be set in production!")
         if not settings.WEBHOOK_SECRET or settings.WEBHOOK_SECRET == "dev_webhook_secret":
             raise ValueError("WEBHOOK_SECRET must be set to a secure custom value in production!")
+        if settings.PAYOUTS_ENABLED and settings.payout_configuration_error:
+            raise ValueError(
+                f"Payouts are enabled but configuration is invalid: {settings.payout_configuration_error}"
+            )
     return settings

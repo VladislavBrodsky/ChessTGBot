@@ -3,10 +3,14 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from app.core.config import get_settings
+from app.core.security import extract_client_ip_from_request, hash_ip, validate_init_data
 import os
 import asyncio
+import hashlib
+import json
 import logging
 import re
+import time
 import anyio
 from app.services.telegram_bot import TelegramService
 from app.core.logger import exception_summary, setup_logging, LoggingMiddleware
@@ -34,27 +38,45 @@ class RawCORSMiddleware:
     (like Socket.IO) or other middleware.
     """
     
-    ALLOWED_ORIGINS = {
-        "https://chesstgbot-frontend-production.up.railway.app",
-        "https://chesstgbot-backend-production.up.railway.app",
-        "https://web.telegram.org",
-        "https://telegram.org",
-    }
+    ALLOWED_METHODS = frozenset({"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"})
+    ALLOWED_HEADERS = frozenset({
+        "authorization",
+        "content-type",
+        "x-telegram-init-data",
+        "x-request-id",
+        "bypass-tunnel-reminder",
+    })
+    ALLOWED_HEADERS_VALUE = b"authorization, content-type, x-telegram-init-data, x-request-id, bypass-tunnel-reminder"
     
     def __init__(self, app):
         self.app = app
 
-    def _get_origin(self, scope):
-        """Extract the Origin header from ASGI scope headers."""
+    def _get_header(self, scope, name):
+        """Extract one lower-case header from an ASGI scope."""
         for key, value in scope.get("headers", []):
-            if key == b"origin":
+            if key == name:
                 return value.decode("latin-1")
         return None
 
+    def _get_origin(self, scope):
+        return self._get_header(scope, b"origin")
+
     def _is_allowed(self, origin):
-        """Allow designated origins, dynamic Railway subdomains, and localhost."""
+        """Allow only exact configured origins."""
         from app.core.security import is_allowed_cors_origin
         return is_allowed_cors_origin(origin)
+
+    @staticmethod
+    def _append_vary_origin(headers):
+        """Ensure caches distinguish CORS responses by Origin."""
+        for index, (key, value) in enumerate(headers):
+            if key.lower() == b"vary":
+                values = {item.strip().lower() for item in value.split(b",")}
+                if b"origin" not in values:
+                    headers[index] = (key, value + b", Origin")
+                return headers
+        headers.append((b"vary", b"Origin"))
+        return headers
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -74,6 +96,21 @@ class RawCORSMiddleware:
 
         # Handle OPTIONS preflight immediately
         if scope["method"] == "OPTIONS":
+            requested_method = self._get_header(scope, b"access-control-request-method")
+            requested_headers = self._get_header(scope, b"access-control-request-headers") or ""
+            requested_header_names = {
+                header.strip().lower()
+                for header in requested_headers.split(",")
+                if header.strip()
+            }
+            if requested_method not in self.ALLOWED_METHODS or not requested_header_names.issubset(self.ALLOWED_HEADERS):
+                await send({
+                    "type": "http.response.start",
+                    "status": 400,
+                    "headers": [(b"vary", b"Origin"), (b"content-length", b"0")],
+                })
+                await send({"type": "http.response.body", "body": b""})
+                return
             await send({
                 "type": "http.response.start",
                 "status": 200,
@@ -81,8 +118,9 @@ class RawCORSMiddleware:
                     (b"access-control-allow-origin", origin.encode()),
                     (b"access-control-allow-credentials", b"true"),
                     (b"access-control-allow-methods", b"GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"),
-                    (b"access-control-allow-headers", b"*"),
+                    (b"access-control-allow-headers", self.ALLOWED_HEADERS_VALUE),
                     (b"access-control-max-age", b"86400"),
+                    (b"vary", b"Origin"),
                     (b"content-length", b"0"),
                 ],
             })
@@ -103,6 +141,7 @@ class RawCORSMiddleware:
                 ]
                 headers.append((b"access-control-allow-origin", origin.encode()))
                 headers.append((b"access-control-allow-credentials", b"true"))
+                headers = self._append_vary_origin(headers)
                 message = {**message, "headers": headers}
             await send(message)
 
@@ -127,6 +166,7 @@ async def start_withdrawal_confirmation_sweeper():
     are never stranded when the user ignores the Confirm DM), and pages
     Treasury for payouts stuck mid-execution after a crash/redeploy."""
     from app.services.withdrawal_confirmation import expire_stale_confirmations, alert_stuck_payouts
+    from app.services.withdrawal_reconciliation import reconcile_nonterminal_withdrawals
     while True:
         try:
             await asyncio.sleep(300)
@@ -136,6 +176,7 @@ async def start_withdrawal_confirmation_sweeper():
             stuck = await alert_stuck_payouts()
             if stuck:
                 logger.warning(f"Withdrawal-confirmation sweeper flagged {stuck} stuck payout(s).")
+            await reconcile_nonterminal_withdrawals()
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -196,9 +237,17 @@ async def lifespan(app: FastAPI):
     from app.services.deposit_crawler import start_deposit_crawler
     asyncio.create_task(start_deposit_crawler())
 
+    # Start background Stripe deposit reconciliation loop
+    from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
+    asyncio.create_task(start_stripe_reconciliation_loop())
+
     # Start background ledger audit reconciliation
     from app.services.ledger_audit import start_ledger_audit_loop
     asyncio.create_task(start_ledger_audit_loop())
+
+    # Recover paid/expired Stripe Checkout sessions that missed webhook delivery.
+    from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
+    asyncio.create_task(start_stripe_reconciliation_loop())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
@@ -245,7 +294,7 @@ async def lifespan(app: FastAPI):
     try:
         from app.core.database import AsyncSessionLocal
         from app.models.user import User as UserModel
-        from app.services.gamification_service import XP_PER_LEVEL
+        from app.services.gamification_service import _xp_to_level
         from sqlalchemy import select as sa_select
 
         if not engine.url.drivername.startswith("sqlite"):
@@ -265,7 +314,7 @@ async def lifespan(app: FastAPI):
                     
                     fixed_in_batch = 0
                     for u in users:
-                        correct_level = max(1, int(u.xp // XP_PER_LEVEL) + 1)
+                        correct_level = _xp_to_level(u.xp)
                         if correct_level > u.level:
                             u.level = correct_level
                             fixed_in_batch += 1
@@ -424,8 +473,19 @@ def create_application() -> FastAPI:
     application.include_router(content.router, prefix="/api/v1/content", tags=["content"])
     application.include_router(marketplace.router, prefix="/api/v1/marketplace", tags=["marketplace"])
 
-    # Sliding window rate limiter for client-side logs (max 5 requests per minute per IP)
+    # Public client logs are intentionally available before app startup, so keep
+    # their size, volume, and alerting surface tightly bounded.
+    CLIENT_LOG_MAX_REQUEST_BYTES = 16 * 1024
+    CLIENT_LOG_MAX_BATCH_ITEMS = 10
+    CLIENT_LOG_MAX_MESSAGE_CHARS = 1_800
+    CLIENT_LOG_MAX_URL_CHARS = 500
+    CLIENT_LOG_ALLOWED_LEVELS = {"INFO", "WARNING", "ERROR"}
+    CLIENT_LOG_UNAUTHENTICATED_ERROR_THRESHOLD = 3
+    CLIENT_LOG_CORRELATION_WINDOW_SECONDS = 10 * 60
+
+    # Sliding window rate limiter for client-side logs (max 5 requests per minute per trusted identity)
     client_log_limits = {}
+    client_error_correlations = {}
 
     async def check_client_log_rate_limit(ip: str) -> bool:
         import time
@@ -467,6 +527,94 @@ def create_application() -> FastAPI:
         client_log_limits[ip] = (new_tokens, now)
         return False
 
+    def _authenticated_client_log_reporter(request: Request) -> int | None:
+        """Return a verified Telegram identity when this early-startup route has one."""
+        init_data = request.headers.get("X-Telegram-Init-Data")
+        if not init_data:
+            return None
+        try:
+            telegram_user = validate_init_data(init_data)
+            telegram_id = telegram_user.get("id")
+            return int(telegram_id) if telegram_id else None
+        except Exception:
+            # This endpoint must remain available while the client is crashing
+            # or before Telegram initData has loaded. Invalid data is anonymous,
+            # never an authentication failure that could trigger alerts itself.
+            return None
+
+    def _validated_client_log_items(data: object) -> list[dict] | None:
+        """Validate a small, boring client-log schema before any logging occurs."""
+        items = data if isinstance(data, list) else [data] if isinstance(data, dict) else None
+        if not items or len(items) > CLIENT_LOG_MAX_BATCH_ITEMS:
+            return None
+
+        validated = []
+        for item in items:
+            if not isinstance(item, dict):
+                return None
+            level = item.get("level", "INFO")
+            message = item.get("message", "")
+            url = item.get("url", "")
+            if (
+                not isinstance(level, str)
+                or level.upper() not in CLIENT_LOG_ALLOWED_LEVELS
+                or not isinstance(message, str)
+                or not message
+                or len(message) > CLIENT_LOG_MAX_MESSAGE_CHARS
+                or not isinstance(url, str)
+                or len(url) > CLIENT_LOG_MAX_URL_CHARS
+            ):
+                return None
+            validated.append({"level": level.upper(), "message": message, "url": url})
+        return validated
+
+    async def _should_page_unauthenticated_client_error(message: str, reporter_hash: str) -> bool:
+        """Require a client crash to be seen from several identities before paging."""
+        fingerprint = hashlib.sha256(message.encode("utf-8")).hexdigest()
+        now = time.time()
+        session_mgr = None
+        try:
+            from app.services.session_manager import SessionManager
+            session_mgr = SessionManager()
+            if session_mgr.redis and not session_mgr._use_memory:
+                reporters_key = f"client_log:correlation:{fingerprint}"
+                alert_key = f"{reporters_key}:alerted"
+                await session_mgr.redis.sadd(reporters_key, reporter_hash)
+                await session_mgr.redis.expire(reporters_key, CLIENT_LOG_CORRELATION_WINDOW_SECONDS)
+                reporter_count = await session_mgr.redis.scard(reporters_key)
+                if reporter_count < CLIENT_LOG_UNAUTHENTICATED_ERROR_THRESHOLD:
+                    return False
+                # Page once per fingerprint/window after the threshold is met.
+                return bool(await session_mgr.redis.set(
+                    alert_key,
+                    "1",
+                    ex=CLIENT_LOG_CORRELATION_WINDOW_SECONDS,
+                    nx=True,
+                ))
+        except Exception:
+            if session_mgr is not None:
+                session_mgr._use_memory = True
+
+        if fingerprint not in client_error_correlations and len(client_error_correlations) >= 500:
+            # This is only a best-effort alert-sampling cache. Resetting it is
+            # safe (it can suppress a page, never create one) and bounds memory
+            # under a flood of unique unauthenticated messages.
+            client_error_correlations.clear()
+        reporters, alerted_at = client_error_correlations.get(fingerprint, ({}, 0.0))
+        reporters = {
+            reporter: seen_at
+            for reporter, seen_at in reporters.items()
+            if now - seen_at < CLIENT_LOG_CORRELATION_WINDOW_SECONDS
+        }
+        reporters[reporter_hash] = now
+
+        should_page = (
+            len(reporters) >= CLIENT_LOG_UNAUTHENTICATED_ERROR_THRESHOLD
+            and now - alerted_at >= CLIENT_LOG_CORRELATION_WINDOW_SECONDS
+        )
+        client_error_correlations[fingerprint] = (reporters, now if should_page else alerted_at)
+        return should_page
+
     # Dedicated logger for client-reported errors. It is NOT in the
     # TelegramAlertHandler ignore-list, so ERROR records here are fingerprinted,
     # rate-limited, and forwarded to admins on Telegram — the same path backend
@@ -484,11 +632,11 @@ def create_application() -> FastAPI:
         "unhandledrejection": "Unhandled Promise Rejection (async)",
     }
 
-    def _handle_client_log_item(item: dict):
-        lvl = str(item.get("level", "INFO")).upper()
-        msg = str(item.get("message", ""))[:2000]
+    async def _handle_client_log_item(item: dict, reporter_hash: str, authenticated: bool):
+        lvl = item["level"]
+        msg = item["message"]
         # Optional context the frontend may attach to crash reports.
-        url = str(item.get("url", ""))[:500]
+        url = item["url"]
         context = f" | page={url}" if url else ""
 
         # Attribute the error to its capture point when the frontend tagged it.
@@ -500,15 +648,19 @@ def create_application() -> FastAPI:
             label = CLIENT_ERROR_SOURCES[source_match.group(1)]
             msg = f"{label} — {source_match.group(2)}"
 
-        if lvl in ("ERROR", "CRITICAL"):
-            # Routes to admins via TelegramAlertHandler (rate-limited + deduped);
-            # the "app.client" logger name attributes it to the Game Client system.
-            client_logger.error(f"[CLIENT ERROR] {msg}{context}")
+        if lvl == "ERROR":
+            if authenticated:
+                # Authenticated clients can immediately report actionable crashes.
+                client_logger.error(f"[CLIENT ERROR] {msg}{context}")
+            elif await _should_page_unauthenticated_client_error(msg, reporter_hash):
+                client_logger.error(f"[CLIENT ERROR] Correlated unauthenticated crash: {msg}{context}")
+            else:
+                # Keep raw startup failures out of pager alerts until independent
+                # clients corroborate the same fingerprint.
+                client_logger.warning(f"[CLIENT ERROR UNSAMPLED] {msg}{context}")
         else:
             log_method = {
-                "DEBUG": client_logger.debug,
                 "WARNING": client_logger.warning,
-                "WARN": client_logger.warning,
             }.get(lvl, client_logger.info)
             log_method("[CLIENT %s] %s%s", lvl, msg, context)
 
@@ -516,24 +668,41 @@ def create_application() -> FastAPI:
     async def client_log(request: Request):
         from fastapi.responses import JSONResponse
 
-        ip = request.client.host if request.client else "unknown"
-        if not await check_client_log_rate_limit(ip):
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                if int(content_length) > CLIENT_LOG_MAX_REQUEST_BYTES:
+                    return JSONResponse(status_code=413, content={"status": "error", "detail": "Payload too large."})
+            except ValueError:
+                return JSONResponse(status_code=400, content={"status": "error", "detail": "Invalid content length."})
+
+        body = bytearray()
+        async for chunk in request.stream():
+            body.extend(chunk)
+            if len(body) > CLIENT_LOG_MAX_REQUEST_BYTES:
+                return JSONResponse(status_code=413, content={"status": "error", "detail": "Payload too large."})
+
+        try:
+            items = _validated_client_log_items(json.loads(body))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            items = None
+        if items is None:
+            return JSONResponse(status_code=422, content={"status": "error", "detail": "Invalid client log payload."})
+
+        # Use the centralized SEC-02 trusted-proxy boundary. Raw addresses are
+        # immediately salted/hashed and never written to logs or durable storage.
+        ip_hash = hash_ip(extract_client_ip_from_request(request)) or "unknown"
+        authenticated_reporter = _authenticated_client_log_reporter(request)
+        reporter_hash = hash_ip(f"telegram:{authenticated_reporter}") if authenticated_reporter else ip_hash
+        if not await check_client_log_rate_limit(reporter_hash):
             return JSONResponse(
                 status_code=429,
                 content={"status": "error", "detail": "Rate limit exceeded. Please slow down."}
             )
 
-        try:
-            data = await request.json()
-            if isinstance(data, list):
-                for item in data[:20]:  # Cap at 20 logs per batch
-                    if isinstance(item, dict):
-                        _handle_client_log_item(item)
-            elif isinstance(data, dict):
-                _handle_client_log_item(data)
-            return {"status": "logged"}
-        except Exception as e:
-            return {"status": "error", "detail": str(e)}
+        for item in items:
+            await _handle_client_log_item(item, reporter_hash, authenticated_reporter is not None)
+        return {"status": "logged"}
 
     @application.get("/version")
     async def get_version():

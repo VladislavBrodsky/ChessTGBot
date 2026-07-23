@@ -102,6 +102,11 @@
   --premium-surface-border: rgba(255, 255, 255, 0.12);
   --premium-orb-gold: rgba(251, 191, 36, 0.18);
   --premium-orb-silver: rgba(226, 232, 240, 0.10);
+  --bg-orb-1: rgba(245, 158, 11, 0.08);
+  --bg-orb-2: rgba(16, 185, 129, 0.06);
+  --bg-orb-3: rgba(168, 85, 247, 0.05);
+  --bg-dot-color: rgba(255, 255, 255, 0.04);
+  --bg-noise-opacity: 0.035;
   --progress-track-bg: linear-gradient(90deg, rgba(245, 158, 11, 0.06), rgba(251, 191, 36, 0.16), rgba(245, 158, 11, 0.06));
   --progress-secured-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
   --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
@@ -187,6 +192,11 @@
   --premium-surface-border: rgba(15, 23, 42, 0.09);
   --premium-orb-gold: rgba(245, 158, 11, 0.20);
   --premium-orb-silver: rgba(100, 116, 139, 0.10);
+  --bg-orb-1: rgba(245, 158, 11, 0.06);
+  --bg-orb-2: rgba(56, 189, 248, 0.05);
+  --bg-orb-3: rgba(168, 85, 247, 0.04);
+  --bg-dot-color: rgba(15, 23, 42, 0.035);
+  --bg-noise-opacity: 0.02;
   --progress-track-bg: linear-gradient(90deg, rgba(245, 158, 11, 0.10), rgba(251, 191, 36, 0.30), rgba(245, 158, 11, 0.10));
   --progress-secured-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
   --progress-gold-fill: linear-gradient(90deg, #B45309 0%, #FBBF24 46%, #FDE68A 58%, #D97706 100%);
@@ -271,6 +281,11 @@
   --premium-surface-border: rgba(160, 136, 255, 0.24);
   --premium-orb-gold: rgba(251, 191, 36, 0.16);
   --premium-orb-silver: rgba(0, 240, 255, 0.13);
+  --bg-orb-1: rgba(6, 182, 212, 0.12);
+  --bg-orb-2: rgba(168, 85, 247, 0.12);
+  --bg-orb-3: rgba(236, 72, 153, 0.08);
+  --bg-dot-color: rgba(6, 182, 212, 0.06);
+  --bg-noise-opacity: 0.04;
   --progress-track-bg: linear-gradient(90deg, rgba(160, 136, 255, 0.08), rgba(0, 240, 255, 0.18), rgba(160, 136, 255, 0.08));
   --progress-secured-fill: linear-gradient(90deg, #00F0FF 0%, #C4B5FD 50%, #7B2CBF 100%);
   --progress-gold-fill: linear-gradient(90deg, #F59E0B 0%, #FDE68A 52%, #00F0FF 100%);
@@ -331,7 +346,8 @@
 
 html {
   max-width: 100vw;
-  overflow-x: hidden !important;
+  /* `hidden` creates an accidental vertical scroll container; clip does not. */
+  overflow-x: clip !important;
   scrollbar-gutter: stable;
   background-color: var(--bg-primary) !important;
   overscroll-behavior-y: none;
@@ -349,9 +365,8 @@ body {
   padding: 0;
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   scrollbar-gutter: stable;
-  overscroll-behavior-y: none;
   background-attachment: fixed;
 }
 

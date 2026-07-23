@@ -89,16 +89,24 @@ class E2EClient:
         return handler
 
     async def connect(self, url: str, user_id: int, name: str, ip: str):
-        await self.sio.connect(
-            url,
-            auth={"initData": _init_data(user_id, name)},
-            headers={
-                "X-Forwarded-For": ip,
-                "Origin": "http://127.0.0.1:3000"
-            },
-            transports=["websocket"],
-            wait_timeout=WHITE_TIMEOUT,
-        )
+        for attempt in range(5):
+            try:
+                await self.sio.connect(
+                    url,
+                    auth={"initData": _init_data(user_id, name)},
+                    headers={
+                        "X-Railway-Edge": "test-edge",
+                        "X-Real-IP": ip,
+                        "Origin": "http://127.0.0.1:3000"
+                    },
+                    transports=["websocket", "polling"],
+                    wait_timeout=WHITE_TIMEOUT,
+                )
+                return
+            except Exception:
+                if attempt == 4:
+                    raise
+                await asyncio.sleep(0.2)
 
     async def next_state(self) -> dict:
         return await asyncio.wait_for(self.game_states.get(), WHITE_TIMEOUT)

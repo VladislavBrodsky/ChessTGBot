@@ -1,8 +1,10 @@
 import hmac
 import hashlib
+import ipaddress
 import json
 import time
-from urllib.parse import unquote
+from collections.abc import Mapping
+from urllib.parse import unquote, urlsplit
 from fastapi import HTTPException
 from app.core.config import get_settings
 
@@ -13,53 +15,86 @@ settings = get_settings()
 # initData string authenticates as its user forever (indefinite replay). 24h is a
 # generous window that still bounds the value of a leaked string.
 INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
+MAX_CLIENT_IP_HEADER_LENGTH = 128
+
+
+def _normalise_ip(value: object) -> str | None:
+    """Return a canonical IP address, rejecting non-IP and oversized values."""
+    if not isinstance(value, str) or not value or len(value) > MAX_CLIENT_IP_HEADER_LENGTH:
+        return None
+    try:
+        return str(ipaddress.ip_address(value.strip()))
+    except ValueError:
+        return None
+
+
+def _trusted_proxy_networks() -> tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...]:
+    """Read the explicit proxy boundary; malformed configuration fails closed."""
+    networks = []
+    for cidr in settings.TRUSTED_PROXY_CIDRS.split(","):
+        try:
+            networks.append(ipaddress.ip_network(cidr.strip()))
+        except ValueError:
+            continue
+    # Test servers are loopback-only. Requiring the Railway marker as well keeps
+    # direct local requests untrusted while allowing realistic edge simulation.
+    if settings.is_development_or_testing:
+        networks.append(ipaddress.ip_network("127.0.0.0/8"))
+        networks.append(ipaddress.ip_network("::1/128"))
+    return tuple(networks)
+
+
+def _is_trusted_railway_proxy(peer_ip: str, headers: Mapping[str, object]) -> bool:
+    """Whether this peer is a Railway edge proxy allowed to supply X-Real-IP."""
+    if not headers.get("x-railway-edge"):
+        return False
+    try:
+        address = ipaddress.ip_address(peer_ip)
+    except ValueError:
+        return False
+    return any(address in network for network in _trusted_proxy_networks())
+
+
+def _extract_trusted_client_ip(peer: object, headers: Mapping[str, object]) -> str | None:
+    """Resolve one client identity without ever trusting generic forwarded hops."""
+    peer_ip = _normalise_ip(peer)
+    if not peer_ip:
+        return None
+
+    if not _is_trusted_railway_proxy(peer_ip, headers):
+        return peer_ip
+
+    # Railway documents X-Real-IP as the original remote address. Do not use
+    # X-Forwarded-For: a client-controlled first hop made rate-limit and Sybil
+    # identities spoofable before SEC-02.
+    return _normalise_ip(headers.get("x-real-ip"))
 
 
 def extract_client_ip(environ: dict) -> str | None:
-    """
-    Best-effort client IP from a Socket.IO ASGI `environ`. In production the app
-    sits behind the Railway edge proxy, so the real client IP is the first hop of
-    X-Forwarded-For; REMOTE_ADDR / the ASGI client tuple would just be the proxy.
-    """
+    """Resolve a Socket.IO client IP using the same trusted boundary as HTTP."""
     if not environ:
         return None
-    xff = environ.get("HTTP_X_FORWARDED_FOR")
-    if xff:
-        # "client, proxy1, proxy2" -> client
-        first = xff.split(",")[0].strip()
-        if first:
-            return first
-    real_ip = environ.get("HTTP_X_REAL_IP")
-    if real_ip:
-        return real_ip.strip()
-    remote = environ.get("REMOTE_ADDR")
-    if remote:
-        return remote
+    peer = environ.get("REMOTE_ADDR")
     scope = environ.get("asgi.scope") or {}
     client = scope.get("client")
-    if client and len(client) >= 1:
-        return client[0]
-    return None
+    if not peer and client and len(client) >= 1:
+        peer = client[0]
+    return _extract_trusted_client_ip(peer, {
+        "x-real-ip": environ.get("HTTP_X_REAL_IP"),
+        "x-railway-edge": environ.get("HTTP_X_RAILWAY_EDGE"),
+    })
 
 
 def extract_client_ip_from_request(request) -> str | None:
-    """
-    Best-effort client IP from a Starlette/FastAPI Request. Same rationale as
-    extract_client_ip(): behind the Railway edge proxy the real client is the
-    first hop of X-Forwarded-For; request.client would just be the proxy.
-    """
+    """Resolve an HTTP client IP using the same trusted boundary as Socket.IO."""
     if request is None:
         return None
     try:
-        xff = request.headers.get("x-forwarded-for")
-        if xff:
-            first = xff.split(",")[0].strip()
-            if first:
-                return first
-        real_ip = request.headers.get("x-real-ip")
-        if real_ip:
-            return real_ip.strip()
-        return request.client.host if request.client else None
+        peer = request.client.host if request.client else None
+        return _extract_trusted_client_ip(peer, {
+            "x-real-ip": request.headers.get("x-real-ip"),
+            "x-railway-edge": request.headers.get("x-railway-edge"),
+        })
     except Exception:
         return None
 
@@ -207,42 +242,59 @@ def parse_init_data_unverified(init_data: str) -> dict:
         return {}
 
 
-def is_allowed_cors_origin(origin: str | None) -> bool:
-    """
-    Checks if a given origin is allowed under the application CORS policy.
-    Matches allowed hardcoded origins, dynamic Railway preview/production subdomains,
-    localhost for development, and the URLs specified in app configuration settings.
-    """
-    if not origin:
-        return False
-        
-    allowed_origins = {
-        "https://chesstgbot-frontend-production.up.railway.app",
-        "https://chesstgbot-backend-production.up.railway.app",
-        "https://web3chess.online",
-        "https://www.web3chess.online",
-        "https://api.web3chess.online",
-        "https://web.telegram.org",
-        "https://telegram.org",
+def _normalise_cors_origin(value: object) -> str | None:
+    """Return a canonical scheme/host/port origin, rejecting URL fragments."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError:
+        return None
+
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        return None
+
+    host = parsed.hostname.lower().rstrip(".")
+    if ":" in host:
+        host = f"[{host}]"
+    if port is None or (parsed.scheme == "https" and port == 443) or (parsed.scheme == "http" and port == 80):
+        return f"{parsed.scheme}://{host}"
+    return f"{parsed.scheme}://{host}:{port}"
+
+
+def _configured_cors_origins() -> set[str]:
+    """Read only exact origins from deployment configuration."""
+    configured = [
+        *settings.CORS_ALLOWED_ORIGINS.split(","),
+        settings.WEBAPP_URL,
+        settings.BACKEND_URL,
+    ]
+    return {
+        origin
+        for value in configured
+        if (origin := _normalise_cors_origin(value.strip() if isinstance(value, str) else value))
     }
-    
-    if origin in allowed_origins:
-        return True
-        
-    # Allow localhost origins for local development
-    if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
-        return True
-        
-    # Dynamically allow any Railway chesstgbot subdomain (preview deploys etc.)
-    if origin.endswith(".up.railway.app") and "chesstgbot" in origin:
-        return True
-        
-    # Allow origins matching configured settings URLs
-    if settings.WEBAPP_URL and origin == settings.WEBAPP_URL.rstrip("/"):
-        return True
-    if settings.BACKEND_URL and origin == settings.BACKEND_URL.rstrip("/"):
-        return True
-        
-    return False
+
+
+def is_allowed_cors_origin(origin: str | None) -> bool:
+    """Allow exact configured origins and local origins only outside production."""
+    normalised_origin = _normalise_cors_origin(origin)
+    if not normalised_origin or normalised_origin != origin:
+        return False
+
+    parsed = urlsplit(normalised_origin)
+    if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+        return settings.is_development_or_testing
+
+    return normalised_origin in _configured_cors_origins()
 
 

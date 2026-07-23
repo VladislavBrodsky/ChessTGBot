@@ -126,9 +126,18 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         const tg = window.Telegram.WebApp;
         if (!tg.BackButton) return;
 
-        const isHomePage = pathname === '/' || pathname.endsWith('/home') || pathname === `/${locale}`;
+        const cleanPath = (pathname || '').split('?')[0].replace(/\/$/, '');
         const hasActiveGame = !!activeGameId || !!urlGameId;
-        const shouldShow = !isHomePage && !hasActiveGame;
+        const isMainTab = 
+            cleanPath.endsWith('/home') || 
+            cleanPath.endsWith('/settings') || 
+            cleanPath.endsWith('/profile') || 
+            cleanPath.endsWith('/wallet') || 
+            cleanPath.endsWith('/challenges') || 
+            cleanPath.endsWith('/marketplace') ||
+            (cleanPath.endsWith('/academy') && !cleanPath.includes('/lesson/') && !cleanPath.includes('/puzzle'));
+        
+        const shouldShow = !isMainTab && !hasActiveGame;
 
         const handleBackClick = () => {
             if (pathname.includes('/admin')) {
@@ -161,15 +170,17 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
 
 
-    const isCorePage = pathname.endsWith('/game') || pathname.endsWith('/home') || pathname === '/' || pathname === `/${locale}`;
+    const cleanPathname = (pathname || '').split('?')[0].replace(/\/$/, '');
+    const isCorePage = cleanPathname.endsWith('/game') || cleanPathname.endsWith('/home') || cleanPathname === '' || cleanPathname === `/${locale}`;
 
     const isMainNavbarPage = 
-        pathname.endsWith('/home') || 
-        pathname.endsWith('/settings') || 
-        pathname.endsWith('/profile') || 
-        pathname.endsWith('/wallet') || 
-        pathname.endsWith('/challenges') || 
-        (pathname.endsWith('/academy') && !pathname.includes('/lesson/') && !pathname.includes('/puzzle'));
+        cleanPathname.endsWith('/home') || 
+        cleanPathname.endsWith('/settings') || 
+        cleanPathname.endsWith('/profile') || 
+        cleanPathname.endsWith('/wallet') || 
+        cleanPathname.endsWith('/challenges') || 
+        cleanPathname.endsWith('/marketplace') || 
+        (cleanPathname.endsWith('/academy') && !cleanPathname.includes('/lesson/') && !cleanPathname.includes('/puzzle'));
 
     // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not
     // hidden by game state. However, when a bottom-sheet drawer / modal opts into
@@ -183,7 +194,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     );
 
     return (
-        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-hidden ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
+        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-clip ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
             {/* Ambient Starfield & Gradients */}
             {!pathname.includes('/admin') && <AnimatedBackground />}
 

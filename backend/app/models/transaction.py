@@ -14,6 +14,13 @@ class Transaction(Base):
     status = Column(String, default="completed")  # 'pending', 'completed', 'failed'
     reference_id = Column(String, nullable=True)  # Game ID or Web3 Transaction Hash
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+    # Manual withdrawal review decisions are financial audit events.  Keep the
+    # reviewer and decision time in dedicated columns rather than overloading
+    # reference_id, which is reserved for a destination or blockchain hash.
+    approved_by_admin_id = Column(BigInteger, nullable=True)
+    approved_at = Column(DateTime, nullable=True)
+    rejected_by_admin_id = Column(BigInteger, nullable=True)
+    rejected_at = Column(DateTime, nullable=True)
 
     # Relationship to user
     user = relationship("User", back_populates="transactions")
@@ -31,6 +38,13 @@ class Transaction(Base):
             unique=True,
             postgresql_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
             sqlite_where=text("type = 'deposit' AND reference_id IS NOT NULL"),
+        ),
+        Index(
+            "uq_transactions_stripe_subscription_invoice",
+            "reference_id",
+            unique=True,
+            postgresql_where=text("type = 'stripe_subscription_payment' AND reference_id IS NOT NULL"),
+            sqlite_where=text("type = 'stripe_subscription_payment' AND reference_id IS NOT NULL"),
         ),
     )
 
