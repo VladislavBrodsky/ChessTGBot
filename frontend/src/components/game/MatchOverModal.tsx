@@ -24,7 +24,6 @@ interface MatchOverModalProps {
 
 export default function MatchOverModal({
   matchResultLabel,
-  resultColor,
   eloChange,
   netPayout,
   wagerAmount,
@@ -84,7 +83,6 @@ export default function MatchOverModal({
   const labelLower = matchResultLabel.toLowerCase();
   const isWin = labelLower.includes('victory') || labelLower.includes('won') || labelLower.includes('побед');
   const isLoss = labelLower.includes('defeat') || labelLower.includes('lost') || labelLower.includes('пораж');
-  const isDraw = !isWin && !isLoss;
 
   // Theme configuration mapping
   const theme = isWin 

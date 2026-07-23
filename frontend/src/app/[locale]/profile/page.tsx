@@ -6,13 +6,11 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apiFetch, getFullPhotoUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { FaTrophy, FaChessKing, FaChessPawn, FaChartLine, FaFire } from "react-icons/fa";
+import { FaChessKing, FaChessPawn, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
-import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 
 // SVG Elo history chart component
 function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
@@ -185,8 +183,9 @@ export default function ProfilePage() {
   />
   <div className={borderInnerClass}>
  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
- <img 
-   src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)} 
+ // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
+ <img
+   src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)}
    alt="Profile" 
    className="w-full h-full object-cover" 
    onError={() => setPhotoError(true)}

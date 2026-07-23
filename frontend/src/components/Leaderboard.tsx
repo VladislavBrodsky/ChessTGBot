@@ -164,6 +164,7 @@ export default function Leaderboard() {
        {/* Avatar */}
        <div className={`relative shrink-0 mx-2 ${item.rank === 1 ? 'p-0.5 rounded-full bg-gradient-to-br from-yellow-200 via-yellow-500 to-amber-700 shadow-[0_0_22px_rgba(250,204,21,0.22)]' : ''}`}>
          {item.photo_url && !brokenAvatars[item.telegram_id] ? (
+           // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
            <img
              src={getFullPhotoUrl(item.photo_url)}
              alt=""

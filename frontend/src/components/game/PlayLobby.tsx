@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -651,6 +651,7 @@ export default function PlayLobby() {
                 {/* Player 1 (Us) */}
                 <div className="flex flex-col items-center space-y-2">
                   <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-primary p-0.5 shadow-premium bg-brand-void flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit */}
                     <img
                       src={getFullPhotoUrl(`/api/v1/users/avatar/${tgUser?.id || 0}`)}
                       alt=""
@@ -677,6 +678,7 @@ export default function PlayLobby() {
                 {/* Player 2 (Opponent) */}
                 <div className="flex flex-col items-center space-y-2">
                   <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-emerald-500 p-0.5 shadow-premium bg-brand-void flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit */}
                     <img
                       src={getFullPhotoUrl(`/api/v1/users/avatar/${matchFoundData?.opponent_id || 0}`)}
                       alt=""

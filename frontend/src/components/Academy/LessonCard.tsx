@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaPlay, FaLock, FaCheckCircle, FaChevronRight } from "react-icons/fa";
+import { FaLock, FaCheckCircle, FaChevronRight } from "react-icons/fa";
 
 interface LessonCardProps {
   title: string;

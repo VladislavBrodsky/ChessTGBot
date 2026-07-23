@@ -459,7 +459,8 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
 
               {/* Styled QR Image Wrapper */}
               <div className="relative p-2.5 bg-white/95 rounded-3xl border border-purple-500/40 shadow-[0_0_24px_rgba(168,85,247,0.2)] flex items-center justify-center shrink-0 w-48 h-48 z-10">
-                <img 
+                {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image; next/image would require remote-domain config for no benefit */}
+                <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteLink)}&color=0f172a&bgcolor=ffffff`} 
                   alt="Referral QR Code" 
                   className="w-full h-full object-contain"

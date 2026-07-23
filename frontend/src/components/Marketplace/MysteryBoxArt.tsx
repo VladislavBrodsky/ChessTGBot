@@ -24,11 +24,10 @@ const FLOAT: Record<BoxTier, { y: number[]; dur: number }> = {
  * washed-out cutouts. Fills its (relatively positioned) parent.
  */
 export default function MysteryBoxArt({ 
-    tier, 
-    className, 
+    tier,
+    className,
     style,
-    variant
-}: { 
+}: {
     tier: BoxTier; 
     className?: string; 
     style?: React.CSSProperties;

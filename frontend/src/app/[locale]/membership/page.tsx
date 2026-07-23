@@ -13,8 +13,6 @@ import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import DepositModal from "@/components/Wallet/DepositModal";
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
-import { BiSupport } from 'react-icons/bi';
-import Link from "next/link";
 
 const stripEmojis = (str: string): string => {
   if (!str) return "";
@@ -63,7 +61,6 @@ const IconCrown = () => (
 
 export default function MembershipPage() {
   const locale = useLocale();
-  const t = useTranslations('Index');
   const tm = useTranslations('Membership');
   const tw = useTranslations('Wallet');
 

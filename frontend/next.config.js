@@ -20,7 +20,12 @@ const nextConfig = {
         // Static exports cannot, so retain plain files only for that build.
         unoptimized: isStaticExport,
     },
-    typescript: { ignoreBuildErrors: true },
+    // Blocking: `next build` fails on TypeScript errors. Previously true, which
+    // shipped type errors as-is (SWC skips them) and let a missing import/prop
+    // become a prod runtime ReferenceError (2026-07-11 wallet-page outage). CI
+    // ran a separate `tsc --noEmit` to compensate; the build now enforces it
+    // directly for both standalone and static-export outputs. See DEP-03.
+    typescript: { ignoreBuildErrors: false },
     experimental: {},
     // Rewrites are only supported when running a Node.js server (i.e. not in
     // static export mode). In static export mode the frontend resolves the

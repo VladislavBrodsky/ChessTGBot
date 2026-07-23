@@ -27,7 +27,13 @@ export default [
       ...tsPlugin.configs.recommended.rules,
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
+      // Underscore-prefixed identifiers are an explicit "intentionally unused"
+      // signal (e.g. a mock that must keep a param for its call signature).
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      }],
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "no-restricted-syntax": [

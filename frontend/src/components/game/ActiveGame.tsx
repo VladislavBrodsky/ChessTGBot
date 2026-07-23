@@ -94,6 +94,7 @@ function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: PlayerAvat
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit
     <img
       src={getFullPhotoUrl(`/api/v1/users/avatar/${userId}`)}
       alt=""
@@ -386,7 +387,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       socket.off("rematch_offered", onRematchOffered);
       socket.off("match_found", onMatchFound);
     };
-  }, [gameId, userId, gameState, locale, router]);
+  }, [gameId, userId, gameState, locale, router, tg]);
 
   // Auto-dismiss game notices after 3.5 seconds
   useEffect(() => {

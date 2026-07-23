@@ -104,7 +104,6 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   const router = useRouter();
   const locale = useLocale();
   const tg = useTranslations('Game');
-  const t = useTranslations('Index');
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +147,6 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         const { evaluation, bestMove } = await new Promise<{ evaluation: number; bestMove: string }>((resolve) => {
           let currentEval = 0;
-          let solved = false;
 
           const onMessage = (e: MessageEvent) => {
             const line = e.data;
@@ -173,7 +171,6 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               }
 
               if (line.startsWith("bestmove")) {
-                solved = true;
                 const best = line.split(" ")[1];
                 worker.removeEventListener("message", onMessage);
                 resolve({ evaluation: currentEval, bestMove: best });

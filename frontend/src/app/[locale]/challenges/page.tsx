@@ -2,11 +2,10 @@
 
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import Link from "next/link";
 import { FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import { useState, useEffect } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
 import ReferralDashboard from "@/components/ReferralDashboard";
@@ -14,10 +13,9 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { getXPProgress, XP_PER_LEVEL } from '@/lib/xpProgress';
+import { getXPProgress } from '@/lib/xpProgress';
 
 export default function ChallengesPage() {
-  const locale = useLocale();
   const t = useTranslations('Gamification');
 
   // Use global context — no stub defaults, no duplicate fetch
@@ -168,7 +166,7 @@ export default function ChallengesPage() {
   const userXp = stats?.xp ?? 0;
   const xpProgress = getXPProgress(userXp, stats?.level);
   const userLevel = xpProgress.displayedLevel;
-  const { currentLevelProgress, nextLevelXp, progressPercentage, isLevelSecured: levelSecured } = xpProgress;
+  const { nextLevelXp, progressPercentage, isLevelSecured: levelSecured } = xpProgress;
 
   return (
     <LayoutWrapper className="w-full">

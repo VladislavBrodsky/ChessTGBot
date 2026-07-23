@@ -40,12 +40,12 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm run test:ci
-      # Non-blocking: the codebase carries pre-existing lint warnings and one
-      # intentional sync <script> (the Telegram SDK must load before hydration).
-      # Surfaces issues without blocking merges on existing debt.
-      - name: Lint (informational)
-        run: npm run lint
-        continue-on-error: true
+      # Blocking: the warning backlog was cleared (DEP-03), so lint is now a merge
+      # gate. --max-warnings=0 keeps it at zero — a new warning fails CI. Genuinely
+      # intentional cases (e.g. deliberate <img>/effect deps) carry a justified
+      # eslint-disable comment rather than being tolerated in bulk.
+      - name: Lint
+        run: npm run lint -- --max-warnings=0
 
   backend:
     name: Backend (import + pytest)
@@ -53,8 +53,12 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    # Scratch Postgres for the migration gate below. pytest is unaffected: it
-    # derives its DB from settings.DATABASE_URL, which stays sqlite here.
+    # Postgres backs both the migration gate and pytest. Previously pytest had no
+    # DATABASE_URL, so settings fell back to the production Postgres default,
+    # 'chess_db_test' was unreachable, and conftest silently degraded the WHOLE
+    # suite to an in-memory MockAsyncSession (validating ~nothing about real DB
+    # semantics). REQUIRE_REAL_DB below now makes that fallback a hard failure and
+    # the Pytest step targets this service. See DEP-03.
     services:
       postgres:
         image: postgres:16
@@ -97,7 +101,21 @@ jobs:
           SECRET_KEY: ci-dummy-secret
           WEBHOOK_SECRET: ci-dummy-webhook-secret
         run: python -m alembic upgrade head
+      # conftest derives the test DB as DATABASE_URL + "_test", so create
+      # 'chess_db_test' in the service. psql is preinstalled on ubuntu-latest.
+      - name: Create test database
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d postgres -c "CREATE DATABASE chess_db_test;"
+      # Run against the real Postgres service. REQUIRE_REAL_DB turns conftest's
+      # silent MockAsyncSession fallback into a hard failure, so a DB that is
+      # unreachable/misconfigured fails CI loudly instead of testing a mock. This
+      # also lets the Postgres-only arena-targeting and row-lock concurrency tests
+      # actually execute here.
       - name: Pytest
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/chess_db
+          REQUIRE_REAL_DB: "1"
         run: python -m pytest
 
   static-export-fresh:

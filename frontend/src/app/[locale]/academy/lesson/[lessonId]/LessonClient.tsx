@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import LessonViewer, { LessonStep } from "@/components/Academy/LessonViewer";
+import LessonViewer from "@/components/Academy/LessonViewer";
 import { FaArrowLeft, FaTelegramPlane, FaCheck } from "react-icons/fa";
 import { FaChessKnight } from "react-icons/fa6";
 import Link from "next/link";
@@ -56,6 +56,9 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
         console.error(err);
         setLoading(false);
       });
+    // trackEvent (from useTelemetry) is intentionally omitted: this fetch must
+    // run only when the lesson/locale changes, not when telemetry identity does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId, locale]);
 
   const handleComplete = async () => {
@@ -69,7 +72,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       });
       
       if (res.ok) {
-        const data = await res.json();
+        await res.json();
         setEarnedXP(lessonData?.xp_reward || 50);
         setCompleted(true);
         trackEvent('academy_lesson_completed', { lesson_id: lessonId, xp_reward: lessonData?.xp_reward || 50 });

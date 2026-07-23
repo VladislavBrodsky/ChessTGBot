@@ -27,7 +27,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
     const locale = useLocale();
     const t = useTranslations('Index');
     const { stats } = useUser();
-    const [isTelegramWeb, setIsTelegramWeb] = React.useState(() => {
+    // Value is not read anywhere; only the setter runs (below) to cache the
+    // detection globally. Destructure the value out to satisfy no-unused-vars.
+    const [, setIsTelegramWeb] = React.useState(() => {
         if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
         return false;
     });
@@ -143,6 +145,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 className="h-10 w-10 cursor-pointer overflow-hidden rounded-xl border-2 border-emerald-500/40"
                             >
                                 {stats.photo_url ? (
+                                    // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
                                     <img src={getFullPhotoUrl(stats.photo_url)} alt="You" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-emerald-500/10 text-sm font-black text-emerald-500">

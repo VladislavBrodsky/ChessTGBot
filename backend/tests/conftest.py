@@ -1,4 +1,5 @@
 import asyncio
+import os
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
@@ -16,6 +17,24 @@ settings.ENV = "development"
 TEST_DATABASE_URL = settings.DATABASE_URL + "_test"
 if TEST_DATABASE_URL.startswith("postgresql://"):
     TEST_DATABASE_URL = TEST_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+# When REQUIRE_REAL_DB=1 (set in CI), the suite must run against a reachable real
+# database. Any failure to connect/create the schema becomes a hard, loud error
+# with setup guidance instead of silently degrading to the in-memory MockAsyncSession
+# below — which validates almost nothing about real DB semantics (atomicity,
+# constraints, row-level locks, ledger correctness). See DEP-03.
+REQUIRE_REAL_DB = os.getenv("REQUIRE_REAL_DB") == "1"
+
+
+def _real_db_required_error(detail: str) -> RuntimeError:
+    return RuntimeError(
+        "REQUIRE_REAL_DB=1 but no real test database is usable: "
+        f"{detail}\n"
+        f"TEST_DATABASE_URL={TEST_DATABASE_URL!r}\n"
+        "Set DATABASE_URL to a reachable Postgres and ensure the '<db>_test' "
+        "database exists (CI creates 'chess_db_test' in the postgres service). "
+        "Unset REQUIRE_REAL_DB to allow the local mock-session fallback."
+    )
 
 _current_mock_session = None
 
@@ -235,6 +254,11 @@ def event_loop():
 async def test_engine():
     # If using internal Railway hostname locally, fallback cleanly to avoid gaierror
     if "postgres.railway.internal" in TEST_DATABASE_URL:
+        if REQUIRE_REAL_DB:
+            raise _real_db_required_error(
+                "TEST_DATABASE_URL points at the internal Railway hostname, "
+                "which is not reachable from the test runner"
+            )
         yield None
         return
 
@@ -243,12 +267,16 @@ async def test_engine():
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
-        yield engine
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await engine.dispose()
-    except Exception:
+    except Exception as exc:
+        if REQUIRE_REAL_DB:
+            raise _real_db_required_error(f"could not connect / create schema: {exc}") from exc
         yield None
+        return
+
+    yield engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
 
 @pytest_asyncio.fixture
 async def db_session(test_engine):
