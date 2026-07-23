@@ -365,10 +365,12 @@ Landed:
   latest-at-build-time. `uvloop` (win32-excluded) and `aiohttp` (test-only) are
   documented floors; transitive dependencies still float.
 - Added a `dependency-audit` CI job with a documented severity policy: frontend
-  `npm audit --omit=dev --audit-level=high` blocks on high/critical and leaves
-  moderate/low advisory (the three moderate PostCSS-via-Next findings stay
-  advisory — the fix is an upstream Next release, not npm's Next 9 downgrade);
-  backend `pip-audit` runs advisory-only for now.
+  `npm audit --omit=dev --audit-level=critical` and backend `pip-audit`
+  advisory-only. (The frontend gate was briefly `--audit-level=high`, but Next's
+  own tree — next, its bundled postcss, and transitively-pinned sharp — carries
+  HIGH advisories whose fix range is past the latest published Next (16.2.11 <
+  16.3.0) and whose only npm "fix" is the forbidden Next 9 downgrade, so a high
+  gate blocked all CI on unactionable findings.)
 
 Remaining:
 
@@ -385,6 +387,13 @@ Remaining:
 - Confirm Railway installs from the same lockfile and Node major version (20).
 - Flip backend `pip-audit` from advisory to blocking once the initial advisory
   backlog is triaged (the staged rollout DEP-03 used for lint).
+- Restore the frontend `npm audit` gate to `--audit-level=high` once a patched
+  Next (>=16.3.0) ships. Meanwhile consider `audit-ci`/`better-npm-audit` with an
+  explicit GHSA allowlist for the known Next advisories, which keeps high-blocking
+  for *new* findings instead of dropping the whole threshold to critical. Note the
+  Server-Action advisories in the set do not apply (the app uses no Server
+  Actions); the middleware/proxy-bypass one is the most relevant given i18n
+  middleware.
 
 ### DEP-02 - Add Staging, Health Gates, and Rollback [P1/P2]
 
