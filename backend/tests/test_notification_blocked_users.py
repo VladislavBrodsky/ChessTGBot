@@ -19,7 +19,7 @@ import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from telegram.error import Forbidden
+from telegram.error import BadRequest, Forbidden
 
 import app.services.telegram_bot as telegram_bot_module
 from app.crud import user as user_crud
@@ -71,6 +71,74 @@ async def test_forbidden_notification_marks_user_blocked(db_session, caplog):
     assert db_user is not None
     assert db_user.is_blocked is True
     assert db_user.blocked_at is not None
+
+
+@pytest.mark.asyncio
+async def test_chat_not_found_notification_marks_user_blocked(db_session, caplog):
+    """A 'Chat not found' BadRequest is routine churn: no admin alert, user flagged.
+
+    Regression for the spurious CORE API page fired when notifying a user who
+    never pressed Start on the bot. 'Chat not found' is a BadRequest (not a
+    Forbidden), so it used to fall through to the app.bot.errors logger and
+    page admins. It must be treated like Forbidden instead.
+    """
+    if hasattr(db_session, "users"):  # mock session (no test DB) — skip
+        return
+    telegram_id = 6842281287
+    await user_crud.create_user(db_session, telegram_id, "NeverStarted")
+    await db_session.commit()
+
+    mock_app = MagicMock()
+    mock_app.bot.send_message = AsyncMock(
+        side_effect=BadRequest("Chat not found")
+    )
+
+    with patch.object(TelegramService, "application", mock_app), \
+         patch.object(telegram_bot_module.settings, "TELEGRAM_BOT_TOKEN", "123:test"):
+        with caplog.at_level(logging.INFO):
+            await _send_and_drain(telegram_id, "you won a game")
+
+    # Routine churn: no ERROR record, nothing on the alertable logger.
+    assert not any(r.levelno >= logging.ERROR for r in caplog.records)
+    assert not any(r.name == "app.bot.errors" for r in caplog.records)
+
+    result = await db_session.execute(select(User).where(User.telegram_id == telegram_id))
+    db_user = result.scalars().first()
+    assert db_user is not None
+    assert db_user.is_blocked is True
+    assert db_user.blocked_at is not None
+
+
+@pytest.mark.asyncio
+async def test_genuine_bad_request_still_logs_error(db_session, caplog):
+    """A real request-shape BadRequest stays alertable and does not flag the user."""
+    if hasattr(db_session, "users"):  # mock session (no test DB) — skip
+        return
+    telegram_id = 555006
+    await user_crud.create_user(db_session, telegram_id, "BadHtml")
+    await db_session.commit()
+
+    mock_app = MagicMock()
+    mock_app.bot.send_message = AsyncMock(
+        side_effect=BadRequest("Can't parse entities: unclosed tag")
+    )
+
+    with patch.object(TelegramService, "application", mock_app), \
+         patch.object(telegram_bot_module.settings, "TELEGRAM_BOT_TOKEN", "123:test"):
+        with caplog.at_level(logging.INFO):
+            await _send_and_drain(telegram_id, "you won a game")
+
+    assert any(
+        r.levelno == logging.ERROR
+        and r.name == "app.bot.errors"
+        and "parse entities" in r.getMessage()
+        for r in caplog.records
+    )
+
+    result = await db_session.execute(select(User).where(User.telegram_id == telegram_id))
+    db_user = result.scalars().first()
+    assert db_user is not None
+    assert db_user.is_blocked is False
 
 
 @pytest.mark.asyncio
