@@ -394,20 +394,26 @@ Acceptance criteria:
 - A migration failure leaves the previous application service available.
 - Staging cannot reach production money credentials.
 
-### DEP-03 - Harden Existing CI Gates [P2]
+### DEP-03 - Harden Existing CI Gates [P2] (mostly landed in PR #81)
 
-Required implementation:
+Landed: `typescript.ignoreBuildErrors` set to false (typecheck now blocks the
+build for both standalone and static-export outputs); the eslint warning backlog
+cleared and lint made merge-blocking with `--max-warnings=0`; backend tests moved
+off the silent in-memory `MockAsyncSession` onto an explicit deterministic sqlite
+engine, guarded by `REQUIRE_REAL_DB` so any fallback-to-mock fails loudly; the
+fresh-Postgres Alembic upgrade and static-export freshness gates retained. CI
+already runs Python 3.12.
 
-- Set `typescript.ignoreBuildErrors` to false after confirming the blocking
-  typecheck order works for both standalone and static builds.
-- Reduce the 49 lint warnings, then make lint blocking.
-- Run backend tests with explicit deterministic test database configuration.
-- Stop silently falling back to mock sessions for tests that claim to validate
-  real database semantics. Skip loudly or fail with setup guidance.
-- Run the two Postgres-only arena targeting tests in CI against the service DB.
-- Retain the fresh-Postgres Alembic upgrade and static-export freshness gates.
-- Test Python 3.12, matching CI and production; optionally add 3.13 as an allowed
-  experimental lane until async fixture compatibility is fixed.
+Remaining:
+
+- Run the full backend suite against the real Postgres service, including the
+  Postgres-only arena-targeting and row-lock concurrency tests (currently sqlite
+  skips the row-lock cases). Blocked by a conftest concurrency bug: the async
+  fixtures share one DB connection across the ASGI test client and the test
+  coroutine, which aiosqlite tolerates but asyncpg rejects ("another operation is
+  in progress", ~125/605 tests). Requires a local Postgres to iterate; overhaul
+  `backend/tests/conftest.py` connection/session scoping, then point the CI Pytest
+  step back at the service DB with `REQUIRE_REAL_DB=1`.
 
 ## 12. Observability
 
