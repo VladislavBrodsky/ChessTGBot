@@ -1,6 +1,6 @@
 import asyncio
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
-from telegram.error import Forbidden
+from telegram.error import Forbidden, BadRequest
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
 import logging
@@ -437,11 +437,14 @@ class TelegramService:
 
     @staticmethod
     async def mark_user_blocked(telegram_id: int) -> None:
-        """Persist is_blocked for a user we just failed to message with Forbidden.
+        """Persist is_blocked for a user we can no longer message.
 
-        Safety net for blocks the my_chat_member webhook never delivered (bot
-        offline, webhook gap, blocks predating the handler): without it those
-        users stay eligible and every broadcast retries them and logs errors.
+        Called when a send fails with an undeliverable-recipient error
+        (Forbidden: bot blocked, or BadRequest: chat not found / account
+        deactivated). Safety net for states the my_chat_member webhook never
+        delivered (bot offline, webhook gap, blocks predating the handler, or
+        a user who never pressed Start): without it those users stay eligible
+        and every broadcast retries them and logs errors.
         """
         from app.models.user import User
         from sqlalchemy import select
@@ -456,7 +459,7 @@ class TelegramService:
                     db_user.is_blocked = True
                     db_user.blocked_at = datetime.now(timezone.utc).replace(tzinfo=None)
                     await db.commit()
-                    logger.info(f"🚫 User {telegram_id} has blocked the bot (Forbidden on send). Marked as blocked.")
+                    logger.info(f"🚫 User {telegram_id} is unreachable on send (blocked / chat not found). Marked as blocked.")
         except Exception as mark_err:
             logger.warning(f"Could not mark user {telegram_id} as blocked: {mark_err}")
 
@@ -996,6 +999,26 @@ class TelegramService:
                 # broadcast targeting stops selecting them.
                 logger.info(f"Notification to {telegram_id} skipped: user has blocked the bot")
                 await cls.mark_user_blocked(telegram_id)
+            except BadRequest as e:
+                # Undeliverable-recipient BadRequests ("Chat not found", account
+                # deactivated, bot can't open the chat) are routine churn just
+                # like Forbidden: the bot has no chat with a user who never
+                # pressed Start (or who deleted their account). These are NOT
+                # Core API faults, so they must not page admins via the
+                # app.bot.errors logger — log at INFO and flag the user so
+                # broadcast targeting stops reselecting them. Any other
+                # BadRequest is a real request-shape bug and stays alertable.
+                msg = str(e).lower()
+                if (
+                    "chat not found" in msg
+                    or "user is deactivated" in msg
+                    or "bot can't initiate conversation" in msg
+                    or "bot was blocked by the user" in msg
+                ):
+                    logger.info(f"Notification to {telegram_id} skipped: {e}")
+                    await cls.mark_user_blocked(telegram_id)
+                else:
+                    bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
             except Exception as e:
                 bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
