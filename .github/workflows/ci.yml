@@ -144,6 +144,36 @@ jobs:
           REQUIRE_REAL_DB: "1"
         run: python -m pytest
 
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Severity policy (DEP-01): BLOCK on high/critical, treat moderate/low as
+      # advisory. --audit-level=high makes npm exit non-zero only at high+.
+      # The known findings are 3 moderate PostCSS advisories bundled in Next; the
+      # fix is an upstream Next release, NOT npm's suggested Next 9 downgrade, so
+      # they must stay advisory rather than fail CI. Audits the committed lockfile.
+      - name: npm audit (frontend production deps)
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Backend audit is ADVISORY for now: it reports findings without failing the
+      # build, then flips to blocking once the initial backlog is triaged — the
+      # same staged rollout DEP-03 used for lint. pip-audit reads the pinned
+      # requirements directly (no install), so it checks the exact deployed set.
+      - name: pip-audit (backend deps, advisory)
+        working-directory: backend
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt --desc
+
   static-export-fresh:
     name: Static export is up to date
     runs-on: ubuntu-latest
