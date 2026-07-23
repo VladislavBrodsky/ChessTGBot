@@ -409,6 +409,7 @@
     "thinking": "思考中",
     "your_turn": "轮到你了",
     "creating_match": "正在创建对局...",
+    "revenge_failed": "无法开始复仇对局，请重试。",
     "pending_opponent": "等待对手...",
     "to_lobby": "返回大厅",
     "xp_reward": "XP 奖励"

@@ -409,6 +409,7 @@
     "thinking": "Pensando",
     "your_turn": "Tu turno",
     "creating_match": "Creando partida...",
+    "revenge_failed": "No se pudo iniciar la revancha. Inténtalo de nuevo.",
     "pending_opponent": "Esperando rival...",
     "to_lobby": "Al lobby",
     "xp_reward": "Recompensa XP"
