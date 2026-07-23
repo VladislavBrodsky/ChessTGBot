@@ -355,24 +355,36 @@ Acceptance criteria:
 
 ## 11. Deployment and CI
 
-### DEP-01 - Make Dependency Resolution Reproducible [P2]
+### DEP-01 - Make Dependency Resolution Reproducible [P2] (partly landed)
 
-Required implementation:
+Landed:
 
-- Change frontend CI from `npm install` to `npm ci` because
-  `frontend/package-lock.json` is committed.
-- Remove the stale no-lockfile CI comment.
-- Confirm Railway uses the same lockfile and Node major version.
-- Pin Python dependencies through a generated lock/constraints file with hashes
-  or exact versions. Keep a human-edited input file if desired.
-- Remove the duplicate `asyncpg` requirement.
-- Add dependency audit jobs with a documented severity policy.
+- Removed the duplicate `asyncpg` requirement.
+- Pinned direct Python dependencies to the exact versions the test suite runs
+  against (`backend/requirements.txt`), so CI/Docker/Railway stop drifting to
+  latest-at-build-time. `uvloop` (win32-excluded) and `aiohttp` (test-only) are
+  documented floors; transitive dependencies still float.
+- Added a `dependency-audit` CI job with a documented severity policy: frontend
+  `npm audit --omit=dev --audit-level=high` blocks on high/critical and leaves
+  moderate/low advisory (the three moderate PostCSS-via-Next findings stay
+  advisory — the fix is an upstream Next release, not npm's Next 9 downgrade);
+  backend `pip-audit` runs advisory-only for now.
 
-Current advisory:
+Remaining:
 
-- `npm audit --omit=dev` reported three moderate findings involving Next.js's
-  bundled PostCSS advisory. Investigate an upstream patched Next.js release.
-  Do not apply npm's suggested downgrade to Next 9.
+- Generate a fully-hashed, universal transitive lock in the Linux build
+  environment (e.g. `uv pip compile --universal --generate-hashes`) and install
+  from it in CI and both Dockerfiles. This must be produced on Linux — resolving
+  on win32 omits `uvloop` and picks platform-specific wheels — so it was not done
+  from the Windows dev box, mirroring the DEP-03 Postgres deferral.
+- Switch frontend CI from `npm install` to `npm ci` and delete the stale
+  no-lockfile comment (`frontend/package-lock.json` is committed again). Blocked
+  on a caveat: the lockfile is regenerated locally and can drift from
+  `package.json`, which makes `npm ci` fail hard — add a lockfile-sync guard or
+  establish commit discipline first.
+- Confirm Railway installs from the same lockfile and Node major version (20).
+- Flip backend `pip-audit` from advisory to blocking once the initial advisory
+  backlog is triaged (the staged rollout DEP-03 used for lint).
 
 ### DEP-02 - Add Staging, Health Gates, and Rollback [P1/P2]
 
