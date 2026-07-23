@@ -1,4 +1,4 @@
-import { getXPProgress, XP_PER_LEVEL } from './xpProgress';
+import { getXPProgress } from './xpProgress';
 
 describe('getXPProgress', () => {
     it('uses the progressive level curve for active progress', () => {

@@ -113,7 +113,7 @@ export const useGameSocket = (gameId: string) => {
                 "INFO",
                 `makeMove attempt: move=${JSON.stringify(move)}, turn=${currentTurn}, piece=${JSON.stringify(pieceAtSource)}, fen=${chess.fen()}`
             );
-        } catch (err) {}
+        } catch {}
 
         // Optimistic Update
         try {

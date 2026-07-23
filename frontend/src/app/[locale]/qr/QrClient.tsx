@@ -87,6 +87,7 @@ export default function QrClient() {
           }}
         >
           {qrSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element -- data/URL QR image; next/image adds no benefit and needs remote-domain config
             <img
               src={qrSrc}
               alt="Referral QR Code"

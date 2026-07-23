@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { FaPalette, FaCheck, FaLock } from "react-icons/fa";
-import { telegramHaptic, telegramAlert, telegramConfirm } from "@/lib/telegram";
+import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 interface Theme {

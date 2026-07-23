@@ -40,12 +40,12 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm run test:ci
-      # Non-blocking: the codebase carries pre-existing lint warnings and one
-      # intentional sync <script> (the Telegram SDK must load before hydration).
-      # Surfaces issues without blocking merges on existing debt.
-      - name: Lint (informational)
-        run: npm run lint
-        continue-on-error: true
+      # Blocking: the warning backlog was cleared (DEP-03), so lint is now a merge
+      # gate. --max-warnings=0 keeps it at zero — a new warning fails CI. Genuinely
+      # intentional cases (e.g. deliberate <img>/effect deps) carry a justified
+      # eslint-disable comment rather than being tolerated in bulk.
+      - name: Lint
+        run: npm run lint -- --max-warnings=0
 
   frontend-e2e:
     name: Frontend browser E2E
@@ -81,8 +81,16 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    # Scratch Postgres for the migration gate below. pytest is unaffected: it
-    # derives its DB from settings.DATABASE_URL, which stays sqlite here.
+    # Scratch Postgres for the migration gate only. pytest runs on an explicit
+    # sqlite file (deterministic, and a REAL engine — not the in-memory
+    # MockAsyncSession). Previously pytest had no DATABASE_URL, so settings fell
+    # back to the production Postgres default, 'chess_db_test' was unreachable, and
+    # conftest silently degraded the WHOLE suite to the mock (validating ~nothing).
+    # REQUIRE_REAL_DB below now makes that silent mock fallback a hard failure.
+    # Running the full suite against asyncpg/Postgres is deferred: the async test
+    # fixtures share a connection across the ASGI client and the test coroutine,
+    # which aiosqlite tolerates but asyncpg rejects ("another operation is in
+    # progress"). That conftest overhaul is tracked as DEP-03 follow-up. See DEP-03.
     services:
       postgres:
         image: postgres:16
@@ -127,7 +135,13 @@ jobs:
           WEBHOOK_SECRET: ci-dummy-webhook-secret
           ADMIN_TELEGRAM_IDS: "999999"
         run: python -m alembic upgrade head
+      # Deterministic sqlite (a real engine, not the mock). REQUIRE_REAL_DB turns
+      # conftest's silent MockAsyncSession fallback into a hard failure, so if the
+      # engine can't be created the suite fails loudly instead of testing a mock.
       - name: Pytest
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///./ci_test.db
+          REQUIRE_REAL_DB: "1"
         run: python -m pytest
 
   static-export-fresh:

@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import TelegramLoginWidget from '@/components/auth/TelegramLoginWidget';
-import { useTheme } from '@/context/ThemeContext';
 import { FaChessKnight, FaChessQueen, FaChessBishop, FaLock } from 'react-icons/fa';
 
 export default function LoginPage() {
     const router = useRouter();
     const locale = useLocale();
     const t = useTranslations('Login');
-    const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -171,6 +169,7 @@ export default function LoginPage() {
                                 className="relative p-1 rounded-2xl transition-all duration-500 bg-gradient-to-br from-brand-primary/20 to-emerald-500/20 shadow-neon"
                             >
                                 <div className="bg-white p-4 rounded-xl shadow-inner">
+                                    {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image; next/image would require remote-domain config for no benefit */}
                                     <img
                                         src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/chess_matbot&color=6b21a8&bgcolor=ffffff&margin=2"
                                         alt="Scan to open bot"

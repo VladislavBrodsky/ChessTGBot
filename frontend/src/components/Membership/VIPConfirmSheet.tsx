@@ -3,7 +3,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCrown, FaGem, FaTimes, FaCheck } from 'react-icons/fa';
+import { FaCrown, FaTimes, FaCheck } from 'react-icons/fa';
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
 
 interface VIPConfirmSheetProps {
@@ -23,7 +23,6 @@ export default function VIPConfirmSheet({
     title,
     description,
     costText,
-    balanceText,
     perks = ['Unlimited Engine Analysis', 'Exclusive Board Themes', 'Priority Matchmaking', 'Daily XP Multipliers'],
     loading = false,
     onConfirm,

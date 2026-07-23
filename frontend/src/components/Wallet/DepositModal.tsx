@@ -26,12 +26,6 @@ interface DepositModalProps {
   walletBalance?: number;
 }
 
-// Transak fiat on-ramp config. Card tab is only shown when an API key is provided.
-// Funds are delivered to the user's OWN wallet as USDT; the platform
-// balance is then credited via the on-chain deposit flow (ref_ comment + 5% fee).
-const TRANSAK_API_KEY = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || "";
-const TRANSAK_ENVIRONMENT = (process.env.NEXT_PUBLIC_TRANSAK_ENVIRONMENT || "STAGING").toUpperCase();
-const TRANSAK_MIN_USD = 15;
 // USDT-only settlement: the platform credits deposits solely in USDT (1:1 USD).
 // The backend rejects any other asset (see wallet.py _is_usdt_master), so the UI
 // must only ever settle USDT. Users holding BTC/ETH can bridge into their OWN

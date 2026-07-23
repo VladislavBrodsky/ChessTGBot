@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from "react";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { apiFetch } from "@/lib/api";
-import { telegramAlert } from "@/lib/telegram";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";

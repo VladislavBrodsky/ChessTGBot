@@ -217,8 +217,9 @@ export default function Home() {
         return (
           <>
             {hasPhoto ? (
-              <img 
-                src={getFullPhotoUrl(rawPhoto)} 
+              // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
+              <img
+                src={getFullPhotoUrl(rawPhoto)}
                 alt="Profile" 
                 className="w-full h-full rounded-lg object-cover"
                 fetchPriority="high"

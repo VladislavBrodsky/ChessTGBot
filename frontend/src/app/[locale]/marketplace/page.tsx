@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useUser } from '@/context/UserContext';
@@ -54,7 +53,6 @@ export default function MarketplacePage() {
     const t = useTranslations('Marketplace');
     const ti = useTranslations('Index');
     const locale = useLocale();
-    const router = useRouter();
 
     const { stats, loadingStats, balanceError, syncStats } = useUser();
     const userXP = stats?.xp || 0;
