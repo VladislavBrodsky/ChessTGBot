@@ -1,6 +1,6 @@
 # ChessTGBot E2E Audit Remediation Playbook
 
-Last updated: 2026-07-23
+Last updated: 2026-07-24
 
 Status: Remaining remediation plan
 
@@ -372,6 +372,13 @@ Remaining:
 - Confirm Railway installs from the same lockfile and Node major version (20).
 - Flip backend `pip-audit` from advisory to blocking once the initial advisory
   backlog is triaged (the staged rollout DEP-03 used for lint).
+- Restore the frontend `npm audit` gate to `--audit-level=high` once a patched
+  Next (>=16.3.0) ships. Meanwhile consider `audit-ci`/`better-npm-audit` with an
+  explicit GHSA allowlist for the known Next advisories, which keeps high-blocking
+  for *new* findings instead of dropping the whole threshold to critical. Note the
+  Server-Action advisories in the set do not apply (the app uses no Server
+  Actions); the middleware/proxy-bypass one is the most relevant given i18n
+  middleware.
 
 ### DEP-02 - Add Staging, Health Gates, and Rollback [P1/P2]
 
