@@ -3,16 +3,16 @@
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Onboarding from './Onboarding';
-import RegionPrompt from './RegionPrompt';
 import NotificationModal from './NotificationModal';
 import AnimatedBackground from './AnimatedBackground';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { useNavbar } from '@/context/NavbarContext';
-import { usePathname, useRouter } from 'next/navigation';
-import { apiFetch } from '@/lib/api';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FiSettings, FiBell } from 'react-icons/fi';
+import { useActiveGame } from '@/hooks/useActiveGame';
+import { useTelegramBackButton } from '@/hooks/useTelegramBackButton';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -20,32 +20,26 @@ interface LayoutWrapperProps {
     bgClass?: string;
     hideHeaderControls?: boolean;
 }
-let globalActiveGameChecked = false;
-let globalActiveGameId: string | null = null;
+
 let globalIsTelegramWeb: boolean | null = null;
 let globalIsDesktopBrowser: boolean | null = null;
 
 export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
     const locale = useLocale();
     const pathname = usePathname();
-    const router = useRouter();
-
-    // Safely extract game ID from window URL on client without useSearchParams deopt
-    let urlGameId: string | null = null;
-    if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        urlGameId = params.get('id');
-    }
+    const { isHidden: isNavbarHiddenByContext } = useNavbar();
+    const { activeGameId, isCheckingActiveGame, urlGameId } = useActiveGame();
+    
+    useTelegramBackButton(activeGameId, urlGameId);
 
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [showNotifications, setShowNotifications] = useState<boolean>(false);
-    const [activeGameId, setActiveGameId] = useState<string | null>(globalActiveGameId);
-    const [isCheckingActiveGame, setIsCheckingActiveGame] = useState<boolean>(!globalActiveGameChecked);
+    
     const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
         if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
         return false;
     });
-    // true when running in a real desktop browser (not inside Telegram)
+
     const [isDesktopBrowser, setIsDesktopBrowser] = useState<boolean>(() => {
         if (globalIsDesktopBrowser !== null) return globalIsDesktopBrowser;
         return false;
@@ -69,43 +63,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         }
     }, []);
 
-    // Use context-driven navbar hide state (reliable, no DOM polling)
-    const { isHidden: isNavbarHiddenByContext } = useNavbar();
-
-  // Check active game status and redirect if needed
-  const checkActiveGame = useCallback(async () => {
-        // LayoutWrapper is rendered by individual pages. Once the active-game
-        // status is known for this app session, do not repeat this network
-        // check on every route transition and compete with the next screen.
-        if (globalActiveGameChecked) {
-            setActiveGameId(globalActiveGameId);
-            setIsCheckingActiveGame(false);
-            return;
-        }
-
-        try {
-            const res = await apiFetch('/api/v1/game/active');
-            if (res.ok) {
-                const data = await res.json();
-                const activeId = data.active_game_id || null;
-                setActiveGameId(activeId);
-                globalActiveGameId = activeId;
-                globalActiveGameChecked = true;
-                
-                if (activeId) {
-                    const isGamePage = pathname === `/${locale}/game` || pathname === '/game';
-                    if (!isGamePage || urlGameId !== activeId) {
-                        router.replace(`/${locale}/game?id=${activeId}`);
-                    }
-                }
-            }
-        } catch (err) {
-            console.error("Failed to check active game", err);
-        } finally {
-            setIsCheckingActiveGame(false);
-        }
-  }, [pathname, locale, urlGameId, router]);
-
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const completed = localStorage.getItem("onboarding_completed");
@@ -114,61 +71,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
             }
         }
     }, []);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            checkActiveGame();
-        }
-  }, [checkActiveGame]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined' || !window.Telegram?.WebApp) return;
-        const tg = window.Telegram.WebApp;
-        if (!tg.BackButton) return;
-
-        const cleanPath = (pathname || '').split('?')[0].replace(/\/$/, '');
-        const hasActiveGame = !!activeGameId || !!urlGameId;
-        const isMainTab = 
-            cleanPath.endsWith('/home') || 
-            cleanPath.endsWith('/settings') || 
-            cleanPath.endsWith('/profile') || 
-            cleanPath.endsWith('/wallet') || 
-            cleanPath.endsWith('/challenges') || 
-            cleanPath.endsWith('/marketplace') ||
-            (cleanPath.endsWith('/academy') && !cleanPath.includes('/lesson/') && !cleanPath.includes('/puzzle'));
-        
-        const shouldShow = !isMainTab && !hasActiveGame;
-
-        const handleBackClick = () => {
-            if (pathname.includes('/admin')) {
-                window.location.href = `/${locale}/settings`;
-            } else if (pathname.includes('/game')) {
-                router.push(`/${locale}/home`);
-            } else {
-                router.back();
-            }
-        };
-
-        if (shouldShow) {
-            tg.BackButton.show();
-            document.documentElement.classList.add('tg-back-button-active');
-            tg.onEvent?.('backButtonClicked', handleBackClick);
-        } else {
-            tg.BackButton.hide();
-            document.documentElement.classList.remove('tg-back-button-active');
-        }
-
-        return () => {
-            try {
-                tg.offEvent?.('backButtonClicked', handleBackClick);
-                document.documentElement.classList.remove('tg-back-button-active');
-            } catch (err) {
-                console.warn('Telegram BackButton offEvent failed', err);
-            }
-        };
-    }, [pathname, locale, router, activeGameId, urlGameId]);
-
-
 
     const cleanPathname = (pathname || '').split('?')[0].replace(/\/$/, '');
     const isCorePage = cleanPathname.endsWith('/game') || cleanPathname.endsWith('/home') || cleanPathname === '' || cleanPathname === `/${locale}`;
@@ -182,25 +84,14 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         cleanPathname.endsWith('/marketplace') || 
         (cleanPathname.endsWith('/academy') && !cleanPathname.includes('/lesson/') && !cleanPathname.includes('/puzzle'));
 
-    // On main dashboard pages (home, settings, wallet, etc.) the navbar is generally not
-    // hidden by game state. However, when a bottom-sheet drawer / modal opts into
-    // `useNavbarHideWhileMounted()` (isNavbarHiddenByContext), we MUST hide the navbar:
-    // its fixed bottom position otherwise overlaps the drawer's primary action button
-    // and silently swallows taps on it. This context hide is driven by React's component
-    // lifecycle (push on mount / pop on unmount), so it cannot be orphaned or leave the
-    // user stranded — see NavbarContext.useNavbarHideWhileMounted.
     const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
         !isMainNavbarPage && !!activeGameId
     );
 
     return (
         <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-clip ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
-            {/* Ambient Starfield & Gradients */}
             {!pathname.includes('/admin') && <AnimatedBackground />}
 
-            {/* Top-Right Header (Settings & Notifications) — only rendered on /home if not suppressed.
-                Home page passes hideHeaderControls and renders them inline instead, so this block
-                is effectively a no-op on all pages. Kept here for any future page that opts in. */}
             {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
                     <button 
@@ -208,7 +99,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                         className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
                         <FiBell size={15} />
-                        {/* Notification indicator dot */}
                         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                     </button>
                     {!pathname.endsWith('/settings') && (
@@ -221,7 +111,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 </div>
             )}
 
-            {/* Content Container */}
             <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
                     ? 'md:pl-[72px] pt-6 pb-8'
@@ -250,9 +139,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                     <Onboarding key="onboarding" onClose={() => setShowOnboarding(false)} />
                 )}
             </AnimatePresence>
-
-            {/* Region ask for arena-notification timing — never over onboarding */}
-            {!showOnboarding && <RegionPrompt />}
         </div>
     );
 }
