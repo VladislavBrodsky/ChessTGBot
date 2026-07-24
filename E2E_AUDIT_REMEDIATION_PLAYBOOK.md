@@ -1,6 +1,6 @@
 # ChessTGBot E2E Audit Remediation Playbook
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
 Status: Remaining remediation plan
 
@@ -355,22 +355,7 @@ Acceptance criteria:
 
 ## 11. Deployment and CI
 
-### DEP-01 - Make Dependency Resolution Reproducible [P2] (partly landed)
-
-Landed:
-
-- Removed the duplicate `asyncpg` requirement.
-- Pinned direct Python dependencies to the exact versions the test suite runs
-  against (`backend/requirements.txt`), so CI/Docker/Railway stop drifting to
-  latest-at-build-time. `uvloop` (win32-excluded) and `aiohttp` (test-only) are
-  documented floors; transitive dependencies still float.
-- Added a `dependency-audit` CI job with a documented severity policy: frontend
-  `npm audit --omit=dev --audit-level=critical` and backend `pip-audit`
-  advisory-only. (The frontend gate was briefly `--audit-level=high`, but Next's
-  own tree — next, its bundled postcss, and transitively-pinned sharp — carries
-  HIGH advisories whose fix range is past the latest published Next (16.2.11 <
-  16.3.0) and whose only npm "fix" is the forbidden Next 9 downgrade, so a high
-  gate blocked all CI on unactionable findings.)
+### DEP-01 - Make Dependency Resolution Reproducible [P2] (remaining follow-ups)
 
 Remaining:
 
@@ -415,15 +400,7 @@ Acceptance criteria:
 - A migration failure leaves the previous application service available.
 - Staging cannot reach production money credentials.
 
-### DEP-03 - Harden Existing CI Gates [P2] (mostly landed in PR #81)
-
-Landed: `typescript.ignoreBuildErrors` set to false (typecheck now blocks the
-build for both standalone and static-export outputs); the eslint warning backlog
-cleared and lint made merge-blocking with `--max-warnings=0`; backend tests moved
-off the silent in-memory `MockAsyncSession` onto an explicit deterministic sqlite
-engine, guarded by `REQUIRE_REAL_DB` so any fallback-to-mock fails loudly; the
-fresh-Postgres Alembic upgrade and static-export freshness gates retained. CI
-already runs Python 3.12.
+### DEP-03 - Harden Existing CI Gates [P2] (remaining follow-up)
 
 Remaining:
 
