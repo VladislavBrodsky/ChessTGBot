@@ -72,9 +72,9 @@ export default function AcademyPage() {
   });
 
   const { data: stats, mutate: mutateStats } = useSWR("/api/v1/users/sync", postFetcher, { revalidateOnFocus: false });
-  const { data: dynamicLessons, mutate: mutateLessons } = useSWR("/api/v1/content/lessons", fetcher);
+  const { data: dynamicLessons } = useSWR("/api/v1/content/lessons", fetcher);
   const { data: unlockedLessons, mutate: mutateUnlocked } = useSWR("/api/v1/gamification/academy/unlocked-lessons", fetcher);
-  const { data: completedLessons, mutate: mutateCompleted } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
+  const { data: completedLessons } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
   const { data: puzzles, mutate: mutatePuzzles } = useSWR("/api/v1/gamification/academy/puzzles", fetcher);
 
   const loading = !stats || !dynamicLessons || !unlockedLessons || !completedLessons || !puzzles;
@@ -87,7 +87,6 @@ export default function AcademyPage() {
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showArchive, setShowArchive] = useState(false);
   const [showCompletedCat, setShowCompletedCat] = useState<Record<string, boolean>>({});
   const { pushHide, popHide } = useNavbar();
 
@@ -634,7 +633,7 @@ export default function AcademyPage() {
 
                   {/* Lessons grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {visibleLessons.map((lesson, idx) => {
+                    {visibleLessons.map((lesson, _idx) => {
                       // Find global index for unlock logic
                       const globalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
                       const isCompleted = (completedLessons as string[]).includes(lesson.slug);

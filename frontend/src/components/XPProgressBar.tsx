@@ -14,7 +14,6 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
     const progress = getXPProgress(xp, level);
     
     const progressPercentage = Math.min(100, Math.max(0, progress.progressPercentage));
-    const levelSecured = progress.isLevelSecured;
     const userLevel = progress.displayedLevel;
 
     const progressText = `${progress.currentLevelProgress.toLocaleString()} / ${progress.nextLevelXp.toLocaleString()} XP`;
