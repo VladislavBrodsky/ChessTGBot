@@ -135,7 +135,7 @@ export default function DailyCheckinModal() {
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
             className="app-premium-surface relative w-full max-w-sm overflow-hidden rounded-[2rem] border border-brand-border p-6 pb-[calc(24px+var(--app-safe-bottom))] shadow-2xl"
           >
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
             
             {/* Top-right close button */}
             <button

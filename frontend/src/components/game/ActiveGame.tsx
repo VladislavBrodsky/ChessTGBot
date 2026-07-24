@@ -821,13 +821,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       <div className="w-full max-w-sm flex justify-between items-center mb-6 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
           {isGameOver && !isTelegram && (
-            <Link href={`/${locale}/home`}>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
-              >
-                <FaArrowLeft size={16} />
-              </motion.button>
+            <Link
+              href={`/${locale}/home`}
+              aria-label="Back to home"
+              className="text-brand-primary opacity-45 hover:opacity-100 transition-all flex items-center cursor-pointer p-2 -ml-2 active:scale-95"
+            >
+              <FaArrowLeft size={16} />
             </Link>
           )}
           {!isGameOver && (

@@ -20,6 +20,15 @@ const robotoMono = Roboto_Mono({ subsets: ['latin'], variable: '--font-geist-mon
 export const metadata: Metadata = {
     title: "Chess Game",
     description: "Real-time Multiplayer Chess on Telegram",
+    // Declare an icon so browsers stop requesting a nonexistent /favicon.ico
+    // (the local E2E run logged that 404). Points at the committed public assets.
+    icons: {
+        icon: [
+            { url: "/icon.svg", type: "image/svg+xml" },
+            { url: "/icon.png", type: "image/png" },
+        ],
+        apple: "/icon.png",
+    },
 };
 
 export const viewport = {

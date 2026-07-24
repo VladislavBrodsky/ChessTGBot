@@ -97,7 +97,7 @@ function PuzzleContent() {
 
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
+          <Link href={`/${locale}/academy`} aria-label="Back to academy" className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
             <FaArrowLeft />
           </Link>
           <div>
@@ -177,15 +177,11 @@ function PuzzleContent() {
             )}
             
             <div className="flex gap-4 justify-center w-full mt-2">
-              <Link href={`/${locale}/academy`} className="flex-1">
-                <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-text-brand-muted font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
-                  {t('continue')}
-                </button>
+              <Link href={`/${locale}/academy`} className="flex-1 w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-text-brand-muted font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs flex items-center justify-center active:scale-[0.98]">
+                {t('continue')}
               </Link>
-              <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just cracked a daily tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
-                <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
-                  <FaTelegramPlane className="text-lg" /> Share
-                </button>
+              <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just cracked a daily tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2 active:scale-[0.98]">
+                <FaTelegramPlane className="text-lg" /> Share
               </a>
             </div>
           </motion.div>
