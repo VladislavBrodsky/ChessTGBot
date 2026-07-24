@@ -64,12 +64,6 @@
     env(safe-area-inset-bottom, 0px)
   );
 
-  --app-safe-top: max(
-    var(--tg-content-safe-area-inset-top, 0px),
-    var(--tg-safe-area-inset-top, 0px),
-    env(safe-area-inset-top, 0px)
-  );
-
   --font-inter: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-sans: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -142,7 +136,7 @@
 
   --color-rose-opacity-10: rgba(239, 68, 68, 0.1);
   --color-rose-opacity-20: rgba(239, 68, 68, 0.2);
-  --color-emerald-opacity-10: rgba(245, 158, 11, 0.15);
+  --color-emerald-opacity-10: rgba(16, 185, 129, 0.15);
   --color-emerald-opacity-20: rgba(16, 185, 129, 0.25);
   --color-cyan-opacity-10: rgba(6, 182, 212, 0.15);
   --color-amber-opacity-10: rgba(245, 158, 11, 0.15);
@@ -321,7 +315,7 @@
 
   --color-rose-opacity-10: rgba(239, 68, 68, 0.1);
   --color-rose-opacity-20: rgba(239, 68, 68, 0.2);
-  --color-emerald-opacity-10: rgba(245, 158, 11, 0.15);
+  --color-emerald-opacity-10: rgba(16, 185, 129, 0.15);
   --color-emerald-opacity-20: rgba(16, 185, 129, 0.25);
   --color-cyan-opacity-10: rgba(6, 182, 212, 0.15);
   --color-amber-opacity-10: rgba(245, 158, 11, 0.15);

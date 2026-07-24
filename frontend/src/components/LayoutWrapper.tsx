@@ -247,7 +247,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
             <AnimatePresence>
                 {showOnboarding && (
-                    <Onboarding onClose={() => setShowOnboarding(false)} />
+                    <Onboarding key="onboarding" onClose={() => setShowOnboarding(false)} />
                 )}
             </AnimatePresence>
 

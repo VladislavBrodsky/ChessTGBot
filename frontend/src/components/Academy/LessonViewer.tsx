@@ -56,7 +56,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
   const handlePrev = () => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex(currentStepIndex - 1);
-      setStepComplete(true);
+      setStepComplete(false);
     }
   };
 

@@ -1,20 +1,20 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
-import { FaHome, FaStore, FaChessKnight, FaBookOpen, FaTrophy, FaSignOutAlt } from 'react-icons/fa';
+import { FaChessKing, FaChessQueen, FaChessKnight, FaChessPawn, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-    { name: 'Home',        icon: <FaHome />,           href: '/home',        key: 'nav_home' },
-    { name: 'Marketplace', icon: <FaStore />,          href: '/marketplace', key: 'nav_marketplace' },
+    { name: 'Home',        icon: <FaChessKing />,      href: '/home',        key: 'nav_home' },
+    { name: 'Marketplace', icon: <FaChessQueen />,     href: '/marketplace', key: 'nav_marketplace' },
     { name: 'Play',        icon: <FaChessKnight />,    href: '/game',        key: 'nav_play', primary: true },
-    { name: 'Learn',       icon: <FaBookOpen />,       href: '/academy',     key: 'nav_learn' },
-    { name: 'Quests',      icon: <FaTrophy />,         href: '/challenges',  key: 'nav_quests' },
+    { name: 'Learn',       icon: <FaChessPawn />,      href: '/academy',     key: 'nav_learn' },
+    { name: 'Quests',      icon: <FaChessRook />,      href: '/challenges',  key: 'nav_quests' },
 ];
 
 let globalIsTelegramWeb: boolean | null = null;
@@ -86,13 +86,16 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
 
     // ── DESKTOP SIDEBAR ──────────────────────────────────────────────────
     if (isDesktopBrowser) {
-        if (hide) return null;
         return (
-            <motion.nav
-                initial={{ x: -72, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="fixed left-0 top-0 z-50 flex h-full w-[72px] flex-col items-center justify-between border-r border-brand-border-opacity-10 bg-brand-void/70 py-6 backdrop-blur-[20px] shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
+            <AnimatePresence>
+                {!hide && (
+                    <motion.nav
+                        key="desktop-sidebar"
+                        initial={{ x: -72, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -72, opacity: 0 }}
+                        transition={{ duration: 0.35, ease: 'easeOut' }}
+                        className="fixed left-0 top-0 z-50 flex h-full w-[72px] flex-col items-center justify-between border-r border-brand-border-opacity-10 bg-brand-void/70 py-6 backdrop-blur-[20px] shadow-[4px_0_24px_rgba(0,0,0,0.15)]"
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center gap-1">
@@ -168,7 +171,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                         <FaSignOutAlt size={14} className="text-red-400/50 group-hover:text-red-400 transition-colors" />
                     </motion.button>
                 </div>
-            </motion.nav>
+                    </motion.nav>
+                )}
+            </AnimatePresence>
         );
     }
 

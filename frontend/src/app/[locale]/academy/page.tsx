@@ -99,11 +99,8 @@ export default function AcademyPage() {
 
   // Hide the global navbar when a drawer is open
   useEffect(() => {
-    if (showPremiumPromo || selectedLevel) {
-      pushHide();
-    } else {
-      popHide();
-    }
+    if (!showPremiumPromo && !selectedLevel) return;
+    pushHide();
     // Cleanup on unmount or when drawer closes
     return () => popHide();
   }, [showPremiumPromo, selectedLevel, pushHide, popHide]);
@@ -344,7 +341,7 @@ export default function AcademyPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 w-full max-w-sm ${
                   stats.is_premium
-                    ? 'bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)] animate-pulse'
+                    ? 'bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
                     : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-muted'
                 }`}
               >
@@ -358,9 +355,7 @@ export default function AcademyPage() {
               {/* Badges & Streak Row */}
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
-                  <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>
-                    <FaFire className="text-amber-500" />
-                  </motion.div> {stats.study_streak || 0} Day Streak
+                  <FaFire className="text-amber-500" /> {stats.study_streak || 0} Day Streak
                 </Badge>
                 <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
                   <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}

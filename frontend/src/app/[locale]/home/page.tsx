@@ -99,7 +99,7 @@ export default function Home() {
         className="relative w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
       >
         <FiBell size={16} />
-        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-danger shadow-premium" />
+        <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-premium" />
       </button>
       <Link
         href={`/${locale}/settings`}
@@ -197,7 +197,16 @@ export default function Home() {
       key="card"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+      role="button"
+      tabIndex={0}
       onClick={() => router.push(`/${locale}/profile`)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          router.push(`/${locale}/profile`);
+        }
+      }}
       className="w-full"
     >
       <Card variant="solid" className="w-full relative overflow-hidden p-5 bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 group cursor-pointer hover:border-brand-primary/20 hover:shadow-md transition-all duration-300">

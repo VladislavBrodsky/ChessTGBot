@@ -17,11 +17,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
     const levelSecured = progress.isLevelSecured;
     const userLevel = progress.displayedLevel;
 
-    const currentLevelCost = 350 + (userLevel - 1) * 50;
-
-    const progressText = levelSecured
-        ? `${progress.currentLevelProgress.toLocaleString()} / ${progress.nextLevelXp.toLocaleString()} XP`
-        : `${progress.currentLevelProgress.toLocaleString()} / ${currentLevelCost.toLocaleString()} XP`;
+    const progressText = `${progress.currentLevelProgress.toLocaleString()} / ${progress.nextLevelXp.toLocaleString()} XP`;
 
     return (
         <div className={`w-full flex flex-col gap-1.5 ${className}`}>
@@ -42,9 +38,9 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 role="progressbar"
                 aria-label={`${levelLabel} ${userLevel} progress`}
                 aria-valuemin={0}
-                aria-valuemax={levelSecured ? progress.nextLevelXp : currentLevelCost}
+                aria-valuemax={progress.nextLevelXp}
                 aria-valuenow={progress.currentLevelProgress}
-                aria-valuetext={`${progress.currentLevelProgress} of ${levelSecured ? progress.nextLevelXp : currentLevelCost} XP toward ${levelLabel} ${userLevel + 1}`}
+                aria-valuetext={`${progress.currentLevelProgress} of ${progress.nextLevelXp} XP toward ${levelLabel} ${userLevel + 1}`}
                 className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border border-brand-border-opacity-10 shadow-inner"
             >
                 {/* Progress Fill */}
@@ -54,15 +50,8 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                     transition={{ 
                         width: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
                     }}
-                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--gold"
+                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--secured"
                 >
-                    {/* Single Ambient Shimmer sweep */}
-                    <motion.div
-                        aria-hidden="true"
-                        animate={{ x: ['-100%', '300%'] }}
-                        transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
-                        className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 pointer-events-none"
-                    />
                 </motion.div>
             </div>
         </div>
