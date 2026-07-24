@@ -172,34 +172,42 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
   const getColorClasses = (color: string, isActive: boolean) => {
     const styles = {
       purple: {
-        activeBg: 'border-purple-500/40 bg-gradient-to-br from-purple-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(168,85,247,0.12)]',
-        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.25)] text-purple-600 dark:text-purple-400',
+        activeBg: 'border-purple-500/40 bg-gradient-to-br from-purple-500/12 to-brand-surface/60 shadow-[0_4px_24px_rgba(168,85,247,0.14)]',
+        inactiveBg: 'border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-brand-surface/30 hover:border-purple-500/35 hover:from-purple-500/8',
+        activeIcon: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/35 shadow-[0_0_12px_rgba(168,85,247,0.25)] text-purple-500 dark:text-purple-400',
+        inactiveIcon: 'bg-gradient-to-br from-purple-500/10 to-purple-500/3 border-purple-500/20 text-purple-500/60 dark:text-purple-400/60',
         activeText: 'text-purple-600 dark:text-purple-400',
+        inactiveText: 'text-purple-500/70 dark:text-purple-400/60',
       },
       emerald: {
-        activeBg: 'border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(16,185,129,0.12)]',
-        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-emerald-500/30 hover:bg-gradient-to-br hover:from-emerald-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-emerald-600 dark:text-emerald-400',
+        activeBg: 'border-emerald-500/40 bg-gradient-to-br from-emerald-500/12 to-brand-surface/60 shadow-[0_4px_24px_rgba(16,185,129,0.14)]',
+        inactiveBg: 'border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-brand-surface/30 hover:border-emerald-500/35 hover:from-emerald-500/8',
+        activeIcon: 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-emerald-500 dark:text-emerald-400',
+        inactiveIcon: 'bg-gradient-to-br from-emerald-500/10 to-emerald-500/3 border-emerald-500/20 text-emerald-500/60 dark:text-emerald-400/60',
         activeText: 'text-emerald-600 dark:text-emerald-400',
+        inactiveText: 'text-emerald-500/70 dark:text-emerald-400/60',
       },
       blue: {
-        activeBg: 'border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(59,130,246,0.12)]',
-        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-blue-500/30 hover:bg-gradient-to-br hover:from-blue-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.25)] text-blue-600 dark:text-blue-400',
+        activeBg: 'border-blue-500/40 bg-gradient-to-br from-blue-500/12 to-brand-surface/60 shadow-[0_4px_24px_rgba(59,130,246,0.14)]',
+        inactiveBg: 'border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-brand-surface/30 hover:border-blue-500/35 hover:from-blue-500/8',
+        activeIcon: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.25)] text-blue-500 dark:text-blue-400',
+        inactiveIcon: 'bg-gradient-to-br from-blue-500/10 to-blue-500/3 border-blue-500/20 text-blue-500/60 dark:text-blue-400/60',
         activeText: 'text-blue-600 dark:text-blue-400',
+        inactiveText: 'text-blue-500/70 dark:text-blue-400/60',
       },
       amber: {
-        activeBg: 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-brand-surface/40 shadow-[0_4px_24px_rgba(245,158,11,0.12)]',
-        inactiveBg: 'border-brand-border-opacity-20 bg-brand-surface hover:border-amber-500/30 hover:bg-gradient-to-br hover:from-amber-500/5 hover:to-brand-surface/20',
-        activeIcon: 'bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.25)] text-amber-600 dark:text-amber-400',
+        activeBg: 'border-amber-500/40 bg-gradient-to-br from-amber-500/12 to-brand-surface/60 shadow-[0_4px_24px_rgba(245,158,11,0.14)]',
+        inactiveBg: 'border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-brand-surface/30 hover:border-amber-500/35 hover:from-amber-500/8',
+        activeIcon: 'bg-gradient-to-br from-amber-500/20 to-amber-500/5 border-amber-500/35 shadow-[0_0_12px_rgba(245,158,11,0.25)] text-amber-500 dark:text-amber-400',
+        inactiveIcon: 'bg-gradient-to-br from-amber-500/10 to-amber-500/3 border-amber-500/20 text-amber-500/60 dark:text-amber-400/60',
         activeText: 'text-amber-600 dark:text-amber-400',
+        inactiveText: 'text-amber-500/70 dark:text-amber-400/60',
       },
     }[color as 'purple' | 'emerald' | 'blue' | 'amber'];
   
     return isActive
       ? { bg: styles.activeBg, icon: styles.activeIcon, text: styles.activeText }
-      : { bg: styles.inactiveBg, icon: 'bg-brand-elevated border-brand-border-opacity-20 text-brand-muted', text: 'text-brand-muted' };
+      : { bg: styles.inactiveBg, icon: styles.inactiveIcon, text: styles.inactiveText };
   };
 
   const activeTabColor = tabs.find(t => t.id === activeTab)?.color || 'emerald';
