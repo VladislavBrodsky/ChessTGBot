@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://web3chess.online"><img src="https://img.shields.io/badge/Frontend-web3chess.online-10B981?style=for-the-badge&logo=vercel&logoColor=white" alt="Frontend Live" /></a>
   <a href="https://api.web3chess.online"><img src="https://img.shields.io/badge/Backend-api.web3chess.online-10B981?style=for-the-badge&logo=fastapi&logoColor=white" alt="Backend Live" /></a>
-  <img src="https://img.shields.io/badge/Tests-%7E260%20Passing-00E676?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest Suite" />
+  <img src="https://img.shields.io/badge/Tests-%7E600%20Passing-00E676?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest Suite" />
   <img src="https://img.shields.io/badge/Design-Obsidian%20Chess-F5C518?style=for-the-badge" alt="Obsidian Chess Brand" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" />
 </p>
@@ -21,7 +21,7 @@ Built on a **Next.js 16 (App Router)** client and a **FastAPI + Socket.IO** real
 ```text
 Audience: Telegram Mini App players seeking Web3 competitive chess & developers building production Telegram WebApps.
 One-Sentence Value: Real-time Telegram Mini App chess arena with high-stakes PvP, TON/USDT vault, and Obsidian Chess UI.
-Primary Proof: Dual Railway production services, ~260 backend integration tests, static-export CI guard, and Bot API 8.0+ fullscreen compliance.
+Primary Proof: Dual Railway production services, ~600 backend integration tests, static-export CI guard, and Bot API 8.0+ fullscreen compliance.
 First Action: Launch the app in Telegram or run `docker-compose up -d && pytest` locally.
 ```
 
@@ -148,8 +148,8 @@ Visit `http://localhost:3000` to play locally.
 
 | Suite | Command | Coverage / Scope |
 | --- | --- | --- |
-| **Backend Integration** | `cd backend && python -m pytest` | ~260 pytest cases testing DB models, game state, Redis pub/sub, and auth |
-| **Frontend Unit Tests** | `cd frontend && npm test` | 11 Jest suites covering navbar context, modals, SWR hooks, and game UI |
+| **Backend Integration** | `cd backend && python -m pytest` | ~600 pytest cases testing DB models, game state, Redis pub/sub, and auth |
+| **Frontend Unit Tests** | `cd frontend && npm test` | 14 Jest suites (59 tests) covering navbar context, modals, SWR hooks, and game UI |
 | **Static Export Guard** | `bash scripts/check-static-export-fresh.sh` | CI freshness guard comparing `frontend/src` changes against `backend/static_frontend` |
 
 ---
@@ -162,7 +162,7 @@ ChessTGBot/
 ├── backend/                 # FastAPI + Socket.IO application
 │   ├── app/                 # Core engine, bot handlers, database models, services
 │   ├── static_frontend/     # Committed static export (monolith deployment fallback)
-│   └── tests/               # Pytest suite (~260 tests)
+│   └── tests/               # Pytest suite (~600 tests)
 ├── frontend/                # Next.js 16 App Router application
 │   ├── src/app/             # Pages, internationalized routes, globals.css
 │   ├── src/components/      # Obsidian Chess UI primitives & game boards

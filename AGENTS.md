@@ -35,7 +35,7 @@ then commit the result. A stale committed export has caused confusion during deb
 - **backend**: `pip install` → import check (`python -c "import app.main"`) → `python -m pytest`.
 - **static-export-fresh**: the staleness guard above (PRs only).
 
-Run locally: `cd frontend && npm test` and `cd backend && python -m pytest` (on Windows use the project venv: `./venv/Scripts/python -m pytest`). The main suite is `backend/tests/` (~260 tests, needs the docker-compose Postgres for the `_test` database); `backend/app/tests/` holds a few pure-unit tests plus manual live-server scripts excluded via `backend/pytest.ini`.
+Run locally: `cd frontend && npm test` and `cd backend && python -m pytest` (on Windows use the project venv: `./venv/Scripts/python -m pytest`). The main suite is `backend/tests/` (~600 tests, needs the docker-compose Postgres for the `_test` database); `backend/app/tests/` holds a few pure-unit tests plus manual live-server scripts excluded via `backend/pytest.ini`.
 
 ## iOS Telegram gotchas (hard-won)
 

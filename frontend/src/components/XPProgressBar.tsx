@@ -50,8 +50,15 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                     transition={{ 
                         width: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
                     }}
-                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--secured"
+                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--gold"
                 >
+                    {/* Single Ambient Shimmer sweep */}
+                    <motion.div
+                        aria-hidden="true"
+                        animate={{ x: ['-100%', '300%'] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+                        className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 pointer-events-none"
+                    />
                 </motion.div>
             </div>
         </div>
