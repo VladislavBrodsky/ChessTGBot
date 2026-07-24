@@ -73,11 +73,15 @@ export default function AcademyPage() {
 
   const { data: stats, mutate: mutateStats } = useSWR("/api/v1/users/sync", postFetcher, { revalidateOnFocus: false });
   const { data: dynamicLessons } = useSWR("/api/v1/content/lessons", fetcher);
-  const { data: unlockedLessons, mutate: mutateUnlocked } = useSWR("/api/v1/gamification/academy/unlocked-lessons", fetcher);
-  const { data: completedLessons } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
-  const { data: puzzles, mutate: mutatePuzzles } = useSWR("/api/v1/gamification/academy/puzzles", fetcher);
+  const { data: academyState, mutate: mutateAcademyState } = useSWR("/api/v1/gamification/academy/state", fetcher);
+  
+  const unlockedLessons = academyState?.unlocked_lessons;
+  const completedLessons = academyState?.completed_lessons;
+  const puzzles = academyState?.puzzles;
+  const mutateUnlocked = mutateAcademyState;
+  const mutatePuzzles = mutateAcademyState;
 
-  const loading = !stats || !dynamicLessons || !unlockedLessons || !completedLessons || !puzzles;
+  const loading = !stats || !dynamicLessons || !academyState;
 
   const puzzlesList = (puzzles || []) as AcademyPuzzle[];
   const lessonsList = (dynamicLessons || []) as AcademyLesson[];

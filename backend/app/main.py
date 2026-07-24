@@ -148,6 +148,39 @@ class RawCORSMiddleware:
         await self.app(scope, receive, send_with_cors)
 
 
+class SecurityHeadersMiddleware:
+    """ASGI middleware to inject security headers into all HTTP responses."""
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_security_headers(message):
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                
+                existing = {k.lower() for k, v in headers}
+                
+                if b"strict-transport-security" not in existing:
+                    headers.append((b"strict-transport-security", b"max-age=63072000; includeSubDomains; preload"))
+                if b"x-content-type-options" not in existing:
+                    headers.append((b"x-content-type-options", b"nosniff"))
+                if b"x-frame-options" not in existing:
+                    headers.append((b"x-frame-options", b"DENY"))
+                if b"content-security-policy" not in existing:
+                    # The backend API doesn't serve HTML, so we restrict everything.
+                    headers.append((b"content-security-policy", b"default-src 'none'; frame-ancestors 'none'"))
+                
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_security_headers)
+
+
+
 async def start_redis_recovery_loop():
     """Periodically check if Redis is down and try to recover it."""
     from app.services.session_manager import SessionManager
@@ -441,6 +474,9 @@ def create_application() -> FastAPI:
     application.add_middleware(LoggingMiddleware)
     application.add_middleware(HeadMiddleware)
     application.add_middleware(GZipMiddleware, minimum_size=1000)
+
+    # Inject security headers into all API responses.
+    application.add_middleware(SecurityHeadersMiddleware)
 
     # Raw CORS middleware — added LAST so it wraps everything and executes FIRST.
     # This handles OPTIONS preflights at the ASGI protocol level and injects

@@ -257,6 +257,77 @@ async def unlock_lesson(
         "lesson_id": req.lesson_id
     }
 
+@router.get("/academy/state")
+async def get_academy_state(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Retrieve all academy state (lessons and puzzles) in a single request."""
+    from sqlalchemy import select
+    from app.models.gamification import UnlockedLesson, SolvedPuzzle, UnlockedPuzzle
+    from app.core.puzzles import CHESS_PUZZLES
+    
+    # 1. Unlocked Lessons
+    unlock_lesson_res = await db.execute(
+        select(UnlockedLesson).where(UnlockedLesson.user_id == current_user.id)
+    )
+    unlocked_lessons = [ul.lesson_id for ul in unlock_lesson_res.scalars().all()]
+    
+    # 2. Completed Lessons
+    completed_lessons = await GamificationService.get_completed_academy_tasks(current_user, "lesson")
+    
+    # 3. Puzzles
+    solved_res = await db.execute(
+        select(SolvedPuzzle.puzzle_id).where(SolvedPuzzle.user_id == current_user.id)
+    )
+    solved_ids = set(solved_res.scalars().all())
+
+    unlock_puzzle_res = await db.execute(
+        select(UnlockedPuzzle.puzzle_id).where(UnlockedPuzzle.user_id == current_user.id)
+    )
+    unlocked_puzzle_ids = set(unlock_puzzle_res.scalars().all())
+    
+    puzzles_list = []
+    for p in CHESS_PUZZLES:
+        id = p["id"]
+        is_solved = id in solved_ids
+        is_sequential_locked = False
+        if id > 1 and (id - 1) not in solved_ids:
+            is_sequential_locked = True
+            
+        is_premium_locked = False
+        is_xp_locked = False
+        xp_cost = 0
+        
+        if id <= 10:
+            pass
+        elif 11 <= id <= 29:
+            if not current_user.is_premium_active and id not in unlocked_puzzle_ids:
+                is_xp_locked = True
+                xp_cost = 200 + (id - 11) * 50
+        else:
+            if not current_user.is_premium_active:
+                is_premium_locked = True
+                
+        puzzles_list.append({
+            "id": id,
+            "title": p["title"],
+            "description": p["description"],
+            "xp_reward": p["xp_reward"],
+            "is_solved": is_solved,
+            "is_sequential_locked": is_sequential_locked,
+            "is_premium_locked": is_premium_locked,
+            "is_xp_locked": is_xp_locked,
+            "xp_cost": xp_cost
+        })
+        
+    return {
+        "unlocked_lessons": unlocked_lessons,
+        "completed_lessons": completed_lessons,
+        "puzzles": puzzles_list
+    }
+
+
 @router.get("/academy/unlocked-lessons")
 async def get_unlocked_lessons(
     current_user: User = Depends(get_current_user),

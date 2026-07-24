@@ -26,6 +26,7 @@ const nextConfig = {
     // ran a separate `tsc --noEmit` to compensate; the build now enforces it
     // directly for both standalone and static-export outputs. See DEP-03.
     typescript: { ignoreBuildErrors: false },
+    poweredByHeader: false,
     experimental: {},
     // Rewrites are only supported when running a Node.js server (i.e. not in
     // static export mode). In static export mode the frontend resolves the
@@ -41,6 +42,33 @@ const nextConfig = {
                 {
                     source: '/socket.io/:path*',
                     destination: `${backendUrl}/socket.io/:path*`,
+                },
+            ];
+        },
+        async headers() {
+            const cspHeader = `
+                default-src 'self';
+                script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org;
+                style-src 'self' 'unsafe-inline';
+                img-src 'self' blob: data: https:;
+                font-src 'self' data:;
+                connect-src 'self' https: wss: ws:;
+                frame-ancestors 'self' https://*.telegram.org https://*.t.me;
+                object-src 'none';
+                base-uri 'self';
+                form-action 'self';
+            `.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+
+            return [
+                {
+                    source: '/(.*)',
+                    headers: [
+                        { key: 'Content-Security-Policy', value: cspHeader },
+                        { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+                        { key: 'X-Content-Type-Options', value: 'nosniff' },
+                        { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+                        { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
+                    ],
                 },
             ];
         },

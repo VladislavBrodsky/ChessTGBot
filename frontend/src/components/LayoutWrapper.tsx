@@ -2,8 +2,10 @@
 
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import Onboarding from './Onboarding';
-import NotificationModal from './NotificationModal';
+import dynamic from 'next/dynamic';
+
+const Onboarding = dynamic(() => import('./Onboarding'), { ssr: false });
+const NotificationModal = dynamic(() => import('./NotificationModal'), { ssr: false });
 import AnimatedBackground from './AnimatedBackground';
 import { useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';

@@ -37,10 +37,13 @@ export default function Home() {
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
  const [showNotifications, setShowNotifications] = useState(false);
+ const [mounted, setMounted] = useState(false);
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
- const displayName = stats
-   ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
-   : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : (t.has('combatant') ? t('combatant') : 'Combatant'));
+ const displayName = !mounted 
+   ? (t.has('combatant') ? t('combatant') : 'Combatant')
+   : stats
+     ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
+     : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : (t.has('combatant') ? t('combatant') : 'Combatant'));
 
  useEffect(() => {
    if (typeof window !== 'undefined') {
@@ -64,6 +67,7 @@ export default function Home() {
  }, [locale, router]);
 
  useEffect(() => {
+   setMounted(true);
    // Init Telegram WebApp Data
    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
      const tg = window.Telegram.WebApp;
@@ -85,7 +89,7 @@ export default function Home() {
   {/* Dashboard Welcome Header — a two-line greeting keeps the profile moment clear at every width. */}
   <header className="mb-1 w-full px-1">
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-      <h1 className="min-w-0 text-start text-xl font-black uppercase leading-[0.95] tracking-tighter text-brand-primary sm:text-2xl" title={t('welcome', { name: displayName })}>
+      <h1 className={`min-w-0 text-start text-xl font-black uppercase leading-[0.95] tracking-tighter text-brand-primary sm:text-2xl transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} title={t('welcome', { name: displayName })}>
         <span className="block">{t('welcome_greeting')}</span>
         <span className="mt-1 block break-words">{displayName}</span>
       </h1>
