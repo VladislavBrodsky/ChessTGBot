@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 160" width="100%" height="100%">
+  <style>
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+
+  <rect x="0" y="0" width="850" height="160" rx="12" fill="#09090D" stroke="#262636" stroke-width="1.5"/>
+
+  <!-- Swatch 1: Obsidian Void -->
+  <g transform="translate(35, 30)">
+    <rect x="0" y="0" width="170" height="100" rx="8" fill="#0D0D12" stroke="#262636" stroke-width="1.5"/>
+    <text x="15" y="30" class="sans" font-size="12" font-weight="700" fill="#F0F6FC">Obsidian Void</text>
+    <text x="15" y="50" class="mono" font-size="11" fill="#A0A0B0">#0D0D12</text>
+    <text x="15" y="80" class="sans" font-size="10" fill="#888">Background / Canvas</text>
+  </g>
+
+  <!-- Swatch 2: Gold Accent -->
+  <g transform="translate(230, 30)">
+    <rect x="0" y="0" width="170" height="100" rx="8" fill="#F5C518"/>
+    <text x="15" y="30" class="sans" font-size="12" font-weight="800" fill="#0D0D12">Gold Accent</text>
+    <text x="15" y="50" class="mono" font-size="11" font-weight="700" fill="#0D0D12">#F5C518</text>
+    <text x="15" y="80" class="sans" font-size="10" font-weight="600" fill="#0D0D12">CTAs / Wagers / Wins</text>
+  </g>
+
+  <!-- Swatch 3: Silver Status -->
+  <g transform="translate(425, 30)">
+    <rect x="0" y="0" width="170" height="100" rx="8" fill="#A0A0B0"/>
+    <text x="15" y="30" class="sans" font-size="12" font-weight="800" fill="#0D0D12">Silver Status</text>
+    <text x="15" y="50" class="mono" font-size="11" font-weight="700" fill="#0D0D12">#A0A0B0</text>
+    <text x="15" y="80" class="sans" font-size="10" font-weight="600" fill="#0D0D12">Secondary / Milestones</text>
+  </g>
+
+  <!-- Swatch 4: Emerald Live -->
+  <g transform="translate(620, 30)">
+    <rect x="0" y="0" width="195" height="100" rx="8" fill="#10B981"/>
+    <text x="15" y="30" class="sans" font-size="12" font-weight="800" fill="#0D0D12">Emerald Live</text>
+    <text x="15" y="50" class="mono" font-size="11" font-weight="700" fill="#0D0D12">#10B981</text>
+    <text x="15" y="80" class="sans" font-size="10" font-weight="600" fill="#0D0D12">Socket / Online / Rating</text>
+  </g>
+</svg>

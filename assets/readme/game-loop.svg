@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="step-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#161622"/>
+      <stop offset="100%" stop-color="#0E0E17"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .step-num { font-size: 10px; font-weight: 800; fill: #F5C518; }
+    .step-title { font-size: 13px; font-weight: 700; fill: #F0F6FC; }
+    .step-desc { font-size: 10.5px; fill: #A0A0B0; }
+  </style>
+
+  <rect x="0" y="0" width="850" height="200" rx="12" fill="#09090D" stroke="#262636" stroke-width="1.5"/>
+
+  <!-- Flow Steps -->
+  <!-- Step 1: Queue -->
+  <g transform="translate(30, 30)">
+    <rect x="0" y="0" width="170" height="140" rx="10" fill="url(#step-bg)" stroke="#F5C518" stroke-width="1"/>
+    <rect x="12" y="12" width="55" height="20" rx="4" fill="#F5C518" fill-opacity="0.15"/>
+    <text x="40" y="26" text-anchor="middle" class="mono step-num">STEP 01</text>
+    <text x="14" y="55" class="sans step-title">⚡ Matchmaking</text>
+    <text x="14" y="78" class="mono" font-size="10" fill="#F5C518">join_queue</text>
+    <text x="14" y="98" class="sans step-desc">Rating tiers, stake</text>
+    <text x="14" y="114" class="sans step-desc">selection &amp; queue pool</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M 205 100 L 230 100" stroke="#F5C518" stroke-width="2" stroke-dasharray="4 3"/>
+  <polygon points="230,96 238,100 230,104" fill="#F5C518"/>
+
+  <!-- Step 2: Init -->
+  <g transform="translate(240, 30)">
+    <rect x="0" y="0" width="170" height="140" rx="10" fill="url(#step-bg)" stroke="#10B981" stroke-width="1"/>
+    <rect x="12" y="12" width="55" height="20" rx="4" fill="#10B981" fill-opacity="0.15"/>
+    <text x="40" y="26" text-anchor="middle" class="mono step-num" fill="#10B981">STEP 02</text>
+    <text x="14" y="55" class="sans step-title">🎮 Game Start</text>
+    <text x="14" y="78" class="mono" font-size="10" fill="#10B981">game_start</text>
+    <text x="14" y="98" class="sans step-desc">Initial FEN, color</text>
+    <text x="14" y="114" class="sans step-desc">assignment &amp; clocks</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M 415 100 L 440 100" stroke="#10B981" stroke-width="2"/>
+  <polygon points="440,96 448,100 440,104" fill="#10B981"/>
+
+  <!-- Step 3: Move Loop -->
+  <g transform="translate(450, 30)">
+    <rect x="0" y="0" width="170" height="140" rx="10" fill="url(#step-bg)" stroke="#3B82F6" stroke-width="1"/>
+    <rect x="12" y="12" width="55" height="20" rx="4" fill="#3B82F6" fill-opacity="0.15"/>
+    <text x="40" y="26" text-anchor="middle" class="mono step-num" fill="#3B82F6">STEP 03</text>
+    <text x="14" y="55" class="sans step-title">♟️ Move Validation</text>
+    <text x="14" y="78" class="mono" font-size="10" fill="#3B82F6">make_move</text>
+    <text x="14" y="98" class="sans step-desc">python-chess server</text>
+    <text x="14" y="114" class="sans step-desc">validation &amp; broadcast</text>
+  </g>
+
+  <!-- Arrow 3 -->
+  <path d="M 625 100 L 650 100" stroke="#3B82F6" stroke-width="2"/>
+  <polygon points="650,96 658,100 650,104" fill="#3B82F6"/>
+
+  <!-- Step 4: Settlement -->
+  <g transform="translate(660, 30)">
+    <rect x="0" y="0" width="160" height="140" rx="10" fill="url(#step-bg)" stroke="#A855F7" stroke-width="1"/>
+    <rect x="12" y="12" width="55" height="20" rx="4" fill="#A855F7" fill-opacity="0.15"/>
+    <text x="40" y="26" text-anchor="middle" class="mono step-num" fill="#A855F7">STEP 04</text>
+    <text x="14" y="55" class="sans step-title">🏆 Settlement</text>
+    <text x="14" y="78" class="mono" font-size="10" fill="#A855F7">game_over</text>
+    <text x="14" y="98" class="sans step-desc">Elo updates, vault</text>
+    <text x="14" y="114" class="sans step-desc">payouts &amp; telemetry</text>
+  </g>
+</svg>
