@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { getXPProgress } from '@/lib/xpProgress';
-import { FaLock } from 'react-icons/fa';
 
 interface XPProgressBarProps {
     xp: number;
@@ -32,11 +31,6 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                     <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
                         {levelLabel} {userLevel}
                     </span>
-                    {levelSecured && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-400/10 border border-slate-400/20 text-[9px] font-black uppercase tracking-wider text-slate-300">
-                            <FaLock size={8} /> SECURED
-                        </span>
-                    )}
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted tabular-nums">
                     {progressText}
@@ -50,18 +44,9 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                 aria-valuemin={0}
                 aria-valuemax={levelSecured ? progress.nextLevelXp : currentLevelCost}
                 aria-valuenow={progress.currentLevelProgress}
-                aria-valuetext={levelSecured
-                    ? `${progress.currentLevelProgress} of ${progress.nextLevelXp} XP toward ${levelLabel} ${userLevel + 1}`
-                    : `${progress.currentLevelProgress} of ${currentLevelCost} XP toward ${levelLabel} ${userLevel + 1}`}
+                aria-valuetext={`${progress.currentLevelProgress} of ${levelSecured ? progress.nextLevelXp : currentLevelCost} XP toward ${levelLabel} ${userLevel + 1}`}
                 className="app-progress-track relative h-3.5 w-full rounded-full overflow-hidden border border-brand-border-opacity-10 shadow-inner"
             >
-                {levelSecured && (
-                    <div 
-                        aria-hidden="true" 
-                        className="absolute inset-[1px] rounded-full border border-slate-300/30 pointer-events-none z-20" 
-                    />
-                )}
-                
                 {/* Progress Fill */}
                 <motion.div
                     initial={{ width: 0 }}
@@ -69,9 +54,7 @@ export default function XPProgressBar({ xp, level, levelLabel = 'Level', classNa
                     transition={{ 
                         width: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
                     }}
-                    className={`absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 ${
-                        levelSecured ? 'app-progress-fill--secured' : 'app-progress-fill--gold'
-                    }`}
+                    className="absolute top-0 left-0 h-full rounded-full overflow-hidden z-10 app-progress-fill--gold"
                 >
                     {/* Single Ambient Shimmer sweep */}
                     <motion.div

@@ -72,9 +72,9 @@ export default function AcademyPage() {
   });
 
   const { data: stats, mutate: mutateStats } = useSWR("/api/v1/users/sync", postFetcher, { revalidateOnFocus: false });
-  const { data: dynamicLessons } = useSWR("/api/v1/content/lessons", fetcher);
+  const { data: dynamicLessons, mutate: mutateLessons } = useSWR("/api/v1/content/lessons", fetcher);
   const { data: unlockedLessons, mutate: mutateUnlocked } = useSWR("/api/v1/gamification/academy/unlocked-lessons", fetcher);
-  const { data: completedLessons } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
+  const { data: completedLessons, mutate: mutateCompleted } = useSWR("/api/v1/gamification/academy/completed-lessons", fetcher);
   const { data: puzzles, mutate: mutatePuzzles } = useSWR("/api/v1/gamification/academy/puzzles", fetcher);
 
   const loading = !stats || !dynamicLessons || !unlockedLessons || !completedLessons || !puzzles;
@@ -87,6 +87,7 @@ export default function AcademyPage() {
   const [showPremiumPromo, setShowPremiumPromo] = useState<boolean>(false);
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [showCompletedCat, setShowCompletedCat] = useState<Record<string, boolean>>({});
   const { pushHide, popHide } = useNavbar();
 
@@ -638,7 +639,7 @@ export default function AcademyPage() {
 
                   {/* Lessons grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {visibleLessons.map((lesson) => {
+                    {visibleLessons.map((lesson, idx) => {
                       // Find global index for unlock logic
                       const globalIndex = lessonsList.findIndex(l => l.slug === lesson.slug);
                       const isCompleted = (completedLessons as string[]).includes(lesson.slug);
@@ -684,7 +685,7 @@ export default function AcademyPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-1">Next Level</p>
-                  <p className="text-sm font-black text-emerald-400">{xpProgress!.isLevelSecured ? 'Level secured' : `Level ${xpProgress!.displayedLevel + 1}`}</p>
+                  <p className="text-sm font-black text-emerald-400">{`Level ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
               
@@ -693,16 +694,13 @@ export default function AcademyPage() {
                   className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
                   style={{
                     width: `${xpProgress!.progressPercentage}%`,
-                    background: xpProgress!.isLevelSecured ? 'var(--accent-silver)' : undefined,
                   }}
                 />
               </div>
               
               <div className="text-center relative z-10 mt-3">
                 <p className="text-[10px] font-bold text-brand-muted">
-                  {xpProgress!.isLevelSecured
-                    ? 'This level is secured. Earn XP to continue toward your next crown.'
-                    : <>You need <span className="text-emerald-400 font-black">{xpProgress!.nextLevelXp - stats.xp} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!</>}
+                  You need <span className="text-emerald-400 font-black">{Math.max(0, xpProgress!.nextLevelXp - stats.xp)} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!
                 </p>
               </div>
             </div>

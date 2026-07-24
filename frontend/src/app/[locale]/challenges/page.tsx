@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { FaTrophy, FaFire, FaCheckCircle, FaStar, FaCrown } from "react-icons/fa";
+import Link from "next/link";
+import { FaTrophy, FaFire, FaCheckCircle, FaStar } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
 import ReferralDashboard from "@/components/ReferralDashboard";
@@ -13,9 +14,10 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { getXPProgress } from '@/lib/xpProgress';
+import { getXPProgress, XP_PER_LEVEL } from '@/lib/xpProgress';
 
 export default function ChallengesPage() {
+  const locale = useLocale();
   const t = useTranslations('Gamification');
 
   // Use global context — no stub defaults, no duplicate fetch
@@ -166,7 +168,7 @@ export default function ChallengesPage() {
   const userXp = stats?.xp ?? 0;
   const xpProgress = getXPProgress(userXp, stats?.level);
   const userLevel = xpProgress.displayedLevel;
-  const { nextLevelXp, progressPercentage, isLevelSecured: levelSecured } = xpProgress;
+  const { currentLevelProgress, nextLevelXp, progressPercentage, isLevelSecured: levelSecured } = xpProgress;
 
   return (
     <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
@@ -232,9 +234,8 @@ export default function ChallengesPage() {
               {t('grandmaster_rising')}
             </h1>
             <div className="flex items-center gap-2 mb-6">
-              {levelSecured && <FaCrown className="text-brand-gold drop-shadow-md" size={11} />}
-              <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${levelSecured ? 'text-brand-muted' : 'text-brand-muted'}`}>
-                {levelSecured ? 'Level secured · build toward your next crown' : t('next_level', { xp: nextLevelXp })}
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-muted">
+                {t('next_level', { xp: nextLevelXp })}
               </p>
             </div>
  
@@ -247,15 +248,8 @@ export default function ChallengesPage() {
             />
  
             {/* XP percentage pill */}
-            <div
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                levelSecured
-                  ? 'bg-brand-elevated text-brand-muted border-brand-border-opacity-20 shadow-sm'
-                  : 'bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm'
-              }`}
-            >
-              {levelSecured && <FaCheckCircle size={10} />}
-              {levelSecured ? 'Level secured' : `${Math.round(progressPercentage)}% to next level`}
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm">
+              {`${Math.round(progressPercentage)}% to next level`}
             </div>
           </div>
         </motion.div>
@@ -268,17 +262,17 @@ export default function ChallengesPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent shadow-[0_4px_24px_rgba(59,130,246,0.06)]"
+            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent shadow-[0_4px_24px_rgba(239,68,68,0.06)]"
           >
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-blue-500/80"
+              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500/80"
             />
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/35 shadow-[0_0_12px_rgba(59,130,246,0.15)]"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-500/20 to-red-500/5 border border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
             >
-              <FaFire className="text-blue-400 text-base" />
+              <FaFire className="text-red-500 text-base" />
             </div>
             <div className="flex flex-col min-w-0">
               <motion.span
