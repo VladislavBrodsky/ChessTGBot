@@ -203,8 +203,9 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 is effectively a no-op on all pages. Kept here for any future page that opts in. */}
             {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
-                    <button 
+                    <button
                         onClick={() => setShowNotifications(true)}
+                        aria-label="Notifications"
                         className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
                         <FiBell size={15} />
@@ -212,10 +213,12 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                     </button>
                     {!pathname.endsWith('/settings') && (
-                        <Link href={`/${locale}/settings`}>
-                            <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
-                                <FiSettings size={15} />
-                            </button>
+                        <Link
+                            href={`/${locale}/settings`}
+                            aria-label="Settings"
+                            className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface/60 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                        >
+                            <FiSettings size={15} />
                         </Link>
                     )}
                 </div>

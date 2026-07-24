@@ -145,15 +145,11 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       </div>
   
     <div className="flex flex-col md:flex-row gap-4 justify-center w-full">
-      <Link href={`/${locale}/academy`} className="flex-1 w-full">
-        <button className="w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs">
-          Back
-        </button>
+      <Link href={`/${locale}/academy`} className="flex-1 w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs flex items-center justify-center active:scale-[0.98]">
+        Back
       </Link>
-      <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full">
-        <button className="w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-xs flex items-center justify-center gap-3">
-          <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
-        </button>
+      <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-xs flex items-center justify-center gap-3 active:scale-[0.98]">
+        <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
       </a>
     </div>
   </div>

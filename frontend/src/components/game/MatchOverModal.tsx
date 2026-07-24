@@ -210,15 +210,12 @@ export default function MatchOverModal({
           )}
 
           <div className="grid grid-cols-2 gap-2.5">
-            <Link href={`/${locale}/game`} className="w-full">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
-              >
-                <FaRedo size={10} className="text-brand-muted" />
-                <span>{tg('to_lobby')}</span>
-              </motion.button>
+            <Link
+              href={`/${locale}/game`}
+              className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <FaRedo size={10} className="text-brand-muted" />
+              <span>{tg('to_lobby')}</span>
             </Link>
             
             <motion.button
