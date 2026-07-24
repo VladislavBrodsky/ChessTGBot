@@ -86,18 +86,19 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
-        <AnimatePresence mode="popLayout">
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden my-auto py-2">
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentStep.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
             className="w-full max-w-4xl px-2"
           >
             {isTextOrStatic && (
-              <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-6 md:gap-8`}>
-                <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[160px] relative overflow-hidden group">
+              <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-5 md:gap-8`}>
+                <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[140px] relative overflow-hidden group">
                   <div className="absolute inset-0 bg-brand-void/10 pointer-events-none" />
                   {/* Decorative subtle background glow */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/20" />
@@ -106,13 +107,6 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                   <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed text-[14px]">
                     <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
                   </div>
-                  
-                  <button
-                    onClick={markCompleteAndAdvance}
-                    className="mt-6 w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.25)] relative z-10 flex items-center justify-center gap-2 overflow-hidden border border-emerald-300/30 text-xs cursor-pointer"
-                  >
-                    <FaCheck /> {isLastStep ? 'Complete Lesson' : 'Got it, Next Step'}
-                  </button>
                 </div>
                
                 {currentStep.fen && (
@@ -126,8 +120,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                           position: currentStep.fen,
                           boardOrientation: currentStep.boardOrientation || 'white',
                           allowDragging: false,
-                          darkSquareStyle: { backgroundColor: '#18181b' },
-                          lightSquareStyle: { backgroundColor: '#52525b' },
+                          darkSquareStyle: { backgroundColor: '#2e3a4e' },
+                          lightSquareStyle: { backgroundColor: '#cbd5e1' },
                           squareStyles: staticSquareStyles,
                         }}
                       />
@@ -178,7 +172,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex justify-between items-center mt-6 w-full gap-2">
+      <div className="flex justify-between items-center mt-4 w-full gap-2 pt-2 border-t border-brand-border-opacity-10">
         <button
           onClick={handlePrev}
           disabled={currentStepIndex === 0}

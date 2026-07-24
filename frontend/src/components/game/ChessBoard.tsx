@@ -54,8 +54,8 @@ export default function ChessBoardComponent({
     autoPromoteToQueen = false,
     customSquareStyles = {},
     customArrows = [],
-    customDarkSquareStyle = { backgroundColor: '#7b9fb6' },
-    customLightSquareStyle = { backgroundColor: '#ebecd0' },
+    customDarkSquareStyle = { backgroundColor: '#2e3a4e' },
+    customLightSquareStyle = { backgroundColor: '#cbd5e1' },
 }: ChessBoardProps) {
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [boardTheme, setBoardTheme] = useState<string>('default');
@@ -68,20 +68,20 @@ export default function ChessBoardComponent({
     }, []);
 
     const themeStyles = {
-        default: { dark: '#7b9fb6', light: '#ebecd0' },
-        neon: { dark: '#0f172a', light: '#0891b2' },
-        obsidian: { dark: '#18181b', light: '#52525b' },
-        marble: { dark: '#78716c', light: '#e7e5e4' },
-        'theme-emerald': { dark: '#022c22', light: '#10b981' },
-        'theme-cyber': { dark: '#090d16', light: '#a21caf' },
-        'theme-gold': { dark: '#451a03', light: '#fef08a' }
+        default: { dark: '#3b4b63', light: '#cbd5e1' },
+        neon: { dark: '#1e293b', light: '#06b6d4' },
+        obsidian: { dark: '#2e3a4e', light: '#cbd5e1' },
+        marble: { dark: '#57534e', light: '#e7e5e4' },
+        'theme-emerald': { dark: '#064e3b', light: '#a7f3d0' },
+        'theme-cyber': { dark: '#3b0764', light: '#f0abfc' },
+        'theme-gold': { dark: '#78350f', light: '#fef08a' }
     };
 
     const activeStyles = themeStyles[boardTheme as keyof typeof themeStyles] || themeStyles.default;
-    const finalDarkSquareStyle = customDarkSquareStyle.backgroundColor === '#7b9fb6'
+    const finalDarkSquareStyle = (customDarkSquareStyle.backgroundColor === '#7b9fb6' || customDarkSquareStyle.backgroundColor === '#2e3a4e')
         ? { backgroundColor: activeStyles.dark }
         : customDarkSquareStyle;
-    const finalLightSquareStyle = customLightSquareStyle.backgroundColor === '#ebecd0'
+    const finalLightSquareStyle = (customLightSquareStyle.backgroundColor === '#ebecd0' || customLightSquareStyle.backgroundColor === '#cbd5e1')
         ? { backgroundColor: activeStyles.light }
         : customLightSquareStyle;
 

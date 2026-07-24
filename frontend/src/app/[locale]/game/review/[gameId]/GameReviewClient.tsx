@@ -412,6 +412,8 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                   position: fens[currentStep],
                   allowDragging: false,
                   boardOrientation: "white",
+                  darkSquareStyle: { backgroundColor: '#2e3a4e' },
+                  lightSquareStyle: { backgroundColor: '#cbd5e1' },
                   boardStyle: {
                     borderRadius: "12px",
                     overflow: "hidden",

@@ -863,7 +863,7 @@ export default function AcademyPage() {
 
               {/* Mini Board Preview */}
               <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-inner-glow border border-brand-border-opacity-10 pointer-events-none opacity-80">
-                <Chessboard options={{ position: band.fen, allowDragging: false, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} />
+                <Chessboard options={{ position: band.fen, allowDragging: false, darkSquareStyle: { backgroundColor: '#2e3a4e' }, lightSquareStyle: { backgroundColor: '#cbd5e1' }, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} />
               </div>
 
               {/* Description */}
