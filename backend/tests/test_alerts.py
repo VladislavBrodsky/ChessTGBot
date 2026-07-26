@@ -97,7 +97,7 @@ async def asyncio_sleep_helper():
     await pytest.importorskip("asyncio").sleep(0.05)
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("logger_name", ["engineio", "engineio.server", "socketio"])
+@pytest.mark.parametrize("logger_name", ["engineio", "engineio.server", "socketio", "asyncio", "asyncio.tasks"])
 async def test_transport_layer_loggers_are_filtered(logger_name):
     """Socket.IO's engineio transport logs benign client-disconnect races
     ("Session is disconnected", "Invalid session") once at ERROR. Those, like
@@ -118,7 +118,7 @@ async def test_transport_layer_loggers_are_filtered(logger_name):
     try:
         with patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock) as mock_send:
             logger.error("'Session is disconnected' _omKBtpF8LbkZBdmAAAk "
-                         "(further occurrences of this error will be logged with level INFO)")
+                          "(further occurrences of this error will be logged with level INFO)")
             await asyncio_sleep_helper()
             assert mock_send.call_count == 0
     finally:
@@ -134,6 +134,7 @@ def test_system_for_logger_attribution():
     assert system_for_logger("app.api.v1.endpoints.wallet") == "treasury"
     assert system_for_logger("app.services.matchmaker") == "realtime"
     assert system_for_logger("app.api.v1.endpoints.users") == "core_api"
+    assert system_for_logger("app.async_runtime") == "core_api"
 
 @pytest.mark.asyncio
 async def test_send_admin_alert_names_the_system():

@@ -219,6 +219,9 @@ async def start_withdrawal_confirmation_sweeper():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    from app.core.async_errors import install_asyncio_exception_handler
+    install_asyncio_exception_handler(asyncio.get_running_loop())
+
     logger.info(f"🚀 Starting App Version: {settings.VERSION}")
     from app.services.game_service import GameService
     GameService.initialize_process_pool()
