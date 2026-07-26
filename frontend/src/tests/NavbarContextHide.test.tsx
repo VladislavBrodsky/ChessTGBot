@@ -10,10 +10,16 @@ import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 // visible navbar then overlapped their bottom action buttons (e.g. the AI difficulty
 // drawer's "Start Training Session" button was unreachable). This test pins the wiring.
 
-jest.mock('next-intl', () => ({
-  useLocale: () => 'en',
-  useTranslations: () => (key: string) => key,
-}));
+jest.mock('next-intl', () => {
+  // jest.mock factories are hoisted above imports, so the helper must be
+  // pulled in lazily here — an ESM import would not be initialised yet.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { asTranslator } = require('./testUtils/nextIntlMock');
+  return {
+    useLocale: () => 'en',
+    useTranslations: () => asTranslator((key: string) => key),
+  };
+});
 
 jest.mock('next/navigation', () => ({
   usePathname: () => '/en/game',
