@@ -122,27 +122,46 @@ async def test_handler_fallback_on_internal_failure():
 
 @pytest.mark.asyncio
 async def test_unretrieved_future_exception_warning_only(caplog):
+    """End-to-end regression test for the production alert this fix was written for:
+
+        Future exception was never retrieved
+        future: <Future finished exception=gaierror(-3, 'Temporary failure in name resolution')>
+
+    Unlike the tests above, this one does NOT call the handler directly — it lets
+    asyncio's own Future destructor route the unretrieved exception, which is the
+    only path that proves the handler is actually installed and wired up.
+    """
     caplog.set_level(logging.WARNING)
-    
+
     loop = asyncio.get_running_loop()
     install_asyncio_exception_handler(loop)
-    
-    # 1. Create a future, set a transient exception, then discard reference
+
+    # 1. Create a future, set a transient exception, then discard the reference.
     f = loop.create_future()
     f.set_exception(socket.gaierror(-3, "Temporary failure in name resolution"))
     del f
-    
-    # 2. Trigger garbage collection to prompt asyncio loop to invoke exception handler on destr
+
+    # 2. Collect the future so its destructor reports the unretrieved exception,
+    #    then yield so the loop can run the handler it schedules.
     gc.collect()
-    
-    # Allow loop to process the destruction task / exception handling
     await asyncio.sleep(0.01)
     gc.collect()
-    
-    # Verify no ERROR log was emitted via the handler, and WARNING was captured if GC fired
-    errors = [r for r in caplog.records if r.levelname == "ERROR" and r.name == "app.async_runtime"]
-    assert len(errors) == 0
-    
-    # NOTE: Since garbage collection timings of unretrieved exceptions on loop futures
-    # can vary between python runtimes, direct handler tests (above) guarantee coverage,
-    # and this regression test confirms that gaierrors don't trigger errors when they do GC.
+    await asyncio.sleep(0.01)
+
+    # The exception must surface as a WARNING from our handler...
+    warnings = [
+        r for r in caplog.records
+        if r.levelname == "WARNING" and r.name == "app.async_runtime"
+    ]
+    assert len(warnings) == 1, (
+        "the orphaned-future gaierror did not reach app.async_runtime — the loop "
+        f"exception handler is not installed. Captured: {[(r.name, r.levelname) for r in caplog.records]}"
+    )
+    assert "Transient network error in async task/future" in warnings[0].message
+    assert "gaierror" in warnings[0].message
+
+    # ...and must NOT page admins as an ERROR from any logger. An ERROR on the
+    # `asyncio` logger specifically means the default handler ran instead of ours,
+    # which is the exact production regression this guards.
+    errors = [r for r in caplog.records if r.levelname == "ERROR"]
+    assert errors == [], f"orphaned future paged as ERROR: {[(r.name, r.message) for r in errors]}"
