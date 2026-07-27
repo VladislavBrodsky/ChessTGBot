@@ -133,6 +133,7 @@ def test_system_for_logger_attribution():
     assert system_for_logger("app.process_payouts_backlog") == "treasury"
     assert system_for_logger("app.api.v1.endpoints.wallet") == "treasury"
     assert system_for_logger("app.services.matchmaker") == "realtime"
+    assert system_for_logger("app.core.socket") == "realtime"
     assert system_for_logger("app.api.v1.endpoints.users") == "core_api"
     assert system_for_logger("app.async_runtime") == "core_api"
 

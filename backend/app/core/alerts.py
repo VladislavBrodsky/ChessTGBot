@@ -52,6 +52,7 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.api.v1.endpoints.game", "realtime"),
     ("app.services.game_service", "realtime"),
     ("app.services.matchmaker", "realtime"),
+    ("app.core.socket", "realtime"),
     ("app.async_runtime", "core_api"),
 ]
 
