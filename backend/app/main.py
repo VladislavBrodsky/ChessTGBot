@@ -281,10 +281,6 @@ async def lifespan(app: FastAPI):
     from app.services.ledger_audit import start_ledger_audit_loop
     asyncio.create_task(start_ledger_audit_loop())
 
-    # Recover paid/expired Stripe Checkout sessions that missed webhook delivery.
-    from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
-    asyncio.create_task(start_stripe_reconciliation_loop())
-
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
     asyncio.create_task(start_solvency_alert_loop())
