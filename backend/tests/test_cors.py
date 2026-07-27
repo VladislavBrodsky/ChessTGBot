@@ -1,5 +1,8 @@
+import logging
+
 import pytest
 from app.core.config import get_settings
+from app.core import security
 from app.core.security import is_allowed_cors_origin
 from httpx import AsyncClient
 
@@ -33,6 +36,42 @@ def test_is_allowed_cors_origin_allows_configured_custom_origin(monkeypatch):
     assert is_allowed_cors_origin("https://custom-webapp.example") is True
     assert is_allowed_cors_origin("https://preview.example") is True
     assert is_allowed_cors_origin("https://unrelated.example") is False
+
+
+def test_rejected_first_party_origin_emits_rate_limited_security_alert(monkeypatch, caplog):
+    settings = get_settings()
+    security.clear_first_party_cors_rejection_alerts()
+    monkeypatch.setattr(settings, "CORS_ALLOWED_ORIGINS", "https://allowed.example")
+    monkeypatch.setattr(settings, "WEBAPP_URL", "https://allowed.example")
+    monkeypatch.setattr(settings, "BACKEND_URL", "https://api.allowed.example")
+
+    now = [100.0]
+    monkeypatch.setattr(security.time, "monotonic", lambda: now[0])
+    origin = "https://web3chess.online"
+
+    with caplog.at_level(logging.ERROR, logger="app.core.security"):
+        assert is_allowed_cors_origin(origin) is False
+        assert is_allowed_cors_origin(origin) is False
+        now[0] = 701.0
+        assert is_allowed_cors_origin(origin) is False
+
+    alerts = [
+        record for record in caplog.records
+        if "First-party CORS origin rejected" in record.getMessage()
+    ]
+    assert len(alerts) == 2
+    assert all(origin in record.getMessage() for record in alerts)
+
+
+def test_rejected_unknown_origin_never_pages(monkeypatch, caplog):
+    security.clear_first_party_cors_rejection_alerts()
+    with caplog.at_level(logging.ERROR, logger="app.core.security"):
+        assert is_allowed_cors_origin("https://evil.example") is False
+
+    assert not any(
+        "First-party CORS origin rejected" in record.getMessage()
+        for record in caplog.records
+    )
 
 
 def test_localhost_is_limited_to_development_and_testing(monkeypatch):

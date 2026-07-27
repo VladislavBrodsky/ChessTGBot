@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import ipaddress
 import json
+import logging
 import time
 from collections.abc import Mapping
 from urllib.parse import unquote, urlsplit
@@ -9,6 +10,7 @@ from fastapi import HTTPException
 from app.core.config import get_settings
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 # Max age of a Telegram initData string before it is rejected as stale. Telegram
 # signs an `auth_date` into every initData payload; without this check a captured
@@ -16,6 +18,16 @@ settings = get_settings()
 # generous window that still bounds the value of a leaked string.
 INIT_DATA_MAX_AGE_SECONDS = 24 * 60 * 60
 MAX_CLIENT_IP_HEADER_LENGTH = 128
+
+# These are the only browser origins we operate. An arbitrary rejected Origin
+# is expected internet noise, but rejecting one of our own app domains is a
+# deployment/configuration failure that prevents API and Socket.IO access.
+FIRST_PARTY_CORS_ORIGINS = frozenset({
+    "https://web3chess.online",
+    "https://www.web3chess.online",
+})
+CORS_REJECTION_ALERT_INTERVAL_SECONDS = 600.0
+_first_party_cors_rejection_alerted_at: dict[str, float] = {}
 
 
 def _normalise_ip(value: object) -> str | None:
@@ -285,6 +297,29 @@ def _configured_cors_origins() -> set[str]:
     }
 
 
+def clear_first_party_cors_rejection_alerts() -> None:
+    """Reset the in-process CORS alert throttle (used by tests)."""
+    _first_party_cors_rejection_alerted_at.clear()
+
+
+def _alert_on_first_party_cors_rejection(origin: str) -> None:
+    """Page once per known app origin when its CORS configuration breaks."""
+    if origin not in FIRST_PARTY_CORS_ORIGINS:
+        return
+    now = time.monotonic()
+    last_alerted_at = _first_party_cors_rejection_alerted_at.get(origin)
+    if (
+        last_alerted_at is not None
+        and now - last_alerted_at < CORS_REJECTION_ALERT_INTERVAL_SECONDS
+    ):
+        return
+    _first_party_cors_rejection_alerted_at[origin] = now
+    logger.error(
+        "First-party CORS origin rejected: %s; check CORS_ALLOWED_ORIGINS, WEBAPP_URL, and BACKEND_URL",
+        origin,
+    )
+
+
 def is_allowed_cors_origin(origin: str | None) -> bool:
     """Allow exact configured origins and local origins only outside production."""
     normalised_origin = _normalise_cors_origin(origin)
@@ -295,6 +330,9 @@ def is_allowed_cors_origin(origin: str | None) -> bool:
     if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
         return settings.is_development_or_testing
 
-    return normalised_origin in _configured_cors_origins()
+    allowed = normalised_origin in _configured_cors_origins()
+    if not allowed:
+        _alert_on_first_party_cors_rejection(normalised_origin)
+    return allowed
 
 
