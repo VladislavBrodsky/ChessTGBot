@@ -3,7 +3,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
+import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake, FaShieldAlt } from 'react-icons/fa';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
@@ -44,6 +44,9 @@ export default function PlayLobby() {
   const [matchmakingError, setMatchmakingError] = useState<string>("");
   const [notifySearchEnabled, setNotifySearchEnabled] = useState(false);
   const [notifyRequestPending, setNotifyRequestPending] = useState(false);
+  // Opponents are queued, but the fair-play guard rejected all of them
+  // (same network, referral link, or a recent wagered opponent).
+  const [fairPlayHold, setFairPlayHold] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
 
@@ -233,8 +236,9 @@ export default function PlayLobby() {
     keepSearchingOnExitRef.current = false;
     setNotifySearchEnabled(false);
     setNotifyRequestPending(false);
+    setFairPlayHold(false);
     setMatchmakingState('searching');
-    socket.emit('join_matchmaking', { 
+    socket.emit('join_matchmaking', {
       bid_amount: wagerInCents,
       time_control: timeControl 
     });
@@ -362,8 +366,14 @@ export default function PlayLobby() {
       keepSearchingOnExitRef.current = false;
       setNotifySearchEnabled(false);
       setNotifyRequestPending(false);
+      setFairPlayHold(false);
       setMatchmakingState('idle');
       submittingRef.current = false;
+    };
+
+    const onFairPlayHold = (data: any) => {
+      console.log("Matchmaking fair-play hold:", data);
+      setFairPlayHold(true);
     };
 
     const onMatchmakingStatus = (data: any) => {
@@ -386,6 +396,7 @@ export default function PlayLobby() {
         keepSearchingOnExitRef.current = false;
         setNotifySearchEnabled(false);
         setNotifyRequestPending(false);
+        setFairPlayHold(false);
         setMatchmakingState('idle');
         submittingRef.current = false;
         if (data.message) {
@@ -416,6 +427,7 @@ export default function PlayLobby() {
     socket.on('match_found', onMatchFound);
     socket.on('matchmaking_error', onMatchmakingError);
     socket.on('matchmaking_status', onMatchmakingStatus);
+    socket.on('matchmaking_fair_play_hold', onFairPlayHold);
     socket.on('matchmaking_notifications_status', onNotificationStatus);
     socket.on('connect', restoreMatchmaking);
     if (socket.connected) {
@@ -426,6 +438,7 @@ export default function PlayLobby() {
       socket.off('match_found', onMatchFound);
       socket.off('matchmaking_error', onMatchmakingError);
       socket.off('matchmaking_status', onMatchmakingStatus);
+      socket.off('matchmaking_fair_play_hold', onFairPlayHold);
       socket.off('matchmaking_notifications_status', onNotificationStatus);
       socket.off('connect', restoreMatchmaking);
     };
@@ -767,6 +780,20 @@ export default function PlayLobby() {
                   ${(chosenWager / 100).toFixed(2)} USDT
                 </span>
               </div>
+
+              {fairPlayHold && (
+                <div className="w-full p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 text-center">
+                  <span className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest">
+                    <FaShieldAlt />
+                    Fair play hold
+                  </span>
+                  <span className="block mt-1 text-[10px] font-bold opacity-80 leading-relaxed">
+                    The only players queued right now cannot be paired with you for a wagered game &mdash;
+                    same network, referral link, or a recent wagered opponent. Try a free game, or wait
+                    for other players.
+                  </span>
+                </div>
+              )}
 
               {searchTimer >= 15 && (
                 <button

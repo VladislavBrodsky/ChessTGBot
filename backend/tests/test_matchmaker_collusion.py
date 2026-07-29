@@ -118,7 +118,7 @@ async def test_matchmaker_history_collusion_guard(db_session):
     await db_session.commit()
 
     try:
-        # 2. Seed a recent game history between A and B
+        # 2. Seed a recent WAGERED game history between A and B
         await create_game_history(
             db=db_session,
             game_id="match_999001_999002_12345",
@@ -130,6 +130,7 @@ async def test_matchmaker_history_collusion_guard(db_session):
             white_elo_after=1005,
             black_elo_before=1000,
             black_elo_after=995,
+            bid_amount=500,
             commit=True
         )
 
@@ -165,3 +166,70 @@ async def test_matchmaker_history_collusion_guard(db_session):
         await db_session.execute(delete(GameHistory).where(GameHistory.game_id == "match_999001_999002_12345"))
         await db_session.execute(delete(User).where(User.telegram_id.in_([999001, 999002, 999003])))
         await db_session.commit()
+
+
+@pytest.mark.asyncio
+async def test_free_history_does_not_block_wagered_match(db_session):
+    """Regression: two friends play a FREE game, then can never be matched for
+    money again — the free game consumed a slot in the recent-opponent lookback,
+    which the wagered guard treated as a collusion signal."""
+    if hasattr(db_session, "users"):
+        return
+
+    mm = MatchmakerService()
+    await user_crud.create_user(db_session, 999011, "User A")
+    await user_crud.create_user(db_session, 999012, "User B")
+    await db_session.commit()
+
+    try:
+        await create_game_history(
+            db=db_session,
+            game_id="match_999011_999012_free",
+            white_player_id=999011,
+            black_player_id=999012,
+            winner="b",
+            result_type="checkmate",
+            white_elo_before=1000,
+            white_elo_after=995,
+            black_elo_before=1000,
+            black_elo_after=1005,
+            bid_amount=0,
+            commit=True,
+        )
+
+        await _enqueue(mm, 999012, 100, time_control=600, ip_hash="ip_x")
+        opponent = await mm.try_match_and_pop(
+            bid_amount=100, user_id=999011, user_elo=1000,
+            time_control=600, ip_hash="ip_y"
+        )
+        assert opponent is not None and opponent["user_id"] == 999012, (
+            "A free game between two players must not block them from wagered matching"
+        )
+    finally:
+        await db_session.execute(delete(GameHistory).where(GameHistory.game_id == "match_999011_999012_free"))
+        await db_session.execute(delete(User).where(User.telegram_id.in_([999011, 999012])))
+        await db_session.commit()
+
+
+async def test_stats_reports_collusion_skips():
+    """The guard's skip count is exported so the socket layer can tell the
+    client 'blocked by fair play' instead of leaving it on an endless spinner."""
+    mm = MatchmakerService()
+    await _enqueue(mm, 222, 500, ip_hash="same-wifi")
+
+    stats = {}
+    opponent = await mm.try_match_and_pop(
+        500, 111, user_elo=1000, time_control=300, ip_hash="same-wifi", stats=stats
+    )
+    assert opponent is None
+    assert stats['collusion_skipped'] == 1
+
+
+async def test_stats_zero_when_queue_empty():
+    mm = MatchmakerService()
+    stats = {}
+    opponent = await mm.try_match_and_pop(
+        500, 111, user_elo=1000, time_control=300, ip_hash="ip-a", stats=stats
+    )
+    assert opponent is None
+    assert stats['collusion_skipped'] == 0
