@@ -19,7 +19,7 @@ import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from telegram.error import BadRequest, Forbidden
+from telegram.error import BadRequest, Forbidden, TimedOut
 
 import app.services.telegram_bot as telegram_bot_module
 from app.crud import user as user_crud
@@ -139,6 +139,52 @@ async def test_genuine_bad_request_still_logs_error(db_session, caplog):
     db_user = result.scalars().first()
     assert db_user is not None
     assert db_user.is_blocked is False
+
+
+@pytest.mark.asyncio
+async def test_transient_timeout_retries_and_succeeds_without_alerting(db_session, caplog):
+    """A TimedOut send is retried once and must never page admins.
+
+    Regression for the 2026-08-10 CORE API alert ("Failed to send Telegram bot
+    notification to X: Timed out"): a momentary network failure fell through to
+    the catch-all and hit the app.bot.errors logger, even though
+    is_transient_telegram_error already classifies it as retryable churn.
+    """
+    if hasattr(db_session, "users"):  # mock session (no test DB) — skip
+        return
+    telegram_id = 716720099
+
+    mock_app = MagicMock()
+    mock_app.bot.send_message = AsyncMock(side_effect=[TimedOut("Timed out"), None])
+
+    with patch.object(TelegramService, "application", mock_app), \
+         patch.object(telegram_bot_module.settings, "TELEGRAM_BOT_TOKEN", "123:test"), \
+         patch.object(telegram_bot_module, "NOTIFICATION_RETRY_DELAY_SECONDS", 0):
+        with caplog.at_level(logging.INFO):
+            await _send_and_drain(telegram_id, "your withdrawal is confirmed")
+
+    assert mock_app.bot.send_message.await_count == 2
+    assert not any(r.levelno >= logging.ERROR for r in caplog.records)
+    assert not any(r.name == "app.bot.errors" for r in caplog.records)
+
+
+@pytest.mark.asyncio
+async def test_transient_timeout_that_persists_is_dropped_without_alerting(db_session, caplog):
+    """If the retry also times out the notification is dropped at WARNING, not paged."""
+    if hasattr(db_session, "users"):  # mock session (no test DB) — skip
+        return
+    mock_app = MagicMock()
+    mock_app.bot.send_message = AsyncMock(side_effect=TimedOut("Timed out"))
+
+    with patch.object(TelegramService, "application", mock_app), \
+         patch.object(telegram_bot_module.settings, "TELEGRAM_BOT_TOKEN", "123:test"), \
+         patch.object(telegram_bot_module, "NOTIFICATION_RETRY_DELAY_SECONDS", 0):
+        with caplog.at_level(logging.INFO):
+            await _send_and_drain(555007, "arena starts soon")
+
+    assert mock_app.bot.send_message.await_count == 2
+    assert not any(r.levelno >= logging.ERROR for r in caplog.records)
+    assert any("dropped after retry" in r.getMessage() for r in caplog.records)
 
 
 @pytest.mark.asyncio

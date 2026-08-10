@@ -5,6 +5,7 @@ games / double the abort path; too tight and stakes stay locked. It is tested
 exhaustively as a pure predicate. A guarded integration test then proves the
 full sweep actually aborts and refunds both players via end_game.
 """
+import asyncio
 import time
 
 import pytest
@@ -65,6 +66,74 @@ def test_not_sweepable_without_created_at():
 
 def test_not_sweepable_on_none_state():
     assert is_sweepable(None, time.time()) is False
+
+
+@pytest.mark.asyncio
+async def test_loop_tolerates_transient_failures_then_alerts_on_sustained_outage(monkeypatch, caplog):
+    """A Redis blip must not page admins; a sustained outage must, exactly once
+    per reminder window. Regression for the 2026-08-10 CORE API alert, where a
+    single "Timeout connecting to server" from one failed sweep alerted.
+    """
+    import logging
+
+    calls = {"n": 0}
+    total_sweeps = sweeper.SWEEP_FAILURES_BEFORE_ALERT + sweeper.SWEEP_ALERT_REMINDER_SWEEPS
+
+    async def always_fails(_service):
+        calls["n"] += 1
+        if calls["n"] > total_sweeps:
+            raise asyncio.CancelledError
+        raise ConnectionError("Timeout connecting to server")
+
+    async def no_sleep(_seconds):
+        return None
+
+    monkeypatch.setattr(sweeper, "_sweep_once", always_fails)
+    monkeypatch.setattr(sweeper.asyncio, "sleep", no_sleep)
+    monkeypatch.setattr(sweeper, "GameService", lambda: object())
+
+    with caplog.at_level(logging.WARNING, logger=sweeper.logger.name):
+        with pytest.raises(asyncio.CancelledError):
+            await sweeper.start_stale_game_sweeper()
+
+    errors = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    # First SWEEP_FAILURES_BEFORE_ALERT - 1 failures stay at WARNING; then one
+    # alert at the threshold and one reminder SWEEP_ALERT_REMINDER_SWEEPS later.
+    assert len(errors) == 2
+    assert errors[0].getMessage().splitlines()[0] == (
+        "Stale-game sweeper sustained outage: never-started wager games are not being refunded"
+    )
+    # Fingerprinting dedupes on the first line: it must be identical across alerts.
+    assert errors[0].getMessage().splitlines()[0] == errors[1].getMessage().splitlines()[0]
+
+
+@pytest.mark.asyncio
+async def test_loop_resets_failure_streak_after_a_successful_sweep(monkeypatch, caplog):
+    """Isolated failures spread across successful sweeps never reach the threshold."""
+    import logging
+
+    calls = {"n": 0}
+
+    async def alternating(_service):
+        calls["n"] += 1
+        if calls["n"] > 4 * sweeper.SWEEP_FAILURES_BEFORE_ALERT:
+            raise asyncio.CancelledError
+        if calls["n"] % 2:
+            raise ConnectionError("Timeout connecting to server")
+        return 0
+
+    async def no_sleep(_seconds):
+        return None
+
+    monkeypatch.setattr(sweeper, "_sweep_once", alternating)
+    monkeypatch.setattr(sweeper.asyncio, "sleep", no_sleep)
+    monkeypatch.setattr(sweeper, "GameService", lambda: object())
+
+    with caplog.at_level(logging.WARNING, logger=sweeper.logger.name):
+        with pytest.raises(asyncio.CancelledError):
+            await sweeper.start_stale_game_sweeper()
+
+    assert [r for r in caplog.records if r.levelno >= logging.ERROR] == []
 
 
 @pytest.mark.asyncio

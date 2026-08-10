@@ -6,6 +6,7 @@ import uuid
 import redis.asyncio as redis
 from typing import Dict, Optional
 from app.core.config import get_settings
+from app.core.redis_client import create_redis_client
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ class MatchmakerService:
     def _init_redis(self):
         if not MatchmakerService._use_memory and MatchmakerService._redis_client is None:
             try:
-                MatchmakerService._redis_client = redis.from_url(
+                MatchmakerService._redis_client = create_redis_client(
                     settings.REDIS_URL, encoding="utf-8", decode_responses=True
                 )
             except Exception as e:
