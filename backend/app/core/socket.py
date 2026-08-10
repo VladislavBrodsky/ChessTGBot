@@ -149,7 +149,17 @@ client_mgr = None
 if settings.REDIS_URL:
     try:
         # Use Redis manager to coordinate messages/rooms across clustered instances (Gunicorn workers / Railway containers)
-        client_mgr = MonitoredAsyncRedisManager(settings.REDIS_URL)
+        # ``pubsub.listen()`` is intentionally a long-lived blocking read.
+        # redis-py 8 defaults socket_timeout to five seconds, which otherwise
+        # makes an idle listener disconnect and resubscribe forever.
+        client_mgr = MonitoredAsyncRedisManager(
+            settings.REDIS_URL,
+            redis_options={
+                "socket_timeout": None,
+                "socket_keepalive": True,
+                "health_check_interval": 30,
+            },
+        )
         logger.info("[Socket] Initialized AsyncRedisManager with configured Redis service")
     except Exception as e:
         logger.warning(

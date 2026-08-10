@@ -11,6 +11,24 @@ def _manager() -> MonitoredAsyncRedisManager:
     return MonitoredAsyncRedisManager("redis://localhost:6379/0")
 
 
+def test_socketio_manager_disables_the_pubsub_read_timeout():
+    """An idle Socket.IO listener must never inherit redis-py's 5s default."""
+    manager = MonitoredAsyncRedisManager(
+        "redis://localhost:6379/0",
+        redis_options={
+            "socket_timeout": None,
+            "socket_keepalive": True,
+            "health_check_interval": 30,
+        },
+    )
+
+    assert manager.redis_options == {
+        "socket_timeout": None,
+        "socket_keepalive": True,
+        "health_check_interval": 30,
+    }
+
+
 def test_sustained_pubsub_outage_alerts_once_then_recovers(caplog):
     manager = _manager()
     failure = ConnectionError("Redis connection lost")
