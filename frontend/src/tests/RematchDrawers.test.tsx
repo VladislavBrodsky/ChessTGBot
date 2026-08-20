@@ -3,18 +3,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
 import IncomingRematchDrawer from '@/components/game/IncomingRematchDrawer';
 
-jest.mock('next-intl', () => {
-  // jest.mock factories are hoisted above imports, so the helper must be
-  // pulled in lazily here — an ESM import would not be initialised yet.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { asTranslator } = require('./testUtils/nextIntlMock');
-  return {
-    useTranslations: () =>
-      asTranslator((key: string, values?: Record<string, string>) =>
-        values?.name ? `${key}:${values.name}` : key
-      ),
-  };
-});
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string, values?: Record<string, string>) =>
+    values?.name ? `${key}:${values.name}` : key,
+}));
 
 jest.mock('@/context/NavbarContext', () => ({
   useNavbarHideWhileMounted: jest.fn(),

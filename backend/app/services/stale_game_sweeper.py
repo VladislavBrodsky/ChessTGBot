@@ -34,13 +34,6 @@ logger = logging.getLogger(__name__)
 STALE_GRACE_SECONDS = 120
 SWEEP_INTERVAL_SECONDS = 60
 
-# A sweep that fails is retried on the next tick, so a momentary Redis/network
-# blip is self-healing and must not page admins. Only a sustained inability to
-# sweep is an incident: never-started wager games stay locked while it lasts.
-SWEEP_FAILURES_BEFORE_ALERT = 5
-# While an outage persists, re-alert only this often (in sweeps).
-SWEEP_ALERT_REMINDER_SWEEPS = 10
-
 
 def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
     """
@@ -83,12 +76,16 @@ async def _sweep_once(service: GameService) -> int:
         active_games = sm._memory_store.get("games:active", set())
         game_ids = list(active_games)
     else:
-        # No fallback path here: the former scan() fallback used the same Redis
-        # connection, so whenever smembers failed for the reason that actually
-        # occurs in production — Redis being unreachable — the fallback failed
-        # identically and turned a blip into a loop-level error. Let the failure
-        # propagate to the caller, which counts it toward a sustained outage.
-        game_ids = [g.decode() if isinstance(g, bytes) else g for g in await sm.redis.smembers("games:active")]
+        try:
+            game_ids = [g.decode() if isinstance(g, bytes) else g for g in await sm.redis.smembers("games:active")]
+        except Exception as e:
+            logger.warning(f"[StaleSweeper] Failed to fetch active games set from Redis: {e}. Falling back to scan.")
+            cursor = 0
+            while True:
+                cursor, keys = await sm.redis.scan(cursor, match="game:*", count=100)
+                game_ids.extend(k.split(":", 1)[1] for k in keys)
+                if cursor == 0:
+                    break
 
     swept = 0
     for gid in game_ids:
@@ -116,35 +113,9 @@ async def start_stale_game_sweeper():
     await asyncio.sleep(25)  # let startup settle
     logger.info("Background stale-game sweeper started.")
     service = GameService()
-    consecutive_failures = 0
     while True:
         try:
             await _sweep_once(service)
-            if consecutive_failures:
-                logger.info(
-                    f"Stale-game sweeper recovered after {consecutive_failures} consecutive failed sweeps."
-                )
-            consecutive_failures = 0
         except Exception as e:
-            consecutive_failures += 1
-            # Alert at the threshold, then only as a periodic reminder: the
-            # count varies per sweep, and alert fingerprinting dedupes on the
-            # message's first line, so alerting every tick would page each
-            # minute for the whole outage.
-            failures_past_threshold = consecutive_failures - SWEEP_FAILURES_BEFORE_ALERT
-            if failures_past_threshold >= 0 and failures_past_threshold % SWEEP_ALERT_REMINDER_SWEEPS == 0:
-                # Keep the first line stable and distinguishing — alert
-                # fingerprinting dedupes on it.
-                logger.error(
-                    "Stale-game sweeper sustained outage: never-started wager games are not being refunded\n"
-                    f"Failed sweeps: {consecutive_failures} consecutive "
-                    f"(~{consecutive_failures * SWEEP_INTERVAL_SECONDS}s)\n"
-                    f"Last error: {e}",
-                    exc_info=True,
-                )
-            else:
-                logger.warning(
-                    f"Stale-game sweeper loop error ({consecutive_failures}/{SWEEP_FAILURES_BEFORE_ALERT} "
-                    f"before alerting): {e}"
-                )
+            logger.error(f"Stale-game sweeper loop error: {e}", exc_info=True)
         await asyncio.sleep(SWEEP_INTERVAL_SECONDS)

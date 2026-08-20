@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
-import { useState, useEffect, type CSSProperties, type KeyboardEvent } from "react";
+import React, { useState, useEffect, useMemo, type CSSProperties, type KeyboardEvent } from "react";
 import Confetti from "react-confetti";
 import { Chess } from "chess.js";
 import { motion } from "framer-motion";
@@ -46,7 +46,7 @@ interface ChessBoardProps {
     customLightSquareStyle?: CSSProperties;
 }
 
-export default function ChessBoardComponent({
+function ChessBoardComponent({
     fen,
     onMove,
     orientation = "white",
@@ -115,6 +115,24 @@ export default function ChessBoardComponent({
     useEffect(() => {
         setSelectedSquare(null);
     }, [fen]);
+
+    const squareStyles = useMemo(() => {
+        const styles: { [square: string]: any } = { ...customSquareStyles };
+        for (const sq of lastMoveSquares) {
+            styles[sq] = {
+                ...styles[sq],
+                backgroundColor: "rgba(255, 255, 51, 0.45)"
+            };
+        }
+        if (selectedSquare) {
+            styles[selectedSquare] = {
+                ...styles[selectedSquare],
+                backgroundColor: "rgba(255, 215, 0, 0.4)",
+                boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.7)"
+            };
+        }
+        return styles;
+    }, [customSquareStyles, lastMoveSquares, selectedSquare]);
 
     function handleSquareClick({ square }: { piece: any; square: string }) {
         const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -390,23 +408,7 @@ export default function ChessBoardComponent({
                             darkSquareStyle: finalDarkSquareStyle,
                             lightSquareStyle: finalLightSquareStyle,
                             onSquareClick: handleSquareClick,
-                            squareStyles: (() => {
-                                const styles: { [square: string]: any } = { ...customSquareStyles };
-                                for (const sq of lastMoveSquares) {
-                                    styles[sq] = {
-                                        ...styles[sq],
-                                        backgroundColor: "rgba(255, 255, 51, 0.45)"
-                                    };
-                                }
-                                if (selectedSquare) {
-                                    styles[selectedSquare] = {
-                                        ...styles[selectedSquare],
-                                        backgroundColor: "rgba(255, 215, 0, 0.4)",
-                                        boxShadow: "inset 0 0 0 2px rgba(255, 215, 0, 0.7)"
-                                    };
-                                }
-                                return styles;
-                            })()
+                            squareStyles: squareStyles
                         }}
                     />
                 </div>
@@ -414,3 +416,5 @@ export default function ChessBoardComponent({
         </div>
     );
 }
+
+export default React.memo(ChessBoardComponent);

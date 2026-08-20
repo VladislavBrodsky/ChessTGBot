@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -11,11 +11,11 @@ import ChessBoardComponent from '@/components/game/ChessBoard';
 import MatchOverModal from '@/components/game/MatchOverModal';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
 import IncomingRematchDrawer from '@/components/game/IncomingRematchDrawer';
+import ChessClockBadge from '@/components/game/ChessClockBadge';
 
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { useAudioSynth } from '@/hooks/useAudioSynth';
 import { useAudio } from '@/hooks/useAudio';
-import { useChessClock } from '@/hooks/useChessClock';
 import { useNavbarHide } from '@/context/NavbarContext';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { requestBotRevengeGame } from '@/lib/botRevenge';
@@ -298,17 +298,9 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     }
   };
 
-  // Dedicated chess clock hook
-  const { whiteTime, blackTime } = useChessClock(
-    gameState,
-    isWhite,
-    triggerClocksWarnings
-  );
-
-  const myTime = isWhite ? whiteTime : blackTime;
-  const opponentTime = isWhite ? blackTime : whiteTime;
   const isMyTurn = gameState && !gameState.is_game_over && gameState.turn === (isWhite ? 'w' : 'b');
   const isOpponentTurn = gameState && !gameState.is_game_over && gameState.turn !== (isWhite ? 'w' : 'b');
+  const sanMoveHistory = useMemo(() => getMovesSanList(gameState?.move_history || []), [gameState?.move_history]);
   // Declared here (not just before its later usages) because the "check notification"
   // effect below references it in its dependency array; a `const` declared further
   // down in this same component scope would throw "Cannot access before
@@ -1039,15 +1031,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               )}
             </div>
           </div>
-          <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
-            opponentTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
-            opponentTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
-            'bg-brand-void/40 border-brand-border-text-brand-muted opacity-85'
-          }`}>
-            <span className="text-sm font-black tracking-tighter font-mono">
-              {formatTime(opponentTime)}
-            </span>
-          </div>
+          <ChessClockBadge
+            gameState={gameState}
+            color={isWhite ? 'b' : 'w'}
+            isWhite={isWhite}
+            onClockWarning={triggerClocksWarnings}
+          />
         </Card>
       
         {/* Board Container */}
@@ -1073,7 +1062,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               ref={moveHistoryRef}
               className="w-full overflow-x-auto flex items-center gap-1.5 pb-2 scrollbar-none scroll-smooth"
             >
-              {getMovesSanList(gameState.move_history).map((movePair, idx) => (
+              {sanMoveHistory.map((movePair, idx) => (
                 <div 
                   key={idx} 
                   className="shrink-0 flex items-center gap-1 bg-brand-surface border border-brand-border-opacity-10 rounded-lg px-2.5 py-1.5 shadow-sm text-[10px] font-bold text-brand-primary"
@@ -1122,15 +1111,13 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               )}
             </div>
           </div>
-          <div className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
-            myTime < 5 ? 'bg-red-500/20 border-red-500/40 text-red-500 animate-pulse' :
-            myTime < 15 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
-            'bg-brand-void/40 border-brand-border-text-brand-muted'
-          }`}>
-            <span className="text-sm font-black tracking-tighter font-mono">
-              {formatTime(myTime)}
-            </span>
-          </div>
+          <ChessClockBadge
+            gameState={gameState}
+            color={isWhite ? 'w' : 'b'}
+            isWhite={isWhite}
+            onClockWarning={triggerClocksWarnings}
+            isMe
+          />
         </Card>
 
         {/* Action Bar */}

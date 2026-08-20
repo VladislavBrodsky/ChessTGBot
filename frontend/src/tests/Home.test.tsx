@@ -19,37 +19,28 @@ jest.mock('next/navigation', () => ({
     useParams: () => ({ locale: 'en' })
 }));
 
-jest.mock('next-intl', () => {
-    // jest.mock factories are hoisted above imports, so the helper must be
-    // pulled in lazily here — an ESM import would not be initialised yet.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { asTranslator } = require('./testUtils/nextIntlMock');
-    const translations = (variables?: any): Record<string, string> => ({
-        welcome: `Welcome, ${variables?.name || ''}`,
-        subtitle: 'FinChess Matrix Protocol',
-        elo: 'ELO',
-        xp: 'XP',
-        level: 'LVL',
-        games_played: 'Games Played',
-        win_rate: 'Win Rate',
-        current_streak: 'Current Streak',
-        play: 'Play Chess',
-        academy: 'Academy',
-        daily_tasks: 'Daily Tasks',
-        recent_activity: 'Recent Activity',
-        leaderboard: 'Leaderboard',
-        vs: 'vs'
-    });
-    const translate = (key: string, variables?: any) =>
-        translations(variables)[key] || key;
-    return {
-        // `t.has` agrees with the dictionary above: 'combatant' is absent, so
-        // the page falls back to its own hardcoded 'Combatant'.
-        useTranslations: () =>
-            asTranslator(translate, (key: string) => key in translations()),
-        useLocale: () => 'en'
-    };
-});
+jest.mock('next-intl', () => ({
+    useTranslations: () => (key: string, variables?: any) => {
+        const translations: Record<string, string> = {
+            welcome: `Welcome, ${variables?.name || ''}`,
+            subtitle: 'FinChess Matrix Protocol',
+            elo: 'ELO',
+            xp: 'XP',
+            level: 'LVL',
+            games_played: 'Games Played',
+            win_rate: 'Win Rate',
+            current_streak: 'Current Streak',
+            play: 'Play Chess',
+            academy: 'Academy',
+            daily_tasks: 'Daily Tasks',
+            recent_activity: 'Recent Activity',
+            leaderboard: 'Leaderboard',
+            vs: 'vs'
+        };
+        return translations[key] || key;
+    },
+    useLocale: () => 'en'
+}));
 
 jest.mock('@/context/UserContext', () => ({
     useUser: () => ({

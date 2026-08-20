@@ -5,16 +5,10 @@ import { apiFetch } from '@/lib/api';
 import { useUser } from '@/context/UserContext';
 
 jest.mock('next/link', () => ({ children }: { children: React.ReactNode }) => <>{children}</>);
-jest.mock('next-intl', () => {
-  // jest.mock factories are hoisted above imports, so the helper must be
-  // pulled in lazily here — an ESM import would not be initialised yet.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { asTranslator } = require('./testUtils/nextIntlMock');
-  return {
-    useTranslations: () => asTranslator((key: string) => key),
-    useLocale: () => 'en',
-  };
-});
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useLocale: () => 'en',
+}));
 jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: {

@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
 import { FaGem, FaCrown } from 'react-icons/fa';
@@ -356,7 +357,18 @@ export default function MarketplacePage() {
                         <h2 id="marketplace-themes-title" className="text-center text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_themes')}</h2>
                         {loadingThemes ? (
                             <div className="grid grid-cols-1 gap-3 w-full">
-                                {[0, 1, 2].map((i) => <div key={i} className="h-[92px] animate-pulse rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />)}
+                                {[0, 1, 2].map((i) => (
+                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-brand-surface border border-brand-border">
+                                        <div className="flex items-center gap-4">
+                                            <Skeleton variant="rectangular" width={44} height={44} className="rounded-xl" />
+                                            <div className="space-y-2">
+                                                <Skeleton variant="text" width={120} height={14} />
+                                                <Skeleton variant="text" width={180} height={10} />
+                                            </div>
+                                        </div>
+                                        <Skeleton variant="rectangular" width={72} height={32} className="rounded-xl" />
+                                    </div>
+                                ))}
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-3 w-full">

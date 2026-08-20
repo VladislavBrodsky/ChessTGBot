@@ -219,9 +219,6 @@ async def start_withdrawal_confirmation_sweeper():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    from app.core.async_errors import install_asyncio_exception_handler
-    install_asyncio_exception_handler(asyncio.get_running_loop())
-
     logger.info(f"🚀 Starting App Version: {settings.VERSION}")
     from app.services.game_service import GameService
     GameService.initialize_process_pool()
@@ -280,6 +277,10 @@ async def lifespan(app: FastAPI):
     # Start background ledger audit reconciliation
     from app.services.ledger_audit import start_ledger_audit_loop
     asyncio.create_task(start_ledger_audit_loop())
+
+    # Recover paid/expired Stripe Checkout sessions that missed webhook delivery.
+    from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
+    asyncio.create_task(start_stripe_reconciliation_loop())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop

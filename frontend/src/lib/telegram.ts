@@ -26,15 +26,17 @@ export const telegramConfirm = (message: string, callback: (ok: boolean) => void
   }
 };
 
-export const telegramHaptic = (type: 'success' | 'warning' | 'error' | 'light' | 'medium' | 'heavy') => {
+export const telegramHaptic = (type: 'success' | 'warning' | 'error' | 'light' | 'medium' | 'heavy' | 'selection') => {
   if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
     try {
-      const haptic = window.Telegram.WebApp.HapticFeedback;
-      if (['success', 'warning', 'error'].includes(type) && haptic.notificationOccurred) {
+      const haptic = window.Telegram.WebApp.HapticFeedback as any;
+      if (type === 'selection' && haptic.selectionChanged) {
+        haptic.selectionChanged();
+      } else if (['success', 'warning', 'error'].includes(type) && haptic.notificationOccurred) {
         haptic.notificationOccurred(type as 'success' | 'warning' | 'error');
       } else if (haptic.impactOccurred) {
         // Fallback to impact feedback if notification is unsupported
-        const style = type === 'warning' || type === 'error' ? 'heavy' : type === 'success' ? 'medium' : type;
+        const style = type === 'warning' || type === 'error' ? 'heavy' : type === 'success' ? 'medium' : type === 'selection' ? 'light' : type;
         haptic.impactOccurred(style as 'light' | 'medium' | 'heavy' | 'rigid' | 'soft');
       }
     } catch (e) {

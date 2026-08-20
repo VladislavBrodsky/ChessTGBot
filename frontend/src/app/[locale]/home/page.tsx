@@ -39,11 +39,13 @@ export default function Home() {
  const [showNotifications, setShowNotifications] = useState(false);
  const [mounted, setMounted] = useState(false);
  const { stats, walletBalance, loadingStats, balanceError, statsError, syncStats } = useUser();
+ const hasCombatant = typeof t?.has === 'function' && t.has('combatant');
+ const fallbackCombatant = hasCombatant ? t('combatant') : 'Combatant';
  const displayName = !mounted 
-   ? (t.has('combatant') ? t('combatant') : 'Combatant')
+   ? fallbackCombatant
    : stats
      ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
-     : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : (t.has('combatant') ? t('combatant') : 'Combatant'));
+     : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : fallbackCombatant);
 
  useEffect(() => {
    if (typeof window !== 'undefined') {

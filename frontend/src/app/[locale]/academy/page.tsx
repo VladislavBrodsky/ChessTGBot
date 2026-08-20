@@ -12,12 +12,14 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { createPortal } from 'react-dom';
 import { useNavbar } from '@/context/NavbarContext';
+import { useUser } from '@/context/UserContext';
 import useSWR from 'swr';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { getXPProgress } from '@/lib/xpProgress';
 
 // These libraries are only needed after a user opens a puzzle preview or
@@ -61,17 +63,13 @@ export default function AcademyPage() {
   const locale = useLocale();
   const t = useTranslations('Academy');
   const router = useRouter();
+  const { stats, syncStats: mutateStats, loadingStats } = useUser();
 
   const fetcher = (url: string) => apiFetch(url).then((res) => {
     if (!res.ok) throw new Error("Failed to fetch");
     return res.json();
   });
-  const postFetcher = (url: string) => apiFetch(url, { method: "POST" }).then((res) => {
-    if (!res.ok) throw new Error("Failed to post fetch");
-    return res.json();
-  });
 
-  const { data: stats, mutate: mutateStats } = useSWR("/api/v1/users/sync", postFetcher, { revalidateOnFocus: false });
   const { data: dynamicLessons } = useSWR("/api/v1/content/lessons", fetcher);
   const { data: academyState, mutate: mutateAcademyState } = useSWR("/api/v1/gamification/academy/state", fetcher);
   

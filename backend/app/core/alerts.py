@@ -52,8 +52,6 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.api.v1.endpoints.game", "realtime"),
     ("app.services.game_service", "realtime"),
     ("app.services.matchmaker", "realtime"),
-    ("app.core.socket", "realtime"),
-    ("app.async_runtime", "core_api"),
 ]
 
 def system_for_logger(logger_name: str) -> str:
@@ -291,20 +289,11 @@ class TelegramAlertHandler(logging.Handler):
             # client-disconnect races ("Session is disconnected", "Invalid
             # session") once at ERROR via _log_error_once. Those are not
             # actionable backend faults, so filter them like `socketio`.
-            #
-            # `asyncio` default handler is ignored because it emits contextless
-            # ERROR records whose fingerprint is always `base_events.py`, which
-            # collapses all orphaned task/future errors in the application
-            # into a single rate-limiting bucket. Furthermore, it logs unhandled
-            # exceptions from any task (including bot tasks), which can bypass
-            # the app.services.telegram_bot exclusion. We intercept these via our
-            # custom handler and log them under `app.async_runtime` instead.
             if (record.name.startswith("app.services.telegram_bot") or
                 record.name.startswith("urllib3") or
                 record.name.startswith("httpx") or
                 record.name.startswith("socketio") or
-                record.name.startswith("engineio") or
-                record.name.startswith("asyncio")):
+                record.name.startswith("engineio")):
                 return
             
             

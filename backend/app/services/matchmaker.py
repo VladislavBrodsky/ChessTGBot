@@ -6,7 +6,6 @@ import uuid
 import redis.asyncio as redis
 from typing import Dict, Optional
 from app.core.config import get_settings
-from app.core.redis_client import create_redis_client
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ class MatchmakerService:
     def _init_redis(self):
         if not MatchmakerService._use_memory and MatchmakerService._redis_client is None:
             try:
-                MatchmakerService._redis_client = create_redis_client(
+                MatchmakerService._redis_client = redis.from_url(
                     settings.REDIS_URL, encoding="utf-8", decode_responses=True
                 )
             except Exception as e:
@@ -345,28 +344,18 @@ class MatchmakerService:
                 if lock_token:
                     await self._release_distributed_lock("global", lock_token)
 
-    async def try_match_and_pop(self, bid_amount: int, user_id: int, user_elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None, stats: Optional[dict] = None) -> Optional[dict]:
+    async def try_match_and_pop(self, bid_amount: int, user_id: int, user_elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> Optional[dict]:
         """
         Atomically find and pop a matching opponent and the user from the queue.
         This ensures that no other worker thread or container can match the same opponent.
-
-        When `stats` is passed, it is filled in with diagnostics about why no
-        match happened — currently `collusion_skipped`, the number of queued
-        candidates rejected by the anti-collusion guard. Callers surface this
-        so a guard-blocked search is distinguishable from an empty queue
-        instead of looking like an indefinite hang.
         """
-        if stats is not None:
-            stats['collusion_skipped'] = 0
         recent_opponents = set()
         if bid_amount > 0:
             try:
                 from app.core.database import AsyncSessionLocal
                 from app.crud.game_history import get_user_recent_games
                 async with AsyncSessionLocal() as db:
-                    # Wagered history only: a free game between two friends must
-                    # not block them from ever being wager-matched again.
-                    games = await get_user_recent_games(db, telegram_id=user_id, limit=5, wagered_only=True)
+                    games = await get_user_recent_games(db, telegram_id=user_id, limit=5)
                     for g in games:
                         opp_id = g.black_player_id if g.white_player_id == user_id else g.white_player_id
                         if opp_id:
@@ -462,8 +451,6 @@ class MatchmakerService:
                         f"User {best_opponent['user_id']} (tc {best_opponent_tc}) at tc {matched_tc} and popped both."
                     )
                 elif collusion_skipped:
-                    if stats is not None:
-                        stats['collusion_skipped'] = collusion_skipped
                     # Make the silent skip diagnosable: a pair stuck "searching"
                     # while both are queued is otherwise invisible in logs.
                     logger.info(
@@ -486,7 +473,7 @@ class MatchmakerService:
                 from app.core.database import AsyncSessionLocal
                 from app.crud.game_history import get_user_recent_games
                 async with AsyncSessionLocal() as db:
-                    games = await get_user_recent_games(db, telegram_id=exclude_user_id, limit=5, wagered_only=True)
+                    games = await get_user_recent_games(db, telegram_id=exclude_user_id, limit=5)
                     for g in games:
                         opp_id = g.black_player_id if g.white_player_id == exclude_user_id else g.white_player_id
                         if opp_id:

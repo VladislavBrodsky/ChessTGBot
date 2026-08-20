@@ -13,6 +13,8 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { SkeletonList } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
 
 export default function ChallengesPage() {
@@ -333,24 +335,13 @@ export default function ChallengesPage() {
           <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
           <div className="space-y-3 w-full">
             {loading ? (
-              <div className="w-full flex flex-col space-y-3">
-                {[1, 2, 3].map((n) => (
-                  <Card key={n} variant="glass" className="p-4 border-brand-border-opacity-10 animate-pulse flex items-center justify-between">
-                    <div className="flex items-center gap-4 w-2/3">
-                      <div className="w-9 h-9 rounded-xl bg-brand-primary opacity-10 shrink-0" />
-                      <div className="flex flex-col space-y-1.5 w-full">
-                        <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/2" />
-                        <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/3" />
-                      </div>
-                    </div>
-                    <div className="w-16 h-1.5 bg-brand-primary opacity-5 rounded-full" />
-                  </Card>
-                ))}
-              </div>
+              <SkeletonList count={3} />
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
-              <div className="text-center py-4 text-xs font-bold text-brand-muted uppercase tracking-widest">
-                {t('no_active_missions')}
-              </div>
+              <EmptyState
+                icon={<FaTrophy className="h-6 w-6 text-brand-muted" />}
+                title={t('no_active_missions')}
+                description="Check back tomorrow for new daily tasks and missions."
+              />
             ) : (
               [...tasks.filter(t => !t.claimed)].sort((a, b) => {
                 if (a.completed && !b.completed) return -1;
