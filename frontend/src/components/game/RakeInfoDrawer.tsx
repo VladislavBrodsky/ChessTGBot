@@ -1,83 +1,46 @@
 'use client';
 
-import { useState, useEffect } from "react";
-
-import { motion } from "framer-motion";
+import React from "react";
 import { useTranslations } from "next-intl";
-import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
+import { Drawer } from "@/components/ui/Drawer";
+import { Button } from "@/components/ui/Button";
 
 interface RakeInfoDrawerProps {
   onClose: () => void;
 }
 
 export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
-  useNavbarHideWhileMounted();
   const tg = useTranslations('Game');
-  const [canClose, setCanClose] = useState<boolean>(false);
-
-  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
-    <div className="bottom-drawer-backdrop z-[100]">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }} 
-        onClick={() => { if (canClose) onClose(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
-      />
-      <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
+    <Drawer
+      isOpen={true}
+      onClose={onClose}
+      title={tg('platform_commission')}
+      description={tg('sustain_ecosystem')}
+    >
+      <div className="w-full bg-brand-elevated rounded-2xl p-5 border border-brand-border space-y-3 text-xs font-medium text-brand-muted leading-relaxed">
+        <p>{tg('rake_desc1')}</p>
+        <p>{tg('rake_desc2')}</p>
+        <div className="h-px w-full bg-brand-border my-2" />
+        <p className="text-[10px] font-bold text-brand-primary uppercase tracking-wider">
+          {tg('where_rake_goes')}
+        </p>
+        <ul className="list-disc pl-4 space-y-1.5 text-xs text-brand-muted">
+          <li>{tg('rake_li1')}</li>
+          <li>{tg('rake_li2')}</li>
+          <li>{tg('rake_li3')}</li>
+        </ul>
+      </div>
+
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={onClose}
+        className="w-full uppercase font-black tracking-wider"
       >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-            {tg('platform_commission')}
-          </h2>
-          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mb-6">
-            {tg('sustain_ecosystem')}
-          </p>
-        </div>
-        
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-3.5 shadow-sm text-xs font-bold text-brand-muted leading-relaxed">
-          <p>
-            {tg('rake_desc1')}
-          </p>
-          <p>
-            {tg('rake_desc2')}
-          </p>
-          <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-          <p className="text-[10px] text-brand-muted uppercase tracking-wider">
-            {tg('where_rake_goes')}
-          </p>
-          <ul className="list-disc pl-4 space-y-1 text-[11px] text-brand-muted">
-            <li>{tg('rake_li1')}</li>
-            <li>{tg('rake_li2')}</li>
-            <li>{tg('rake_li3')}</li>
-          </ul>
-        </div>
-        
-        <div className="w-full flex flex-col gap-3">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={onClose}
-            className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-          >
-            <span>{tg('got_it')}</span>
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>
+        {tg('got_it')}
+      </Button>
+    </Drawer>
   );
 }

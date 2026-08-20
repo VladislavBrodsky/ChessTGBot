@@ -325,11 +325,11 @@ export default function MembershipPage() {
         <div className="grid grid-cols-2 gap-3 w-full max-[350px]:grid-cols-1">
           {/* Monthly Card */}
           <button
-            onClick={() => { telegramHaptic('light'); setBillingPeriod('monthly'); }}
-            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
+            onClick={() => { telegramHaptic('selection'); setBillingPeriod('monthly'); }}
+            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
               billingPeriod === 'monthly'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
-                : "bg-brand-surface border-brand-border-text-brand-muted hover:border-brand-primary/30"
+                : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
             }`}
           >
             {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && (
@@ -351,11 +351,11 @@ export default function MembershipPage() {
 
           {/* Annual Card */}
           <button
-            onClick={() => { telegramHaptic('light'); setBillingPeriod('annual'); }}
-            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden backdrop-blur-sm ${
+            onClick={() => { telegramHaptic('selection'); setBillingPeriod('annual'); }}
+            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
               billingPeriod === 'annual'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
-                : "bg-brand-surface border-brand-border-text-brand-muted hover:border-brand-primary/30"
+                : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
             }`}
           >
             {/* Badges */}

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { getFullPhotoUrl } from '@/lib/api';
+import { telegramHaptic } from '@/lib/telegram';
 import { FaChessKing, FaChessQueen, FaChessKnight, FaChessPawn, FaChessRook, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
@@ -207,6 +208,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 href={item.href}
                                 aria-label={item.label}
                                 aria-current={isActive ? 'page' : undefined}
+                                onClick={() => {
+                                    if (!isActive) telegramHaptic('selection');
+                                }}
                                 className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                             >
                                 <div className={`app-bottom-nav__button relative flex flex-col items-center justify-center min-h-[50px] w-full rounded-[20px] transition-all duration-300 ${

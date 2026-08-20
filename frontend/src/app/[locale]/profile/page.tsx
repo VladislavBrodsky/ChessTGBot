@@ -11,6 +11,9 @@ import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { Card } from "@/components/ui/Card";
+import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useUser } from "@/context/UserContext";
 
 // SVG Elo history chart component
 function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
@@ -98,45 +101,9 @@ export default function ProfilePage() {
 
  const labels = localizedLabels[locale] || localizedLabels['en'];
 
- const [tgUser, setTgUser] = useState<any>(null);
- const [stats, setStats] = useState<any>(null);
+ const { stats, loadingStats } = useUser();
  const [photoError, setPhotoError] = useState(false);
-
- useEffect(() => {
- if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
- const tg = window.Telegram.WebApp;
- const user = tg.initDataUnsafe?.user;
- setTgUser(user);
-
- if (user?.id) {
- apiFetch(`/api/v1/users/sync`, {
- method: "POST"
- })
- .then(res => res.json())
- .then(data => setStats(data))
- .catch(err => console.error("Failed to fetch Stats", err));
- }
- } else {
- // Mock for dev
- setTgUser({ first_name: "Grand", last_name: "Master", photo_url: null });
- setStats({
-   elo: 1450,
-   xp: 850,
-   level: 5,
-   games_played: 28,
-   wins: 16,
-   losses: 8,
-   draws: 4,
-   win_rate: 57.1,
-   loss_rate: 28.6,
-   draw_rate: 14.3,
-   global_rank: 42,
-   percentile: 96.8,
-   total_score: 18.0,
-    recent_games: []
-  });
-  }
-  }, []);
+ const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
 
   // Parse unlocked items
   const unlockedItems: string[] = (() => {
@@ -225,57 +192,57 @@ export default function ProfilePage() {
   <div className="w-full grid grid-cols-2 gap-3">
     {/* ELO & Rank Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-premium backdrop-blur-xl">
-        <div className="h-2 bg-brand-primary opacity-10 rounded w-12 mb-2" />
-        <div className="h-6 bg-brand-primary opacity-15 rounded w-16 mb-2" />
-        <div className="h-1.5 bg-brand-primary opacity-5 rounded w-24" />
-      </Card>
+      <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface h-24 w-full">
+        <Skeleton variant="text" width={40} height={10} className="mb-2" />
+        <Skeleton variant="text" width={60} height={24} className="mb-2" />
+        <Skeleton variant="text" width={90} height={10} />
+      </div>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-premium backdrop-blur-xl">
-        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{t('elo')}</span>
+      <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface shadow-sm">
+        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">{t('elo')}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
         <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
           <span>{labels.global_rank} #{stats.global_rank || 1}</span>
           <span>•</span>
           <span>{stats.percentile?.toFixed(0) || 100}%</span>
         </div>
-      </Card>
+      </div>
     )}
 
     {/* Games Played & Total Score Card */}
     {!stats ? (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden animate-pulse h-24 w-full shadow-premium backdrop-blur-xl">
-        <div className="h-2 bg-brand-primary opacity-10 rounded w-16 mb-2" />
-        <div className="h-6 bg-brand-primary opacity-15 rounded w-12 mb-2" />
-        <div className="h-1.5 bg-brand-primary opacity-5 rounded w-20" />
-      </Card>
+      <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface h-24 w-full">
+        <Skeleton variant="text" width={60} height={10} className="mb-2" />
+        <Skeleton variant="text" width={40} height={24} className="mb-2" />
+        <Skeleton variant="text" width={80} height={10} />
+      </div>
     ) : (
-      <Card variant="glass" className="p-4 flex flex-col items-center justify-center border-brand-border-opacity-20 relative overflow-hidden shadow-premium backdrop-blur-xl">
-        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest mb-1">{labels.games_played}</span>
+      <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface shadow-sm">
+        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">{labels.games_played}</span>
         <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
         <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
           <span>{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} PTS</span>
         </div>
-      </Card>
+      </div>
     )}
   </div>
 
   {/* Visual W - D - L Breakdown Bar */}
   {!stats ? (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl animate-pulse space-y-3.5">
+    <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-3.5">
       <div className="flex justify-between items-center px-0.5">
-        <div className="h-2.5 bg-brand-primary opacity-10 rounded w-24" />
-        <div className="h-2.5 bg-brand-primary opacity-10 rounded w-12" />
+        <Skeleton variant="text" width={100} height={12} />
+        <Skeleton variant="text" width={48} height={12} />
       </div>
-      <div className="w-full h-2 rounded-full bg-brand-primary opacity-5" />
+      <Skeleton variant="rectangular" width="100%" height={10} className="rounded-full" />
       <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
-        <div className="flex flex-col items-center"><div className="h-2 bg-brand-primary opacity-10 rounded w-8 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
-        <div className="flex flex-col items-center border-x border-brand-border-opacity-10"><div className="h-2 bg-brand-primary opacity-10 rounded w-8 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
-        <div className="flex flex-col items-center"><div className="h-2 bg-brand-primary opacity-10 rounded w-8 mb-1" /><div className="h-3 bg-brand-primary opacity-10 rounded w-6" /></div>
+        <div className="flex flex-col items-center"><Skeleton variant="text" width={32} height={10} /><Skeleton variant="text" width={24} height={14} className="mt-1" /></div>
+        <div className="flex flex-col items-center border-x border-brand-border"><Skeleton variant="text" width={32} height={10} /><Skeleton variant="text" width={24} height={14} className="mt-1" /></div>
+        <div className="flex flex-col items-center"><Skeleton variant="text" width={32} height={10} /><Skeleton variant="text" width={24} height={14} className="mt-1" /></div>
       </div>
-    </Card>
+    </div>
   ) : (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl space-y-3.5">
+    <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-3.5 shadow-sm">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{labels.breakdown}</span>
         <span className="text-[10px] font-black text-brand-success text-brand-success uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
@@ -312,18 +279,18 @@ export default function ProfilePage() {
           <span className="text-[10px] font-bold text-brand-muted">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
       </div>
-    </Card>
+    </div>
   )}
 
   {/* ELO History Chart */}
   {stats && (
-    <Card variant="glass" className="w-full p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl space-y-2">
+    <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-2 shadow-sm">
       <div className="flex justify-between items-center px-1 mb-2">
-        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">Rating Trajectory</span>
+        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Rating Trajectory</span>
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Last 10 Games</span>
       </div>
       <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
-    </Card>
+    </div>
   )}
 
  {/* Gamification Sections */}
@@ -369,23 +336,7 @@ export default function ProfilePage() {
    <h2 className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">{t('recent_activity')}</h2>
    
    {!stats ? (
-     <div className="flex flex-col gap-3">
-       {[1, 2].map((n) => (
-         <Card key={n} variant="glass" className="p-4 border-brand-border-opacity-10 flex justify-between items-center animate-pulse">
-           <div className="flex items-center gap-3 w-2/3">
-             <div className="w-9 h-9 rounded-lg bg-brand-primary opacity-10 shrink-0" />
-             <div className="flex flex-col space-y-1.5 w-full">
-               <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/2" />
-               <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3" />
-             </div>
-           </div>
-           <div className="flex flex-col items-end space-y-1">
-             <div className="h-3 bg-brand-primary opacity-10 rounded w-10" />
-             <div className="h-2 bg-brand-primary opacity-5 rounded w-12" />
-           </div>
-         </Card>
-       ))}
-     </div>
+      <SkeletonList count={3} />
    ) : stats.recent_games && stats.recent_games.length > 0 ? (
      <div className="flex flex-col gap-3">
        {stats.recent_games.map((game: any) => {
@@ -458,16 +409,12 @@ export default function ProfilePage() {
          );
        })}
      </div>
-   ) : (
-      <Card variant="glass" className="p-6 border-brand-border-opacity-10 text-center">
-        <span className="text-xs font-bold text-brand-muted uppercase tracking-widest block mb-1">
-          {t('no_games_logged')}
-        </span>
-        <span className="text-[10px] font-medium text-brand-muted uppercase tracking-widest">
-          {t('initiate_combat')}
-        </span>
-      </Card>
-   )}
+    ) : (
+      <EmptyState
+        title={t('no_games_logged')}
+        description={t('initiate_combat')}
+      />
+    )}
  </div>
 
  </div>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { FaRobot, FaGamepad, FaAward } from "react-icons/fa";
-import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
+import { Drawer } from "@/components/ui/Drawer";
+import { Button } from "@/components/ui/Button";
+import { telegramHaptic } from "@/lib/telegram";
 
 interface AiDifficultyDrawerProps {
   locale: string;
@@ -12,15 +13,15 @@ interface AiDifficultyDrawerProps {
   isCreating: boolean;
 }
 
-const localTranslations: { [locale: string]: any } = {
+const localTranslations: Record<string, any> = {
   en: {
     select_difficulty: "Select AI Difficulty",
     easy_title: "🟢 Easy Mode",
-    easy_desc: "800 ELO. Bot searches 2 moves ahead and makes occasional mistakes. Best for learning and testing.",
+    easy_desc: "800 ELO. Bot searches 2 moves ahead and makes occasional mistakes. Best for learning.",
     medium_title: "🟡 Medium Mode",
-    medium_desc: "1200 ELO. Bot searches 3 moves ahead. Plays balanced and solid chess.",
+    medium_desc: "1200 ELO. Bot searches 3 moves ahead. Plays balanced, solid chess.",
     hard_title: "🔴 Hard Mode",
-    hard_desc: "1600 ELO. Bot searches 4 moves ahead. Plays tactically sharp and challenging chess.",
+    hard_desc: "1600 ELO. Bot searches 4 moves ahead. Plays tactically sharp chess.",
     start_game: "Start Training Session",
     close: "Close"
   },
@@ -71,158 +72,88 @@ const localTranslations: { [locale: string]: any } = {
 };
 
 export default function AiDifficultyDrawer({ locale, onClose, onSelect, isCreating }: AiDifficultyDrawerProps) {
-  const [canClose, setCanClose] = useState<boolean>(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("medium");
-
-  // The navbar is otherwise still visible on this page (/game is not a
-  // "main navbar page") and its fixed bottom position overlaps the
-  // "Start Training Session" button, silently swallowing taps on it.
-  useNavbarHideWhileMounted();
-
   const trans = localTranslations[locale] || localTranslations["en"];
 
-  // Cooldown to prevent instant closing on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
+  const options = [
+    {
+      id: "easy",
+      title: trans.easy_title,
+      desc: trans.easy_desc,
+      icon: <FaGamepad size={14} />,
+      colorClass: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
+      activeBg: "border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.12)]",
+    },
+    {
+      id: "medium",
+      title: trans.medium_title,
+      desc: trans.medium_desc,
+      icon: <FaAward size={14} />,
+      colorClass: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+      activeBg: "border-amber-500/50 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.12)]",
+    },
+    {
+      id: "hard",
+      title: trans.hard_title,
+      desc: trans.hard_desc,
+      icon: <FaRobot size={14} />,
+      colorClass: "text-rose-400 border-rose-500/30 bg-rose-500/10",
+      activeBg: "border-rose-500/50 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.12)]",
+    },
+  ];
 
   return (
-    <div className="bottom-drawer-backdrop z-[100]">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }} 
-        onClick={() => { if (canClose && !isCreating) onClose(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style={{ touchAction: 'none' }}
-      />
-      <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
+    <Drawer
+      isOpen={true}
+      onClose={onClose}
+      title={trans.select_difficulty}
+      description="Select training level to practice vs the chess engine."
+    >
+      <div className="space-y-3 mb-2">
+        {options.map((opt) => {
+          const isSelected = selectedDifficulty === opt.id;
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={isCreating}
+              onClick={() => {
+                telegramHaptic('selection');
+                setSelectedDifficulty(opt.id);
+              }}
+              className={`w-full text-left rounded-2xl p-4 border transition-all duration-200 flex items-start gap-3 bg-brand-surface ${
+                isSelected
+                  ? opt.activeBg
+                  : "border-brand-border hover:border-brand-border-opacity-20"
+              }`}
+            >
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                isSelected ? opt.colorClass : 'bg-brand-elevated border-brand-border text-brand-muted'
+              }`}>
+                {opt.icon}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold text-brand-primary">
+                  {opt.title}
+                </span>
+                <span className="text-[11px] text-brand-muted mt-1 leading-relaxed">
+                  {opt.desc}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <Button
+        variant="primary"
+        size="lg"
+        isLoading={isCreating}
+        onClick={() => onSelect(selectedDifficulty)}
+        className="w-full uppercase font-black tracking-wider"
       >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center mb-3">
-            <FaRobot className="text-emerald-500 text-lg" />
-          </div>
-          <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-            {trans.select_difficulty}
-          </h2>
-          <p className="text-[10px] font-bold text-brand-primary/45 uppercase tracking-[0.2em] mb-5">
-            TRAINING ARENA
-          </p>
-        </div>
-        
-        {/* Difficulty List */}
-        <div className="w-full flex flex-col gap-3.5 mb-6">
-          
-          {/* Easy Card */}
-          <button
-            onClick={() => setSelectedDifficulty("easy")}
-            disabled={isCreating}
-            className={`w-full text-left rounded-2xl p-4 border transition-all duration-200 cursor-pointer flex items-start gap-3 bg-brand-surface ${
-              selectedDifficulty === "easy" 
-                ? "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.12)] bg-emerald-500/5" 
-                : "border-brand-border-opacity-10 hover:border-brand-border-opacity-20"
-            }`}
-          >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
-              selectedDifficulty === "easy"
-                ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
-            }`}>
-              <FaGamepad size={13} />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className={`text-xs font-black tracking-wide uppercase ${
-                selectedDifficulty === "easy" ? "text-emerald-400" : "text-brand-primary"
-              }`}>
-                {trans.easy_title}
-              </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-55 mt-1 leading-relaxed">
-                {trans.easy_desc}
-              </span>
-            </div>
-          </button>
-
-          {/* Medium Card */}
-          <button
-            onClick={() => setSelectedDifficulty("medium")}
-            disabled={isCreating}
-            className={`w-full text-left rounded-2xl p-4 border transition-all duration-200 cursor-pointer flex items-start gap-3 bg-brand-surface ${
-              selectedDifficulty === "medium" 
-                ? "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.12)] bg-emerald-500/5" 
-                : "border-brand-border-opacity-10 hover:border-brand-border-opacity-20"
-            }`}
-          >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
-              selectedDifficulty === "medium"
-                ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
-            }`}>
-              <FaAward size={12} />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className={`text-xs font-black tracking-wide uppercase ${
-                selectedDifficulty === "medium" ? "text-amber-400" : "text-brand-primary"
-              }`}>
-                {trans.medium_title}
-              </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-55 mt-1 leading-relaxed">
-                {trans.medium_desc}
-              </span>
-            </div>
-          </button>
-
-          {/* Hard Card */}
-          <button
-            onClick={() => setSelectedDifficulty("hard")}
-            disabled={isCreating}
-            className={`w-full text-left rounded-2xl p-4 border transition-all duration-200 cursor-pointer flex items-start gap-3 bg-brand-surface ${
-              selectedDifficulty === "hard" 
-                ? "border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.12)] bg-rose-500/5" 
-                : "border-brand-border-opacity-10 hover:border-brand-border-opacity-20"
-            }`}
-          >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
-              selectedDifficulty === "hard"
-                ? "bg-rose-500/20 border-rose-500/30 text-rose-400"
-                : "bg-brand-bg-opacity-5 border-brand-border-opacity-10 text-brand-muted"
-            }`}>
-              <FaRobot size={12} />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className={`text-xs font-black tracking-wide uppercase ${
-                selectedDifficulty === "hard" ? "text-rose-400" : "text-brand-primary"
-              }`}>
-                {trans.hard_title}
-              </span>
-              <span className="text-[10px] font-medium text-brand-primary opacity-55 mt-1 leading-relaxed">
-                {trans.hard_desc}
-              </span>
-            </div>
-          </button>
-
-        </div>
-        
-        {/* Buttons */}
-        <div className="w-full flex flex-col gap-3">
-          <motion.button
-            whileTap={!isCreating ? { scale: 0.98 } : {}}
-            onClick={() => onSelect(selectedDifficulty)}
-            disabled={isCreating}
-            className="w-full bg-brand-primary text-brand-void py-4 rounded-2xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-neon disabled:opacity-50"
-          >
-            <span>{isCreating ? "INITIALIZING..." : trans.start_game}</span>
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>
+        {isCreating ? "Initializing..." : trans.start_game}
+      </Button>
+    </Drawer>
   );
 }
