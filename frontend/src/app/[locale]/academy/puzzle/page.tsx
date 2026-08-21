@@ -176,15 +176,15 @@ function PuzzleContent() {
               </div>
             )}
             
-            <div className="flex gap-4 justify-center w-full mt-2">
+            <div className="flex gap-3 justify-center w-full mt-2">
               <Link href={`/${locale}/academy`} className="flex-1">
-                <button className="w-full px-4 py-4 bg-brand-surface border border-brand-border-opacity-20 hover:bg-brand-bg-text-brand-muted font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
+                <button className="w-full px-4 py-3.5 bg-brand-elevated border border-brand-border hover:border-brand-border-opacity-30 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
                   {t('continue')}
                 </button>
               </Link>
-              <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just cracked a daily tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
-                <button className="w-full px-4 py-4 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
-                  <FaTelegramPlane className="text-lg" /> Share
+              <a href={`https://t.me/share/url?url=https://t.me/FinChess_bot/app&text=${encodeURIComponent(`I just cracked a tactical puzzle on FinChess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
+                <button className="w-full px-4 py-3.5 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
+                  <FaTelegramPlane className="text-base" /> Share
                 </button>
               </a>
             </div>

@@ -142,7 +142,7 @@ export default function WalletSelectorModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={() => { if (canClose) onClose(); }}
-        className="absolute inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80"
         style={{ touchAction: "none" }}
       />
 
