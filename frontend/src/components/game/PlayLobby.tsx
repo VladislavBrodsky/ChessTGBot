@@ -1017,7 +1017,7 @@ export default function PlayLobby() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.06, type: "spring", stiffness: 200, damping: 20 }}
-                          className="relative overflow-hidden p-3.5 flex items-center justify-between rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 backdrop-blur-md hover:border-brand-border-opacity-25 hover:bg-brand-surface/30 transition-all duration-300 shadow-sm group cursor-pointer"
+                          className="relative overflow-hidden p-3.5 flex items-center justify-between rounded-2xl border border-brand-border bg-brand-surface hover:border-brand-border-opacity-30 transition-all duration-200 shadow-sm group cursor-pointer"
                         >
                           {/* Decorative subtle background gradient on card hover */}
                           <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/0 via-brand-primary/[0.02] to-brand-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

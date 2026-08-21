@@ -715,7 +715,7 @@ export default function AcademyPage() {
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }} 
         onClick={() => setShowPremiumPromo(false)}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-sm" 
+        className="absolute inset-0 bg-black/80" 
         style={{ touchAction: 'none' }}
       />
       <motion.div 
@@ -823,7 +823,7 @@ export default function AcademyPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedLevel(null)}
-            className="absolute inset-0 bg-[rgba(0,0,0,0.55)] backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80"
             style={{ touchAction: 'none' }}
           />
           <motion.div

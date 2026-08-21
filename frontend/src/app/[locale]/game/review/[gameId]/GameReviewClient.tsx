@@ -8,6 +8,9 @@ import { Chess } from "chess.js";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { 
@@ -305,12 +308,18 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
   if (loading) {
     return (
-      <LayoutWrapper className="justify-center items-center">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <div className="w-10 h-10 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-black text-brand-muted uppercase tracking-[0.2em]">
-            Reconstructing Matrix...
-          </span>
+      <LayoutWrapper className="justify-center items-center px-4">
+        <div className="w-full max-w-sm md:max-w-md flex flex-col items-center space-y-4 py-8">
+          <div className="flex items-center justify-between w-full">
+            <Skeleton variant="rectangular" width={36} height={36} className="rounded-xl" />
+            <Skeleton variant="text" width={140} height={18} />
+            <Skeleton variant="rectangular" width={36} height={36} className="rounded-xl" />
+          </div>
+          <Skeleton variant="rectangular" width="100%" height={320} className="rounded-2xl" />
+          <div className="w-full space-y-2">
+            <Skeleton variant="rectangular" width="100%" height={48} className="rounded-xl" />
+            <Skeleton variant="rectangular" width="100%" height={48} className="rounded-xl" />
+          </div>
         </div>
       </LayoutWrapper>
     );
@@ -318,21 +327,20 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
   if (error || !gameData) {
     return (
-      <LayoutWrapper className="justify-center items-center">
-        <div className="glass-panel p-6 rounded-2xl border border-brand-rose-opacity-20 bg-brand-surface max-w-sm md:max-w-xl lg:max-w-3xl text-center">
-          <span className="text-sm font-black text-rose-400 uppercase tracking-widest block mb-2">
-            Link Failure
-          </span>
-          <p className="text-xs text-brand-muted mb-6 uppercase tracking-wider">
-            {error || "Unable to locate match history."}
-          </p>
-          <button
-            onClick={() => router.push(`/${locale}/profile`)}
-            className="w-full py-3 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-[10px] font-black uppercase tracking-widest text-brand-primary cursor-pointer hover:opacity-80"
-          >
-            Return to Profile
-          </button>
-        </div>
+      <LayoutWrapper className="justify-center items-center px-4">
+        <ErrorState
+          title="Match Review Unavailable"
+          message={error || "Unable to locate match history or reconstructed moves."}
+          action={
+            <Button
+              variant="action"
+              size="md"
+              onClick={() => router.push(`/${locale}/profile`)}
+            >
+              Return to Profile
+            </Button>
+          }
+        />
       </LayoutWrapper>
     );
   }

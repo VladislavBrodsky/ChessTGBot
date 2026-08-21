@@ -663,7 +663,7 @@ export default function DepositModal({
           )}
 
           {cardEnabled && (
-            <div className="relative flex p-1 rounded-xl bg-brand-void/50 backdrop-blur-md border border-brand-border-opacity-10 shadow-inner overflow-hidden">
+            <div className="relative flex p-1 rounded-xl bg-brand-elevated border border-brand-border shadow-inner overflow-hidden">
               <div 
                 className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
                 style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
@@ -845,7 +845,7 @@ export default function DepositModal({
                 <div className="space-y-4 pt-4">
 
                   {/* ── Info Banner ── */}
-                  <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/10 flex flex-col gap-2 backdrop-blur-sm">
+                  <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/10 flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
                         <span className="text-amber-400 text-[10px] font-black">i</span>

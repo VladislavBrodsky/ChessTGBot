@@ -93,7 +93,7 @@ export default function LoginPage() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
                 className="relative z-10 w-full max-w-[900px] mx-auto px-4"
             >
-                <div className="w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-500 bg-brand-surface/80 backdrop-blur-2xl border border-brand-border-opacity-10 shadow-premium">
+                <div className="w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-300 bg-brand-surface border border-brand-border shadow-premium">
                     {/* ── LEFT: Login ── */}
                     <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-brand-border-opacity-10">
                         <div className="flex flex-col items-center space-y-7 text-center w-full">

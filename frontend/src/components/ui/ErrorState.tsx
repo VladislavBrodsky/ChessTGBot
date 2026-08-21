@@ -8,6 +8,7 @@ export interface ErrorStateProps {
   message?: React.ReactNode;
   onRetry?: () => void;
   retryLabel?: string;
+  action?: React.ReactNode;
   className?: string;
 }
 
@@ -16,6 +17,7 @@ export function ErrorState({
   message = 'We encountered an error loading this data. Please try again.',
   onRetry,
   retryLabel = 'Try again',
+  action,
   className = '',
 }: ErrorStateProps) {
   return (
@@ -33,11 +35,13 @@ export function ErrorState({
         <p className="text-xs leading-relaxed text-brand-muted">{message}</p>
       </div>
 
-      {onRetry && (
+      {action ? (
+        action
+      ) : onRetry ? (
         <Button variant="secondary" size="sm" onClick={onRetry}>
           {retryLabel}
         </Button>
-      )}
+      ) : null}
     </Card>
   );
 }

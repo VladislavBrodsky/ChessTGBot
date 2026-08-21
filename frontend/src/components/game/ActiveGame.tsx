@@ -1242,7 +1242,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           style={{
             bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
           }}
-          className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-void backdrop-blur-3xl border border-brand-border-opacity-10 p-3 rounded-2xl shadow-premium"
+          className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-surface border border-brand-border p-3 rounded-2xl shadow-premium"
         >
           {/* Resign Button */}
           <motion.button
