@@ -6,6 +6,8 @@ import { Skeleton, SkeletonList } from '../components/ui/Skeleton';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
+import { Toast } from '../components/ui/Toast';
+import { Card } from '../components/ui/Card';
 
 describe('UI Primitives Layer', () => {
   describe('Input', () => {
@@ -106,6 +108,34 @@ describe('UI Primitives Layer', () => {
       const btn = screen.getByRole('button', { name: 'Try Again' });
       fireEvent.click(btn);
       expect(handleRetry).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Toast & Card x-panel', () => {
+    it('renders Toast notification and triggers dismiss on click', () => {
+      const handleDismiss = jest.fn();
+      const toastItem = {
+        id: 't-1',
+        message: 'Settings saved successfully',
+        type: 'success' as const,
+      };
+
+      render(<Toast toast={toastItem} onDismiss={handleDismiss} />);
+      expect(screen.getByText('Settings saved successfully')).toBeInTheDocument();
+
+      const dismissBtn = screen.getByLabelText(/dismiss toast/i);
+      fireEvent.click(dismissBtn);
+      expect(handleDismiss).toHaveBeenCalledWith('t-1');
+    });
+
+    it('renders Card with x-panel variant', () => {
+      const { container } = render(
+        <Card variant="x-panel">
+          <span>X Feed Item</span>
+        </Card>
+      );
+      expect(container.firstChild).toHaveClass('bg-brand-surface');
+      expect(container.firstChild).toHaveClass('border-brand-border');
     });
   });
 });

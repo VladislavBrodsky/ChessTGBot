@@ -9,6 +9,7 @@ import Script from 'next/script';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
+import { ToastProvider } from "@/context/ToastContext";
 import AuthGuard from "@/components/AuthGuard";
 
 import { Outfit, Plus_Jakarta_Sans, Roboto_Mono } from 'next/font/google';
@@ -97,12 +98,14 @@ export default async function LocaleLayout({
                     <ThemeProvider>
                         <NavbarProvider>
                             <UserProvider>
-                                <Providers>
-                                    <TelegramInit />
-                                    <AuthGuard>
-                                        {children}
-                                    </AuthGuard>
-                                </Providers>
+                                <ToastProvider>
+                                    <Providers>
+                                        <TelegramInit />
+                                        <AuthGuard>
+                                            {children}
+                                        </AuthGuard>
+                                    </Providers>
+                                </ToastProvider>
                             </UserProvider>
                         </NavbarProvider>
                     </ThemeProvider>

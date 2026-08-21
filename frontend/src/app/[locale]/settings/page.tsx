@@ -10,6 +10,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
+import { useToast } from "@/context/ToastContext";
 import { apiFetch } from "@/lib/api";
 import { useReducedMotionPreference } from "@/context/ReducedMotionContext";
 
@@ -18,6 +19,7 @@ export default function SettingsPage() {
  const locale = useLocale();
  const { theme, toggleTheme } = useTheme();
  const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
+ const toast = useToast();
  const [soundEnabled, setSoundEnabled] = useState(true);
  // Pull wallet address from global context — no extra API call needed
  const { walletAddress, stats, syncStats } = useUser();
@@ -34,6 +36,7 @@ export default function SettingsPage() {
    const next = !arenaAlerts;
    setArenaAlerts(next); // optimistic
    telegramHaptic('light');
+   toast.info(next ? 'Arena alerts enabled' : 'Arena alerts disabled');
    try {
      const res = await apiFetch('/api/v1/gamification/arena-notifications', {
        method: 'PUT',
@@ -44,6 +47,7 @@ export default function SettingsPage() {
      syncStats();
    } catch {
      setArenaAlerts(!next); // revert on failure
+     toast.error('Failed to update alert settings');
    }
  };
 
@@ -60,16 +64,23 @@ export default function SettingsPage() {
  const handleThemeToggle = () => {
    toggleTheme();
    telegramHaptic('light');
+   toast.info(`Theme set to ${theme === 'dark' ? 'Light' : 'Dark'}`);
  };
 
  const handleSoundToggle = () => {
-   setSoundEnabled(prev => !prev);
+   setSoundEnabled(prev => {
+     const next = !prev;
+     toast.info(next ? 'Sound FX enabled' : 'Sound FX muted');
+     return next;
+   });
    telegramHaptic('light');
  };
 
  const handleReducedMotionToggle = () => {
-   setReducedMotion(!reducedMotion);
+   const next = !reducedMotion;
+   setReducedMotion(next);
    telegramHaptic('light');
+   toast.info(next ? 'Reduced motion active' : 'Full animations active');
  };
 
  return (

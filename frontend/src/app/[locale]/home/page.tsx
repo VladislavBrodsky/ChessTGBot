@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/Button";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
 import NotificationModal from "@/components/NotificationModal";
+import { QuickPlayFAB } from "@/components/ui/QuickPlayFAB";
 import { telegramHaptic } from "@/lib/telegram";
 
 // Telegram's `start_param` persists for the whole webview session, so the
@@ -399,6 +400,7 @@ export default function Home() {
  </footer>
  </div>
  
+ <QuickPlayFAB />
  </LayoutWrapper >
  );
 }

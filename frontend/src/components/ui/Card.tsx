@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type CardVariant = 'glass' | 'solid' | 'premium' | 'cyber';
+export type CardVariant = 'glass' | 'solid' | 'premium' | 'cyber' | 'x-panel';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: CardVariant;
@@ -23,6 +23,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
     solid: 'bg-brand-surface border border-brand-border-opacity-10 shadow-sm',
     premium: 'bg-brand-surface border border-purple-500/20 shadow-premium relative overflow-hidden',
     cyber: 'bg-cyber-card border border-brand-primary/20 shadow-neon',
+    'x-panel': 'bg-brand-surface border border-brand-border shadow-sm transition-all',
   };
 
   const interactiveClasses = interactive 

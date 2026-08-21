@@ -45,26 +45,33 @@ export default function ChallengesPage() {
     if (claimingId) return;
     setClaimingId(taskDefId);
     const task = tasks.find(t => t.task_id === taskDefId);
+    const previousTasks = [...tasks];
+
+    // Optimistic instant state transition
+    setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
+
+    if (task) {
+      let title = task.title_key;
+      try {
+        title = t(task.title_key);
+      } catch {}
+      triggerTaskSuccess(title, task.xp_reward);
+    }
+
     try {
       const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
         method: "POST"
       });
       if (res.ok) {
-        // Update local task state
-        setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
-        // Refresh context so XP/level everywhere reflects the claim
         syncStats();
-
-        if (task) {
-          let title = task.title_key;
-          try {
-            title = t(task.title_key);
-          } catch {}
-          triggerTaskSuccess(title, task.xp_reward);
-        }
+      } else {
+        // Rollback on non-200
+        setTasks(previousTasks);
       }
     } catch (err) {
       console.error("Failed to claim task reward:", err);
+      // Rollback on network error
+      setTasks(previousTasks);
     } finally {
       setClaimingId(null);
     }
