@@ -27,13 +27,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   ...props
 }, ref) => {
   
-  const baseClasses = 'inline-flex items-center justify-center font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-white';
+  const baseClasses = 'inline-flex items-center justify-center font-bold tracking-wider transition-all duration-150 active:scale-[0.96] select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-white cursor-pointer';
   
   // Mobile-friendly sizes (ensuring at least 44px height for touch targets on md/lg)
   const sizeClasses = {
-    sm: 'text-xs px-3 py-1.5 min-h-[36px] rounded-lg',
-    md: 'text-sm px-4 py-2.5 min-h-[44px] rounded-xl',
-    lg: 'text-base px-6 py-3 min-h-[50px] rounded-2xl',
+    sm: 'text-[10px] px-3 py-1.5 min-h-[36px] rounded-xl font-bold uppercase tracking-wider',
+    md: 'text-xs px-4 py-2.5 min-h-[44px] rounded-2xl font-black uppercase tracking-wider',
+    lg: 'text-sm px-6 py-3 min-h-[50px] rounded-2xl font-black uppercase tracking-wider',
   };
 
   const variantClasses: Record<ButtonVariant, string> = {

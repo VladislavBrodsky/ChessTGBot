@@ -597,16 +597,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     });
   };
 
-  const formatTime = (seconds: number) => {
-    if (seconds <= 0) return "0.0";
-    if (seconds < 20) {
-      return seconds.toFixed(1);
-    }
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
   const prevFenRef = useRef<string | null>(null);
   const prevStatusRef = useRef<string | null>(null);
 

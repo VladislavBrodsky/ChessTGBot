@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaBolt, FaChessKnight } from 'react-icons/fa';
+import { FaBolt } from 'react-icons/fa';
 import { useLocale } from 'next-intl';
 import { telegramHaptic } from '@/lib/telegram';
 

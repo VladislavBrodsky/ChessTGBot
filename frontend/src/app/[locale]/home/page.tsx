@@ -7,7 +7,7 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { getFullPhotoUrl } from "@/lib/api";
 import Link from "next/link";
 import { 
-  FaGraduationCap, FaStar, FaChessKnight, 
+  FaGraduationCap, FaChessKnight, 
   FaWallet, FaTrophy,
   FaListOl, FaNewspaper, FaArrowRight
 } from "react-icons/fa";

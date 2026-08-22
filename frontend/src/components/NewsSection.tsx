@@ -50,7 +50,7 @@ export default function NewsSection() {
   return (
     <section aria-labelledby="news-heading" className="w-full space-y-3">
       <h2 id="news-heading" className="sr-only">Latest Updates & Announcements</h2>
-      {newsItems.map((item, idx) => {
+      {newsItems.map((item) => {
         const isExpanded = expandedId === item.id;
         return (
           <article

@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 interface ChessClockBadgeProps {
   gameState: any;
   color: 'w' | 'b';
-  isWhite: boolean;
+  isWhite?: boolean;
   onClockWarning?: (timeLeft: number) => void;
   isMe?: boolean;
 }
@@ -20,7 +20,7 @@ function formatTime(seconds: number): string {
 export function ChessClockBadge({
   gameState,
   color,
-  isWhite,
+  isWhite: _isWhite,
   onClockWarning,
   isMe = false,
 }: ChessClockBadgeProps) {

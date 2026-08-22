@@ -89,7 +89,7 @@ export default function Leaderboard() {
       : Math.max(...players.map(p => p.xp || 0), 5000);
   }, [players, activeTab]);
 
-  const renderRow = (item: LeaderboardItem, idx: number, isModal = false) => {
+  const renderRow = (item: LeaderboardItem, idx: number, _isModal = false) => {
     const cfg = getRankConfig(item.rank);
     const score = activeTab === 'arena' ? (item.elo || 0) : (item.xp || 0);
     const barPct = Math.min(100, Math.round((score / topScore) * 100));

@@ -19,7 +19,6 @@ import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { getXPProgress } from '@/lib/xpProgress';
 
 // These libraries are only needed after a user opens a puzzle preview or
@@ -63,7 +62,7 @@ export default function AcademyPage() {
   const locale = useLocale();
   const t = useTranslations('Academy');
   const router = useRouter();
-  const { stats, syncStats: mutateStats, loadingStats } = useUser();
+  const { stats, syncStats: mutateStats } = useUser();
 
   const fetcher = (url: string) => apiFetch(url).then((res) => {
     if (!res.ok) throw new Error("Failed to fetch");

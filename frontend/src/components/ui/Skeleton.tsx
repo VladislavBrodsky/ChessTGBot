@@ -38,7 +38,7 @@ export function Skeleton({
   return (
     <div
       aria-hidden="true"
-      className={`relative overflow-hidden bg-brand-elevated/60 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.8s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/[0.06] before:to-transparent ${getVariantStyles()} ${className}`}
+      className={`relative overflow-hidden bg-brand-elevated/60 dark:bg-white/[0.05] before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.6s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/[0.08] before:to-transparent ${getVariantStyles()} ${className}`}
       style={inlineStyles}
       {...props}
     />

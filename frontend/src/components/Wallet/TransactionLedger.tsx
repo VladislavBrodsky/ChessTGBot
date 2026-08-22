@@ -3,8 +3,6 @@
 import React from "react";
 import { FaArrowDown, FaArrowUp, FaRobot, FaGamepad, FaHistory } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";

@@ -4,8 +4,8 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { apiFetch, getFullPhotoUrl } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { getFullPhotoUrl } from "@/lib/api";
+import { useState } from "react";
 import { FaChessKing, FaChessPawn, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
@@ -102,7 +102,7 @@ export default function ProfilePage() {
 
  const labels = localizedLabels[locale] || localizedLabels['en'];
 
- const { stats, loadingStats } = useUser();
+ const { stats } = useUser();
  const [photoError, setPhotoError] = useState(false);
  const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
 

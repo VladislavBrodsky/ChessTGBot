@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 import { FaFire, FaTrophy, FaBrain, FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { Card } from '@/components/ui/Card';
