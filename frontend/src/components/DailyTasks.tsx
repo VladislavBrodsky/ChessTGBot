@@ -121,40 +121,43 @@ export default function DailyTasks() {
                             {t('no_missions')}
                         </motion.div>
                     ) : (
-                        <ol role="list" className="space-y-3 list-none m-0 p-0">
+                        <ol role="list" className="space-y-3 list-none m-0 p-0 relative">
+                            {/* Connected vertical milestone track */}
+                            <div className="absolute left-[26px] top-4 bottom-4 w-0.5 bg-brand-border-opacity-10 pointer-events-none -z-0" />
+                            
                             {tasks.map((task, index) => {
                                 const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
                                 return (
                                     <motion.li
                                         key={task.id}
                                         layout
-                                        initial={{ opacity: 0, y: 10 }}
+                                        initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
+                                        transition={{ delay: index * 0.04 }}
                                         className={`
-                                            relative overflow-hidden rounded-xl border p-3 flex items-center justify-between transition-all duration-300 list-item-contain
+                                            relative overflow-hidden rounded-2xl border p-3 flex items-center justify-between transition-all duration-300 list-item-contain z-10
                                             ${status === 'completed'
-                                                ? 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 opacity-60'
+                                                ? 'bg-brand-void/50 border-brand-border-opacity-10 opacity-70'
                                                 : status === 'claimable'
-                                                ? 'bg-gradient-to-r from-brand-surface to-emerald-900/20 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
-                                                : 'bg-brand-surface border-brand-border-opacity-10'}
+                                                ? 'bg-gradient-to-r from-brand-surface to-emerald-950/25 border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.18)]'
+                                                : 'bg-brand-surface/90 border-brand-border-opacity-10'}
                                         `}
                                     >
                                         <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
                                             <div className={`
-                                                w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all duration-300 shrink-0
-                                                ${status === 'completed' ? 'bg-brand-bg-text-brand-muted' 
-                                                : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
-                                                : 'bg-brand-bg-opacity-5 text-brand-muted'}
+                                                w-9 h-9 rounded-xl flex items-center justify-center text-sm transition-all duration-300 shrink-0
+                                                ${status === 'completed' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+                                                : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.4)]'
+                                                : 'bg-brand-elevated text-brand-muted border border-brand-border-opacity-10'}
                                             `}>
-                                                {status === 'completed' ? <FaCheck /> : <FaGift className={status === 'claimable' ? 'animate-pulse' : ''} />}
+                                                {status === 'completed' ? <FaCheck className="text-xs" /> : <FaGift className={status === 'claimable' ? 'animate-pulse text-xs' : 'text-xs'} />}
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-snug header-balanced truncate">
                                                     {t(task.title_key)}
                                                 </h4>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-1">
-                                                    <span>+{task.xp_reward} XP</span>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
+                                                    <span className="text-amber-400">+{task.xp_reward} XP</span>
                                                     <span>•</span>
                                                     <span>{task.progress} / {task.target_count}</span>
                                                 </div>
@@ -163,23 +166,23 @@ export default function DailyTasks() {
 
                                         {status === 'claimable' && (
                                             <motion.button
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
+                                                whileHover={{ scale: 1.04 }}
+                                                whileTap={{ scale: 0.94 }}
                                                 onClick={() => handleClaim(task.task_id)}
                                                 disabled={claimingId === task.task_id}
-                                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] text-[10px] font-black uppercase tracking-widest cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.35)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] text-[10px] font-black uppercase tracking-wider cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all select-none"
                                             >
                                                 {claimingId === task.task_id ? '...' : t('claim')}
                                             </motion.button>
                                         )}
 
                                         {status === 'pending' && (
-                                            <div className="w-16 h-1.5 bg-brand-bg-opacity-10 rounded-full overflow-hidden border border-brand-border-opacity-5 relative">
+                                            <div className="w-16 h-1.5 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10 relative">
                                                 <motion.div
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
-                                                    transition={{ duration: 1, ease: 'easeOut', delay: index * 0.05 + 0.2 }}
-                                                    className="h-full bg-brand-primary opacity-50 rounded-full absolute left-0 top-0"
+                                                    transition={{ duration: 0.8, ease: 'easeOut', delay: index * 0.04 + 0.1 }}
+                                                    className="h-full bg-brand-primary opacity-60 rounded-full absolute left-0 top-0"
                                                 />
                                             </div>
                                         )}

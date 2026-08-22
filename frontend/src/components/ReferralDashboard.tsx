@@ -382,68 +382,118 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
           </Card>
       </motion.div>
 
-      {/* Invite link: Web3 Premium Action Area */}
-      <div className="relative w-full rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-50/50 to-purple-500/5 dark:from-purple-500/10 dark:to-brand-surface/40 shadow-sm overflow-hidden mt-2">
-        {/* Ambient glow in the background */}
-        <div className="absolute -top-16 -right-16 w-40 h-40 bg-purple-500/15 rounded-full blur-[64px] pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-[48px] pointer-events-none" />
+      {/* Coupon Ticket Referral Code Card (inspired by Fintech Referral Template) */}
+      <div className="relative w-full rounded-2xl border-2 border-dashed border-purple-500/35 bg-gradient-to-br from-purple-500/10 via-brand-surface to-brand-void p-4 space-y-3.5 shadow-sm overflow-hidden mt-1">
+        {/* Perforated ticket ambient glow */}
+        <div className="absolute -top-12 -right-12 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="p-4 space-y-4 relative z-10">
-          
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex flex-col">
-              <p className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-[0.16em] mb-1 flex items-center gap-2">
-                {t('your_link')}
-                <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm">VIP</span>
-              </p>
-              <p className="text-[10px] font-bold text-purple-600/70 dark:text-purple-300/70 uppercase tracking-widest">Share to earn 15%</p>
-            </div>
-            <div className="px-2 py-1 rounded-lg border border-purple-500/30 bg-purple-500/10 text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest shadow-sm">
-              +50 XP
-            </div>
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-purple-400 uppercase tracking-[0.16em] flex items-center gap-1.5">
+              🎟️ {t('your_link')}
+              <span className="px-1.5 py-0.2 rounded-md text-[8px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm">VIP</span>
+            </span>
+            <span className="text-[9px] font-bold text-brand-muted uppercase tracking-widest mt-0.5">Share coupon to earn 15%</span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleCopy}
-              aria-label={`${t('copy')} ${t('your_link')}`}
-              className="min-h-11 flex-1 bg-white dark:bg-brand-void/50 border border-purple-500/20 rounded-xl px-3 py-3 flex items-center overflow-hidden text-left hover:border-purple-500/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 shadow-inner"
-            >
-              <span className="font-mono text-[10px] font-bold text-purple-700 dark:text-purple-300 tracking-wider truncate">
-                {inviteLink}
-              </span>
-            </button>
-            
-            <button
-              type="button"
-              onClick={handleCopy}
-              className={`shrink-0 h-11 px-4 flex items-center justify-center gap-1.5 font-black text-[10px] uppercase tracking-wider rounded-xl transition-all ${copied ? 'bg-purple-500/20 border border-purple-500/40 text-purple-700 dark:text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/30 text-purple-700 dark:text-purple-400 hover:bg-purple-500/30 shadow-sm'}`}
-            >
-              {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
-              {copied ? t('copied') : t('copy')}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleShare}
-              aria-label={`Share ${t('your_link')}`}
-              className="shrink-0 w-11 h-11 bg-white dark:bg-brand-void/50 border border-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
-            >
-              <FaShareAlt size={14} />
-            </button>
+          <div className="px-2 py-0.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-[9px] font-black text-purple-400 uppercase tracking-widest shadow-sm">
+            +50 XP
           </div>
-          
-          <Button 
-            variant="outline"
-            size="md"
-            onClick={() => setShowQr(!showQr)}
-            aria-expanded={showQr}
-            className="w-full mt-2 border-purple-500/20 bg-white dark:bg-brand-void/30 text-[10px] !text-purple-600 dark:!text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
-            leftIcon={<FaQrcode size={12} />}
+        </div>
+
+        <div className="flex items-center gap-2 relative z-10">
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label={`${t('copy')} ${t('your_link')}`}
+            className="min-h-11 flex-1 bg-brand-void/70 border border-purple-500/25 rounded-xl px-3 py-2.5 flex items-center overflow-hidden text-left hover:border-purple-500/45 transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 shadow-inner"
           >
-            {showQr ? "Hide QR Code" : "Show QR Code"}
-          </Button>
+            <span className="font-mono text-[10px] font-bold text-purple-300 tracking-wider truncate">
+              {inviteLink}
+            </span>
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleCopy}
+            className={`shrink-0 h-11 px-4 flex items-center justify-center gap-1.5 font-black text-[10px] uppercase tracking-wider rounded-xl transition-all select-none ${copied ? 'bg-purple-500/20 border border-purple-500/40 text-purple-400' : 'bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 shadow-sm'}`}
+          >
+            {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
+            {copied ? t('copied') : t('copy')}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label={`Share ${t('your_link')}`}
+            className="shrink-0 w-11 h-11 bg-brand-void/70 border border-purple-500/25 text-purple-400 rounded-xl flex items-center justify-center hover:border-purple-500/45 hover:bg-purple-500/10 transition-colors shadow-sm select-none"
+          >
+            <FaShareAlt size={14} />
+          </button>
+        </div>
+        
+        <Button 
+          variant="outline"
+          size="sm"
+          onClick={() => setShowQr(!showQr)}
+          aria-expanded={showQr}
+          className="w-full border-purple-500/20 bg-brand-void/30 text-[9px] !text-purple-400 uppercase tracking-widest hover:border-purple-500/40 hover:bg-purple-500/10 transition-colors shadow-sm"
+          leftIcon={<FaQrcode size={11} />}
+        >
+          {showQr ? "Hide QR Code" : "Show QR Code"}
+        </Button>
+      </div>
+
+      {/* 3-Step Referral Journey Stepper */}
+      <div className="w-full rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/60 p-3.5 space-y-3 shadow-sm mt-1">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+            How It Works
+          </span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            3 Simple Steps
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 text-center relative">
+          {/* Step 1 */}
+          <div className="flex flex-col items-center space-y-1 relative z-10">
+            <div className="w-7 h-7 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black text-xs flex items-center justify-center shadow-sm">
+              1
+            </div>
+            <span className="text-[9px] font-black uppercase text-brand-primary leading-tight header-balanced">
+              Share Link
+            </span>
+            <span className="text-[8px] font-medium text-brand-muted leading-tight text-pretty">
+              Send coupon to friends
+            </span>
+          </div>
+
+          {/* Step 2 */}
+          <div className="flex flex-col items-center space-y-1 relative z-10">
+            <div className="w-7 h-7 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black text-xs flex items-center justify-center shadow-sm">
+              2
+            </div>
+            <span className="text-[9px] font-black uppercase text-brand-primary leading-tight header-balanced">
+              Friend Plays
+            </span>
+            <span className="text-[8px] font-medium text-brand-muted leading-tight text-pretty">
+              Plays match or deposits
+            </span>
+          </div>
+
+          {/* Step 3 */}
+          <div className="flex flex-col items-center space-y-1 relative z-10">
+            <div className="w-7 h-7 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-black text-xs flex items-center justify-center shadow-sm">
+              3
+            </div>
+            <span className="text-[9px] font-black uppercase text-amber-400 leading-tight header-balanced">
+              Earn USDT
+            </span>
+            <span className="text-[8px] font-medium text-brand-muted leading-tight text-pretty">
+              15% revenue share
+            </span>
+          </div>
         </div>
       </div>
 

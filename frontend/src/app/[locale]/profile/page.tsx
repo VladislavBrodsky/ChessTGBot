@@ -10,6 +10,7 @@ import { FaChessKing, FaChessPawn, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
+import DailyGoalsBento from "@/components/DailyGoalsBento";
 import { Card } from "@/components/ui/Card";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -161,16 +162,11 @@ export default function ProfilePage() {
   <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
   )}
   </div>
-    {/* Premium overlay badge */}
-    {stats?.is_premium ? (
-      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/40 bg-brand-elevated text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon">
-        {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
-      </div>
-    ) : (
-      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border bg-brand-elevated text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
-        {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
-      </div>
-    )}
+    {/* Floating Level & Tier Badge */}
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full border border-amber-400/40 bg-brand-surface text-amber-400 text-[9px] font-black uppercase tracking-wider whitespace-nowrap shadow-sm flex items-center gap-1">
+      <span>LVL {stats?.level || 1}</span>
+      <span className="text-[8px]">⚡</span>
+    </div>
   </div>
   <h1 className="text-xl sm:text-2xl font-black text-brand-primary tracking-tighter uppercase mb-0.5 header-balanced">
   {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
@@ -294,6 +290,14 @@ export default function ProfilePage() {
       </div>
       <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
     </section>
+  )}
+
+  {/* Daily Combat Goals Bento */}
+  {stats && (
+    <DailyGoalsBento
+      percentile={stats.percentile || 74}
+      xpCurrent={Math.min(300, (stats.xp || 0) % 500)}
+    />
   )}
 
  {/* Gamification Sections */}

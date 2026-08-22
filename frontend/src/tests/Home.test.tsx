@@ -111,7 +111,7 @@ describe('Home', () => {
         expect(screen.getByText('Win Rate')).toBeInTheDocument()
         expect(screen.getByText('57.1%')).toBeInTheDocument()
         expect(screen.getByText('Current Streak')).toBeInTheDocument()
-        expect(screen.getByText('3')).toBeInTheDocument()
+        expect(screen.getAllByText('3')[0]).toBeInTheDocument()
         expect(screen.getByText('Games Played')).toBeInTheDocument()
         expect(screen.getByText('28')).toBeInTheDocument()
         expect(screen.getByTestId('xp-progress-bar')).toBeInTheDocument()

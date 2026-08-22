@@ -22,6 +22,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
 import NotificationModal from "@/components/NotificationModal";
+import DailyGoalsBento from "@/components/DailyGoalsBento";
 import { QuickPlayFAB } from "@/components/ui/QuickPlayFAB";
 import { telegramHaptic } from "@/lib/telegram";
 
@@ -231,11 +232,12 @@ export default function Home() {
           src={stats.photo_url || tgUser?.photo_url ? getFullPhotoUrl(stats.photo_url || tgUser?.photo_url) : undefined}
           name={`${stats.first_name} ${stats.last_name || ""}`.trim() || tgUser?.first_name}
           size="lg"
-          badge={stats.is_premium ? (
-            <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] border border-brand-gold/40 bg-brand-elevated text-brand-gold shadow-sm">
-              <FaStar />
+          badge={
+            <div className="px-1.5 py-0.5 rounded-full flex items-center gap-0.5 text-[8px] font-black border border-amber-400/40 bg-brand-surface text-amber-400 shadow-sm">
+              <span>{stats.level || 1}</span>
+              <span className="text-[7px]">⚡</span>
             </div>
-          ) : undefined}
+          }
         />
         <div className="flex flex-col justify-center text-left">
           <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
@@ -349,11 +351,19 @@ export default function Home() {
      <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('daily_tasks')}</span>
     </motion.div>
    </Link>
+   </div>
   </div>
- </div>
 
- {/* Global Leaderboard Panel */}
- <div className="w-full space-y-2 relative z-10">
+  {/* Daily Combat Goals Bento */}
+  {stats && (
+    <DailyGoalsBento
+      percentile={stats.percentile || 74}
+      xpCurrent={Math.min(300, (stats.xp || 0) % 500)}
+    />
+  )}
+
+  {/* Global Leaderboard Panel */}
+  <div className="w-full space-y-2 relative z-10">
  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
  <FaListOl className="text-brand-muted text-xs" />
  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">{t('leaderboard')}</h3>
