@@ -97,21 +97,22 @@ export default function WalletPage() {
 
   return (
     <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12 pt-2">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12 pt-2 space-y-6">
       
         {/* Header Back Link */}
-        <div className="w-full flex items-center justify-between">
+        <header className="w-full flex items-center justify-between">
           <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-muted hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
             <FaChevronLeft className="text-xs" />
             <span>{t('back')}</span>
           </Link>
-          <span className="text-xs font-black text-brand-muted uppercase tracking-widest">{tw('title')}</span>
-        </div>
+          <h1 className="text-xs font-black text-brand-muted uppercase tracking-widest">{tw('title')}</h1>
+        </header>
 
         {/* HOLOGRAPHIC CYBER-CARD */}
-        <div className="w-full mt-6">
+        <section aria-labelledby="wallet-balance-heading" className="w-full">
+          <h2 id="wallet-balance-heading" className="sr-only">Wallet Balance Card</h2>
           <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={refreshWalletData} />
-        </div>
+        </section>
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
         <div className="w-full grid grid-cols-3 gap-2.5 mt-6">
@@ -213,7 +214,7 @@ export default function WalletPage() {
           )}
         </AnimatePresence>
 
-      </div>
+      </main>
     </LayoutWrapper>
   );
 }

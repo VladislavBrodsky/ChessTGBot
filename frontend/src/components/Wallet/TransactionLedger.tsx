@@ -118,13 +118,13 @@ export default function TransactionLedger({
   const tw = useTranslations('Wallet');
 
   return (
-    <div className="w-full space-y-3">
+    <section aria-labelledby="tx-history-heading" className="w-full space-y-3">
       {/* Ledger Header */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-xs font-black uppercase tracking-wider text-brand-primary flex items-center gap-2">
+        <h2 id="tx-history-heading" className="text-xs font-black uppercase tracking-wider text-brand-primary flex items-center gap-2">
           <FaHistory className="text-brand-muted text-xs" />
           {tw('tx_history_title')}
-        </span>
+        </h2>
         {transactions && transactions.length > 0 && (
           <span className="text-[10px] font-bold text-brand-muted">
             {transactions.length} records
@@ -153,7 +153,7 @@ export default function TransactionLedger({
           description="Your deposits, withdrawals, and game settlements will appear here."
         />
       ) : (
-        <div className="w-full flex flex-col space-y-2">
+        <ol role="list" className="w-full flex flex-col space-y-2 list-none m-0 p-0">
           {transactions.map((tx) => {
             const isPositive = tx.amount > 0;
             const isZero = tx.amount === 0;
@@ -161,9 +161,9 @@ export default function TransactionLedger({
             const formattedFee = tx.fee > 0 ? `($${(tx.fee / 100).toFixed(2)} fee)` : "";
 
             return (
-              <div 
+              <li 
                 key={tx.id}
-                className="w-full flex items-center justify-between p-3 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-border-opacity-20 transition-all"
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-border-opacity-20 transition-all list-item-contain"
               >
                 <div className="flex items-center space-x-3 min-w-0">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs shrink-0 border ${
@@ -198,21 +198,25 @@ export default function TransactionLedger({
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end shrink-0 pl-3">
-                  <span className={`text-xs font-bold font-mono ${isZero ? 'text-brand-muted' : isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {isZero ? '' : isPositive ? '+' : '-'}{formattedAmt}
+                <div className="flex flex-col items-end shrink-0 pl-2">
+                  <span className={`text-xs font-black font-mono ${
+                    isZero ? 'text-brand-muted' :
+                    isPositive ? 'text-emerald-400' :
+                    'text-rose-400'
+                  }`}>
+                    {isZero ? '$0.00' : `${isPositive ? '+' : '-'}${formattedAmt}`}
                   </span>
-                  {tx.fee > 0 && (
-                    <span className="text-[10px] text-brand-muted font-mono">
+                  {formattedFee && (
+                    <span className="text-[9px] text-brand-muted">
                       {formattedFee}
                     </span>
                   )}
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ol>
       )}
-    </div>
+    </section>
   );
 }
