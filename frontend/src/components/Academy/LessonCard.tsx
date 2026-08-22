@@ -92,12 +92,12 @@ export default function LessonCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-black tracking-tight text-brand-primary uppercase leading-tight mb-1.5">
+        <h3 className="text-sm font-black tracking-tight text-brand-primary uppercase leading-tight mb-1.5 header-balanced">
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-[11px] text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3">
+        <p className="text-[11px] text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3 text-pretty">
           {description}
         </p>
 

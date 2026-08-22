@@ -364,6 +364,17 @@ body {
   background-attachment: fixed;
 }
 
+/* 2026 Typography Standards: Anti-Orphan & Balanced Wrapping */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+p, li, blockquote {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
 
 
 /* Consistent, visible keyboard focus without changing pointer interactions. */

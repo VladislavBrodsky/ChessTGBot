@@ -105,8 +105,8 @@ export default function DailyHintCard() {
               <FaCheckCircle className="text-[40px] text-emerald-500 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] relative z-10" />
             </motion.div>
             
-            <div className="flex flex-col gap-1.5 flex-1">
-              <p className="text-xs font-medium text-brand-muted leading-relaxed drop-shadow-md italic">
+            <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+              <p className="text-xs font-medium text-brand-muted leading-relaxed drop-shadow-md italic text-pretty">
                 "{hint}"
               </p>
               <motion.p 
