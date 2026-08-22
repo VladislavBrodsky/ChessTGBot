@@ -211,30 +211,38 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                 onClick={() => {
                                     if (!isActive) telegramHaptic('selection');
                                 }}
-                                className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+                                className="block rounded-2xl focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none select-none"
                             >
-                                <div className={`app-bottom-nav__button relative flex flex-col items-center justify-center min-h-[50px] w-full rounded-[20px] transition-all duration-300 ${
-                                    isActive ? 'app-bottom-nav__item--active' : ''
-                                }`}>
-                                    <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-300 relative z-10 ${
+                                <motion.div 
+                                    whileTap={{ scale: 0.93 }}
+                                    className="app-bottom-nav__button relative flex flex-col items-center justify-center min-h-[50px] w-full rounded-[20px] transition-all duration-200"
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activeMobileNavPill"
+                                            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                                            className="absolute inset-0 bg-emerald-500/10 border border-emerald-500/25 rounded-[18px] shadow-[0_0_14px_rgba(16,185,129,0.18)]"
+                                        />
+                                    )}
+                                    <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-200 relative z-10 ${
                                         isActive 
-                                            ? 'text-emerald-500 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.4)]' 
+                                            ? 'text-emerald-400 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.5)]' 
                                             : isPrimary 
                                                 ? 'text-emerald-500/80 scale-105' 
                                                 : 'text-brand-muted hover:text-brand-primary'
                                     } text-[20px]`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`app-bottom-nav__label max-w-full truncate text-[10px] font-bold tracking-[0.02em] transition-all duration-300 relative z-10 mt-0.5 px-0.5 ${
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[10px] font-black uppercase tracking-[0.05em] transition-all duration-200 relative z-10 mt-0.5 px-0.5 ${
                                         isActive 
-                                            ? 'text-emerald-500' 
+                                            ? 'text-emerald-400' 
                                             : isPrimary 
                                                 ? 'text-emerald-500/80' 
                                                 : 'text-brand-muted'
                                     }`}>
                                         {item.label}
                                     </span>
-                                </div>
+                                </motion.div>
                             </Link>
                         </li>
                     );
