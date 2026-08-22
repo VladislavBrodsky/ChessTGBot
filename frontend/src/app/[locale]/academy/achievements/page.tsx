@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { FaTrophy, FaStar, FaShieldAlt, FaBook, FaFire, FaCoins, FaLock } from "react-icons/fa";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import BadgeShowcaseModal from "@/components/BadgeShowcaseModal";
+import { telegramHaptic } from "@/lib/telegram";
 
 interface Achievement {
   id: number;
@@ -28,6 +30,7 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedBadge, setSelectedBadge] = useState<Achievement | null>(null);
 
   useEffect(() => {
     apiFetch('/api/v1/gamification/achievements')
@@ -62,46 +65,64 @@ export default function AchievementsPage() {
 
   return (
     <LayoutWrapper className="pb-32 px-4 md:px-6">
-    <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight">Achievements</h1>
-        <p className="text-sm font-bold text-brand-muted tracking-widest uppercase">
-          Unlocked {unlockedCount} / {achievements.length}
-        </p>
+      <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight header-balanced">Achievements</h1>
+          <p className="text-sm font-bold text-brand-muted tracking-widest uppercase">
+            Unlocked {unlockedCount} / {achievements.length}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {achievements.map((ach) => (
+            <div
+              key={ach.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                telegramHaptic('selection');
+                setSelectedBadge(ach);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  telegramHaptic('selection');
+                  setSelectedBadge(ach);
+                }
+              }}
+              className={`relative p-4 rounded-2xl border flex flex-col items-center text-center transition-all cursor-pointer select-none active:scale-[0.97] ${
+                ach.unlocked 
+                  ? 'glass-panel border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:border-emerald-500/50' 
+                  : 'glass-panel opacity-60 border-brand-border-opacity-10 bg-brand-surface grayscale hover:opacity-80'
+              }`}
+            >
+              <div className={`text-4xl mb-3 ${ach.unlocked ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'text-slate-500'}`}>
+                {iconMap[ach.icon] || <FaTrophy />}
+              </div>
+              
+              <h3 className="text-sm font-black text-brand-primary uppercase mb-1 header-balanced">{ach.title}</h3>
+              <p className="text-[10px] text-brand-muted font-medium leading-tight mb-3 flex-1 text-pretty">{ach.description}</p>
+              
+              {ach.xp_reward > 0 && (
+                <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                  <span className="text-[9px] font-black uppercase">+{ach.xp_reward} XP</span>
+                </div>
+              )}
+              
+              {!ach.unlocked && (
+                <div className="absolute top-2 right-2">
+                  <FaLock className="text-xs text-slate-500" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {achievements.map((ach) => (
-          <div
-            key={ach.id}
-            className={`relative p-4 rounded-2xl border flex flex-col items-center text-center transition-all ${
-              ach.unlocked 
-                ? 'glass-panel border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-                : 'glass-panel opacity-50 border-brand-border-opacity-10 bg-brand-surface grayscale'
-            }`}
-          >
-            <div className={`text-4xl mb-3 ${ach.unlocked ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'text-slate-500'}`}>
-              {iconMap[ach.icon] || <FaTrophy />}
-            </div>
-            
-            <h3 className="text-sm font-black text-brand-primary uppercase mb-1">{ach.title}</h3>
-            <p className="text-[10px] text-brand-muted font-medium leading-tight mb-3 flex-1">{ach.description}</p>
-            
-            {ach.xp_reward > 0 && (
-              <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                <span className="text-[9px] font-black uppercase">+{ach.xp_reward} XP</span>
-              </div>
-            )}
-            
-            {!ach.unlocked && (
-              <div className="absolute top-2 right-2">
-                <FaLock className="text-xs text-slate-500" />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+      <BadgeShowcaseModal
+        isOpen={Boolean(selectedBadge)}
+        onClose={() => setSelectedBadge(null)}
+        badge={selectedBadge}
+      />
     </LayoutWrapper>
   );
 }
