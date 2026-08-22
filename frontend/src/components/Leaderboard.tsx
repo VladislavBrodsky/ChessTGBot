@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook, FaFire } from 'react-icons/fa';
-import { FiAward, FiClock, FiChevronRight, FiRadio } from 'react-icons/fi';
+import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
+import { FiAward, FiChevronRight, FiRadio } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
@@ -11,6 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { Drawer } from '@/components/ui/Drawer';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { SkeletonList } from '@/components/ui/Skeleton';
+import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
 
 interface LeaderboardItem {
@@ -38,8 +38,6 @@ export default function Leaderboard() {
   }, [activeTab, arenaData, academyData]);
 
   const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
-
-  const [brokenAvatars, setBrokenAvatars] = useState<Record<number, boolean>>({});
   const [showModal, setShowModal] = useState(false);
   const { trackEvent } = useTelemetry();
 
@@ -52,7 +50,6 @@ export default function Leaderboard() {
       icon: <FaCrown className="text-amber-400" size={14} />,
       label: '1',
       rowBg: 'bg-amber-500/10 border-amber-500/30',
-      avatarRing: 'ring-2 ring-amber-400/60 ring-offset-1 ring-offset-brand-surface',
       barColor: 'bg-amber-400',
       rankBg: 'bg-amber-400/20 text-amber-300',
     };
@@ -60,7 +57,6 @@ export default function Leaderboard() {
       icon: <FaMedal className="text-slate-300" size={13} />,
       label: '2',
       rowBg: 'bg-slate-500/10 border-slate-400/30',
-      avatarRing: 'ring-2 ring-slate-300/40 ring-offset-1 ring-offset-brand-surface',
       barColor: 'bg-slate-300',
       rankBg: 'bg-slate-700/40 text-slate-200',
     };
@@ -68,7 +64,6 @@ export default function Leaderboard() {
       icon: <FaMedal className="text-amber-600" size={13} />,
       label: '3',
       rowBg: 'bg-amber-900/10 border-amber-700/30',
-      avatarRing: 'ring-2 ring-amber-600/40 ring-offset-1 ring-offset-brand-surface',
       barColor: 'bg-amber-600',
       rankBg: 'bg-amber-900/30 text-amber-400',
     };
@@ -76,7 +71,6 @@ export default function Leaderboard() {
       icon: null,
       label: `#${rank}`,
       rowBg: 'bg-brand-surface border-brand-border',
-      avatarRing: 'ring-1 ring-brand-border',
       barColor: 'bg-brand-muted/40',
       rankBg: 'text-brand-muted',
     };
@@ -99,11 +93,10 @@ export default function Leaderboard() {
     const cfg = getRankConfig(item.rank);
     const score = activeTab === 'arena' ? (item.elo || 0) : (item.xp || 0);
     const barPct = Math.min(100, Math.round((score / topScore) * 100));
-    const hasActivity = (item.games_played || 0) > 0 || (item.xp || 0) > 0;
-    const avatarSize = item.rank === 1 ? 'w-10 h-10' : 'w-9 h-9';
+    const fullName = `${item.first_name} ${item.last_name || ''}`.trim();
 
     return (
-      <div
+      <li
         key={`${item.telegram_id}-${item.rank}`}
         className={`flex items-center justify-between p-3 rounded-2xl border transition-all duration-200 ${cfg.rowBg}`}
       >
@@ -113,25 +106,15 @@ export default function Leaderboard() {
             {cfg.icon || cfg.label}
           </div>
 
-          <div className={`relative shrink-0 rounded-full overflow-hidden ${avatarSize} ${cfg.avatarRing} bg-brand-elevated`}>
-            {item.photo_url && !brokenAvatars[item.telegram_id] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={getFullPhotoUrl(item.photo_url)}
-                alt=""
-                className="w-full h-full object-cover"
-                onError={() => setBrokenAvatars(prev => ({ ...prev, [item.telegram_id]: true }))}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-brand-muted font-bold text-xs">
-                {item.first_name?.[0] || 'C'}
-              </div>
-            )}
-          </div>
+          <Avatar
+            src={item.photo_url ? getFullPhotoUrl(item.photo_url) : undefined}
+            name={fullName}
+            size={item.rank === 1 ? 'md' : 'sm'}
+          />
 
           <div className="min-w-0">
             <p className="text-xs font-bold text-brand-primary truncate">
-              {item.first_name} {item.last_name || ''}
+              {fullName}
             </p>
             <p className="text-[10px] text-brand-muted truncate">
               {activeTab === 'arena'
@@ -158,7 +141,7 @@ export default function Leaderboard() {
             />
           </div>
         </div>
-      </div>
+      </li>
     );
   };
 
@@ -168,16 +151,16 @@ export default function Leaderboard() {
   ];
 
   return (
-    <div className="w-full space-y-4">
+    <section aria-labelledby="leaderboard-heading" className="w-full space-y-4">
       {/* Section Header */}
       <div className="flex flex-col items-center text-center gap-1.5">
         <div className="flex items-center justify-center gap-2">
           <span className="w-7 h-7 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center">
             <FaChessKnight size={13} />
           </span>
-          <h3 className="text-base font-black text-brand-primary tracking-tight uppercase leading-none">
+          <h2 id="leaderboard-heading" className="text-base font-black text-brand-primary tracking-tight uppercase leading-none">
             {t('global_ranking')}
-          </h3>
+          </h2>
         </div>
         <div className="flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-muted">
           <span className="flex items-center gap-1 text-amber-400"><FiAward size={11} /> Season 1</span>
@@ -210,19 +193,19 @@ export default function Leaderboard() {
           </div>
         </div>
 
-        <div className="p-3 space-y-2">
+        <ol aria-label="Leaderboard standings" className="p-3 space-y-2 list-none m-0">
           {loading ? (
             <SkeletonList count={5} />
           ) : displayedPlayers.length > 0 ? (
             displayedPlayers.map((item, idx) => renderRow(item, idx))
           ) : (
-            <div className="py-8 px-4 text-center space-y-2">
+            <li className="py-8 px-4 text-center space-y-2 list-none">
               <FaChessKnight className="mx-auto text-brand-muted" size={24} />
               <p className="text-brand-primary font-bold text-xs uppercase tracking-wider">{t('no_data')}</p>
               <p className="text-brand-muted text-xs">Complete a game or lesson to enter the standings.</p>
-            </div>
+            </li>
           )}
-        </div>
+        </ol>
 
         {!loading && players.length > 5 && (
           <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-brand-border bg-brand-elevated/50">
@@ -231,7 +214,7 @@ export default function Leaderboard() {
             </span>
             <button
               onClick={() => setShowModal(true)}
-              className="flex shrink-0 items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300 transition-colors"
+              className="flex shrink-0 items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300 transition-colors cursor-pointer"
             >
               <FaTrophy size={11} className="opacity-70" />
               View all
@@ -255,11 +238,11 @@ export default function Leaderboard() {
             onChange={setActiveTab}
             size="sm"
           />
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          <ol aria-label="All standings" className="space-y-2 max-h-[60vh] overflow-y-auto pr-1 list-none m-0">
             {players.map((item, idx) => renderRow(item, idx, true))}
-          </div>
+          </ol>
         </div>
       </Drawer>
-    </div>
+    </section>
   );
 }

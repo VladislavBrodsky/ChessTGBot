@@ -1,6 +1,6 @@
 :HL["/_next/static/media/636a5ac981f94f8b-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/media/739c2d8941231bb4-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/media/7b0b24f36b1a6d0b-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-:HL["/_next/static/css/4c4f6f69fc852d4d.css","style"]
+:HL["/_next/static/css/1f6aa4720021dfd4.css","style"]
 :HL["/_next/static/css/5812a989f4aa4c8c.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"locale","param":{"type":"d","key":"en","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"academy","param":null,"prefetchHints":0,"slots":{"children":{"name":"lesson","param":null,"prefetchHints":0,"slots":{"children":{"name":"lessonId","param":{"type":"d","key":"tactics-101","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}}}},"staleTime":300,"buildId":"pNV49g6X5GMHw3iM_kemu"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"locale","param":{"type":"d","key":"en","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"academy","param":null,"prefetchHints":0,"slots":{"children":{"name":"lesson","param":null,"prefetchHints":0,"slots":{"children":{"name":"lessonId","param":{"type":"d","key":"tactics-101","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}}}},"staleTime":300,"buildId":"ov_o3mjb80Mr5pY09l1af"}

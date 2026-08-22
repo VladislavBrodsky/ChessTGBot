@@ -18,6 +18,7 @@ import NewsSection from "@/components/NewsSection";
 import { useUser } from "@/context/UserContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyCheckinModal from "@/components/DailyCheckinModal";
 import NotificationModal from "@/components/NotificationModal";
@@ -226,45 +227,24 @@ export default function Home() {
 
       <div className="flex items-center justify-between mb-4 relative z-10">
       <div className="flex items-center space-x-3.5">
-      <div className="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border-opacity-10 p-0.5 relative shadow-inner-glow">
-      {(() => {
-        const rawPhoto = stats.photo_url || tgUser?.photo_url;
-        const hasPhoto = rawPhoto && rawPhoto !== 'null' && rawPhoto !== 'undefined' && rawPhoto !== '';
-        return (
-          <>
-            {hasPhoto ? (
-              // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
-              <img
-                src={getFullPhotoUrl(rawPhoto)}
-                alt="Profile" 
-                className="w-full h-full rounded-lg object-cover"
-                fetchPriority="high"
-                onError={(e) => { 
-                  (e.target as HTMLImageElement).style.display = 'none'; 
-                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); 
-                }}
-              />
-            ) : null}
-            <div className={`w-full h-full rounded-lg bg-brand-bg-opacity-5 flex items-center justify-center text-lg font-black text-brand-muted ${hasPhoto ? 'hidden' : ''}`}>
-              {stats.first_name?.[0] || tgUser?.first_name?.[0] || "?"}
+        <Avatar
+          src={stats.photo_url || tgUser?.photo_url ? getFullPhotoUrl(stats.photo_url || tgUser?.photo_url) : undefined}
+          name={`${stats.first_name} ${stats.last_name || ""}`.trim() || tgUser?.first_name}
+          size="lg"
+          badge={stats.is_premium ? (
+            <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] border border-brand-gold/40 bg-brand-elevated text-brand-gold shadow-sm">
+              <FaStar />
             </div>
-          </>
-        );
-      })()}
-      {stats.is_premium && (
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-brand-gold/40 bg-gradient-to-br from-brand-gold/10 to-brand-gold/20 text-brand-gold shadow-premium backdrop-blur-md">
-      <FaStar />
-      </div>
-      )}
-      </div>
-      <div className="flex flex-col justify-center">
-      <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
-      {`${stats.first_name} ${stats.last_name || ""}`.trim()}
-      </h2>
-      <span className="text-[11px] font-black text-brand-muted tracking-widest uppercase leading-none">
-      {stats.elo || 1000} {t('elo')}
-      </span>
-      </div>
+          ) : undefined}
+        />
+        <div className="flex flex-col justify-center text-left">
+          <h2 className="text-sm font-extrabold tracking-tight text-brand-primary leading-none mb-1.5">
+            {`${stats.first_name} ${stats.last_name || ""}`.trim()}
+          </h2>
+          <span className="text-[11px] font-black text-brand-muted tracking-widest uppercase leading-none">
+            {stats.elo || 1000} {t('elo')}
+          </span>
+        </div>
       </div>
 
       {/* Balance pill inside the User Card */}
