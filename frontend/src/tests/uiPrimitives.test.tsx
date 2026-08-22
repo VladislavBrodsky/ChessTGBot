@@ -8,6 +8,9 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
 import { Toast } from '../components/ui/Toast';
 import { Card } from '../components/ui/Card';
+import { Avatar } from '../components/ui/Avatar';
+import { Switch } from '../components/ui/Switch';
+import { Tabs } from '../components/ui/Tabs';
 
 describe('UI Primitives Layer', () => {
   describe('Input', () => {
@@ -136,6 +139,59 @@ describe('UI Primitives Layer', () => {
       );
       expect(container.firstChild).toHaveClass('bg-brand-surface');
       expect(container.firstChild).toHaveClass('border-brand-border');
+    });
+  });
+
+  describe('Avatar, Switch, & Tabs', () => {
+    it('renders Avatar with fallback initials and online badge', () => {
+      render(<Avatar name="Magnus Carlsen" isOnline={true} />);
+      expect(screen.getByText('MC')).toBeInTheDocument();
+      expect(screen.getByLabelText('Online')).toBeInTheDocument();
+    });
+
+    it('renders accessible Switch and toggles on click and keydown', () => {
+      const handleChange = jest.fn();
+      render(
+        <Switch
+          label="Sound FX"
+          description="Enable game audio"
+          checked={false}
+          onChange={handleChange}
+        />
+      );
+
+      const switchBtn = screen.getByRole('switch');
+      expect(switchBtn).toHaveAttribute('aria-checked', 'false');
+
+      fireEvent.click(switchBtn);
+      expect(handleChange).toHaveBeenCalledWith(true);
+
+      fireEvent.keyDown(switchBtn, { key: ' ' });
+      expect(handleChange).toHaveBeenCalledWith(true);
+    });
+
+    it('renders Tabs and switches selection on tab click', () => {
+      const handleTabChange = jest.fn();
+      const tabs = [
+        { id: 'overview', label: 'Overview', badge: 3 },
+        { id: 'stats', label: 'Stats' },
+      ];
+
+      render(
+        <Tabs
+          tabs={tabs}
+          activeTab="overview"
+          onChange={handleTabChange}
+        />
+      );
+
+      const overviewTab = screen.getByRole('tab', { name: /overview/i });
+      expect(overviewTab).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByText('3')).toBeInTheDocument();
+
+      const statsTab = screen.getByRole('tab', { name: /stats/i });
+      fireEvent.click(statsTab);
+      expect(handleTabChange).toHaveBeenCalledWith('stats');
     });
   });
 });

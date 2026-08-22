@@ -11,6 +11,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/context/ToastContext";
+import { Switch } from "@/components/ui/Switch";
 import { apiFetch } from "@/lib/api";
 import { useReducedMotionPreference } from "@/context/ReducedMotionContext";
 
@@ -130,7 +131,7 @@ export default function SettingsPage() {
  {/* Theme row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
  {theme === 'dark' ? <FaMoon /> : <FaSun />}
  </div>
  <div className="flex flex-col text-left">
@@ -142,23 +143,17 @@ export default function SettingsPage() {
  </span>
  </div>
  </div>
- <button
- role="switch"
- aria-checked={theme === 'dark'}
+ <Switch
+ checked={theme === 'dark'}
+ onChange={handleThemeToggle}
  aria-label={t('luminance_mode')}
- onClick={handleThemeToggle}
- className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
- theme === 'dark' ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
- }`}
- >
- <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
- </button>
+ />
  </div>
 
  {/* Reduce motion row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
  <FaUniversalAccess />
  </div>
  <div className="flex flex-col text-left">
@@ -170,23 +165,17 @@ export default function SettingsPage() {
  </span>
  </div>
  </div>
- <button
- role="switch"
- aria-checked={reducedMotion}
+ <Switch
+ checked={reducedMotion}
+ onChange={handleReducedMotionToggle}
  aria-label={t('reduce_motion')}
- onClick={handleReducedMotionToggle}
- className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
- reducedMotion ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
- }`}
- >
- <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
- </button>
+ />
  </div>
 
  {/* Sound effects row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
  <FaVolumeUp />
  </div>
  <div className="flex flex-col text-left">
@@ -198,23 +187,17 @@ export default function SettingsPage() {
  </span>
  </div>
  </div>
- <button
- role="switch"
- aria-checked={soundEnabled}
+ <Switch
+ checked={soundEnabled}
+ onChange={handleSoundToggle}
  aria-label={t('audio_protocol')}
- onClick={handleSoundToggle}
- className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
- soundEnabled ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
- }`}
- >
- <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
- </button>
+ />
  </div>
 
  {/* Arena alerts row */}
  <div className="p-4 flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+ <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
  <FaTrophy />
  </div>
  <div className="flex flex-col text-left">
@@ -226,20 +209,14 @@ export default function SettingsPage() {
  </span>
  </div>
  </div>
- <button
- role="switch"
- aria-checked={arenaAlerts}
- aria-label={t('arena_alerts')}
- onClick={handleArenaAlertsToggle}
- className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors duration-300 ease-in-out ${
- arenaAlerts ? 'bg-brand-success justify-end' : 'bg-brand-bg-opacity-10 justify-start'
- }`}
- >
- <motion.div layout className="w-5 h-5 bg-brand-surface rounded-full shadow-md flex items-center justify-center" />
- </button>
- </div>
- </div>
- </div>
+ <Switch
+  checked={arenaAlerts}
+  onChange={handleArenaAlertsToggle}
+  aria-label={t('arena_alerts')}
+  />
+  </div>
+  </div>
+  </div>
 
  {/* Section: Language */}
  <div className="w-full space-y-2.5 mb-6">

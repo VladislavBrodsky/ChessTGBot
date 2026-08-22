@@ -161,16 +161,16 @@ export default function ProfilePage() {
  <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
  )}
  </div>
-  {/* Premium overlay badge */}
-  {stats?.is_premium ? (
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/30 bg-gradient-to-br from-brand-gold/20 to-brand-gold/40 text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon backdrop-blur-md">
-      {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
-    </div>
-  ) : (
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-primary/30 bg-gradient-to-br from-brand-surface to-brand-void text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-[0_0_12px_rgba(255,255,255,0.05)] backdrop-blur-md">
-      {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
-    </div>
-  )}
+   {/* Premium overlay badge */}
+   {stats?.is_premium ? (
+     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/40 bg-brand-elevated text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon">
+       {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
+     </div>
+   ) : (
+     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border bg-brand-elevated text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
+       {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
+     </div>
+   )}
  </div>
  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
  {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
