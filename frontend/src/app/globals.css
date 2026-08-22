@@ -1547,8 +1547,19 @@ div[class*="chessboard"] svg {
 [dir="rtl"] .right-0 { left: 0 !important; right: auto !important; }
 [dir="rtl"] .right-1 { left: 0.25rem !important; right: auto !important; }
 [dir="rtl"] .right-2 { left: 0.5rem !important; right: auto !important; }
-[dir="rtl"] .right-3 { left: 0.75rem !important; right: auto !important; }
-[dir="rtl"] .right-4 { left: 1rem !important; right: auto !important; }
-[dir="rtl"] .right-5 { left: 1.25rem !important; right: auto !important; }
 [dir="rtl"] .right-6 { left: 1.5rem !important; right: auto !important; }
 [dir="rtl"] .right-8 { left: 2rem !important; right: auto !important; }
+
+/* 2026 CSS Performance & Layout Containment */
+.list-item-contain {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 68px;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}

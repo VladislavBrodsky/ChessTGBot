@@ -320,18 +320,18 @@ export default function AcademyPage() {
           />
         </div>
       )}
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8">
 
         {/* Header */}
-        <div className="flex flex-col items-center w-full mb-4">
-          <motion.div
+        <header className="flex flex-col items-center w-full mb-4">
+          <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 text-brand-primary text-3xl font-black tracking-tighter select-none uppercase"
           >
             <FaBrain className="text-2xl opacity-80" />
             {t('title')}
-          </motion.div>
+          </motion.h1>
           <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
           <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-muted">{t('subtitle')}</span>
 
@@ -364,7 +364,7 @@ export default function AcademyPage() {
               </div>
             </div>
           )}
-        </div>
+        </header>
 
         {/* Academy Progress Card — prominent, right below header */}
         {stats && (
@@ -703,7 +703,7 @@ export default function AcademyPage() {
           </div>
         )}
 
-      </div>
+      </main>
 
       {/* Premium Upgrade Promotion Drawer */}
       {typeof document !== 'undefined' && createPortal(

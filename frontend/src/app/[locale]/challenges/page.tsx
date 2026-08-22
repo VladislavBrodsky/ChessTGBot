@@ -179,167 +179,173 @@ export default function ChallengesPage() {
 
   return (
     <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto pt-2">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto pt-2 space-y-6">
 
         {/* Level Progress Card — Ultra Premium */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          whileHover={{ scale: 1.01 }}
-          className="app-premium-surface w-full relative overflow-hidden rounded-3xl mb-8 border"
-        >
-          <div className="relative z-10 p-6 flex flex-col items-center text-center">
-            {/* Level badge */}
-            <div className="relative mb-5">
-              <div
-                className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
-                style={{ filter: 'blur(8px)' }}
-              />
-              {/* Badge outer ring */}
-              <div
-                className="relative w-24 h-24 rounded-2xl flex items-center justify-center bg-brand-surface border border-brand-border-opacity-20 shadow-premium"
-              >
-                {/* Inner badge */}
+        <section aria-labelledby="level-heading" className="w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.01 }}
+            className="app-premium-surface w-full relative overflow-hidden rounded-3xl border"
+          >
+            <div className="relative z-10 p-6 flex flex-col items-center text-center">
+              {/* Level badge */}
+              <div className="relative mb-5">
                 <div
-                  className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
-                >
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">LEVEL</span>
-                  <motion.span
-                    key={userLevel}
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    className="text-3xl font-black leading-none text-brand-primary"
-                  >
-                    {userLevel}
-                  </motion.span>
-                </div>
-              </div>
-              {/* Floating animated star markers */}
-              {[{top:'-8px',right:'-6px'},{bottom:'-6px',left:'-4px'},{top:'4px',left:'-10px'}].map((pos, i) => (
-                <motion.span
-                  key={i}
-                  animate={{ 
-                    y: [0, -6, 0],
-                    opacity: [0.5, 1, 0.5],
-                    scale: [0.8, 1.2, 0.8]
-                  }}
-                  transition={{
-                    duration: 3 + i * 0.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: i * 0.7
-                  }}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-brand-primary/40 shadow-[0_0_8px_rgba(0,0,0,0.2)]"
-                  style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
+                  className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
+                  style={{ filter: 'blur(8px)' }}
                 />
-              ))}
+                {/* Badge outer ring */}
+                <div
+                  className="relative w-24 h-24 rounded-2xl flex items-center justify-center bg-brand-surface border border-brand-border-opacity-20 shadow-premium"
+                >
+                  {/* Inner badge */}
+                  <div
+                    className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">LEVEL</span>
+                    <motion.span
+                      key={userLevel}
+                      initial={{ scale: 0.6, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                      className="text-3xl font-black leading-none text-brand-primary"
+                    >
+                      {userLevel}
+                    </motion.span>
+                  </div>
+                </div>
+                {/* Floating animated star markers */}
+                {[{top:'-8px',right:'-6px'},{bottom:'-6px',left:'-4px'},{top:'4px',left:'-10px'}].map((pos, i) => (
+                  <motion.span
+                    key={i}
+                    animate={{ 
+                      y: [0, -6, 0],
+                      opacity: [0.5, 1, 0.5],
+                      scale: [0.8, 1.2, 0.8]
+                    }}
+                    transition={{
+                      duration: 3 + i * 0.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.7
+                    }}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-brand-primary/40 shadow-[0_0_8px_rgba(0,0,0,0.2)]"
+                    style={{ top: pos.top, right: (pos as any).right, bottom: (pos as any).bottom, left: (pos as any).left }}
+                  />
+                ))}
+              </div>
+   
+              <h1 id="level-heading" className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
+                {t('grandmaster_rising')}
+              </h1>
+              <div className="flex items-center gap-2 mb-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-muted">
+                  {t('next_level', { xp: nextLevelXp })}
+                </p>
+              </div>
+   
+              {/* XP Bar — premium with shimmer */}
+              <XPProgressBar
+                xp={userXp}
+                level={stats?.level ?? 1}
+                levelLabel={t.has('level') ? t('level') : 'Level'}
+                className="max-w-[260px] mb-4"
+              />
+   
+              {/* XP percentage pill */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm">
+                {`${Math.round(progressPercentage)}% to next level`}
+              </div>
             </div>
- 
-            <h1 className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
-              {t('grandmaster_rising')}
-            </h1>
-            <div className="flex items-center gap-2 mb-6">
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-muted">
-                {t('next_level', { xp: nextLevelXp })}
-              </p>
-            </div>
- 
-            {/* XP Bar — premium with shimmer */}
-            <XPProgressBar
-              xp={userXp}
-              level={stats?.level ?? 1}
-              levelLabel={t.has('level') ? t('level') : 'Level'}
-              className="max-w-[260px] mb-4"
-            />
- 
-            {/* XP percentage pill */}
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm">
-              {`${Math.round(progressPercentage)}% to next level`}
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </section>
 
         {/* Stats Row — Ultra Premium */}
-        <div className="w-full grid grid-cols-2 gap-3 mb-8">
-          {/* Battles stat */}
-          <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent shadow-[0_4px_24px_rgba(239,68,68,0.06)]"
-          >
+        <section aria-labelledby="stats-heading" className="w-full">
+          <h2 id="stats-heading" className="sr-only">Player Lifetime Combat Stats</h2>
+          <div className="w-full grid grid-cols-2 gap-3">
+            {/* Battles stat */}
             <motion.div
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500/80"
-            />
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-500/20 to-red-500/5 border border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ scale: 1.03 }}
+              className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent shadow-[0_4px_24px_rgba(239,68,68,0.06)]"
             >
-              <FaFire className="text-red-500 text-base" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <motion.span
-                key={stats?.games_played}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="text-xl font-black leading-none text-brand-primary"
+              <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500/80"
+              />
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-500/20 to-red-500/5 border border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
               >
-                {stats?.games_played ?? 0}
-              </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
-                {t('battles')}
-              </span>
-            </div>
-          </motion.div>
- 
-          {/* ELO stat */}
-          <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent shadow-[0_4px_24px_rgba(16,185,129,0.05)]"
-          >
+                <FaFire className="text-red-500 text-base" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <motion.span
+                  key={stats?.games_played}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  className="text-xl font-black leading-none text-brand-primary"
+                >
+                  {stats?.games_played ?? 0}
+                </motion.span>
+                <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
+                  {t('battles')}
+                </span>
+              </div>
+            </motion.div>
+   
+            {/* ELO stat */}
             <motion.div
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-              className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500/80"
-            />
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.03 }}
+              className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent shadow-[0_4px_24px_rgba(16,185,129,0.05)]"
             >
-              <FaTrophy className="text-emerald-400 text-base" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <motion.span
-                key={stats?.elo}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="text-xl font-black leading-none text-brand-primary"
+              <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500/80"
+              />
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
               >
-                {stats?.elo ?? 1000}
-              </motion.span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
-                {t('elo_rating')}
-              </span>
-            </div>
-          </motion.div>
-        </div>
+                <FaTrophy className="text-emerald-400 text-base" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <motion.span
+                  key={stats?.elo}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  className="text-xl font-black leading-none text-brand-primary"
+                >
+                  {stats?.elo ?? 1000}
+                </motion.span>
+                <span className="text-[10px] font-black uppercase tracking-widest mt-0.5 text-brand-muted">
+                  {t('elo_rating')}
+                </span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
 
         {/* Referral Dashboard */}
-        <div className="w-full mb-6">
+        <section aria-labelledby="referral-heading" className="w-full">
+          <h2 id="referral-heading" className="sr-only">Referral & Squad Dashboard</h2>
           <ReferralDashboard referralCode={stats?.referral_code} botUsername={stats?.bot_username} />
-        </div>
+        </section>
 
         {/* Tasks Section */}
-        <div className="w-full mb-8">
-          <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h3>
+        <section aria-labelledby="tasks-heading" className="w-full">
+          <h2 id="tasks-heading" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center mb-4">{t('daily_operations')}</h2>
           <div className="space-y-3 w-full">
             {loading ? (
               <SkeletonList count={3} />
@@ -463,14 +469,15 @@ export default function ChallengesPage() {
               ))
             )}
           </div>
-        </div>
+        </section>
 
         {/* Archive Section */}
         {!loading && tasks.some(t => t.claimed) && (
-          <div className="w-full mb-12">
+          <section aria-labelledby="archive-heading" className="w-full mb-12">
+            <h2 id="archive-heading" className="sr-only">Archived Completed Operations</h2>
             <button 
               onClick={() => setShowArchive(!showArchive)}
-              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-muted hover:bg-brand-surface/40 hover:text-brand-primary transition-colors"
+              className="w-full flex items-center justify-between p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/20 text-xs font-black tracking-[0.2em] uppercase text-brand-muted hover:bg-brand-surface/40 hover:text-brand-primary transition-colors cursor-pointer"
             >
               <span>{t.has('completed_missions') ? t('completed_missions') : 'Archive'}</span>
               <span className="text-brand-muted text-[10px]">{showArchive ? '▲' : '▼'} {tasks.filter(t => t.claimed).length}</span>
@@ -504,9 +511,9 @@ export default function ChallengesPage() {
                 ))}
               </motion.div>
             )}
-          </div>
+          </section>
         )}
-      </div>
+      </main>
     </LayoutWrapper>
   );
 }
