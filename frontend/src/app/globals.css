@@ -1563,3 +1563,19 @@ div[class*="chessboard"] svg {
   outline: 2px solid var(--text-primary);
   outline-offset: 2px;
 }
+
+/* 2026 Typography Balance & Anti-Orphan Layout Rules */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.header-balanced {
+  text-wrap: balance;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+

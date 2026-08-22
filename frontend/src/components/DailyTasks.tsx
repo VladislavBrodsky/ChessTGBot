@@ -89,10 +89,10 @@ export default function DailyTasks() {
     };
 
     return (
-        <div className="w-full space-y-4">
+        <section aria-labelledby="daily-missions-title" className="w-full space-y-4">
             <div className="flex items-center gap-2 mb-2">
                 <FaTrophy className="text-brand-primary text-xs" />
-                <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.2em]">
+                <h3 id="daily-missions-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.2em]">
                     {t('daily_missions')}
                 </h3>
             </div>
@@ -121,25 +121,18 @@ export default function DailyTasks() {
                             {t('no_missions')}
                         </motion.div>
                     ) : (
-                        <motion.div
-                            key="tasks"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="space-y-3"
-                        >
+                        <ol role="list" className="space-y-3 list-none m-0 p-0">
                             {tasks.map((task, index) => {
                                 const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
                                 return (
-                                    <motion.div
+                                    <motion.li
                                         key={task.id}
                                         layout
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                         className={`
-                                            relative overflow-hidden rounded-xl border p-3 flex items-center justify-between transition-all duration-300
+                                            relative overflow-hidden rounded-xl border p-3 flex items-center justify-between transition-all duration-300 list-item-contain
                                             ${status === 'completed'
                                                 ? 'bg-brand-bg-opacity-5 border-brand-border-opacity-10 opacity-60'
                                                 : status === 'claimable'
@@ -147,17 +140,17 @@ export default function DailyTasks() {
                                                 : 'bg-brand-surface border-brand-border-opacity-10'}
                                         `}
                                     >
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
                                             <div className={`
-                                                w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all duration-300
+                                                w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all duration-300 shrink-0
                                                 ${status === 'completed' ? 'bg-brand-bg-text-brand-muted' 
                                                 : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
                                                 : 'bg-brand-bg-opacity-5 text-brand-muted'}
                                             `}>
                                                 {status === 'completed' ? <FaCheck /> : <FaGift className={status === 'claimable' ? 'animate-pulse' : ''} />}
                                             </div>
-                                            <div>
-                                                <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide">
+                                            <div className="min-w-0 flex-1">
+                                                <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-snug header-balanced truncate">
                                                     {t(task.title_key)}
                                                 </h4>
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-1">
@@ -190,13 +183,13 @@ export default function DailyTasks() {
                                                 />
                                             </div>
                                         )}
-                                    </motion.div>
+                                    </motion.li>
                                 );
                             })}
-                        </motion.div>
+                        </ol>
                     )}
                 </AnimatePresence>
             </motion.div>
-        </div>
+        </section>
     );
 }

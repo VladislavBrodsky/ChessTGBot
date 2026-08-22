@@ -258,11 +258,11 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
               </div>
 
               {/* Value / Label */}
-              <div className="flex flex-col min-w-0 z-10">
-                <span className="text-xl font-black leading-none text-brand-primary">
+              <div className="flex flex-col min-w-0 flex-1 z-10">
+                <span className="text-xl font-black leading-none text-brand-primary truncate">
                   {tab.value}
                 </span>
-                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 ${colors.text}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 truncate header-balanced ${colors.text}`}>
                   {tab.label}
                 </span>
               </div>
