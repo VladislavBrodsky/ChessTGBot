@@ -137,10 +137,10 @@ export default function ProfilePage() {
 
   return (
     <LayoutWrapper className="w-full" hideHeaderControls>
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 pb-12">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 pb-12">
 
  {/* Profile Header */}
- <div className="w-full flex flex-col items-center text-center">
+ <header className="w-full flex flex-col items-center text-center">
  <div className="relative mb-4">
   {/* Outer rotating/pulsing ring */}
   <motion.div 
@@ -186,10 +186,12 @@ export default function ProfilePage() {
  <div className="mb-6 w-full max-w-[200px]">
  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
  </div>
- </div>
+ </header>
 
   {/* Stats Grid */}
-  <div className="w-full grid grid-cols-2 gap-3">
+  <section aria-labelledby="profile-stats-heading" className="w-full space-y-3">
+    <h2 id="profile-stats-heading" className="sr-only">Player Statistics</h2>
+    <div className="w-full grid grid-cols-2 gap-3">
     {/* ELO & Rank Card */}
     {!stats ? (
       <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface h-24 w-full">
@@ -281,16 +283,17 @@ export default function ProfilePage() {
       </div>
     </div>
   )}
+  </section>
 
   {/* ELO History Chart */}
   {stats && (
-    <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-2 shadow-sm">
+    <section aria-labelledby="elo-history-heading" className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-2 shadow-sm">
       <div className="flex justify-between items-center px-1 mb-2">
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Rating Trajectory</span>
+        <h2 id="elo-history-heading" className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Rating Trajectory</h2>
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Last 10 Games</span>
       </div>
       <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
-    </div>
+    </section>
   )}
 
  {/* Gamification Sections */}
@@ -299,8 +302,8 @@ export default function ProfilePage() {
 
  {/* Inventory & Boosters */}
  {stats && (stats.xp_multiplier > 1.0 || unlockedItems.length > 0) && (
-   <div className="w-full space-y-4">
-     <h2 className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">Inventory & Boosters</h2>
+   <section aria-labelledby="inventory-heading" className="w-full space-y-4">
+     <h2 id="inventory-heading" className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">Inventory & Boosters</h2>
      <div className="grid grid-cols-2 gap-3">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
@@ -328,17 +331,17 @@ export default function ProfilePage() {
          </Card>
        )}
      </div>
-   </div>
+   </section>
  )}
 
  {/* Recent Games History */}
- <div className="w-full space-y-4">
-   <h2 className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">{t('recent_activity')}</h2>
+ <section aria-labelledby="recent-activity-heading" className="w-full space-y-4">
+   <h2 id="recent-activity-heading" className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">{t('recent_activity')}</h2>
    
    {!stats ? (
       <SkeletonList count={3} />
    ) : stats.recent_games && stats.recent_games.length > 0 ? (
-     <div className="flex flex-col gap-3">
+     <ol role="list" className="flex flex-col gap-3 list-none m-0 p-0">
        {stats.recent_games.map((game: any) => {
          const isWin = game.result === 'win';
          const isLoss = game.result === 'loss';
@@ -355,44 +358,44 @@ export default function ProfilePage() {
              : "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md";
 
          return (
-           <motion.div
+           <motion.li
              key={game.game_id}
              whileHover={{ scale: 1.01 }}
              whileTap={{ scale: 0.99 }}
              onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
-             className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden ${rowGlow}`}
+             className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden list-item-contain ${rowGlow}`}
            >
              {/* Ambient hover glow indicator */}
              {isWin && (
                <motion.div 
                  animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
-                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
                  className="absolute top-0 right-0 w-24 h-24 bg-brand-success/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
                />
              )}
              {isLoss && (
                <motion.div 
                  animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
-                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
                  className="absolute top-0 right-0 w-24 h-24 bg-red-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
                />
              )}
 
-             <div className="flex items-center gap-3 relative z-10">
-               <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center">
+             <div className="flex items-center gap-3 relative z-10 min-w-0 flex-1 pr-2">
+               <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center shrink-0">
                  <FaChessPawn className="text-brand-muted drop-shadow-sm" />
                </div>
-               <div className="flex flex-col">
-                 <span className="text-xs font-black text-brand-primary uppercase tracking-tight">
+               <div className="flex flex-col min-w-0 flex-1">
+                 <span className="text-xs font-black text-brand-primary uppercase tracking-tight truncate header-balanced">
                    vs {game.opponent?.name || "{t.has('ai_engine') ? t('ai_engine') : 'AI Engine'}"}
                  </span>
-                 <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em]">
+                 <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] truncate">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
                  </span>
                </div>
              </div>
              
-             <div className="flex items-center gap-4 relative z-10">
+             <div className="flex items-center gap-4 relative z-10 shrink-0">
                <div className="flex flex-col items-end">
                  <span className={`px-2 py-0.5 rounded border text-[10px] font-black uppercase tracking-widest ${badgeColor}`}>
                    {game.result}
@@ -405,19 +408,19 @@ export default function ProfilePage() {
                </div>
                <span className="text-brand-muted text-xs">▶</span>
              </div>
-           </motion.div>
+           </motion.li>
          );
        })}
-     </div>
+     </ol>
     ) : (
       <EmptyState
         title={t('no_games_logged')}
         description={t('initiate_combat')}
       />
     )}
- </div>
+ </section>
 
- </div>
+ </main>
  </LayoutWrapper>
  );
 }
