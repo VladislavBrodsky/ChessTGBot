@@ -1,11 +1,12 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { FaShareAlt } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaShareAlt, FaCopy, FaCheck } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
+import { Drawer } from "@/components/ui/Drawer";
+import { Button } from "@/components/ui/Button";
 
 interface FriendInviteDrawerProps {
   inviteLink: string;
@@ -21,15 +22,6 @@ export default function FriendInviteDrawer({
   const tg = useTranslations('Game');
   const tIndex = useTranslations('Index');
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [canClose, setCanClose] = useState<boolean>(false);
-
-  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
 
   const shareInviteLink = () => {
     const shareUrl = inviteLink;
@@ -59,71 +51,56 @@ export default function FriendInviteDrawer({
   };
 
   return (
-    <div className="bottom-drawer-backdrop z-[100]">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }} 
-        onClick={() => { if (canClose) onClose(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
-      />
-      <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10"
-      >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-            {tg('invite_link_title')}
-          </h2>
-          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mb-6">
-            {tg('invite_link_desc')}
-          </p>
-        </div>
-        
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-sm">
+    <Drawer
+      isOpen={true}
+      onClose={onClose}
+      title={tg('invite_link_title')}
+      description={tg('invite_link_desc')}
+    >
+      <div className="space-y-4">
+        <div className="w-full bg-brand-elevated rounded-2xl p-4 border border-brand-border space-y-2 text-center">
           <input
             readOnly
             type="text"
             value={inviteLink}
             onClick={(e) => (e.currentTarget as HTMLInputElement).select()}
-            className="w-full py-2.5 px-4 rounded-xl bg-brand-void border border-brand-border-opacity-10 text-[11px] font-mono text-brand-muted text-center select-all focus:outline-none focus:border-brand-primary/20 shadow-inner"
+            className="w-full py-2.5 px-3 rounded-xl bg-brand-surface border border-brand-border text-xs font-mono text-brand-primary text-center select-all focus:outline-none focus:border-brand-primary/40 shadow-inner"
           />
         </div>
         
-        <div className="w-full flex flex-col gap-3">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
+        <div className="flex flex-col gap-2.5">
+          <Button
+            variant="primary"
+            size="lg"
             onClick={shareInviteLink}
-            className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
+            className="w-full uppercase font-black tracking-wider flex items-center justify-center gap-2"
           >
             <FaShareAlt size={12} />
             <span>{tg('share_invite')}</span>
-          </motion.button>
+          </Button>
           
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <motion.button
-              whileTap={{ scale: 0.98 }}
+          <div className="grid grid-cols-2 gap-2.5 w-full">
+            <Button
+              variant="secondary"
+              size="md"
               onClick={handleCopyLink}
-              className="w-full action-button py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] cursor-pointer shadow-sm"
+              className="w-full flex items-center justify-center gap-2"
             >
+              {copiedLink ? <FaCheck className="text-emerald-400" /> : <FaCopy />}
               <span>{copiedLink ? tg('copied_success') : tg('copy_code')}</span>
-            </motion.button>
+            </Button>
             
-            <motion.button
-              whileTap={{ scale: 0.98 }}
+            <Button
+              variant="outline"
+              size="md"
               onClick={onClose}
-              className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
+              className="w-full"
             >
-              <span>{tIndex('back')}</span>
-            </motion.button>
+              {tIndex('back')}
+            </Button>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </Drawer>
   );
 }

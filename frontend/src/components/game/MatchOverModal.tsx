@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FaRedo, FaShareAlt, FaTrophy, FaShieldAlt, FaBalanceScale } from "react-icons/fa";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { telegramHaptic } from "@/lib/telegram";
 
 interface MatchOverModalProps {
   matchResultLabel: string;
@@ -115,7 +116,7 @@ export default function MatchOverModal({
   // so AnimatePresence exit animations still work.
   if (typeof document === 'undefined') return null;
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85">
       {/* Backdrop fading in */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -195,14 +196,14 @@ export default function MatchOverModal({
         {/* Buttons / Actions */}
         <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
-            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border-text-brand-muted animate-pulse select-none">
+            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] border border-brand-border text-brand-muted animate-pulse select-none">
               <span>{isBotGame ? tg('creating_match') : tg('pending_opponent')}</span>
             </div>
           ) : (
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={onShowRematchChoice}
+              onClick={() => { telegramHaptic('selection'); onShowRematchChoice(); }}
               className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-300"
             >
               <span>{tg('revenge_match')}</span>
@@ -210,7 +211,7 @@ export default function MatchOverModal({
           )}
 
           <div className="grid grid-cols-2 gap-2.5">
-            <Link href={`/${locale}/game`} className="w-full">
+            <Link href={`/${locale}/game`} className="w-full" onClick={() => telegramHaptic('selection')}>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -224,7 +225,7 @@ export default function MatchOverModal({
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={onShareGame}
+              onClick={() => { telegramHaptic('selection'); onShareGame(); }}
               className="w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-sm transition-all"
             >
               <FaShareAlt size={10} className="text-brand-muted" />
