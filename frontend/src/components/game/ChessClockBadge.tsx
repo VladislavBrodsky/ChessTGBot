@@ -27,24 +27,27 @@ export function ChessClockBadge({
   const initialTime = color === 'w' ? (gameState?.white_time_left ?? 600) : (gameState?.black_time_left ?? 600);
   const [timeLeft, setTimeLeft] = useState<number>(initialTime);
 
+  const serverTime = color === 'w' ? gameState?.white_time_left : gameState?.black_time_left;
+  const isGameOver = Boolean(!gameState || gameState.is_game_over || gameState.status === 'completed' || gameState.status === 'aborted');
+  const gameId = gameState?.id;
+
   // Resync when server updates clock
   useEffect(() => {
-    if (gameState) {
-      const serverTime = color === 'w' ? (gameState.white_time_left ?? 600) : (gameState.black_time_left ?? 600);
+    if (typeof serverTime === 'number') {
       setTimeLeft(serverTime);
     }
-  }, [gameState?.white_time_left, gameState?.black_time_left, color]);
+  }, [serverTime]);
 
   const turnRef = useRef(gameState?.turn);
-  const isGameOverRef = useRef(gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted');
+  const isGameOverRef = useRef(isGameOver);
 
   useEffect(() => {
     turnRef.current = gameState?.turn;
-    isGameOverRef.current = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
-  }, [gameState?.turn, gameState?.is_game_over, gameState?.status]);
+    isGameOverRef.current = isGameOver;
+  }, [gameState?.turn, isGameOver]);
 
   useEffect(() => {
-    if (!gameState || gameState.is_game_over || gameState.status === 'completed' || gameState.status === 'aborted') {
+    if (isGameOver) {
       return;
     }
 
@@ -62,7 +65,7 @@ export function ChessClockBadge({
     }, 250);
 
     return () => clearInterval(interval);
-  }, [gameState?.id, gameState?.status, gameState?.is_game_over, color, isMe, onClockWarning]);
+  }, [gameId, isGameOver, color, isMe, onClockWarning]);
 
   const isLowTime = timeLeft < 5;
   const isWarningTime = timeLeft < 15;
