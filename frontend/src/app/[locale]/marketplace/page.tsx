@@ -231,7 +231,7 @@ export default function MarketplacePage() {
             {/* Ambient background light */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             
-            <div className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-2 md:max-w-xl lg:max-w-3xl">
+            <main className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-2 md:max-w-xl lg:max-w-3xl">
                     <header className="flex w-full flex-col items-center text-center relative pt-[calc(36px+var(--app-safe-top))] md:pt-4">
                         <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
                         <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
@@ -244,7 +244,8 @@ export default function MarketplacePage() {
                         </p>
                     </header>
 
-                    <div className="w-full">
+                    <section aria-labelledby="xp-balance-heading" className="w-full">
+                        <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
                         <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-5 shadow-premium overflow-hidden relative">
                             {/* Inner ambient light for XP card */}
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
@@ -275,7 +276,7 @@ export default function MarketplacePage() {
                                 </div>
                             )}
                         </Card>
-                    </div>
+                    </section>
 
                     {/* Recently won */}
                     <AnimatePresence>
@@ -415,7 +416,7 @@ export default function MarketplacePage() {
                             </div>
                         )}
                     </section>
-            </div>
+            </main>
 
             <UnboxConfirmSheet
                 isOpen={Boolean(confirmingTier)}

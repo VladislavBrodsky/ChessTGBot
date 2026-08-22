@@ -283,14 +283,10 @@ export default function MembershipPage() {
   return (
     <LayoutWrapper className="w-full relative">
 
-      <div className="w-full max-w-md flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
 
         {/* Hero with Gold Accents */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3"
-        >
+        <header className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3">
           <div className="w-16 h-16 rounded-[22px] bg-brand-elevated text-purple-500 flex items-center justify-center border border-brand-border-opacity-20 shadow-sm">
             <IconCrown />
           </div>
@@ -302,7 +298,7 @@ export default function MembershipPage() {
               {tm('subtitle')}
             </p>
           </div>
-        </motion.div>
+        </header>
 
         {/* ── Active membership badge ──────────────────────────── */}
         {stats?.is_premium && stats.premium_expires_at && (
@@ -385,27 +381,30 @@ export default function MembershipPage() {
         </div>
 
         {/* ── Features list with Gold Accents ──────────────────── */}
-        <div className="w-full flex flex-col space-y-2.5">
-          {FEATURES.map((f, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 px-4 py-3 bg-brand-surface border border-brand-border-opacity-20 rounded-[18px] hover:border-brand-primary/30 transition-colors group"
-            >
-              <div className="w-9 h-9 rounded-[12px] bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-purple-500 shrink-0 group-hover:scale-105 transition-transform duration-300">
-                {f.icon}
-              </div>
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-none mb-0.5">
-                  {stripEmojis(f.title)}
-                </span>
-                <span className="text-[10px] text-brand-muted font-medium leading-snug truncate">
-                  {stripEmojis(f.desc)}
-                </span>
-              </div>
-              <FaCheck className="text-purple-500 shrink-0" fontSize={10} />
-            </div>
-          ))}
-        </div>
+        <section aria-labelledby="vip-perks-heading" className="w-full">
+          <h2 id="vip-perks-heading" className="sr-only">VIP Privileges and Benefits</h2>
+          <ul role="list" className="w-full flex flex-col space-y-2.5 list-none m-0 p-0">
+            {FEATURES.map((f, i) => (
+              <li
+                key={i}
+                className="flex items-center gap-3 px-4 py-3 bg-brand-surface border border-brand-border-opacity-20 rounded-[18px] hover:border-brand-primary/30 transition-colors group list-item-contain"
+              >
+                <div className="w-9 h-9 rounded-[12px] bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-purple-500 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  {f.icon}
+                </div>
+                <div className="flex flex-col flex-1 min-w-0">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-none mb-0.5">
+                    {stripEmojis(f.title)}
+                  </span>
+                  <span className="text-[10px] text-brand-muted font-medium leading-snug truncate">
+                    {stripEmojis(f.desc)}
+                  </span>
+                </div>
+                <FaCheck className="text-purple-500 shrink-0" fontSize={10} />
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* ── Subscribe CTA (Glowing Gold Button) ───────────────── */}
         <div className="w-full pt-1 flex flex-col gap-2">
@@ -547,7 +546,7 @@ export default function MembershipPage() {
         <p className="w-full text-[10px] text-brand-muted text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
           {tm('legal')}
         </p>
-      </div>
+      </main>
 
       {/* ── Success modal (portaled: fixed overlays must not scope to a
              transformed ancestor — the leaderboard-modal stacking trap) ── */}
