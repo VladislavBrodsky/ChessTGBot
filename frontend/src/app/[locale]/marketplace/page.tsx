@@ -227,18 +227,18 @@ export default function MarketplacePage() {
     };
 
     return (
-        <LayoutWrapper className="w-full px-4 md:px-6 pt-[max(1rem,var(--app-safe-top))] pb-[max(1rem,var(--app-safe-bottom))]">
+        <LayoutWrapper className="w-full px-3.5 md:px-6 pt-[max(0.75rem,var(--app-safe-top))]">
             {/* Ambient background light */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             
-            <main className="flex w-full max-w-sm flex-col items-center mx-auto space-y-8 py-2 md:max-w-xl lg:max-w-3xl">
-                    <header className="flex w-full flex-col items-center text-center relative pt-[calc(36px+var(--app-safe-top))] md:pt-4">
-                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary">
+            <main className="flex w-full max-w-sm flex-col items-center mx-auto space-y-4 pt-1 pb-[calc(84px+var(--app-safe-bottom))] md:max-w-xl lg:max-w-3xl">
+                    <header className="flex w-full flex-col items-center text-center relative pt-1 md:pt-4 mb-1">
+                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary header-balanced">
                             <FaGem className="text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
                             {t('title')}
                         </h1>
-                        <p className="mt-2.5 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.16em] text-brand-muted flex flex-col items-center">
+                        <p className="mt-1.5 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.14em] text-brand-muted flex flex-col items-center">
                             <span>EXCHANGE XP TO UNLOCK</span>
                             <span>PREMIUM REWARDS & THEMES</span>
                         </p>
@@ -246,7 +246,7 @@ export default function MarketplacePage() {
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
                         <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
-                        <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-5 shadow-premium overflow-hidden relative">
+                        <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-4 sm:p-5 shadow-premium overflow-hidden relative">
                             {/* Inner ambient light for XP card */}
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
                             <div className="flex items-center justify-between gap-4 relative z-10">

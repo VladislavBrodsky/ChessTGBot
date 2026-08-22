@@ -281,20 +281,20 @@ export default function MembershipPage() {
   };
 
   return (
-    <LayoutWrapper className="w-full relative">
+    <LayoutWrapper className="w-full relative pt-[max(0.75rem,var(--app-safe-top))]">
 
-      <main className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center mx-auto space-y-5 px-4 relative z-10">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center mx-auto space-y-4 px-3.5 pt-1 pb-[calc(84px+var(--app-safe-bottom))] relative z-10">
 
         {/* Hero with Gold Accents */}
-        <header className="w-full flex flex-col items-center text-center pt-2 pb-1 space-y-3">
-          <div className="w-16 h-16 rounded-[22px] bg-brand-elevated text-purple-500 flex items-center justify-center border border-brand-border-opacity-20 shadow-sm">
+        <header className="w-full flex flex-col items-center text-center pt-1 pb-1 space-y-2">
+          <div className="w-14 h-14 rounded-[20px] bg-brand-elevated text-purple-500 flex items-center justify-center border border-brand-border-opacity-20 shadow-sm">
             <IconCrown />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none">
+            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none header-balanced">
               {stripEmojis(tm('title'))}
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-muted mt-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted mt-1.5">
               {tm('subtitle')}
             </p>
           </div>

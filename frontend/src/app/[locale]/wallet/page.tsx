@@ -96,11 +96,11 @@ export default function WalletPage() {
   }, [fetchTransactions]);
 
   return (
-    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pb-12 pt-2 space-y-6">
+    <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto pb-[calc(84px+var(--app-safe-bottom))] pt-1 space-y-4">
       
         {/* Header Back Link */}
-        <header className="w-full flex items-center justify-between">
+        <header className="w-full flex items-center justify-between mb-1">
           <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-muted hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
             <FaChevronLeft className="text-xs" />
             <span>{t('back')}</span>
@@ -115,18 +115,18 @@ export default function WalletPage() {
         </section>
 
         {/* QUICK ACTION TRIGGER BUTTONS */}
-        <div className="w-full grid grid-cols-3 gap-2.5 mt-6">
+        <div className="w-full grid grid-cols-3 gap-2.5">
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setActiveModal('connect'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-primary/30 group">
+            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-primary/30 group">
               <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-primary-opacity-10)] text-brand-primary flex items-center justify-center transition-all group-hover:scale-110">
                 <FaWallet className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('link_ton')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('link_ton')}</span>
             </Card>
           </motion.button>
           
@@ -136,11 +136,11 @@ export default function WalletPage() {
             onClick={() => { setActiveModal('deposit'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-success/30 group">
+            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-success/30 group">
               <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-success-opacity-10)] text-brand-success flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowDown className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('deposit')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('deposit')}</span>
             </Card>
           </motion.button>
           
@@ -150,18 +150,18 @@ export default function WalletPage() {
             onClick={() => { setActiveModal('withdraw'); }}
             className="w-full"
           >
-            <Card variant="glass" className="p-3.5 flex flex-col items-center justify-center space-y-2 border-brand-border-opacity-10 shadow-sm hover:border-brand-danger/30 group">
+            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-danger/30 group">
               <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-danger-opacity-10)] text-brand-danger flex items-center justify-center transition-all group-hover:scale-110">
                 <FaArrowUp className="text-xs" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted">{tw('withdraw')}</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('withdraw')}</span>
             </Card>
           </motion.button>
         </div>
 
         {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full mt-6">
-          <Card variant="glass" className="w-full p-3 border-brand-border-opacity-10 shadow-sm flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
+        <div className="w-full">
+          <Card variant="glass" className="w-full p-2.5 sm:p-3 border-brand-border-opacity-10 shadow-sm flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
             <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
             <span className="flex items-center gap-1.5 relative z-10">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-success shadow-neon" />
@@ -176,7 +176,7 @@ export default function WalletPage() {
         </div>
 
         {/* TRANSACTION LEDGER */}
-        <div className="w-full mt-6">
+        <div className="w-full">
           <TransactionLedger 
             loading={loading}
             transactions={transactions}

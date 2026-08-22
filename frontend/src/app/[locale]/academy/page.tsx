@@ -308,7 +308,7 @@ export default function AcademyPage() {
   }
 
   return (
-    <LayoutWrapper className="w-full px-4">
+    <LayoutWrapper className="w-full px-3.5 pt-[max(0.75rem,var(--app-safe-top))]">
       {showConfetti && typeof window !== 'undefined' && (
         <div className="fixed inset-0 z-20 pointer-events-none flex items-center justify-center">
           <Confetti
@@ -320,20 +320,20 @@ export default function AcademyPage() {
           />
         </div>
       )}
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-1 space-y-4 pb-[calc(84px+var(--app-safe-bottom))]">
 
         {/* Header */}
-        <header className="flex flex-col items-center w-full mb-4">
+        <header className="flex flex-col items-center w-full mb-2">
           <motion.h1
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 text-brand-primary text-3xl font-black tracking-tighter select-none uppercase"
+            className="flex items-center gap-2.5 text-brand-primary text-2xl sm:text-3xl font-black tracking-tighter select-none uppercase header-balanced"
           >
-            <FaBrain className="text-2xl opacity-80" />
+            <FaBrain className="text-xl opacity-80" />
             {t('title')}
           </motion.h1>
-          <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-muted">{t('subtitle')}</span>
+          <div className="h-px w-8 bg-brand-border-opacity-10 my-1.5" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-muted">{t('subtitle')}</span>
 
           {stats && (
             <div className="flex flex-col items-center gap-3">

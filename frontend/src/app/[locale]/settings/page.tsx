@@ -85,22 +85,22 @@ export default function SettingsPage() {
  };
 
  return (
- <LayoutWrapper className="w-full">
- <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-6">
+  <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
+  <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto space-y-4 pt-1 pb-[calc(84px+var(--app-safe-bottom))]">
 
- {/* Page Title & Subtitle Centered in 1 Line */}
- <header className="w-full text-center flex flex-col items-center mb-2">
- <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1.5 whitespace-nowrap leading-none">
- {t('title')}
- </h1>
- <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] leading-none mt-1">
- {t('subtitle')}
- </p>
- </header>
+  {/* Page Title & Subtitle Centered in 1 Line */}
+  <header className="w-full text-center flex flex-col items-center mb-1">
+  <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1 whitespace-nowrap leading-none header-balanced">
+  {t('title')}
+  </h1>
+  <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] leading-none mt-1">
+  {t('subtitle')}
+  </p>
+  </header>
 
- {/* Standalone Glowing Premium Card */}
- <Link href={`/${locale}/membership`} className="w-full block">
- <div className="w-full glass-panel bg-brand-surface border border-brand-gold/30 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-brand-gold/60 transition-all duration-300 shadow-sm">
+  {/* Standalone Glowing Premium Card */}
+  <Link href={`/${locale}/membership`} className="w-full block">
+  <div className="w-full glass-panel bg-brand-surface border border-brand-gold/30 rounded-[20px] p-3.5 sm:p-4 flex items-center justify-between cursor-pointer hover:border-brand-gold/60 transition-all duration-300 shadow-sm">
  <div className="flex items-center gap-3.5">
  <div className="w-9 h-9 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center text-brand-gold text-sm shrink-0">
  <FaGem />

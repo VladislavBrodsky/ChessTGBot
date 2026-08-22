@@ -178,51 +178,51 @@ export default function ChallengesPage() {
   const { nextLevelXp, progressPercentage } = xpProgress;
 
   return (
-    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))]">
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto pt-2 space-y-6">
+    <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-3.5 mx-auto pt-1 space-y-4 pb-[calc(84px+var(--app-safe-bottom))]">
 
         {/* Level Progress Card — Ultra Premium */}
         <section aria-labelledby="level-heading" className="w-full">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             whileHover={{ scale: 1.01 }}
             className="app-premium-surface w-full relative overflow-hidden rounded-3xl border"
           >
-            <div className="relative z-10 p-6 flex flex-col items-center text-center">
+            <div className="relative z-10 p-4 sm:p-5 flex flex-col items-center text-center">
               {/* Level badge */}
-              <div className="relative mb-5">
+              <div className="relative mb-3">
                 <div
                   className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
                   style={{ filter: 'blur(8px)' }}
                 />
                 {/* Badge outer ring */}
                 <div
-                  className="relative w-24 h-24 rounded-2xl flex items-center justify-center bg-brand-surface border border-brand-border-opacity-20 shadow-premium"
+                  className="relative w-20 h-20 rounded-2xl flex items-center justify-center bg-brand-surface border border-brand-border-opacity-20 shadow-premium"
                 >
                   {/* Inner badge */}
                   <div
-                    className="w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
+                    className="w-14 h-14 rounded-xl flex flex-col items-center justify-center bg-brand-surface border border-brand-border-opacity-15 shadow-inner-glow"
                   >
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted">LEVEL</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.25em] text-brand-muted">LEVEL</span>
                     <motion.span
                       key={userLevel}
                       initial={{ scale: 0.6, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                      className="text-3xl font-black leading-none text-brand-primary"
+                      className="text-2xl font-black leading-none text-brand-primary"
                     >
                       {userLevel}
                     </motion.span>
                   </div>
                 </div>
                 {/* Floating animated star markers */}
-                {[{top:'-8px',right:'-6px'},{bottom:'-6px',left:'-4px'},{top:'4px',left:'-10px'}].map((pos, i) => (
+                {[{top:'-6px',right:'-4px'},{bottom:'-4px',left:'-3px'},{top:'4px',left:'-8px'}].map((pos, i) => (
                   <motion.span
                     key={i}
                     animate={{ 
-                      y: [0, -6, 0],
+                      y: [0, -4, 0],
                       opacity: [0.5, 1, 0.5],
                       scale: [0.8, 1.2, 0.8]
                     }}
@@ -238,11 +238,11 @@ export default function ChallengesPage() {
                 ))}
               </div>
    
-              <h1 id="level-heading" className="text-xl font-black tracking-tighter uppercase mb-1 text-brand-primary">
+              <h1 id="level-heading" className="text-lg font-black tracking-tighter uppercase mb-0.5 text-brand-primary header-balanced">
                 {t('grandmaster_rising')}
               </h1>
-              <div className="flex items-center gap-2 mb-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-muted">
+              <div className="flex items-center gap-2 mb-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">
                   {t('next_level', { xp: nextLevelXp })}
                 </p>
               </div>
@@ -252,11 +252,11 @@ export default function ChallengesPage() {
                 xp={userXp}
                 level={stats?.level ?? 1}
                 levelLabel={t.has('level') ? t('level') : 'Level'}
-                className="max-w-[260px] mb-4"
+                className="max-w-[260px] mb-3"
               />
    
               {/* XP percentage pill */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm">
+              <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-amber-400/10 text-amber-600 dark:text-amber-400 border-amber-400/20 shadow-sm">
                 {`${Math.round(progressPercentage)}% to next level`}
               </div>
             </div>

@@ -137,56 +137,56 @@ export default function ProfilePage() {
 
   return (
     <LayoutWrapper className="w-full" hideHeaderControls>
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-8 pb-12">
+      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto space-y-4 pb-[calc(84px+var(--app-safe-bottom))] pt-1">
 
- {/* Profile Header */}
- <header className="w-full flex flex-col items-center text-center">
- <div className="relative mb-4">
-  {/* Outer rotating/pulsing ring */}
-  <motion.div 
-    animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.6, 1, 0.6] }} 
-    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-    className={borderOuterClass} 
+  {/* Profile Header */}
+  <header className="w-full flex flex-col items-center text-center">
+  <div className="relative mb-3">
+   {/* Outer rotating/pulsing ring */}
+   <motion.div 
+     animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.6, 1, 0.6] }} 
+     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+     className={borderOuterClass} 
+   />
+   <div className={borderInnerClass}>
+  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
+  // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
+  <img
+    src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)}
+    alt="Profile" 
+    className="w-full h-full object-cover" 
+    onError={() => setPhotoError(true)}
   />
-  <div className={borderInnerClass}>
- {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
- // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
- <img
-   src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)}
-   alt="Profile" 
-   className="w-full h-full object-cover" 
-   onError={() => setPhotoError(true)}
- />
- ) : (
- <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
- )}
- </div>
-   {/* Premium overlay badge */}
-   {stats?.is_premium ? (
-     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/40 bg-brand-elevated text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon">
-       {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
+  ) : (
+  <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
+  )}
+  </div>
+    {/* Premium overlay badge */}
+    {stats?.is_premium ? (
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-gold/40 bg-brand-elevated text-brand-gold text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-neon">
+        {t.has('premium_title') ? t('premium_title') : '👑 PREMIUM'}
+      </div>
+    ) : (
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border bg-brand-elevated text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
+        {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
+      </div>
+    )}
+  </div>
+  <h1 className="text-xl sm:text-2xl font-black text-brand-primary tracking-tighter uppercase mb-0.5 header-balanced">
+  {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
+  </h1>
+  
+  {stats && stats.study_streak > 0 && (
+     <div className="flex items-center gap-1.5 mb-2.5 text-brand-gold bg-brand-gold/10 px-3 py-0.5 rounded-full border border-brand-gold/20 shadow-neon">
+         <FaFire className="text-xs" />
+         <span className="text-[9px] font-black uppercase tracking-widest">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
      </div>
-   ) : (
-     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full border border-brand-border bg-brand-elevated text-brand-muted text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-sm">
-       {stats?.elo > 1500 ? t('grandmaster') : t('cyber_knight')}
-     </div>
-   )}
- </div>
- <h1 className="text-2xl font-black text-brand-primary tracking-tighter uppercase mb-1">
- {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
- </h1>
- 
- {stats && stats.study_streak > 0 && (
-    <div className="flex items-center gap-1.5 mb-4 text-brand-gold bg-brand-gold/10 px-3 py-1 rounded-full border border-brand-gold/20 shadow-neon">
-        <FaFire className="text-sm" />
-        <span className="text-[10px] font-black uppercase tracking-widest">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
-    </div>
- )}
- 
- <div className="mb-6 w-full max-w-[200px]">
- <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
- </div>
- </header>
+  )}
+  
+  <div className="mb-3 w-full max-w-[200px]">
+  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} />
+  </div>
+  </header>
 
   {/* Stats Grid */}
   <section aria-labelledby="profile-stats-heading" className="w-full space-y-3">
