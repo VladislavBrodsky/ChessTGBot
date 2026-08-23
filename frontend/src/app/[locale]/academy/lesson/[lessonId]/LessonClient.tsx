@@ -125,7 +125,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   >
   <div className="glass-panel p-6 md:p-10 rounded-[32px] border border-brand-border-opacity-10 bg-brand-surface shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10 overflow-hidden">
     <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
-    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/30" />
+    <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.3)_0%,transparent_70%)] opacity-70 rounded-full -mr-20 -mt-20 pointer-events-none transition-all group-hover:opacity-100" />
     
     <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)] mb-6 rotate-12 group-hover:rotate-0 transition-all duration-500">
       <FaCheck className="text-4xl text-white drop-shadow-md" />
@@ -137,7 +137,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       <div className="flex justify-center mb-10">
         <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden">
           <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
-          <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-[40px] -ml-16 -mt-16 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full -ml-16 -mt-16 pointer-events-none" />
           
           <span className="text-emerald-500 font-black text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.3)] relative z-10">+{earnedXP}</span>
           <span className="text-[10px] text-emerald-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>

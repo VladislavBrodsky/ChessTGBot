@@ -416,8 +416,8 @@ export default function AcademyPage() {
             className="p-6 relative overflow-hidden group shadow-premium border-brand-primary/20 rounded-3xl"
           >
           {/* Neon Backlight Blurs */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-brand-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,var(--color-brand-primary)_0%,transparent_70%)] opacity-10 rounded-full -mr-16 -mt-16 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-4">
@@ -471,8 +471,8 @@ export default function AcademyPage() {
           </div>
           <Card variant="solid" className="w-full shadow-premium relative overflow-hidden">
             {/* Backlight Orbs */}
-            <div className="absolute top-0 left-0 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mb-20 pointer-events-none" />
+            <div className="absolute top-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(168,85,247,1)_0%,transparent_70%)] opacity-10 rounded-full -ml-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-10 rounded-full -mr-20 -mb-20 pointer-events-none" />
 
             {/* Progress Header */}
             <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
@@ -731,7 +731,7 @@ export default function AcademyPage() {
         className="bottom-drawer-sheet relative z-20"
       >
         {/* Glowing Backlight */}
-        <div className="absolute top-0 left-1/2 w-72 h-72 bg-gradient-to-b from-purple-500/10 to-transparent rounded-full blur-3xl -translate-x-1/2 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 w-72 h-72 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full -translate-x-1/2 pointer-events-none" />
 
         <div className="bottom-drawer-handle relative z-10" />
         
@@ -839,7 +839,7 @@ export default function AcademyPage() {
             className="bottom-drawer-sheet relative z-20"
           >
             {/* Glow */}
-            <div className={`absolute top-0 left-1/2 w-64 h-64 rounded-full blur-3xl -translate-x-1/2 pointer-events-none opacity-20 ${isCompleted ? 'bg-emerald-500' : isPremLocked ? 'bg-purple-500' : 'bg-brand-primary'}`} />
+            <div className={`absolute top-0 left-1/2 w-64 h-64 rounded-full bg-[radial-gradient(ellipse_at_top,currentColor_0%,transparent_70%)] opacity-20 -translate-x-1/2 pointer-events-none ${isCompleted ? 'text-emerald-500' : isPremLocked ? 'text-purple-500' : 'text-brand-primary'}`} />
 
             <div className="bottom-drawer-handle relative z-10" />
 

@@ -359,7 +359,7 @@ export default function ProfilePage() {
            ? "hover:border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(16,185,129,0.1)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.2)]"
            : isLoss
              ? "hover:border-red-500/30 bg-gradient-to-r from-red-500/[0.05] to-transparent shadow-[0_4px_16px_rgba(239,68,68,0.1)] hover:shadow-[0_8px_24px_rgba(239,68,68,0.2)]"
-             : "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md";
+             : "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)]";
 
          return (
            <motion.li
@@ -369,21 +369,7 @@ export default function ProfilePage() {
              onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
              className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden list-item-contain ${rowGlow}`}
            >
-             {/* Ambient hover glow indicator */}
-             {isWin && (
-               <motion.div 
-                 animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
-                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-                 className="absolute top-0 right-0 w-24 h-24 bg-brand-success/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
-               />
-             )}
-             {isLoss && (
-               <motion.div 
-                 animate={{ opacity: [0.1, 0.25, 0.1], scale: [1, 1.1, 1] }} 
-                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-                 className="absolute top-0 right-0 w-24 h-24 bg-red-500/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" 
-               />
-             )}
+             {/* Glows removed for performance in repeating lists */}
 
              <div className="flex items-center gap-3 relative z-10 min-w-0 flex-1 pr-2">
                <div className="w-9 h-9 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center shrink-0">

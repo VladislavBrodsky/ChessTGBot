@@ -57,14 +57,14 @@ export default function LoginPage() {
                 
                 {/* Glow blobs */}
                 <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -top-1/4 -left-1/4 w-[60%] h-[60%] rounded-full transition-all duration-500 bg-brand-primary/20 blur-[100px]"
+                    className="absolute -top-1/4 -left-1/4 w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.15)_0%,transparent_70%)] pointer-events-none"
                 />
                 <motion.div
-                    animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
+                    animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] rounded-full transition-all duration-500 bg-emerald-500/10 blur-[100px]"
+                    className="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.15)_0%,transparent_70%)] pointer-events-none"
                 />
             </div>
 
