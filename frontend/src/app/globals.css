@@ -792,16 +792,17 @@ div[class*="chessboard"] svg {
 @keyframes portal-pulse {
   0%, 100% {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+    opacity: 0.8;
   }
   50% {
     transform: scale(1.15);
-    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.85));
+    opacity: 1;
   }
 }
 
 .animate-active-portal {
   animation: portal-pulse 1.5s infinite ease-in-out;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
 }
 /* =====================================================
    Tactics Grid Cells — theme-aware utility classes
