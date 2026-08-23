@@ -326,30 +326,30 @@ export default function Home() {
   </Link>
 
   <div className="grid grid-cols-2 gap-3">
-   <Link href={`/${locale}/academy`} className="block rounded-2xl">
-    <motion.div
-     whileHover={{ y: -2 }}
-     whileTap={{ scale: 0.98 }}
-     className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
+   <Link href={`/${locale}/academy`} className="block w-full">
+    <Card
+     variant="solid"
+     interactive
+     className="min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer"
     >
      <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
       <FaGraduationCap className="text-lg text-brand-muted" />
      </div>
      <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('academy')}</span>
-    </motion.div>
+    </Card>
    </Link>
 
-   <Link href={`/${locale}/challenges`} className="block rounded-2xl">
-    <motion.div
-     whileHover={{ y: -2 }}
-     whileTap={{ scale: 0.98 }}
-     className="relative overflow-hidden min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer border border-brand-border-opacity-10 rounded-2xl bg-gradient-to-br from-brand-surface to-brand-bg-opacity-5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-brand-border-opacity-20 hover:shadow-md transition-all duration-300"
+   <Link href={`/${locale}/challenges`} className="block w-full">
+    <Card
+     variant="solid"
+     interactive
+     className="min-h-[76px] w-full px-4 flex items-center gap-3 cursor-pointer"
     >
      <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center bg-brand-bg-opacity-5 border border-brand-border-opacity-5">
       <FaTrophy className="text-base text-brand-muted" />
      </div>
      <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-tight">{t('daily_tasks')}</span>
-    </motion.div>
+    </Card>
    </Link>
    </div>
   </div>

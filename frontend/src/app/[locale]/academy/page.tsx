@@ -257,7 +257,7 @@ export default function AcademyPage() {
           </div>
 
           {/* Daily Challenge Card Skeleton */}
-          <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface space-y-4">
+          <Card variant="glass" className="w-full p-6 space-y-4">
             <div className="flex justify-between items-center">
               <div className="h-5 bg-brand-primary opacity-10 rounded-full w-24" />
               <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
@@ -265,7 +265,7 @@ export default function AcademyPage() {
             <div className="h-6 bg-brand-primary opacity-15 rounded-lg w-3/4" />
             <div className="h-4 bg-brand-primary opacity-10 rounded w-5/6" />
             <div className="h-10 bg-brand-primary opacity-20 rounded-xl w-full" />
-          </div>
+          </Card>
 
           {/* Tactics Grid Skeleton */}
           <div className="space-y-4">
@@ -273,13 +273,13 @@ export default function AcademyPage() {
               <div className="w-4 h-4 bg-brand-primary opacity-10 rounded" />
               <div className="h-3 bg-brand-primary opacity-10 rounded w-24" />
             </div>
-            <div className="glass-panel p-5 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface">
+            <Card variant="glass" className="p-5">
               <div className="grid grid-cols-10 gap-2 w-full">
                 {Array.from({ length: 100 }, (_, i) => (
                   <div key={i} className="aspect-square rounded-xl bg-brand-primary opacity-5 border border-brand-border-opacity-5" />
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
 
           {/* Mastery Tracks Skeleton */}
@@ -290,14 +290,14 @@ export default function AcademyPage() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="w-full p-4 rounded-2xl glass-panel border border-brand-border-opacity-10 bg-brand-surface space-y-3">
+                <Card key={n} variant="glass" className="w-full p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div className="h-4 bg-brand-primary opacity-15 rounded w-1/3" />
                     <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
                   </div>
                   <div className="h-3 bg-brand-primary opacity-10 rounded w-2/3" />
                   <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
-                </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -379,11 +379,17 @@ export default function AcademyPage() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
-          className="w-full text-center px-6 py-4 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 cursor-pointer hover:bg-brand-void/50 transition-all group"
+          className="w-full"
         >
-          <p className="text-xs font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
+          <Card 
+            variant="solid" 
+            interactive
+            onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
+            className="w-full text-center px-6 py-4 group"
+          >
+            <p className="text-xs font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
+          </Card>
         </motion.div>
 
         {/* Hint of the Day */}
@@ -463,7 +469,7 @@ export default function AcademyPage() {
             <FaChessRook className="text-brand-muted text-xl" />
             <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">{t('tactics_grid')}</h3>
           </div>
-          <div className="rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden">
+          <Card variant="solid" className="w-full shadow-premium relative overflow-hidden">
             {/* Backlight Orbs */}
             <div className="absolute top-0 left-0 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mb-20 pointer-events-none" />
@@ -553,7 +559,7 @@ export default function AcademyPage() {
                 {t('premium')}
               </span>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Mastery Tracks Grid */}
@@ -670,7 +676,7 @@ export default function AcademyPage() {
               <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">Next Milestone</h3>
             </div>
             
-            <div className="w-full p-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface relative overflow-hidden shadow-sm">
+            <Card variant="solid" className="w-full p-5 relative overflow-hidden">
               <div className="absolute right-0 top-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
               
               <div className="flex justify-between items-end mb-3 relative z-10">
@@ -698,7 +704,7 @@ export default function AcademyPage() {
                   You need <span className="text-emerald-400 font-black">{Math.max(0, xpProgress!.nextLevelXp - stats.xp)} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!
                 </p>
               </div>
-            </div>
+              </Card>
           </div>
         )}
 
