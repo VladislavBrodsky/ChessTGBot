@@ -385,8 +385,8 @@ export default function ReferralDashboard({ referralCode, botUsername = 'FinChes
       {/* Coupon Ticket Referral Code Card (inspired by Fintech Referral Template) */}
       <div className="relative w-full rounded-2xl border-2 border-dashed border-purple-500/35 bg-gradient-to-br from-purple-500/10 via-brand-surface to-brand-void p-4 space-y-3.5 shadow-sm overflow-hidden mt-1">
         {/* Perforated ticket ambient glow */}
-        <div className="absolute -top-12 -right-12 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-32 h-32 bg-[radial-gradient(circle,rgba(168,85,247,0.18)_0%,transparent_70%)] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
         <div className="flex items-center justify-between relative z-10">
           <div className="flex flex-col">

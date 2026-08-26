@@ -23,14 +23,14 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
     >
       {/* Ambient glowing blobs */}
       <motion.div 
-        animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.1, 1] }} 
+        animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }} 
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl -mr-8 -mt-8 pointer-events-none" 
+        className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.25)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" 
       />
       <motion.div 
-        animate={{ opacity: [0.05, 0.15, 0.05], scale: [1, 1.15, 1] }} 
+        animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.15, 1] }} 
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" 
+        className="absolute bottom-0 left-0 w-24 h-24 bg-[radial-gradient(circle,rgba(6,182,212,0.25)_0%,transparent_70%)] rounded-full -ml-8 -mb-8 pointer-events-none" 
       />
 
       {/* Card Top */}

@@ -677,7 +677,7 @@ export default function AcademyPage() {
             </div>
             
             <Card variant="solid" className="w-full p-5 relative overflow-hidden">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 w-32 h-32 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-10 -mt-10 pointer-events-none" />
               
               <div className="flex justify-between items-end mb-3 relative z-10">
                 <div>

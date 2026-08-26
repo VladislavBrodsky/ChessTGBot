@@ -26,8 +26,8 @@ export default function AcademyProgressCard({ completedCount, totalCount, totalX
       className="relative overflow-hidden rounded-3xl border border-brand-border-opacity-10 bg-brand-surface p-5 mb-6 shadow-sm"
     >
       {/* Ambient glow */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/8 blur-3xl rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-primary/4 blur-3xl rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_0%,transparent_70%)] rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
       {/* Top accent line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />

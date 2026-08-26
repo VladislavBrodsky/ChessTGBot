@@ -88,7 +88,7 @@ export default function MatchOverModal({
   // Theme configuration mapping
   const theme = isWin 
     ? {
-        ambientGlow: "bg-emerald-500/10",
+        ambientGlow: "bg-[radial-gradient(circle,rgba(16,185,129,0.25)_0%,transparent_70%)]",
         radialBorder: "border-emerald-500/30",
         shadow: "shadow-[0_0_50px_rgba(16,185,129,0.25)]",
         titleClass: "text-emerald-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(16,185,129,0.3)]",
@@ -96,14 +96,14 @@ export default function MatchOverModal({
       }
     : isLoss 
       ? {
-          ambientGlow: "bg-rose-500/10",
+          ambientGlow: "bg-[radial-gradient(circle,rgba(239,68,68,0.25)_0%,transparent_70%)]",
           radialBorder: "border-rose-500/30",
           shadow: "shadow-[0_0_50px_rgba(239,68,68,0.25)]",
           titleClass: "text-rose-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(239,68,68,0.3)]",
           icon: <FaShieldAlt className="text-5xl text-rose-500/70 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] rotate-12 mt-1" />
         }
       : {
-          ambientGlow: "bg-cyan-500/10",
+          ambientGlow: "bg-[radial-gradient(circle,rgba(6,182,212,0.25)_0%,transparent_70%)]",
           radialBorder: "border-cyan-500/30",
           shadow: "shadow-[0_0_50px_rgba(6,182,212,0.25)]",
           titleClass: "text-cyan-400 font-black tracking-widest uppercase drop-shadow-[0_2px_12px_rgba(6,182,212,0.3)]",
@@ -134,8 +134,8 @@ export default function MatchOverModal({
         className={`relative overflow-hidden w-full max-w-[300px] bg-brand-surface border rounded-[32px] p-6 flex flex-col items-center text-center space-y-6 z-10 transform-gpu will-change-transform ${theme.radialBorder} ${theme.shadow}`}
       >
         {/* Ambient neon radial glows in background */}
-        <div className={`absolute -top-20 -left-20 w-44 h-44 rounded-full ${theme.ambientGlow} blur-3xl pointer-events-none`} />
-        <div className={`absolute -bottom-20 -right-20 w-44 h-44 rounded-full ${theme.ambientGlow} blur-3xl pointer-events-none`} />
+        <div className={`absolute -top-20 -left-20 w-44 h-44 rounded-full ${theme.ambientGlow} pointer-events-none`} />
+        <div className={`absolute -bottom-20 -right-20 w-44 h-44 rounded-full ${theme.ambientGlow} pointer-events-none`} />
 
         {/* Visual Outcome Header */}
         <div className="flex flex-col items-center space-y-1 relative z-10 w-full mt-2">

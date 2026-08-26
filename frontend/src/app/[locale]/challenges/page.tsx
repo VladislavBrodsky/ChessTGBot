@@ -194,8 +194,7 @@ export default function ChallengesPage() {
               {/* Level badge */}
               <div className="relative mb-3">
                 <div
-                  className="absolute inset-0 rounded-2xl bg-brand-primary/5 pointer-events-none"
-                  style={{ filter: 'blur(8px)' }}
+                  className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] pointer-events-none"
                 />
                 {/* Badge outer ring */}
                 <div

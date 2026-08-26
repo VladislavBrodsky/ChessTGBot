@@ -79,8 +79,8 @@ export default function BadgeShowcaseModal({
           className="relative w-full max-w-sm rounded-3xl border border-brand-border-opacity-10 bg-brand-surface p-6 shadow-2xl overflow-hidden text-center z-10 space-y-5"
         >
           {/* Ambient Glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(245,158,11,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
           {/* Close button */}
           <button

@@ -243,7 +243,7 @@ export default function ProfilePage() {
     <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-3.5 shadow-sm">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{labels.breakdown}</span>
-        <span className="text-[10px] font-black text-brand-success text-brand-success uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
+        <span className="text-[10px] font-black text-brand-success uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
       </div>
 
       {/* Segmented Progress Bar */}
@@ -251,7 +251,7 @@ export default function ProfilePage() {
         {stats.games_played > 0 ? (
           <>
             <div className="h-full bg-brand-success transition-all duration-700" style={{ width: `${stats.win_rate}%` }} title={`Wins: ${stats.win_rate}%`} />
-            <div className="h-full bg-slate-300 bg-brand-surface transition-all duration-700" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
+            <div className="h-full bg-zinc-500 transition-all duration-700" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
             <div className="h-full bg-brand-danger transition-all duration-700" style={{ width: `${stats.loss_rate}%` }} title={`Losses: ${stats.loss_rate}%`} />
           </>
         ) : (
@@ -326,7 +326,7 @@ export default function ProfilePage() {
        )}
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
-         <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-premium backdrop-blur-xl flex flex-col items-center text-center justify-center">
+         <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-premium flex flex-col items-center text-center justify-center">
            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Cosmetics Owned</span>
            <span className="text-2xl font-black text-brand-primary">
              {unlockedItems.length}
@@ -377,7 +377,7 @@ export default function ProfilePage() {
                </div>
                <div className="flex flex-col min-w-0 flex-1">
                  <span className="text-xs font-black text-brand-primary uppercase tracking-tight truncate header-balanced">
-                   vs {game.opponent?.name || "{t.has('ai_engine') ? t('ai_engine') : 'AI Engine'}"}
+                   vs {game.opponent?.name || (typeof t?.has === 'function' && t.has('ai_engine') ? t('ai_engine') : 'AI Engine')}
                  </span>
                  <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] truncate">
                    {t('opponent_elo')}: {game.opponent?.elo || 1000}
@@ -391,7 +391,7 @@ export default function ProfilePage() {
                    {game.result}
                  </span>
                  <span className={`text-[10px] font-black mt-1.5 drop-shadow-sm ${
-                    game.elo_change > 0 ? 'text-brand-success text-brand-success' : game.elo_change < 0 ? 'text-brand-danger' : 'text-brand-muted'
+                    game.elo_change > 0 ? 'text-brand-success' : game.elo_change < 0 ? 'text-brand-danger' : 'text-brand-muted'
                   }`}>
                     {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                   </span>

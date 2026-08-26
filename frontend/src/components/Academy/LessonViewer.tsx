@@ -101,8 +101,8 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                 <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[140px] relative overflow-hidden group">
                   <div className="absolute inset-0 bg-brand-void/10 pointer-events-none" />
                   {/* Decorative subtle background glow */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-all group-hover:bg-emerald-500/20" />
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full -mr-20 -mt-20 pointer-events-none transition-all group-hover:opacity-100 opacity-70" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-[radial-gradient(circle,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full -ml-20 -mb-20 pointer-events-none" />
                   
                   <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed text-[14px]">
                     <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />

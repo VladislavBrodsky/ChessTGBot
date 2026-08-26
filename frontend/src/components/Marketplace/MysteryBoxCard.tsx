@@ -74,10 +74,10 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                 <div className="relative -mx-1 mt-1 mb-1 z-10 h-[118px] flex items-center justify-center">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                         <motion.div
-                            animate={{ opacity: [0.12, 0.28, 0.12], scale: [1, 1.05, 1] }}
+                            animate={{ opacity: [0.2, 0.45, 0.2], scale: [1, 1.05, 1] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="w-28 h-16 rounded-full blur-2xl group-hover:opacity-40 group-hover:scale-110 transition-all duration-500 mix-blend-screen"
-                            style={{ background: `radial-gradient(ellipse, ${glow}, transparent 68%)` }}
+                            className="w-28 h-16 rounded-full group-hover:opacity-60 group-hover:scale-110 transition-all duration-500 pointer-events-none"
+                            style={{ background: `radial-gradient(ellipse, ${glow}, transparent 70%)` }}
                         />
                     </div>
                     <MysteryBoxArt tier={tier} />

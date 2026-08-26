@@ -888,8 +888,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         <div className="w-full max-w-sm flex flex-col items-center gap-6 mx-auto px-1 animate-fade-in">
           <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center text-center shadow-premium relative overflow-hidden">
             {/* Ambient corner backlights */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-bg-opacity-5 rounded-full blur-2xl -mr-6 -mt-6 pointer-events-none animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -ml-6 -mb-6 pointer-events-none animate-pulse" />
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-6 -mt-6 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[radial-gradient(circle,rgba(59,130,246,0.15)_0%,transparent_70%)] rounded-full -ml-6 -mb-6 pointer-events-none" />
 
             {/* Radar / Sonar pulse loading widget */}
             <div className="relative w-28 h-28 flex items-center justify-center rounded-full border border-brand-border-opacity-10 bg-brand-void mb-5 shadow-inner-glow">

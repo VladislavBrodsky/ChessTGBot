@@ -52,7 +52,7 @@ export default function ThemeConfirmSheet({
                     className="relative w-full max-w-md bg-brand-surface border-t sm:border border-brand-border-opacity-20 rounded-t-[32px] sm:rounded-[32px] p-6 text-center shadow-2xl overflow-hidden pointer-events-auto pb-[max(1.5rem,var(--app-safe-bottom))]"
                 >
                     {/* Ambient Glow */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(168,85,247,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
                     {/* Close Button */}
                     <button

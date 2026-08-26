@@ -43,7 +43,7 @@ export default function ReferralCard({ referralCode, onInteraction }: ReferralCa
     return (
         <div className="w-full glass-panel p-5 rounded-2xl border-brand-border-opacity-10 bg-brand-surface space-y-4 shadow-sm relative overflow-hidden">
             {/* Visual background gradient glow */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-xl -mr-6 -mt-6 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-6 -mt-6 pointer-events-none" />
 
             <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary shrink-0 mt-0.5">

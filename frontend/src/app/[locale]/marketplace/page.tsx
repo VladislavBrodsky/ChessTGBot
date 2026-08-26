@@ -248,7 +248,7 @@ export default function MarketplacePage() {
                         <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
                         <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-4 sm:p-5 shadow-premium overflow-hidden relative">
                             {/* Inner ambient light for XP card */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" />
                             <div className="flex items-center justify-between gap-4 relative z-10">
                                 <div className="space-y-1 text-left">
                                 <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>

@@ -78,7 +78,7 @@ export default function UnboxConfirmSheet({
                     >
                         {/* Ambient Glow */}
                         <div
-                            className="absolute -top-20 left-1/2 -translate-x-1/2 w-56 h-56 rounded-full blur-3xl pointer-events-none opacity-20"
+                            className="absolute -top-20 left-1/2 -translate-x-1/2 w-56 h-56 rounded-full pointer-events-none opacity-30"
                             style={{ background: `radial-gradient(circle, ${glow}, transparent 70%)` }}
                         />
 

@@ -105,7 +105,7 @@ export default function Home() {
         type="button"
         onClick={() => setShowNotifications(true)}
         aria-label="Notifications"
-        className="relative w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
+        className="relative w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95 cursor-pointer"
       >
         <FiBell size={16} />
         <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-premium" />
@@ -113,7 +113,7 @@ export default function Home() {
       <Link
         href={`/${locale}/settings`}
         aria-label={t('nav_settings')}
-        className="w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface/70 backdrop-blur-md border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95"
+        className="w-10 h-10 pb-[0.5px] flex items-center justify-center rounded-2xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20 transition-all active:scale-95"
       >
           <FiSettings size={16} />
       </Link>

@@ -717,7 +717,7 @@ export default function PlayLobby() {
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="app-premium-surface w-full p-6 rounded-3xl border flex flex-col items-center justify-center space-y-6 text-center relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.18)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" />
               <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
               
               {/* Active Contenders Badge */}

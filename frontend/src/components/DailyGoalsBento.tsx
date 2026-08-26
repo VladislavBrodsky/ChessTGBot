@@ -34,12 +34,12 @@ export default function DailyGoalsBento({
   return (
     <section aria-labelledby="daily-goals-title" className={`w-full ${className}`}>
       <Card
-        variant="glass"
-        className="w-full p-3.5 sm:p-4 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface/80 backdrop-blur-xl shadow-premium relative overflow-hidden"
+        variant="solid"
+        className="w-full p-3.5 sm:p-4 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-premium relative overflow-hidden"
       >
         {/* Subtle ambient gradient glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none -ml-10 -mb-10" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_0%,transparent_70%)] rounded-full pointer-events-none -mr-10 -mt-10" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] rounded-full pointer-events-none -ml-10 -mb-10" />
 
         <div className="relative z-10 space-y-2.5">
           {/* Header Row */}

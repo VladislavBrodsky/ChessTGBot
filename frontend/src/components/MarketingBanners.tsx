@@ -20,7 +20,7 @@ export default function MarketingBanners() {
   color: "from-indigo-600 via-purple-600 to-pink-500",
   icon: <FaCoins className="text-4xl text-yellow-400 drop-shadow-xl animate-pulse" />,
   decoration: (
-  <div style={{ backgroundColor: 'rgba(250, 204, 21, 0.2)' }} className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 rounded-full blur-3xl animate-pulse" />
+  <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(250,204,21,0.25)_0%,transparent_70%)] pointer-events-none" />
   )
   },
   {
@@ -32,7 +32,7 @@ export default function MarketingBanners() {
   color: "from-blue-600 via-cyan-500 to-emerald-500",
   icon: <FaCrown className="text-4xl text-brand-primary drop-shadow-xl" />,
   decoration: (
-  <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-brand-bg-opacity-20 rounded-full blur-3xl animate-pulse" />
+  <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.15)_0%,transparent_70%)] pointer-events-none" />
   )
   }
  ];
@@ -105,10 +105,10 @@ export default function MarketingBanners() {
  }}
  className="hidden xs:flex w-24 h-24 items-center justify-center relative"
  >
- <div className="absolute inset-0 bg-white opacity-10 rounded-full blur-2xl animate-pulse" />
+ <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
  <div 
- style={{ background: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05))', borderColor: 'rgba(255, 255, 255, 0.3)' }}
- className="w-16 h-16 rounded-full backdrop-blur-3xl border flex items-center justify-center shadow-[inset_0_0_15px_rgba(255,255,255,0.4)]"
+ style={{ background: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))', borderColor: 'rgba(255, 255, 255, 0.3)' }}
+ className="w-16 h-16 rounded-full border flex items-center justify-center shadow-[inset_0_0_15px_rgba(255,255,255,0.4)]"
  >
  <FaUsers className="text-3xl text-white opacity-40 drop-shadow-glow" />
  </div>
