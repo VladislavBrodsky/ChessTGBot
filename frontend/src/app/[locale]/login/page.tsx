@@ -184,7 +184,7 @@ export default function LoginPage() {
                                 rel="noopener noreferrer"
                                 whileHover={{ scale: 1.04 }}
                                 whileTap={{ scale: 0.97 }}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-500 bg-brand-bg-opacity-5 border border-brand-border-text-brand-muted hover:bg-brand-primary/10 shadow-sm"
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-20 text-brand-muted hover:text-brand-primary hover:bg-brand-primary/10 shadow-sm"
                             >
                                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
                                 {t('open_in_telegram')}

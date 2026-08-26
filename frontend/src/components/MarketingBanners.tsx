@@ -67,7 +67,7 @@ export default function MarketingBanners() {
  <motion.div
  whileHover={{ scale: 1.1, rotate: 5 }}
  style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }}
- className="p-2 rounded-xl backdrop-blur-md border shadow-lg"
+ className="p-2 rounded-xl border shadow-lg"
  >
  {banner.icon}
  </motion.div>
