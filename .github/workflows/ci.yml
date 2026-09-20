@@ -75,6 +75,26 @@ jobs:
           path: frontend/playwright-report/
           retention-days: 14
 
+  website:
+    name: Website (build + typecheck + lint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Same as the frontend job: no lockfile is committed, so npm resolves the
+      # platform-specific swc/oxide binaries per-OS.
+      - run: npm install
+      # Build first: it is the only step that catches a bad token import from
+      # design-system/website/theme.css or a server/client boundary mistake.
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm run lint
+
   backend:
     name: Backend (import + pytest)
     runs-on: ubuntu-latest

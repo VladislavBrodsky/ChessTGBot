@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "../../../design-system/website/theme.css";
+
+/* Tailwind scans this app's source for utility usage. */
+@source "../";
+
+@layer components {
+  /* Pawn Tittle — the dot of the "i" in the hero headline (DESIGN.md §3.5). */
+  .tittle-host {
+    position: relative;
+  }
+  .tittle {
+    position: absolute;
+    left: 50%;
+    top: 0.02em;
+    width: 0.21em;
+    height: 0.21em;
+    translate: -50% 0;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-ink);
+    background-image: var(--grain-ink);
+    box-shadow: var(--shadow-edge);
+    animation: pop 200ms var(--ease-pop) 300ms both;
+    transition: transform var(--dur-instant) var(--ease-pop);
+  }
+  @media (hover: hover) {
+    .tittle-host:hover .tittle {
+      transform: rotate(-12deg) scale(1.15);
+    }
+  }
+
+  /* Toppling king — a player resigns by laying the king down (DESIGN.md §7.3). */
+  .topple {
+    transform-origin: 50% 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .topple {
+        animation: topple linear both;
+        animation-timeline: view();
+        animation-range: entry 25% cover 65%;
+      }
+    }
+  }
+  @keyframes topple {
+    0% { rotate: 0deg; }
+    20% { rotate: -6deg; }
+    40% { rotate: -18deg; }
+    60% { rotate: -40deg; }
+    80% { rotate: -72deg; }
+    100% { rotate: -88deg; }
+  }
+}

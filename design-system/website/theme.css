@@ -1,0 +1,502 @@
+/*
+ * Web3Chess Website — "Fog Board" theme for Tailwind CSS v4.1+
+ * Spec: design-system/website/DESIGN.md · Token source: tokens.json · Why: REFERENCE_AUDIT.md
+ *
+ * Usage (website/src/app/globals.css):
+ *   @import "tailwindcss";
+ *   @import "../../../design-system/website/theme.css";
+ *
+ * Fonts are supplied by next/font, which sets --font-onest, --font-golos and
+ * --font-plex-mono on <html> (see DESIGN.md §3.2).
+ *
+ * SCOPE: marketing website only. The Telegram Mini App in frontend/ keeps
+ * Obsidian Chess (BRAND_DESIGN_SYSTEM.md). Never import this file there.
+ */
+
+/* ───────────────────────────── 1. Primitives ───────────────────────────── */
+/* `static` keeps every variable in the output so :root and surface scopes can
+   reference them. Default Tailwind colors, radii and shadows are reset so only
+   system values exist — `bg-blue-500` failing to compile is intentional. */
+@theme static {
+  --color-*: initial;
+
+  /* Ink family — every text, border, icon and shadow tint comes from here */
+  --color-ink: #20294c;          /* Board Ink: headlines, body, primary buttons */
+  --color-royal: #0a2d67;        /* Royal Ink: chip + nav-chip text, hover borders */
+  --color-steel: #375390;        /* Cornflower Steel: icons, outline buttons */
+  --color-hyacinth: #788dba;     /* borders only; dark squares on the Fog Board */
+  --color-dusk: #676b89;         /* secondary text on Fog / White / Paper only */
+  --color-smoke: #979db5;        /* text on dark surfaces only */
+
+  /* Fog neutrals */
+  --color-silver: #c7cbdb;       /* hairlines, dividers, nav-chip borders */
+  --color-mist: #dddfe9;         /* washes, nested fills, light squares */
+  --color-fog: #f0f1f5;          /* page canvas */
+  --color-paper: #fafafa;        /* chip fill */
+  --color-white: #ffffff;        /* card surface */
+
+  /* Night — dark bands and Mini App previews */
+  --color-abyss: #042939;        /* text on Voltage, darkest frame */
+  --color-night: #071a22;        /* Night panel (with grain) */
+  --color-night-raised: #103645; /* raised element on Night */
+
+  /* Accents — spend deliberately */
+  --color-signal: #459af8;       /* dots, active marks, one Signal tile. NOT text on light */
+  --color-signal-ink: #1a63bf;   /* link text on light (5.20:1 on Fog) */
+  --color-signal-soft: #7db8fa;  /* link text on Night / Ink */
+  --color-voltage: #ffff00;      /* one moment per page */
+  --color-king: #ffd700;         /* logo king only */
+
+  /* Game semantics — state, never decoration */
+  --color-win: #047857;
+  --color-win-fill: #10b981;
+  --color-win-soft: #34d399;
+  --color-loss: #be123c;
+  --color-loss-fill: #e11d48;
+  --color-loss-soft: #fb7185;
+  --color-premium: #6d28d9;
+  --color-premium-soft: #a78bfa;
+  --color-caution: #92400e;
+  --color-caution-soft: #fbbf24;
+
+  /* ── Type scale (fluid 375px → 1280px). Poster tracking is −0.03em, as measured. ── */
+  --text-display: clamp(3.5rem, 2.36rem + 4.86vw, 6.25rem);      /* 56 → 100 */
+  --text-display--line-height: 0.85;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+
+  --text-heading-xl: clamp(2.5rem, 1.88rem + 2.65vw, 4rem);      /* 40 → 64 */
+  --text-heading-xl--line-height: 1;
+  --text-heading-xl--letter-spacing: -0.03em;
+  --text-heading-xl--font-weight: 700;
+
+  --text-heading-lg: clamp(2.125rem, 1.76rem + 1.55vw, 3rem);    /* 34 → 48 */
+  --text-heading-lg--line-height: 1.08;
+  --text-heading-lg--letter-spacing: -0.03em;
+  --text-heading-lg--font-weight: 700;
+
+  --text-heading-md: clamp(1.625rem, 1.47rem + 0.66vw, 2rem);    /* 26 → 32 */
+  --text-heading-md--line-height: 1.2;
+  --text-heading-md--letter-spacing: -0.03em;
+  --text-heading-md--font-weight: 700;
+
+  --text-heading-sm: clamp(1.375rem, 1.32rem + 0.22vw, 1.5rem);  /* 22 → 24 */
+  --text-heading-sm--line-height: 1.5;
+  --text-heading-sm--letter-spacing: -0.03em;
+  --text-heading-sm--font-weight: 600;
+
+  --text-stat: clamp(2rem, 1.74rem + 1.1vw, 2.625rem);           /* 32 → 42, accent face */
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.02em;
+  --text-stat--font-weight: 500;
+
+  --text-lead: clamp(1.25rem, 1.15rem + 0.44vw, 1.5rem);         /* 20 → 24 */
+  --text-lead--line-height: 1.5;
+  --text-lead--font-weight: 400;
+
+  --text-title: 1.25rem;          /* 20 */
+  --text-title--line-height: 1.5;
+  --text-title--letter-spacing: -0.01em;
+  --text-title--font-weight: 600;
+
+  --text-chip: 1.125rem;          /* 18 */
+  --text-chip--line-height: 1.33;
+  --text-chip--font-weight: 600;
+
+  --text-body-lg: 1.125rem;       /* 18 */
+  --text-body-lg--line-height: 1.5;
+
+  --text-body: 1.0625rem;         /* 17 — the measured workhorse */
+  --text-body--line-height: 1.41;
+
+  --text-body-sm: 1rem;           /* 16 */
+  --text-body-sm--line-height: 1.5;
+
+  --text-label: 0.875rem;         /* 14 */
+  --text-label--line-height: 1.43;
+  --text-label--letter-spacing: 0.01em;
+  --text-label--font-weight: 600;
+
+  --text-caption: 0.875rem;       /* 14 */
+  --text-caption--line-height: 1.43;
+
+  --text-overline: 0.75rem;       /* 12 — floor; Fold's 10px is rejected */
+  --text-overline--line-height: 1.2;
+  --text-overline--letter-spacing: 0.08em;
+  --text-overline--font-weight: 600;
+
+  --text-button-sm: 0.9375rem;    /* 15 */
+  --text-button-sm--line-height: 1.33;
+  --text-button-sm--font-weight: 600;
+  --text-button: 1.0625rem;       /* 17 */
+  --text-button--line-height: 1.41;
+  --text-button--font-weight: 600;
+  --text-button-lg: 1.25rem;      /* 20 */
+  --text-button-lg--line-height: 1.2;
+  --text-button-lg--font-weight: 600;
+
+  --tracking-poster: -0.03em;
+  --tracking-overline: 0.08em;
+
+  /* ── Space ── Tailwind's 0.25rem spacing multiplier stays; these add named rhythm */
+  --spacing-gutter: clamp(1.5rem, 0.88rem + 2.65vw, 3rem);       /* 24 → 48 */
+  --spacing-section: clamp(4rem, 2.55rem + 6.19vw, 7.5rem);      /* 64 → 120 */
+  --spacing-card: 1.5rem;                                        /* 24 */
+  --spacing-panel: clamp(1.5rem, 0.88rem + 2.65vw, 3rem);        /* 24 → 48 */
+
+  /* ── Containers ── */
+  --container-prose: 40rem;     /* 640  — long-form reading */
+  --container-content: 58rem;   /* 928  — measured Fold section width */
+  --container-main: 64rem;      /* 1024 — default page column */
+  --container-wide: 75rem;      /* 1200 — footer, bento, wide bands */
+
+  /* ── Radii ── roles, not sizes (DESIGN.md §5.2) */
+  --radius-*: initial;
+  --radius-control: 0.5rem;     /* 8  — nav chips, icon buttons, inputs, tooltips */
+  --radius-card: 0.75rem;       /* 12 — cards, QR dock, board frame */
+  --radius-media: 1rem;         /* 16 — images, screenshots */
+  --radius-device: 1.25rem;     /* 20 — screen inside a device frame */
+  --radius-panel: 1.5rem;       /* 24 — bento tiles, bands, modals, sticky nav pill */
+  --radius-frame: 2.5rem;       /* 40 — device outer frame */
+  --radius-pill: 9999px;        /* buttons, chips, badges, toggles */
+
+  /* ── Elevation ── navy-tinted only, exactly as measured */
+  --shadow-*: initial;
+  --shadow-control: 0 1px 4px 0 rgb(32 41 76 / 0.1);
+  --shadow-hairline: 0 1px 4px 0 rgb(32 41 76 / 0.04);
+  --shadow-nested: 0 4px 11px 0 rgb(32 41 76 / 0.07), 0 1px 3px 0 rgb(32 41 76 / 0.12);
+  --shadow-float: 0 6px 16px 0 rgb(32 41 76 / 0.12), 0 1px 5px 0 rgb(32 41 76 / 0.09);
+  --shadow-card: 0 9px 25px 0 rgb(32 41 76 / 0.12);
+  --shadow-edge: 0 1px 0 0 rgb(255 255 255 / 0.53);
+  --inset-shadow-well: inset 0 0 4px 0 rgb(32 41 76 / 0.05);
+
+  /* ── Easing & animation ── */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);   /* measured default */
+  --ease-pop: cubic-bezier(0.06, 0.94, 0.67, 1.01); /* measured tittle pop */
+  --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --animate-pop: pop 200ms var(--ease-pop) both;
+  --animate-live: live 1.6s var(--ease-standard) infinite;
+  --animate-dash: dash 1.2s var(--ease-enter) both;
+
+  @keyframes pop {
+    from { transform: scale(0.4); }
+    to { transform: scale(1); }
+  }
+  @keyframes live {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  @keyframes dash {
+    from { stroke-dashoffset: var(--dash-length, 1000); }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(16px); }
+  }
+}
+
+/* ─────────────────────── 2. Fonts + semantic color roles ─────────────────────── */
+/* `inline` so utilities emit var(--surface-…) directly and follow surface scopes. */
+@theme inline {
+  --font-sans: var(--font-onest), "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Noto Sans SC", "Noto Sans JP", "Noto Sans Devanagari", "Noto Sans Arabic", sans-serif;
+  --font-accent: var(--font-golos), "Golos Text", var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-canvas: var(--surface-canvas);
+  --color-surface: var(--surface-card);
+  --color-inset: var(--surface-inset);
+  --color-wash: var(--surface-wash);
+  --color-chip: var(--surface-chip);
+  --color-inverse: var(--surface-inverse);
+
+  --color-fg: var(--fg-default);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-action: var(--fg-action);
+  --color-fg-link: var(--fg-link);
+  --color-fg-inverse: var(--fg-inverse);
+  --color-fg-win: var(--fg-win);
+  --color-fg-loss: var(--fg-loss);
+  --color-fg-premium: var(--fg-premium);
+  --color-fg-caution: var(--fg-caution);
+
+  --color-line: var(--line-hairline);
+  --color-line-soft: var(--line-soft);
+  --color-line-strong: var(--line-strong);
+  --color-line-ghost: var(--line-ghost);
+  --color-icon: var(--icon-default);
+  --color-focus: var(--focus-ring);
+}
+
+/* Canvas (default light) surface */
+:root {
+  --surface-canvas: var(--color-fog);
+  --surface-card: var(--color-white);
+  --surface-inset: var(--color-fog);
+  --surface-wash: var(--color-mist);
+  --surface-chip: var(--color-paper);
+  --surface-inverse: var(--color-ink);
+
+  --fg-default: var(--color-ink);
+  --fg-muted: var(--color-dusk);
+  --fg-action: var(--color-royal);
+  --fg-link: var(--color-signal-ink);
+  --fg-inverse: var(--color-white);
+  --fg-win: var(--color-win);
+  --fg-loss: var(--color-loss);
+  --fg-premium: var(--color-premium);
+  --fg-caution: var(--color-caution);
+
+  --line-hairline: var(--color-silver);
+  --line-soft: var(--color-mist);
+  --line-strong: var(--color-steel);
+  --line-ghost: rgb(120 141 186 / 0.5);
+  --icon-default: var(--color-steel);
+  --focus-ring: var(--color-signal-ink);
+
+  /* Motion durations (Tailwind v4 has no duration theme namespace) */
+  --dur-instant: 75ms;
+  --dur-fast: 100ms;
+  --dur-base: 150ms;
+  --dur-medium: 200ms;
+  --dur-slow: 500ms;
+  --dur-reveal: 640ms;
+
+  /* Layers */
+  --z-raised: 10;
+  --z-sticky: 40;
+  --z-dock: 50;
+  --z-dropdown: 60;
+  --z-overlay: 100;
+  --z-modal: 110;
+  --z-toast: 140;
+
+  /* Grain for Night panels and the Pawn Tittle */
+  --grain-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .125 0 0 0 0 .16 0 0 0 0 .3 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Ink band — brand dark, flat. Max 1 per page. */
+[data-surface="ink"] {
+  --surface-canvas: var(--color-ink);
+  --surface-card: rgb(255 255 255 / 0.06);
+  --surface-inset: rgb(255 255 255 / 0.04);
+  --surface-wash: rgb(255 255 255 / 0.08);
+  --surface-chip: rgb(255 255 255 / 0.08);
+  --surface-inverse: var(--color-white);
+  --fg-default: var(--color-white);
+  --fg-muted: var(--color-silver);
+  --fg-action: var(--color-white);
+  --fg-link: var(--color-signal-soft);
+  --fg-inverse: var(--color-ink);
+  --fg-win: var(--color-win-soft);
+  --fg-loss: var(--color-loss-soft);
+  --fg-premium: var(--color-premium-soft);
+  --fg-caution: var(--color-caution-soft);
+  --line-hairline: rgb(255 255 255 / 0.12);
+  --line-soft: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.4);
+  --line-ghost: rgb(255 255 255 / 0.24);
+  --icon-default: var(--color-smoke);
+  --focus-ring: var(--color-signal-soft);
+}
+
+/* Night panel — the Mini App bridge. Grain on, shadows off. Max 1 per page. */
+[data-surface="night"],
+[data-theme="dark"] {
+  --surface-canvas: var(--color-night);
+  --surface-card: var(--color-night-raised);
+  --surface-inset: rgb(255 255 255 / 0.04);
+  --surface-wash: rgb(255 255 255 / 0.06);
+  --surface-chip: rgb(255 255 255 / 0.06);
+  --surface-inverse: var(--color-white);
+  --fg-default: var(--color-white);
+  --fg-muted: var(--color-smoke);
+  --fg-action: var(--color-white);
+  --fg-link: var(--color-signal-soft);
+  --fg-inverse: var(--color-night);
+  --fg-win: var(--color-win-soft);
+  --fg-loss: var(--color-loss-soft);
+  --fg-premium: var(--color-premium-soft);
+  --fg-caution: var(--color-caution-soft);
+  --line-hairline: rgb(255 255 255 / 0.1);
+  --line-soft: rgb(255 255 255 / 0.06);
+  --line-strong: rgb(255 255 255 / 0.36);
+  --line-ghost: rgb(255 255 255 / 0.2);
+  --icon-default: var(--color-smoke);
+  --focus-ring: var(--color-signal-soft);
+}
+
+/* Voltage moment — one per page. Text is Abyss (14.16:1). */
+[data-surface="voltage"] {
+  --surface-canvas: var(--color-voltage);
+  --surface-card: rgb(255 255 255 / 0.55);
+  --fg-default: var(--color-abyss);
+  --fg-muted: var(--color-abyss);
+  --fg-action: var(--color-abyss);
+  --fg-link: var(--color-abyss);
+  --line-hairline: rgb(4 41 57 / 0.2);
+  --icon-default: var(--color-abyss);
+  --focus-ring: var(--color-abyss);
+}
+
+/* Signal tile — one per page. Ink text (4.88:1). Never white text. */
+[data-surface="signal"] {
+  --surface-canvas: var(--color-signal);
+  --surface-card: rgb(255 255 255 / 0.9);
+  --fg-default: var(--color-ink);
+  --fg-muted: var(--color-ink);
+  --fg-action: var(--color-ink);
+  --fg-link: var(--color-ink);
+  --line-hairline: rgb(32 41 76 / 0.2);
+  --icon-default: var(--color-ink);
+  --focus-ring: var(--color-ink);
+}
+
+/* ───────────────────────────── 3. Base ───────────────────────────── */
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem; /* clears the sticky nav pill for #anchors */
+  }
+
+  body {
+    background-color: var(--surface-canvas);
+    color: var(--fg-default);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  [data-surface] {
+    background-color: var(--surface-canvas);
+    color: var(--fg-default);
+  }
+  [data-surface="ink"],
+  [data-surface="night"] {
+    color-scheme: dark;
+  }
+  [data-surface="night"] {
+    background-image: var(--grain-light);
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p, li, dd, blockquote {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-voltage);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Script-aware typography. Negative tracking breaks CJK rhythm, Devanagari
+     conjuncts and Arabic joining; tall marks need more leading. */
+  :lang(zh), :lang(ja) {
+    --tracking-poster: 0em;
+    --tracking-overline: 0.02em;
+    --text-display--letter-spacing: 0em;
+    --text-display--line-height: 1.12;
+    --text-heading-xl--letter-spacing: 0em;
+    --text-heading-xl--line-height: 1.18;
+    --text-heading-lg--letter-spacing: 0em;
+    --text-heading-lg--line-height: 1.22;
+    --text-heading-md--letter-spacing: 0em;
+    --text-heading-sm--letter-spacing: 0em;
+    --text-overline--letter-spacing: 0.02em;
+    --text-body--line-height: 1.7;
+    --text-lead--line-height: 1.7;
+  }
+  :lang(hi), :lang(ar) {
+    --tracking-poster: 0em;
+    --tracking-overline: 0em;
+    --text-display--letter-spacing: 0em;
+    --text-display--line-height: 1.25;
+    --text-heading-xl--letter-spacing: 0em;
+    --text-heading-xl--line-height: 1.3;
+    --text-heading-lg--letter-spacing: 0em;
+    --text-heading-lg--line-height: 1.3;
+    --text-heading-md--letter-spacing: 0em;
+    --text-heading-md--line-height: 1.35;
+    --text-heading-sm--letter-spacing: 0em;
+    --text-overline--letter-spacing: 0em;
+    --text-body--line-height: 1.7;
+    --text-lead--line-height: 1.7;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ───────────────────────────── 4. Utilities ───────────────────────────── */
+
+/* Page columns: shell-prose | shell-content | shell-main | shell-wide */
+@utility shell-* {
+  width: min(100% - 2 * var(--spacing-gutter), --value(--container-*));
+  margin-inline: auto;
+}
+
+@utility section-y {
+  padding-block: var(--spacing-section);
+}
+
+/* Standalone link (nav, footer, "Read the manifesto"): underline on hover */
+@utility link {
+  color: var(--fg-link);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-fast) var(--ease-standard);
+  &:hover { text-decoration-color: currentColor; }
+}
+
+/* Link inside running text: always underlined (WCAG 1.4.1) */
+@utility link-inline {
+  color: var(--fg-link);
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.18em;
+  &:hover { text-decoration-thickness: 0.12em; }
+}
+
+@utility grain {
+  background-image: var(--grain-light);
+}
+@utility grain-ink {
+  background-image: var(--grain-ink);
+}
+
+/* Scroll-driven reveal. No JS; content is visible wherever the API or motion is unavailable. */
+@utility reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+/* Logical flip for directional icons in RTL */
+@utility flip-rtl {
+  &:where([dir="rtl"], [dir="rtl"] *) { transform: scaleX(-1); }
+}

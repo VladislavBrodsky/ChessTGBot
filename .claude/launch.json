@@ -18,6 +18,12 @@
         "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
       ],
       "port": 3000
+    },
+    {
+      "name": "website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "website", "--", "-p", "3100"],
+      "port": 3100
     }
   ]
 }
