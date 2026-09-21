@@ -31,6 +31,11 @@ to `/game?id=…` (`frontend/src/app/[locale]/home/page.tsx`). A campaign parame
 `?startapp=site_hero` therefore sends players to a game that does not exist. Use `telegramLink()`
 or `telegramLink("arena")` from `src/lib/config.ts` and nothing else.
 
+The one exception is the marketing deep link the app already parses,
+`mk_<card-id>_<channel>_<target>` (targets: `arena`, `academy`, `challenges`, `wallet`), which also
+emits a `marketing_launch` telemetry event. Using it for website attribution requires a card id
+reserved from the Marketing Content OS (`backend/app/services/marketing/`) — do not invent one.
+
 ## Deployment
 
 Railway service **ChessTGBot - Website** in project `TGChessBot`, built from this repo's root with

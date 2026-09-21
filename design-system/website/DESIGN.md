@@ -637,7 +637,8 @@ The conversion component, used in the hero, the sticky nav pill, the mobile CTA 
   | none | Opens home. **Default for website CTAs.** |
   | `startapp=arena` | Opens matchmaking. Use on "Find a game" CTAs. |
   | `startapp=ref_<code>` | Referral landing pages only |
-  | anything else | **Broken.** Don't add `site_*` tracking params until the app ignores an agreed prefix (e.g. `src_`). Track clicks on the website side instead (§12.4). |
+  | `startapp=mk_<id>_<channel>_<target>` | Marketing deep link the app already understands: `mk_` + a numeric content-card id + a 1–3 letter channel + an optional target (`arena`, `academy`, `challenges`, `wallet`). It fires a `marketing_launch` telemetry event and routes to the target. Usable for website attribution **only with an id reserved from the Marketing Content OS** — don't invent one. |
+  | anything else | **Broken.** Any other value is read as a game id and sends the player to a game that does not exist. Track clicks on the website side instead (§12.4). |
 
 - **Desktop behaviour:** the link still works (it opens Telegram Desktop or Web). Next to it, show "or scan with your phone" pointing to the QR dock.
 - **In the Telegram in-app browser:** the same link opens the Mini App natively.
@@ -1075,7 +1076,7 @@ Privacy-preserving (e.g. Plausible, or PostHog with cookieless mode), and **noth
 | `demo_interact` | `demo` (puzzle, wager, matchmaking, theme_toggle) |
 | `outbound_click` | `domain` |
 
-Attribution is website-side only until the Mini App supports a campaign `startapp` prefix (§8.2).
+Attribution is website-side by default. App-side attribution is possible through the `mk_` marketing deep link (§8.2), but it needs a content-card id reserved from the Marketing Content OS (`backend/app/services/marketing/`), so agree that with the marketing system before using it.
 
 ---
 

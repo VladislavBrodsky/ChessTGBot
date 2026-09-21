@@ -12,6 +12,9 @@ export const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "FinChess_bo
  *   - omitted      → opens home
  *   - "arena"      → opens matchmaking
  *   - "ref_<code>" → referral
+ *   - "mk_<card-id>_<channel>_<target>" → marketing deep link; routes to the
+ *     target (arena | academy | challenges | wallet) and logs telemetry. Needs a
+ *     card id reserved from backend/app/services/marketing/ — do not invent one.
  * ANY other value is treated as a game id and sends the player to a game that
  * does not exist. Do not add campaign parameters here.
  */
