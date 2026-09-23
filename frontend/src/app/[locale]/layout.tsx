@@ -84,6 +84,27 @@ export default async function LocaleLayout({
                                     }
                                     var reduceMotion = localStorage.getItem('setting_reduce_motion') === 'true';
                                     document.documentElement.setAttribute('data-reduce-motion', String(reduceMotion));
+
+                                    /* Decide the low-end effect mode BEFORE first paint.
+                                       Providers.tsx used to stamp .lite-fx from an effect, which
+                                       (a) ran after hydration, so the expensive blurs painted once
+                                       and then vanished — a visible flash on every load — and
+                                       (b) keyed only on hardwareConcurrency <= 4 / deviceMemory <= 4.
+                                       WKWebView does not implement deviceMemory at all and modern
+                                       iPhones report 6 cores, so no iPhone ever qualified, even
+                                       though Telegram's fullscreen iOS WebView is exactly where the
+                                       100px+ blurred mesh blobs cost the most. Treat any mobile
+                                       Telegram host as low-end: Telegram puts the platform on the
+                                       launch URL hash before its SDK parses it, so this is readable
+                                       here without waiting for telegram-web-app.js. */
+                                    var lite = false;
+                                    var n = navigator;
+                                    if ((n.hardwareConcurrency || 8) <= 4) lite = true;
+                                    if (typeof n.deviceMemory === 'number' && n.deviceMemory <= 4) lite = true;
+                                    var pm = (location.hash || '').match(/tgWebAppPlatform=([a-z]+)/);
+                                    var platform = pm ? pm[1] : (window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.platform : '');
+                                    if (platform === 'ios' || platform === 'android') lite = true;
+                                    if (lite) document.documentElement.classList.add('lite-fx');
                                 } catch (e) {}
                             })();
                         `

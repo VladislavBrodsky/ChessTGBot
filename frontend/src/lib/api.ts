@@ -1,4 +1,4 @@
-import { E2E_TEST_INIT_DATA, hasE2ETestIdentity } from '@/lib/e2eTestMode';
+import { waitForInitData } from '@/lib/telegramAuth';
 
 interface ReadCacheEntry {
   response: Response;
@@ -62,16 +62,15 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
   const url = `${baseUrl}${cleanPath}`;
   const cacheableRead = canUseReadCache(cleanPath, options);
 
-  // Retrieve Telegram Init Data automatically if in client-side WebApp
+  // Retrieve Telegram Init Data automatically if in client-side WebApp.
+  //
+  // This AWAITS the cold-start gate rather than reading synchronously: the Telegram SDK
+  // loads asynchronously, and a request that goes out before it lands carries no
+  // credential, earns a 401, and (via the handler below) used to bounce a valid session
+  // to /login. See lib/telegramAuth.ts for the full story.
   let initData = "";
   if (typeof window !== "undefined") {
-    if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
-      initData = (window.Telegram.WebApp as any).initData;
-    } else if (hasE2ETestIdentity()) {
-      initData = E2E_TEST_INIT_DATA;
-    } else {
-      initData = localStorage.getItem('telegram_web_auth') || "";
-    }
+    initData = await waitForInitData();
   }
 
   // Scope cache entries to the active authentication material. A signed-out
@@ -131,10 +130,15 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
     readCache.clear();
   }
 
-  // Global 401 Unauthorized handler
-  if (res.status === 401) {
+  // Global 401 Unauthorized handler.
+  //
+  // Only a request that actually PRESENTED a credential can tell us that credential is
+  // bad. A 401 on a request we sent without one says nothing about the session — it just
+  // means we asked too early — so tearing down stored auth and redirecting on it logged
+  // out valid users during the cold-start window.
+  if (res.status === 401 && initData) {
     if (typeof window !== "undefined") {
-      localStorage.removeItem('telegram_web_auth');
+      try { localStorage.removeItem('telegram_web_auth'); } catch { /* storage blocked */ }
       const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/);
       const locale = localeMatch ? localeMatch[1] : 'en';
       if (!window.location.pathname.includes('/login')) {

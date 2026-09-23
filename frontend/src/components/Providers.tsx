@@ -26,17 +26,28 @@ export default function Providers({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     const needsTonConnect = TON_ROUTE_PATTERN.test(pathname || '');
 
-    // Low-end device detection: weak hardware gets the same effect freezes as
-    // "reduce motion" (see :root.lite-fx in globals.css) WITHOUT requiring the
-    // user to find an OS accessibility setting. hardwareConcurrency <= 4 marks
-    // older phones; deviceMemory (Chrome/Android only) catches low-RAM devices.
+    // Low-end device detection: weak hardware and mobile Telegram hosts get the same
+    // effect freezes as "reduce motion" (see :root.lite-fx in globals.css) without the
+    // user having to find an OS accessibility setting.
+    //
+    // The decision is normally made by the pre-hydration script in [locale]/layout.tsx,
+    // which runs before first paint so the expensive blurs never paint at all. This
+    // effect is only a late fallback for the one case that script cannot see: a Telegram
+    // launch with no platform on the URL hash, where the SDK finishes loading afterwards
+    // and is the first thing to reveal that we are on a phone.
     useEffect(() => {
         try {
+            const root = document.documentElement;
+            if (root.classList.contains('lite-fx')) return;
+
             const nav = navigator as any;
             const lowCpu = (nav.hardwareConcurrency || 8) <= 4;
             const lowMem = typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4;
-            if (lowCpu || lowMem) {
-                document.documentElement.classList.add('lite-fx');
+            const platform = (window as any).Telegram?.WebApp?.platform;
+            const mobileHost = platform === 'ios' || platform === 'android';
+
+            if (lowCpu || lowMem || mobileHost) {
+                root.classList.add('lite-fx');
             }
         } catch { /* detection is best-effort */ }
     }, []);

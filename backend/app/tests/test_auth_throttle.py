@@ -140,3 +140,44 @@ async def test_auth_throttle_noop_on_null_iphash():
     for _ in range(deps.AUTH_FAIL_LIMIT + 5):
         await deps.register_auth_failure(None)
     assert await deps.auth_ip_is_blocked(None) is False
+
+
+@pytest.mark.asyncio
+async def test_missing_init_data_header_is_not_counted_as_a_failure(monkeypatch):
+    """A request with NO credential must not move the throttle.
+
+    Regression guard. get_current_user used to call register_auth_failure when the
+    X-Telegram-Init-Data header was simply absent. That is not a forgery attempt: it
+    is the normal state of any signed-out visitor, and of a legitimate Mini App during
+    the window before telegram-web-app.js has loaded and populated initData. Counting
+    it broke this throttle's documented invariant that legitimate users sharing one
+    NAT / carrier IP are never throttled - a handful of ordinary cold app launches from
+    a single Wi-Fi escalated into 429s for everyone behind it, which is what made the
+    app unopenable from a second phone. Only a credential that is actually PRESENTED
+    and fails validation counts (covered by the tests above).
+    """
+    from fastapi import HTTPException
+    from app.core.config import get_settings
+
+    # The dev/testing branch of get_current_user hands back a mock user instead of
+    # rejecting, so pin production semantics to exercise the real path.
+    settings = get_settings()
+    monkeypatch.setattr(settings, "TESTING", False, raising=False)
+    monkeypatch.setattr(settings, "ENV", "production", raising=False)
+
+    request = _FakeRequest(
+        headers={"x-railway-edge": "edge", "x-real-ip": "203.0.113.9"},
+        client_host="100.2.3.4",
+    )
+    ip_hash = security.hash_ip(security.extract_client_ip_from_request(request))
+
+    # Far more header-less requests than the limit, as a NAT full of cold launches
+    # would produce.
+    for _ in range(deps.AUTH_FAIL_LIMIT * 2):
+        with pytest.raises(HTTPException) as excinfo:
+            await deps.get_current_user(request=request, x_telegram_init_data=None, db=None)
+        # Still the honest "you sent no credential" answer, never a throttle 429.
+        assert excinfo.value.status_code == 401
+
+    # The client behind those requests is still free to authenticate.
+    assert await deps.auth_ip_is_blocked(ip_hash) is False

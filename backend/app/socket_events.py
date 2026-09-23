@@ -185,7 +185,14 @@ async def connect(sid, environ, auth):
                 user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
                 print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")
             else:
-                await register_auth_failure(ip_hash)
+                # Count this only when a credential was actually PRESENTED and turned
+                # out to be unusable. A socket that connects with no initData at all is
+                # a client that reached us before telegram-web-app.js loaded, not an
+                # attacker, and counting it let ordinary cold launches from one NAT
+                # throttle every legitimate user behind that IP. (A presented-but-invalid
+                # initData is already counted in the except branch above.)
+                if auth and auth.get('initData'):
+                    await register_auth_failure(ip_hash)
                 raise Exception("Unauthorized: initData missing or invalid")
 
         # Save user_id to session

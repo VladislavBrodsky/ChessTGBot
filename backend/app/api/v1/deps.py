@@ -88,8 +88,15 @@ async def get_current_user(
                     username="Protagonist"
                 )
             return user
-        # 2b: a bare unauthenticated request is a failed auth attempt.
-        await register_auth_failure(ip_hash)
+        # A MISSING header is not a credential-forgery attempt, so it must not count
+        # toward the throttle below. It is the normal state of any signed-out visitor
+        # and — until the cold-start gate in the frontend's lib/telegramAuth.ts — of a
+        # legitimate Mini App during the window before telegram-web-app.js has loaded.
+        # Counting it broke this throttle's whole invariant that "legitimate users, even
+        # many sharing one NAT / carrier IP, are never throttled": a handful of cold app
+        # launches from one Wi-Fi escalated into 429s for everyone behind it. Only a
+        # request that actually PRESENTS bad credentials is evidence of an attack, and
+        # that case is still counted below.
         raise HTTPException(
             status_code=401,
             detail="X-Telegram-Init-Data header missing"
