@@ -35,7 +35,6 @@
 3. **Z-Index Layering Scale**:
    - `0–10`: Base page content and cards
    - `20`: Sticky sub-headers and filters
-   - `40`: Floating Action Controls (`QuickPlayFAB`)
    - `50`: Persistent bottom Navbar
    - `100`: Standard Overlays (Modals, Drawers, Sheets)
    - `110`: Nested gameplay dialogs
@@ -81,7 +80,6 @@ All new pages and feature refactors MUST reuse existing design system primitives
 | **ErrorState** | `ErrorState.tsx` | Error banner/card with error icon, title, message, and `onRetry` action. |
 | **Input** | `Input.tsx` | Accessible form text input with `label`, `error`, `helperText`, `leftIcon`, `rightIcon`. |
 | **Modal** | `Modal.tsx` | Accessible dialog modal with ESC key dismiss and backdrop lock. |
-| **QuickPlayFAB** | `QuickPlayFAB.tsx` | Floating 1-tap quick matchmaking action pill docked above navbar. |
 | **SegmentedControl**| `SegmentedControl.tsx`| Sliding pill toggle selector with tactile haptics. |
 | **Skeleton** | `Skeleton.tsx` | `text`, `circular`, `rectangular` shimmers and `SkeletonList`. |
 | **Switch** | `Switch.tsx` | WAI-ARIA accessible toggle switch with spring thumb and Telegram haptic feedback. |

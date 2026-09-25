@@ -20,34 +20,39 @@
 @theme static {
   --color-*: initial;
 
-  /* Ink family — every text, border, icon and shadow tint comes from here */
-  --color-ink: #20294c;          /* Board Ink: headlines, body, primary buttons */
-  --color-royal: #0a2d67;        /* Royal Ink: chip + nav-chip text, hover borders */
-  --color-steel: #375390;        /* Cornflower Steel: icons, outline buttons */
-  --color-hyacinth: #788dba;     /* borders only; dark squares on the Fog Board */
-  --color-dusk: #676b89;         /* secondary text on Fog / White / Paper only */
-  --color-smoke: #979db5;        /* text on dark surfaces only */
+  /* Dayos / Refero Editorial Palette */
+  --color-carbon-black: #000000;  /* Primary text, inverted card surfaces, filled blocks */
+  --color-paper-white: #ffffff;   /* Card surfaces, inverted text on dark blocks */
+  --color-warm-canvas: #e5e5e5;   /* Page background, hero backdrop */
+  --color-mist-gray: #f3f3f3;     /* Secondary surface, nav pill backgrounds */
+  --color-ash: #c6c6c6;           /* Borders, hairlines, disabled states */
+  --color-smoke: #979797;         /* Body text secondary, meta labels, captions */
+  --color-slate: #444444;         /* Secondary body text, navigation labels */
+  --color-graphite: #2f2f2f;      /* Deep surface for code blocks */
+  --color-mint-chip: #d1ffca;     /* Link backgrounds, tag pills, accent highlights */
+  --color-voltage-yellow: #fff100;/* Email highlights, small accent dots, bursts */
 
-  /* Fog neutrals */
-  --color-silver: #c7cbdb;       /* hairlines, dividers, nav-chip borders */
-  --color-mist: #dddfe9;         /* washes, nested fills, light squares */
-  --color-fog: #f0f1f5;          /* page canvas */
-  --color-paper: #fafafa;        /* chip fill */
-  --color-white: #ffffff;        /* card surface */
+  /* Semantic aliases */
+  --color-ink: #000000;
+  --color-royal: #000000;
+  --color-steel: #444444;
+  --color-hyacinth: #c6c6c6;
+  --color-dusk: #444444;
+  --color-silver: #c6c6c6;
+  --color-mist: #f3f3f3;
+  --color-fog: #e5e5e5;
+  --color-paper: #ffffff;
+  --color-white: #ffffff;
+  --color-abyss: #000000;
+  --color-night: #000000;
+  --color-night-raised: #181818;
+  --color-signal: #d1ffca;
+  --color-signal-ink: #000000;
+  --color-signal-soft: #d1ffca;
+  --color-voltage: #fff100;
+  --color-king: #fff100;
 
-  /* Night — dark bands and Mini App previews */
-  --color-abyss: #042939;        /* text on Voltage, darkest frame */
-  --color-night: #071a22;        /* Night panel (with grain) */
-  --color-night-raised: #103645; /* raised element on Night */
-
-  /* Accents — spend deliberately */
-  --color-signal: #459af8;       /* dots, active marks, one Signal tile. NOT text on light */
-  --color-signal-ink: #1a63bf;   /* link text on light (5.20:1 on Fog) */
-  --color-signal-soft: #7db8fa;  /* link text on Night / Ink */
-  --color-voltage: #ffff00;      /* one moment per page */
-  --color-king: #ffd700;         /* logo king only */
-
-  /* Game semantics — state, never decoration */
+  /* Game semantics */
   --color-win: #047857;
   --color-win-fill: #10b981;
   --color-win-soft: #34d399;
@@ -202,7 +207,8 @@
 @theme inline {
   --font-sans: var(--font-onest), "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Noto Sans SC", "Noto Sans JP", "Noto Sans Devanagari", "Noto Sans Arabic", sans-serif;
-  --font-accent: var(--font-golos), "Golos Text", var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  --font-condensed: var(--font-condensed), "Barlow Condensed", "Anton", "Bebas Neue", ui-sans-serif, sans-serif;
+  --font-accent: var(--font-condensed), "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-canvas: var(--surface-canvas);
@@ -232,29 +238,29 @@
 
 /* Canvas (default light) surface */
 :root {
-  --surface-canvas: var(--color-fog);
-  --surface-card: var(--color-white);
-  --surface-inset: var(--color-fog);
-  --surface-wash: var(--color-mist);
-  --surface-chip: var(--color-paper);
-  --surface-inverse: var(--color-ink);
+  --surface-canvas: var(--color-warm-canvas);
+  --surface-card: var(--color-paper-white);
+  --surface-inset: var(--color-mist-gray);
+  --surface-wash: var(--color-mist-gray);
+  --surface-chip: var(--color-mint-chip);
+  --surface-inverse: var(--color-carbon-black);
 
-  --fg-default: var(--color-ink);
-  --fg-muted: var(--color-dusk);
-  --fg-action: var(--color-royal);
-  --fg-link: var(--color-signal-ink);
-  --fg-inverse: var(--color-white);
+  --fg-default: var(--color-carbon-black);
+  --fg-muted: var(--color-slate);
+  --fg-action: var(--color-carbon-black);
+  --fg-link: var(--color-carbon-black);
+  --fg-inverse: var(--color-paper-white);
   --fg-win: var(--color-win);
   --fg-loss: var(--color-loss);
   --fg-premium: var(--color-premium);
   --fg-caution: var(--color-caution);
 
-  --line-hairline: var(--color-silver);
-  --line-soft: var(--color-mist);
-  --line-strong: var(--color-steel);
-  --line-ghost: rgb(120 141 186 / 0.5);
-  --icon-default: var(--color-steel);
-  --focus-ring: var(--color-signal-ink);
+  --line-hairline: var(--color-ash);
+  --line-soft: var(--color-warm-canvas);
+  --line-strong: var(--color-slate);
+  --line-ghost: var(--color-ash);
+  --icon-default: var(--color-slate);
+  --focus-ring: var(--color-carbon-black);
 
   /* Motion durations (Tailwind v4 has no duration theme namespace) */
   --dur-instant: 75ms;

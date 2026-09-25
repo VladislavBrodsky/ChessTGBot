@@ -30,29 +30,32 @@ export function Nav() {
 
   return (
     <>
-      <header className="shell-main flex items-center justify-between gap-4 py-5">
-        <Link href="/" aria-label="Web3Chess home">
+      <header className="shell-wide flex items-center justify-between gap-4 py-6">
+        <Link href="/" aria-label="Web3Chess home" className="flex items-center gap-2">
           <Logo />
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-2 lg:flex">
+        
+        {/* Dayos Centered Floating Pill */}
+        <nav aria-label="Main" className="hidden items-center gap-1.5 rounded-[48px] bg-white px-5 py-2 shadow-none lg:flex">
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-control border border-line bg-inset px-3 py-2 text-chip text-fg-action shadow-control transition-colors duration-150 hover:border-royal"
+              className="rounded-full px-3.5 py-1.5 text-[15px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000] hover:bg-[#f3f3f3]"
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <PlayButton size="sm" className="hidden md:inline-flex" />
+
+        <div className="flex items-center gap-3">
+          <PlayButton size="sm" label="Play in Telegram" className="hidden sm:inline-flex" />
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="grid size-11 place-items-center rounded-control bg-surface text-icon shadow-control lg:hidden"
+            className="grid size-11 place-items-center rounded-[8px] bg-white text-[#000000] lg:hidden"
           >
             <Menu className="size-5" strokeWidth={1.5} />
           </button>
@@ -67,16 +70,16 @@ export function Nav() {
       >
         <nav
           aria-label="Sticky"
-          className="flex items-center gap-2 rounded-panel bg-canvas/85 p-2 shadow-float backdrop-blur-sm"
+          className="flex items-center gap-3 rounded-[48px] bg-white/95 px-5 py-2 backdrop-blur-md"
         >
-          <Link href="/" aria-label="Web3Chess home" className="ps-2">
+          <Link href="/" aria-label="Web3Chess home" className="pe-2">
             <Logo />
           </Link>
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-pill px-3 py-2 text-body font-semibold text-fg transition-colors duration-150 hover:text-fg-action"
+              className="rounded-full px-3 py-1.5 text-[14px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000] hover:bg-[#f3f3f3]"
             >
               {item.label}
             </Link>

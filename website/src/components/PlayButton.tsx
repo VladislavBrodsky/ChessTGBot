@@ -3,16 +3,16 @@ import { TelegramIcon } from "./icons";
 
 type Props = {
   size?: "sm" | "md" | "lg";
-  variant?: "primary" | "onDark";
+  variant?: "primary" | "onDark" | "ghost";
   startapp?: "arena";
   label?: string;
   className?: string;
 };
 
 const sizes = {
-  sm: "min-h-11 px-4 text-button-sm gap-2",
-  md: "min-h-12 px-5 text-button gap-2",
-  lg: "min-h-14 px-7 text-button-lg gap-3",
+  sm: "min-h-10 px-4 text-[14px] gap-2 rounded-[6px]",
+  md: "min-h-12 px-6 text-[16px] gap-2.5 rounded-[8px]",
+  lg: "min-h-14 px-8 text-[18px] gap-3 rounded-[8px]",
 } as const;
 
 export function PlayButton({
@@ -22,18 +22,20 @@ export function PlayButton({
   label = "Play in Telegram",
   className = "",
 }: Props) {
-  const skin =
-    variant === "primary"
-      ? "bg-inverse text-fg-inverse hover:bg-royal"
-      : "bg-white text-ink hover:bg-mist";
+  const skins = {
+    primary: "bg-[#000000] text-[#ffffff] hover:opacity-90",
+    onDark: "bg-[#ffffff] text-[#000000] hover:bg-[#f3f3f3]",
+    ghost: "bg-transparent border border-[#444444] text-[#444444] hover:text-[#000000] hover:border-[#000000]",
+  };
+
   return (
     <a
       href={telegramLink(startapp)}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-pill font-semibold shadow-control transition-colors duration-150 active:scale-[.98] ${sizes[size]} ${skin} ${className}`}
+      className={`inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-150 active:scale-[.98] ${sizes[size]} ${skins[variant]} ${className}`}
     >
-      <TelegramIcon className={size === "lg" ? "size-6" : "size-5"} />
+      <TelegramIcon className={size === "lg" ? "size-5" : "size-4"} />
       {label}
     </a>
   );

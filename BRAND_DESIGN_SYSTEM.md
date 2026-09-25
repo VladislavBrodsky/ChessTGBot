@@ -87,7 +87,6 @@ Use semantic CSS tokens from [`frontend/src/app/globals.css`](frontend/src/app/g
 | --- | ---: | --- |
 | **Base content** | `0`–`10` | Page sections, Bento cards, local decorations |
 | **Sticky controls** | `20` | In-content sticky controls, sub-headers |
-| **Floating Actions (FAB)**| `40` | `QuickPlayFAB` |
 | **App navigation** | `50` | Bottom navigation bar, persistent app chrome |
 | **Standard overlay** | `100` | `Modal`, `Drawer`, bottom sheets |
 | **Gameplay overlay** | `110` | Nested game dialogs |
@@ -111,8 +110,6 @@ frontend/src/components/ui/
 ├── ErrorState.tsx      # Sanitized error panel with retry action
 ├── Input.tsx           # Accessible form text inputs with labels, errors, and icons
 ├── Modal.tsx           # Centered dialog with backdrop lock and keyboard ESC dismiss
-├── NoiseGradient.tsx   # Subtle atmospheric background noise texture
-├── QuickPlayFAB.tsx    # Floating 1-tap quick play action pill docked above navbar
 ├── SegmentedControl.tsx# Sliding pill tab toggle with spring physics and haptics
 ├── Skeleton.tsx        # Geometry-matched shimmers (text, circular, rectangular, SkeletonList)
 ├── Switch.tsx          # WAI-ARIA accessible toggle switch with spring thumb and haptics

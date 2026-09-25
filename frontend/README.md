@@ -33,7 +33,6 @@ frontend/src/
 │   │   ├── ErrorState.tsx    # Sanitized error banner with retry
 │   │   ├── Input.tsx         # Accessible text inputs with error & icons
 │   │   ├── Modal.tsx         # Centered modal with backdrop blur & ESC dismiss
-│   │   ├── QuickPlayFAB.tsx  # Floating 1-tap quick matchmaking action pill
 │   │   ├── SegmentedControl.tsx # Sliding pill tab toggle with spring physics
 │   │   ├── Skeleton.tsx      # Geometry-matched shimmers (text, rect, list)
 │   │   ├── Switch.tsx        # WAI-ARIA accessible toggle switch with haptics

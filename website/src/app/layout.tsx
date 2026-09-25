@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Onest, Golos_Text, IBM_Plex_Mono } from "next/font/google";
+import { Onest, Barlow_Condensed, IBM_Plex_Mono } from "next/font/google";
 import { SITE } from "@/lib/config";
 import "./globals.css";
 
 const onest = Onest({
   subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-onest",
   display: "swap",
 });
-const golos = Golos_Text({
-  subsets: ["latin", "cyrillic"],
-  weight: ["500"],
-  variable: "--font-golos",
+const condensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  variable: "--font-condensed",
   display: "swap",
 });
 const plexMono = IBM_Plex_Mono({
@@ -44,7 +44,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr" className={`${onest.variable} ${golos.variable} ${plexMono.variable}`}>
+    <html lang="en" dir="ltr" className={`${onest.variable} ${condensed.variable} ${plexMono.variable}`}>
       <body>
         <a
           href="#main"
