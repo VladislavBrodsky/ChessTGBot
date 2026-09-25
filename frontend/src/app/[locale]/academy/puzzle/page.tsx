@@ -182,7 +182,7 @@ function PuzzleContent() {
                   {t('continue')}
                 </button>
               </Link>
-              <a href={`https://t.me/share/url?url=https://t.me/FinChess_bot/app&text=${encodeURIComponent(`I just cracked a tactical puzzle on FinChess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
+              <a href={`https://t.me/share/url?url=https://t.me/chess_matbot/app&text=${encodeURIComponent(`I just cracked a tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
                 <button className="w-full px-4 py-3.5 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
                   <FaTelegramPlane className="text-base" /> Share
                 </button>

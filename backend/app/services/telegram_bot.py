@@ -323,7 +323,7 @@ class TelegramService:
             if start_param:
                 web_app_url += f"&startapp={start_param}"
 
-            raw_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
+            raw_username = settings.TELEGRAM_BOT_USERNAME or "chess_matbot"
             bot_username = raw_username.lstrip("@")
             referral_link = f"https://t.me/{bot_username}?start=ref_{referral_code}"
 
@@ -787,7 +787,7 @@ class TelegramService:
         """
         Generates a direct StartApp link for the Telegram Mini App.
         """
-        bot_username = settings.TELEGRAM_BOT_USERNAME or "FinChess_bot"
+        bot_username = settings.TELEGRAM_BOT_USERNAME or "chess_matbot"
         try:
             if cls.application:
                 me = await cls.application.bot.get_me()

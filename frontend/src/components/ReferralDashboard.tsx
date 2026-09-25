@@ -97,7 +97,7 @@ function EarningsChart({ data }: { data: EarningPoint[] }) {
   );
 }
 
-export default function ReferralDashboard({ referralCode, botUsername = 'FinChess_bot' }: ReferralDashboardProps) {
+export default function ReferralDashboard({ referralCode, botUsername = 'chess_matbot' }: ReferralDashboardProps) {
   const t = useTranslations('Referral');
   const { stats: userStats } = useUser();
   const { data: statsData, isLoading: loading } = useSWRFetch('/api/v1/users/referrals/stats');

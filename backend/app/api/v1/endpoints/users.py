@@ -80,7 +80,7 @@ class UserStats(BaseModel):
     referral_code: Optional[str] = None
     xp: int = 0
     level: int = 1
-    bot_username: str = "FinChess_bot"
+    bot_username: str = "chess_matbot"
     # Arena notification targeting. `region` is None until the user answers the
     # region prompt, which the frontend uses to decide whether to show it.
     region: Optional[str] = None

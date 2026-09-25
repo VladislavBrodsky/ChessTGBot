@@ -1,5 +1,5 @@
 # Telegram Channel Master Content Strategy & Advanced Copywriting System
-## Web3Chess / Obsidian Arena (`@FinChess_bot` & Official Channel)
+## Web3Chess / Obsidian Arena (`@chess_matbot` & Official Channel)
 
 > **Channel Mission**: The definitive war room for competitive speed chess, real-time Telegram Mini App matchmaking, and high-stakes crypto prize vaults. 
 > Combining Grandmaster tactical depth with the frictionless convenience of Telegram Bot API 8.0.
@@ -22,7 +22,7 @@ To maximize user lifetime value and prevent notification burnout, our Telegram p
                    ▼                                                           ▼
 ┌──────────────────────────────────────┐                     ┌──────────────────────────────────────┐
 │       COMMUNITY DISCUSSION GROUP     │                     │      TELEGRAM MINI APP BOT           │
-│  (#arena-chat, #puzzle-debates,      │                     │       (@FinChess_bot)                │
+│  (#arena-chat, #puzzle-debates,      │                     │       (@chess_matbot)                │
 │   #brilliancies, #match-invites)     │                     │  (Instant 1-Tap 60fps Fullscreen App)│
 └──────────────────────────────────────┘                     └──────────────────────────────────────┘
 ```
@@ -37,13 +37,13 @@ Telegram's internal search algorithm ranks channels based on **Title relevance, 
 #### Channel Metadata Optimization Formula
 - **Channel Title**: `Web3Chess | Daily Blitz Arena & Puzzles ♟️⚡`
   - *Rationale*: Contains primary keyword ("Web3Chess"), core activity ("Blitz Arena"), and daily value proposition ("Puzzles").
-- **Public Handle**: `@Web3ChessArena` (or matching bot `@FinChess_bot`).
+- **Public Handle**: `@Web3ChessArena` (or matching bot `@chess_matbot`).
 - **Channel Bio (Max 255 Chars)**:
   ```text
   ♟️ Official Arena of Web3Chess inside Telegram.
   ⚡ 3-Min Blitz & 1-Min Bullet PvP • Daily $500 USDT Prize Arenas.
   🏆 Play free or wager with instant TON payout.
-  📱 Launch Arena: @FinChess_bot
+  📱 Launch Arena: @chess_matbot
   🌐 Blog & Academy: web3chess.online
   ```
 
@@ -55,7 +55,7 @@ Every new visitor from search should immediately see an organized, hyperlinked i
 Over 900M users have Telegram. Only the sharpest minds compete here.
 
 ⚡ <b>QUICK ACTIONS</b>
-• <b>Launch Mini App</b>: <a href="https://t.me/FinChess_bot?startapp=ref_channel_pinned">Tap to Play Instant PvP</a>
+• <b>Launch Mini App</b>: <a href="https://t.me/chess_matbot?startapp=ref_channel_pinned">Tap to Play Instant PvP</a>
 • <b>Daily Arenas</b>: 4 global tournaments every day (02:00, 08:00, 14:00, 20:00 UTC)
 • <b>Chess Academy</b>: Daily tactics, opening masterclasses & interactive lessons
 • <b>Official Website & Blog</b>: <a href="https://web3chess.online">web3chess.online</a>
@@ -116,7 +116,7 @@ FEN: <code>8/5P1k/8/8/8/8/6K1/8 w - - 0 1</code>
 
 🎯 <i>First 50 players to solve today's puzzle in the Academy claim +25 bonus XP toward their VIP Membership pass!</i>
 
-👉 <a href="https://t.me/FinChess_bot?startapp=ref_channel_quiz&tab=puzzles">Solve Live in Mini App</a>
+👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_quiz&tab=puzzles">Solve Live in Mini App</a>
 ```
 
 ---
@@ -137,7 +137,7 @@ Top 10 players on the live leaderboard automatically split the prize vault direc
 
 📱 <i>Zero downloads. Zero registration forms. One tap into full-screen battle.</i>
 
-👉 <a href="https://t.me/FinChess_bot?startapp=ref_channel_arena&startapp=arena">Enter the Arena Queue Now</a>
+👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_arena&startapp=arena">Enter the Arena Queue Now</a>
 ```
 
 ---
@@ -161,7 +161,7 @@ Down to the final 2 seconds, Black attempted to flag White with desperate checks
 Did you spot the Queen sacrifice before move 20? 
 
 💬 <i>Debate the position in @Web3ChessChat</i>
-👉 <a href="https://t.me/FinChess_bot?startapp=ref_channel_recap&startapp=lobby">Challenge Players in the Wager Lobby</a>
+👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_recap&startapp=lobby">Challenge Players in the Wager Lobby</a>
 ```
 
 ---
@@ -185,7 +185,7 @@ Why do 1600-rated players constantly blunder under 3-minute clock pressure? It i
 Read the full interactive guide with move-by-move FEN diagrams on our official blog:
 🔗 <a href="https://web3chess.online/blog/the-3-minute-blitz-blueprint-tactics-time-management?ref=telegram">Read Full 8-Minute Breakdown on web3chess.online</a>
 
-👉 <a href="https://t.me/FinChess_bot?startapp=ref_channel_blog_blitz">Practice in the Academy</a>
+👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_blog_blitz">Practice in the Academy</a>
 ```
 
 ---
@@ -209,7 +209,7 @@ All withdrawals below auto-review limits were settled within 120 seconds via TON
 
 <i>New Season resets tomorrow at 00:00 UTC. Where will your rating land?</i>
 
-👉 <a href="https://t.me/FinChess_bot?startapp=ref_channel_halloffame">Claim Your Weekly XP & Queue Now</a>
+👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_halloffame">Claim Your Weekly XP & Queue Now</a>
 ```
 
 ---
@@ -252,7 +252,7 @@ To keep the discussion group high-signal rather than a chaotic wall of spam:
                                     │
                                     ▼
         ┌────────────────────────────────────────────────────────┐
-        │        TELEGRAM MINI APP BOT (@FinChess_bot)           │
+        │        TELEGRAM MINI APP BOT (@chess_matbot)           │
         │  • Zero install, 60fps fullscreen gameplay             │
         │  • Daily XP Check-in & Referral Commission Flywheel    │
         └───────────────────────────┬────────────────────────────┘

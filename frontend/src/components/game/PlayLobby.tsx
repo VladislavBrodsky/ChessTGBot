@@ -182,7 +182,7 @@ export default function PlayLobby() {
   const handleShareResult = (game: any) => {
     const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
     const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
-    const botUsername = stats?.bot_username || "FinChess_bot";
+    const botUsername = stats?.bot_username || "chess_matbot";
     const message = `${resultText} ${t('against')} ${getOpponentName(game.opponent.name)}! 📈 ${t('global_ranking')}: ${eloText} ELO.\n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
 
     let success = false;

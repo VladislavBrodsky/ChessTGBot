@@ -4,7 +4,7 @@
  */
 
 /** Canonical bot. Backend default: backend/app/core/config.py TELEGRAM_BOT_USERNAME. */
-export const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "FinChess_bot";
+export const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "chess_matbot";
 
 /**
  * Mini App deep link.
