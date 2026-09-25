@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { PlayButton } from "./PlayButton";
@@ -30,18 +31,18 @@ export function Nav() {
   return (
     <>
       <header className="shell-main flex items-center justify-between gap-4 py-5">
-        <a href="#top" aria-label="Web3Chess home">
+        <Link href="/" aria-label="Web3Chess home">
           <Logo />
-        </a>
+        </Link>
         <nav aria-label="Main" className="hidden items-center gap-2 lg:flex">
           {home.nav.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="rounded-control border border-line bg-inset px-3 py-2 text-chip text-fg-action shadow-control transition-colors duration-150 hover:border-royal"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -68,17 +69,17 @@ export function Nav() {
           aria-label="Sticky"
           className="flex items-center gap-2 rounded-panel bg-canvas/85 p-2 shadow-float backdrop-blur-sm"
         >
-          <a href="#top" aria-label="Web3Chess home" className="ps-2">
+          <Link href="/" aria-label="Web3Chess home" className="ps-2">
             <Logo />
-          </a>
+          </Link>
           {home.nav.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="rounded-pill px-3 py-2 text-body font-semibold text-fg transition-colors duration-150 hover:text-fg-action"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
           <PlayButton size="sm" />
         </nav>
@@ -112,13 +113,13 @@ export function Nav() {
             <ul className="mt-6 grid gap-1">
               {home.nav.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
                     className="flex min-h-14 items-center text-heading-md text-fg"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

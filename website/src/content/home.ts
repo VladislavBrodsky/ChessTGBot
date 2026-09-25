@@ -6,11 +6,12 @@
  */
 export const home = {
   nav: [
-    { href: "#play", label: "How it works" },
-    { href: "#wagers", label: "Wagers" },
-    { href: "#academy", label: "Academy" },
-    { href: "#money", label: "Money" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/#play", label: "How it works" },
+    { href: "/#wagers", label: "Wagers" },
+    { href: "/#academy", label: "Academy" },
+    { href: "/#money", label: "Money" },
+    { href: "/blog", label: "Blog" },
+    { href: "/#faq", label: "FAQ" },
   ],
   hero: {
     headlineBefore: "Sk",
@@ -123,9 +124,9 @@ export const home = {
   footer: {
     statement: "How money moves on Web3Chess.",
     columns: [
-      { title: "Play", links: [ { label: "Play in Telegram", href: "#" }, { label: "How it works", href: "#play" }, { label: "Academy", href: "#academy" }, { label: "Premium", href: "#progression" } ] },
+      { title: "Play", links: [ { label: "Play in Telegram", href: "#" }, { label: "How it works", href: "/#play" }, { label: "Academy", href: "/#academy" }, { label: "Blog & Chronicles", href: "/blog" }, { label: "Premium", href: "/#progression" } ] },
       { title: "Community", links: [ { label: "Telegram channel", href: "https://t.me/chess_hub" }, { label: "Telegram chat", href: "https://t.me/chesshub_chat" } ] },
-      { title: "Trust", links: [ { label: "How money moves", href: "#money" }, { label: "Responsible play", href: "#philosophy" }, { label: "FAQ", href: "#faq" } ] },
+      { title: "Trust", links: [ { label: "How money moves", href: "/#money" }, { label: "Responsible play", href: "/#philosophy" }, { label: "FAQ", href: "/#faq" } ] },
     ],
     legal: "18+. Wager matches involve real money and you can lose your stake. Free play is always available.",
   },

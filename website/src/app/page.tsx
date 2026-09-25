@@ -1,4 +1,5 @@
-import { Check, Clock, Gift, Globe, Shield, Sparkles, Swords, Trophy, Wallet } from "lucide-react";
+import Link from "next/link";
+import { Check, Clock, Gift, Globe, Shield, Sparkles, Swords, Trophy, Wallet, ArrowUpRight } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
@@ -6,10 +7,12 @@ import { MobileCta } from "@/components/MobileCta";
 import { FogBoard } from "@/components/FogBoard";
 import { WagerDemo } from "@/components/WagerDemo";
 import { MoveOfTheDay } from "@/components/MoveOfTheDay";
+import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
 import { KingMark } from "@/components/icons";
 import { Logo } from "@/components/Logo";
 import { home } from "@/content/home";
+import { BLOG_POSTS } from "@/content/blog";
 import { SITE, TIME_CONTROLS } from "@/lib/config";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink } from "@/lib/config";
@@ -257,6 +260,35 @@ export default async function HomePage() {
             </div>
             <div className="flex h-60 items-end justify-center">
               <KingMark className="topple h-52 w-auto text-ink" />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Chronicles & Strategy (Blog Preview) ────────────────── */}
+        <section id="blog" className="section-y">
+          <div className="shell-main space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <p className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-fg-muted">
+                  THE WEB3CHESS CHRONICLES
+                </p>
+                <h2 className="text-heading-lg text-fg mt-1">
+                  Insights, fair play &amp; strategy.
+                </h2>
+              </div>
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-1 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-transform hover:translate-x-1"
+              >
+                <span>Read all chronicles</span>
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {BLOG_POSTS.slice(0, 3).map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
             </div>
           </div>
         </section>
