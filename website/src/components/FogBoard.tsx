@@ -20,14 +20,23 @@ type Props = {
   position: string;
   /** Accessible description of the position — required. */
   label: string;
+  allowDragging?: boolean;
   squareStyles?: Record<string, React.CSSProperties>;
   onSquareClick?: (args: { square: string }) => void;
+  onPieceDrop?: (args: { sourceSquare: string; targetSquare: string | null }) => boolean;
 };
 
-export function FogBoard({ position, label, squareStyles, onSquareClick }: Props) {
+export function FogBoard({
+  position,
+  label,
+  allowDragging = false,
+  squareStyles,
+  onSquareClick,
+  onPieceDrop,
+}: Props) {
   return (
     <div
-      className="overflow-hidden rounded-card shadow-card"
+      className="overflow-hidden rounded-[24px]"
       role="img"
       aria-label={label}
     >
@@ -35,7 +44,7 @@ export function FogBoard({ position, label, squareStyles, onSquareClick }: Props
         options={{
           id: "fog-board",
           position,
-          allowDragging: false,
+          allowDragging,
           showNotation: true,
           animationDurationInMs: 200,
           darkSquareStyle: { backgroundColor: board.squareDark },
@@ -44,6 +53,7 @@ export function FogBoard({ position, label, squareStyles, onSquareClick }: Props
           lightSquareNotationStyle: { color: board.coordinateOnLight },
           squareStyles,
           onSquareClick,
+          onPieceDrop,
           pieces,
         }}
       />

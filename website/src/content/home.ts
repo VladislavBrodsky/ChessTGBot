@@ -124,9 +124,9 @@ export const home = {
   footer: {
     statement: "How money moves on Web3Chess.",
     columns: [
-      { title: "Play", links: [ { label: "Play in Telegram", href: "#" }, { label: "How it works", href: "/#play" }, { label: "Academy", href: "/#academy" }, { label: "Blog & Chronicles", href: "/blog" }, { label: "Premium", href: "/#progression" } ] },
+      { title: "Play", links: [ { label: "Play in Telegram", href: "#" }, { label: "How it works", href: "/#play" }, { label: "Academy", href: "/#academy" }, { label: "Blog & Chronicles", href: "/blog" }, { label: "Fair Play Protocol", href: "/fair-play" } ] },
       { title: "Community", links: [ { label: "Telegram channel", href: "https://t.me/chess_hub" }, { label: "Telegram chat", href: "https://t.me/chesshub_chat" } ] },
-      { title: "Trust", links: [ { label: "How money moves", href: "/#money" }, { label: "Responsible play", href: "/#philosophy" }, { label: "FAQ", href: "/#faq" } ] },
+      { title: "Trust & Legal", links: [ { label: "Fair play protocol", href: "/fair-play" }, { label: "Terms of service", href: "/terms" }, { label: "Privacy policy", href: "/privacy" }, { label: "FAQ", href: "/#faq" } ] },
     ],
     legal: "18+. Wager matches involve real money and you can lose your stake. Free play is always available.",
   },

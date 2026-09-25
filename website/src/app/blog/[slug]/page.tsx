@@ -36,14 +36,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${post.title} · Web3Chess Chronicles`,
     description: post.excerpt,
+    keywords: [
+      post.category,
+      "Web3 Chess",
+      "Telegram Chess Bot",
+      "Play Chess Earn Crypto",
+      "TON Gaming",
+      "Speed Chess Tactics",
+      "Blitz Chess Strategy",
+      "Online Chess Wagers"
+    ],
     authors: [{ name: post.author.name }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
       url,
+      siteName: "Web3Chess Chronicles",
       type: "article",
       publishedTime: post.publishedAt,
       authors: [post.author.name],
+      section: post.category,
+      tags: post.takeaways.slice(0, 3),
     },
     twitter: {
       card: "summary_large_image",
@@ -69,22 +82,54 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
-    author: {
-      "@type": "Person",
-      name: post.author.name,
-      jobTitle: post.author.role,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Web3Chess",
-      url: SITE.url,
-      logo: `${SITE.url}/icon.svg`,
-    },
-    datePublished: post.publishedAt,
-    mainEntityOfPage: articleUrl,
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${articleUrl}#article`,
+        headline: post.title,
+        description: post.excerpt,
+        articleSection: post.category,
+        inLanguage: "en-US",
+        author: {
+          "@type": "Person",
+          name: post.author.name,
+          jobTitle: post.author.role,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Web3Chess",
+          url: SITE.url,
+          logo: `${SITE.url}/icon.svg`,
+        },
+        datePublished: post.publishedAt,
+        mainEntityOfPage: articleUrl,
+        keywords: [post.category, "Chess", "Web3", "Telegram Mini App"],
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${articleUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: SITE.url,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: `${SITE.url}/blog`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: post.title,
+            item: articleUrl,
+          },
+        ],
+      },
+    ],
   };
 
   return (

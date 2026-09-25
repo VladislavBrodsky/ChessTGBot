@@ -61,16 +61,27 @@ async def create_game_history(
         await db.refresh(db_game)
     return db_game
 
-async def get_user_recent_games(db: AsyncSession, telegram_id: int, limit: int = 10) -> List[GameHistory]:
-    """Get recent games for a user."""
+async def get_user_recent_games(
+    db: AsyncSession,
+    telegram_id: int,
+    limit: int = 10,
+    wagered_only: bool = False,
+) -> List[GameHistory]:
+    """Get recent games for a user.
+
+    With wagered_only=True, free games (bid_amount 0) are excluded. The
+    matchmaker's recent-opponent collusion guard uses that: a free rematch
+    carries no rake or commission to farm, so it must not consume a slot in
+    the lookback window and lock a legitimate pair out of wagered play.
+    """
+    query = select(GameHistory).filter(
+        (GameHistory.white_player_id == telegram_id) |
+        (GameHistory.black_player_id == telegram_id)
+    )
+    if wagered_only:
+        query = query.filter(GameHistory.bid_amount > 0)
     result = await db.execute(
-        select(GameHistory)
-        .filter(
-            (GameHistory.white_player_id == telegram_id) | 
-            (GameHistory.black_player_id == telegram_id)
-        )
-        .order_by(desc(GameHistory.ended_at))
-        .limit(limit)
+        query.order_by(desc(GameHistory.ended_at)).limit(limit)
     )
     return result.scalars().all()
 

@@ -185,14 +185,7 @@ async def connect(sid, environ, auth):
                 user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
                 print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")
             else:
-                # Count this only when a credential was actually PRESENTED and turned
-                # out to be unusable. A socket that connects with no initData at all is
-                # a client that reached us before telegram-web-app.js loaded, not an
-                # attacker, and counting it let ordinary cold launches from one NAT
-                # throttle every legitimate user behind that IP. (A presented-but-invalid
-                # initData is already counted in the except branch above.)
-                if auth and auth.get('initData'):
-                    await register_auth_failure(ip_hash)
+                await register_auth_failure(ip_hash)
                 raise Exception("Unauthorized: initData missing or invalid")
 
         # Save user_id to session
@@ -643,6 +636,27 @@ async def leave_arena(sid, data):
     except Exception as e:
         print(f"Error leaving arena: {e}")
 
+async def emit_fair_play_hold(sid: str, bid_amount: int, time_control: int, skipped: int) -> None:
+    """Tell the client that opponents ARE queued but the fair-play guard
+    rejected every one of them (same network, referral edge, or a recent
+    wagered opponent). Without this the search is indistinguishable from an
+    empty queue and just looks like a hang until the wagered TTL expires.
+
+    Sent as its own event rather than a `matchmaking_status` update: the
+    status payload is a full state restore (wager, time control, elapsed
+    timer, notification opt-in) and re-emitting it here would reset the
+    client's search timer.
+    """
+    try:
+        await sio.emit('matchmaking_fair_play_hold', {
+            'bid_amount': bid_amount,
+            'time_control': time_control,
+            'skipped': skipped,
+        }, room=sid)
+    except Exception as e:
+        logger.warning(f"Failed to emit fair-play hold to {sid}: {e}")
+
+
 async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: int, time_control: int, user_elo: int, ip_hash: str = None, referrer_id: int = None):
     """
     Background loop that runs for a matchmaking player when they are not matched
@@ -660,6 +674,7 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
     matched = False
     last_known_sid = sid
     started = time.time()
+    fair_play_notified = False
     try:
         while True:
             elapsed = time.time() - started
@@ -678,7 +693,14 @@ async def run_background_matchmaker_polling(user_id: int, sid: str, bid_amount: 
             # The entry's sid is refreshed on reconnect — always use the latest
             last_known_sid = entry_info['entry'].get('sid', last_known_sid)
 
-            opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id)
+            match_stats = {}
+            opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_id, stats=match_stats)
+            if not opponent and match_stats.get('collusion_skipped') and not fair_play_notified:
+                # Once per search: the guard state does not change while the
+                # same candidates sit in the queue, so re-emitting every poll
+                # would just spam the client.
+                fair_play_notified = True
+                await emit_fair_play_hold(last_known_sid, bid_amount, time_control, match_stats['collusion_skipped'])
             if opponent:
                 logger.info(f"Background matchmaker found opponent {opponent['user_id']} for user {user_id}")
                 try:
@@ -840,10 +862,13 @@ async def join_matchmaking(sid, data):
         }, room=sid)
 
         # 3. Find and pop matching opponent atomically
-        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid)
+        match_stats = {}
+        opponent = await matchmaker.try_match_and_pop(bid_amount, user_id, user_elo=user_elo, time_control=time_control, ip_hash=ip_hash, referrer_id=referrer_tid, stats=match_stats)
         if opponent:
             await establish_match(user_id, sid, opponent['user_id'], opponent['sid'], bid_amount, opponent.get('matched_time_control', time_control))
         else:
+            if match_stats.get('collusion_skipped'):
+                await emit_fair_play_hold(sid, bid_amount, time_control, match_stats['collusion_skipped'])
             # Spawn the background polling task to allow ELO thresholds to expand
             # and match dynamically. One poller per user: a re-join (e.g. after
             # reopening the app with a persisted free search) replaces the old one.

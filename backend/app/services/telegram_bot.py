@@ -3,6 +3,7 @@ from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMar
 from telegram.error import Forbidden, BadRequest
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
+from app.core.redis_client import create_redis_client
 import logging
 
 settings = get_settings()
@@ -15,6 +16,9 @@ logger = logging.getLogger(__name__)
 # Alert-loop safety holds because failed alert sends still log under the
 # excluded module logger.
 bot_errors_logger = logging.getLogger("app.bot.errors")
+
+# Backoff before the single retry of a notification that failed transiently.
+NOTIFICATION_RETRY_DELAY_SECONDS = 2.0
 
 class TelegramService:
     application: Application = None
@@ -655,9 +659,8 @@ class TelegramService:
 
         # 2. Self-Healing Background Leader Election Loop
         async def election_loop():
-            import redis.asyncio as redis
             import os
-            
+
             instance_id = f"bot_{settings.PROJECT_NAME}_{os.getpid()}_{asyncio.get_event_loop().time()}"
             cls.instance_id = instance_id
             lock_key = "telegram_bot_leader"
@@ -676,7 +679,7 @@ class TelegramService:
                         db_healthy = False
                         logger.error(f"❌ [LEADER ELECTION] Database health check failed, instance cannot be leader: {db_err}")
 
-                    redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+                    redis_client = create_redis_client(settings.REDIS_URL, decode_responses=True)
 
                     if not db_healthy:
                         if cls.is_currently_leader:
@@ -756,8 +759,7 @@ class TelegramService:
         # without waiting for the 20-second TTL to expire.
         if cls.is_currently_leader and cls.instance_id:
             try:
-                import redis.asyncio as redis
-                redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+                redis_client = create_redis_client(settings.REDIS_URL, decode_responses=True)
                 lock_key = "telegram_bot_leader"
                 current_owner = await redis_client.get(lock_key)
                 if current_owner == cls.instance_id:
@@ -982,15 +984,15 @@ class TelegramService:
             return
 
         async def _do_send():
-            try:
-                # If the application is already running, reuse its bot client.
-                # Otherwise, instantiate a one-off bot client.
-                bot = cls.application.bot if (cls.application and cls.application.bot) else None
-                if not bot:
-                    from telegram import Bot
-                    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+            # If the application is already running, reuse its bot client.
+            # Otherwise, instantiate a one-off bot client. Resolved outside the
+            # try so the transient-retry path below always has a client.
+            bot = cls.application.bot if (cls.application and cls.application.bot) else None
+            if not bot:
+                from telegram import Bot
+                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
 
-                # Send message
+            try:
                 await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
                 logger.info(f"✉️ Telegram Notification successfully pushed to user {telegram_id}")
             except Forbidden:
@@ -1020,6 +1022,31 @@ class TelegramService:
                 else:
                     bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
             except Exception as e:
-                bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
+                # A momentary network failure (TimedOut, 502, dropped
+                # connection) is not a Core API fault and must not page
+                # admins — a Railway network blip otherwise alerts once per
+                # affected notification. One retry after a short backoff
+                # recovers the common case; a still-failing send is logged at
+                # WARNING and the notification is dropped.
+                from app.core.alerts import is_transient_telegram_error
+                if is_transient_telegram_error(e):
+                    logger.warning(
+                        f"Transient failure sending notification to {telegram_id}: {e}. Retrying once."
+                    )
+                    try:
+                        await asyncio.sleep(NOTIFICATION_RETRY_DELAY_SECONDS)
+                        await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
+                        logger.info(f"✉️ Telegram Notification pushed to user {telegram_id} on retry")
+                    except Exception as retry_err:
+                        if is_transient_telegram_error(retry_err):
+                            logger.warning(
+                                f"Notification to {telegram_id} dropped after retry: {retry_err}"
+                            )
+                        else:
+                            bot_errors_logger.error(
+                                f"❌ Failed to send Telegram bot notification to {telegram_id}: {retry_err}"
+                            )
+                else:
+                    bot_errors_logger.error(f"❌ Failed to send Telegram bot notification to {telegram_id}: {e}")
 
         asyncio.create_task(_do_send())
