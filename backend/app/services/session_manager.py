@@ -1,5 +1,6 @@
 import redis.asyncio as redis
 from app.core.config import get_settings
+from app.core.redis_client import create_redis_client
 from app.schemas.game_state import GameState
 import logging
 
@@ -14,7 +15,7 @@ class SessionManager:
     def __init__(self):
         if not SessionManager._use_memory and SessionManager._redis_client is None:
             try:
-                SessionManager._redis_client = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+                SessionManager._redis_client = create_redis_client(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
             except Exception as e:
                 logger.warning(f"Failed to initialize Redis client: {e}. Falling back to in-memory store.")
                 SessionManager._redis_client = None
