@@ -80,7 +80,7 @@ const getSocketUrl = () => {
         if (host === "chesstgbot-frontend-production.up.railway.app") {
             return "https://chesstgbot-backend-production.up.railway.app";
         }
-        if (host === "web3chess.online" || host === "www.web3chess.online") {
+        if (host === "web3chess.online" || host === "www.web3chess.online" || host === "app.web3chess.online") {
             return "https://api.web3chess.online";
         }
 
