@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy, FaUniversalAccess, FaGem } from "react-icons/fa";
+import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy, FaUniversalAccess, FaGem, FaSyncAlt, FaStore, FaGraduationCap } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -13,6 +13,7 @@ import { useUser } from "@/context/UserContext";
 import { useToast } from "@/context/ToastContext";
 import { Switch } from "@/components/ui/Switch";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { apiFetch } from "@/lib/api";
 import { useReducedMotionPreference } from "@/context/ReducedMotionContext";
 
@@ -23,8 +24,9 @@ export default function SettingsPage() {
  const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
  const toast = useToast();
  const [soundEnabled, setSoundEnabled] = useState(true);
- // Pull wallet address from global context — no extra API call needed
- const { walletAddress, stats, syncStats } = useUser();
+ const [isResyncing, setIsResyncing] = useState(false);
+ // Pull wallet address & sync utilities from global context
+ const { walletAddress, stats, syncStats, syncBalance } = useUser();
  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
  // Daily-arena heads-up opt-out. Seed from synced stats; optimistic on toggle.
@@ -61,7 +63,25 @@ export default function SettingsPage() {
  ];
 
  const tgId = stats?.telegram_id || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id : null);
- const isAdmin = tgId === 1016749901 || tgId === 716720099;
+ const isAdmin = Boolean(stats?.is_admin || tgId === 1016749901 || tgId === 716720099);
+
+ const handleResyncCache = async () => {
+   if (isResyncing) return;
+   setIsResyncing(true);
+   telegramHaptic('medium');
+   try {
+     await Promise.all([
+       syncStats?.(),
+       syncBalance?.(),
+     ]);
+     telegramHaptic('success');
+     toast.success('System state & wallet re-synchronized');
+   } catch {
+     toast.error('Failed to sync system state');
+   } finally {
+     setIsResyncing(false);
+   }
+ };
 
  const handleThemeToggle = () => {
    toggleTheme();
@@ -302,6 +322,77 @@ export default function SettingsPage() {
           </motion.div>
         </div>
       ))}
+    </Card>
+
+    {/* Quick Hub Navigation */}
+    <Card variant="x-panel" className="divide-y divide-brand-border-opacity-10 mt-3">
+      <Link href={`/${locale}/marketplace`} className="w-full block">
+        <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
+              <FaStore />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
+                Marketplace & Vaults
+              </span>
+              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">
+                XP Mystery Boxes & Custom Board Styles
+              </span>
+            </div>
+          </div>
+          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
+            <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
+          </div>
+        </div>
+      </Link>
+
+      <Link href={`/${locale}/academy`} className="w-full block">
+        <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+              <FaGraduationCap />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
+                Chess Academy
+              </span>
+              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">
+                Interactive Tactics & Opening Lessons
+              </span>
+            </div>
+          </div>
+          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
+            <FaArrowLeft className="rotate-180 text-[10px] text-brand-primary" />
+          </div>
+        </div>
+      </Link>
+
+      {/* Diagnostics / State Re-sync */}
+      <div className="p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+            <FaSyncAlt className={isResyncing ? "animate-spin text-emerald-400" : ""} />
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-none mb-1">
+              Data & Wallet Sync
+            </span>
+            <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">
+              Force refresh balance & cached stats
+            </span>
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={isResyncing}
+          onClick={handleResyncCache}
+          className="shrink-0 text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30"
+        >
+          {isResyncing ? "Syncing..." : "Re-sync"}
+        </Button>
+      </div>
     </Card>
 
     {/* Admin Command Center Card - Standalone if present */}

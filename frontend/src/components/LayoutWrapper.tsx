@@ -84,6 +84,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         cleanPathname.endsWith('/wallet') || 
         cleanPathname.endsWith('/challenges') || 
         cleanPathname.endsWith('/marketplace') || 
+        (cleanPathname.endsWith('/game') && !activeGameId && !urlGameId) ||
         (cleanPathname.endsWith('/academy') && !cleanPathname.includes('/lesson/') && !cleanPathname.includes('/puzzle'));
 
     const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (

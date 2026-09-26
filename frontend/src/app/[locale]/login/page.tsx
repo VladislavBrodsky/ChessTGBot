@@ -77,7 +77,7 @@ export default function LoginPage() {
             ].map(({ Icon, delay, x, y, size }, i) => (
                 <motion.div
                     key={i}
-                    className="absolute pointer-events-none text-brand-muted"
+                    className="absolute pointer-events-none text-brand-muted/20"
                     style={{ left: x, top: y }}
                     animate={{ y: [0, -16, 0] }}
                     transition={{ duration: 6 + i, delay, repeat: Infinity, ease: 'easeInOut' }}
@@ -95,7 +95,7 @@ export default function LoginPage() {
             >
                 <div className="w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-300 bg-brand-surface border border-brand-border shadow-premium">
                     {/* ── LEFT: Login ── */}
-                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-brand-border-opacity-10">
+                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-white/10">
                         <div className="flex flex-col items-center space-y-7 text-center w-full">
 
                             {/* Logo mark */}
@@ -103,32 +103,33 @@ export default function LoginPage() {
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                                    className="absolute inset-0 rounded-full blur-md opacity-50"
+                                    className="absolute inset-0 rounded-full blur-md opacity-40"
                                     style={{ 
-                                        background: 'conic-gradient(from 0deg, var(--color-brand-primary), transparent, var(--color-emerald-500), transparent)' 
+                                        background: 'conic-gradient(from 0deg, rgba(255,255,255,0.4), transparent, rgba(16,185,129,0.5), transparent)' 
                                     }}
                                 />
-                                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-20 shadow-inner-glow">
-                                    <FaChessKnight size={30} className="text-brand-primary drop-shadow-md" />
+                                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-neutral-900 border border-white/10 shadow-lg">
+                                    <FaChessKnight size={30} className="text-white drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]" />
                                 </div>
                             </div>
 
                             {/* Title */}
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 transition-colors duration-500 text-brand-muted">
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] mb-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                     {t('secure_web_portal')}
-                                </p>
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none transition-all duration-500 bg-gradient-to-br from-brand-primary to-emerald-500 bg-clip-text text-transparent drop-shadow-sm">
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none bg-gradient-to-r from-white via-neutral-200 to-emerald-400 bg-clip-text text-transparent drop-shadow-sm">
                                     {t('web3chess')}
                                 </h1>
                             </div>
 
-                            <p className="text-sm max-w-[260px] leading-relaxed transition-colors duration-500 text-brand-muted">
+                            <p className="text-sm max-w-[280px] leading-relaxed transition-colors duration-500 text-neutral-400">
                                 {t('premium_desc')}
                             </p>
 
                             {/* Widget */}
-                            <div className="w-full flex justify-center py-2">
+                            <div className="w-full flex flex-col items-center justify-center py-2 min-h-[48px]">
                                 <TelegramLoginWidget
                                     botName="chess_matbot"
                                     buttonSize="large"
@@ -138,9 +139,9 @@ export default function LoginPage() {
                             </div>
 
                             {/* Security badge */}
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-10">
-                                <FaLock size={10} className="text-brand-muted" />
-                                <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-500 text-brand-muted">
+                            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
+                                <FaLock size={10} className="text-emerald-400" />
+                                <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-neutral-400">
                                     {t('secure_auth')}
                                 </span>
                             </div>
@@ -148,60 +149,64 @@ export default function LoginPage() {
                     </div>
 
                     {/* ── RIGHT: QR / Mobile ── */}
-                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-colors duration-500 bg-brand-bg-opacity-5">
+                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-colors duration-500 bg-white/[0.02]">
                         <div className="flex flex-col items-center text-center space-y-6 w-full">
 
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-px bg-gradient-to-r from-transparent to-brand-primary/40" />
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500 text-brand-muted">
+                                <div className="w-8 h-px bg-gradient-to-r from-transparent to-emerald-500/40" />
+                                <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.3em] text-neutral-300">
                                     {t('play_on_mobile')}
                                 </p>
-                                <div className="w-8 h-px bg-gradient-to-l from-transparent to-brand-primary/40" />
+                                <div className="w-8 h-px bg-gradient-to-l from-transparent to-emerald-500/40" />
                             </div>
 
-                            <p className="text-sm max-w-[220px] leading-relaxed transition-colors duration-500 text-brand-muted">
+                            <p className="text-sm max-w-[240px] leading-relaxed transition-colors duration-500 text-neutral-400">
                                 {t('scan_qr')}
                             </p>
 
-                            {/* QR Code with border */}
+                            {/* QR Code Container (Obsidian contrast frame, pure black QR on crisp white) */}
                             <motion.div
-                                whileHover={{ scale: 1.03 }}
-                                className="relative p-1 rounded-2xl transition-all duration-500 bg-gradient-to-br from-brand-primary/20 to-emerald-500/20 shadow-neon"
+                                whileHover={{ scale: 1.02 }}
+                                transition={{ duration: 0.2 }}
+                                className="relative p-2 rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl shadow-black/80"
                             >
-                                <div className="bg-white p-4 rounded-xl shadow-inner">
+                                <div className="bg-white p-3 rounded-xl flex items-center justify-center shadow-inner">
                                     {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image; next/image would require remote-domain config for no benefit */}
                                     <img
-                                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/chess_matbot&color=6b21a8&bgcolor=ffffff&margin=2"
+                                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/chess_matbot&color=000000&bgcolor=ffffff&margin=2"
                                         alt="Scan to open bot"
-                                        className="w-40 h-40 block rounded"
+                                        className="w-36 h-36 block rounded"
                                     />
                                 </div>
                             </motion.div>
 
+                            {/* High-contrast tactile action CTA */}
                             <motion.a
                                 href="https://t.me/chess_matbot"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                whileHover={{ scale: 1.04 }}
-                                whileTap={{ scale: 0.97 }}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-500 bg-brand-bg-opacity-5 border border-brand-border-opacity-20 text-brand-muted hover:text-brand-primary hover:bg-brand-primary/10 shadow-sm"
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-98"
                             >
-                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
-                                {t('open_in_telegram')}
+                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
+                                </svg>
+                                <span>{t('open_in_telegram')}</span>
                             </motion.a>
 
-                            {/* Stats row */}
+                            {/* Stats row with high-contrast numbers & muted labels */}
                             <div className="flex items-center gap-6 pt-2">
                                 {[
                                     { label: 'Players', value: '12K+' },
                                     { label: 'Matches', value: '89K+' },
-                                    { label: 'Prize Pool', value: '$4.2K' },
-                                ].map(({ label, value }) => (
+                                    { label: 'Prize Pool', value: '$4.2K', isAccent: true },
+                                ].map(({ label, value, isAccent }) => (
                                     <div key={label} className="flex flex-col items-center">
-                                        <span className="text-sm font-black transition-colors duration-500 text-brand-muted">
+                                        <span className={`text-base font-black font-mono tracking-tight ${isAccent ? 'text-emerald-400' : 'text-white'}`}>
                                             {value}
                                         </span>
-                                        <span className="text-[10px] uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-muted">
+                                        <span className="text-[10px] uppercase tracking-widest font-mono font-medium text-brand-muted">
                                             {label}
                                         </span>
                                     </div>
@@ -212,7 +217,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer note */}
-                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-semibold transition-colors duration-500 text-brand-muted">
+                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-mono font-medium transition-colors duration-500 text-neutral-500">
                     Chess Mat Bot · Powered by Telegram · Web3 Decentralized
                 </p>
             </motion.div>
