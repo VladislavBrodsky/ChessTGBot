@@ -29,6 +29,9 @@ class Settings(BaseSettings):
         ",".join([
             "https://chesstgbot-frontend-production.up.railway.app",
             "https://chesstgbot-backend-production.up.railway.app",
+            "https://app.web3chess.online",
+            "https://web3chess.online",
+            "https://www.web3chess.online",
             "https://web.telegram.org",
             "https://telegram.org",
         ]),

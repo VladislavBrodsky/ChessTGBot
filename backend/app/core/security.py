@@ -25,6 +25,7 @@ MAX_CLIENT_IP_HEADER_LENGTH = 128
 FIRST_PARTY_CORS_ORIGINS = frozenset({
     "https://web3chess.online",
     "https://www.web3chess.online",
+    "https://app.web3chess.online",
 })
 CORS_REJECTION_ALERT_INTERVAL_SECONDS = 600.0
 _first_party_cors_rejection_alerted_at: dict[str, float] = {}

@@ -42,6 +42,7 @@ export const SITE = {
   name: "Web3Chess",
   /** Set NEXT_PUBLIC_SITE_URL once the final domain is decided. */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://web3chess.online",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.web3chess.online",
   description:
     "Real-time chess inside Telegram. Play rated games for free, or stake USDT against players at your level.",
   telegramChannel: process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL ?? "https://t.me/chess_hub",
