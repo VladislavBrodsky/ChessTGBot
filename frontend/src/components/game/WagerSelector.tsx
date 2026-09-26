@@ -39,7 +39,6 @@ export default function WagerSelector({
           className="flex gap-2.5 overflow-x-auto scrollbar-none py-1 px-[calc(50%-42px)] snap-x snap-mandatory"
         >
           {[
-            { label: "FREE", val: 0 },
             { label: "$1", val: 100 },
             { label: "$5", val: 500 },
             { label: "$10", val: 1000 },
@@ -115,6 +114,8 @@ export default function WagerSelector({
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-2">
           <input
             type="number"
+            min="1"
+            step="1"
             value={customWagerInput}
             onChange={(e) => setCustomWagerInput(e.target.value)}
             className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-[16px] font-black focus:outline-none shadow-inner tracking-wider"

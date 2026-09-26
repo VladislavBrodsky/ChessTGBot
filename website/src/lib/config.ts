@@ -44,8 +44,8 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://web3chess.online",
   description:
     "Real-time chess inside Telegram. Play rated games for free, or stake USDT against players at your level.",
-  telegramChannel: "https://t.me/chess_hub",
-  telegramChat: "https://t.me/chesshub_chat",
+  telegramChannel: process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL ?? "https://t.me/chess_hub",
+  telegramChat: process.env.NEXT_PUBLIC_TELEGRAM_CHAT ?? "https://t.me/chesshub_chat",
 } as const;
 
 export const TIME_CONTROLS = ["1+0", "3+2", "5+0", "10+0"] as const;

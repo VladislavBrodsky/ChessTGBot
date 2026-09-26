@@ -14,7 +14,7 @@ interface ReferralSectionProps {
 export default function ReferralSection({ referralCode }: ReferralSectionProps) {
  const [copied, setCopied] = useState(false);
  const { stats } = useUser();
- const botUsername = stats?.bot_username || "FinChess_bot";
+ const botUsername = stats?.bot_username || "chess_matbot";
 
  const inviteLink = `https://t.me/${botUsername}?start=${referralCode}`;
 

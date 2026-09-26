@@ -24,10 +24,14 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Web3Chess — Chess in Telegram", template: "%s · Web3Chess" },
+  title: { default: "Web3Chess — Play-to-Earn Chess in Telegram", template: "%s · Web3Chess" },
   description: SITE.description,
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
-    title: "Web3Chess — Chess in Telegram",
+    title: "Web3Chess — Play-to-Earn Chess in Telegram",
     description: SITE.description,
     url: SITE.url,
     siteName: SITE.name,
@@ -38,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#20294C",
+  themeColor: "#e5e5e5",
   colorScheme: "light",
 };
 

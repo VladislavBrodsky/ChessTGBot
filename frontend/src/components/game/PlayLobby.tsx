@@ -211,8 +211,8 @@ export default function PlayLobby() {
       ? Math.round(parseFloat(customWagerInput) * 100)
       : selectedWager;
 
-    if (isNaN(wagerInCents) || wagerInCents < 0) {
-      setMatchmakingError("Please specify a valid wager amount.");
+    if (isNaN(wagerInCents) || wagerInCents < 100) {
+      setMatchmakingError("Minimum wager is $1.00.");
       return;
     }
 
@@ -438,8 +438,8 @@ export default function PlayLobby() {
       ? Math.round(parseFloat(customWagerInput) * 100)
       : selectedWager;
 
-    if (isNaN(wagerInCents) || wagerInCents < 0) {
-      setMatchmakingError("Please specify a valid wager amount.");
+    if (isNaN(wagerInCents) || wagerInCents < 100) {
+      setMatchmakingError("Minimum wager is $1.00.");
       return;
     }
 
@@ -928,13 +928,9 @@ export default function PlayLobby() {
                       </span>
                       <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-muted' : 'text-brand-muted'}`}>
                         {hasSufficient ? (
-                          chosenWager > 0 ? (
-                            <>
-                              <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
-                            </>
-                          ) : (
-                            "FREE PRACTICE MATCH"
-                          )
+                          <>
+                            <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                          </>
                         ) : (
                           tg('amount_needed', { amount: `$${((chosenWager - walletBalance) / 100).toFixed(2)}` })
                         )}

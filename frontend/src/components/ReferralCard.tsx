@@ -17,7 +17,7 @@ export default function ReferralCard({ referralCode, onInteraction }: ReferralCa
     const [copied, setCopied] = useState(false);
     const { stats } = useUser();
     const displayCode = referralCode || stats?.referral_code || "MATRIX-CORE";
-    const botUsername = stats?.bot_username || "FinChess_bot";
+    const botUsername = stats?.bot_username || "chess_matbot";
     const inviteLink = `https://t.me/${botUsername}/app?startapp=ref_${displayCode}`;
 
     const handleCopy = () => {

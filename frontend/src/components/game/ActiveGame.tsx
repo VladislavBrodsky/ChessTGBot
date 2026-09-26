@@ -650,7 +650,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     prevStatusRef.current = currentStatus;
   }, [gameState, userId, playAudio]);
 
-  const botUsername = userStats?.bot_username || "FinChess_bot";
+  const botUsername = userStats?.bot_username || "chess_matbot";
   const inviteLink = `https://t.me/${botUsername}/app?startapp=${gameId}`;
 
   const handleShareInvite = () => {
