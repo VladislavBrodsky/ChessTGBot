@@ -767,8 +767,8 @@ async def join_matchmaking(sid, data):
 
         bid_amount = int(data.get('bid_amount', 0))
         time_control = int(data.get('time_control', 600))
-        if bid_amount < 0:
-            await sio.emit('matchmaking_error', {'message': 'Invalid bid amount'}, room=sid)
+        if bid_amount < 100:
+            await sio.emit('matchmaking_error', {'message': 'Minimum wager is $1.00 (100 cents).'}, room=sid)
             return
 
         user_elo = 1000

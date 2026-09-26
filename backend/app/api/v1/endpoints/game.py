@@ -22,7 +22,7 @@ class CreateGameResponse(BaseModel):
 async def create_game(
     type: str = "online",
     time_control: int = 600,
-    wager: int = 0,
+    wager: int = 100,
     difficulty: Optional[str] = "medium",
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -31,6 +31,10 @@ async def create_game(
     service = GameService()
     
     is_bot_game = (type == "computer")
+
+    # Enforce minimum wager of $1.00 (100 cents) for all player games
+    if not is_bot_game and wager < 100:
+        raise HTTPException(status_code=400, detail="Minimum wager is $1.00 (100 cents).")
     
     # Verify and deduct balance if wager > 0 and type is online
     if not is_bot_game and wager > 0:

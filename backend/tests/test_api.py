@@ -44,6 +44,12 @@ async def test_create_game_computer(client):
     assert "game_id" in data
 
 @pytest.mark.asyncio
+async def test_create_game_online_enforces_minimum_wager(client):
+    response = await client.post("/api/v1/game/create?type=online&wager=0")
+    assert response.status_code == 400
+    assert "Minimum wager is $1.00" in response.json()["detail"]
+
+@pytest.mark.asyncio
 async def test_nonexistent_api_returns_json_404(client):
     response = await client.get("/api/v1/nonexistent")
     assert response.status_code == 404

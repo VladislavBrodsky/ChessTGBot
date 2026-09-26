@@ -18,7 +18,6 @@ import ArenaBanner from './ArenaBanner';
 
 import DepositModal from '../Wallet/DepositModal';
 import RakeInfoDrawer from './RakeInfoDrawer';
-import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
 
@@ -52,13 +51,11 @@ export default function PlayLobby() {
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
-  const [showAiDifficultyDrawer, setShowAiDifficultyDrawer] = useState<boolean>(false);
 
   // Refs for scroll container alignment
   const wagerScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef<boolean>(false);
-  const aiFallbackOfferedRef = useRef<boolean>(false);
   const keepSearchingOnExitRef = useRef<boolean>(false);
 
   const scrollToWager = () => {
@@ -279,28 +276,9 @@ export default function PlayLobby() {
     } else {
       setSearchTimer(0);
       setContendersCount(5);
-      aiFallbackOfferedRef.current = false;
     }
     return () => clearInterval(interval);
   }, [matchmakingState]);
-
-  useEffect(() => {
-    if (
-      matchmakingState === 'searching' &&
-      searchTimer >= 15 &&
-      !aiFallbackOfferedRef.current
-    ) {
-      const wagerInCents = isCustomWager
-        ? Math.round(parseFloat(customWagerInput) * 100)
-        : selectedWager;
-      aiFallbackOfferedRef.current = true;
-      logTelemetryEvent('queue_ai_fallback_offered', {
-        bid_amount: wagerInCents,
-        time_control: timeControl,
-        duration_waited: searchTimer,
-      });
-    }
-  }, [matchmakingState, searchTimer, isCustomWager, customWagerInput, selectedWager, timeControl]);
 
   // Manage Telegram WebApp BackButton visibility during active search
   useEffect(() => {
@@ -468,26 +446,6 @@ export default function PlayLobby() {
     submittingRef.current = false;
   };
 
-  const switchSearchToAi = () => {
-    const wagerInCents = isCustomWager
-      ? Math.round(parseFloat(customWagerInput) * 100)
-      : selectedWager;
-    logTelemetryEvent('queue_ai_fallback_accepted', {
-      bid_amount: wagerInCents,
-      time_control: timeControl,
-      duration_waited: searchTimer,
-    });
-    keepSearchingOnExitRef.current = false;
-    setNotifySearchEnabled(false);
-    setNotifyRequestPending(false);
-    const socket = getSocket();
-    socket.emit('leave_matchmaking', {});
-    setMatchmakingState('idle');
-    submittingRef.current = false;
-    telegramHaptic('light');
-    setShowAiDifficultyDrawer(true);
-  };
-
   const enableMatchNotifications = () => {
     if (chosenWager !== 0 || notifySearchEnabled || notifyRequestPending) return;
     keepSearchingOnExitRef.current = true;
@@ -496,35 +454,13 @@ export default function PlayLobby() {
     getSocket().emit('enable_matchmaking_notifications', {});
   };
 
-  const triggerPlayVsComputer = () => {
-    if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
-    telegramHaptic('light');
-    setShowAiDifficultyDrawer(true);
-  };
-
-  const executePlayVsComputer = async (difficulty: string) => {
-    if (isCreating || submittingRef.current) return;
-    submittingRef.current = true;
-    setIsCreating(true);
-    try {
-      const res = await apiFetch(`/api/v1/game/create?type=computer&time_control=${timeControl}&difficulty=${difficulty}`, {
-        method: "POST"
-      });
-      if (!res.ok) throw new Error("Backend error");
-      const data = await res.json();
-      setShowAiDifficultyDrawer(false);
-      router.push(`/${locale}/game?id=${data.game_id}`);
-    } catch (e) {
-      console.error("Failed to create computer game", e);
-      setMatchmakingError("Failed to initiate training session.");
-    } finally {
-      setIsCreating(false);
-      submittingRef.current = false;
-    }
-  };
-
   const playVsFriend = async () => {
     if (isCreating || submittingRef.current) return;
+
+    if (isNaN(chosenWager) || chosenWager < 100) {
+      setMatchmakingError("Minimum wager is $1.00.");
+      return;
+    }
     
     // Check if creator has sufficient balance for chosenWager
     if (walletBalance < chosenWager) {
@@ -768,18 +704,6 @@ export default function PlayLobby() {
                 </span>
               </div>
 
-              {searchTimer >= 15 && (
-                <button
-                  onClick={switchSearchToAi}
-                  className="w-full py-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <FaRobot />
-                    {tg('train_ai')}
-                  </span>
-                </button>
-              )}
-
               {searchTimer >= 15 && chosenWager === 0 && (
                 notifySearchEnabled ? (
                   <div className="w-full p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-500">
@@ -947,53 +871,34 @@ export default function PlayLobby() {
                 </div>
               )}
 
-              {/* Secondary Actions — Upgraded to match Command Center stats cards */}
-              <div className="grid grid-cols-2 gap-3 w-full">
+              {/* Secondary Actions — Play with Friend Wager Match */}
+              <div className="w-full">
                 <motion.button
-                  whileHover={!isCreating ? { scale: 1.03 } : {}}
-                  whileTap={!isCreating ? { scale: 0.98 } : {}}
-                  onClick={triggerPlayVsComputer}
+                  whileHover={!isCreating ? { scale: 1.015 } : {}}
+                  whileTap={!isCreating ? { scale: 0.985 } : {}}
+                  onClick={playVsFriend}
                   disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/5 border border-emerald-500/40 hover:border-emerald-500/60 transition-all group shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                  className="relative overflow-hidden rounded-2xl p-4 flex items-center justify-between w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
                 >
-                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" aria-hidden="true" />
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 group-hover:text-emerald-400 transition-colors"
-                  >
-                    <FaRobot className="text-[15px] group-hover:scale-110 transition-transform" />
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" aria-hidden="true" />
+                  <div className="flex items-center gap-3.5">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-purple-500/10 border border-purple-500/20 text-purple-500 group-hover:text-purple-400 transition-colors"
+                    >
+                      <FaShareAlt className="text-base group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-black leading-none text-purple-500 tracking-wide uppercase drop-shadow-md">
+                        PLAY WITH FRIEND
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-purple-400">
+                        SHARE WAGER CHALLENGE LINK
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-emerald-500 tracking-wide uppercase drop-shadow-md">
-                      TRAIN
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-emerald-500">
-                      AGAINST A.I.
-                    </span>
-                  </div>
-                </motion.button>
- 
-                {/* Play with friend button */}
-                <motion.button
-                   whileHover={!isCreating ? { scale: 1.03 } : {}}
-                   whileTap={!isCreating ? { scale: 0.98 } : {}}
-                   onClick={playVsFriend}
-                   disabled={isCreating}
-                   className="relative overflow-hidden rounded-2xl p-3.5 flex items-center gap-3 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
-                 >
-                   <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" aria-hidden="true" />
-                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-purple-500/10 border border-purple-500/20 text-purple-500 group-hover:text-purple-400 transition-colors"
-                   >
-                     <FaShareAlt className="text-[14px] group-hover:scale-110 transition-transform" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-black leading-none text-purple-500 tracking-wide uppercase drop-shadow-md">
-                      PLAY
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-purple-500">
-                      WITH FRIEND
-                    </span>
-                  </div>
+                  <span className="text-xs font-black text-purple-400/90 tracking-wider uppercase px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                    ${(chosenWager / 100).toFixed(2)}
+                  </span>
                 </motion.button>
               </div>
 
@@ -1113,18 +1018,6 @@ export default function PlayLobby() {
         <AnimatePresence>
           {showRakeInfo && (
             <RakeInfoDrawer onClose={() => setShowRakeInfo(false)} />
-          )}
-        </AnimatePresence>
-
-        {/* AI Difficulty Selector Drawer */}
-        <AnimatePresence>
-          {showAiDifficultyDrawer && (
-            <AiDifficultyDrawer
-              locale={locale}
-              onClose={() => setShowAiDifficultyDrawer(false)}
-              onSelect={executePlayVsComputer}
-              isCreating={isCreating}
-            />
           )}
         </AnimatePresence>
 
