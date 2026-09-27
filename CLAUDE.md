@@ -4,13 +4,13 @@ Telegram Mini App chess game. Next.js frontend + FastAPI backend.
 
 ## Production topology (verified 2026-07)
 
-Two separate Railway services, auto-deployed from this repo on push to `main`:
+Two separate Railway services with custom domains, auto-deployed from this repo on push to `main`:
 
-- **Frontend**: `https://chesstgbot-frontend-production.up.railway.app` — runs `next start` (NOT the static export). Built from `frontend/`. This is what the Telegram Mini App loads.
-- **Backend**: `https://chesstgbot-backend-production.up.railway.app` — FastAPI + Socket.IO, built from `backend/` (no `static_frontend` inside; its SPA-serving code path is inactive there).
-- The monolith URL `chesstgbot-production.up.railway.app` (default `WEBAPP_URL` in `backend/app/core/config.py`) is DEAD — do not test against it. `frontend/src/lib/api.ts` maps the frontend host to the backend host at runtime.
+- **Frontend / Mini App**: `https://app.web3chess.online` (or `https://web3chess.online`) — runs `next start` (built from `frontend/`). This is what the Telegram Mini App loads.
+- **Backend API & Realtime**: `https://api.web3chess.online` — FastAPI + Socket.IO, built from `backend/`.
+- The monolith URL `chesstgbot-production.up.railway.app` is DEAD — do not test against it. `frontend/src/lib/api.ts` maps `app.web3chess.online` and `web3chess.online` directly to `api.web3chess.online` at runtime.
 
-So: **frontend fixes ship by pushing `frontend/src` to main** (Railway rebuilds the frontend service). To verify what production actually runs, curl the frontend URL and grep the served HTML/chunks — don't assume.
+So: **frontend fixes ship by pushing `frontend/src` to main** (Railway rebuilds the service).
 
 ## backend/static_frontend
 
