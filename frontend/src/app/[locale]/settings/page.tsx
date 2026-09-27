@@ -107,7 +107,7 @@ export default function SettingsPage() {
 
  return (
   <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
-  <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto space-y-4 pt-1 pb-[calc(84px+var(--app-safe-bottom))]">
+  <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-4 pt-1">
 
   {/* Page Title & Subtitle Centered in 1 Line */}
   <header className="w-full text-center flex flex-col items-center mb-1">

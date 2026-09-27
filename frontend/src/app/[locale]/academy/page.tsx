@@ -319,7 +319,7 @@ export default function AcademyPage() {
           />
         </div>
       )}
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-1 space-y-4 pb-[calc(84px+var(--app-safe-bottom))]">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-1 space-y-4">
 
         {/* Header */}
         <header className="flex flex-col items-center w-full mb-2">

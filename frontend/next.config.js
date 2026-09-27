@@ -61,13 +61,22 @@ const nextConfig = {
 
             return [
                 {
-                    source: '/(.*)',
+                    source: '/((?!_next/static|_next/image|favicon.ico|icon.png).*)',
                     headers: [
                         { key: 'Content-Security-Policy', value: cspHeader },
                         { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
                         { key: 'X-Content-Type-Options', value: 'nosniff' },
                         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
                         { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
+                        { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' },
+                        { key: 'Pragma', value: 'no-cache' },
+                        { key: 'Expires', value: '0' },
+                    ],
+                },
+                {
+                    source: '/_next/static/:path*',
+                    headers: [
+                        { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
                     ],
                 },
             ];

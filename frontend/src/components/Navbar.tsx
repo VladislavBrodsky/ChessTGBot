@@ -195,9 +195,9 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                 bottom: `calc(16px + var(--app-safe-bottom))`
             }}
             aria-label="Primary navigation"
-            className="app-bottom-nav fixed left-4 right-4 z-50 w-auto max-w-[420px] mx-auto rounded-[28px] border border-brand-border-opacity-10 px-1.5 py-1.5 backdrop-blur-[24px] shadow-premium flex justify-center"
+            className="app-bottom-nav fixed left-3 right-3 sm:left-4 sm:right-4 z-50 w-auto max-w-[420px] mx-auto rounded-[28px] border border-brand-border-opacity-10 px-1 py-1.5 sm:px-1.5 backdrop-blur-[24px] shadow-premium flex justify-center"
         >
-            <ul className="grid w-full grid-cols-5 gap-1">
+            <ul className="grid w-full grid-cols-5 gap-0.5 sm:gap-1">
                 {localizedItems.map((item) => {
                     const currentPath = (pathname || '').split('?')[0].replace(/\/$/, '');
                     const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
@@ -227,13 +227,13 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
                                     <div className={`app-bottom-nav__icon flex items-center justify-center transition-all duration-200 relative z-10 ${
                                         isActive 
                                             ? 'text-emerald-400 -translate-y-0.5 scale-110 drop-shadow-[0_2px_8px_rgba(16,185,129,0.5)]' 
-                                            : isPrimary 
+                                             : isPrimary 
                                                 ? 'text-emerald-500/80 scale-105' 
                                                 : 'text-brand-muted hover:text-brand-primary'
-                                    } text-[20px]`}>
+                                    } text-[19px] sm:text-[20px]`}>
                                         {item.icon}
                                     </div>
-                                    <span className={`app-bottom-nav__label max-w-full truncate text-[10px] font-black uppercase tracking-[0.05em] transition-all duration-200 relative z-10 mt-0.5 px-0.5 ${
+                                    <span className={`app-bottom-nav__label max-w-full truncate text-[9px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-[0.05em] transition-all duration-200 relative z-10 mt-0.5 px-0.5 ${
                                         isActive 
                                             ? 'text-emerald-400' 
                                             : isPrimary 

@@ -138,7 +138,7 @@ export default function ProfilePage() {
 
   return (
     <LayoutWrapper className="w-full" hideHeaderControls>
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto space-y-4 pb-[calc(84px+var(--app-safe-bottom))] pt-1">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-4 pt-1">
 
   {/* Profile Header */}
   <header className="w-full flex flex-col items-center text-center">

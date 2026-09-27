@@ -318,8 +318,8 @@ class TelegramService:
                     db_user.referral_code = referral_code
                     await db.commit()
 
-            # Build webapp URL with the resolved language
-            web_app_url = f"{settings.WEBAPP_URL}?lang={lang}"
+            # Build webapp URL with the resolved language and cache-busting version
+            web_app_url = f"{settings.WEBAPP_URL}?v={settings.VERSION}&lang={lang}"
             if start_param:
                 web_app_url += f"&startapp={start_param}"
 

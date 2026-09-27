@@ -97,7 +97,7 @@ export default function WalletPage() {
 
   return (
     <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center px-3.5 mx-auto pb-[calc(84px+var(--app-safe-bottom))] pt-1 space-y-4">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pt-1 space-y-4">
       
         {/* Header Back Link */}
         <header className="w-full flex items-center justify-between mb-1">

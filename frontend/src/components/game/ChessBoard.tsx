@@ -314,7 +314,7 @@ function ChessBoardComponent({
     return (
         <div
             data-testid="live-chessboard"
-            className="w-full max-w-[400px] aspect-square relative z-10 transition-all duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary"
+            className="w-full aspect-square relative z-10 transition-all duration-700 mx-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary"
             role="group"
             tabIndex={0}
             aria-label="Chessboard. Type a source square and destination square, for example e2e4, to make a move. Press Escape to clear the current entry."

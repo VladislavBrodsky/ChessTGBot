@@ -505,8 +505,8 @@ export default function PlayLobby() {
   const hasSufficient = walletBalance >= chosenWager;
 
   return (
-    <LayoutWrapper className="justify-start pt-4 pb-20">
-      <div className="w-full max-w-sm flex flex-col items-center px-4 mx-auto space-y-4">
+    <LayoutWrapper className="justify-start pt-2">
+      <div className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-4">
         
         {/* Visual Header */}
         <header className="flex flex-col items-center w-full mt-2 space-y-2 text-center">

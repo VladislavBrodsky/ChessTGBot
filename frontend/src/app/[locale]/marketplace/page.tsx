@@ -274,7 +274,7 @@ export default function MarketplacePage() {
             {/* Ambient background light */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.1)_0%,transparent_70%)] pointer-events-none -z-10" />
             
-            <main className="flex w-full max-w-sm flex-col items-center mx-auto space-y-4 pt-1 pb-[calc(84px+var(--app-safe-bottom))] md:max-w-xl lg:max-w-3xl">
+            <main className="flex w-full max-w-md flex-col items-center mx-auto space-y-4 pt-1 md:max-w-xl lg:max-w-3xl">
                     <header className="flex w-full flex-col items-center text-center relative pt-1 md:pt-4 mb-1">
                         <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-20 bg-[radial-gradient(circle,rgba(245,158,11,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
                         <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary header-balanced">

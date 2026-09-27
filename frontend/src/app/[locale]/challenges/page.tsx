@@ -179,7 +179,7 @@ export default function ChallengesPage() {
 
   return (
     <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
-      <main className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-start px-3.5 mx-auto pt-1 space-y-4 pb-[calc(84px+var(--app-safe-bottom))]">
+      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-start px-4 mx-auto pt-1 space-y-4">
 
         {/* Level Progress Card — Ultra Premium */}
         <section aria-labelledby="level-heading" className="w-full">

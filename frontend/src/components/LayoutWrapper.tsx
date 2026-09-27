@@ -116,10 +116,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
             <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
-                    ? 'md:pl-[72px] pt-6 pb-8'
-                    : isTelegramWeb
-                        ? 'pt-[calc(28px+var(--app-safe-top))] pb-[calc(150px+var(--app-safe-bottom))]'
-                        : 'pt-[calc(28px+var(--app-safe-top))] pb-[calc(100px+var(--app-safe-bottom))]'
+                    ? 'md:pl-[72px] pt-6 pb-12'
+                    : 'pt-[calc(20px+var(--app-safe-top))] pb-[calc(88px+var(--app-safe-bottom))]'
             } ${className}`}>
                 {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
                     <div className="flex-1 flex flex-col items-center justify-center">

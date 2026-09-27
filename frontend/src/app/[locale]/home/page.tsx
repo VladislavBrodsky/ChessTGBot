@@ -88,7 +88,7 @@ export default function Home() {
  <LayoutWrapper className="px-4 md:px-6 w-full" hideHeaderControls>
  <DailyCheckinModal />
  <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
- <main className="flex flex-col items-center w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-4">
+ <main className="flex flex-col items-center w-full max-w-md md:max-w-xl lg:max-w-3xl mx-auto space-y-5 py-2">
 
   {/* Dashboard Welcome Header — a two-line greeting keeps the profile moment clear at every width. */}
   <header className="mb-1 w-full px-1">

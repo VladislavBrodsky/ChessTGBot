@@ -67,7 +67,9 @@ export default async function LocaleLayout({
                 {/* Preconnect to the backend to eliminate TCP handshake latency on the first
                     avatar load. Production (www.web3chess.online) calls api.web3chess.online. */}
                 <link rel="preconnect" href="https://api.web3chess.online" crossOrigin="anonymous" />
-                <link rel="dns-prefetch" href="https://api.web3chess.online" />
+                <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                <meta httpEquiv="Pragma" content="no-cache" />
+                <meta httpEquiv="Expires" content="0" />
                 <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
                 <script
                     dangerouslySetInnerHTML={{

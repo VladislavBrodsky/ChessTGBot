@@ -800,7 +800,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   return (
     <LayoutWrapper className="pb-12">
       {/* Header / Nav */}
-      <div className="w-full max-w-sm flex justify-between items-center mb-6 relative z-10 px-2 mt-2 mx-auto">
+      <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
           {isGameOver && !isTelegram && (
             <Link href={`/${locale}/home`}>
@@ -885,7 +885,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
       {/* Main Game Area */}
       {isWaiting ? (
-        <div className="w-full max-w-sm flex flex-col items-center gap-6 mx-auto px-1 animate-fade-in">
+        <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-6 mx-auto px-1 animate-fade-in">
           <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center text-center shadow-premium relative overflow-hidden">
             {/* Ambient corner backlights */}
             <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-6 -mt-6 pointer-events-none" />
@@ -981,7 +981,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-sm flex flex-col items-center gap-5 mx-auto">
+        <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">
 
         {/* Opponent Widget */}
         <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${

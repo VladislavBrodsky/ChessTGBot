@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     TESTING: bool = False
     
     PROJECT_NAME: str = "Chess Mini App"
-    VERSION: str = "1.7.0"
+    VERSION: str = "1.7.3"
     API_V1_STR: str = "/api/v1"
     
     # CORS exact-origin allowlist
