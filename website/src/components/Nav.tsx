@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { PlayButton } from "./PlayButton";
 import { home } from "@/content/home";
+import { Icon } from "@/icons";
 
 export function Nav() {
   const [stuck, setStuck] = useState(false);
@@ -57,7 +57,7 @@ export function Nav() {
             aria-expanded={open}
             className="grid size-11 place-items-center rounded-[8px] bg-white text-[#000000] lg:hidden"
           >
-            <Menu className="size-5" strokeWidth={1.5} />
+            <Icon name="list" size={20} />
           </button>
         </div>
       </header>
@@ -110,7 +110,7 @@ export function Nav() {
                 aria-label="Close menu"
                 className="grid size-11 place-items-center rounded-control bg-surface text-icon shadow-control"
               >
-                <X className="size-5" strokeWidth={1.5} />
+                <Icon name="x" size={20} />
               </button>
             </div>
             <ul className="mt-6 grid gap-1">

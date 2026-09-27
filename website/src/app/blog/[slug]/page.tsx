@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Clock, Sparkles, CheckCircle2, ChevronRight, BookOpen } from "lucide-react";
 import { BLOG_POSTS, getBlogPostBySlug, getRelatedBlogPosts } from "@/content/blog";
 import { BlogCard } from "@/components/BlogCard";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -10,6 +9,7 @@ import { Nav } from "@/components/Nav";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE, telegramLink } from "@/lib/config";
+import { Icon } from "@/icons";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -27,14 +27,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return {
-      title: "Article Not Found · Web3Chess",
+      title: "Article Not Found",
     };
   }
 
   const url = `${SITE.url}/blog/${post.slug}`;
 
   return {
-    title: `${post.title} · Web3Chess Chronicles`,
+    title: post.title,
     description: post.excerpt,
     keywords: [
       post.category,
@@ -146,11 +146,11 @@ export default async function BlogPostPage({ params }: PageProps) {
           <Link href="/" className="transition-colors hover:text-[#000000]">
             Home
           </Link>
-          <ChevronRight className="size-3" />
+          <Icon name="caret-right" size={12} />
           <Link href="/blog" className="transition-colors hover:text-[#000000]">
             Blog
           </Link>
-          <ChevronRight className="size-3" />
+          <Icon name="caret-right" size={12} />
           <span className="text-[#000000] font-semibold">{post.category}</span>
         </nav>
 
@@ -162,7 +162,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               {post.category}
             </span>
             <span className="inline-flex items-center gap-1 font-mono text-[12px] text-[#979797]">
-              <Clock className="size-3.5" />
+              <Icon name="clock" size={14} />
               {post.readingTime}
             </span>
             <span className="font-mono text-[12px] text-[#979797]">• {post.publishedAt}</span>
@@ -195,7 +195,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <section className="max-w-4xl rounded-[32px] bg-white p-8 md:p-10">
             <div className="flex items-center gap-2.5 mb-6">
               <span className="grid size-7 place-items-center rounded-full bg-[#d1ffca] text-[#000000]">
-                <Sparkles className="size-4" />
+                <Icon name="sparkle" size={16} />
               </span>
               <h2 className="font-mono text-[12px] font-bold uppercase tracking-wider text-[#000000]">
                 Key Takeaways
@@ -204,7 +204,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             <ul className="grid gap-4 sm:grid-cols-2">
               {post.takeaways.map((takeaway, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-[15px] leading-[1.4] text-[#000000]">
-                  <CheckCircle2 className="size-4 shrink-0 text-[#047857] mt-1" />
+                  <Icon name="check-circle" size={16} className="shrink-0 text-[#047857] mt-1" />
                   <span>{takeaway}</span>
                 </li>
               ))}
@@ -313,7 +313,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               rel="noopener noreferrer"
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[8px] bg-white px-8 py-4 font-medium text-[15px] text-[#000000] transition-opacity hover:opacity-90 active:scale-95"
             >
-              <BookOpen className="size-4" />
+              <Icon name="book-open-text" size={16} />
               <span>Launch Web3Chess</span>
             </a>
           </div>

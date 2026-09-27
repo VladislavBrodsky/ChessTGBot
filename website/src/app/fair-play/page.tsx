@@ -1,42 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, Cpu, Scale, Lock, Zap } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE, SETTLEMENT } from "@/lib/config";
+import { Icon, type IconName } from "@/icons";
 
 export const metadata: Metadata = {
-  title: "Fair Play & Anti-Cheat Protocol · Web3Chess",
+  title: "Fair Play & Anti-Cheat Protocol",
   description: "How Web3Chess enforces deterministic Stockfish move evaluation, server-side clock validation, and non-custodial smart escrow.",
   openGraph: {
     title: "Fair Play & Anti-Cheat Protocol · Web3Chess",
-    description: "Server-side chess integrity, ELO matchmaking, and transparent on-chain payouts.",
+    description: "Server-side chess integrity, ELO matchmaking, and transparent payouts.",
     url: `${SITE.url}/fair-play`,
   },
 };
 
 const PILLARS = [
   {
-    icon: Cpu,
+    icon: "cpu" as IconName,
     title: "Server-Side Move Verification",
     desc: "Every move is parsed, validated, and clocked on our backend clusters. The client browser has zero authority over move legality, preventing client-side memory or clock exploits.",
   },
   {
-    icon: ShieldCheck,
+    icon: "shield-check" as IconName,
     title: "Continuous Stockfish Engine Analysis",
     desc: "Match transcripts are evaluated in real-time against Grandmaster engine heuristics (Centipawn loss, move timing patterns, and move entropy) to detect unauthorized computer assistance.",
   },
   {
-    icon: Scale,
+    icon: "scales" as IconName,
     title: "Provably Fair ELO Matchmaking",
     desc: "Dynamic matchmaking pairs opponents within tight rating bands. Wager tiers prevent rating manipulation, smurfing, and predatory pairing.",
   },
   {
-    icon: Lock,
-    title: "Self-Custodial Smart Escrow",
-    desc: `Both players lock equal stakes into escrow at match start. The winner claims ${100 - SETTLEMENT.platformFeePercent - SETTLEMENT.referralFeePercent}% of the pool automatically upon resignation or checkmate.`,
+    icon: "lock" as IconName,
+    title: "Escrowed Stakes",
+    desc: `Both players lock equal stakes into escrow held by the platform at match start. The winner claims ${100 - SETTLEMENT.platformFeePercent - SETTLEMENT.referralFeePercent}% of the pool automatically upon resignation or checkmate.`,
   },
 ];
 
@@ -52,12 +52,12 @@ export default function FairPlayPage() {
             href="/"
             className="inline-flex items-center gap-2 rounded-[8px] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase text-[#000000] transition-opacity hover:opacity-80"
           >
-            <ArrowLeft className="size-3.5" />
+            <Icon name="arrow-left" size={14} />
             <span>Back to Home</span>
           </Link>
 
           <div className="inline-flex items-center gap-2 rounded-full bg-[#d1ffca] px-4 py-1.5 font-mono text-[12px] font-medium uppercase tracking-tight text-[#000000]">
-            <Zap className="size-3.5" />
+            <Icon name="lightning" size={14} />
             <span>Integrity System v2.4</span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function FairPlayPage() {
           {PILLARS.map((p) => (
             <div key={p.title} className="rounded-[32px] bg-white p-8 sm:p-10 space-y-4">
               <span className="grid size-12 place-items-center rounded-[8px] bg-[#f3f3f3] text-[#000000]">
-                <p.icon className="size-6" strokeWidth={1.5} />
+                <Icon name={p.icon} size={24} />
               </span>
               <h2 className="font-condensed text-[32px] font-bold uppercase leading-[0.95] tracking-[-0.03em] text-[#000000]">
                 {p.title}

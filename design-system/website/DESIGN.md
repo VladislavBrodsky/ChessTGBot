@@ -465,7 +465,9 @@ All shadows are navy-tinted and exact to the measured site.
 
 ### 6.1 Icons
 
-- **Library:** `lucide-react` with `strokeWidth={1.5}`, at 20px inline and 24px standalone. Color: `text-icon` (Steel), or `currentColor` inside buttons.
+- **Library:** **Phosphor Icons (regular weight), vendored into the repo** at `website/src/icons/` (MIT, licence included). Regular weight draws at a 1.5px stroke on a 24px grid, which is the weight this system calls for.
+  - Use `<Icon name="…" size={20} />` from `@/icons`; 20px inline, 24px standalone. Colour comes from `currentColor`, so set `text-icon` (Steel) or inherit from a button.
+  - Add an icon by dropping its SVG into `website/src/icons/svg/` and running `npm run icons`, which regenerates `generated.ts` and the `IconName` union. No runtime icon dependency, and only the icons in use reach the bundle.
 - **Chess pieces:** a custom 6-piece SVG set drawn to the Fog Board spec (§2.5). Used in demos, the Pawn Tittle and small inline glyphs. Never use Unicode ♞ glyphs in production UI; they render inconsistently across platforms.
 - **Brand marks:** official Telegram, TON and Tether (USDT) SVGs, unmodified, following each brand's guidelines. Monochrome Ink versions are allowed only where the brand provides them.
 - **Directional icons** (arrows, chevrons) get `flip-rtl`.

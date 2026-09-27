@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Check, Copy, Send } from "lucide-react";
+import { Icon } from "@/icons";
 
 interface ShareButtonsProps {
   title: string;
@@ -27,7 +27,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-line">
       <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-widest text-fg-muted mr-2">
-        <Share2 className="size-3.5" />
+        <Icon name="share-network" size={14} />
         <span>Share:</span>
       </span>
 
@@ -36,7 +36,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
         onClick={handleCopy}
         className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink hover:bg-mist"
       >
-        {copied ? <Check className="size-3.5 text-win" /> : <Copy className="size-3.5" />}
+        {copied ? <Icon name="check" size={14} className="text-win" /> : <Icon name="copy" size={14} />}
         <span>{copied ? "Copied Link" : "Copy Link"}</span>
       </button>
 
@@ -46,7 +46,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink hover:bg-mist"
       >
-        <Send className="size-3.5" />
+        <Icon name="paper-plane-tilt" size={14} />
         <span>Telegram</span>
       </a>
 

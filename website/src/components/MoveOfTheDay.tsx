@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Chess } from "chess.js";
-import { Sparkles, RotateCcw, CheckCircle2, ArrowRight } from "lucide-react";
 import { FogBoard } from "./FogBoard";
 import { home } from "@/content/home";
 import { telegramLink } from "@/lib/config";
+import { Icon } from "@/icons";
 
 /** Verified with chess.js: Ra8 is mate in this position. */
 const INITIAL_FEN = "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1";
@@ -83,7 +83,7 @@ export function MoveOfTheDay() {
           </span>
           {solved && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 font-mono text-[11px] font-bold text-[#000000]">
-              <CheckCircle2 className="size-3.5 text-[#047857]" />
+              <Icon name="check-circle" size={14} className="text-[#047857]" />
               SOLVED
             </span>
           )}
@@ -109,14 +109,14 @@ export function MoveOfTheDay() {
                 className="inline-flex items-center gap-2 rounded-[8px] bg-[#000000] px-6 py-3 font-medium text-[15px] text-white transition-opacity hover:opacity-90 active:scale-95"
               >
                 <span>Play Live in Telegram</span>
-                <ArrowRight className="size-4" />
+                <Icon name="arrow-right" size={16} />
               </a>
               <button
                 type="button"
                 onClick={handleReset}
                 className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#000000] px-4 py-3 font-mono text-[13px] font-semibold text-[#000000] hover:bg-black/5"
               >
-                <RotateCcw className="size-3.5" />
+                <Icon name="arrow-counter-clockwise" size={14} />
                 <span>Reset Puzzle</span>
               </button>
             </div>
@@ -127,7 +127,7 @@ export function MoveOfTheDay() {
                 onClick={handleReveal}
                 className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#000000] px-5 py-3 font-medium text-[14px] text-white transition-opacity hover:opacity-90"
               >
-                <Sparkles className="size-3.5 text-[#fff100]" />
+                <Icon name="sparkle" size={14} className="text-[#fff100]" />
                 <span>{revealed ? "Show Solution" : "Give Me A Hint"}</span>
               </button>
             </div>

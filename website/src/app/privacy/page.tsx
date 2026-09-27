@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
+import { Icon } from "@/icons";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy · Web3Chess",
+  title: "Privacy Policy",
   description: "How Web3Chess handles data privacy, Telegram WebApp authentication, and self-custodial wallet interactions.",
   openGraph: {
     title: "Privacy Policy · Web3Chess",
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             href="/"
             className="inline-flex items-center gap-2 rounded-[8px] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase text-[#000000] transition-opacity hover:opacity-80"
           >
-            <ArrowLeft className="size-3.5" />
+            <Icon name="arrow-left" size={14} />
             <span>Back to Home</span>
           </Link>
           <span className="font-mono text-[12px] text-[#979797]">Last updated: September 2026</span>

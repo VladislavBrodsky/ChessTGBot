@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SETTLEMENT, WAGER_TIERS, winnerReceives } from "@/lib/config";
-import { Users, Coins, TrendingUp } from "lucide-react";
+import { Icon } from "@/icons";
 
 const fmt = (n: number) => `${n.toFixed(2)} USDT`;
 
@@ -44,7 +44,7 @@ export function WagerDemo() {
               : "text-[#444444] hover:text-[#000000]"
           }`}
         >
-          <Coins className="size-3.5" />
+          <Icon name="coins" size={14} />
           <span>Match Settlement</span>
         </button>
         <button
@@ -56,7 +56,7 @@ export function WagerDemo() {
               : "text-[#444444] hover:text-[#000000]"
           }`}
         >
-          <Users className="size-3.5" />
+          <Icon name="users-three" size={14} />
           <span>3-Tier Network Calc</span>
         </button>
       </div>
@@ -161,7 +161,7 @@ export function WagerDemo() {
           <div className="rounded-[20px] bg-[#000000] p-6 text-white space-y-4">
             <div className="flex items-center justify-between border-b border-[#2f2f2f] pb-3">
               <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-[#d1ffca]">
-                <TrendingUp className="size-3.5" />
+                <Icon name="trend-up" size={14} />
                 Monthly Passive Rake
               </span>
               <span className="font-mono text-[11px] text-[#979797]">3-Tier Depth</span>

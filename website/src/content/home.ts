@@ -17,15 +17,15 @@ export const home = {
     headlineBefore: "Sk",
     headlineAfter: "ll is the only edge.",
     headlinePlain: "Skill is the only edge.",
-    lead: "Real-time chess inside Telegram. Play rated games for free, or put USDT on the board against players at your level.",
-    ctaNote: "Free to play · No download · 18+ for wager matches",
+    lead: "Real-time chess inside Telegram. Every player match is played for real USDT \u2014 1 USDT minimum \u2014 against someone at your rating. Practice against the engine is free.",
+    ctaNote: "No download · 1 USDT minimum stake · Free vs the A.I. · 18+",
     boardCaption: "Morphy vs. Duke of Brunswick & Count Isouard, Paris 1858 — the final position.",
   },
   chips: [
     "Runs inside Telegram",
     "No download",
-    "Free games, always",
-    "Play the A.I. or real players",
+    "1 USDT minimum stake",
+    "Free practice vs the A.I.",
     "USDT & TON wallet",
     "10 languages",
   ],
@@ -97,8 +97,8 @@ export const home = {
   },
   faq: [
     {
-      q: "Is it free?",
-      a: "Yes. Rated games against other players and unlimited games against the A.I. cost nothing. Wager matches are optional and separate.",
+      q: "Can I play for free?",
+      a: "Against the engine, yes \u2014 unlimited practice games cost nothing. Matches against other players are real-money games with a 1 USDT minimum stake.",
     },
     {
       q: "How does a wager match work?",
@@ -114,11 +114,11 @@ export const home = {
     },
     {
       q: "What do I need to start?",
-      a: "A Telegram account. That's it for free games. A TON wallet is only needed if you want to deposit, stake or withdraw.",
+      a: "A Telegram account is enough to practise against the engine. To play other players you also need a funded balance, so a TON wallet and a deposit of at least 1 USDT.",
     },
     {
       q: "Is it available where I live?",
-      a: "Free play is open to everyone. Real-money features depend on local law and are 18+, so check the rules where you live before you stake.",
+      a: "Practice against the engine is open to everyone. Player matches are real-money games, depend on local law and are 18+, so check the rules where you live before you stake.",
     },
   ],
   footer: {
@@ -128,6 +128,6 @@ export const home = {
       { title: "Community", links: [ { label: "Telegram channel", href: "https://t.me/chess_hub" }, { label: "Telegram chat", href: "https://t.me/chesshub_chat" } ] },
       { title: "Trust & Legal", links: [ { label: "Fair play protocol", href: "/fair-play" }, { label: "Terms of service", href: "/terms" }, { label: "Privacy policy", href: "/privacy" }, { label: "FAQ", href: "/#faq" } ] },
     ],
-    legal: "18+. Wager matches involve real money and you can lose your stake. Free play is always available.",
+    legal: "18+. Player matches involve real money and you can lose your stake. Practice against the A.I. is always free.",
   },
 } as const;

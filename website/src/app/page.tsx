@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Clock, Gift, Globe, Shield, Sparkles, Swords, Trophy, Wallet, ArrowUpRight } from "lucide-react";
+import { Icon, type IconName } from "@/icons";
 import { Nav } from "@/components/Nav";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
@@ -17,7 +17,7 @@ import { SITE, TIME_CONTROLS } from "@/lib/config";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink } from "@/lib/config";
 
-const PROGRESSION_ICONS = [Sparkles, Trophy, Gift, Swords, Shield, Globe] as const;
+const PROGRESSION_ICONS: IconName[] = ["sparkle", "trophy", "gift", "sword", "crown-simple", "users-three"];
 
 /** Opera Game final position — verified mate with chess.js. */
 const OPERA_FEN = "1n1Rkb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2K5 b k - 1 17";
@@ -160,7 +160,7 @@ export default async function HomePage() {
               <ul className="grid gap-3 pt-2">
                 {home.play.points.map((point) => (
                   <li key={point} className="flex gap-3 text-[14px] text-[#444444]">
-                    <Check className="mt-0.5 size-4 shrink-0 text-[#000000]" strokeWidth={2} />
+                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-[#000000]" />
                     {point}
                   </li>
                 ))}
@@ -213,7 +213,7 @@ export default async function HomePage() {
               </h2>
               <p className="text-[16px] leading-[1.4] text-[#444444]">{home.wagers.lead}</p>
               <p className="flex gap-2 font-mono text-[12px] text-[#979797] pt-2">
-                <Shield className="size-4 shrink-0 text-[#444444]" strokeWidth={1.5} aria-hidden="true" />
+                <Icon name="shield-check" size={16} className="shrink-0 text-[#444444]" />
                 {home.wagers.risk}
               </p>
             </div>
@@ -272,17 +272,17 @@ export default async function HomePage() {
               </ul>
 
               <div className="rounded-[28px] bg-[#181818] p-6 lg:col-span-7">
-                <p className="font-mono text-[11px] uppercase tracking-wider text-[#979797]">Example on-chain ledger</p>
+                <p className="font-mono text-[11px] uppercase tracking-wider text-[#979797]">Example ledger</p>
                 <ul className="mt-4 grid gap-1">
                   {[
-                    { icon: Wallet, title: "Deposit", meta: "Today, 11:24", amount: "+25.00 USDT", tone: "text-white" },
-                    { icon: Swords, title: "Match wager", meta: "Today, 11:31", amount: "−5.00 USDT", tone: "text-[#979797]" },
-                    { icon: Trophy, title: "Winnings", meta: "Today, 11:44", amount: "+9.50 USDT", tone: "text-[#d1ffca]" },
-                    { icon: Clock, title: "Withdrawal", meta: "Today, 12:02", amount: "−20.00 USDT", tone: "text-white", status: "Verified" },
+                    { icon: "wallet" as IconName, title: "Deposit", meta: "Today, 11:24", amount: "+25.00 USDT", tone: "text-white" },
+                    { icon: "sword" as IconName, title: "Match wager", meta: "Today, 11:31", amount: "−5.00 USDT", tone: "text-[#979797]" },
+                    { icon: "trophy" as IconName, title: "Winnings", meta: "Today, 11:44", amount: "+9.50 USDT", tone: "text-[#d1ffca]" },
+                    { icon: "clock" as IconName, title: "Withdrawal", meta: "Today, 12:02", amount: "−20.00 USDT", tone: "text-white", status: "Verified" },
                   ].map((row) => (
                     <li key={row.title} className="flex items-center gap-4 border-b border-[#2f2f2f] py-3.5 last:border-0">
                       <span className="grid size-9 shrink-0 place-items-center rounded-[8px] bg-[#2f2f2f] text-white">
-                        <row.icon className="size-4" strokeWidth={1.5} aria-hidden="true" />
+                        <Icon name={row.icon} size={16} />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[14px] font-medium text-white">{row.title}</span>
@@ -317,11 +317,11 @@ export default async function HomePage() {
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {home.progression.tiles.map((tile, i) => {
-              const Icon = PROGRESSION_ICONS[i] ?? Sparkles;
+              const iconName = PROGRESSION_ICONS[i] ?? "sparkle";
               return (
                 <li key={tile.title} className="rounded-[28px] bg-white p-7 transition-transform duration-150 hover:-translate-y-0.5">
                   <span className="grid size-10 place-items-center rounded-[8px] bg-[#f3f3f3] text-[#000000]">
-                    <Icon className="size-5" strokeWidth={1.5} aria-hidden="true" />
+                    <Icon name={iconName} size={20} />
                   </span>
                   <p className="mt-4 text-[17px] font-semibold text-[#000000]">{tile.title}</p>
                   <p className="mt-1.5 text-[14px] leading-[1.4] text-[#444444]">{tile.body}</p>
@@ -378,7 +378,7 @@ export default async function HomePage() {
               className="inline-flex items-center gap-1.5 font-mono text-[13px] font-semibold uppercase tracking-wider text-[#000000] transition-transform hover:translate-x-1"
             >
               <span>Explore all articles</span>
-              <ArrowUpRight className="size-4" />
+              <Icon name="arrow-up-right" size={16} />
             </Link>
           </div>
 

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Send, BookOpen } from "lucide-react";
 import { BLOG_POSTS } from "@/content/blog";
 import { BlogCard } from "@/components/BlogCard";
 import { Nav } from "@/components/Nav";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE, telegramLink } from "@/lib/config";
+import { Icon } from "@/icons";
 
 export const metadata: Metadata = {
-  title: "Blog & Chronicles · Web3Chess",
+  title: "Blog & Chronicles",
   description: "Explore in-depth articles on chess strategy, game theory, Telegram Mini App architecture, and fair play protocols.",
   openGraph: {
     title: "Blog & Chronicles · Web3Chess",
@@ -33,12 +33,12 @@ export default function BlogHubPage() {
             href="/"
             className="inline-flex items-center gap-2 rounded-[8px] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase text-[#000000] transition-opacity hover:opacity-80"
           >
-            <ArrowLeft className="size-3.5" />
+            <Icon name="arrow-left" size={14} />
             <span>Back to Home</span>
           </Link>
 
           <div className="inline-flex items-center gap-2 rounded-full bg-[#d1ffca] px-4 py-1.5 font-mono text-[12px] font-medium uppercase tracking-tight text-[#000000]">
-            <Sparkles className="size-3.5" />
+            <Icon name="sparkle" size={14} />
             <span>Official Chronicles</span>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function BlogHubPage() {
                 rel="noopener noreferrer"
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-[8px] bg-[#000000] px-8 py-4 font-medium text-[15px] text-white transition-opacity hover:opacity-90 active:scale-95"
               >
-                <Send className="size-4" />
+                <Icon name="paper-plane-tilt" size={16} />
                 <span>Join Official Telegram</span>
               </a>
 
@@ -111,7 +111,7 @@ export default function BlogHubPage() {
                 href="/play"
                 className="inline-flex items-center justify-center gap-2 rounded-[8px] border-[1.5px] border-[#444444] px-6 py-4 text-[15px] font-medium text-[#444444] transition-colors hover:border-[#000000] hover:text-[#000000]"
               >
-                <BookOpen className="size-4" />
+                <Icon name="book-open-text" size={16} />
                 <span>Play Free Match</span>
               </Link>
             </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Clock, ArrowUpRight } from "lucide-react";
 import type { BlogPost } from "@/content/blog";
+import { Icon } from "@/icons";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -19,7 +19,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
                 {post.category}
               </span>
               <span className="inline-flex items-center gap-1.5 font-mono text-[12px] text-[#979797]">
-                <Clock className="size-3.5 text-[#979797]" />
+                <Icon name="clock" size={14} className="text-[#979797]" />
                 {post.readingTime}
               </span>
               <span className="font-mono text-[12px] text-[#979797]">• {post.publishedAt}</span>
@@ -54,7 +54,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
                 className="inline-flex items-center gap-2 rounded-[8px] bg-[#000000] px-6 py-3 font-medium text-[14px] text-white transition-opacity hover:opacity-90 active:scale-95"
               >
                 <span>Read Story</span>
-                <ArrowUpRight className="size-4" />
+                <Icon name="arrow-up-right" size={16} />
               </Link>
             </div>
           </div>
@@ -72,7 +72,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
             {post.category}
           </span>
           <span className="inline-flex items-center gap-1 font-mono text-[12px] text-[#979797]">
-            <Clock className="size-3.5" />
+            <Icon name="clock" size={14} />
             {post.readingTime}
           </span>
         </div>
@@ -104,7 +104,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
           className="inline-flex items-center gap-1 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-transform group-hover:translate-x-1"
         >
           <span>Read</span>
-          <ArrowUpRight className="size-3.5" />
+          <Icon name="arrow-up-right" size={14} />
         </Link>
       </div>
     </article>
