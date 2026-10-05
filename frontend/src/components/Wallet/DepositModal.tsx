@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
-import Confetti from "react-confetti";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
 import { logTelemetryEvent } from "@/lib/telemetry";
@@ -13,8 +12,12 @@ import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 import { useUser } from "@/context/UserContext";
-import { SiVisa } from "react-icons/si";
-import { FaStripe } from "react-icons/fa";
+
+import {
+  DepositSuccessView,
+  CardDepositSection,
+  ManualDepositSection,
+} from './deposit';
 
 interface DepositModalProps {
   onClose: () => void;
@@ -578,32 +581,17 @@ export default function DepositModal({
 
   if (verificationSuccess) {
     return createPortal(
-      <div className="bottom-drawer-backdrop z-[100] flex items-center justify-center p-4">
-        {showConfetti && <Confetti width={windowDimensions.width} height={windowDimensions.height} recycle={false} numberOfPieces={200} />}
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-emerald-500/30 bg-brand-void shadow-2xl space-y-4 transform-gpu will-change-transform"
-        >
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-black animate-pulse">
-            ✓
-          </div>
-          <div className="space-y-1">
-            <h2 className="text-lg font-black text-emerald-500 uppercase tracking-wider animate-pulse-slow">Top-Up Successful!</h2>
-            <p className="text-xs text-brand-muted font-bold uppercase tracking-widest">{successMessage}</p>
-          </div>
-          <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45">Updated Balance</span>
-            <div className="text-2xl font-black text-emerald-400 mt-1">${(walletBalance ? walletBalance / 100 : 0).toFixed(2)} USDT</div>
-          </div>
-          <button
-            onClick={() => { setVerificationSuccess(false); setSuccessMessage(""); closeDeposit(); }}
-            className="w-full py-3 rounded-xl bg-emerald-500 text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
-          >
-            Acknowledge & Close
-          </button>
-        </motion.div>
-      </div>,
+      <DepositSuccessView
+        showConfetti={showConfetti}
+        windowDimensions={windowDimensions}
+        successMessage={successMessage}
+        walletBalance={walletBalance}
+        onClose={() => {
+          setVerificationSuccess(false);
+          setSuccessMessage("");
+          closeDeposit();
+        }}
+      />,
       document.body
     );
   }
@@ -842,126 +830,45 @@ export default function DepositModal({
               </button>
 
               {showManualFallback && (
-                <div className="space-y-4 pt-4">
-
-                  {/* ── Info Banner ── */}
-                  <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/10 flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                        <span className="text-amber-400 text-[10px] font-black">i</span>
-                      </div>
-                      <p className="text-[10px] font-black text-amber-400 uppercase tracking-wider">
-                        Important: Memo Required
-                      </p>
-                    </div>
-                    <p className="text-[10px] font-bold text-amber-400/80 leading-relaxed pl-6">
-                      Please ensure you include your unique memo comment below so we can correctly attribute the deposit to your account.
-                    </p>
-                  </div>
-
-                  {/* ── Step 1: Copy destination address ── */}
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
-                      Step 1 — {tw('destination')}
-                    </label>
-                    <div
-                      className="group w-full p-2.5 rounded-xl border border-brand-border-opacity-10 bg-brand-void text-brand-primary text-[10px] font-bold font-mono truncate flex justify-between items-center cursor-pointer hover:border-brand-primary/50 transition-all"
-                      onClick={() => {
-                        copyToClipboard(masterWallet).then((ok) => {
-                          if (!ok) return;
-                          setCopiedWallet(true);
-                          logTelemetryEvent('deposit_address_copied', {
-                            field: 'master_wallet',
-                            method: 'manual_transfer',
-                          });
-                          telegramHaptic('light');
-                          setTimeout(() => setCopiedWallet(false), 2000);
-                        });
-                      }}
-                    >
-                      <span className="truncate">{masterWallet}</span>
-                      <div className="w-5 h-5 flex items-center justify-center shrink-0 ml-2">
-                        {copiedWallet ? (
-                          <FaCheck className="text-emerald-400 animate-pulse" />
-                        ) : (
-                          <FaCopy className="text-brand-muted group-hover:opacity-100 transition-opacity" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ── Step 2: Copy memo comment ── */}
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-2">
-                      <span>Step 2 — {tw('comment_memo')}</span>
-                      <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-[8px] font-black">REQUIRED</span>
-                    </label>
-                    <div
-                      className="group w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 text-brand-primary text-[11px] font-black font-mono flex justify-between items-center cursor-pointer hover:border-brand-primary/60 hover:bg-brand-primary/10 transition-all"
-                      onClick={() => {
-                        copyToClipboard(memoComment).then((ok) => {
-                          if (!ok) return;
-                          setCopiedMemo(true);
-                          setMemoConfirmed(true);
-                          logTelemetryEvent('deposit_address_copied', {
-                            field: 'memo',
-                            method: 'manual_transfer',
-                          });
-                          telegramHaptic('medium');
-                          setTimeout(() => setCopiedMemo(false), 2500);
-                        });
-                      }}
-                    >
-                      <span className="tracking-widest">{memoComment}</span>
-                      <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                        {copiedMemo ? (
-                          <><FaCheck className="text-emerald-400 animate-pulse" /><span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">Copied!</span></>
-                        ) : (
-                          <><FaCopy className="text-brand-muted group-hover:opacity-100 transition-opacity" /><span className="text-[10px] font-black text-brand-muted group-hover:text-brand-muted uppercase tracking-wider transition-colors">Copy</span></>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ── Step 3: Memo confirmation checkbox ── */}
-                  <label className="flex items-start gap-2.5 cursor-pointer group pt-1">
-                    <input
-                      type="checkbox"
-                      checked={memoConfirmed}
-                      onChange={(e) => setMemoConfirmed(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded border-brand-primary/30 accent-brand-primary cursor-pointer shrink-0"
-                    />
-                    <span className="text-[10px] font-bold text-brand-muted group-hover:text-brand-muted leading-relaxed transition-colors">
-                      I have copied the exact memo comment <span className="font-black text-brand-primary">({memoComment})</span> and will include it in my transfer.
-                    </span>
-                  </label>
-
-                  {/* ── Step 4: Verify hash ── */}
-                  <div className={`flex flex-col space-y-2 pt-3 border-t border-brand-border-opacity-10 transition-opacity duration-300 ${memoConfirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
-                      Step 3 — Already paid? Paste transaction hash to verify:
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={manualTxHash}
-                        disabled={processing || !memoConfirmed}
-                        onChange={(e) => setManualTxHash(e.target.value)}
-                        placeholder="e.g. 0:abcd... or msg_hash..."
-                        className="flex-1 bg-brand-void border border-brand-border-opacity-20 rounded-xl py-2.5 px-3.5 text-[10px] text-brand-primary font-mono focus:outline-none focus:border-brand-primary/50 transition-colors"
-                      />
-                      <button
-                        type="button"
-                        disabled={processing || !manualTxHash.trim() || !memoConfirmed}
-                        onClick={handleManualVerify}
-                        className="px-4 rounded-xl bg-brand-primary text-brand-void text-[10px] font-black hover:bg-brand-primary-hover transition-all uppercase tracking-wider disabled:opacity-40 disabled:bg-brand-primary/50 disabled:cursor-not-allowed shrink-0"
-                      >
-                        {processing ? "Checking..." : "Verify"}
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
+                <ManualDepositSection
+                  masterWallet={masterWallet}
+                  memoComment={memoComment}
+                  copiedWallet={copiedWallet}
+                  copiedMemo={copiedMemo}
+                  memoConfirmed={memoConfirmed}
+                  manualTxHash={manualTxHash}
+                  processing={processing}
+                  onCopyWallet={() => {
+                    copyToClipboard(masterWallet).then((ok) => {
+                      if (!ok) return;
+                      setCopiedWallet(true);
+                      logTelemetryEvent('deposit_address_copied', {
+                        field: 'master_wallet',
+                        method: 'manual_transfer',
+                      });
+                      telegramHaptic('light');
+                      setTimeout(() => setCopiedWallet(false), 2000);
+                    });
+                  }}
+                  onCopyMemo={() => {
+                    copyToClipboard(memoComment).then((ok) => {
+                      if (!ok) return;
+                      setCopiedMemo(true);
+                      setMemoConfirmed(true);
+                      logTelemetryEvent('deposit_address_copied', {
+                        field: 'memo',
+                        method: 'manual_transfer',
+                      });
+                      telegramHaptic('medium');
+                      setTimeout(() => setCopiedMemo(false), 2500);
+                    });
+                  }}
+                  setMemoConfirmed={setMemoConfirmed}
+                  setManualTxHash={setManualTxHash}
+                  onManualVerify={handleManualVerify}
+                  transferInstructionsText={tw('transfer_instructions', { currency, symbol: currency })}
+                  commentMemoText={tw('comment_memo')}
+                />
               )}
             </div>
 
@@ -973,82 +880,12 @@ export default function DepositModal({
           )}
 
           {activeTab === 'card' && (
-          <div className="space-y-4">
-            <div className="flex justify-center mb-2">
-              <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">
-                  Instant Card Top-Up
-                </span>
-              </div>
-            </div>
-
-            {/* Visa / MasterCard Logos display */}
-            <div className="flex items-center justify-center gap-4 py-2.5 bg-brand-void/35 rounded-xl border border-brand-border-opacity-5">
-              <SiVisa className="w-10 h-8 text-white" />
-              <div className="w-px h-6 bg-brand-border-opacity-10" />
-              <svg className="w-10 h-6" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.5" cy="7.5" r="7.5" fill="#EB001B"/>
-                <circle cx="16.5" cy="7.5" r="7.5" fill="#F79E1B"/>
-                <path d="M12 11.5A7.478 7.478 0 0113.882 7.5 7.478 7.478 0 0112 3.5a7.478 7.478 0 01-1.882 4A7.478 7.478 0 0112 11.5z" fill="#FF5F00"/>
-              </svg>
-            </div>
-
-            {/* Amount (USD) */}
-            <div className="flex flex-col space-y-1.5">
-              <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Amount (USD)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-3.5 text-brand-muted text-[10px] font-black font-mono">$</span>
-                <input
-                  type="number"
-                  value={depositAmount}
-                  disabled={processing}
-                  onChange={(e) => setDepositAmount(e.target.value)}
-                  className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-3 pl-8 pr-4 text-sm text-brand-primary font-black focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:shadow-[0_0_15px_rgba(255,215,0,0.1)] transition-all"
-                  placeholder="10.00"
-                  min="1"
-                />
-              </div>
-              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider">Minimum top-up is $1.00 USD</span>
-            </div>
-
-            {/* Fee Breakdown Display */}
-            {!isNaN(parseFloat(depositAmount)) && parseFloat(depositAmount) > 0 && (
-              <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-muted animate-fade-in">
-                <div className="flex justify-between">
-                  <span>Credited to Balance:</span>
-                  <span className="text-emerald-400 font-mono">${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Platform Fee (5%):</span>
-                  <span className="text-rose-400 font-mono">${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
-                  <span>Total Charged:</span>
-                  <span className="font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleCardTopUp}
-              disabled={processing || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) < 1.0}
-              className="group relative overflow-hidden w-full py-3.5 rounded-xl border border-white/10 bg-gradient-to-r from-[#635BFF] to-[#4338CA] text-white text-[11px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(99,91,255,0.25)] hover:shadow-[0_0_25px_rgba(99,91,255,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-700 ease-in-out" />
-              {processing ? (
-                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-              ) : (
-                <FaStripe className="w-12 h-6 text-white shrink-0" />
-              )}
-              <span>{processing ? "Initializing Checkout..." : "Checkout securely"}</span>
-            </button>
-            <div className="flex items-center justify-center gap-2 opacity-50 mt-1">
-               <svg className="w-2.5 h-2.5 fill-brand-primary" viewBox="0 0 448 512"><path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"/></svg>
-               <span className="text-[9px] font-bold text-brand-primary uppercase tracking-widest">Guaranteed safe & secure</span>
-            </div>
-          </div>
+            <CardDepositSection
+              depositAmount={depositAmount}
+              setDepositAmount={setDepositAmount}
+              processing={processing}
+              onCardTopUp={handleCardTopUp}
+            />
           )}
 
           {/* Messages */}

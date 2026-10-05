@@ -12,12 +12,15 @@ import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
 import { logTelemetryEvent } from '@/lib/telemetry';
 
+import dynamic from 'next/dynamic';
 import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
 import ArenaBanner from './ArenaBanner';
-
-import DepositModal from '../Wallet/DepositModal';
 import RakeInfoDrawer from './RakeInfoDrawer';
+
+const DepositModal = dynamic(() => import('../Wallet/DepositModal'), {
+  ssr: false,
+});
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
 

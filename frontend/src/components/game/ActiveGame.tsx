@@ -3,107 +3,38 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaCopy, FaCheck, FaRobot, FaFlag, FaHandshake, FaShareAlt, FaChessKnight } from 'react-icons/fa';
+import { FaArrowLeft, FaCopy, FaCheck, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
-import { Card } from '@/components/ui/Card';
 import ChessBoardComponent from '@/components/game/ChessBoard';
 import MatchOverModal from '@/components/game/MatchOverModal';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
 import IncomingRematchDrawer from '@/components/game/IncomingRematchDrawer';
-import ChessClockBadge from '@/components/game/ChessClockBadge';
 
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { useAudioSynth } from '@/hooks/useAudioSynth';
 import { useAudio } from '@/hooks/useAudio';
 import { useNavbarHide } from '@/context/NavbarContext';
-import { apiFetch, getFullPhotoUrl } from '@/lib/api';
+import { apiFetch } from '@/lib/api';
 import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
 
-import { Chess } from 'chess.js';
+import {
+  GamePlayerCard,
+  WaitingOpponentCard,
+  MoveHistoryRail,
+  GameActionBar,
+  ConfirmActionDrawer,
+  GameCrashOverlay,
+  getMovesSanList,
+} from './active';
 
 interface ActiveGameProps {
   gameId: string;
 }
 
-function getMovesSanList(moveHistory: string[]): { white: string; black?: string }[] {
-  const tempChess = new Chess();
-  const result: { white: string; black?: string }[] = [];
-  
-  for (let i = 0; i < moveHistory.length; i += 2) {
-    const whiteUci = moveHistory[i];
-    const blackUci = moveHistory[i+1];
-    
-    let whiteSan = "";
-    if (whiteUci) {
-      try {
-        const from = whiteUci.substring(0, 2);
-        const to = whiteUci.substring(2, 4);
-        const promotion = whiteUci.substring(4, 5) || undefined;
-        const move = tempChess.move({ from, to, promotion });
-        whiteSan = move.san;
-      } catch {
-        whiteSan = whiteUci;
-      }
-    }
-    
-    let blackSan = "";
-    if (blackUci) {
-      try {
-        const from = blackUci.substring(0, 2);
-        const to = blackUci.substring(2, 4);
-        const promotion = blackUci.substring(4, 5) || undefined;
-        const move = tempChess.move({ from, to, promotion });
-        blackSan = move.san;
-      } catch {
-        blackSan = blackUci;
-      }
-    }
-    
-    result.push({
-      white: whiteSan,
-      ...(blackSan ? { black: blackSan } : {})
-    });
-  }
-  
-  return result;
-}
-
-interface PlayerAvatarProps {
-  userId?: number | null;
-  fallbackText: string;
-  isBot?: boolean;
-  textClassName?: string;
-}
-
-function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: PlayerAvatarProps) {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    setHasError(false);
-  }, [userId]);
-
-  if (isBot) {
-    return <FaRobot className="text-xl text-brand-muted" />;
-  }
-
-  if (!userId || hasError) {
-    return <span className={textClassName || "text-xl font-bold text-brand-muted"}>{fallbackText}</span>;
-  }
-
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit
-    <img
-      src={getFullPhotoUrl(`/api/v1/users/avatar/${userId}`)}
-      alt=""
-      className="w-full h-full object-cover"
-      onError={() => setHasError(true)}
-    />
-  );
-}
 
 export default function ActiveGame({ gameId }: ActiveGameProps) {
   const router = useRouter();
@@ -885,244 +816,93 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
       {/* Main Game Area */}
       {isWaiting ? (
-        <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-6 mx-auto px-1 animate-fade-in">
-          <div className="w-full glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface flex flex-col items-center text-center shadow-premium relative overflow-hidden">
-            {/* Ambient corner backlights */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-6 -mt-6 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[radial-gradient(circle,rgba(59,130,246,0.15)_0%,transparent_70%)] rounded-full -ml-6 -mb-6 pointer-events-none" />
-
-            {/* Radar / Sonar pulse loading widget */}
-            <div className="relative w-28 h-28 flex items-center justify-center rounded-full border border-brand-border-opacity-10 bg-brand-void mb-5 shadow-inner-glow">
-              <div className="absolute inset-0 rounded-full border border-brand-primary/20 animate-ping opacity-40" />
-              <div className="absolute w-20 h-20 rounded-full border border-brand-primary/10 animate-pulse opacity-60" />
-              <div className="absolute w-14 h-14 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center shadow-premium">
-                <FaChessKnight className="text-xl text-brand-primary animate-bounce" />
-              </div>
-            </div>
-
-            <div className="flex flex-col space-y-1.5 mb-6">
-              <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
-                {tg('waiting_opponent_title')}
-              </span>
-              <span className="text-sm font-bold text-brand-primary uppercase tracking-wide">
-                {tg('share_invite_hint')}
-              </span>
-            </div>
-
-            {/* Match details card */}
-            <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
-              <div className="flex flex-col items-start text-left">
-                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
-                  {tg('wager_tier')}
-                </span>
-                <span className="text-xs font-black text-emerald-400">
-                  {gameState.bid_amount > 0 
-                    ? `$${(gameState.bid_amount / 100).toFixed(2)} USDT` 
-                    : tg('free_match')}
-                </span>
-              </div>
-              <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
-                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
-                  {tg('time_control')}
-                </span>
-                <span className="text-xs font-black text-amber-400 uppercase">
-                  {gameState.time_control_seconds >= 60 
-                    ? `${gameState.time_control_seconds / 60} MIN` 
-                    : `${gameState.time_control_seconds}s`}
-                </span>
-              </div>
-            </div>
-
-            {/* Share link widget */}
-            <div className="w-full space-y-3">
-              <div className="relative w-full flex items-center bg-brand-void/80 border border-brand-border-opacity-10 rounded-xl px-3.5 py-3 shadow-inner-glow overflow-hidden">
-                <span className="text-[10px] font-mono text-brand-muted truncate select-all pr-8 w-full text-left">
-                  {inviteLink}
-                </span>
-                <button
-                  onClick={handleCopyInvite}
-                  className="absolute right-2 text-brand-muted hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
-                >
-                  {copied ? <FaCheck className="text-emerald-400 text-[11px]" /> : <FaCopy className="text-[11px]" />}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-2.5 w-full">
-                <motion.button
-                  whileTap={{ scale: 0.985 }}
-                  onClick={handleShareInvite}
-                  className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-neon"
-                >
-                  <FaShareAlt size={11} />
-                  <span>{tg('invite_on_telegram')}</span>
-                </motion.button>
-
-                {gameState.white_player_id === userId && (
-                  <motion.button
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => {
-                      const socket = getSocket();
-                      socket.emit('abort_game', { game_id: gameId });
-                    }}
-                    className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
-                  >
-                    <span>{tg('cancel_refund_match')}</span>
-                  </motion.button>
-                )}
-              </div>
-            </div>
-
-          </div>
-          
-          <div className="w-full text-center px-4">
-            <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider leading-relaxed">
-              {tg('waiting_keep_open')}
-            </p>
-          </div>
-        </div>
+        <WaitingOpponentCard
+          gameState={gameState}
+          userId={userId}
+          gameId={gameId}
+          inviteLink={inviteLink}
+          copied={copied}
+          onCopyInvite={handleCopyInvite}
+          onShareInvite={handleShareInvite}
+          onAbortGame={() => {
+            const socket = getSocket();
+            socket.emit('abort_game', { game_id: gameId });
+          }}
+          tWaitingOpponentTitle={tg('waiting_opponent_title')}
+          tShareInviteHint={tg('share_invite_hint')}
+          tWagerTier={tg('wager_tier')}
+          tFreeMatch={tg('free_match')}
+          tTimeControl={tg('time_control')}
+          tInviteOnTelegram={tg('invite_on_telegram')}
+          tCancelRefundMatch={tg('cancel_refund_match')}
+          tWaitingKeepOpen={tg('waiting_keep_open')}
+        />
       ) : (
         <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">
-
-        {/* Opponent Widget */}
-        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
-          isOpponentTurn 
-            ? 'border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-gradient-to-r from-purple-500/[0.02] to-transparent opacity-100' 
-            : 'border-brand-border-opacity-10 opacity-60'
-        }`}>
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
-              <PlayerAvatar 
-                userId={opponentId} 
-                fallbackText="?" 
-                isBot={isBotGame} 
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
-                {isBotGame 
-                  ? tg('ai_combatant') 
-                  : (isWhite ? gameState?.black_username : gameState?.white_username) || tg('opponent')}
-              </span>
-              {isOpponentTurn ? (
-                <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1 animate-pulse">
-                  {tg('thinking')}
-                  <span className="inline-flex gap-0.5 ml-0.5">
-                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </span>
-                </span>
-              ) : (
-                <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
-                  {isBotGame 
-                    ? tg('ai_engine') 
-                    : `ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
-                </span>
-              )}
-            </div>
-          </div>
-          <ChessClockBadge
-            gameState={gameState}
-            color={isWhite ? 'b' : 'w'}
+          {/* Opponent HUD Card */}
+          <GamePlayerCard
+            userId={opponentId}
+            username={
+              isBotGame
+                ? tg('ai_combatant')
+                : (isWhite ? gameState?.black_username : gameState?.white_username) || tg('opponent')
+            }
+            eloText={`ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
+            isTurn={isOpponentTurn}
+            turnLabel={tg('thinking')}
             isWhite={isWhite}
+            isBot={isBotGame}
+            botLabel={tg('ai_engine')}
+            gameState={gameState}
             onClockWarning={triggerClocksWarnings}
           />
-        </Card>
-      
-        {/* Board Container */}
-        <div className="w-full relative z-20 flex justify-center px-1">
-          <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
-            <ChessBoardComponent
-              fen={fen}
-              onMove={handleBoardMove}
-              orientation={isWhite ? "white" : "black"}
-              showConfetti={isGameOver && gameState?.winner_id === userId}
-              autoPromoteToQueen={autoPromote}
-            />
-          </div>
-        </div>
 
-        {/* Move History log */}
-        {gameState?.move_history && gameState.move_history.length > 0 && (
-          <div className="w-full overflow-hidden px-1">
-            <div className="flex items-center space-x-2 text-[10px] font-black uppercase text-brand-muted tracking-[0.2em] mb-1.5 pl-1 w-full text-left">
-              <span>{tg('move_history')}</span>
-            </div>
-            <div 
-              ref={moveHistoryRef}
-              className="w-full overflow-x-auto flex items-center gap-1.5 pb-2 scrollbar-none scroll-smooth"
-            >
-              {sanMoveHistory.map((movePair, idx) => (
-                <div 
-                  key={idx} 
-                  className="shrink-0 flex items-center gap-1 bg-brand-surface border border-brand-border-opacity-10 rounded-lg px-2.5 py-1.5 shadow-sm text-[10px] font-bold text-brand-primary"
-                >
-                  <span className="opacity-45">{idx + 1}.</span>
-                  <span>{movePair.white}</span>
-                  {movePair.black && (
-                    <>
-                      <span className="opacity-25">•</span>
-                      <span>{movePair.black}</span>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      
-        {/* Player Widget */}
-        <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
-          isMyTurn 
-            ? 'border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-gradient-to-r from-emerald-500/[0.02] to-transparent opacity-100' 
-            : 'border-brand-border-opacity-10'
-        }`}>
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm overflow-hidden">
-              <PlayerAvatar 
-                userId={userId} 
-                fallbackText={tg('you')} 
-                textClassName="text-xs font-black text-brand-void uppercase tracking-tighter" 
+          {/* Board Container */}
+          <div className="w-full relative z-20 flex justify-center px-1">
+            <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
+              <ChessBoardComponent
+                fen={fen}
+                onMove={handleBoardMove}
+                orientation={isWhite ? "white" : "black"}
+                showConfetti={isGameOver && gameState?.winner_id === userId}
+                autoPromoteToQueen={autoPromote}
               />
             </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
-                {(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
-              </span>
-              {isMyTurn ? (
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
-                  {tg('your_turn')}
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                </span>
-              ) : (
-                <span className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
-                  MASTER • ELO {(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}
-                </span>
-              )}
-            </div>
           </div>
-          <ChessClockBadge
-            gameState={gameState}
-            color={isWhite ? 'w' : 'b'}
-            isWhite={isWhite}
-            onClockWarning={triggerClocksWarnings}
+
+          {/* Move History Rail */}
+          <MoveHistoryRail
+            sanMoveHistory={sanMoveHistory}
+            moveHistoryRef={moveHistoryRef}
+            title={tg('move_history')}
+          />
+
+          {/* Current Player HUD Card */}
+          <GamePlayerCard
             isMe
+            userId={userId}
+            username={(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
+            eloText={`MASTER • ELO ${(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}`}
+            isTurn={isMyTurn}
+            turnLabel={tg('your_turn')}
+            isWhite={isWhite}
+            gameState={gameState}
+            onClockWarning={triggerClocksWarnings}
           />
-        </Card>
 
-        {/* Action Bar */}
-        {!isBotGame && !isGameOver && (
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            onClick={shareGame}
-            className="w-full action-button py-[18px] rounded-2xl uppercase flex items-center justify-center gap-3 cursor-pointer shadow-sm"
-          >
-            {copied ? <FaCheck /> : <FaCopy />}
-            <span>{copied ? "Sync Success" : "Establish Link"}</span>
-          </motion.button>
-        )}
-      </div>
+          {/* Action Bar */}
+          {!isBotGame && !isGameOver && (
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={shareGame}
+              className="w-full action-button py-[18px] rounded-2xl uppercase flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+            >
+              {copied ? <FaCheck /> : <FaCopy />}
+              <span>{copied ? "Sync Success" : "Establish Link"}</span>
+            </motion.button>
+          )}
+        </div>
       )}
 
       {/* Premium Match Over Overlay Modal */}
@@ -1169,126 +949,29 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       </AnimatePresence>
 
       {/* Custom Confirmation Drawer */}
-      <AnimatePresence>
-        {confirmConfig && (
-          <div className="bottom-drawer-backdrop z-[110]">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              onClick={() => setConfirmConfig(null)}
-              className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" 
-              style={{ touchAction: 'none' }}
-            />
-            <motion.div 
-              initial={{ y: "100%" }} 
-              animate={{ y: 0 }} 
-              exit={{ y: "100%" }} 
-              transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="bottom-drawer-sheet relative z-20"
-            >
-              <div className="bottom-drawer-handle" />
-              
-              <div className="flex flex-col items-center text-center mt-2">
-                <h2 className="text-xl font-black uppercase tracking-widest mb-1 text-brand-primary">
-                  {confirmConfig.title}
-                </h2>
-                <p className="text-sm font-bold text-brand-primary opacity-65 uppercase tracking-wide mt-2 mb-6">
-                  {confirmConfig.message}
-                </p>
-              </div>
-              
-              <div className="w-full flex flex-col gap-3">
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    confirmConfig.onConfirm();
-                    setConfirmConfig(null);
-                  }}
-                  className="w-full bg-brand-primary text-brand-void py-4 rounded-xl flex items-center justify-center gap-3 text-xs uppercase font-black tracking-[0.2em] cursor-pointer shadow-sm"
-                >
-                  <span>{confirmConfig.confirmText}</span>
-                </motion.button>
-                
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setConfirmConfig(null)}
-                  className="w-full bg-brand-bg-opacity-10 border border-brand-border-text-brand-muted py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer shadow-sm"
-                >
-                  <span>{confirmConfig.cancelText}</span>
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <ConfirmActionDrawer
+        confirmConfig={confirmConfig}
+        onClose={() => setConfirmConfig(null)}
+      />
 
       {/* Bottom Action Bar — replacing Navbar during match */}
       {!isGameOver && !isWaiting && (
-        <motion.div
-          initial={{ x: "-50%", y: 80, opacity: 0 }}
-          animate={{ x: "-50%", y: 0, opacity: 1 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          style={{
-            bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
-          }}
-          className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-surface border border-brand-border p-3 rounded-2xl shadow-premium"
-        >
-          {/* Resign Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleResign}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
-          >
-            <FaFlag size={12} />
-            <span>{tg('resign')}</span>
-          </motion.button>
-
-          {/* Offer Draw Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleOfferDraw}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
-          >
-            <FaHandshake size={14} />
-            <span>{tg('offer_draw')}</span>
-          </motion.button>
-        </motion.div>
+        <GameActionBar
+          isTelegramWeb={isTelegramWeb}
+          onResign={handleResign}
+          onOfferDraw={handleOfferDraw}
+          tResign={tg('resign')}
+          tOfferDraw={tg('offer_draw')}
+        />
       )}
 
-      {showCrashOverlay && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-brand-void/80 p-6 backdrop-blur-md" role="alertdialog" aria-modal="true" aria-labelledby="game-crashed-title">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-sm rounded-2xl border border-brand-border-opacity-10 bg-brand-surface p-6 shadow-2xl flex flex-col items-center text-center gap-4"
-          >
-            {/* Warning Icon with pulse */}
-            <div className="relative w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 text-red-500 animate-pulse">
-              <span className="text-3xl font-black">⚠️</span>
-            </div>
-            
-            <h2 id="game-crashed-title" className="text-lg font-black uppercase tracking-wider text-brand-primary">
-              {tg('game_crashed')}
-            </h2>
-            
-            <p className="text-xs text-brand-muted leading-relaxed px-2">
-              {tg('game_crashed_desc')}
-            </p>
-            
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => window.location.reload()}
-              className="w-full mt-2 py-3.5 rounded-xl bg-brand-primary text-brand-void font-black text-xs uppercase tracking-widest hover:opacity-90 shadow-md cursor-pointer transition-all"
-            >
-              {tg('reload_game_btn')}
-            </motion.button>
-          </motion.div>
-        </div>
-      )}
+      {/* Fatal Game Crash Overlay */}
+      <GameCrashOverlay
+        show={showCrashOverlay}
+        tGameCrashed={tg('game_crashed')}
+        tGameCrashedDesc={tg('game_crashed_desc')}
+        tReloadGameBtn={tg('reload_game_btn')}
+      />
     </LayoutWrapper>
   );
 }
