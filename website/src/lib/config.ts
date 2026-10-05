@@ -3,8 +3,9 @@
  * Anything that can change in the product is an env var with a documented default.
  */
 
-/** Canonical bot. Backend default: backend/app/core/config.py TELEGRAM_BOT_USERNAME. */
-export const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "chess_matbot";
+/** Canonical bot. Backend default: backend/app/core/config.py TELEGRAM_BOT_USERNAME.
+ *  A leading "@" is stripped: `t.me/@bot/...` is not a valid Telegram link. */
+export const BOT_USERNAME = (process.env.NEXT_PUBLIC_BOT_USERNAME || "chess_matbot").trim().replace(/^@+/, "");
 
 /**
  * Mini App deep link.

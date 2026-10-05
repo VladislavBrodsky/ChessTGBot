@@ -41,7 +41,7 @@ export default function LoginPage() {
         router.replace(`/${locale}/home`);
     };
 
-    const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot';
+    const botUsername = (process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').trim().replace(/^@+/, '');
 
     if (!mounted || isRedirecting) {
         return (
