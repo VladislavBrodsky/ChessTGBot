@@ -75,7 +75,7 @@ async def broadcast_marketing_messages():
             msg_text = msgs[variation_index]
             
             # Build the WebApp URL with deep link to arena
-            web_app_url = f"{settings.WEBAPP_URL}?lang={lang}&startapp=arena"
+            web_app_url = f"{settings.WEBAPP_URL}/{lang}/home?startapp=arena"
             keyboard = [
                 [InlineKeyboardButton("♟️ Join Battle Arena", web_app=WebAppInfo(url=web_app_url))]
             ]

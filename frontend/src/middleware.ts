@@ -10,6 +10,17 @@ const handleI18nRouting = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // Fast-path root "/" directly to "/en/home" preserving query string and eliminating double redirects
+    if (pathname === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/en/home';
+        const response = Response.redirect(url, 302);
+        response.headers.set('Cache-Control', 'no-cache, must-revalidate');
+        return response;
+    }
+
     const response = handleI18nRouting(request);
 
     // Force HTML documents to always revalidate.

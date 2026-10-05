@@ -286,11 +286,14 @@ def _normalise_cors_origin(value: object) -> str | None:
 
 def _configured_cors_origins() -> set[str]:
     """Read only exact origins from deployment configuration."""
+    raw = settings.CORS_ALLOWED_ORIGINS
     configured = [
-        *settings.CORS_ALLOWED_ORIGINS.split(","),
+        *raw.split(","),
         settings.WEBAPP_URL,
         settings.BACKEND_URL,
     ]
+    if not settings.TESTING and "https://app.web3chess.online" not in configured:
+        configured.append("https://app.web3chess.online")
     return {
         origin
         for value in configured

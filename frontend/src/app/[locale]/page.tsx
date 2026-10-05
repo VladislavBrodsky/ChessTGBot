@@ -9,8 +9,10 @@ export default function LocaleIndex() {
 
     useEffect(() => {
         // pathname includes locale, e.g. /en
-        // we want to redirect to /en/home
-        router.replace(`${pathname}/home`);
+        // preserve query string and hash when redirecting to /home
+        const search = typeof window !== 'undefined' ? window.location.search : '';
+        const hash = typeof window !== 'undefined' ? window.location.hash : '';
+        router.replace(`${pathname}/home${search}${hash}`);
     }, [router, pathname]);
 
     return null;

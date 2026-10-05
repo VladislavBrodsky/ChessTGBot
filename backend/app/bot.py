@@ -35,7 +35,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.info(f"Created new user {user.id} in DB")
 
     # URL for the Mini App with cache-busting version
-    web_app = WebAppInfo(url=f"{settings.WEBAPP_URL}?v={settings.VERSION}")
+    web_app = WebAppInfo(url=f"{settings.WEBAPP_URL}/en/home?v={settings.VERSION}")
     
     keyboard = [
         [InlineKeyboardButton("Play Chess ♟️", web_app=web_app)]

@@ -319,7 +319,7 @@ class TelegramService:
                     await db.commit()
 
             # Build webapp URL with the resolved language and cache-busting version
-            web_app_url = f"{settings.WEBAPP_URL}?v={settings.VERSION}&lang={lang}"
+            web_app_url = f"{settings.WEBAPP_URL}/{lang}/home?v={settings.VERSION}"
             if start_param:
                 web_app_url += f"&startapp={start_param}"
 

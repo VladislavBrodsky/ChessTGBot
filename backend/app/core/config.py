@@ -229,6 +229,10 @@ def get_settings():
     # Automatically detect pytest execution and set TESTING flag
     if "pytest" in sys.modules:
         settings.TESTING = True
+
+    # Safeguard: marketing website (web3chess.online) must never be used as the Mini App client URL
+    if settings.WEBAPP_URL.rstrip("/") in ("https://web3chess.online", "http://web3chess.online"):
+        settings.WEBAPP_URL = "https://app.web3chess.online"
         
     # Admin access must be explicitly configured outside local development and
     # tests. Never use fallback identities in a deployed environment.
