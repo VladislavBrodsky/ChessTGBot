@@ -26,6 +26,7 @@ class TelegramService:
     receiver_active = False
     receiver_type = None
     election_task = None  # Background leader election asyncio.Task
+    menu_reset_task = None  # One-time legacy per-chat menu button sweep
     instance_id = None   # Unique ID for this process instance
 
     @staticmethod
@@ -407,12 +408,22 @@ class TelegramService:
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
-            # Note: We do NOT use `set_chat_menu_button` here dynamically on /start.
+            # Note: We do NOT set a custom per-chat menu button here on /start.
             # Doing so overrides the bot's default menu button (set via BotFather) and causes 
             # severe UI desyncs/caching glitches in Telegram mobile clients where the menu button 
             # requires a double-click or app restart to actually open the Web App.
             # Telegram automatically passes `start_param` and `language_code` in `initDataUnsafe` 
             # when the Web App opens, so we do not need to inject them into the menu button URL dynamically.
+            #
+            # We DO reset it to MenuButtonDefault: until 2026-07 every /start stored a
+            # per-chat "♟️ Play-to-Earn" button pointing at the old WEBAPP_URL (now the
+            # marketing site). Per-chat buttons outrank BotFather and the global default
+            # forever, so those users kept seeing the stale title/URL. Resetting removes
+            # the override and the chat follows the global button again.
+            try:
+                await context.bot.set_chat_menu_button(chat_id=user.id, menu_button=MenuButtonDefault())
+            except Exception as menu_err:
+                logger.debug(f"Could not reset per-chat menu button for {user.id}: {menu_err}")
 
             await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -625,6 +636,62 @@ class TelegramService:
         except Exception as mb_err:
             logger.warning(f"Failed to set default chat menu button: {mb_err}")
 
+        # Strong reference so the sweep task is not garbage-collected mid-run.
+        if cls.menu_reset_task is None or cls.menu_reset_task.done():
+            cls.menu_reset_task = asyncio.create_task(cls._reset_legacy_chat_menu_buttons())
+
+    @classmethod
+    async def _reset_legacy_chat_menu_buttons(cls):
+        """One-time sweep: delete per-chat menu buttons stored by pre-2026-07 /start.
+
+        Those per-chat "♟️ Play-to-Earn" buttons point at the old WEBAPP_URL (now the
+        marketing site) and outrank both BotFather and the global default, so affected
+        users never saw the new button. MenuButtonDefault on a chat removes the override.
+        Guarded by a Redis flag so it runs once across all replicas/restarts.
+        """
+        from sqlalchemy import select
+        from app.core.database import AsyncSessionLocal
+        from app.models.user import User
+
+        flag_key = "bot:legacy_menu_reset:v1"
+        try:
+            redis_client = create_redis_client(settings.REDIS_URL, decode_responses=True)
+            # 'running' lease expires in case the process dies mid-sweep.
+            if not await redis_client.set(flag_key, "running", nx=True, ex=6 * 3600):
+                return
+        except Exception as e:
+            logger.warning(f"Legacy menu reset skipped (redis unavailable): {e}")
+            return
+
+        try:
+            async with AsyncSessionLocal() as db:
+                rows = await db.execute(
+                    select(User.telegram_id).where(User.telegram_id.isnot(None), User.is_blocked.is_(False))
+                )
+                chat_ids = [r[0] for r in rows.all()]
+
+            logger.info(f"Resetting legacy per-chat menu buttons for {len(chat_ids)} users...")
+            done = 0
+            for chat_id in chat_ids:
+                if not cls.is_currently_leader or not cls.application:
+                    # Lost leadership: release so the next leader resumes.
+                    await redis_client.delete(flag_key)
+                    return
+                try:
+                    await cls.application.bot.set_chat_menu_button(chat_id=chat_id, menu_button=MenuButtonDefault())
+                    done += 1
+                except Exception:
+                    pass  # blocked/deleted chats etc. — nothing to reset
+                await asyncio.sleep(0.05)  # ~20 req/s, well under Bot API limits
+
+            await redis_client.set(flag_key, "done")
+            logger.info(f"✅ Legacy per-chat menu buttons reset for {done}/{len(chat_ids)} users")
+        except Exception as e:
+            logger.warning(f"Legacy menu reset failed: {e}")
+            try:
+                await redis_client.delete(flag_key)
+            except Exception:
+                pass
     @classmethod
     async def stop_receiver(cls):
         """Stop receiving updates (Node demoted to passive/sender mode)."""
