@@ -30,18 +30,18 @@ export function Nav() {
 
   return (
     <>
-      <header className="shell-wide flex h-28 sm:h-32 items-center justify-between gap-4">
-        <Link href="/" aria-label="Web3Chess home" className="flex items-center gap-2">
+      <header className="shell-wide flex h-24 sm:h-28 items-center justify-between gap-4">
+        <Link href="/" aria-label="Web3Chess home" className="flex items-center gap-2 transition-transform hover:scale-[1.02]">
           <Logo />
         </Link>
         
-        {/* Dayos Centered Floating Pill */}
-        <nav aria-label="Main" className="hidden items-center gap-6 rounded-[48px] bg-white px-8 py-3.5 shadow-none lg:flex">
+        {/* Floating Glassmorphic Nav Pill */}
+        <nav aria-label="Main" className="hidden items-center gap-7 rounded-full bg-white/85 backdrop-blur-md px-8 py-3.5 border border-[#c7cbdb]/40 shadow-[0_4px_18px_rgba(32,41,76,0.06)] lg:flex">
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-[16px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000]"
+              className="text-[15px] font-semibold tracking-tight text-[#20294C]/70 transition-colors duration-150 hover:text-[#20294C]"
             >
               {item.label}
             </Link>
@@ -55,7 +55,7 @@ export function Nav() {
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="grid size-11 place-items-center rounded-[8px] bg-white text-[#000000] lg:hidden"
+            className="grid size-11 place-items-center rounded-full bg-white text-[#20294C] border border-[#c7cbdb]/50 shadow-[0_2px_8px_rgba(32,41,76,0.08)] lg:hidden"
           >
             <Icon name="list" size={20} />
           </button>
@@ -65,12 +65,12 @@ export function Nav() {
       {/* Sticky condensed pill */}
       <div
         className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-all duration-200 lg:flex ${
-          stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+          stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"
         }`}
       >
         <nav
           aria-label="Sticky"
-          className="flex items-center gap-6 rounded-[48px] bg-white px-7 py-3 shadow-none border border-[#c6c6c6]/60"
+          className="flex items-center gap-6 rounded-full bg-white/95 backdrop-blur-md px-7 py-2.5 border border-[#c7cbdb]/60 shadow-[0_8px_25px_rgba(32,41,76,0.12)]"
         >
           <Link href="/" aria-label="Web3Chess home" className="pe-1">
             <Logo />
@@ -79,7 +79,7 @@ export function Nav() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-[15px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000]"
+              className="text-[14px] font-semibold text-[#20294C]/70 transition-colors duration-150 hover:text-[#20294C]"
             >
               {item.label}
             </Link>

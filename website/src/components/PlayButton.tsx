@@ -10,9 +10,9 @@ type Props = {
 };
 
 const sizes = {
-  sm: "min-h-10 px-4 text-[14px] gap-2 rounded-[6px]",
-  md: "min-h-12 px-6 text-[16px] gap-2.5 rounded-[8px]",
-  lg: "min-h-14 px-8 text-[18px] gap-3 rounded-[8px]",
+  sm: "min-h-10 px-5 text-[14px] gap-2 rounded-full font-medium tracking-tight",
+  md: "min-h-12 px-6 text-[15px] gap-2.5 rounded-full font-semibold tracking-tight",
+  lg: "min-h-14 px-8 text-[17px] gap-3 rounded-full font-semibold tracking-tight",
 } as const;
 
 export function PlayButton({
@@ -23,9 +23,9 @@ export function PlayButton({
   className = "",
 }: Props) {
   const skins = {
-    primary: "bg-[#000000] text-[#ffffff] hover:opacity-90",
-    onDark: "bg-[#ffffff] text-[#000000] hover:bg-[#f3f3f3]",
-    ghost: "bg-transparent border-[1.5px] border-[#444444] text-[#444444] hover:text-[#000000] hover:border-[#000000]",
+    primary: "bg-[#20294C] text-[#ffffff] hover:bg-[#0A2D67] hover:-translate-y-0.5 shadow-[0_4px_14px_rgba(32,41,76,0.18)] hover:shadow-[0_6px_20px_rgba(32,41,76,0.28)]",
+    onDark: "bg-[#ffffff] text-[#20294C] hover:bg-[#f3f4f8] hover:-translate-y-0.5 shadow-[0_4px_14px_rgba(0,0,0,0.15)]",
+    ghost: "bg-white/80 backdrop-blur-sm border border-[#c7cbdb] text-[#20294C] hover:bg-white hover:border-[#20294C] hover:-translate-y-0.5 shadow-[0_2px_8px_rgba(32,41,76,0.06)]",
   };
 
   return (
