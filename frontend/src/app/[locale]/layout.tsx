@@ -10,7 +10,6 @@ import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
 import { ToastProvider } from "@/context/ToastContext";
-import AuthGuard from "@/components/AuthGuard";
 
 import { Outfit, Plus_Jakarta_Sans, Roboto_Mono } from 'next/font/google';
 
@@ -70,11 +69,18 @@ export default async function LocaleLayout({
                 <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
                 <meta httpEquiv="Pragma" content="no-cache" />
                 <meta httpEquiv="Expires" content="0" />
-                <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+                {/* Synchronous script tag so window.Telegram.WebApp is guaranteed ready before ANY React component hydrates */}
+                <script src="https://telegram.org/js/telegram-web-app.js"></script>
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
                             (function() {
+                                try {
+                                    if (window.Telegram && window.Telegram.WebApp) {
+                                        window.Telegram.WebApp.ready();
+                                        window.Telegram.WebApp.expand();
+                                    }
+                                } catch (e) {}
                                 try {
                                     var savedTheme = localStorage.getItem('theme');
                                     if (savedTheme === 'light' || savedTheme === 'dark') {
@@ -87,18 +93,6 @@ export default async function LocaleLayout({
                                     var reduceMotion = localStorage.getItem('setting_reduce_motion') === 'true';
                                     document.documentElement.setAttribute('data-reduce-motion', String(reduceMotion));
 
-                                    /* Decide the low-end effect mode BEFORE first paint.
-                                       Providers.tsx used to stamp .lite-fx from an effect, which
-                                       (a) ran after hydration, so the expensive blurs painted once
-                                       and then vanished — a visible flash on every load — and
-                                       (b) keyed only on hardwareConcurrency <= 4 / deviceMemory <= 4.
-                                       WKWebView does not implement deviceMemory at all and modern
-                                       iPhones report 6 cores, so no iPhone ever qualified, even
-                                       though Telegram's fullscreen iOS WebView is exactly where the
-                                       100px+ blurred mesh blobs cost the most. Treat any mobile
-                                       Telegram host as low-end: Telegram puts the platform on the
-                                       launch URL hash before its SDK parses it, so this is readable
-                                       here without waiting for telegram-web-app.js. */
                                     var lite = false;
                                     var n = navigator;
                                     if ((n.hardwareConcurrency || 8) <= 4) lite = true;
@@ -124,9 +118,7 @@ export default async function LocaleLayout({
                                 <ToastProvider>
                                     <Providers>
                                         <TelegramInit />
-                                        <AuthGuard>
-                                            {children}
-                                        </AuthGuard>
+                                        {children}
                                     </Providers>
                                 </ToastProvider>
                             </UserProvider>

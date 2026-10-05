@@ -16,9 +16,20 @@ export default function LoginPage() {
 
     useEffect(() => {
         setMounted(true);
-        if (typeof window !== 'undefined' && localStorage.getItem('telegram_web_auth')) {
-            setIsRedirecting(true);
-            router.replace(`/${locale}/home`);
+        if (typeof window !== 'undefined') {
+            const isTMA = !!(window as any).Telegram?.WebApp?.initData;
+            let hasWebAuth = false;
+            try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
+            if (isTMA) {
+                try {
+                    (window as any).Telegram?.WebApp?.ready();
+                    (window as any).Telegram?.WebApp?.expand();
+                } catch { /* noop */ }
+            }
+            if (isTMA || hasWebAuth) {
+                setIsRedirecting(true);
+                router.replace(`/${locale}/home`);
+            }
         }
     }, [router, locale]);
 

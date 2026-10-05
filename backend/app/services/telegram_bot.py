@@ -1,6 +1,5 @@
 import asyncio
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp
-from telegram.error import Forbidden, BadRequest
+from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp, MenuButtonDefault
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
 from app.core.redis_client import create_redis_client
@@ -76,11 +75,11 @@ class TelegramService:
             "ref_qr": "📷 <b>Invite QR Code (scan in person):</b> <a href=\"{qr_link}\">Open QR Code</a>",
             "ref_hint": "Invite friends & earn USDT from their moves!",
             "cta": "👇 Tap below to start playing!",
-            "btn": "♟️  Open FinChess Arena  ♟️",
+            "btn": "♟️  Open Web3Chess Arena  ♟️",
         },
         "ru": {
             "greeting": "👑 <b>Добро пожаловать, {name}!</b>",
-            "sync": "Вы на арене FinChess.",
+            "sync": "Вы на арене Web3Chess.",
             "level_label": "УР.",
             "xp_label": "XP",
             "next_label": "до след. ур.",
@@ -93,7 +92,7 @@ class TelegramService:
             "ref_qr": "📷 <b>QR-код для приглашения (показать другу):</b> <a href=\"{qr_link}\">Открыть QR-код</a>",
             "ref_hint": "Приглашайте друзей и зарабатывайте с каждой их игры!",
             "cta": "👇 Нажмите кнопку ниже для начала игры!",
-            "btn": "♟️  Открыть FinChess Arena  ♟️",
+            "btn": "♟️  Открыть Web3Chess Arena  ♟️",
         },
         "de": {
             "greeting": "👑 <b>Willkommen, {name}!</b>",
@@ -110,7 +109,7 @@ class TelegramService:
             "ref_qr": "📷 <b>Einladungs-QR-Code (persönlich scannen):</b> <a href=\"{qr_link}\">QR-Code öffnen</a>",
             "ref_hint": "Freunde einladen und an jedem ihrer Züge verdienen!",
             "cta": "👇 Tippe unten, um das Spiel zu starten!",
-            "btn": "♟️  FinChess Arena öffnen  ♟️",
+            "btn": "♟️  Web3Chess Arena öffnen  ♟️",
         },
         "es": {
             "greeting": "👑 <b>¡Bienvenido, {name}!</b>",
@@ -127,7 +126,7 @@ class TelegramService:
             "ref_qr": "📷 <b>Código QR de invitado (escanear en persona):</b> <a href=\"{qr_link}\">Abrir código QR</a>",
             "ref_hint": "¡Invita amigos y gana USDT por cada movimiento que hagan!",
             "cta": "👇 ¡Toca abajo para comenzar a jugar!",
-            "btn": "♟️  Abrir FinChess Arena  ♟️",
+            "btn": "♟️  Abrir Web3Chess Arena  ♟️",
         },
         "fr": {
             "greeting": "👑 <b>Bienvenue, {name} !</b>",
@@ -144,7 +143,7 @@ class TelegramService:
             "ref_qr": "📷 <b>Code QR d'invitation (scanner en personne) :</b> <a href=\"{qr_link}\">Ouvrir le code QR</a>",
             "ref_hint": "Parrainez des amis et gagnez des USDT à chaque coup !",
             "cta": "👇 Appuyez ci-dessous pour commencer !",
-            "btn": "♟️  Ouvrir FinChess Arena  ♟️",
+            "btn": "♟️  Ouvrir Web3Chess Arena  ♟️",
         },
         "ar": {
             "greeting": "👑 <b>مرحباً، {name}!</b>",
@@ -161,7 +160,7 @@ class TelegramService:
             "ref_qr": "📷 <b>رمز QR للدعوة (امسحه مباشرة):</b> <a href=\"{qr_link}\">افتح رمز QR</a>",
             "ref_hint": "ادعُ الأصدقاء واكسب USDT مع كل حركة يقومون بها!",
             "cta": "👇 اضغط أدناه لبدء اللعب!",
-            "btn": "♟️  فتح FinChess Arena  ♟️",
+            "btn": "♟️  فتح Web3Chess Arena  ♟️",
         },
         "hi": {
             "greeting": "👑 <b>स्वागत है, {name}!</b>",
@@ -178,7 +177,7 @@ class TelegramService:
             "ref_qr": "📷 <b>आमंत्रण QR कोड (स्कैन करें):</b> <a href=\"{qr_link}\">QR कोड खोलें</a>",
             "ref_hint": "दोस्तों को आमंत्रित करें और उनकी हर चाल पर कमाएं!",
             "cta": "👇 खेलने के लिए नीचे टैप करें!",
-            "btn": "♟️  FinChess Arena खोलें  ♟️",
+            "btn": "♟️  Web3Chess Arena खोलें  ♟️",
         },
         "pt": {
             "greeting": "👑 <b>Bem-vindo, {name}!</b>",
@@ -195,7 +194,7 @@ class TelegramService:
             "ref_qr": "📷 <b>Código QR de convite (escanear pessoalmente):</b> <a href=\"{qr_link}\">Abrir código QR</a>",
             "ref_hint": "Convide amigos e ganhe USDT a cada lance deles!",
             "cta": "👇 Toque abaixo para começar a jogar!",
-            "btn": "♟️  Abrir FinChess Arena  ♟️",
+            "btn": "♟️  Abrir Web3Chess Arena  ♟️",
         },
         "ja": {
             "greeting": "👑 <b>{name} さん、ようこそ！</b>",
@@ -212,7 +211,7 @@ class TelegramService:
             "ref_qr": "📷 <b>招待用QRコード (友達に見せてスキャン):</b> <a href=\"{qr_link}\">QRコードを開く</a>",
             "ref_hint": "友達を招待して、彼らの一手ごとにUSDTを獲得しましょう！",
             "cta": "👇 下をタップしてゲームを開始！",
-            "btn": "♟️  FinChess Arena を開く  ♟️",
+            "btn": "♟️  Web3Chess Arena を開く  ♟️",
         },
         "zh": {
             "greeting": "👑 <b>欢迎你，{name}！</b>",
@@ -229,7 +228,7 @@ class TelegramService:
             "ref_qr": "📷 <b>邀请二维码（面对面扫码）：</b> <a href=\"{qr_link}\">打开二维码</a>",
             "ref_hint": "邀请好友加入，从他们的每一步对局中赚取 USDT！",
             "cta": "👇 点击下方开始您的第一场对局！",
-            "btn": "♟️  打开 FinChess Arena  ♟️",
+            "btn": "♟️  打开 Web3Chess Arena  ♟️",
         },
     }
 
@@ -385,16 +384,16 @@ class TelegramService:
 
             # Inline button inside the message
             SHARE_BUTTONS = {
-                "en": ("🔗  Invite Friends", "Play chess, wager USDT, and earn rewards on FinChess Arena! ♟️🔥"),
-                "ru": ("🔗  Пригласить друзей", "Играй в шахматы, ставь USDT и зарабатывай на FinChess Arena! ♟️🔥"),
-                "de": ("🔗  Freunde einladen", "Spiele Schach, setze USDT und verdiene Belohnungen in der FinChess Arena! ♟️🔥"),
-                "es": ("🔗  Invitar amigos", "¡Juega al ajedrez, apuesta USDT y gana recompensas en FinChess Arena! ♟️🔥"),
-                "fr": ("🔗  Inviter des amis", "Jouez aux échecs, misez des USDT et gagnez des récompenses sur FinChess Arena ! ♟️🔥"),
-                "ar": ("🔗  دعوة الأصدقاء", "العب الشطرنج، راهن بـ USDT، واكسب الجوائز في FinChess Arena! ♟️🔥"),
-                "hi": ("🔗  दोस्तों को आमंत्रित करें", "FinChess Arena पर शतरंज खेलें, USDT दांव पर लगाएं और पुरस्कार जीतें! ♟️🔥"),
-                "pt": ("🔗  Convidar amigos", "Jogue xadrez, aposte USDT e ganhe prêmios na FinChess Arena! ♟️🔥"),
-                "ja": ("🔗  友達を招待", "FinChess Arenaでチェスをプレイし、USDTを賭けて報酬を獲得しましょう！♟️🔥"),
-                "zh": ("🔗  邀请好友", "在 FinChess Arena 对弈、押注 USDT 并赢取奖励！♟️🔥"),
+                "en": ("🔗  Invite Friends", "Play chess, wager USDT, and earn rewards on Web3Chess Arena! ♟️🔥"),
+                "ru": ("🔗  Пригласить друзей", "Играй в шахматы, ставь USDT и зарабатывай на Web3Chess Arena! ♟️🔥"),
+                "de": ("🔗  Freunde einladen", "Spiele Schach, setze USDT und verdiene Belohnungen in der Web3Chess Arena! ♟️🔥"),
+                "es": ("🔗  Invitar amigos", "¡Juega al ajedrez, apuesta USDT y gana recompensas en Web3Chess Arena! ♟️🔥"),
+                "fr": ("🔗  Inviter des amis", "Jouez aux échecs, misez des USDT et gagnez des récompenses sur Web3Chess Arena ! ♟️🔥"),
+                "ar": ("🔗  دعوة الأصدقاء", "العب الشطرنج، راهن بـ USDT، واكسب الجوائز في Web3Chess Arena! ♟️🔥"),
+                "hi": ("🔗  दोस्तों को आमंत्रित करें", "Web3Chess Arena पर शतरंज खेलें, USDT दांव पर लगाएं और पुरस्कार जीतें! ♟️🔥"),
+                "pt": ("🔗  Convidar amigos", "Jogue xadrez, aposte USDT e ganhe prêmios na Web3Chess Arena! ♟️🔥"),
+                "ja": ("🔗  友達を招待", "Web3Chess Arenaでチェスをプレイし、USDTを賭けて報酬を獲得しましょう！♟️🔥"),
+                "zh": ("🔗  邀请好友", "在 Web3Chess Arena 对弈、押注 USDT 并赢取奖励！♟️🔥"),
             }
             share_btn_text, share_msg_text = SHARE_BUTTONS.get(lang, SHARE_BUTTONS["en"])
             
@@ -608,14 +607,20 @@ class TelegramService:
 
         # Ensure global default menu button opens the Web App rather than website
         try:
-            menu_url = f"{settings.WEBAPP_URL}/en/home?v={settings.VERSION}"
-            await cls.application.bot.set_chat_menu_button(
-                menu_button=MenuButtonWebApp(
-                    text="♟️ Play-to-Earn",
-                    web_app=WebAppInfo(url=menu_url)
+            menu_button_text = os.getenv("TELEGRAM_MENU_BUTTON_TEXT", "♟️ Play Chess, Win and Earn Real Crypto")
+            use_default_menu = os.getenv("USE_BOTFATHER_MENU_BUTTON", "false").lower() == "true"
+            if use_default_menu:
+                await cls.application.bot.set_chat_menu_button(menu_button=MenuButtonDefault())
+                logger.info("👑 Bot Chat Menu Button reset to BotFather default")
+            else:
+                menu_url = f"{settings.WEBAPP_URL}/en/home?v={settings.VERSION}"
+                await cls.application.bot.set_chat_menu_button(
+                    menu_button=MenuButtonWebApp(
+                        text=menu_button_text,
+                        web_app=WebAppInfo(url=menu_url)
+                    )
                 )
-            )
-            logger.info(f"👑 Bot Chat Menu Button successfully set to: {menu_url}")
+                logger.info(f"👑 Bot Chat Menu Button successfully set to: {menu_url} ({menu_button_text})")
         except Exception as mb_err:
             logger.warning(f"Failed to set default chat menu button: {mb_err}")
 
