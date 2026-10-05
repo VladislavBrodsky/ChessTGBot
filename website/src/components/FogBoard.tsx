@@ -21,6 +21,7 @@ type Props = {
   /** Accessible description of the position — required. */
   label: string;
   allowDragging?: boolean;
+  showNotation?: boolean;
   squareStyles?: Record<string, React.CSSProperties>;
   onSquareClick?: (args: { square: string }) => void;
   onPieceDrop?: (args: { sourceSquare: string; targetSquare: string | null }) => boolean;
@@ -30,6 +31,7 @@ export function FogBoard({
   position,
   label,
   allowDragging = false,
+  showNotation = false,
   squareStyles,
   onSquareClick,
   onPieceDrop,
@@ -45,7 +47,7 @@ export function FogBoard({
           id: "fog-board",
           position,
           allowDragging,
-          showNotation: true,
+          showNotation,
           animationDurationInMs: 200,
           darkSquareStyle: { backgroundColor: board.squareDark },
           lightSquareStyle: { backgroundColor: board.squareLight },

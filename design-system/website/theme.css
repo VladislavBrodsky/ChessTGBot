@@ -21,36 +21,36 @@
   --color-*: initial;
 
   /* Colors */
-  --color-carbon-black: #000000;
+  --color-carbon-black: #071A22;
   --color-paper-white: #ffffff;
-  --color-warm-canvas: #e5e5e5;
-  --color-mist-gray: #f3f3f3;
-  --color-ash: #c6c6c6;
-  --color-smoke: #979797;
-  --color-slate: #444444;
-  --color-graphite: #2f2f2f;
-  --color-mint-chip: #d1ffca;
-  --color-voltage-yellow: #fff100;
+  --color-warm-canvas: #F0F1F5;
+  --color-mist-gray: #DDDFE9;
+  --color-ash: #C7CBDB;
+  --color-smoke: #979DB5;
+  --color-slate: #424B6D;
+  --color-graphite: #20294C;
+  --color-mint-chip: #10B981;
+  --color-voltage-yellow: #FFFF00;
 
   /* Semantic aliases */
-  --color-ink: #000000;
-  --color-royal: #000000;
-  --color-steel: #444444;
-  --color-hyacinth: #c6c6c6;
-  --color-dusk: #444444;
-  --color-silver: #c6c6c6;
-  --color-mist: #f3f3f3;
-  --color-fog: #e5e5e5;
-  --color-paper: #ffffff;
+  --color-ink: #20294C;
+  --color-royal: #0A2D67;
+  --color-steel: #375390;
+  --color-hyacinth: #788DBA;
+  --color-dusk: #676B89;
+  --color-silver: #C7CBDB;
+  --color-mist: #DDDFE9;
+  --color-fog: #F0F1F5;
+  --color-paper: #FAFAFA;
   --color-white: #ffffff;
-  --color-abyss: #000000;
-  --color-night: #000000;
-  --color-night-raised: #181818;
-  --color-signal: #d1ffca;
-  --color-signal-ink: #000000;
-  --color-signal-soft: #d1ffca;
-  --color-voltage: #fff100;
-  --color-king: #fff100;
+  --color-abyss: #042939;
+  --color-night: #071A22;
+  --color-night-raised: #103645;
+  --color-signal: #459AF8;
+  --color-signal-ink: #1A63BF;
+  --color-signal-soft: #7DB8FA;
+  --color-voltage: #FFFF00;
+  --color-king: #FFD700;
 
   /* Game semantics */
   --color-win: #047857;

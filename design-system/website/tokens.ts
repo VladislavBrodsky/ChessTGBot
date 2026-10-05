@@ -54,16 +54,16 @@ export type Surface = (typeof surfaces)[number];
 
 /** Fog Board — chessboard theme for website widgets (Dayos brutalist monochrome palette). */
 export const board = {
-  squareLight: '#f3f3f3',
-  squareDark: '#c6c6c6',
-  coordinateOnLight: '#444444',
-  coordinateOnDark: '#000000',
+  squareLight: '#ECEEF4',
+  squareDark: '#A8B8D4',
+  coordinateOnLight: '#424B6D',
+  coordinateOnDark: '#20294C',
   lastMove: 'rgba(255, 241, 0, 0.45)',
-  selected: 'rgba(209, 255, 202, 0.6)',
-  moveHint: 'rgba(0, 0, 0, 0.25)',
+  selected: 'rgba(69, 154, 248, 0.35)',
+  moveHint: 'rgba(32, 41, 76, 0.25)',
   check: 'radial-gradient(circle, rgba(225, 29, 72, 0.6) 0%, rgba(225, 29, 72, 0) 70%)',
-  pieceWhite: { fill: '#ffffff', stroke: '#000000' },
-  pieceBlack: { fill: '#000000', stroke: '#c6c6c6' },
+  pieceWhite: { fill: '#ffffff', stroke: '#20294C' },
+  pieceBlack: { fill: '#20294C', stroke: '#103645' },
   frameRadiusPx: 24,
 } as const;
 

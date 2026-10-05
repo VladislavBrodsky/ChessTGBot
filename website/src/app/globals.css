@@ -8,24 +8,24 @@
   /* Pawn Tittle — the dot of the "i" in the hero headline (DESIGN.md §3.5). */
   .tittle-host {
     position: relative;
+    display: inline-block;
   }
   .tittle {
     position: absolute;
     left: 50%;
-    top: 0.02em;
-    width: 0.21em;
-    height: 0.21em;
+    top: -0.05em;
+    width: 0.22em;
+    height: 0.22em;
     translate: -50% 0;
-    border-radius: var(--radius-pill);
-    background-color: var(--color-ink);
-    background-image: var(--grain-ink);
-    box-shadow: var(--shadow-edge);
+    border-radius: 9999px;
+    background-color: var(--color-ink, #20294C);
+    box-shadow: 0 2px 5px rgba(32, 41, 76, 0.28);
     animation: pop 200ms var(--ease-pop) 300ms both;
     transition: transform var(--dur-instant) var(--ease-pop);
   }
   @media (hover: hover) {
     .tittle-host:hover .tittle {
-      transform: rotate(-12deg) scale(1.15);
+      transform: rotate(-12deg) scale(1.18);
     }
   }
 
