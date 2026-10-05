@@ -1,5 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 const handleI18nRouting = createMiddleware({
     // A list of all locales that are supported
@@ -10,13 +10,12 @@ const handleI18nRouting = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    const { pathname, search } = request.nextUrl;
 
-    // Fast-path root "/" directly to "/en/home" preserving query string and eliminating double redirects
+    // Fast-path root "/" directly to "/en/home" preserving query string and avoiding double redirects
     if (pathname === '/') {
-        const url = request.nextUrl.clone();
-        url.pathname = '/en/home';
-        const response = Response.redirect(url, 302);
+        const redirectUrl = new URL(`/en/home${search}`, request.url);
+        const response = NextResponse.redirect(redirectUrl);
         response.headers.set('Cache-Control', 'no-cache, must-revalidate');
         return response;
     }

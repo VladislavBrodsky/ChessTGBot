@@ -19,7 +19,7 @@ export const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "chess_matbo
  * does not exist. Do not add campaign parameters here.
  */
 export function telegramLink(startapp?: "arena"): string {
-  const base = `https://t.me/${BOT_USERNAME}/app`;
+  const base = `https://t.me/${BOT_USERNAME}/Web3Chess`;
   return startapp ? `${base}?startapp=${startapp}` : base;
 }
 
