@@ -30,12 +30,16 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=8080
 
 # Only copy what's needed to run
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/start-server.mjs ./start-server.mjs
 
+EXPOSE 8080
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "start-server.mjs"]
