@@ -10,11 +10,12 @@ Telegram Mini App chess game. Next.js frontend + FastAPI backend.
 - The guide's Telegram safe-area, `NavbarContext`, accessibility, reduced-motion, z-index, and performance rules are mandatory. Update the guide in the same change when those conventions or shared primitives change.
 - **Marketing website only** (not the Mini App): follows the light "Fog Board" system in [`design-system/website/DESIGN.md`](design-system/website/DESIGN.md) with tokens in `design-system/website/theme.css`. Never import those tokens into `frontend/`, and never apply Obsidian Chess rules to the website.
 
-## Production topology (verified 2026-07)
+## Production topology
 
-Two separate Railway services with custom domains, auto-deployed from this repo on push to `main`:
+Three Railway services with custom domains, auto-deployed from this repo on push to `main`:
 
-- **Frontend / Mini App**: `https://app.web3chess.online` (or `https://web3chess.online`) — runs `next start` (built from `frontend/`). This is what the Telegram Mini App loads.
+- **Marketing Website**: `https://web3chess.online` — built from `website/` (Next.js public site, blog, rules).
+- **Frontend / Mini App & Desktop Web**: `https://app.web3chess.online` — built from `frontend/` (Next.js game client and Telegram Mini App).
 - **Backend API & Realtime**: `https://api.web3chess.online` — FastAPI + Socket.IO, built from `backend/`.
 - The monolith URL `chesstgbot-production.up.railway.app` is DEAD — do not test against it. `frontend/src/lib/api.ts` maps `app.web3chess.online` and `web3chess.online` directly to `api.web3chess.online` at runtime.
 
