@@ -614,7 +614,7 @@ class TelegramService:
                 await cls.application.bot.set_chat_menu_button(menu_button=MenuButtonDefault())
                 logger.info("👑 Bot Chat Menu Button reset to BotFather default")
             else:
-                menu_url = f"{settings.WEBAPP_URL}/en/home?v={settings.VERSION}"
+                menu_url = settings.WEBAPP_URL.rstrip("/")
                 await cls.application.bot.set_chat_menu_button(
                     menu_button=MenuButtonWebApp(
                         text=menu_button_text,
