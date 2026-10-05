@@ -216,6 +216,17 @@ async def start_withdrawal_confirmation_sweeper():
             logger.warning(f"Error in withdrawal-confirmation sweeper: {e}")
 
 
+# Retain strong references to background tasks to prevent Python 3.8+ GC from reaping them
+_background_tasks: set[asyncio.Task] = set()
+
+def start_background_task(coro) -> asyncio.Task:
+    """Schedule a background task with a strong reference to prevent premature GC collection."""
+    task = asyncio.create_task(coro)
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+    return task
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -267,57 +278,57 @@ async def lifespan(app: FastAPI):
 
     # Start background subscription expiration checker
     from app.services.subscription_service import start_subscription_checker
-    asyncio.create_task(start_subscription_checker())
+    start_background_task(start_subscription_checker())
 
     # Start background deposit crawler to auto-sync transactions
     from app.services.deposit_crawler import start_deposit_crawler
-    asyncio.create_task(start_deposit_crawler())
+    start_background_task(start_deposit_crawler())
 
     # Start background Stripe deposit reconciliation loop
     from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
-    asyncio.create_task(start_stripe_reconciliation_loop())
+    start_background_task(start_stripe_reconciliation_loop())
 
     # Start background ledger audit reconciliation
     from app.services.ledger_audit import start_ledger_audit_loop
-    asyncio.create_task(start_ledger_audit_loop())
+    start_background_task(start_ledger_audit_loop())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
-    asyncio.create_task(start_solvency_alert_loop())
+    start_background_task(start_solvency_alert_loop())
 
     # Start background gas-float alert loop (no-op unless GAS_FLOAT_ALERTS_ENABLED)
-    asyncio.create_task(start_gas_float_alert_loop())
+    start_background_task(start_gas_float_alert_loop())
 
     # Start background payout backlog processor
     from app.process_payouts_backlog import start_payout_backlog_loop
-    asyncio.create_task(start_payout_backlog_loop())
+    start_background_task(start_payout_backlog_loop())
 
     # Start background withdrawal verification crawler
     from app.services.withdrawal_crawler import start_withdrawal_crawler
-    asyncio.create_task(start_withdrawal_crawler())
+    start_background_task(start_withdrawal_crawler())
 
     # Start background stale-game sweeper: aborts + refunds matched wager games
     # that never got a first move (backstop for the ephemeral in-process abort timer).
     from app.services.stale_game_sweeper import start_stale_game_sweeper
-    asyncio.create_task(start_stale_game_sweeper())
+    start_background_task(start_stale_game_sweeper())
 
     # Start the daily-arena scheduler (announce -> live pairing -> prizes)
     from app.services.arena_service import start_arena_loop
-    asyncio.create_task(start_arena_loop())
+    start_background_task(start_arena_loop())
 
     # Start the marketing scheduler
     from app.services.marketing_scheduler import start_marketing_loop
-    asyncio.create_task(start_marketing_loop())
+    start_background_task(start_marketing_loop())
 
     # Start background Redis recovery loop
-    asyncio.create_task(start_redis_recovery_loop())
+    start_background_task(start_redis_recovery_loop())
 
     # Refund withdrawal-confirmation requests that expired unanswered
-    asyncio.create_task(start_withdrawal_confirmation_sweeper())
+    start_background_task(start_withdrawal_confirmation_sweeper())
 
     # Aggregate complete UTC telemetry days before pruning expired raw events.
     from app.services.telemetry_maintenance import start_telemetry_maintenance_loop
-    asyncio.create_task(start_telemetry_maintenance_loop())
+    start_background_task(start_telemetry_maintenance_loop())
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Lifts users whose stored level is below the level earned from their XP.
@@ -450,7 +461,7 @@ async def lifespan(app: FastAPI):
                 except Exception as e:
                     logger.error(f"Error running v1.7.0 broadcast startup task: {e}")
                     
-            asyncio.create_task(run_release_broadcast())
+            start_background_task(run_release_broadcast())
 
     except Exception as e:
         logger.error(f"⚠️  Level backfill failed (non-fatal): {e}")
@@ -461,6 +472,8 @@ async def lifespan(app: FastAPI):
     from app.services.game_service import GameService
     GameService.shutdown_process_pool()
     await TelegramService.stop_bot()
+    for task in list(_background_tasks):
+        task.cancel()
 
 def create_application() -> FastAPI:
     application = FastAPI(

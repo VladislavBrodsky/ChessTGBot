@@ -110,7 +110,10 @@ class GameService:
             import multiprocessing
             from concurrent.futures import ProcessPoolExecutor
             if multiprocessing.current_process().name == 'MainProcess':
-                num_cores = max(1, multiprocessing.cpu_count())
+                import os
+                # Cap workers to prevent container OOM killer on high-core cloud hosts
+                pool_size_limit = int(os.getenv("AI_WORKER_POOL_SIZE", "2"))
+                num_cores = max(1, min(pool_size_limit, multiprocessing.cpu_count()))
                 _process_pool = ProcessPoolExecutor(max_workers=num_cores)
 
     @classmethod
