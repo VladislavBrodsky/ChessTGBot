@@ -608,7 +608,7 @@ class TelegramService:
 
         # Ensure global default menu button opens the Web App rather than website
         try:
-            menu_button_text = os.getenv("TELEGRAM_MENU_BUTTON_TEXT", "♟️ Play Chess, Win and Earn Real Crypto")
+            menu_button_text = os.getenv("TELEGRAM_MENU_BUTTON_TEXT", "Play Now")
             use_default_menu = os.getenv("USE_BOTFATHER_MENU_BUTTON", "false").lower() == "true"
             if use_default_menu:
                 await cls.application.bot.set_chat_menu_button(menu_button=MenuButtonDefault())
