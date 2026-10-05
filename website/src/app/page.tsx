@@ -69,13 +69,40 @@ export default async function HomePage() {
                 <Icon name="check" size={14} className="text-[#10b981]" />
                 <span>Free rated play · No app download · Instant TON payouts · 18+</span>
               </div>
+
+              {/* Live Matchmaking Radar & Game Mode Pulse */}
+              <div className="pt-2 max-w-[540px]">
+                <div className="rounded-[24px] bg-white/85 backdrop-blur-md p-4 border border-[#c7cbdb]/50 shadow-[0_4px_16px_rgba(32,41,76,0.06)]">
+                  <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#c7cbdb]/30 text-[12px] font-mono">
+                    <span className="flex items-center gap-2 font-bold text-[#20294C]">
+                      <span className="size-2 rounded-full bg-[#10b981] animate-ping" />
+                      340+ Duels Active Right Now
+                    </span>
+                    <span className="text-[#047857] font-bold">● Telegram Node Live</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F1F5] px-3 py-1 font-semibold text-[#20294C]">
+                      <Icon name="lightning" size={12} className="text-[#20294C]" />
+                      3+2 Blitz · 142 in queue
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F1F5] px-3 py-1 font-semibold text-[#20294C]">
+                      <Icon name="target" size={12} className="text-[#20294C]" />
+                      1+0 Bullet · 96 in queue
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F1F5] px-3 py-1 font-semibold text-[#20294C]">
+                      <Icon name="clock" size={12} className="text-[#20294C]" />
+                      10+0 Rapid · 104 in queue
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Column: Broadcast-Grade Tactical Arena Card */}
             <div className="lg:col-span-5">
               <div className="rounded-[32px] bg-white p-5 sm:p-7 shadow-[0_12px_40px_rgba(32,41,76,0.12)] border border-[#c7cbdb]/40 transition-all hover:shadow-[0_16px_48px_rgba(32,41,76,0.16)]">
                 {/* Live Match Top Bar */}
-                <div className="flex items-center justify-between gap-2 pb-3.5 mb-3 border-b border-[#c7cbdb]/30">
+                <div className="flex items-center justify-between gap-2 pb-3 mb-2.5 border-b border-[#c7cbdb]/30">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/15 px-3 py-1 font-mono text-[11px] font-bold uppercase text-[#047857]">
                       <span className="size-1.5 rounded-full bg-[#10b981] animate-ping" />
@@ -88,10 +115,20 @@ export default async function HomePage() {
                   </span>
                 </div>
 
+                {/* Evaluation bar indicator */}
+                <div className="flex items-center justify-between px-3 py-1 mb-2.5 rounded-xl bg-[#10b981]/10 border border-[#10b981]/20 text-[11px] font-mono font-bold text-[#047857]">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-[#10b981]" />
+                    Eval: +M1 Checkmate on board
+                  </span>
+                  <span className="text-[10px] text-[#047857]/80">99.8% Accuracy</span>
+                </div>
+
                 {/* Opponent Info */}
-                <div className="flex items-center justify-between pb-2.5 text-[13px]">
+                <div className="flex items-center justify-between pb-2 text-[13px]">
                   <div className="flex items-center gap-2">
                     <span className="size-7 rounded-full bg-[#20294C] text-white flex items-center justify-center font-bold text-[11px]">D</span>
+                    <span className="px-1.5 py-0.2 rounded bg-[#F0F1F5] text-[10px] font-black font-mono text-[#20294C]">GM</span>
                     <span className="font-semibold text-[#20294C]">Duke &amp; Count</span>
                     <span className="font-mono text-[11px] text-[#676B89]">2210</span>
                   </div>
@@ -99,7 +136,7 @@ export default async function HomePage() {
                 </div>
 
                 {/* Fog Board */}
-                <div className="my-1.5 rounded-[20px] overflow-hidden shadow-inner border border-[#c7cbdb]/40">
+                <div className="my-1 rounded-[20px] overflow-hidden shadow-inner border border-[#c7cbdb]/40">
                   <FogBoard
                     position={OPERA_FEN}
                     label="Morphy vs. Duke of Brunswick & Count Isouard, Paris 1858 — White plays 17. Rd8# checkmate."
@@ -112,9 +149,10 @@ export default async function HomePage() {
                 </div>
 
                 {/* Hero Player Info */}
-                <div className="flex items-center justify-between pt-2.5 text-[13px]">
+                <div className="flex items-center justify-between pt-2 text-[13px]">
                   <div className="flex items-center gap-2">
                     <span className="size-7 rounded-full bg-[#FFFF00] text-[#042939] flex items-center justify-center font-bold text-[11px] shadow-sm">M</span>
+                    <span className="px-1.5 py-0.2 rounded bg-[#FFFF00] text-[10px] font-black font-mono text-[#042939] shadow-xs">GM</span>
                     <span className="font-semibold text-[#20294C]">Paul Morphy</span>
                     <span className="font-mono text-[11px] text-[#676B89]">2480</span>
                   </div>
@@ -122,7 +160,7 @@ export default async function HomePage() {
                 </div>
 
                 {/* Move Notation & Verification Footer */}
-                <div className="mt-3 pt-3 border-t border-[#c7cbdb]/30 flex items-center justify-between text-[11px] font-mono">
+                <div className="mt-2.5 pt-2.5 border-t border-[#c7cbdb]/30 flex items-center justify-between text-[11px] font-mono">
                   <span className="font-bold text-[#20294C]">17. Rd8# Immortal Checkmate</span>
                   <span className="flex items-center gap-1 font-semibold text-[#047857]">
                     <Icon name="shield-check" size={13} />

@@ -34,14 +34,14 @@ export function WagerDemo() {
   return (
     <div className="space-y-6">
       {/* Mode Switcher Pills */}
-      <div className="flex rounded-[12px] bg-[#f3f3f3] p-1.5 font-mono text-[12px] font-semibold">
+      <div className="flex rounded-[14px] bg-[#F0F1F5] p-1.5 font-mono text-[12px] font-semibold border border-[#c7cbdb]/40">
         <button
           type="button"
           onClick={() => setTab("settlement")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] py-2.5 transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 rounded-[10px] py-2.5 transition-all ${
             tab === "settlement"
-              ? "bg-[#000000] text-white"
-              : "text-[#444444] hover:text-[#000000]"
+              ? "bg-[#20294C] text-white shadow-sm"
+              : "text-[#676B89] hover:text-[#20294C]"
           }`}
         >
           <Icon name="coins" size={14} />
@@ -50,10 +50,10 @@ export function WagerDemo() {
         <button
           type="button"
           onClick={() => setTab("referral")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] py-2.5 transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 rounded-[10px] py-2.5 transition-all ${
             tab === "referral"
-              ? "bg-[#000000] text-white"
-              : "text-[#444444] hover:text-[#000000]"
+              ? "bg-[#20294C] text-white shadow-sm"
+              : "text-[#676B89] hover:text-[#20294C]"
           }`}
         >
           <Icon name="users-three" size={14} />
@@ -64,7 +64,7 @@ export function WagerDemo() {
       {tab === "settlement" ? (
         <div className="space-y-6">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-wider text-[#979797]">Stake amount per player</p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-[#676B89]">Stake amount per player</p>
             <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Stake amount">
               {WAGER_TIERS.map((tier) => {
                 const active = tier === stake;
@@ -74,10 +74,10 @@ export function WagerDemo() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => setStake(tier)}
-                    className={`min-h-11 rounded-[8px] px-5 font-mono text-[14px] font-semibold transition-all ${
+                    className={`min-h-11 rounded-[10px] px-5 font-mono text-[14px] font-semibold transition-all ${
                       active
-                        ? "bg-[#000000] text-white"
-                        : "bg-[#f3f3f3] text-[#444444] hover:bg-[#e5e5e5] hover:text-[#000000]"
+                        ? "bg-[#20294C] text-white shadow-sm"
+                        : "bg-[#F0F1F5] text-[#424B6D] hover:bg-[#e4e6ef] hover:text-[#20294C]"
                     }`}
                   >
                     {tier} USDT
@@ -87,22 +87,22 @@ export function WagerDemo() {
             </div>
           </div>
 
-          <dl className="grid gap-3 border-t border-[#e5e5e5] pt-5 font-mono text-[14px] tabular-nums">
+          <dl className="grid gap-3 border-t border-[#c7cbdb]/40 pt-5 font-mono text-[14px] tabular-nums">
             <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-[#444444]">Total Match Pot (2 players)</dt>
-              <dd className="font-bold text-[#000000] text-[16px]">{fmt(stake * 2)}</dd>
+              <dt className="text-[#424B6D]">Total Match Pot (2 players)</dt>
+              <dd className="font-bold text-[#20294C] text-[16px]">{fmt(stake * 2)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-[#444444]">Platform Protocol Fee ({SETTLEMENT.platformFeePercent}%)</dt>
-              <dd className="text-[#979797]">−{fmt((stake * 2 * SETTLEMENT.platformFeePercent) / 100)}</dd>
+              <dt className="text-[#424B6D]">Platform Protocol Fee ({SETTLEMENT.platformFeePercent}%)</dt>
+              <dd className="text-[#676B89]">−{fmt((stake * 2 * SETTLEMENT.platformFeePercent) / 100)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-[#444444]">3-Tier Referral Pool ({SETTLEMENT.referralFeePercent}%)</dt>
-              <dd className="text-[#979797]">−{fmt((stake * 2 * SETTLEMENT.referralFeePercent) / 100)}</dd>
+              <dt className="text-[#424B6D]">3-Tier Referral Pool ({SETTLEMENT.referralFeePercent}%)</dt>
+              <dd className="text-[#676B89]">−{fmt((stake * 2 * SETTLEMENT.referralFeePercent) / 100)}</dd>
             </div>
-            <div className="flex items-baseline justify-between gap-4 border-t border-[#000000] pt-4 mt-2">
-              <dt className="font-condensed text-[20px] font-bold uppercase text-[#000000]">Winner Receives (95%)</dt>
-              <dd className="font-condensed text-[24px] font-bold text-[#047857]">{fmt(winnerReceives(stake))}</dd>
+            <div className="flex items-baseline justify-between gap-4 border-t border-[#c7cbdb]/60 pt-4 mt-2">
+              <dt className="font-sans text-[18px] sm:text-[20px] font-extrabold uppercase text-[#20294C]">Winner Receives (95%)</dt>
+              <dd className="font-mono text-[22px] sm:text-[24px] font-bold text-[#047857]">{fmt(winnerReceives(stake))}</dd>
             </div>
           </dl>
         </div>
@@ -110,7 +110,7 @@ export function WagerDemo() {
         <div className="space-y-6">
           <div className="space-y-4">
             <div>
-              <div className="flex justify-between text-[13px] font-mono text-[#000000] mb-1.5">
+              <div className="flex justify-between text-[13px] font-mono text-[#20294C] mb-1.5">
                 <span>Direct Rivals Invited (Tier 1):</span>
                 <span className="font-bold">{tier1Invites} players</span>
               </div>
@@ -121,12 +121,12 @@ export function WagerDemo() {
                 step="1"
                 value={tier1Invites}
                 onChange={(e) => setTier1Invites(Number(e.target.value))}
-                className="w-full accent-black cursor-pointer"
+                className="w-full accent-[#20294C] cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-[13px] font-mono text-[#000000] mb-1.5">
+              <div className="flex justify-between text-[13px] font-mono text-[#20294C] mb-1.5">
                 <span>Avg. Matches per Player / Day:</span>
                 <span className="font-bold">{gamesPerPlayer} matches</span>
               </div>
@@ -137,12 +137,12 @@ export function WagerDemo() {
                 step="1"
                 value={gamesPerPlayer}
                 onChange={(e) => setGamesPerPlayer(Number(e.target.value))}
-                className="w-full accent-black cursor-pointer"
+                className="w-full accent-[#20294C] cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-[13px] font-mono text-[#000000] mb-1.5">
+              <div className="flex justify-between text-[13px] font-mono text-[#20294C] mb-1.5">
                 <span>Avg. Stake per Match:</span>
                 <span className="font-bold">{avgStake} USDT</span>
               </div>
@@ -153,30 +153,30 @@ export function WagerDemo() {
                 step="1"
                 value={avgStake}
                 onChange={(e) => setAvgStake(Number(e.target.value))}
-                className="w-full accent-black cursor-pointer"
+                className="w-full accent-[#20294C] cursor-pointer"
               />
             </div>
           </div>
 
-          <div className="rounded-[20px] bg-[#000000] p-6 text-white space-y-4">
-            <div className="flex items-center justify-between border-b border-[#2f2f2f] pb-3">
-              <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-[#d1ffca]">
+          <div className="rounded-[24px] bg-[#071A22] p-6 text-white space-y-4 border border-[#103645]">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-[#34D399]">
                 <Icon name="trend-up" size={14} />
                 Monthly Passive Rake
               </span>
-              <span className="font-mono text-[11px] text-[#979797]">3-Tier Depth</span>
+              <span className="font-mono text-[11px] text-[#979DB5]">3-Tier Depth</span>
             </div>
 
             <div className="flex items-baseline justify-between">
               <div>
-                <p className="font-condensed text-[36px] font-bold leading-none text-white">
-                  +${totalMonthlyEarnings.toLocaleString("en-US", { maximumFractionDigits: 0 })} <span className="text-[18px] text-[#d1ffca]">USDT</span>
+                <p className="font-sans text-[32px] sm:text-[36px] font-extrabold leading-none text-white">
+                  +${totalMonthlyEarnings.toLocaleString("en-US", { maximumFractionDigits: 0 })} <span className="text-[18px] text-[#34D399]">USDT</span>
                 </p>
-                <p className="font-mono text-[11px] text-[#979797] mt-1">/ month estimated passive commission</p>
+                <p className="font-mono text-[11px] text-[#979DB5] mt-1.5">/ month estimated passive commission</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#2f2f2f] font-mono text-[11px] text-[#979797]">
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 font-mono text-[11px] text-[#979DB5]">
               <div>
                 <span className="block text-white font-semibold">T1 ({tier1Invites})</span>
                 <span>+${earningsT1.toFixed(0)}</span>

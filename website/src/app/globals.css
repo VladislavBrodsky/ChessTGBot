@@ -13,15 +13,16 @@
   .tittle {
     position: absolute;
     left: 50%;
-    top: -0.05em;
+    bottom: 0.56em;
     width: 0.22em;
     height: 0.22em;
     translate: -50% 0;
     border-radius: 9999px;
     background-color: var(--color-ink, #20294C);
-    box-shadow: 0 2px 5px rgba(32, 41, 76, 0.28);
+    box-shadow: 0 2px 4px rgba(32, 41, 76, 0.28);
     animation: pop 200ms var(--ease-pop) 300ms both;
     transition: transform var(--dur-instant) var(--ease-pop);
+    pointer-events: none;
   }
   @media (hover: hover) {
     .tittle-host:hover .tittle {
