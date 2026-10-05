@@ -49,9 +49,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost/chess_db"
     DATABASE_READ_URL: str | None = None
     
-    # DB Pooling
-    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE") or "20")
-    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW") or "50")
+    # DB Pooling (defaults tuned for Railway Postgres connection limits; override via env)
+    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE") or "10")
+    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW") or "20")
 
     # Raw events support debugging; daily aggregates remain available for trends.
     TELEMETRY_RAW_RETENTION_DAYS: int = int(os.getenv("TELEMETRY_RAW_RETENTION_DAYS", "30"))
@@ -126,7 +126,7 @@ class Settings(BaseSettings):
     # Railway). Until the registrar DNS is corrected, the Railway subdomain
     # is the only reliable endpoint. Set WEBAPP_URL env var on Railway to
     # override once the custom domain DNS is fixed.
-    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://app.web3chess.online")
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://web3chess.online")
     BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments

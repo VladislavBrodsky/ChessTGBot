@@ -108,7 +108,11 @@ export const getSocket = () => {
             if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
                 initData = (window.Telegram.WebApp as any).initData;
             } else {
-                initData = localStorage.getItem('telegram_web_auth') || "";
+                try {
+                    initData = localStorage.getItem('telegram_web_auth') || "";
+                } catch {
+                    initData = "";
+                }
             }
         }
 
@@ -144,7 +148,11 @@ export const getSocket = () => {
         if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
             freshInitData = (window.Telegram.WebApp as any).initData;
         } else {
-            freshInitData = localStorage.getItem('telegram_web_auth') || "";
+            try {
+                freshInitData = localStorage.getItem('telegram_web_auth') || "";
+            } catch {
+                freshInitData = "";
+            }
         }
         
         if (freshInitData) {

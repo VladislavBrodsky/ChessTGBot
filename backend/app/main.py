@@ -744,6 +744,11 @@ def create_application() -> FastAPI:
         return {"version": settings.VERSION, "status": "deployed"}
 
     @application.get("/health")
+    @application.head("/health")
+    @application.get("/api/v1/health")
+    @application.head("/api/v1/health")
+    @application.get("/api/health")
+    @application.head("/api/health")
     async def health_check():
         # 1. Check Database
         try:

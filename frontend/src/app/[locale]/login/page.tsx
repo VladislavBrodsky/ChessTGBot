@@ -30,11 +30,13 @@ export default function LoginPage() {
         router.replace(`/${locale}/home`);
     };
 
+    const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot';
+
     if (!mounted || isRedirecting) {
         return (
-            <div className="fixed inset-0 flex items-center justify-center bg-brand-bg">
+            <div className="fixed inset-0 flex items-center justify-center bg-brand-void">
                 <div className="flex flex-col items-center gap-4">
-                    <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
+                    <FaChessKnight className="text-emerald-500 animate-pulse drop-shadow-lg" size={48} />
                     <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-muted">
                         Authenticating...
                     </p>
@@ -44,11 +46,11 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-brand-bg transition-colors duration-500">
+        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-brand-void transition-colors duration-500">
             {/* ── Animated Background ── */}
             <div className="absolute inset-0 pointer-events-none">
                 {/* Grid */}
-                <div className="absolute inset-0 transition-opacity duration-500 opacity-40" 
+                <div className="absolute inset-0 transition-opacity duration-500 opacity-30" 
                      style={{
                          backgroundImage: 'linear-gradient(var(--color-brand-border-opacity-10) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-border-opacity-10) 1px, transparent 1px)',
                          backgroundSize: '40px 40px',
@@ -57,12 +59,12 @@ export default function LoginPage() {
                 
                 {/* Glow blobs */}
                 <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -top-1/4 -left-1/4 w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.15)_0%,transparent_70%)] pointer-events-none"
+                    className="absolute -top-1/4 -left-1/4 w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] pointer-events-none"
                 />
                 <motion.div
-                    animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
+                    animate={{ scale: [1.2, 1, 1.2], opacity: [0.15, 0.3, 0.15] }}
                     transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
                     className="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.15)_0%,transparent_70%)] pointer-events-none"
                 />
@@ -95,7 +97,7 @@ export default function LoginPage() {
             >
                 <div className="w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-300 bg-brand-surface border border-brand-border shadow-premium">
                     {/* ── LEFT: Login ── */}
-                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-white/10">
+                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-brand-border">
                         <div className="flex flex-col items-center space-y-7 text-center w-full">
 
                             {/* Logo mark */}
@@ -108,30 +110,30 @@ export default function LoginPage() {
                                         background: 'conic-gradient(from 0deg, rgba(255,255,255,0.4), transparent, rgba(16,185,129,0.5), transparent)' 
                                     }}
                                 />
-                                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-neutral-900 border border-white/10 shadow-lg">
-                                    <FaChessKnight size={30} className="text-white drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]" />
+                                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-brand-elevated border border-brand-border shadow-lg">
+                                    <FaChessKnight size={30} className="text-emerald-500 drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]" />
                                 </div>
                             </div>
 
                             {/* Title */}
                             <div>
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] mb-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] mb-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                     {t('secure_web_portal')}
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none bg-gradient-to-r from-white via-neutral-200 to-emerald-400 bg-clip-text text-transparent drop-shadow-sm">
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] font-mono leading-none bg-gradient-to-r from-brand-primary via-emerald-400 to-emerald-500 bg-clip-text text-transparent drop-shadow-sm">
                                     {t('web3chess')}
                                 </h1>
                             </div>
 
-                            <p className="text-sm max-w-[280px] leading-relaxed transition-colors duration-500 text-neutral-400">
+                            <p className="text-sm max-w-[280px] leading-relaxed transition-colors duration-500 text-brand-muted">
                                 {t('premium_desc')}
                             </p>
 
                             {/* Widget */}
                             <div className="w-full flex flex-col items-center justify-center py-2 min-h-[48px]">
                                 <TelegramLoginWidget
-                                    botName="chess_matbot"
+                                    botName={botUsername}
                                     buttonSize="large"
                                     cornerRadius={12}
                                     onAuthCallback={handleTelegramAuth}
@@ -139,9 +141,9 @@ export default function LoginPage() {
                             </div>
 
                             {/* Security badge */}
-                            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
-                                <FaLock size={10} className="text-emerald-400" />
-                                <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-neutral-400">
+                            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-elevated border border-brand-border">
+                                <FaLock size={10} className="text-emerald-500" />
+                                <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-brand-muted">
                                     {t('secure_auth')}
                                 </span>
                             </div>
@@ -149,18 +151,18 @@ export default function LoginPage() {
                     </div>
 
                     {/* ── RIGHT: QR / Mobile ── */}
-                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-colors duration-500 bg-white/[0.02]">
+                    <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-colors duration-500 bg-brand-elevated/30">
                         <div className="flex flex-col items-center text-center space-y-6 w-full">
 
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-px bg-gradient-to-r from-transparent to-emerald-500/40" />
-                                <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.3em] text-neutral-300">
+                                <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.3em] text-brand-muted">
                                     {t('play_on_mobile')}
                                 </p>
                                 <div className="w-8 h-px bg-gradient-to-l from-transparent to-emerald-500/40" />
                             </div>
 
-                            <p className="text-sm max-w-[240px] leading-relaxed transition-colors duration-500 text-neutral-400">
+                            <p className="text-sm max-w-[240px] leading-relaxed transition-colors duration-500 text-brand-muted">
                                 {t('scan_qr')}
                             </p>
 
@@ -168,12 +170,12 @@ export default function LoginPage() {
                             <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 transition={{ duration: 0.2 }}
-                                className="relative p-2 rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl shadow-black/80"
+                                className="relative p-2 rounded-2xl bg-brand-surface border border-brand-border shadow-xl"
                             >
                                 <div className="bg-white p-3 rounded-xl flex items-center justify-center shadow-inner">
-                                    {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image; next/image would require remote-domain config for no benefit */}
+                                    {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image */}
                                     <img
-                                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/chess_matbot&color=000000&bgcolor=ffffff&margin=2"
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/${botUsername}&color=000000&bgcolor=ffffff&margin=2`}
                                         alt="Scan to open bot"
                                         className="w-36 h-36 block rounded"
                                     />
@@ -182,7 +184,7 @@ export default function LoginPage() {
 
                             {/* High-contrast tactile action CTA */}
                             <motion.a
-                                href="https://t.me/chess_matbot"
+                                href={`https://t.me/${botUsername}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 whileHover={{ scale: 1.03 }}
@@ -203,7 +205,7 @@ export default function LoginPage() {
                                     { label: 'Prize Pool', value: '$4.2K', isAccent: true },
                                 ].map(({ label, value, isAccent }) => (
                                     <div key={label} className="flex flex-col items-center">
-                                        <span className={`text-base font-black font-mono tracking-tight ${isAccent ? 'text-emerald-400' : 'text-white'}`}>
+                                        <span className={`text-base font-black font-mono tracking-tight ${isAccent ? 'text-emerald-500' : 'text-brand-primary'}`}>
                                             {value}
                                         </span>
                                         <span className="text-[10px] uppercase tracking-widest font-mono font-medium text-brand-muted">
@@ -217,7 +219,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer note */}
-                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-mono font-medium transition-colors duration-500 text-neutral-500">
+                <p className="text-center text-[10px] mt-5 uppercase tracking-widest font-mono font-medium transition-colors duration-500 text-brand-muted">
                     Chess Mat Bot · Powered by Telegram · Web3 Decentralized
                 </p>
             </motion.div>

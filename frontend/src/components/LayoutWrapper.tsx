@@ -37,7 +37,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [showNotifications, setShowNotifications] = useState<boolean>(false);
     
-    const [isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
+    const [_isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
         if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
         return false;
     });
