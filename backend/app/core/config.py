@@ -119,14 +119,8 @@ class Settings(BaseSettings):
     # from every direct client.
     TRUSTED_PROXY_CIDRS: str = os.getenv("TRUSTED_PROXY_CIDRS", "100.0.0.0/8")
 
-    # Deployment
-    # This URL should be the production URL of your app.
-    # NOTE: The custom domain web3chess.online has a DNS misconfiguration
-    # (apex A record points to Namecheap parking IP 162.255.119.119, not
-    # Railway). Until the registrar DNS is corrected, the Railway subdomain
-    # is the only reliable endpoint. Set WEBAPP_URL env var on Railway to
-    # override once the custom domain DNS is fixed.
-    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://web3chess.online")
+    # Frontend WebApp URL (Mini App client)
+    WEBAPP_URL: str = os.getenv("WEBAPP_URL", "https://app.web3chess.online")
     BACKEND_URL: str = os.getenv("BACKEND_URL", "https://api.web3chess.online")
 
     # Payments
