@@ -40,7 +40,7 @@ export function WagerDemo() {
           onClick={() => setTab("settlement")}
           className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] py-2.5 transition-all ${
             tab === "settlement"
-              ? "bg-[#000000] text-white shadow-sm"
+              ? "bg-[#000000] text-white"
               : "text-[#444444] hover:text-[#000000]"
           }`}
         >
@@ -52,7 +52,7 @@ export function WagerDemo() {
           onClick={() => setTab("referral")}
           className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] py-2.5 transition-all ${
             tab === "referral"
-              ? "bg-[#000000] text-white shadow-sm"
+              ? "bg-[#000000] text-white"
               : "text-[#444444] hover:text-[#000000]"
           }`}
         >

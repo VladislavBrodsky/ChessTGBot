@@ -40,7 +40,7 @@ export default async function HomePage() {
                 TELEGRAM NATIVE · TON PROTOCOL
               </div>
 
-              <h1 className="font-condensed font-bold uppercase tracking-[-0.03em] leading-[0.9] text-[54px] sm:text-[76px] lg:text-[100px] text-[#000000]">
+              <h1 className="font-condensed font-bold uppercase tracking-[-0.03em] leading-[0.9] text-[56px] sm:text-[84px] lg:text-[112px] xl:text-[124px] text-[#000000]">
                 BORN ON-CHAIN.<br />
                 NOT BOLTED<br />
                 ONTO IT.
@@ -125,7 +125,7 @@ export default async function HomePage() {
 
             {/* Massive Inverted Display Title */}
             <div className="mt-16 pt-12 border-t border-[#2f2f2f]">
-              <h2 className="font-condensed text-[44px] sm:text-[72px] lg:text-[104px] font-bold uppercase leading-[0.9] tracking-[-0.03em] text-white">
+              <h2 className="font-condensed text-[48px] sm:text-[80px] lg:text-[112px] xl:text-[124px] font-bold uppercase leading-[0.9] tracking-[-0.03em] text-white">
                 WE&apos;RE REVOLUTIONIZING COMPETITIVE CHESS.
               </h2>
             </div>

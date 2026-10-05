@@ -30,18 +30,18 @@ export function Nav() {
 
   return (
     <>
-      <header className="shell-wide flex items-center justify-between gap-4 py-6">
+      <header className="shell-wide flex h-28 sm:h-32 items-center justify-between gap-4">
         <Link href="/" aria-label="Web3Chess home" className="flex items-center gap-2">
           <Logo />
         </Link>
         
         {/* Dayos Centered Floating Pill */}
-        <nav aria-label="Main" className="hidden items-center gap-1.5 rounded-[48px] bg-white px-5 py-2 shadow-none lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 rounded-[48px] bg-white px-8 py-3.5 shadow-none lg:flex">
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-3.5 py-1.5 text-[15px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000] hover:bg-[#f3f3f3]"
+              className="text-[16px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000]"
             >
               {item.label}
             </Link>
@@ -49,7 +49,7 @@ export function Nav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <PlayButton size="sm" label="Play in Telegram" className="hidden sm:inline-flex" />
+          <PlayButton size="md" label="Play in Telegram" className="hidden sm:inline-flex" />
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -70,16 +70,16 @@ export function Nav() {
       >
         <nav
           aria-label="Sticky"
-          className="flex items-center gap-3 rounded-[48px] bg-white/95 px-5 py-2 backdrop-blur-md"
+          className="flex items-center gap-6 rounded-[48px] bg-white px-7 py-3 shadow-none border border-[#c6c6c6]/60"
         >
-          <Link href="/" aria-label="Web3Chess home" className="pe-2">
+          <Link href="/" aria-label="Web3Chess home" className="pe-1">
             <Logo />
           </Link>
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-3 py-1.5 text-[14px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000] hover:bg-[#f3f3f3]"
+              className="text-[15px] font-medium text-[#444444] transition-colors duration-150 hover:text-[#000000]"
             >
               {item.label}
             </Link>
@@ -92,7 +92,7 @@ export function Nav() {
       {open && (
         <div className="fixed inset-0 z-[110] lg:hidden">
           <div
-            className="absolute inset-0 bg-ink/40"
+            className="absolute inset-0 bg-[#000000]/60"
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
@@ -100,7 +100,7 @@ export function Nav() {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-x-0 top-0 rounded-b-panel bg-canvas p-5 shadow-card"
+            className="absolute inset-x-0 top-0 rounded-b-[32px] bg-[#e5e5e5] p-6 shadow-none border-b border-[#c6c6c6]"
           >
             <div className="flex items-center justify-between">
               <Logo />
@@ -108,18 +108,18 @@ export function Nav() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="grid size-11 place-items-center rounded-control bg-surface text-icon shadow-control"
+                className="grid size-11 place-items-center rounded-[8px] bg-white text-[#000000]"
               >
                 <Icon name="x" size={20} />
               </button>
             </div>
-            <ul className="mt-6 grid gap-1">
+            <ul className="mt-8 grid gap-2">
               {home.nav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="flex min-h-14 items-center text-heading-md text-fg"
+                    className="flex min-h-14 items-center rounded-[16px] bg-white px-5 font-condensed text-[24px] font-bold uppercase text-[#000000]"
                   >
                     {item.label}
                   </Link>

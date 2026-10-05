@@ -11,7 +11,7 @@ export async function QrDock() {
   return (
     <aside
       aria-label="Scan to play in Telegram"
-      className="fixed bottom-6 start-5 z-50 hidden rounded-card bg-mist/50 p-2 backdrop-blur-sm xl:block"
+      className="fixed bottom-6 start-5 z-50 hidden rounded-[20px] bg-white p-3 border border-[#c6c6c6] shadow-none xl:block"
     >
       <div
         className="size-25 [&>svg]:size-full"
@@ -19,7 +19,7 @@ export async function QrDock() {
         role="img"
         aria-label="QR code that opens Web3Chess in Telegram"
       />
-      <p className="mt-2 max-w-25 text-center text-caption text-fg-muted">Scan to play</p>
+      <p className="mt-2 max-w-25 text-center font-mono text-[11px] uppercase tracking-wider text-[#979797]">Scan to play</p>
     </aside>
   );
 }

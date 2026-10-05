@@ -25,8 +25,8 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
   const xShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + " via @Web3Chess")}`;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-line">
-      <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-widest text-fg-muted mr-2">
+    <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-[#e5e5e5]">
+      <span className="inline-flex items-center gap-1.5 font-mono text-[12px] font-bold uppercase tracking-wider text-[#979797] mr-2">
         <Icon name="share-network" size={14} />
         <span>Share:</span>
       </span>
@@ -34,9 +34,9 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
       <button
         type="button"
         onClick={handleCopy}
-        className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink hover:bg-mist"
+        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
       >
-        {copied ? <Icon name="check" size={14} className="text-win" /> : <Icon name="copy" size={14} />}
+        {copied ? <Icon name="check" size={14} className="text-[#047857]" /> : <Icon name="copy" size={14} />}
         <span>{copied ? "Copied Link" : "Copy Link"}</span>
       </button>
 
@@ -44,7 +44,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
         href={telegramShareUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink hover:bg-mist"
+        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
       >
         <Icon name="paper-plane-tilt" size={14} />
         <span>Telegram</span>
@@ -54,7 +54,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
         href={xShareUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink hover:bg-mist"
+        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
       >
         <span>X (Twitter)</span>
       </a>

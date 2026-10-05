@@ -25,7 +25,7 @@ export function PlayButton({
   const skins = {
     primary: "bg-[#000000] text-[#ffffff] hover:opacity-90",
     onDark: "bg-[#ffffff] text-[#000000] hover:bg-[#f3f3f3]",
-    ghost: "bg-transparent border border-[#444444] text-[#444444] hover:text-[#000000] hover:border-[#000000]",
+    ghost: "bg-transparent border-[1.5px] border-[#444444] text-[#444444] hover:text-[#000000] hover:border-[#000000]",
   };
 
   return (

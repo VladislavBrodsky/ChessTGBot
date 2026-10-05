@@ -20,7 +20,7 @@ export function MobileCta() {
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 px-4 pt-3 transition-transform duration-200 lg:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#c6c6c6] bg-[#e5e5e5] px-4 pt-3 transition-transform duration-200 lg:hidden ${
         show ? "translate-y-0" : "translate-y-full"
       }`}
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
