@@ -592,19 +592,32 @@ class TelegramService:
                 logger.info(f"👑 Bot Webhook Successfully Set: {webhook_url}")
                 cls.receiver_active = True
                 cls.receiver_type = "webhook"
-                return
             except Exception as e:
                 logger.error(f"Failed to set webhook: {e}. Falling back to polling.")
 
-        # Polling fallback (Only Leader)
+        if not cls.receiver_active:
+            # Polling fallback (Only Leader)
+            try:
+                await cls.application.bot.delete_webhook(drop_pending_updates=True)
+                await cls.application.updater.start_polling(drop_pending_updates=True)
+                logger.info("👑 Bot Polling Successfully Started")
+                cls.receiver_active = True
+                cls.receiver_type = "polling"
+            except Exception as e:
+                logger.error(f"Failed to start polling: {e}")
+
+        # Ensure global default menu button opens the Web App rather than website
         try:
-            await cls.application.bot.delete_webhook(drop_pending_updates=True)
-            await cls.application.updater.start_polling(drop_pending_updates=True)
-            logger.info("👑 Bot Polling Successfully Started")
-            cls.receiver_active = True
-            cls.receiver_type = "polling"
-        except Exception as e:
-            logger.error(f"Failed to start polling: {e}")
+            menu_url = f"{settings.WEBAPP_URL}/en/home?v={settings.VERSION}"
+            await cls.application.bot.set_chat_menu_button(
+                menu_button=MenuButtonWebApp(
+                    text="♟️ Play-to-Earn",
+                    web_app=WebAppInfo(url=menu_url)
+                )
+            )
+            logger.info(f"👑 Bot Chat Menu Button successfully set to: {menu_url}")
+        except Exception as mb_err:
+            logger.warning(f"Failed to set default chat menu button: {mb_err}")
 
     @classmethod
     async def stop_receiver(cls):
