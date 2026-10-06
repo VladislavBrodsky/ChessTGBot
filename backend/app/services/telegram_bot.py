@@ -1,6 +1,7 @@
 import asyncio
 import os
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp, MenuButtonDefault
+from telegram.error import BadRequest, Forbidden
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, ChatMemberHandler
 from app.core.config import get_settings
 from app.core.redis_client import create_redis_client

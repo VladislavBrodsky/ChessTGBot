@@ -74,3 +74,41 @@ def test_missing_avatar_user_errors_are_benign(exc):
 ])
 def test_non_avatar_errors_are_not_benign(exc):
     assert is_benign_telegram_avatar_error(exc) is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("exc", [
+    tg_error.Forbidden("bot was blocked by the user"),
+    tg_error.BadRequest("Bad Request: chat not found"),
+    tg_error.NetworkError("httpx.ConnectError: connection failed"),
+])
+async def test_send_notification_handles_exceptions_without_name_error(exc):
+    """Regression test for NameError: name 'Forbidden' / 'BadRequest' is not defined in send_notification."""
+    import asyncio
+    from unittest.mock import AsyncMock, MagicMock, patch
+    from app.services.telegram_bot import TelegramService
+    import app.services.telegram_bot as tg_service_module
+
+    tasks = []
+    orig_create_task = asyncio.create_task
+
+    def capture_task(coro):
+        task = orig_create_task(coro)
+        tasks.append(task)
+        return task
+
+    mock_app = MagicMock()
+    mock_app.bot.send_message = AsyncMock(side_effect=exc)
+
+    with patch.object(TelegramService, "application", mock_app), \
+         patch.object(TelegramService, "mark_user_blocked", new_callable=AsyncMock) as mock_mark, \
+         patch.object(tg_service_module.settings, "TELEGRAM_BOT_TOKEN", "123:test"), \
+         patch.object(tg_service_module, "NOTIFICATION_RETRY_DELAY_SECONDS", 0), \
+         patch.object(asyncio, "create_task", capture_task):
+        await TelegramService.send_notification(123456, "Test message")
+        assert len(tasks) == 1
+        await asyncio.gather(*tasks)
+
+    if isinstance(exc, (tg_error.Forbidden, tg_error.BadRequest)):
+        mock_mark.assert_awaited_once_with(123456)
+
