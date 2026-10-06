@@ -4,7 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
-import { SITE } from "@/lib/config";
+import { SITE, SETTLEMENT } from "@/lib/config";
 import { Icon } from "@/icons";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function TermsPage() {
             <Icon name="arrow-left" size={14} className="flip-rtl" />
             <span>Back to Home</span>
           </Link>
-          <span className="font-mono text-caption text-fg-muted">Last updated: September 2026</span>
+          <span className="font-mono text-caption text-fg-muted">Last updated: October 2026</span>
         </div>
 
         {/* Header */}
@@ -42,54 +42,54 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-body sm:text-lead text-fg-muted">
-            By accessing Web3Chess via Telegram Mini App, web, or smart contract interactions, you agree to comply with these terms.
+            By accessing Web3Chess via the Telegram Mini App or web interface, you agree to comply with these terms.
           </p>
         </section>
 
         {/* Content Card */}
         <div className="rounded-card bg-surface p-8 md:p-12 space-y-8 text-body text-fg-muted">
           <section className="space-y-3">
-            <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
+            <h2 className="poster text-heading-md text-fg">
               1. ELIGIBILITY &amp; AGE REQUIREMENTS
             </h2>
             <p>
-              Free play is open to global users with an active Telegram account. You must be at least 18 years of age (or the legal age of majority in your jurisdiction) to participate in real-money USDT or TON wager matches.
+              Free practice against the A.I. and daily tactical puzzle training are open to global users with an active Telegram account. You must be at least 18 years of age (or the legal age of majority in your jurisdiction) to participate in real-money USDT or TON wager matches. Real-money gaming is subject to local laws; players are responsible for compliance within their own jurisdictions.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
-              2. FAIR PLAY &amp; ANTI-CHEAT POLICY
+            <h2 className="poster text-heading-md text-fg">
+              2. FAIR PLAY &amp; ZERO-TOLERANCE ANTI-CHEAT
             </h2>
             <p>
-              External chess engines, AI bots, opening books during live games, and multi-accounting to manipulate ELO rating or wager pools are strictly prohibited. Accounts identified as violating fair play policies will be disqualified from prize pools and banned.
+              External chess engines, computer assistance, opening books during active wager matches, and multi-accounting to manipulate rating or match pools are strictly prohibited. Every move is processed server-side and analyzed against Stockfish 17 centipawn loss heuristics. Accounts violating fair play policies will be permanently banned and forfeits enforced.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
-              3. WAGERS &amp; PRIZE SETTLEMENT
+            <h2 className="poster text-heading-md text-fg">
+              3. WAGERS &amp; SETTLEMENT RULES
             </h2>
             <p>
-              When entering a cash wager match, both players commit equal platform balance stakes. The winner receives 95% of the total pot. A platform fee of 3% is retained for server operation, and 2% is distributed to the referral pool. Games ended by timeout, resignation, or checkmate are final.
+              When entering a cash wager match, both players commit equal platform balance stakes into match escrow. The winner receives {SETTLEMENT.winnerPercent}% of the total pot immediately upon checkmate, opponent resignation, or opponent clock flag. A platform fee of {SETTLEMENT.platformFeePercent}% is retained for server operations and anti-cheat compute, and {SETTLEMENT.referralFeePercent}% funds community referral rewards. Matches that conclude by legitimate chess rules are final.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
-              4. WITHDRAWALS &amp; SECURITY CHECKS
+            <h2 className="poster text-heading-md text-fg">
+              4. PLATFORM BALANCE &amp; WITHDRAWALS
             </h2>
             <p>
-              Withdrawals to personal TON wallets are processed automatically. High-frequency or large withdrawals may undergo secondary risk verification to safeguard treasury liquidity and prevent fraud.
+              Deposits are credited to your in-app platform balance. Web3Chess is not a bank or self-custody wallet. Withdrawals to your personal TON wallet are processed following security verification. High-volume transfers receive secondary review to safeguard platform solvency and prevent fraudulent account drain.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
-              5. RESPONSIBLE GAMING
+            <h2 className="poster text-heading-md text-fg">
+              5. RESPONSIBLE GAMING SAFEGUARDS
             </h2>
             <p>
-              Wager chess involves financial risk. Users should never stake funds they cannot afford to lose. Web3Chess provides voluntary deposit limits and self-exclusion tools via the Telegram bot interface.
+              Wager matches involve real cryptocurrency and you can lose your stake. Never wager funds you cannot comfortably afford to lose. Web3Chess provides voluntary pause and cool-off options in the Telegram interface. Practice against the A.I. is always 100% free and unlimited.
             </p>
           </section>
         </div>

@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `${SITE.url}/blog/${post.slug}`;
 
   return {
-    title: post.title,
+    title: `${post.title} · Web3Chess Chronicles`,
     description: post.excerpt,
     keywords: [
       post.category,
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "TON Gaming",
       "Speed Chess Tactics",
       "Blitz Chess Strategy",
-      "Online Chess Wagers"
+      "Online Chess Wagers",
     ],
     authors: [{ name: post.author.name }],
     openGraph: {
@@ -100,11 +100,16 @@ export default async function BlogPostPage({ params }: PageProps) {
           "@type": "Organization",
           name: "Web3Chess",
           url: SITE.url,
-          logo: `${SITE.url}/icon.svg`,
+          logo: {
+            "@type": "ImageObject",
+            url: `${SITE.url}/icon.svg`,
+          },
         },
         datePublished: post.publishedAt,
-        mainEntityOfPage: articleUrl,
-        keywords: [post.category, "Chess", "Web3", "Telegram Mini App"],
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": articleUrl,
+        },
       },
       {
         "@type": "BreadcrumbList",
@@ -134,7 +139,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#e5e5e5] text-[#000000]">
+    <div className="min-h-screen bg-canvas text-fg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -143,69 +148,67 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <main className="shell-wide space-y-12 py-8 md:space-y-16 md:py-12">
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 font-mono text-[12px] text-[#979797]">
-          <Link href="/" className="transition-colors hover:text-[#000000]">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 font-mono text-overline uppercase text-fg-muted">
+          <Link href="/" className="transition-colors hover:text-fg">
             Home
           </Link>
           <Icon name="caret-right" size={12} />
-          <Link href="/blog" className="transition-colors hover:text-[#000000]">
+          <Link href="/blog" className="transition-colors hover:text-fg">
             Blog
           </Link>
           <Icon name="caret-right" size={12} />
-          <span className="text-[#000000] font-semibold">{post.category}</span>
+          <span className="text-fg font-semibold">{post.category}</span>
         </nav>
 
         {/* Article Header Container */}
         <header className="space-y-6 max-w-4xl">
           {/* Metadata Pill Row */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center rounded-full bg-[#d1ffca] px-3.5 py-1 font-mono text-[12px] font-medium uppercase tracking-tight text-[#000000]">
+            <span className="tag">
               {post.category}
             </span>
-            <span className="inline-flex items-center gap-1 font-mono text-[12px] text-[#979797]">
+            <span className="inline-flex items-center gap-1 font-mono text-caption text-fg-muted">
               <Icon name="clock" size={14} />
               {post.readingTime}
             </span>
-            <span className="font-mono text-[12px] text-[#979797]">• {post.publishedAt}</span>
+            <span className="font-mono text-caption text-fg-muted">• {post.publishedAt}</span>
           </div>
 
-          {/* Headline (Brutalist Condensed) */}
-          <h1 className="font-condensed text-[40px] font-bold uppercase leading-[0.9] tracking-[-0.03em] text-[#000000] sm:text-[58px] lg:text-[76px]">
+          {/* Headline */}
+          <h1 className="poster text-display-xl text-fg">
             {post.title}
           </h1>
 
           {/* Subtitle / Lead */}
-          <p className="text-[18px] sm:text-[20px] leading-[1.35] text-[#444444] font-normal">
+          <p className="text-lead text-fg-muted">
             {post.subtitle}
           </p>
 
           {/* Author Badge */}
-          <div className="flex items-center gap-3.5 pt-6 border-t border-[#e5e5e5]">
-            <div className="grid size-11 place-items-center rounded-full bg-[#000000] font-mono text-sm font-bold text-white">
+          <div className="flex items-center gap-3.5 pt-6 border-t border-line">
+            <div className="grid size-11 place-items-center rounded-full bg-black font-mono text-sm font-bold text-white">
               {post.author.name.charAt(0)}
             </div>
             <div>
-              <p className="text-[14px] font-semibold text-[#000000] leading-tight">{post.author.name}</p>
-              <p className="font-mono text-[11px] text-[#979797] uppercase tracking-wider mt-0.5">{post.author.role}</p>
+              <p className="text-body-sm font-semibold text-fg leading-tight">{post.author.name}</p>
+              <p className="font-mono text-overline text-fg-muted uppercase tracking-wider mt-0.5">{post.author.role}</p>
             </div>
           </div>
         </header>
 
-        {/* Key Takeaways Box (Dayos Style) */}
+        {/* Key Takeaways Box */}
         {post.takeaways && post.takeaways.length > 0 && (
-          <section className="max-w-4xl rounded-[32px] bg-white p-8 md:p-10">
+          <section className="max-w-4xl rounded-card bg-surface p-8 md:p-10">
             <div className="flex items-center gap-2.5 mb-6">
-              <span className="grid size-7 place-items-center rounded-full bg-[#d1ffca] text-[#000000]">
-                <Icon name="sparkle" size={16} />
+              <span className="tag">
+                <Icon name="sparkle" size={14} />
+                Key Intel &amp; Takeaways
               </span>
-              <h2 className="font-mono text-[12px] font-bold uppercase tracking-wider text-[#000000]">
-                Key Takeaways
-              </h2>
             </div>
             <ul className="grid gap-4 sm:grid-cols-2">
               {post.takeaways.map((takeaway, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-[15px] leading-[1.4] text-[#000000]">
-                  <Icon name="check-circle" size={16} className="shrink-0 text-[#047857] mt-1" />
+                <li key={idx} className="flex items-start gap-3 text-body-sm text-fg">
+                  <Icon name="check-circle" size={16} className="shrink-0 text-black mt-0.5" />
                   <span>{takeaway}</span>
                 </li>
               ))}
@@ -214,14 +217,14 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* Main Article Content Body */}
-        <article className="max-w-4xl rounded-[32px] bg-white p-8 md:p-14 space-y-8 text-[16px] md:text-[18px] leading-[1.65] text-[#000000]">
+        <article className="max-w-4xl rounded-card bg-surface p-8 md:p-14 space-y-8 text-body text-fg">
           {post.content.map((block, index) => {
             switch (block.type) {
               case "heading":
                 return (
                   <h2
                     key={index}
-                    className="font-condensed text-[32px] sm:text-[42px] font-bold uppercase leading-[0.92] tracking-[-0.03em] text-[#000000] pt-8 first:pt-0"
+                    className="poster text-heading-lg text-fg pt-8 first:pt-0"
                   >
                     {block.text}
                   </h2>
@@ -230,14 +233,14 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <h3
                     key={index}
-                    className="font-condensed text-[24px] sm:text-[28px] font-bold uppercase leading-[0.95] tracking-[-0.02em] text-[#000000] pt-4"
+                    className="poster text-heading-md text-fg pt-4"
                   >
                     {block.text}
                   </h3>
                 );
               case "paragraph":
                 return (
-                  <p key={index} className="text-[#444444] leading-[1.65]">
+                  <p key={index} className="text-body sm:text-lead text-fg-muted leading-relaxed">
                     {block.text}
                   </p>
                 );
@@ -245,7 +248,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <blockquote
                     key={index}
-                    className="my-8 rounded-[24px] border-l-4 border-[#000000] bg-[#f3f3f3] p-6 font-condensed text-[24px] font-bold uppercase leading-[1.1] tracking-[-0.02em] text-[#000000] sm:text-[28px]"
+                    className="my-8 rounded-control border-l-4 border-black bg-inset p-6 poster text-heading-md text-fg"
                   >
                     {block.text}
                   </blockquote>
@@ -254,9 +257,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <div
                     key={index}
-                    className="my-6 rounded-[24px] bg-[#d1ffca]/30 p-6 text-[#000000]"
+                    className="my-6 rounded-control bg-mint/50 border border-line p-6 text-fg"
                   >
-                    <p className="text-[15px] md:text-[16px] leading-[1.5] font-medium text-[#000000]">
+                    <p className="text-body font-medium text-fg">
                       {block.text}
                     </p>
                   </div>
@@ -273,8 +276,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <ul key={index} className="my-4 space-y-3 list-none">
                     {block.items?.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3.5 text-[15px] md:text-[16px] text-[#444444]">
-                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#f3f3f3] font-mono text-[11px] font-bold text-[#000000] mt-0.5">
+                      <li key={i} className="flex items-start gap-3.5 text-body text-fg-muted">
+                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-inset font-mono text-[11px] font-bold text-fg mt-0.5">
                           {i + 1}
                         </span>
                         <span>{item}</span>
@@ -288,23 +291,23 @@ export default async function BlogPostPage({ params }: PageProps) {
           })}
 
           {/* Share Section */}
-          <div className="pt-8 border-t border-[#e5e5e5]">
+          <div className="pt-8 border-t border-line">
             <ShareButtons title={post.title} url={articleUrl} />
           </div>
         </article>
 
         {/* Interactive Play Banner Callout */}
-        <section className="max-w-4xl rounded-[32px] bg-[#000000] p-8 md:p-12 text-white">
+        <section className="max-w-4xl rounded-block bg-black p-8 sm:p-12 text-white" data-surface="ink">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <span className="inline-flex items-center rounded-full bg-[#d1ffca] px-3 py-0.5 font-mono text-[11px] font-medium uppercase text-[#000000]">
-                READY TO TEST YOUR SKILLS?
+              <span className="tag bg-zinc-800 text-zinc-200">
+                Ready to Test Your Skills?
               </span>
-              <h3 className="font-condensed text-[32px] sm:text-[40px] font-bold uppercase leading-[0.92] tracking-[-0.03em] text-white">
-                PLAY REAL-TIME CHESS ON TELEGRAM.
+              <h3 className="poster text-heading-lg text-white">
+                Play Real-Time Chess on Telegram.
               </h3>
-              <p className="text-[14px] text-[#979797]">
-                Zero download required. Play free ranked matches or stake USDT instantly.
+              <p className="text-body-sm text-zinc-400">
+                Zero app download required. Play free ranked matches or stake USDT instantly.
               </p>
             </div>
 
@@ -312,7 +315,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               href={telegramLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[8px] bg-white px-8 py-4 font-medium text-[15px] text-[#000000] transition-opacity hover:opacity-90 active:scale-95"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-control bg-white px-8 py-4 font-semibold text-body-sm text-black transition-opacity hover:opacity-90 active:scale-95"
             >
               <Icon name="book-open-text" size={16} />
               <span>Launch Web3Chess</span>
@@ -322,16 +325,16 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         {/* Related Articles Section */}
         {relatedPosts.length > 0 && (
-          <section aria-labelledby="related-heading" className="space-y-6 pt-8">
+          <section aria-labelledby="related-heading" className="space-y-6 pt-8 max-w-4xl">
             <div className="flex items-center justify-between">
-              <h2 id="related-heading" className="font-mono text-[12px] uppercase tracking-wider text-[#979797]">
+              <h2 id="related-heading" className="font-mono text-overline uppercase text-fg-muted">
                 Related Articles
               </h2>
               <Link
                 href="/blog"
-                className="font-mono text-[12px] uppercase tracking-wider text-[#000000] hover:underline"
+                className="font-mono text-overline uppercase text-fg hover:underline"
               >
-                View all →
+                View all articles →
               </Link>
             </div>
 

@@ -60,7 +60,7 @@ export default function BlogHubPage() {
         {/* Featured Post Hero */}
         <section aria-labelledby="featured-post-heading">
           <div className="flex items-center justify-between mb-4">
-            <h2 id="featured-post-heading" className="font-mono text-[12px] uppercase tracking-wider text-[#979797]">
+            <h2 id="featured-post-heading" className="font-mono text-overline uppercase text-fg-muted">
               Featured Story
             </h2>
           </div>
@@ -70,7 +70,7 @@ export default function BlogHubPage() {
         {/* Regular Articles Grid */}
         <section aria-labelledby="latest-articles-heading" className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 id="latest-articles-heading" className="font-mono text-[12px] uppercase tracking-wider text-[#979797]">
+            <h2 id="latest-articles-heading" className="font-mono text-overline uppercase text-fg-muted">
               All Articles ({BLOG_POSTS.length})
             </h2>
           </div>
