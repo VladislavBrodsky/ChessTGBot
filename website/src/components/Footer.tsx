@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "./Logo";
 import { home } from "@/content/home";
 import { SITE, telegramLink } from "@/lib/config";
@@ -28,19 +29,32 @@ export async function Footer() {
               <div key={col.title} className="space-y-3">
                 <p className="font-mono text-overline uppercase text-fg-link">{col.title}</p>
                 <ul className="grid gap-2.5">
-                  {col.links.map((l) => (
-                    <li key={l.label}>
-                      <a
-                        href={l.href === "#" ? telegramLink() : l.href}
-                        className="link text-body text-fg-muted hover:text-fg"
-                        {...(l.href.startsWith("http") || l.href === "#"
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        {l.label}
-                      </a>
-                    </li>
-                  ))}
+                  {col.links.map((l) => {
+                    const isExternal = l.href.startsWith("http") || l.href === "#";
+                    const targetHref = l.href === "#" ? telegramLink() : l.href;
+
+                    return (
+                      <li key={l.label}>
+                        {isExternal ? (
+                          <a
+                            href={targetHref}
+                            className="link text-body text-fg-muted hover:text-fg"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {l.label}
+                          </a>
+                        ) : (
+                          <Link
+                            href={targetHref}
+                            className="link text-body text-fg-muted hover:text-fg"
+                          >
+                            {l.label}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}

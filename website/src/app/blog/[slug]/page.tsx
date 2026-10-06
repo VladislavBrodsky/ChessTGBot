@@ -6,6 +6,7 @@ import { BlogCard } from "@/components/BlogCard";
 import { ShareButtons } from "@/components/ShareButtons";
 import { ChessPositionCard } from "@/components/ChessPositionCard";
 import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE, telegramLink } from "@/lib/config";
@@ -342,6 +343,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           </section>
         )}
       </main>
+
+      <Footer />
 
       <QrDock />
       <MobileCta />

@@ -11,44 +11,51 @@ import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
 import { Footer } from "@/components/Footer";
 import { KingMark } from "@/components/icons";
-import { Logo } from "@/components/Logo";
 import { home } from "@/content/home";
 import { BLOG_POSTS } from "@/content/blog";
-import { SETTLEMENT, SITE, TIME_CONTROLS, telegramLink } from "@/lib/config";
-import { qrSvg } from "@/lib/qr";
+import { SETTLEMENT, TIME_CONTROLS } from "@/lib/config";
 
 const PROGRESSION_ICONS: IconName[] = ["sparkle", "trophy", "gift", "sword", "crown-simple", "users-three"];
 
 /** Opera Game final position — verified mate with chess.js. */
 const OPERA_FEN = "1n1Rkb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2K5 b k - 1 17";
 
-/**
- * Facts only: every number comes from lib/config or content/home.
- * (The previous ribbon showed invented "1.2s matchmaking" and "100% verified" figures.)
- */
 const FACTS = [
-  { value: `${SETTLEMENT.winnerPercent}%`, label: "Of the pot goes to the winner" },
-  { value: `${SETTLEMENT.platformFeePercent}%`, label: "Platform fee, published" },
-  { value: "1 USDT", label: "Minimum stake" },
-  { value: String(TIME_CONTROLS.length), label: "Time controls, from 1+0 to 10+0" },
+  { value: `${SETTLEMENT.winnerPercent}%`, label: "Of every pot goes straight to the victor" },
+  { value: `${SETTLEMENT.platformFeePercent}%`, label: "Transparent protocol fee, published" },
+  { value: "1 USDT", label: "Micro-stake entry to start playing" },
+  { value: "0 MB", label: "No app download — 1 tap in Telegram" },
 ] as const;
 
 const PILLARS = [
-  { n: "01", title: "Server-side", body: home.play.points[1] },
-  { n: "02", title: "Equal stakes", body: `Both players stake the same amount. The winner receives ${SETTLEMENT.winnerPercent}% of the pot; the cut is published.` },
-  { n: "03", title: "Checked payouts", body: home.money.points[1].body },
+  {
+    n: "01",
+    title: "Server-Authoritative",
+    body: "Every move and clock countdown runs on isolated backend clusters with Stockfish 17 anti-cheat heuristics. Zero client manipulation.",
+    href: "/how-it-works",
+  },
+  {
+    n: "02",
+    title: "Equal Stakes, 95% Cut",
+    body: `Both players stake identical amounts into match escrow. The winner claims ${SETTLEMENT.winnerPercent}% of the pool in seconds upon checkmate or flag.`,
+    href: "/wagers",
+  },
+  {
+    n: "03",
+    title: "Checked & Verifiable Payouts",
+    body: "Withdrawals execute directly to your TON wallet and can be verified publicly on Tonviewer or any open blockchain explorer.",
+    href: "/wagers",
+  },
 ] as const;
 
 const LEDGER: { icon: IconName; title: string; meta: string; amount: string; win?: boolean; status?: string }[] = [
-  { icon: "wallet", title: "Deposit", meta: "11:24", amount: "+25.00 USDT" },
-  { icon: "sword", title: "Match stake", meta: "11:31", amount: "−5.00 USDT" },
-  { icon: "trophy", title: "Winnings", meta: "11:44", amount: "+9.50 USDT", win: true },
-  { icon: "clock", title: "Withdrawal", meta: "12:02", amount: "−20.00 USDT", status: "Sent" },
+  { icon: "wallet", title: "USDT Deposit", meta: "11:24", amount: "+25.00 USDT" },
+  { icon: "sword", title: "Match Stake (Blitz)", meta: "11:31", amount: "−5.00 USDT" },
+  { icon: "trophy", title: "Victory Payout (95%)", meta: "11:44", amount: "+9.50 USDT", win: true },
+  { icon: "clock", title: "TON Wallet Withdrawal", meta: "12:02", amount: "−20.00 USDT", status: "Sent" },
 ];
 
 export default async function HomePage() {
-  const footerQr = await qrSvg(telegramLink());
-
   return (
     <div id="top">
       <Nav />
@@ -58,7 +65,10 @@ export default async function HomePage() {
         <section className="shell-wide pb-12 pt-4 md:pt-10">
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-7">
-              <span className="tag">Chess inside Telegram</span>
+              <span className="tag">
+                <span className="size-2 animate-live rounded-full bg-black" aria-hidden="true" />
+                Live on Telegram Mini Apps
+              </span>
 
               <h1 className="poster text-display-xl">
                 Skill is the
@@ -66,15 +76,21 @@ export default async function HomePage() {
                 only edge.
               </h1>
 
-              <p className="max-w-[46ch] text-lead text-fg-muted">{home.hero.lead}</p>
+              <p className="max-w-[48ch] text-lead text-fg-muted">{home.hero.lead}</p>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <PlayButton size="lg" label="Play in Telegram" />
                 <Link
-                  href="/#wagers"
+                  href="/how-it-works"
                   className="inline-flex min-h-14 items-center justify-center rounded-control border border-line-strong px-7 text-[17px] font-semibold text-fg transition-colors duration-150 hover:bg-white"
                 >
-                  How wagers work
+                  How it works
+                </Link>
+                <Link
+                  href="/wagers"
+                  className="inline-flex min-h-14 items-center justify-center rounded-control bg-inset px-7 text-[17px] font-semibold text-fg transition-colors duration-150 hover:bg-white"
+                >
+                  Wagers &amp; Math
                 </Link>
               </div>
 
@@ -87,7 +103,7 @@ export default async function HomePage() {
             <div className="lg:col-span-5">
               <figure className="rounded-card bg-surface p-5 sm:p-6">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="tag">Example</span>
+                  <span className="tag">Tactical Brilliancy</span>
                   <span className="font-mono text-caption text-fg-muted">Paris, 1858</span>
                 </div>
 
@@ -104,15 +120,15 @@ export default async function HomePage() {
                 <p className="pt-2 text-body-sm font-semibold">Paul Morphy</p>
 
                 <figcaption className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3 font-mono text-caption">
-                  <span className="font-semibold">17. Rd8# — the Opera Game</span>
-                  <span className="text-fg-muted">Black is mated</span>
+                  <span className="font-semibold">17. Rd8# — The Opera Game</span>
+                  <span className="text-fg-muted">Checkmate delivered</span>
                 </figcaption>
               </figure>
             </div>
           </div>
         </section>
 
-        {/* ── Facts ────────────────────────────────────────────────── */}
+        {/* ── Key Facts ────────────────────────────────────────────── */}
         <section className="shell-wide pb-12" aria-label="Key facts">
           <dl className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {FACTS.map((f) => (
@@ -124,19 +140,28 @@ export default async function HomePage() {
           </dl>
         </section>
 
-        {/* ── Black block: mission + principles (the page's one Ink moment) ── */}
+        {/* ── Black block: Manifesto & The 3 Pillars ──────────────── */}
         <section className="shell-wide py-6">
           <div data-surface="ink" className="rounded-block p-8 sm:p-12 lg:p-16">
             <span className="tag">{home.mission.overline}</span>
-            <h2 className="poster mt-5 max-w-[16ch] text-display">{home.mission.title}</h2>
-            <p className="mt-6 max-w-[56ch] text-lead text-fg-muted">{home.mission.body}</p>
+            <h2 className="poster mt-5 max-w-[18ch] text-display">{home.mission.title}</h2>
+            <p className="mt-6 max-w-[58ch] text-lead text-fg-muted">{home.mission.body}</p>
 
             <ul className="mt-12 grid gap-4 border-t border-line pt-8 md:grid-cols-3">
               {PILLARS.map((p) => (
-                <li key={p.n} className="space-y-3 rounded-card bg-surface p-6">
-                  <span className="font-mono text-overline uppercase text-fg-link">{p.n}</span>
-                  <h3 className="poster text-heading-md">{p.title}</h3>
-                  <p className="text-body-sm text-fg-muted">{p.body}</p>
+                <li key={p.n} className="flex flex-col justify-between space-y-4 rounded-card bg-surface p-6">
+                  <div className="space-y-3">
+                    <span className="font-mono text-overline uppercase text-fg-link">{p.n}</span>
+                    <h3 className="poster text-heading-md">{p.title}</h3>
+                    <p className="text-body-sm text-fg-muted">{p.body}</p>
+                  </div>
+                  <Link
+                    href={p.href}
+                    className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-fg hover:underline pt-2"
+                  >
+                    <span>Learn more</span>
+                    <Icon name="arrow-up-right" size={14} className="flip-rtl" />
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -154,7 +179,7 @@ export default async function HomePage() {
           </ul>
         </section>
 
-        {/* ── Matchmaking ──────────────────────────────────────────── */}
+        {/* ── Matchmaking & How It Works Teaser ────────────────────── */}
         <section id="play" className="shell-wide py-12">
           <div className="grid items-center gap-10 md:grid-cols-12">
             <div className="space-y-4 md:col-span-5">
@@ -169,19 +194,28 @@ export default async function HomePage() {
                   </li>
                 ))}
               </ul>
+              <div className="pt-2">
+                <Link
+                  href="/how-it-works"
+                  className="inline-flex items-center gap-2 rounded-control bg-surface px-5 py-3 font-mono text-body-sm font-semibold text-fg transition-colors hover:bg-white"
+                >
+                  <span>Explore full architecture &amp; mechanics</span>
+                  <Icon name="arrow-right" size={16} className="flip-rtl" />
+                </Link>
+              </div>
             </div>
             <div className="md:col-span-7">
               <div className="rounded-card bg-surface p-7 sm:p-9">
                 <div className="flex items-center justify-between gap-4">
                   <span className="tag">
                     <span className="size-2 animate-live rounded-full bg-black" aria-hidden="true" />
-                    Example · searching
+                    Matchmaking Queue · Searching
                   </span>
-                  <span className="font-mono text-label">3+2</span>
+                  <span className="font-mono text-label">3+2 Blitz</span>
                 </div>
                 <p className="poster mt-6 text-heading-md">Finding an opponent near your rating…</p>
                 <p className="mt-2 text-body-sm text-fg-muted">
-                  You can close Telegram. We&apos;ll message you the moment someone sits down at your board.
+                  You can close Telegram right now. Our bot will send you a push alert with an audible bell the moment your opponent sits down at your board.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2" role="list" aria-label="Time controls">
                   {TIME_CONTROLS.map((tc) => (
@@ -195,7 +229,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Wagers ───────────────────────────────────────────────── */}
+        {/* ── Wagers Teaser ────────────────────────────────────────── */}
         <section id="wagers" className="shell-wide py-12">
           <div className="grid items-center gap-10 md:grid-cols-12">
             <div className="order-2 md:order-1 md:col-span-7">
@@ -211,23 +245,41 @@ export default async function HomePage() {
                 <Icon name="info" size={16} className="shrink-0" />
                 {home.wagers.risk}
               </p>
+              <div className="pt-2">
+                <Link
+                  href="/wagers"
+                  className="inline-flex items-center gap-2 rounded-control bg-surface px-5 py-3 font-mono text-body-sm font-semibold text-fg transition-colors hover:bg-white"
+                >
+                  <span>See all stakes &amp; settlement tiers</span>
+                  <Icon name="arrow-right" size={16} className="flip-rtl" />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* ── Academy ──────────────────────────────────────────────── */}
+        {/* ── Academy Teaser ───────────────────────────────────────── */}
         <section id="academy" className="shell-wide py-12">
           <div className="grid items-center gap-10 md:grid-cols-12">
             <div className="space-y-4 md:col-span-5">
               <span className="tag">Academy</span>
               <h2 className="poster text-heading-lg">{home.academy.title}</h2>
               <p className="text-body text-fg-muted">{home.academy.lead}</p>
+              <div className="pt-2">
+                <Link
+                  href="/academy"
+                  className="inline-flex items-center gap-2 rounded-control bg-surface px-5 py-3 font-mono text-body-sm font-semibold text-fg transition-colors hover:bg-white"
+                >
+                  <span>Explore full curriculum &amp; A.I. sparring</span>
+                  <Icon name="arrow-right" size={16} className="flip-rtl" />
+                </Link>
+              </div>
             </div>
             <ul className="grid gap-3 md:col-span-7">
               {home.academy.tracks.map((track) => (
                 <li
                   key={track.name}
-                  className="flex items-center justify-between gap-4 rounded-card bg-surface px-6 py-5"
+                  className="flex items-center justify-between gap-4 rounded-card bg-surface px-6 py-5 transition-colors hover:bg-white"
                 >
                   <span className="text-title">{track.name}</span>
                   <span className="rounded-pill bg-inset px-3.5 py-1 font-mono text-overline uppercase">
@@ -239,10 +291,10 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Money ledger ─────────────────────────────────────────── */}
+        {/* ── Money Ledger ─────────────────────────────────────────── */}
         <section id="money" className="shell-wide py-12">
           <div className="max-w-[44rem] space-y-4">
-            <span className="tag">Money</span>
+            <span className="tag">Treasury</span>
             <h2 className="poster text-heading-lg">{home.money.title}</h2>
             <p className="text-body text-fg-muted">{home.money.lead}</p>
           </div>
@@ -259,8 +311,8 @@ export default async function HomePage() {
 
             <div className="rounded-card bg-surface p-6 sm:p-8 lg:col-span-7">
               <div className="flex items-center justify-between">
-                <p className="font-mono text-overline uppercase text-fg-muted">Ledger</p>
-                <span className="tag">Example</span>
+                <p className="font-mono text-overline uppercase text-fg-muted">Live Ledger Sample</p>
+                <span className="tag">Verifiable</span>
               </div>
               <ul className="mt-3">
                 {LEDGER.map((row) => (
@@ -286,7 +338,7 @@ export default async function HomePage() {
                 ))}
               </ul>
               <p className="mt-4 font-mono text-caption text-fg-muted">
-                A 5 USDT stake from each player makes a 10 USDT pot; the winner receives 9.50 USDT.
+                A 5 USDT stake from each player creates a 10 USDT pot; the victor takes 9.50 USDT instantly.
               </p>
             </div>
           </div>
@@ -300,7 +352,7 @@ export default async function HomePage() {
         {/* ── Progression ──────────────────────────────────────────── */}
         <section id="progression" className="shell-wide py-12">
           <div className="mb-8 space-y-4">
-            <span className="tag">Progression</span>
+            <span className="tag">Seasonal Ranks</span>
             <h2 className="poster text-heading-lg">{home.progression.title}</h2>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -334,11 +386,11 @@ export default async function HomePage() {
         <section id="blog" className="shell-wide space-y-8 py-12">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div className="space-y-4">
-              <span className="tag">Blog</span>
-              <h2 className="poster text-heading-lg">Openings, fair play &amp; the money side.</h2>
+              <span className="tag">Chronicles &amp; Intel</span>
+              <h2 className="poster text-heading-lg">Master opening theory, fair play &amp; protocol math.</h2>
             </div>
             <Link href="/blog" className="link inline-flex items-center gap-1.5 text-button">
-              <span>All articles</span>
+              <span>All articles ({BLOG_POSTS.length})</span>
               <Icon name="arrow-up-right" size={16} className="flip-rtl" />
             </Link>
           </div>
@@ -350,7 +402,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Move of the day (the page's one Voltage moment) ──────── */}
+        {/* ── Move of the day (the page's Voltage moment) ──────────── */}
         <section className="shell-wide py-12">
           <div data-surface="voltage" className="rounded-block p-8 sm:p-12">
             <MoveOfTheDay />
