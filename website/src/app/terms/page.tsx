@@ -18,37 +18,35 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#e5e5e5] text-[#000000]">
+    <div className="min-h-screen bg-canvas text-fg">
       <Nav />
 
-      <main className="shell-wide space-y-12 py-8 md:py-14 max-w-4xl">
+      <main className="shell-prose space-y-12 py-8 md:py-14">
         {/* Top Breadcrumb */}
         <div className="flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-[8px] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase text-[#000000] transition-opacity hover:opacity-80"
+            className="inline-flex items-center gap-2 rounded-control bg-surface px-4 py-2 font-mono text-overline uppercase text-fg transition-opacity hover:opacity-80"
           >
-            <Icon name="arrow-left" size={14} />
+            <Icon name="arrow-left" size={14} className="flip-rtl" />
             <span>Back to Home</span>
           </Link>
-          <span className="font-mono text-[12px] text-[#979797]">Last updated: September 2026</span>
+          <span className="font-mono text-caption text-fg-muted">Last updated: September 2026</span>
         </div>
 
         {/* Header */}
         <section className="space-y-4">
-          <span className="inline-flex items-center rounded-full bg-[#d1ffca] px-3.5 py-1 font-mono text-[11px] font-medium uppercase text-[#000000]">
-            LEGAL PROTOCOL
-          </span>
-          <h1 className="font-condensed text-[48px] sm:text-[68px] font-bold uppercase leading-[0.9] tracking-[-0.03em] text-[#000000]">
-            TERMS OF SERVICE
+          <span className="tag">Legal Protocol</span>
+          <h1 className="poster text-heading-xl text-fg">
+            Terms of Service
           </h1>
-          <p className="text-[16px] sm:text-[18px] leading-[1.4] text-[#444444]">
+          <p className="text-body sm:text-lead text-fg-muted">
             By accessing Web3Chess via Telegram Mini App, web, or smart contract interactions, you agree to comply with these terms.
           </p>
         </section>
 
         {/* Content Card */}
-        <div className="rounded-[32px] bg-white p-8 md:p-14 space-y-8 text-[15px] sm:text-[16px] leading-[1.65] text-[#444444]">
+        <div className="rounded-card bg-surface p-8 md:p-12 space-y-8 text-body text-fg-muted">
           <section className="space-y-3">
             <h2 className="font-condensed text-[26px] sm:text-[30px] font-bold uppercase text-[#000000]">
               1. ELIGIBILITY &amp; AGE REQUIREMENTS
