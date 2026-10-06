@@ -38,7 +38,7 @@ export function FogBoard({
 }: Props) {
   return (
     <div
-      className="overflow-hidden rounded-[24px]"
+      className="overflow-hidden rounded-media"
       role="img"
       aria-label={label}
     >

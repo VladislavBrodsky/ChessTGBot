@@ -1,10 +1,10 @@
 # Web3Chess Website: DESIGN.md
 
-**System:** Fog Board, *"a tournament poster on fog"*
-**Version:** 1.0 · 2026-09-11
-**Scope:** the public marketing website for Web3Chess (web3chess.online, or wherever the owner places it; see §14.4).
+**System:** Concrete Poster (Dayos / Refero style ee403055), *"brutalist editorial showroom on warm gray"*
+**Version:** 2.0 · 2026-10-06
+**Scope:** the public marketing website for Web3Chess (web3chess.online).
 **Not in scope:** the Telegram Mini App in `frontend/`, which keeps **Obsidian Chess** ([`BRAND_DESIGN_SYSTEM.md`](../../BRAND_DESIGN_SYSTEM.md)).
-**Reference:** Fold (fold.money) via Refero Styles, audited and corrected in [`REFERENCE_AUDIT.md`](REFERENCE_AUDIT.md).
+**Reference:** Dayos (dayos.com) via Refero Styles (`ee403055-480e-4bd4-9216-07c9ae2dde2e`).
 
 | File | What it is |
 |---|---|

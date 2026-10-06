@@ -13,7 +13,7 @@ const INITIAL_FEN = "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1";
 export function MoveOfTheDay() {
   const [game, setGame] = useState(() => new Chess(INITIAL_FEN));
   const [solved, setSolved] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+  const [, setRevealed] = useState(false);
   const [errorShake, setErrorShake] = useState(false);
 
   const handleDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) => {
@@ -71,29 +71,29 @@ export function MoveOfTheDay() {
               : { a1: { backgroundColor: "rgba(0, 0, 0, 0.15)" } }
           }
         />
-        <p className="mt-3 text-center font-mono text-[12px] text-[#042939]/75 font-semibold">
-          {solved ? "✓ Checkmate position reached" : "Drag the rook or click a square to move"}
+        <p className="mt-3 text-center font-mono text-caption font-semibold" aria-live="polite">
+          {solved ? "Checkmate position reached" : "Drag the rook, or click a square to move"}
         </p>
       </div>
 
-      <div className="md:col-span-6 space-y-4 text-[#042939]">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full bg-[#042939] px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-tight text-white">
+      <div className="space-y-4 md:col-span-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center rounded-pill bg-inverse px-3.5 py-1 font-mono text-overline uppercase text-fg-inverse">
             {home.moveOfTheDay.overline}
           </span>
           {solved && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 font-mono text-[11px] font-bold text-[#042939] shadow-sm">
-              <Icon name="check-circle" size={14} className="text-[#047857]" />
-              SOLVED
+            <span className="inline-flex items-center gap-1.5 rounded-pill bg-white px-3 py-1 font-mono text-overline uppercase text-black">
+              <Icon name="check-circle" size={14} />
+              Solved
             </span>
           )}
         </div>
 
-        <h2 className="font-sans text-[36px] sm:text-[48px] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-[#042939]">
-          {solved ? "BOOM. CHECKMATE IN 1." : home.moveOfTheDay.title}
+        <h2 className="poster text-heading-lg">
+          {solved ? "Checkmate in 1." : home.moveOfTheDay.title}
         </h2>
 
-        <p className="text-[16px] leading-[1.4] text-[#042939]/85 font-medium">
+        <p className="text-body-sm font-medium sm:text-body">
           {solved
             ? "White delivers back-rank mate with 1. Ra8#. The black pawns trap their own king with no escape square."
             : home.moveOfTheDay.body}
@@ -106,31 +106,29 @@ export function MoveOfTheDay() {
                 href={telegramLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-[#042939] px-7 py-3.5 font-semibold text-[15px] text-white transition-opacity hover:opacity-90 active:scale-95 shadow-md"
+                className="inline-flex min-h-12 items-center gap-2 rounded-control bg-inverse px-5 text-button text-fg-inverse transition-colors duration-150 hover:bg-graphite active:scale-[.98]"
               >
-                <span>Play Live in Telegram</span>
-                <Icon name="arrow-right" size={16} />
+                <span>Play in Telegram</span>
+                <Icon name="arrow-right" size={16} className="flip-rtl" />
               </a>
               <button
                 type="button"
                 onClick={handleReset}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#042939] px-5 py-3 font-mono text-[13px] font-semibold text-[#042939] hover:bg-black/5"
+                className="inline-flex min-h-12 items-center gap-1.5 rounded-control border border-black px-5 text-button hover:bg-white/60"
               >
                 <Icon name="arrow-counter-clockwise" size={14} />
-                <span>Reset Puzzle</span>
+                <span>Reset puzzle</span>
               </button>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={handleReveal}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#042939] px-6 py-3.5 font-semibold text-[14px] text-white transition-opacity hover:opacity-90 shadow-sm"
-              >
-                <Icon name="sparkle" size={14} className="text-[#FFFF00]" />
-                <span>{revealed ? "Show Solution" : "Give Me A Hint"}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleReveal}
+              className="inline-flex min-h-12 items-center gap-1.5 rounded-control bg-inverse px-5 text-button text-fg-inverse transition-colors duration-150 hover:bg-graphite active:scale-[.98]"
+            >
+              <Icon name="sparkle" size={14} />
+              <span>Show the solution</span>
+            </button>
           )}
         </div>
       </div>

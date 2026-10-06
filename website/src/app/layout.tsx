@@ -6,19 +6,19 @@ import "./globals.css";
 const onest = Onest({
   subsets: ["latin", "latin-ext", "cyrillic"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-onest",
+  variable: "--nf-sans",
   display: "swap",
 });
 const condensed = Barlow_Condensed({
-  subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-condensed",
+  subsets: ["latin", "latin-ext"],
+  weight: ["600", "700"],
+  variable: "--nf-condensed",
   display: "swap",
 });
 const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600"],
-  variable: "--font-plex-mono",
+  variable: "--nf-mono",
   display: "swap",
 });
 
@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[140] focus:rounded-control focus:bg-surface focus:px-4 focus:py-3 focus:text-body focus:font-semibold focus:text-fg focus:shadow-card"
+          className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[140] focus:rounded-control focus:bg-surface focus:px-4 focus:py-3 focus:text-body focus:font-semibold focus:text-fg focus:border focus:border-line"
         >
           Skip to content
         </a>

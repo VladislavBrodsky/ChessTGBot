@@ -30,18 +30,21 @@ export function Nav() {
 
   return (
     <>
-      <header className="shell-wide flex h-24 sm:h-28 items-center justify-between gap-4">
-        <Link href="/" aria-label="Web3Chess home" className="flex items-center gap-2 transition-transform hover:scale-[1.02]">
+      <header className="shell-wide flex h-20 items-center justify-between gap-4 sm:h-24">
+        <Link href="/" aria-label="Web3Chess home">
           <Logo />
         </Link>
-        
-        {/* Floating Glassmorphic Nav Pill */}
-        <nav aria-label="Main" className="hidden items-center gap-7 rounded-full bg-white/85 backdrop-blur-md px-8 py-3.5 border border-[#c7cbdb]/40 shadow-[0_4px_18px_rgba(32,41,76,0.06)] lg:flex">
+
+        {/* Nav pill: 48px radius, Mist ground, hairline only */}
+        <nav
+          aria-label="Main"
+          className="hidden items-center gap-1 rounded-nav border border-line bg-inset p-1.5 lg:flex"
+        >
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-[15px] font-semibold tracking-tight text-[#20294C]/70 transition-colors duration-150 hover:text-[#20294C]"
+              className="rounded-pill px-4 py-2 text-button text-fg transition-colors duration-150 hover:bg-white"
             >
               {item.label}
             </Link>
@@ -55,52 +58,49 @@ export function Nav() {
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="grid size-11 place-items-center rounded-full bg-white text-[#20294C] border border-[#c7cbdb]/50 shadow-[0_2px_8px_rgba(32,41,76,0.08)] lg:hidden"
+            className="grid size-11 place-items-center rounded-control bg-surface text-fg lg:hidden"
           >
             <Icon name="list" size={20} />
           </button>
         </div>
       </header>
 
-      {/* Sticky condensed pill */}
+      {/* Sticky condensed pill (appears after 480px) */}
       <div
-        className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-all duration-200 lg:flex ${
+        className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${
           stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"
         }`}
       >
         <nav
           aria-label="Sticky"
-          className="flex items-center gap-6 rounded-full bg-white/95 backdrop-blur-md px-7 py-2.5 border border-[#c7cbdb]/60 shadow-[0_8px_25px_rgba(32,41,76,0.12)]"
+          className="flex items-center gap-1 rounded-nav border border-line bg-canvas p-1.5 ps-5"
         >
-          <Link href="/" aria-label="Web3Chess home" className="pe-1">
+          <Link href="/" aria-label="Web3Chess home" className="pe-3">
             <Logo />
           </Link>
           {home.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-[14px] font-semibold text-[#20294C]/70 transition-colors duration-150 hover:text-[#20294C]"
+              tabIndex={stuck ? 0 : -1}
+              className="rounded-pill px-3.5 py-2 text-body-sm font-semibold text-fg transition-colors duration-150 hover:bg-white"
             >
               {item.label}
             </Link>
           ))}
-          <PlayButton size="sm" />
+          <PlayButton size="sm" className="ms-2 rounded-pill!" />
         </nav>
       </div>
 
       {/* Mobile sheet */}
       {open && (
         <div className="fixed inset-0 z-[110] lg:hidden">
-          <div
-            className="absolute inset-0 bg-[#000000]/60"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-hidden="true" />
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-x-0 top-0 rounded-b-[32px] bg-[#e5e5e5] p-6 shadow-none border-b border-[#c6c6c6]"
+            className="absolute inset-x-0 top-0 rounded-b-card border-b border-line bg-canvas p-6"
           >
             <div className="flex items-center justify-between">
               <Logo />
@@ -108,7 +108,7 @@ export function Nav() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="grid size-11 place-items-center rounded-[8px] bg-white text-[#000000]"
+                className="grid size-11 place-items-center rounded-control bg-surface text-fg"
               >
                 <Icon name="x" size={20} />
               </button>
@@ -119,7 +119,7 @@ export function Nav() {
                   <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="flex min-h-14 items-center rounded-[16px] bg-white px-5 font-condensed text-[24px] font-bold uppercase text-[#000000]"
+                    className="poster flex min-h-14 items-center rounded-media bg-surface px-5 text-heading-sm"
                   >
                     {item.label}
                   </Link>
