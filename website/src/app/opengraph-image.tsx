@@ -108,7 +108,7 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            SKILL IS THE ONLY EDGE.
+            SKILL IS THE ONLY EDGE
           </div>
           <div
             style={{

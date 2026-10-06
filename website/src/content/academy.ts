@@ -14,7 +14,7 @@ export const academyContent = {
   hero: {
     badge: "Interactive Chess Academy",
     headlineBefore: "Turn opening prep into",
-    headlineAfter: "instant USDT.",
+    headlineAfter: "instant USDT",
     lead: "Stop blundering your edge in time trouble. Master high-percentage blitz openings, calculate killer tactical forks, and dominate the endgame before putting a single dollar on the board.",
     ctaNote: "100% Free interactive lessons · Unlimited A.I. sparring · 0 download required",
   },
@@ -99,7 +99,7 @@ export const academyContent = {
   ] as AcademyTrack[],
   aiSparring: {
     headline: "The Sandbox Engine",
-    subheadline: "Stockfish 17. From Novice to Grandmaster.",
+    subheadline: "Stockfish 17. From Novice to Grandmaster",
     description: "Before wagering your USDT in the live arena, test your opening novelties against our authoritative neural chess engine. Dial the difficulty to match your exact skill bracket.",
     levels: [
       { elo: "800 Elo", name: "Novice Sparring", desc: "Forgiving opponent. Leaves occasional tactical openings to exploit." },
@@ -110,7 +110,7 @@ export const academyContent = {
   },
   dailyPuzzle: {
     badge: "Daily Mental Workout",
-    headline: "Solve the daily puzzle, earn instant XP.",
+    headline: "Solve the daily puzzle, earn instant XP",
     description: "Every day, a new high-leverage chess position is generated from tournament archives. Solve it directly on this page or inside Telegram to boost your seasonal rank.",
   },
 } as const;

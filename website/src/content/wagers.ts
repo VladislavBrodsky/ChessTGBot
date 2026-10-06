@@ -3,8 +3,8 @@ import { SETTLEMENT } from "@/lib/config";
 export const wagersContent = {
   hero: {
     badge: "The Economics of Skill",
-    headlineBefore: "Stop playing for fake points.",
-    headlineAfter: "Play for real USDT.",
+    headlineBefore: "Stop playing for fake points",
+    headlineAfter: "Play for real USDT",
     lead: "Chess has zero RNG, zero lucky rolls, and zero pay-to-win boosts. If your calculation is deeper and your clock management is sharper, you walk away with 95% of the pot. Simple, mathematical, and instant.",
     ctaNote: "Minimum wager: 1 USDT · Transparent 3% platform fee · 18+",
   },
@@ -48,7 +48,7 @@ export const wagersContent = {
   ],
   economics: {
     headline: "The 95% Winner Take All Equation",
-    subheadline: "Where every cent of the pot actually goes.",
+    subheadline: "Where every cent of the pot actually goes",
     points: [
       {
         percent: `${SETTLEMENT.winnerPercent}%`,
@@ -81,7 +81,7 @@ export const wagersContent = {
     {
       icon: "check-circle",
       title: "Verifiable on TON Blockchain",
-      body: "When you withdraw your winnings, you receive a transaction hash verifiable on Tonviewer or any public TON block explorer.",
+      body: "When you withdraw your winnings, you receive a transaction hash verifiable on Tonviewer or any open TON block explorer.",
     },
     {
       icon: "scales",

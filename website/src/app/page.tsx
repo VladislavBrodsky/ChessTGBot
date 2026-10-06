@@ -122,7 +122,7 @@ export default async function HomePage() {
               <h1 className="poster text-display-xl">
                 Skill is the
                 <br />
-                only edge.
+                only edge
               </h1>
 
               <p className="max-w-[48ch] text-lead text-fg-muted">{home.hero.lead}</p>
@@ -436,7 +436,7 @@ export default async function HomePage() {
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div className="space-y-4">
               <span className="tag">Chronicles &amp; Intel</span>
-              <h2 className="poster text-heading-lg">Master opening theory, fair play &amp; protocol math.</h2>
+              <h2 className="poster text-heading-lg">Master opening theory, fair play &amp; protocol math</h2>
             </div>
             <Link href="/blog" className="link inline-flex items-center gap-1.5 text-button">
               <span>All articles ({BLOG_POSTS.length})</span>
@@ -462,7 +462,7 @@ export default async function HomePage() {
         <section id="faq" className="shell-wide py-12">
           <div className="mb-8 space-y-4">
             <span className="tag">FAQ</span>
-            <h2 className="poster text-heading-lg">Questions players ask.</h2>
+            <h2 className="poster text-heading-lg">Questions players ask</h2>
           </div>
           <div className="rounded-card bg-surface p-6 sm:p-10">
             <Faq />

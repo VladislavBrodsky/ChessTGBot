@@ -50,7 +50,7 @@ export default function BlogHubPage() {
             Insights · Strategy · Technology
           </span>
           <h1 className="poster text-heading-xl text-fg">
-            Thoughts on skill, code &amp; protocol strategy.
+            Thoughts on skill, code &amp; protocol strategy
           </h1>
           <p className="text-body sm:text-lead text-fg-muted max-w-[65ch]">
             Deep dives on real-time chess engine mechanics, fair play arbitration, grandmaster opening preparation, and the future of Telegram gaming.
@@ -90,7 +90,7 @@ export default function BlogHubPage() {
                 Community Signals
               </span>
               <h3 className="poster text-heading-md text-fg">
-                Get tournament signals &amp; tactics first.
+                Get tournament signals &amp; tactics first
               </h3>
               <p className="text-body text-fg-muted">
                 Subscribe to our Telegram announcement channel for tactical breakdowns, puzzles, and season leaderboard updates.

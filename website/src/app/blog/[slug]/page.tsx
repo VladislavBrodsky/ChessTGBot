@@ -304,7 +304,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 Ready to Test Your Skills?
               </span>
               <h3 className="poster text-heading-lg text-white">
-                Play Real-Time Chess on Telegram.
+                Play Real-Time Chess on Telegram
               </h3>
               <p className="text-body-sm text-zinc-400">
                 Zero app download required. Play free ranked matches or stake USDT instantly.

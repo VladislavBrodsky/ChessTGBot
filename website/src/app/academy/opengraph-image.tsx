@@ -107,7 +107,7 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            TURN OPENING PREP INTO INSTANT USDT.
+            TURN OPENING PREP INTO INSTANT USDT
           </div>
           <div
             style={{

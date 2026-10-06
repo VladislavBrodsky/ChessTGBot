@@ -1,8 +1,8 @@
 export const howItWorksContent = {
   hero: {
     badge: "Architecture & Mechanics",
-    headlineBefore: "Zero downloads.",
-    headlineAfter: "Zero delay. Real USDT.",
+    headlineBefore: "Zero downloads",
+    headlineAfter: "Zero delay. Real USDT",
     lead: "Experience competitive chess engineered from the ground up for Telegram. Lightning-fast rating matchmaking, server-authoritative move validation, and instant 95% pot payouts the microsecond checkmate lands.",
     ctaNote: "Instant 1-tap launch · Built for iOS & Android Telegram · 18+",
   },

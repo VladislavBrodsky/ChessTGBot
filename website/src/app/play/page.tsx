@@ -15,7 +15,7 @@ export default async function PlayPage() {
   return (
     <main id="main" className="shell-prose flex min-h-screen flex-col items-center justify-center gap-8 py-16 text-center">
       <Logo />
-      <h1 className="text-heading-xl text-fg">Open the board.</h1>
+      <h1 className="poster text-heading-xl text-fg">Open the board</h1>
       <PlayButton size="lg" />
       <div className="rounded-card bg-surface p-6 shadow-card">
         <div

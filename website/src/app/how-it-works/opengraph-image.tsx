@@ -108,7 +108,7 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            ZERO DOWNLOADS. ZERO DELAY. REAL USDT.
+            ZERO DOWNLOADS. ZERO DELAY. REAL USDT
           </div>
           <div
             style={{

@@ -90,7 +90,7 @@ export function MoveOfTheDay() {
         </div>
 
         <h2 className="poster text-heading-lg">
-          {solved ? "Checkmate in 1." : home.moveOfTheDay.title}
+          {solved ? "Checkmate in 1" : home.moveOfTheDay.title}
         </h2>
 
         <p className="text-body-sm font-medium sm:text-body">

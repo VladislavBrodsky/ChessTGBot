@@ -69,9 +69,9 @@ export default function FairPlayPage() {
             Protocol Integrity
           </span>
           <h1 className="poster text-heading-xl text-fg">
-            Skill is sacred.<br />
-            No exploits.<br />
-            Zero tampering.
+            Skill is sacred<br />
+            No exploits<br />
+            Zero tampering
           </h1>
           <p className="text-body sm:text-lead text-fg-muted max-w-[65ch]">
             Chess is the ultimate game of pure intellect. We designed Web3Chess from the protocol layer up so that no player can buy an advantage, manipulate clock timers, or exploit engine assistance.
@@ -132,7 +132,7 @@ export default function FairPlayPage() {
         <section className="rounded-card bg-surface p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2">
             <h3 className="poster text-heading-sm text-fg">
-              Experience True Competitive Integrity.
+              Experience True Competitive Integrity
             </h3>
             <p className="text-body text-fg-muted">
               Join thousands of rated players in the Telegram arena.

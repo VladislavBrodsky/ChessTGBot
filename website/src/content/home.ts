@@ -2,6 +2,7 @@
  * All marketing copy for the home page.
  * Strictly compliant with truth-in-product rules (DESIGN.md §10.4):
  * no custody claims, no promised earnings, exact fees sourced from src/lib/config.ts.
+ * Typography Rule: Headlines, titles, and hooks NEVER end with a trailing period.
  */
 export const home = {
   nav: [
@@ -14,8 +15,8 @@ export const home = {
   ],
   hero: {
     headlineBefore: "Sk",
-    headlineAfter: "ll is the only edge.",
-    headlinePlain: "Skill is the only edge.",
+    headlineAfter: "ll is the only edge",
+    headlinePlain: "Skill is the only edge",
     lead: "Stop playing chess for meaningless virtual rating points. Every player match on Web3Chess is fought for real USDT — 1 USDT minimum — against verified players at your rating level. Beat your rival, take 95% of the pot.",
     ctaNote: "No download · 1-click in Telegram · Free vs the A.I. · 18+",
     boardCaption: "Morphy vs. Duke of Brunswick & Count Isouard, Paris 1858 — the final position.",
@@ -30,7 +31,7 @@ export const home = {
     "10 languages",
   ],
   play: {
-    title: "Queue up. Close Telegram. We'll alert you when your rival sits down.",
+    title: "Queue up. Close Telegram. We'll alert you when your rival sits down",
     lead: "No staring at loading spinners. Pick your time control and stake. Our Telegram bot pings you with an instant alert the millisecond an opponent in your rating bracket enters your board.",
     points: [
       "Strict rating-based matchmaking ensures games stay fiercely competitive.",
@@ -44,7 +45,7 @@ export const home = {
     risk: "Wager matches involve real money and you can lose your stake. Play responsibly. 18+.",
   },
   academy: {
-    title: "Sharpen your tactical edge before you wager.",
+    title: "Sharpen your tactical edge before you wager",
     lead: "From back-rank checkmate patterns to deep rook endgame conversions — train with interactive tactical tracks, daily puzzles, and unlimited A.I. sparring inside Telegram.",
     tracks: [
       { name: "Origins & Board Geometry", level: "Introductory" },
@@ -55,11 +56,11 @@ export const home = {
     ],
   },
   arena: {
-    title: "Engineered for rapid thumb execution under pressure.",
+    title: "Engineered for rapid thumb execution under pressure",
     lead: "A ruthless, zero-distraction dark board room built specifically for one-handed play in Telegram. High-contrast piece geometry, haptic feedback, and zero latency.",
   },
   money: {
-    title: "Your funds. In plain sight. Settle in seconds.",
+    title: "Your funds. In plain sight. Settle in seconds",
     lead: "Deposit USDT or TON seamlessly, track every move on a chronological ledger, and withdraw directly to your TON wallet.",
     points: [
       { title: "Transparent Ledger", body: "Deposits, stakes, winnings, and withdrawals appear as verifiable rows with exact amounts and timestamps." },
@@ -69,7 +70,7 @@ export const home = {
     custodyNote: "Your deposit is held as a platform balance until you withdraw it. Web3Chess is not a self-custody wallet.",
   },
   progression: {
-    title: "Every checkmate elevates your seasonal status.",
+    title: "Every checkmate elevates your seasonal status",
     tiles: [
       { title: "XP & Competitive Ranks", body: "Every rated game, completed lesson, and tactical puzzle awards XP toward your seasonal rank tier." },
       { title: "Seasonal Leaderboards", body: "Climb monthly division ladders for exclusive prize pools and tournament invitations." },
@@ -81,17 +82,17 @@ export const home = {
   },
   mission: {
     overline: "THE MANIFESTO",
-    title: "Making chess skill the only currency that matters.",
+    title: "Making chess skill the only currency that matters",
     body: "In a world of predatory casinos and pay-to-win mobile games, chess remains the ultimate bastion of pure intellect. Nobody buys a better bishop or pays to skip a blunder. We built Web3Chess to honour that pure edge: equal stakes, transparent 95% winner payouts, and instant settlement you can verify yourself.",
   },
   philosophy: {
     overline: "SPORTSMANSHIP",
-    title: "Honor the game. Respect your limits.",
+    title: "Honor the game. Respect your limits",
     body: "In classical chess, a master resigns by gently laying their king down. Know when to walk away from the tables. Set clear bankroll limits before you sit down, never chase losses, and remember that training is always free.",
   },
   moveOfTheDay: {
     overline: "MOVE OF THE DAY",
-    title: "White to play. Mate in one.",
+    title: "White to play. Mate in one",
     body: "Spot the back-rank weakness, deliver checkmate, and prove your tactical vision.",
     answer: "Ra8#",
     hint: "The black king has no escape square along the back rank.",
@@ -123,7 +124,7 @@ export const home = {
     },
   ],
   footer: {
-    statement: "The Premier Skill-Based Chess Arena on Telegram.",
+    statement: "The Premier Skill-Based Chess Arena on Telegram",
     columns: [
       {
         title: "Platform",

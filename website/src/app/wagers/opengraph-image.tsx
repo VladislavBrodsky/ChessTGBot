@@ -108,7 +108,7 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            STOP PLAYING FOR FAKE POINTS. PLAY FOR REAL USDT.
+            STOP PLAYING FOR FAKE POINTS. PLAY FOR REAL USDT
           </div>
           <div
             style={{
