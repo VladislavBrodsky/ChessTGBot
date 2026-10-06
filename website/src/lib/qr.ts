@@ -1,11 +1,11 @@
 import QRCode from "qrcode";
 
-/** Renders a QR as an inline SVG string at build time (no client JS, no image request). */
+/** Renders a QR as an inline SVG string at build time with Dayos pure black modules. */
 export async function qrSvg(data: string): Promise<string> {
   return QRCode.toString(data, {
     type: "svg",
-    margin: 0,
+    margin: 1,
     errorCorrectionLevel: "M",
-    color: { dark: "#20294C", light: "#0000" },
+    color: { dark: "#000000", light: "#0000" },
   });
 }
