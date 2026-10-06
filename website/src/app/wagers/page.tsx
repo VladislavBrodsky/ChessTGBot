@@ -21,8 +21,33 @@ export const metadata: Metadata = {
 };
 
 export default function WagersPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Game",
+        "@id": `${SITE.url}/wagers#game`,
+        name: "Web3Chess Real-Stakes Matchmaking",
+        description:
+          "Skill-based real-time chess matches with 95% winner payout, 1 USDT minimum stake, and instant TON blockchain withdrawals.",
+        operatingSystem: "Telegram",
+        offers: wagersContent.tiers.map((t) => ({
+          "@type": "Offer",
+          name: t.tier,
+          description: t.desc,
+          price: t.stake.replace(/[^0-9.]/g, ""),
+          priceCurrency: "USDT",
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-canvas text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
 
       <main className="shell-wide space-y-16 py-8 md:space-y-20 md:py-14">

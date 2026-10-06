@@ -21,8 +21,36 @@ export const metadata: Metadata = {
 };
 
 export default function AcademyPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Course",
+        "@id": `${SITE.url}/academy#course`,
+        name: "Web3Chess Tactical Academy",
+        description:
+          "Comprehensive tactical chess training tracks, opening repertoires, and Stockfish 17 sparring engine for competitive players.",
+        provider: {
+          "@type": "Organization",
+          name: "Web3Chess",
+          sameAs: SITE.url,
+        },
+        hasCourseInstance: academyContent.tracks.map((t) => ({
+          "@type": "CourseInstance",
+          name: t.title,
+          description: t.description,
+          courseMode: "online",
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-canvas text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
 
       <main className="shell-wide space-y-16 py-8 md:space-y-20 md:py-14">

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { SETTLEMENT } from "@/lib/config";
 
 export const runtime = "nodejs";
-export const alt = "Web3Chess — Real-Time Competitive Chess on Telegram";
+export const alt = "Web3Chess — The Economics of Skill: 95% Winner Payouts in USDT";
 export const size = {
   width: 1200,
   height: 630,
@@ -53,7 +53,7 @@ export default async function Image() {
                 fontWeight: 900,
               }}
             >
-              ♟
+              💰
             </div>
             <div
               style={{
@@ -65,14 +65,14 @@ export default async function Image() {
                 textTransform: "uppercase",
               }}
             >
-              WEB3CHESS
+              WEB3CHESS WAGERS
             </div>
           </div>
 
           <div
             style={{
               display: "flex",
-              backgroundColor: "#d1ffca",
+              backgroundColor: "#fff100",
               padding: "8px 20px",
               borderRadius: 40,
               fontSize: 16,
@@ -82,11 +82,11 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            TELEGRAM MINI APP
+            {SETTLEMENT.winnerPercent}% WINNER POT
           </div>
         </div>
 
-        {/* Hero Display Text Card */}
+        {/* Hero Card */}
         <div
           style={{
             display: "flex",
@@ -100,7 +100,7 @@ export default async function Image() {
           <div
             style={{
               display: "flex",
-              fontSize: 68,
+              fontSize: 62,
               fontWeight: 900,
               lineHeight: 0.95,
               letterSpacing: "-0.04em",
@@ -108,7 +108,7 @@ export default async function Image() {
               textTransform: "uppercase",
             }}
           >
-            SKILL IS THE ONLY EDGE.
+            STOP PLAYING FOR FAKE POINTS. PLAY FOR REAL USDT.
           </div>
           <div
             style={{
@@ -119,7 +119,7 @@ export default async function Image() {
               marginTop: 8,
             }}
           >
-            Real-time chess on Telegram • {SETTLEMENT.winnerPercent}% winner payout • 1 USDT minimum stake
+            Zero RNG • 1 USDT minimum stake • {SETTLEMENT.winnerPercent}% winner payout • Direct TON wallet withdrawals
           </div>
         </div>
 
@@ -133,13 +133,13 @@ export default async function Image() {
         >
           <div style={{ display: "flex", gap: 32 }}>
             <div style={{ display: "flex", fontSize: 18, fontWeight: 700, color: "#000000" }}>
-              ⚡ 1+0 BULLET &amp; 3+2 BLITZ
+              💵 1, 5, 10, 25 USDT TIERS
             </div>
             <div style={{ display: "flex", fontSize: 18, fontWeight: 700, color: "#000000" }}>
-              🏆 {SETTLEMENT.winnerPercent}% WINNER POT
+              📊 LIVE AUDITABLE LEDGER
             </div>
             <div style={{ display: "flex", fontSize: 18, fontWeight: 700, color: "#000000" }}>
-              🛡️ STOCKFISH VERIFIED
+              🔒 18+ RESPONSIBLE GAMING
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export default async function Image() {
               letterSpacing: "0.05em",
             }}
           >
-            WEB3CHESS.ONLINE
+            WEB3CHESS.ONLINE/WAGERS
           </div>
         </div>
       </div>

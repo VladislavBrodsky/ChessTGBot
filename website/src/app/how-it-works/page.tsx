@@ -20,8 +20,31 @@ export const metadata: Metadata = {
 };
 
 export default function HowItWorksPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "@id": `${SITE.url}/how-it-works#howto`,
+        name: "How to Play Competitive Chess and Win USDT on Web3Chess",
+        description:
+          "Step-by-step guide to onboarding, matchmaking, server move validation, and instant checkmate settlements in Telegram.",
+        step: howItWorksContent.steps.map((s, idx) => ({
+          "@type": "HowToStep",
+          position: idx + 1,
+          name: s.title,
+          text: s.body,
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-canvas text-fg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
 
       <main className="shell-wide space-y-16 py-8 md:space-y-20 md:py-14">

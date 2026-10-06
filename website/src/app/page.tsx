@@ -13,7 +13,7 @@ import { Footer } from "@/components/Footer";
 import { KingMark } from "@/components/icons";
 import { home } from "@/content/home";
 import { BLOG_POSTS } from "@/content/blog";
-import { SETTLEMENT, TIME_CONTROLS } from "@/lib/config";
+import { SETTLEMENT, SITE, TIME_CONTROLS } from "@/lib/config";
 
 const PROGRESSION_ICONS: IconName[] = ["sparkle", "trophy", "gift", "sword", "crown-simple", "users-three"];
 
@@ -56,8 +56,57 @@ const LEDGER: { icon: IconName; title: string; meta: string; amount: string; win
 ];
 
 export default async function HomePage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE.url}/#website`,
+        url: SITE.url,
+        name: SITE.name,
+        description: SITE.description,
+        publisher: {
+          "@type": "Organization",
+          name: SITE.name,
+          url: SITE.url,
+          logo: `${SITE.url}/icon.svg`,
+        },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${SITE.url}/#app`,
+        name: "Web3Chess",
+        applicationCategory: "GameApplication",
+        operatingSystem: "Telegram (iOS, Android, macOS, Windows, Linux, Web)",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        description:
+          "Competitive real-time chess inside Telegram. Free practice vs Stockfish 17, and USDT wager matches with 95% winner payouts.",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE.url}/#faq`,
+        mainEntity: home.faq.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.a,
+          },
+        })),
+      },
+    ],
+  };
+
   return (
     <div id="top">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
 
       <main id="main">
