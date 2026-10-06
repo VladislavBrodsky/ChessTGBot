@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
@@ -141,6 +142,7 @@ export default function FairPlayPage() {
         </section>
       </main>
 
+      <Footer />
       <QrDock />
       <MobileCta />
     </div>

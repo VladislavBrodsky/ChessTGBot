@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BLOG_POSTS } from "@/content/blog";
 import { BlogCard } from "@/components/BlogCard";
 import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE, telegramLink } from "@/lib/config";
@@ -119,6 +120,7 @@ export default function BlogHubPage() {
         </section>
       </main>
 
+      <Footer />
       <QrDock />
       <MobileCta />
     </div>

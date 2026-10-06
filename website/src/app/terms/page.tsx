@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
@@ -94,6 +95,7 @@ export default function TermsPage() {
         </div>
       </main>
 
+      <Footer />
       <QrDock />
       <MobileCta />
     </div>
