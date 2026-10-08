@@ -29,20 +29,20 @@ export function MatchPreview() {
           Interactive preview
         </span>
       </div>
-      <div className="my-8 flex items-center justify-between">
+      <div className="my-5 flex items-center justify-between">
         <div>
           <p className="font-mono text-overline uppercase text-fg-muted">
             {names[time]}
           </p>
           <p
-            className="poster mt-1 text-display tabular-nums"
+            className="poster mt-1 text-stat tabular-nums"
             aria-live="polite"
           >
             {time}
           </p>
         </div>
-        <span className="grid size-20 place-items-center rounded-pill bg-inset">
-          <Icon name="clock" size={40} />
+        <span className="grid size-16 place-items-center rounded-pill bg-inset">
+          <Icon name="clock" size={32} />
         </span>
       </div>
       <div
@@ -63,24 +63,14 @@ export function MatchPreview() {
         ))}
       </div>
       <p
-        className="mt-5 min-h-12 text-body-sm text-fg-muted"
+        className="my-4 min-h-12 text-body-sm text-fg-muted"
         aria-live="polite"
       >
         {descriptions[time]}
       </p>
-      <div className="flex items-start gap-3 border-t border-line pt-5">
-        <span className="grid size-10 shrink-0 place-items-center rounded-pill bg-chip">
-          <Icon name="paper-plane-tilt" size={20} />
-        </span>
-        <div>
-          <p className="text-body font-semibold">
-            Keep the conversation going.
-          </p>
-          <p className="mt-1 text-body-sm text-fg-muted">
-            Our bot notifies you in Telegram when an opponent is found. Select
-            your stake and start matchmaking in the app.
-          </p>
-        </div>
+      <div className="flex items-start gap-2 border-t border-line pt-4 text-caption text-fg-muted">
+        <Icon name="paper-plane-tilt" size={16} className="mt-0.5 shrink-0" />
+        <p>Choose your match in the app. Telegram notifies you when an opponent is found.</p>
       </div>
     </Card>
   );

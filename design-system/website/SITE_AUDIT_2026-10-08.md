@@ -29,3 +29,19 @@ The first-visit loop is **see a chess position → solve it → send the same po
 Measure this loop only after a privacy-reviewed first-party event plan exists. Useful events would be hero puzzle click, challenge loaded, move submitted, solved without reveal, puzzle share, Telegram handoff, browser sign-in handoff, and successful authenticated arrival in the app. Do not call a click a new player or a share a referral. Test alternate hero copy and puzzle placement against these outcomes when real data is available.
 
 Before using event-based FOMO, connect the site to a verified backend schedule and show the event time, timezone, and availability. Do not add live opponent counts, reward claims, prize pools, or countdowns without a source. Other follow-ups: localize the public journey, review Terms/Privacy with counsel, and assess article depth and search demand from actual analytics.
+
+## Follow-up: responsive space and construction
+
+The subsequent pass reviewed all 17 content routes at phone and desktop widths, plus tablet breakpoints for the nine main/policy/handoff pages. Clean overflow alone was insufficient: Wagers still repeated its split in three tall cards, the challenge left a long empty column, and repeated journal category covers resembled skeletons.
+
+| Surface | Structural correction |
+| --- | --- |
+| Wagers | Paired the calculator with its explanation/allocation on desktop; consolidated percentage cards and balance steps; preserved money units and risk details. |
+| Home | Explanation precedes the wager controls on phones; shared split rhythm, a smaller time-control preview, and compact journal cards reduce unnecessary scrolling. |
+| Academy | Introduction sits above board/controls; matched loading geometry; lesson tracks share a divided surface. |
+| How It Works | Grouped journey/questions; aligned practice and player-match actions; retained the product handoff guide. |
+| Fair Play | Grouped rule essentials and consistent phone hero action width; preserved the distinction between legal moves and outside assistance. |
+| Journal/articles | Removed repeated empty category covers from summary cards. Featured artwork, article content, metadata, related reading, and URLs remain intact. |
+| Footer/navigation | Full-width phone action, short labels, two-column community row, and a useful Ways to play route. Floating action hides when the actual footer enters view. |
+
+Measured layout and interaction results are recorded in QA.md. The design conventions are documented in DESIGN.md v2.10. These checks do not assert a measured throttled performance score or that every future content/state combination is error-free.

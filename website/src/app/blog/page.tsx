@@ -48,7 +48,7 @@ export default function BlogHubPage() {
       <Nav />
       <main
         id="main"
-        className="shell-wide space-y-12 py-6 md:space-y-16 md:py-10"
+        className="shell-wide page-flow"
       >
         <script
           type="application/ld+json"

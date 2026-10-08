@@ -79,15 +79,15 @@ export const home = {
         title: "Platform",
         links: [
           {
-            label: "Play in Telegram",
-            href: "#",
+            label: "Ways to play",
+            href: "/play",
           },
           {
             label: "How It Works",
             href: "/how-it-works",
           },
           {
-            label: "Wagers & Economics",
+            label: "Stakes & fees",
             href: "/wagers",
           },
           {
@@ -95,7 +95,7 @@ export const home = {
             href: "/academy",
           },
           {
-            label: "Chronicles & Blog",
+            label: "Chess journal",
             href: "/blog",
           },
         ],
@@ -104,7 +104,7 @@ export const home = {
         title: "Integrity",
         links: [
           {
-            label: "Fair Play Protocol",
+            label: "Fair play",
             href: "/fair-play",
           },
           {

@@ -10,14 +10,14 @@ export async function Footer() {
   const footerQr = await qrSvg(telegramLink());
 
   return (
-    <footer className="shell-wide pb-16 pt-12">
+    <footer className="shell-wide pb-8 pt-8 sm:pb-12 sm:pt-10">
       <div
         data-surface="ink"
         className="rounded-card p-6 sm:p-10 lg:rounded-block lg:p-12"
       >
         <div className="flex flex-wrap items-center justify-between gap-5 border-b border-line pb-6 sm:pb-8">
           <Logo inverse />
-          <PlayButton variant="onDark" />
+          <PlayButton variant="onDark" className="w-full sm:w-auto" />
         </div>
         <div className="grid items-start gap-8 py-6 sm:py-8 lg:grid-cols-[1fr_auto] lg:gap-12">
           <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
@@ -29,17 +29,15 @@ export async function Footer() {
                 <p className="font-mono text-overline uppercase text-fg-link">
                   {col.title}
                 </p>
-                <ul className="grid gap-1">
+                <ul className={`grid gap-1 ${index === 2 ? "grid-cols-2 gap-x-6 sm:grid-cols-1" : ""}`}>
                   {col.links.map((l) => {
-                    const isExternal =
-                      l.href.startsWith("http") || l.href === "#";
-                    const targetHref = l.href === "#" ? telegramLink() : l.href;
+                    const isExternal = l.href.startsWith("http");
 
                     return (
                       <li key={l.label}>
                         {isExternal ? (
                           <a
-                            href={targetHref}
+                            href={l.href}
                             className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -48,7 +46,7 @@ export async function Footer() {
                           </a>
                         ) : (
                           <Link
-                            href={targetHref}
+                            href={l.href}
                             className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
                           >
                             {l.label}

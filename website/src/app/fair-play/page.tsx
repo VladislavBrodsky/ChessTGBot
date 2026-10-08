@@ -6,6 +6,7 @@ import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { PageHero } from "@/components/PageHero";
 import { ChessSculpture } from "@/components/ChessSculpture";
+import { InfoGrid } from "@/components/InfoGrid";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
@@ -44,7 +45,7 @@ export default function FairPlayPage() {
       <Nav />
       <main
         id="main"
-        className="shell-wide space-y-16 py-6 md:space-y-20 md:py-10"
+        className="shell-wide page-flow"
       >
         <PageHero
           eyebrow="Respect the board"
@@ -68,22 +69,13 @@ export default function FairPlayPage() {
             <span>01 / The essentials</span>
             <span>Fair play starts with you</span>
           </div>
-          <h2 id="rules-heading" className="editorial-title mb-8">
+          <h2 id="rules-heading" className="editorial-title mb-6">
             Same board. Same rules.
           </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {pillars.map((pillar) => (
-              <Card key={pillar.title}>
-                <span className="grid size-12 place-items-center rounded-media bg-inset">
-                  <Icon name={pillar.icon} size={24} />
-                </span>
-                <h3 className="mt-6 text-heading-sm font-medium">
-                  {pillar.title}
-                </h3>
-                <p className="mt-3 text-body text-fg-muted">{pillar.body}</p>
-              </Card>
-            ))}
-          </div>
+          <InfoGrid items={pillars.map((pillar) => ({
+            title: pillar.title, body: pillar.body,
+            marker: <Icon name={pillar.icon} size={20} />,
+          }))} />
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>A clear distinction</Eyebrow>
@@ -92,7 +84,7 @@ export default function FairPlayPage() {
             <br />
             Honest play.
           </h2>
-          <p className="mt-5 max-w-[60ch] text-lead text-fg-muted">
+          <p className="mt-5 max-w-[60ch] section-lead text-fg-muted">
             Server validation catches illegal moves. It does not, on its own,
             prove that a player has avoided outside assistance. We do not
             promise that any online chess platform can eliminate cheating.

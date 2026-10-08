@@ -12,11 +12,11 @@ export function WagerDemo() {
   const payout = winnerReceives(stake);
   const netGain = payout - stake;
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Eyebrow>Try the match math</Eyebrow>
-        <span className="font-mono text-caption text-fg-muted">
-          Example · No transaction
+        <Eyebrow>Match example</Eyebrow>
+        <span className="text-caption text-fg-muted">
+          No transaction
         </span>
       </div>
       <p className="text-body-sm text-fg-muted">
@@ -40,7 +40,7 @@ export function WagerDemo() {
           </button>
         ))}
       </div>
-      <dl className="grid gap-4 border-t border-line pt-5 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
+      <dl className="grid gap-3 border-t border-line pt-4 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
         <div className="flex justify-between gap-4">
           <dt className="text-fg-muted">Combined pot</dt>
           <dd className="font-mono font-semibold">{fmt(pot)}</dd>
@@ -61,15 +61,15 @@ export function WagerDemo() {
             {fmt((pot * SETTLEMENT.referralFeePercent) / 100)}
           </dd>
         </div>
-        <div className="border-t border-line pt-5">
+        <div className="border-t border-line pt-4">
           <dt className="text-caption text-fg-muted">
-            Winner receives · includes original stake
+            Winner receives, including original stake
           </dt>
           <dd
-            className="poster mt-2 text-heading-lg text-fg-win"
+            className="wager-result poster mt-2 text-stat text-fg-win"
             aria-live="polite"
           >
-            {fmt(payout)}
+            <span>{payout.toFixed(2)}</span>{" "}<span className="wager-result-unit">USDT</span>
           </dd>
         </div>
         <div className="flex justify-between gap-4">
@@ -82,8 +82,7 @@ export function WagerDemo() {
         </div>
       </dl>
       <p className="rounded-media bg-inset p-4 text-caption text-fg-muted">
-        A decided match credits the winner’s platform balance. A wallet
-        withdrawal is a separate request.
+        Credited to the winner’s platform balance. Wallet withdrawals are requested separately.
       </p>
       <p className="text-caption text-fg-muted">
         You can lose your stake. Wager matches are 18+. Check current fees and

@@ -26,10 +26,10 @@ export function ChallengePlaceholder({ error = false }: { error?: boolean }) {
           <Button onClick={() => window.location.reload()}>Reload challenge<Icon name="arrow-counter-clockwise" size={16} /></Button>
         </div>
       ) : (
-        <div className="challenge-controls challenge-loading-controls space-y-5" aria-hidden="true" inert>
-          <div className="rounded-media bg-inset p-4">
+        <div className="challenge-controls challenge-loading-controls space-y-4" aria-hidden="true" inert>
+          <div className="challenge-progress">
             <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm"><span className="font-semibold">Your progress</span><span className="font-mono tabular-nums">0 / 3 solved</span></p>
-            <div className="mt-3 flex gap-2">{CHALLENGES.map(item => <span key={item.id} className="h-2 flex-1 rounded-pill bg-line-strong" />)}</div>
+            <div className="mt-2 flex gap-2">{CHALLENGES.map(item => <span key={item.id} className="h-1 flex-1 rounded-pill bg-line-strong" />)}</div>
           </div>
           <div className="flex flex-wrap gap-2">{CHALLENGES.map((item, i) => <button key={item.id} disabled className={`min-h-11 rounded-control border px-3 text-caption font-medium ${i === 0 ? "border-line-strong bg-inverse text-fg-inverse" : "border-line bg-inset"}`}>{item.name}</button>)}</div>
           <div className="space-y-2">

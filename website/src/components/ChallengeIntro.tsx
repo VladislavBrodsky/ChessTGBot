@@ -6,7 +6,7 @@ export function ChallengeIntro({
   explanation?: string;
 }) {
   return (
-    <div className="challenge-intro space-y-4">
+    <div className="challenge-intro">
       <span className="inline-flex items-center gap-2 font-mono text-overline uppercase text-fg-muted">
         <span className="size-2 rounded-full bg-voltage" aria-hidden="true" />
         The one-move challenge

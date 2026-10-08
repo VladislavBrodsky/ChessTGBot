@@ -125,15 +125,15 @@ export function ChessChallenge() {
           </p>
         </div>
       </div>
-      <div className="challenge-controls space-y-5">
-        <div className="rounded-media bg-inset p-4" aria-label="Challenge progress">
+      <div className="challenge-controls space-y-4">
+        <div className="challenge-progress" aria-label="Challenge progress">
           <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm">
             <span className="font-semibold">Your progress</span>
             <span className="font-mono tabular-nums">{solvedIds.length} / {CHALLENGES.length} solved</span>
           </p>
-          <div className="mt-3 flex gap-2" aria-hidden="true">
+          <div className="mt-2 flex gap-2" aria-hidden="true">
             {CHALLENGES.map((item) => (
-              <span key={item.id} className={`h-2 flex-1 rounded-pill ${solvedIds.includes(item.id) ? "bg-fg" : "bg-line-strong"}`} />
+              <span key={item.id} className={`h-1 flex-1 rounded-pill ${solvedIds.includes(item.id) ? "bg-fg" : "bg-line-strong"}`} />
             ))}
           </div>
           {solvedIds.length === CHALLENGES.length && (

@@ -166,7 +166,7 @@ export default function HomePage() {
             <span>02 / From chat to checkmate</span>
             <span>Built around your day</span>
           </div>
-          <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="section-split">
             <div className="space-y-5">
               <span className="eyebrow">Your next match</span>
               <h2 className="editorial-title">
@@ -174,7 +174,7 @@ export default function HomePage() {
                 <br />
                 More playing.
               </h2>
-              <p className="max-w-[42ch] text-lead text-fg-muted">
+              <p className="max-w-[42ch] section-lead text-fg-muted">
                 Pick a pace. Choose a stake. Keep chatting while we find your
                 opponent. Telegram tells you when the board is ready.
               </p>
@@ -198,12 +198,12 @@ export default function HomePage() {
                 You can’t buy
                 <br />a better bishop.
               </h2>
-              <p className="max-w-[42ch] text-lead text-fg-muted">
+              <p className="max-w-[42ch] section-lead text-fg-muted">
                 Every piece follows the same rules. Your preparation, your
                 decisions, and your clock management make the difference.
               </p>
             </div>
-            <div className="mt-10 grid gap-6 border-t border-line pt-8 md:grid-cols-3">
+            <div className="mt-6 grid gap-6 border-t border-line pt-6 md:mt-10 md:pt-8 md:grid-cols-3">
               {[
                 {
                   icon: "cpu" as const,
@@ -240,7 +240,7 @@ export default function HomePage() {
             <span>04 / Build your board vision</span>
             <span>Practice is always free</span>
           </div>
-          <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="section-split">
             <div className="space-y-5">
               <span className="eyebrow">The Academy</span>
               <h2 className="editorial-title">
@@ -248,7 +248,7 @@ export default function HomePage() {
                 <br />
                 move a better one.
               </h2>
-              <p className="max-w-[42ch] text-lead text-fg-muted">
+              <p className="max-w-[42ch] section-lead text-fg-muted">
                 Learn opening principles. Spot the fork. Find the endgame plan.
                 Build confidence with lessons, puzzles, and A.I. practice inside
                 Telegram.
@@ -283,10 +283,7 @@ export default function HomePage() {
             <span>05 / Know the numbers</span>
             <span>18+ wager matches</span>
           </div>
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <Card>
-              <WagerDemo />
-            </Card>
+          <div className="section-split">
             <div className="space-y-5">
               <span className="eyebrow">Equal stakes. Clear math.</span>
               <h2 className="editorial-title">
@@ -294,7 +291,7 @@ export default function HomePage() {
                 <br />
                 in the match pot.
               </h2>
-              <p className="max-w-[42ch] text-lead text-fg-muted">
+              <p className="max-w-[42ch] section-lead text-fg-muted">
                 Both players contribute the same stake. A decided match credits{" "}
                 {SETTLEMENT.winnerPercent}% of the combined pot to the winner’s
                 platform balance.
@@ -313,6 +310,9 @@ export default function HomePage() {
                 Play responsibly. 18+.
               </p>
             </div>
+            <Card>
+              <WagerDemo />
+            </Card>
           </div>
         </section>
 

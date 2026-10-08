@@ -6,6 +6,7 @@ import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { PageHero } from "@/components/PageHero";
 import { ChessSculpture } from "@/components/ChessSculpture";
+import { InfoGrid } from "@/components/InfoGrid";
 import { FogBoard } from "@/components/FogBoard";
 import { MoveOfTheDay } from "@/components/MoveOfTheDay";
 import { Card } from "@/components/ui/Card";
@@ -31,7 +32,7 @@ export default function AcademyPage() {
       <Nav />
       <main
         id="main"
-        className="shell-wide space-y-16 py-6 md:space-y-20 md:py-10"
+        className="shell-wide page-flow"
       >
         <script
           type="application/ld+json"
@@ -78,7 +79,7 @@ export default function AcademyPage() {
         </section>
         <section
           aria-labelledby="opening-heading"
-          className="grid items-center gap-8 md:grid-cols-2"
+          className="section-split"
         >
           <div>
             <span className="eyebrow">A plan you understand</span>
@@ -87,7 +88,7 @@ export default function AcademyPage() {
               <br />
               moves make sense.
             </h2>
-            <p className="mt-5 max-w-[42ch] text-lead text-fg-muted">
+            <p className="mt-5 max-w-[42ch] section-lead text-fg-muted">
               Start with the Italian Game: control the center, develop your
               pieces, and prepare to castle. Learn the idea behind a move before
               memorizing a line.
@@ -113,50 +114,21 @@ export default function AcademyPage() {
             <span>02 / Find your next lesson</span>
             <span>Four mastery tracks</span>
           </div>
-          <h2 id="tracks-heading" className="editorial-title mb-8">
+          <h2 id="tracks-heading" className="editorial-title mb-6">
             From the first move
             <br />
             to the final square.
           </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {home.academy.tracks.map((track, i) => (
-              <Card key={track.name}>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-overline text-fg-muted">
-                    TRACK 0{i + 1}
-                  </span>
-                  <Icon
-                    name={
-                      i === 0
-                        ? "globe"
-                        : i === 1
-                          ? "strategy"
-                          : i === 2
-                            ? "target"
-                            : "crown-simple"
-                    }
-                    size={24}
-                  />
-                </div>
-                <h3 className="mt-6 text-heading-sm font-medium">
-                  {track.name}
-                </h3>
-                <p className="mt-3 text-body text-fg-muted">
-                  {descriptions[i]}
-                </p>
-                <p className="mt-6 border-t border-line pt-4 font-mono text-caption">
-                  {track.level}
-                </p>
-              </Card>
-            ))}
-          </div>
+          <InfoGrid ordered items={home.academy.tracks.map((track, i) => ({
+            title: track.name, body: descriptions[i], note: track.level,
+          }))} />
         </section>
         <section aria-labelledby="guides-heading">
           <div className="section-index">
             <span>03 / Take a useful idea into your next game</span>
             <span>Two practical guides</span>
           </div>
-          <h2 id="guides-heading" className="editorial-title mb-8">
+          <h2 id="guides-heading" className="editorial-title mb-6">
             Learn it. Then try it.
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -184,7 +156,7 @@ export default function AcademyPage() {
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>Your training partner</Eyebrow>
-          <div className="mt-5 grid items-end gap-8 md:grid-cols-[1fr_.7fr]">
+          <div className="mt-5 grid items-end gap-8 lg:grid-cols-[1fr_.7fr]">
             <div>
               <h2 className="poster text-heading-xl">
                 Try the idea.
