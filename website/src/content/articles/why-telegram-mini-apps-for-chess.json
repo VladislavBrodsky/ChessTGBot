@@ -1,0 +1,78 @@
+{
+  "slug": "why-telegram-mini-apps-for-chess",
+  "title": "How to play chess in Telegram with Web3Chess",
+  "subtitle": "Open the Mini App, choose a practice session, and understand player matches before committing a stake.",
+  "excerpt": "Start chess inside Telegram: explore free A.I. practice, the Academy, opponent notifications, and the rules for USDT player matches.",
+  "category": "Product",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-12",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "The chess client opens inside Telegram.",
+    "A.I. practice and puzzles are free.",
+    "Player matches use USDT stakes; withdrawals are a separate flow."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "The appeal of chess inside Telegram is simple: your conversations and your board can share the same app. Web3Chess opens as a Mini App, so you can try the experience from a Telegram link."
+    },
+    {
+      "type": "heading",
+      "text": "Start with practice"
+    },
+    {
+      "type": "paragraph",
+      "text": "Open Web3Chess and choose free A.I. practice. Get comfortable with moving pieces and watching the clock before choosing a player match. The Academy gives you another route into the game through lessons and tactical puzzles."
+    },
+    {
+      "type": "heading",
+      "text": "Understand notifications"
+    },
+    {
+      "type": "paragraph",
+      "text": "The bot can notify you when an opponent is found. Follow the current in-app instructions and return promptly when a match is ready. Closing a screen does not mean that an active game clock pauses."
+    },
+    {
+      "type": "heading",
+      "text": "Player matches have stakes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Player matches use equal USDT stakes from platform balances. Read the current rules, eligibility and fees before confirming. In a decided match, settlement credits the winner’s platform balance; it does not promise an immediate transfer to a personal wallet."
+    },
+    {
+      "type": "heading",
+      "text": "Keep wallet steps separate"
+    },
+    {
+      "type": "paragraph",
+      "text": "A connected personal wallet and a Web3Chess platform balance serve different roles. A personal-wallet swap does not automatically fund the platform. Deposits require the network, token and reference shown in the app, and withdrawals follow their own confirmation steps."
+    },
+    {
+      "type": "callout",
+      "text": "Wager matches are 18+, subject to local availability, and you can lose your stake. Free A.I. practice gives you a way to learn without committing one."
+    }
+  ],
+  "relatedSlugs": [
+    "fair-play-in-web3-chess",
+    "elo-xp-progression-guide"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Start chess inside Telegram: explore free A.I. practice, the Academy, opponent notifications, and the rules for USDT player matches.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

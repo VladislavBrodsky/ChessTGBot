@@ -8,18 +8,37 @@ export function MobileCta() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
+    let frame = 0;
+    const update = () => {
       const nearFooter =
         window.innerHeight + window.scrollY > document.body.offsetHeight - 700;
-      setShow(window.scrollY > 560 && !nearFooter);
+      const editing = document.activeElement?.matches(
+        'input, textarea, select, [contenteditable="true"]',
+      );
+      setShow(window.scrollY > 560 && !nearFooter && !editing);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    document.addEventListener("focusin", schedule);
+    document.addEventListener("focusout", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      document.removeEventListener("focusin", schedule);
+      document.removeEventListener("focusout", schedule);
+    };
   }, []);
 
   return (
     <div
+      inert={!show}
+      aria-hidden={!show}
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas px-4 pt-3 transition-transform duration-200 lg:hidden ${
         show ? "translate-y-0" : "translate-y-full"
       }`}

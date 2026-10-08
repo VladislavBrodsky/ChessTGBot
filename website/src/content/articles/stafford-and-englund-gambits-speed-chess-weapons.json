@@ -1,0 +1,80 @@
+{
+  "slug": "stafford-and-englund-gambits-speed-chess-weapons",
+  "title": "Stafford and Englund gambits: spot the threat before reacting",
+  "subtitle": "Use move-by-move questions to understand an unfamiliar gambit.",
+  "excerpt": "Explore the starting ideas of the Stafford and Englund gambits and learn to inspect threats without relying on unsupported opening win rates.",
+  "category": "Openings",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-19",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "A gambit offers material for an attacking opportunity.",
+    "Know the starting moves and inspect each new threat.",
+    "A legal line does not prove an advantage or a promised result."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "A gambit can make a familiar opening feel unfamiliar. Your opponent offers a pawn, then develops quickly or creates a threat. The right response starts with the position on the board rather than a reputation for tricks."
+    },
+    {
+      "type": "heading",
+      "text": "The Stafford starting point"
+    },
+    {
+      "type": "paragraph",
+      "text": "The sequence 1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6 4.Nxc6 dxc6 is a common starting point for the Stafford Gambit. Black has given up a pawn and opened lines for development. White should inspect attacks on the king and avoid assuming that extra material removes the need to calculate."
+    },
+    {
+      "type": "heading",
+      "text": "The Englund starting point"
+    },
+    {
+      "type": "paragraph",
+      "text": "After 1.d4 e5 2.dxe5, Black has offered the e-pawn. Queen and knight moves can create several threats at once. On every move, check whether your king is in check and which pieces or pawns are attacked before deciding how to develop."
+    },
+    {
+      "type": "heading",
+      "text": "Study the defence as a position"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Replay a legal move sequence.",
+        "Write down the opponent’s immediate threat.",
+        "Compare two plausible defensive moves.",
+        "Check the next forcing reply before calling the position safe."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A single trap line is not a complete opening repertoire. Use a reliable analysis tool and slower practice to explore alternatives. This guide supplies a study process rather than an engine evaluation or a claimed win rate."
+    },
+    {
+      "type": "callout",
+      "text": "Save a surprising position and revisit it without the clock. The lesson is useful even when the next opponent chooses a different move."
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "elo-xp-progression-guide"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Explore the starting ideas of the Stafford and Englund gambits and learn to inspect threats without relying on unsupported opening win rates.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

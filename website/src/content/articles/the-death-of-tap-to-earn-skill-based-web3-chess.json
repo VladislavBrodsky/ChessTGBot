@@ -1,0 +1,83 @@
+{
+  "slug": "the-death-of-tap-to-earn-skill-based-web3-chess",
+  "title": "Chess in Telegram: understand skill, stakes and settlement",
+  "subtitle": "A game result, a platform balance and a wallet withdrawal are different steps.",
+  "excerpt": "Understand what makes Web3Chess a chess game, which activities are free, and how USDT match settlement differs from a wallet payout.",
+  "category": "Product",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-25",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "Chess decisions determine the game; no result or income is guaranteed.",
+    "Free practice is separate from USDT player matches.",
+    "Match results credit a platform balance, with withdrawal handled separately."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "A good reason to play chess is the game itself: a position to solve, an opponent to understand and a decision to improve. Adding an optional stake does not turn that decision into dependable income."
+    },
+    {
+      "type": "heading",
+      "text": "Begin with the board"
+    },
+    {
+      "type": "paragraph",
+      "text": "Web3Chess offers A.I. practice and an Academy. Use those activities to build familiarity with tactics, clocks and endgames. Practice does not promise money rewards."
+    },
+    {
+      "type": "heading",
+      "text": "Know the match economics"
+    },
+    {
+      "type": "paragraph",
+      "text": "Both players commit the same stake in a USDT player match. For a decided result, the combined pot is allocated between the winner, platform and referral pool. The current rules explain those allocations and the treatment of draws."
+    },
+    {
+      "type": "heading",
+      "text": "Follow the actual money flow"
+    },
+    {
+      "type": "paragraph",
+      "text": "Deposits fund a platform balance held by Web3Chess. Match settlement credits that balance. A transfer to a personal wallet requires a separate withdrawal and its confirmation or review steps. The platform should not be described as non-custodial smart-contract escrow or instant on-chain settlement."
+    },
+    {
+      "type": "heading",
+      "text": "Choose the activity for your goal"
+    },
+    {
+      "type": "list",
+      "items": [
+        "To learn: explore the Academy.",
+        "To practise: play against A.I. without a stake.",
+        "To consider a player match: read the terms and current match rules first."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "USDT player matches are 18+ and subject to local availability. You can lose your stake. Chess skill does not establish that a player will make a profit or replace a salary."
+    }
+  ],
+  "relatedSlugs": [
+    "why-telegram-mini-apps-for-chess",
+    "bankroll-management-for-competitive-chess-wagers",
+    "fair-play-in-web3-chess"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Understand what makes Web3Chess a chess game, which activities are free, and how USDT match settlement differs from a wallet payout.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

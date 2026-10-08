@@ -11,13 +11,13 @@ type Props = {
 
 /* Dayos buttons: 8px radius, flat, no shadow, no blur. Press = scale(.98). */
 const sizes = {
-  sm: "min-h-10 px-4 text-[14px] gap-2",
+  sm: "min-h-11 px-4 text-[14px] gap-2",
   md: "min-h-12 px-5 text-button gap-2.5",
   lg: "min-h-14 px-7 text-[17px] gap-3",
 } as const;
 
 const skins = {
-  primary: "bg-inverse text-fg-inverse hover:bg-graphite",
+  primary: "bg-inverse text-fg-inverse hover:opacity-85",
   onDark: "bg-white text-black hover:bg-mint",
   ghost: "border border-line-strong text-fg hover:bg-white",
 } as const;

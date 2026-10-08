@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { PlayButton } from "./PlayButton";
@@ -8,128 +9,144 @@ import { home } from "@/content/home";
 import { Icon } from "@/icons";
 
 export function Nav() {
+  const path = usePathname();
   const [stuck, setStuck] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const onScroll = () => setStuck(window.scrollY > 480);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = open ? "hidden" : "";
+    const node = dialog.current;
+    if (!node) return;
+    const previousOverflow = document.body.style.overflow;
+    if (open) {
+      node.showModal();
+      document.body.style.overflow = "hidden";
+    } else node.close();
     return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      if (node.open) node.close();
     };
   }, [open]);
-
+  const links = (mobile = false) =>
+    home.nav.map((item) => (
+      <Link
+        key={item.href}
+        href={item.href}
+        aria-current={path === item.href ? "page" : undefined}
+        onClick={() => setOpen(false)}
+        className={`${mobile ? "flex min-h-14 items-center rounded-media px-5 text-title" : "inline-flex min-h-11 items-center rounded-pill px-3.5 text-button"} transition-colors ${path === item.href ? "bg-surface font-semibold" : "hover:bg-surface"}`}
+      >
+        {item.label}
+        {mobile && <Icon name="arrow-up-right" size={18} className="ms-auto" />}
+      </Link>
+    ));
   return (
     <>
-      <header className="shell-wide flex h-20 items-center justify-between gap-4 sm:h-24">
-        <Link href="/" aria-label="Web3Chess home">
+      <header className="shell-wide flex h-20 items-center justify-between gap-3 sm:h-24">
+        <Link
+          href="/"
+          aria-label="Web3Chess home"
+          className="inline-flex min-h-11 items-center"
+        >
           <Logo />
         </Link>
-
-        {/* Nav pill: 48px radius, Mist ground, hairline only */}
         <nav
           aria-label="Main"
-          className="hidden items-center gap-1 rounded-nav border border-line bg-inset p-1.5 lg:flex"
+          className="hidden items-center gap-1 rounded-nav border border-line bg-inset p-1 lg:flex"
         >
-          {home.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-pill px-4 py-2 text-button text-fg transition-colors duration-150 hover:bg-white"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {links()}
         </nav>
-
         <div className="flex items-center gap-3">
-          <PlayButton size="md" label="Play in Telegram" className="hidden sm:inline-flex" />
+          <PlayButton className="hidden! sm:inline-flex!" />
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
-            className="grid size-11 place-items-center rounded-control bg-surface text-fg lg:hidden"
+            aria-controls="mobile-menu"
+            className="grid size-11 place-items-center rounded-control bg-surface lg:hidden"
           >
             <Icon name="list" size={20} />
           </button>
         </div>
       </header>
-
-      {/* Sticky condensed pill (appears after 480px) */}
       <div
-        className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${
-          stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"
-        }`}
+        inert={!stuck || open}
+        aria-hidden={!stuck || open}
+        className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"}`}
       >
         <nav
           aria-label="Sticky"
           className="flex items-center gap-1 rounded-nav border border-line bg-canvas p-1.5 ps-5"
         >
-          <Link href="/" aria-label="Web3Chess home" className="pe-3">
+          <Link
+            href="/"
+            aria-label="Web3Chess home"
+            className="inline-flex min-h-11 items-center pe-3"
+          >
             <Logo />
           </Link>
-          {home.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              tabIndex={stuck ? 0 : -1}
-              className="rounded-pill px-3.5 py-2 text-body-sm font-semibold text-fg transition-colors duration-150 hover:bg-white"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {links()}
           <PlayButton size="sm" className="ms-2 rounded-pill!" />
         </nav>
       </div>
-
-      {/* Mobile sheet */}
-      {open && (
-        <div className="fixed inset-0 z-[110] lg:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu"
-            className="absolute inset-x-0 top-0 rounded-b-card border-b border-line bg-canvas p-6"
-          >
-            <div className="flex items-center justify-between">
-              <Logo />
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="grid size-11 place-items-center rounded-control bg-surface text-fg"
-              >
-                <Icon name="x" size={20} />
-              </button>
-            </div>
-            <ul className="mt-8 grid gap-2">
-              {home.nav.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="poster flex min-h-14 items-center rounded-media bg-surface px-5 text-heading-sm"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <PlayButton size="lg" className="mt-6 w-full" />
+      <dialog
+        id="mobile-menu"
+        ref={dialog}
+        aria-label="Navigation menu"
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = Array.from(
+            event.currentTarget.querySelectorAll<HTMLElement>(
+              "a[href], button:not([disabled])",
+            ),
+          );
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+          }
+        }}
+        onCancel={() => setOpen(false)}
+        onClose={() => setOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setOpen(false);
+        }}
+        className="fixed inset-0 z-[110] m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/60"
+      >
+        <div
+          className="mx-auto max-h-full overflow-y-auto rounded-b-card bg-canvas p-6"
+          style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+        >
+          <div className="flex items-center justify-between">
+            <Logo />
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+              className="grid size-11 place-items-center rounded-control bg-surface"
+            >
+              <Icon name="x" size={20} />
+            </button>
           </div>
+          <nav aria-label="Mobile" className="my-6 grid gap-2">
+            {links(true)}
+          </nav>
+          <PlayButton size="lg" className="w-full" />
+          <p className="mt-4 text-caption text-fg-muted">
+            No download · Free A.I. practice
+          </p>
         </div>
-      )}
+      </dialog>
     </>
   );
 }

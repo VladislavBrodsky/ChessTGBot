@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run content:check && next build",
+    "content:check": "node scripts/check-content.mjs",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "brand:build": "node scripts/build-brand.mjs"
   },
   "dependencies": {
     "chess.js": "1.4.0",

@@ -16,6 +16,9 @@ export const color = {
   graphite: '#2f2f2f',
   mintChip: '#d1ffca',
   voltageYellow: '#fff100',
+  brandTile: '#211330',
+  brandCrown: '#d6b6ff',
+  brandInk: '#654599',
 
   // Semantic aliases
   ink: '#000000',
@@ -95,6 +98,14 @@ export const motion = {
 export const breakpoints = { sm: 640, md: 768, lg: 1024, xl: 1280, '2xl': 1536 } as const;
 
 export const container = { prose: 640, content: 928, main: 1024, wide: 1200 } as const;
+
+/** Shipped semantic type roles; mirrors theme.css and tokens.json. */
+export const typography = {
+  body: { fontSize: 16, lineHeight: 1.5 },
+  bodySmall: { fontSize: 16, lineHeight: 1.45 },
+  caption: { fontSize: 14, lineHeight: 1.45 },
+  label: { fontSize: 14, lineHeight: 1.3 },
+} as const;
 
 export const z = {
   base: 0,

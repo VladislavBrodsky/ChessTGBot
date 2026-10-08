@@ -1,0 +1,89 @@
+{
+  "slug": "opening-mastery-tactics",
+  "title": "Opening traps: a practical defence against early attacks",
+  "subtitle": "Recognise the threat before memorising a move. King safety and development come first.",
+  "excerpt": "Learn how to check early queen attacks, avoid loose pieces, and use opening principles when a blitz opponent sets a trap.",
+  "category": "Openings",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-05",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "Check the opponent’s threat before choosing your move.",
+    "Develop pieces and protect your king.",
+    "A trap is a calculation exercise, not a promised win rate."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "An opening trap works when one player follows a familiar pattern without checking what changed. The defence begins with a question: what does the opponent’s last move threaten?"
+    },
+    {
+      "type": "heading",
+      "text": "Inspect checks and captures"
+    },
+    {
+      "type": "paragraph",
+      "text": "Look for attacks on your king and undefended pieces before taking a tempting pawn. A queen raid can gain material while losing time, so calculate a safe retreat as well as the capture."
+    },
+    {
+      "type": "heading",
+      "text": "Develop with a purpose"
+    },
+    {
+      "type": "paragraph",
+      "text": "Bring pieces toward useful squares and check whether castling is legal and safe. A move that protects a vulnerable square while developing a piece is often easier to justify than an unrelated pawn move."
+    },
+    {
+      "type": "heading",
+      "text": "Test a position instead of a slogan"
+    },
+    {
+      "type": "chess_position",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 1 2",
+      "moves": ["e4", "e5", "Qh5"],
+      "caption": "After 1.e4 e5 2.Qh5, Black should inspect the queen’s attacks before developing automatically."
+    },
+    {
+      "type": "paragraph",
+      "text": "White’s queen attacks e5 and looks toward f7. Identify both targets, then compare legal defensive moves. The point is to understand the threats rather than assume that an early queen move must win or lose."
+    },
+    {
+      "type": "heading",
+      "text": "Build your own opening notebook"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Record the move sequence that surprised you.",
+        "Mark the threatened square or loose piece.",
+        "Find a legal response and test the opponent’s next idea.",
+        "Repeat the position in practice before using it under a short clock."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "A sound defence is more useful than a trap you only recognise when it is too late. Practise the idea in the Academy and free A.I. games."
+    }
+  ],
+  "relatedSlugs": [
+    "elo-xp-progression-guide",
+    "fair-play-in-web3-chess"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Learn how to check early queen attacks, avoid loose pieces, and use opening principles when a blitz opponent sets a trap.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

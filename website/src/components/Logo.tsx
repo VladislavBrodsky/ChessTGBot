@@ -1,16 +1,20 @@
-import { KingMark } from "./icons";
+import { BrandMark } from "./BrandMark";
+import { BRAND } from "@/lib/brand";
+import { BrandWordmark } from "./BrandWordmark";
 
 export function Logo({ inverse = false }: { inverse?: boolean }) {
   return (
-    <span className="flex items-center gap-2">
-      <span className="grid size-9 place-items-center rounded-[9px] bg-ink">
-        <KingMark className="size-5" fill="#FFD700" />
-      </span>
-      <span
-        className={`text-heading-sm ${inverse ? "text-white" : "text-fg"}`}
-        style={{ fontWeight: 700 }}
-      >
-        web3chess
+    <span className="brand-lockup inline-flex min-w-0 items-center gap-2.5">
+      <BrandMark
+        className="size-11 shrink-0 sm:size-12"
+        foreground={inverse ? "var(--color-brand-crown)" : undefined}
+      />
+      <span className="flex min-w-0 flex-col justify-center">
+        <span className="sr-only">{BRAND.wordmark}</span>
+        <BrandWordmark className={`h-[1.375rem] w-auto sm:h-6 ${inverse ? "text-white" : "text-fg"}`} />
+        <span className="mt-1.5 font-sans text-overline font-normal leading-none tracking-[.035em] text-fg-muted">
+          {BRAND.tagline}
+        </span>
       </span>
     </span>
   );

@@ -31,7 +31,10 @@
   --color-slate: #444444;         /* muted text on light */
   --color-graphite: #2f2f2f;
   --color-mint: #d1ffca;          /* tags, links, active marks */
-  --color-voltage: #fff100;       /* one moment per page */
+  --color-voltage: #fff100;       /* small brand and state accents only */
+  --color-brand-tile: #211330;    /* Telegram crown identity: logo only */
+  --color-brand-crown: #d6b6ff;   /* lilac crown: logo only */
+  --color-brand-ink: #654599;     /* open crown on light backgrounds: logo only */
 
   /* Semantic aliases kept so existing pages resolve */
   --color-ink: #000000;
@@ -86,14 +89,14 @@
   --text-heading-lg--font-weight: 700;
 
   --text-heading-md: 2rem;
-  --text-heading-md--line-height: 1;
+  --text-heading-md--line-height: 1.2;
   --text-heading-md--letter-spacing: -0.02em;
-  --text-heading-md--font-weight: 700;
+  --text-heading-md--font-weight: 500;
 
   --text-heading-sm: 1.5rem;
-  --text-heading-sm--line-height: 1.1;
+  --text-heading-sm--line-height: 1.2;
   --text-heading-sm--letter-spacing: -0.02em;
-  --text-heading-sm--font-weight: 700;
+  --text-heading-sm--font-weight: 500;
 
   --text-stat: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
   --text-stat--line-height: 0.9;
@@ -104,14 +107,14 @@
   --text-lead--line-height: 1.4;
   --text-title: 1.125rem;
   --text-title--line-height: 1.25;
-  --text-title--font-weight: 700;
+  --text-title--font-weight: 500;
   --text-body: 1rem;
-  --text-body--line-height: 1.45;
-  --text-body-sm: 0.875rem;
+  --text-body--line-height: 1.5;
+  --text-body-sm: 1rem;
   --text-body-sm--line-height: 1.45;
-  --text-caption: 0.8125rem;
+  --text-caption: 0.875rem;
   --text-caption--line-height: 1.45;
-  --text-label: 0.8125rem;
+  --text-label: 0.875rem;
   --text-label--line-height: 1.3;
   --text-label--font-weight: 600;
   --text-overline: 0.75rem;
@@ -269,19 +272,6 @@
   --focus-ring: var(--color-mint);
 }
 
-/* Voltage moment: one per page. */
-[data-surface="voltage"] {
-  --surface-canvas: var(--color-voltage);
-  --surface-card: rgb(255 255 255 / 0.55);
-  --fg-default: var(--color-black);
-  --fg-muted: var(--color-black);
-  --fg-action: var(--color-black);
-  --fg-link: var(--color-black);
-  --line-hairline: rgb(0 0 0 / 0.2);
-  --icon-default: var(--color-black);
-  --focus-ring: var(--color-black);
-}
-
 /* Mint tile */
 [data-surface="signal"] {
   --surface-canvas: var(--color-mint);
@@ -383,20 +373,38 @@
   font-weight: 700;
 }
 
-/* Mint tag (Dayos "Mint Chip"): uppercase mono label on a pill */
+/* Legacy tag utility matches the shared static metadata geometry. Prefer Badge. */
 @utility tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  border-radius: var(--radius-pill);
+  gap: 0.375rem;
+  width: fit-content;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  flex: 0 1 auto;
+  min-block-size: 1.75rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-mint);
   color: var(--color-black);
-  padding: 0.25rem 0.875rem;
+  padding: 0.25rem 0.625rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+/* Supporting section labels stay neutral; mint tags identify the hero and metadata. */
+@utility eyebrow {
+  display: inline-block;
+  color: var(--fg-muted);
   font-family: var(--font-mono);
   font-size: var(--text-overline);
   line-height: var(--text-overline--line-height);
   letter-spacing: var(--text-overline--letter-spacing);
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
 }
 

@@ -1,63 +1,90 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Icon } from "@/icons";
+import { Button, buttonClass } from "./ui/Button";
 
-interface ShareButtonsProps {
+export function ShareButtons({
+  title,
+  url,
+  compact = false,
+}: {
   title: string;
   url: string;
-}
-
-export function ShareButtons({ title, url }: ShareButtonsProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
+  compact?: boolean;
+}) {
+  const [status, setStatus] = useState("");
+  const [showLink, setShowLink] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+  const shareText = title + " — Web3Chess";
+  async function copy() {
     try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setStatus("Link copied. Your friend is up next.");
+      setShowLink(false);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => setStatus(""), 4000);
     } catch {
-      // Fallback
+      setShowLink(true);
+      setStatus("Select and copy the link below.");
     }
-  };
-
-  const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + " — Web3Chess")}`;
-  const xShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + " via @Web3Chess")}`;
-
+  }
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-[#e5e5e5]">
-      <span className="inline-flex items-center gap-1.5 font-mono text-[12px] font-bold uppercase tracking-wider text-[#979797] mr-2">
-        <Icon name="share-network" size={14} />
-        <span>Share:</span>
-      </span>
-
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
-      >
-        {copied ? <Icon name="check" size={14} className="text-[#047857]" /> : <Icon name="copy" size={14} />}
-        <span>{copied ? "Copied Link" : "Copy Link"}</span>
-      </button>
-
-      <a
-        href={telegramShareUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
-      >
-        <Icon name="paper-plane-tilt" size={14} />
-        <span>Telegram</span>
-      </a>
-
-      <a
-        href={xShareUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#c6c6c6] bg-white px-4 py-2 font-mono text-[12px] font-medium uppercase tracking-wider text-[#000000] transition-colors hover:border-[#000000] hover:bg-[#f3f3f3]"
-      >
-        <span>X (Twitter)</span>
-      </a>
+    <div className="border-t border-line pt-4">
+      <p className="mb-3 font-mono text-overline uppercase">
+        {compact ? "Make it a friendly rivalry" : "Share this story"}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonClass("secondary", "px-3! text-caption!")}
+        >
+          <Icon name="paper-plane-tilt" size={16} />
+          {compact ? "Challenge a friend" : "Telegram"}
+        </a>
+        <Button
+          variant="secondary"
+          onClick={copy}
+          className="px-3! text-caption!"
+        >
+          <Icon name="copy" size={16} />
+          Copy link
+        </Button>
+        {!compact && (
+          <a
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonClass("secondary", "px-3! text-caption!")}
+          >
+            Share on X
+          </a>
+        )}
+      </div>
+      {status && (
+        <p role="status" className="mt-2 text-caption">
+          {status}
+        </p>
+      )}
+      {showLink && (
+        <label className="mt-3 block text-caption">
+          Challenge link
+          <input
+            readOnly
+            value={url}
+            onFocus={(e) => e.target.select()}
+            className="mt-1 min-h-11 w-full rounded-control border border-line-strong bg-surface px-3 text-body"
+          />
+        </label>
+      )}
     </div>
   );
 }

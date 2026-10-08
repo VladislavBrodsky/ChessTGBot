@@ -1,147 +1,141 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { Eyebrow } from "@/components/ui/Badge";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
-import { SITE, SETTLEMENT } from "@/lib/config";
-import { Icon, type IconName } from "@/icons";
+import { PageHero } from "@/components/PageHero";
+import { ChessSculpture } from "@/components/ChessSculpture";
+import { Card } from "@/components/ui/Card";
+import { ButtonLink } from "@/components/ui/Button";
+import { Icon } from "@/icons";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Fair Play & Anti-Cheat Protocol",
-  description: "How Web3Chess enforces deterministic Stockfish move evaluation, server-side clock validation, and non-custodial smart escrow.",
-  openGraph: {
-    title: "Fair Play & Anti-Cheat Protocol · Web3Chess",
-    description: "Server-side chess integrity, ELO matchmaking, and transparent payouts.",
-    url: `${SITE.url}/fair-play`,
-  },
-};
-
-const PILLARS = [
+export const metadata = pageMetadata(
+  "Fair Play & Chess Match Rules",
+  "Learn how Web3Chess validates moves, handles match clocks, and expects players to compete without outside assistance.",
+  "/fair-play",
+);
+const pillars = [
   {
-    icon: "cpu" as IconName,
-    title: "Server-Side Move Verification",
-    desc: "Every move is parsed, validated, and clocked on our backend clusters. The client browser has zero authority over move legality, preventing client-side memory or clock exploits.",
+    icon: "cpu" as const,
+    title: "The server keeps the board",
+    body: "The backend validates moves against the position and maintains the authoritative game state. Your device displays the game; it does not decide which moves are legal.",
   },
   {
-    icon: "shield-check" as IconName,
-    title: "Continuous Stockfish Engine Analysis",
-    desc: "Match transcripts are evaluated in real-time against Grandmaster engine heuristics (Centipawn loss, move timing patterns, and move entropy) to detect unauthorized computer assistance.",
+    icon: "clock" as const,
+    title: "The clock is part of the game",
+    body: "Play within your selected time control. Reconnect promptly if you lose connection: leaving the app is not a guarantee that your clock pauses.",
   },
   {
-    icon: "scales" as IconName,
-    title: "Provably Fair ELO Matchmaking",
-    desc: "Dynamic matchmaking pairs opponents within tight rating bands. Wager tiers prevent rating manipulation, smurfing, and predatory pairing.",
+    icon: "users-three" as const,
+    title: "Matchmaking considers your rating",
+    body: "Your rating, selected time control, and stake help determine the matchmaking pool. Ratings are a guide to pairing, not a guarantee of equal strength.",
   },
   {
-    icon: "lock" as IconName,
-    title: "Escrowed Stakes",
-    desc: `Both players lock equal stakes into escrow held by the platform at match start. The winner claims ${100 - SETTLEMENT.platformFeePercent - SETTLEMENT.referralFeePercent}% of the pool automatically upon resignation or checkmate.`,
+    icon: "shield-check" as const,
+    title: "Your moves must be your own",
+    body: "Do not use chess engines, outside analysis, or another person to choose moves during a player match. Free A.I. practice is a separate training mode.",
   },
 ];
-
 export default function FairPlayPage() {
   return (
-    <div className="min-h-screen bg-canvas text-fg">
+    <div>
       <Nav />
-
-      <main className="shell-wide space-y-16 py-8 md:py-14">
-        {/* Top Breadcrumb */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-control bg-surface px-4 py-2 font-mono text-overline uppercase text-fg transition-opacity hover:opacity-80"
-          >
-            <Icon name="arrow-left" size={14} className="flip-rtl" />
-            <span>Back to Home</span>
-          </Link>
-
-          <span className="tag">
-            <Icon name="lightning" size={14} />
-            Deterministic Engine Arbitration
-          </span>
-        </div>
-
-        {/* Hero Section */}
-        <section className="space-y-6 max-w-4xl">
-          <span className="tag">
-            Protocol Integrity
-          </span>
-          <h1 className="poster text-heading-xl text-fg">
-            Skill is sacred<br />
-            No exploits<br />
-            Zero tampering
-          </h1>
-          <p className="text-body sm:text-lead text-fg-muted max-w-[65ch]">
-            Chess is the ultimate game of pure intellect. We designed Web3Chess from the protocol layer up so that no player can buy an advantage, manipulate clock timers, or exploit engine assistance.
+      <main
+        id="main"
+        className="shell-wide space-y-16 py-6 md:space-y-20 md:py-10"
+      >
+        <PageHero
+          eyebrow="Respect the board"
+          title={
+            <>
+              Your mind.
+              <br />
+              Your moves.
+            </>
+          }
+          lead="Great chess needs clear rules and honest opponents. Here’s how the game is validated, and what we expect from everyone at the board."
+          visual={<ChessSculpture variant="fairPlay" />}
+        >
+          <ButtonLink href="#fair-play-rules" variant="secondary">
+            Read the essentials
+            <Icon name="arrow-right" size={16} />
+          </ButtonLink>
+        </PageHero>
+        <section id="fair-play-rules" aria-labelledby="rules-heading">
+          <div className="section-index">
+            <span>01 / The essentials</span>
+            <span>Fair play starts with you</span>
+          </div>
+          <h2 id="rules-heading" className="editorial-title mb-8">
+            Same board. Same rules.
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {pillars.map((pillar) => (
+              <Card key={pillar.title}>
+                <span className="grid size-12 place-items-center rounded-media bg-inset">
+                  <Icon name={pillar.icon} size={24} />
+                </span>
+                <h3 className="mt-6 text-heading-sm font-medium">
+                  {pillar.title}
+                </h3>
+                <p className="mt-3 text-body text-fg-muted">{pillar.body}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+        <section data-surface="ink" className="rounded-block p-8 sm:p-12">
+          <Eyebrow>A clear distinction</Eyebrow>
+          <h2 className="poster mt-5 text-heading-xl">
+            Legal moves.
+            <br />
+            Honest play.
+          </h2>
+          <p className="mt-5 max-w-[60ch] text-lead text-fg-muted">
+            Server validation catches illegal moves. It does not, on its own,
+            prove that a player has avoided outside assistance. We do not
+            promise that any online chess platform can eliminate cheating.
+          </p>
+          <p className="mt-5 max-w-[60ch] text-body text-fg-muted">
+            If you notice suspicious play or a result you want reviewed, keep
+            the match identifier and contact support through the bot chat. Avoid
+            public accusations based on one strong move.
           </p>
         </section>
-
-        {/* 4 Pillars Grid */}
-        <section className="grid gap-6 sm:grid-cols-2">
-          {PILLARS.map((p) => (
-            <div key={p.title} className="rounded-card bg-surface p-8 sm:p-10 space-y-4">
-              <span className="grid size-12 place-items-center rounded-control bg-wash text-fg">
-                <Icon name={p.icon} size={24} />
-              </span>
-              <h2 className="poster text-heading-sm text-fg">
-                {p.title}
-              </h2>
-              <p className="text-body text-fg-muted">
-                {p.desc}
-              </p>
-            </div>
-          ))}
-        </section>
-
-        {/* Settlement Rules: Black Block */}
-        <section className="rounded-block bg-inverse p-8 sm:p-14 text-fg-inverse space-y-8">
-          <div className="space-y-3">
-            <span className="tag">
-              Transparent Math
-            </span>
-            <h2 className="poster text-heading-lg text-fg-inverse">
-              How Prize Pools and Rakes are Split
+        <section className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <Eyebrow>Match results</Eyebrow>
+            <h2 className="mt-5 text-heading-sm font-medium">
+              Understand the outcome
             </h2>
-            <p className="max-w-[55ch] text-body sm:text-lead text-smoke">
-              Every match creates a deterministic prize ledger on our server infrastructure.
+            <p className="mt-3 text-body text-fg-muted">
+              Checkmate, resignation, timeout, and draw rules determine the
+              result. Wager settlement is recorded in your platform balance. A
+              withdrawal to your wallet is a separate request.
             </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3 font-mono">
-            <div className="rounded-card bg-white/5 p-6 space-y-2 border border-white/10">
-              <p className="text-overline text-smoke uppercase tracking-wider">Winner Share</p>
-              <p className="poster text-display text-fg-link leading-none">{SETTLEMENT.winnerPercent}%</p>
-              <p className="text-caption text-smoke pt-2">Credited immediately to the winner&apos;s balance upon mate or resignation.</p>
-            </div>
-            <div className="rounded-card bg-white/5 p-6 space-y-2 border border-white/10">
-              <p className="text-overline text-smoke uppercase tracking-wider">Platform Rake</p>
-              <p className="poster text-display text-fg-inverse leading-none">{SETTLEMENT.platformFeePercent}%</p>
-              <p className="text-caption text-smoke pt-2">Funds engine compute, game sockets, and arbitration infrastructure.</p>
-            </div>
-            <div className="rounded-card bg-white/5 p-6 space-y-2 border border-white/10">
-              <p className="text-overline text-smoke uppercase tracking-wider">Referral Reward Pool</p>
-              <p className="poster text-display text-voltage leading-none">{SETTLEMENT.referralFeePercent}%</p>
-              <p className="text-caption text-smoke pt-2">Distributed transparently to players who invited community members.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Card */}
-        <section className="rounded-card bg-surface p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2">
-            <h3 className="poster text-heading-sm text-fg">
-              Experience True Competitive Integrity
-            </h3>
-            <p className="text-body text-fg-muted">
-              Join thousands of rated players in the Telegram arena.
+            <ButtonLink href="/wagers" variant="secondary" className="mt-6">
+              Read settlement &amp; withdrawals
+              <Icon name="arrow-right" size={16} />
+            </ButtonLink>
+            <p className="mt-4 text-caption text-fg-muted">
+              Wager matches involve real money. You can lose your stake. 18+.
             </p>
-          </div>
-          <PlayButton size="lg" />
+          </Card>
+          <Card>
+            <Eyebrow>Your next game</Eyebrow>
+            <h2 className="mt-5 text-heading-sm font-medium">
+              Play with a clear head
+            </h2>
+            <p className="mt-3 text-body text-fg-muted">
+              Set your limits before you join a wager match. If you want to
+              experiment or learn without a stake, choose A.I. practice or the
+              Academy.
+            </p>
+            <PlayButton size="lg" className="mt-6" />
+          </Card>
         </section>
       </main>
-
       <Footer />
       <QrDock />
       <MobileCta />

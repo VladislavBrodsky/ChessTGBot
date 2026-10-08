@@ -2,7 +2,7 @@ import { home } from "@/content/home";
 
 export function Faq() {
   return (
-    <div className="shell-prose">
+    <div>
       {home.faq.map((item) => (
         <details
           key={item.q}
@@ -15,7 +15,13 @@ export function Faq() {
               aria-hidden="true"
               className="text-fg-muted transition-transform duration-150 group-open:rotate-45"
             >
-              <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <svg
+                viewBox="0 0 24 24"
+                className="size-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
                 <path d="M12 5v14M5 12h14" strokeLinecap="round" />
               </svg>
             </span>

@@ -1,0 +1,83 @@
+{
+  "slug": "elo-xp-progression-guide",
+  "title": "Chess rating and XP: understand two kinds of progress",
+  "subtitle": "Your rating tracks game results. XP tracks progression. Use each for the question it can answer.",
+  "excerpt": "Learn the difference between chess rating and XP, and build a practice routine around the current Academy and progression features.",
+  "category": "Academy",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-18",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "Rating and XP describe different things.",
+    "The backend currently uses an Elo-style update; it does not implement Glicko-2.",
+    "Check the current app for reward amounts and membership options."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Your rating can move after a match while your learning continues. Separating rating from progression makes it easier to choose a useful next step instead of reacting to every result."
+    },
+    {
+      "type": "heading",
+      "text": "What a rating tells you"
+    },
+    {
+      "type": "paragraph",
+      "text": "Web3Chess updates ratings using an Elo-style expected-score calculation. The result depends on the players’ ratings and the match outcome. A rating is an estimate within a platform’s player pool, not a certificate of chess knowledge or a guarantee of winning your next game."
+    },
+    {
+      "type": "heading",
+      "text": "What XP tells you"
+    },
+    {
+      "type": "paragraph",
+      "text": "XP supports progression through the app. The current interface shows available activities, requirements and rewards. Those amounts can change; use the app’s current values instead of treating an old article as a reward schedule."
+    },
+    {
+      "type": "heading",
+      "text": "Use a routine you can repeat"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Practise one tactical theme.",
+        "Review one decision from your last game.",
+        "Play a free A.I. practice game to try the idea.",
+        "Use the Academy to revisit the pattern that caused difficulty."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Read membership terms in the app"
+    },
+    {
+      "type": "paragraph",
+      "text": "Membership and Marketplace options have their own current requirements. Check them before spending XP or money. This article does not promise an XP-to-membership exchange, a particular multiplier or a prize."
+    },
+    {
+      "type": "callout",
+      "text": "A useful session can end with a better question rather than a higher rating. Write down the position you want to understand and return to it tomorrow."
+    }
+  ],
+  "relatedSlugs": [
+    "fair-play-in-web3-chess",
+    "opening-mastery-tactics"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Learn the difference between chess rating and XP, and build a practice routine around the current Academy and progression features.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

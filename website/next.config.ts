@@ -8,9 +8,11 @@ const repoRoot = path.join(import.meta.dirname, "..");
 const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: repoRoot,
+  outputFileTracingIncludes: { "/*": ["./src/content/articles/**/*.json"] },
   turbopack: { root: repoRoot },
   poweredByHeader: false,
   reactStrictMode: true,
+  devIndicators: false,
 };
 
 export default nextConfig;

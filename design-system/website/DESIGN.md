@@ -1,7 +1,7 @@
 # Web3Chess Website: DESIGN.md
 
 **System:** Concrete Poster (Dayos / Refero style ee403055), *"brutalist editorial showroom on warm gray"*
-**Version:** 2.0 · 2026-10-06
+**Version:** 2.4 · 2026-10-07
 **Scope:** the public marketing website for Web3Chess (web3chess.online).
 **Not in scope:** the Telegram Mini App in `frontend/`, which keeps **Obsidian Chess** ([`BRAND_DESIGN_SYSTEM.md`](../../BRAND_DESIGN_SYSTEM.md)).
 **Reference:** Dayos (dayos.com) via Refero Styles (`ee403055-480e-4bd4-9216-07c9ae2dde2e`).
@@ -9,7 +9,8 @@
 | File | What it is |
 |---|---|
 | `DESIGN.md` | This spec: foundations, components, pages, voice, build plan |
-| [`REFERENCE_AUDIT.md`](REFERENCE_AUDIT.md) | What Fold actually does, measured, plus where Refero was wrong |
+| [`DAYOS_AUDIT.md`](DAYOS_AUDIT.md) | Current Dayos / Refero audit and its translation to Web3Chess |
+| [`REFERENCE_AUDIT.md`](REFERENCE_AUDIT.md) | Historical Fold audit; superseded for the shipped website |
 | [`tokens.json`](tokens.json) | Source of truth for tokens (W3C DTCG format) |
 | [`theme.css`](theme.css) | Tailwind v4.1 theme: primitives, semantic roles, surfaces, base styles, utilities. Verified to compile. |
 | [`tokens.ts`](tokens.ts) | Typed tokens for JS: motion, board, breakpoints, z-index, locales |
@@ -17,6 +18,31 @@
 ---
 
 ## 0. How to use this document
+
+### 0.1 Shipped website conventions (2026-10-07)
+
+This section supersedes legacy Fold/Fog recipes below where they differ from the shipped Concrete Poster tokens. The website keeps its light canvas; Mini App primitives and Obsidian tokens are never imported.
+
+- **Palette:** warm canvas `#E5E5E5`, white cards, black ink, slate `#444444` muted text, and small mint `#D1FFCA` tags. Voltage `#FFF100` is restricted to small highlights and chess state; never fill a challenge or large section with it. The owner's Telegram crown uses logo-only violet `#654599`, deep violet `#211330`, and lilac `#D6B6FF`; do not apply them to page surfaces, controls, or game states. The legacy Voltage surface recipe below is superseded and its CSS scope has been removed. `theme.css`, `tokens.json`, and `tokens.ts` define the current palette. Two dark blocks are allowed: one content statement and the shared footer.
+- **Brand lockup:** the compact public wordmark is `W3Chess`, with optically spaced, outlined Onest 650 lettering and a quiet `Play-to-earn` line in Onest 400. A wide three-point crown with smooth corners and a separate baseline derives from the owner's supplied Telegram logo. The website lockup uses an open violet crown without a tile; avatars and metadata icons use lilac on a deep-violet rounded tile. Keep the mark flat, without neon, glow, gradient, or animation. Full `Web3Chess` remains the legal, domain, and SEO name. The tagline is brand positioning, not a claim that free practice earns money. Details and reusable asset paths are in §6.5.
+- **Typography:** Barlow Condensed for the hero, numerical facts, and one dark content statement. Ordinary section headings use the shared `editorial-title`: Onest, 30–40px, weight 500, uppercase, 1.1 leading. Card headings use Onest at 24–32px/500. Body and controls use Onest; notation and small annotations use IBM Plex Mono. Body and body-small are 16px; captions and financial notes are at least 14px; overlines are at least 12px. Long article titles use Onest and a readable line height. Mono is not preloaded. Supporting section labels use neutral `eyebrow` rather than repeated mint pills.
+- **Composition:** from 768px, home uses an even split between short hero copy and the chess sculpture; supporting pages use `PageHero` with contextual artwork. Below 768px the hero follows headline → artwork → explanation/actions, putting the artwork in the first phone viewport. Phone object width is bounded to 220–260px, supporting page headlines are 44–54px, and hero leads are 18px. Redundant figure annotations are hidden and actions use the full available width. A hero never leaves a large empty half-page. `section-index` supplies quiet numbered navigation through the home story. Other split sections collapse with text before their demonstration.
+- **3D hero artwork:** the owner requested contextual 3D chess elements in every main page hero, overriding the older illustration restriction in §6.2. Use `ChessSculpture` and the `chessArt` registry: the original knight/rook/pawn for Home, a twin-dial clock for How It Works, an open chess book for Academy and Journal, a level pawn balance for Wagers, and equal-height kings with a mint shield for Fair Play. All artwork lives in the hero; useful interactive demos follow below. Preserve transparency and keep captions live. Each 1000px WebP is 70–127KB; Next Image serves responsive sizes. Figures have intrinsic dimensions and bounded widths: 560px desktop, 472px tablet, 380px phone. Asset paths and full built-in generation prompts: [ARTWORK.md](ARTWORK.md).
+- **Hero presentation and motion:** let the sculpture stand alone on the canvas, with one quiet live caption. Do not add a wireframe grid, orbit, metadata strip, or separate caption card. `SculptureMotion` uses one finite 640ms entrance and event-driven pointer tilt (maximum 8px horizontally, 6px vertically, and 2° rotation). It batches DOM writes with requestAnimationFrame without React state updates. No idle loops, WebGL, blur effects, or phone tilt. Pointer work stops offscreen or when the document is hidden. Reduced motion disables transforms and entrance animations. Headline, image, and caption remain visible from the first frame; animation never gates content.
+- **Website primitives:** `website/src/components/ui/Button.tsx` and `Card.tsx` are shared across new website sections. These intentionally use website surface roles. `PageHero`, `PlayButton`, `FogBoard`, and `ShareButtons` provide reusable patterns.
+- **Challenge:** a shared white Card, with a gray board workspace on desktop. Introduction and controls sit beside the board from 768px; phones follow introduction → board → controls, with no extra board-column padding. `ChallengeIntro` also supplies the lazy placeholder heading; placeholders reserve the controls' approximate geometry. Three verified mate-in-one positions support drag/tap/typed moves, hint, reveal, reset, and distinct solved/revealed feedback. The rules engine and interactive board load near the viewport. Share links select a puzzle with `?puzzle=<id>#challenge`; the website examples do not award app XP or claim daily rotation.
+- **Small-screen forms:** challenge columns explicitly use `minmax(0,1fr)` and children use `min-width:0`. The move input and submit action stack on phones and narrow split columns. Never conceal overflow to hide a broken layout. The fixed mobile Play action hides while an editable field has focus, then returns after focus leaves.
+- **Section links:** `ButtonLink` uses a native anchor for same-page fragment targets so repeated taps return to the section even when that fragment is already in the URL. Route links continue to use Next Link.
+- **Journal covers:** decorative artwork and its live caption occupy separate grid rows with a 144px minimum cover height. Captions never overlay the icon. Card titles and excerpts use concise summaries; preserve full article content and existing URLs.
+- **Footer:** use a compact Ink block with the shared brand and a direct Play action. Group links into two columns on phones and three from 640px. QR appears from 1024px; phones use the direct action. Legal copy uses readable 14px Onest rather than a large mono paragraph. Keep 44px minimum link targets.
+- **Navigation:** active links have `aria-current`. The mobile menu is a native modal `dialog` with explicit first/last Tab cycling, Escape, and focus restoration. Hidden sticky controls are inert. Mobile actions respect `env(safe-area-inset-bottom)`; the website sets `viewport-fit=cover`. The QR dock appears only at 1480px+, where it fits outside the 1200px shell; narrower desktop screens retain the footer QR. Never overlap the hero’s primary action with a QR.
+- **Motion:** no automatic board playback. `FogBoard` uses a unique React id and listens to reduced-motion changes. The toppling king rests in its final pose when reduced motion is enabled.
+- **Copy and money:** do not promise engine-cheat elimination, continuous Stockfish scanning, millisecond guarantees, instant wallet withdrawals, or non-custodial escrow. The current backend validates legal moves; validation is not proof of unaided play. USDT deposits require the correct TON network transfer and reference. A personal-wallet swap is not a platform credit. Standard withdrawals require owner confirmation in the bot; some require review.
+- **Settlement source:** the shipped 95/3/2 split is sourced from `backend/app/services/settlement.py` and mirrored in `website/src/lib/config.ts`, verified 2026-10-07. Match settlement credits a platform balance. Withdrawals are separate; the calculator is explicitly an example, includes the original stake, and performs no transaction.
+- **SEO:** route-specific canonical URLs and descriptions, contextual 1200×630 artwork previews, Organization/WebSite/VideoGame data on home, and ISO article dates. Sitemaps use actual article dates and omit unknown static modification dates. FAQ markup describes visible content; do not promise FAQ rich results. The current website is English; ten languages refers to the Mini App. Do not emit hreflang for routes that do not exist.
+- **Daily editorial content:** articles live in `website/src/content/articles/*.json`, with taxonomy in `blog-taxonomy.ts` and schema checks in `scripts/check-content.mjs`. Preserve existing slugs. Use an accountable Organization author unless a real person and credential are verified. Show publication and substantive update dates, source links, and one contextual action in shared Card/ButtonLink primitives. Sources support the actual claim; product mechanics must also be checked against current code. Optional SAN move sequences are replayed to verify their diagrams. News drafts and social derivatives live in `marketing/content-ops/drafts/` until reviewed. The content workflow and review records do not authorize Telegram broadcasts or deployment.
+
+The remaining language-route and launch recipes describe future work; they are not assertions that those routes or services are already shipped.
 
 **Precedence when rules conflict:** owner instruction → this file → `tokens.json` → your judgment. If you invent something, add it here in the same change.
 
@@ -526,10 +552,13 @@ Generate per page with `next/og` and per locale; use Noto fonts for zh / ja / hi
 
 ### 6.5 Logo
 
-- **Mark:** the gold king (`king` `#FFD700`) on an Ink rounded square (radius = 25% of size), carried over from `frontend/public/icon.svg`, recolored from `#1A1A1A` to Ink for the website.
-- **Wordmark:** lowercase `web3chess` in Onest 700 at −0.03em, Ink. Lowercase matches the poster voice.
-- **Lockup:** mark (1.25× cap height) + 8px gap + wordmark. Clear space = mark width / 2. Minimum mark size is 24px.
-- **On Ink or Night surfaces:** White wordmark; the mark keeps its Ink square with a 1px White/12% border.
+- **Reference:** the owner's Telegram logo supplied 2026-10-07: a purple three-point outline crown with a separate base. This supersedes the rejected yellow knight direction. Preserve the recognizable crown geometry while adapting it to the flat website system.
+- **Mark:** use the open `BrandMark` symbol in `brand-ink` violet on light surfaces and `brand-crown` lilac on dark surfaces. Its 64-unit geometry uses a 4.6-unit rounded stroke, smooth transitions, a separate baseline, and optical vertical centering. Avatars scale the crown to 80% inside a deep-violet tile with a 16-unit radius. `website/src/lib/brand.ts` shares the paths and transforms. An actual 180px `apple-icon.png` provides the touch icon; the favicon uses the contained avatar geometry. Minimum open symbol size is 24px; the favicon is legible at 16px.
+- **Wordmark:** `W3Chess` uses outlined Onest 650 with font kerning and −0.035em tracking. `BrandWordmark` renders the same paths in UI and sharing previews, reserving dimensions without waiting for a font. Its visible height is 22px on phones and 24px from 640px. Keep live accessible text alongside the decorative vector. The second line reads `Play-to-earn` in 12px Onest 400 with 0.035em tracking and a 6px gap. Do not use condensed poster type or technical mono for this lockup.
+- **Naming:** `W3Chess` is the visual shorthand; retain `Web3Chess` for legal copy, metadata, and descriptive alt/accessible names. Do not rename the domain or suggest that free practice produces earnings.
+- **Lockup:** 44px symbol box on phones, 48px from 640px, 10px gap, and stacked wordmark/tagline. Clear space = half the symbol box width. The mark remains fixed in size and the lockup never splits. The open crown should feel like a brand signature, not an app tile inside navigation.
+- **On Ink surfaces:** White wordmark and lilac open crown; no tile or extra border.
+- **Reusable assets:** `website/public/brand/w3chess-crown.svg` (open symbol), `w3chess-mark.svg` (contained avatar), `w3chess-logo.svg`, `w3chess-logo-inverse.svg`, `w3chess-logo-mono.svg`, and the 512px `w3chess-avatar.png`. SVG lockup lettering is outlined so it needs no font installation. `npm run brand:build` regenerates exports and metadata icons from the same crown and lettering sources. Keep the supplied `OFL-Onest.txt` with redistributed assets. Asset notes: [`website/public/brand/README.md`](../../website/public/brand/README.md).
 
 ---
 
@@ -694,15 +723,18 @@ The conversion component, used in the hero, the sticky nav pill, the mobile CTA 
 - **Contents:** a Primary md CTA at full width.
 - **Hidden** while the mobile nav sheet is open or the footer is in view.
 
-### 8.5 Chips, tags, badges
+### 8.5 Badges, metadata and section labels
 
-| Component | Spec | Use |
-|---|---|---|
-| **Feature chip** (measured) | `bg-chip` Paper, 1px `border-line-ghost`, `rounded-pill`, 8/16 padding, `text-chip` Royal, optional 20px Steel icon, 8px gap | Honest claims: "No download", "Free games", "10 languages". Negative-trust phrasing is encouraged. |
-| **Filter tag** | Same as the feature chip at 36px high; selected state = Ink fill, White text, `aria-pressed` | Time controls "1+0 · 3+2 · 5+0 · 10+0", FAQ filters |
-| **Badge** | `rounded-pill`, 4/10 padding, `text-overline` | **Live** (Loss dot + "Live"), **Beta** (Paper, ghost border, Ink), **New** (Signal Ink text on Paper), **Premium** (Premium text on Paper), **18+** (Ink outline) |
-| **Category pill** | Fog fill, Steel icon, `text-overline` Dusk (on Fog 4.60) | Blog categories, Academy tracks |
-| **Result chip** | `rounded-pill`, 2/8 padding, `text-label`: "Won" `text-fg-win` on Paper · "Lost" `text-fg-loss` · "Draw" Steel | Match history rows |
+Use `website/src/components/ui/Badge.tsx` for static metadata. `Badge` has neutral, accent and outline tones; `BadgeRow` wraps metadata; `Eyebrow` is a quiet section label. This Concrete Poster recipe supersedes the older Fog chip table.
+
+- **Geometry:** Onest 14px/1.4, weight 500, normal case and tracking; minimum 28px high; 4px block / 10px inline padding; 8px control radius; 1px border. Optional Phosphor icon is a fixed 16px with a 6px gap. Icons never shrink and labels wrap without shrinking type, truncating a claim, or stretching the container.
+- **Meaning:** neutral for categories and verified status; mint accent for one introductory badge per hero; outline for age restrictions or qualifications. Do not label a feature Live, New, Premium or Free without evidence. Color accompanies text, never supplies meaning alone.
+- **Position:** stay in normal flow, at most the parent's width. Metadata rows wrap with 8px gaps. Hero badges live in the introductory stack, 20px away from the headline; card metadata is at least 16px away from a heading. Do not absolutely position text badges over logos, illustrations, a board, a CTA or another badge. An online dot may attach to an avatar, but text metadata gets its own row.
+- **Hierarchy:** supporting sections use `Eyebrow`, not repeated mint badges. An age note belongs beside the relevant wager information and in the shared footer. Category badges belong with article metadata. Decorative badges are not added merely to fill empty space.
+- **Interaction:** static `Badge` is not a control. Filters, time controls and actions use shared `Button` with an at-least-44px hit area and their own selected state; do not make a tiny clickable badge.
+- **Responsive / RTL:** allow both row and label to wrap, use logical spacing, test 320px, longer labels and RTL. Keep the icon and text together. Do not lower font size to avoid a collision.
+- **Marketing exports:** use the same passive-label hierarchy, Onest and fixed icon/text gap. Native 1080px badges use 30px type, 30px icons, 20px inline padding and at least 54px height. Templates keep the badge in the header with half-mark clear space; a long label moves to its own row. The complete badge is inside the selected safe guide and counted in collision checks. See `marketing/templates/renderer.js` and `AUDIT.html`.
+
 
 ### 8.6 Cards and tiles
 

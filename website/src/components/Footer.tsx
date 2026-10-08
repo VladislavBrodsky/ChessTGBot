@@ -1,36 +1,38 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { PlayButton } from "./PlayButton";
 import { home } from "@/content/home";
 import { SITE, telegramLink } from "@/lib/config";
 import { qrSvg } from "@/lib/qr";
+import { Badge } from "./ui/Badge";
 
 export async function Footer() {
   const footerQr = await qrSvg(telegramLink());
 
   return (
     <footer className="shell-wide pb-16 pt-12">
-      <div data-surface="ink" className="rounded-block p-8 sm:p-12 lg:p-16">
-        <div className="grid items-start gap-10 lg:grid-cols-12">
-          <div className="rounded-card bg-surface p-6 text-center lg:col-span-4">
-            <div className="inline-block rounded-media bg-white p-3.5">
+      <div
+        data-surface="ink"
+        className="rounded-card p-6 sm:p-10 lg:rounded-block lg:p-12"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-5 border-b border-line pb-6 sm:pb-8">
+          <Logo inverse />
+          <PlayButton variant="onDark" />
+        </div>
+        <div className="grid items-start gap-8 py-6 sm:py-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+            {home.footer.columns.map((col, index) => (
               <div
-                className="size-32 [&>svg]:size-full"
-                dangerouslySetInnerHTML={{ __html: footerQr }}
-                role="img"
-                aria-label="QR code that opens Web3Chess in Telegram"
-              />
-            </div>
-            <p className="poster mt-4 text-heading-sm">Scan to play in Telegram</p>
-            <p className="mt-1 font-mono text-caption text-fg-muted">No download · Opens the Mini App</p>
-          </div>
-
-          <div className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
-            {home.footer.columns.map((col) => (
-              <div key={col.title} className="space-y-3">
-                <p className="font-mono text-overline uppercase text-fg-link">{col.title}</p>
-                <ul className="grid gap-2.5">
+                key={col.title}
+                className={`space-y-2 ${index === 2 ? "col-span-2 sm:col-span-1" : ""}`}
+              >
+                <p className="font-mono text-overline uppercase text-fg-link">
+                  {col.title}
+                </p>
+                <ul className="grid gap-1">
                   {col.links.map((l) => {
-                    const isExternal = l.href.startsWith("http") || l.href === "#";
+                    const isExternal =
+                      l.href.startsWith("http") || l.href === "#";
                     const targetHref = l.href === "#" ? telegramLink() : l.href;
 
                     return (
@@ -38,7 +40,7 @@ export async function Footer() {
                         {isExternal ? (
                           <a
                             href={targetHref}
-                            className="link text-body text-fg-muted hover:text-fg"
+                            className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -47,7 +49,7 @@ export async function Footer() {
                         ) : (
                           <Link
                             href={targetHref}
-                            className="link text-body text-fg-muted hover:text-fg"
+                            className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
                           >
                             {l.label}
                           </Link>
@@ -59,11 +61,25 @@ export async function Footer() {
               </div>
             ))}
           </div>
+          <div className="hidden max-w-44 text-center lg:block">
+            <div className="inline-block rounded-media bg-white p-3">
+              <div
+                className="size-28 [&>svg]:size-full"
+                dangerouslySetInnerHTML={{ __html: footerQr }}
+                role="img"
+                aria-label="QR code that opens Web3Chess in Telegram"
+              />
+            </div>
+            <p className="mt-3 text-caption">Scan to play</p>
+            <p className="mt-1 font-mono text-caption text-fg-muted">
+              Opens in Telegram
+            </p>
+          </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <Logo inverse />
-          <p className="max-w-[60ch] font-mono text-caption text-fg-muted">
+        <div className="flex flex-wrap items-start gap-3 border-t border-line pt-5">
+          <Badge tone="outline">18+ wager matches</Badge>
+          <p className="max-w-[85ch] text-caption text-fg-muted">
             {home.footer.legal} © {new Date().getFullYear()} {SITE.name}.
           </p>
         </div>

@@ -20,18 +20,18 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600"],
   variable: "--nf-mono",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Web3Chess — Competitive Real-Time Chess on Telegram", template: "%s · Web3Chess" },
-  description: SITE.description,
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+  title: {
+    default: "Web3Chess — Chess in Telegram",
+    template: "%s · Web3Chess",
   },
+  description: SITE.description,
   openGraph: {
-    title: "Web3Chess — Competitive Real-Time Chess on Telegram",
+    title: "Web3Chess — Chess in Telegram",
     description: SITE.description,
     url: SITE.url,
     siteName: SITE.name,
@@ -47,11 +47,20 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#e5e5e5",
   colorScheme: "light",
+  viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" dir="ltr" className={`${onest.variable} ${condensed.variable} ${plexMono.variable}`}>
+    <html
+      lang="en"
+      dir="ltr"
+      className={`${onest.variable} ${condensed.variable} ${plexMono.variable}`}
+    >
       <body>
         <a
           href="#main"

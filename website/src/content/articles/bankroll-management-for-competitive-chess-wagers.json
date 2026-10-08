@@ -1,0 +1,83 @@
+{
+  "slug": "bankroll-management-for-competitive-chess-wagers",
+  "title": "USDT chess match payouts: pot, fees and net result",
+  "subtitle": "The winner’s receipt includes their original stake. That difference matters.",
+  "excerpt": "See how an equal-stake USDT chess match is settled, distinguish a payout from profit, and understand why a win does not guarantee income.",
+  "category": "Match Rules",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-21",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "The winner’s receipt includes the original stake.",
+    "A 10 USDT-per-player example returns 19 USDT to the winner’s platform balance.",
+    "Wager losses and fees prevent a match payout from being a salary promise."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "A payout number can sound larger than the result it represents. The first step in reading a USDT match result is to separate the stake you committed from the amount credited afterwards."
+    },
+    {
+      "type": "heading",
+      "text": "A worked example"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose both players commit 10 USDT. The combined pot is 20 USDT. Under the current decided-match allocation, 19 USDT is credited to the winner’s platform balance, 0.60 USDT goes to the platform and 0.40 USDT funds the referral pool. This is an illustration, not a transaction."
+    },
+    {
+      "type": "paragraph",
+      "text": "The winner committed 10 USDT and receives 19 USDT, so the net match gain is 9 USDT before any separate costs. The losing player loses their 10 USDT stake. Calling the full 19 USDT profit would be incorrect."
+    },
+    {
+      "type": "heading",
+      "text": "Why equal wins and losses do not imply profit"
+    },
+    {
+      "type": "paragraph",
+      "text": "In a simplified series with the same stake every time, only decided games, and no other costs, the net result per unit of stake is 1.9p − 1, where p is the win probability. Break-even is 1 ÷ 1.9, about 52.63%. A 50% win probability gives a negative expected net result of 5% of the stake. This calculation does not estimate anyone’s real win probability."
+    },
+    {
+      "type": "heading",
+      "text": "A result is not a wallet transfer"
+    },
+    {
+      "type": "paragraph",
+      "text": "Match settlement credits the platform balance. A wallet withdrawal is a separate request, with confirmation in the bot and additional review when required. Check the current fees, network and terms before making money decisions."
+    },
+    {
+      "type": "heading",
+      "text": "Keep the purpose clear"
+    },
+    {
+      "type": "paragraph",
+      "text": "Play for the chess experience, within an amount you can afford to lose. Do not borrow, chase a loss by increasing a stake, or treat wager winnings as essential income. Free practice remains available without a stake."
+    },
+    {
+      "type": "callout",
+      "text": "18+; local availability and rules apply. You can lose your stake. No win probability, profit, salary replacement or withdrawal timing is guaranteed."
+    }
+  ],
+  "relatedSlugs": [
+    "the-death-of-tap-to-earn-skill-based-web3-chess",
+    "fair-play-in-web3-chess",
+    "elo-xp-progression-guide"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "See how an equal-stake USDT chess match is settled, distinguish a payout from profit, and understand why a win does not guarantee income.",
+  "sources": [
+    {
+      "title": "Web3Chess match rules",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "cta": {
+    "label": "Read the match rules",
+    "href": "/wagers"
+  }
+}

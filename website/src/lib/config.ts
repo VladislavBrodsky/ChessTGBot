@@ -5,7 +5,11 @@
 
 /** Canonical bot. Backend default: backend/app/core/config.py TELEGRAM_BOT_USERNAME.
  *  A leading "@" is stripped: `t.me/@bot/...` is not a valid Telegram link. */
-export const BOT_USERNAME = (process.env.NEXT_PUBLIC_BOT_USERNAME || "chess_matbot").trim().replace(/^@+/, "");
+export const BOT_USERNAME = (
+  process.env.NEXT_PUBLIC_BOT_USERNAME || "chess_matbot"
+)
+  .trim()
+  .replace(/^@+/, "");
 
 /**
  * Mini App deep link.
@@ -45,9 +49,11 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://web3chess.online",
   appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.web3chess.online",
   description:
-    "Real-time chess inside Telegram. Play rated games for free, or stake USDT against players at your level.",
-  telegramChannel: process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL ?? "https://t.me/chess_hub",
-  telegramChat: process.env.NEXT_PUBLIC_TELEGRAM_CHAT ?? "https://t.me/chesshub_chat",
+    "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
+  telegramChannel:
+    process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL ?? "https://t.me/chess_hub",
+  telegramChat:
+    process.env.NEXT_PUBLIC_TELEGRAM_CHAT ?? "https://t.me/chesshub_chat",
 } as const;
 
 export const TIME_CONTROLS = ["1+0", "3+2", "5+0", "10+0"] as const;

@@ -1,0 +1,97 @@
+{
+  "slug": "fair-play-in-web3-chess",
+  "title": "Fair play starts with a clear board",
+  "subtitle": "What server validation does, why honest play still matters, and how match settlement works.",
+  "excerpt": "A closer look at legal-move validation, match clocks, and the difference between a platform balance and a wallet withdrawal.",
+  "category": "Match Rules",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-24",
+  "updatedAt": "2026-10-07",
+  "readingTime": "2 min read",
+  "featured": true,
+  "takeaways": [
+    "The backend validates legal moves and maintains the authoritative game state.",
+    "Legal-move validation alone does not establish whether a player used outside assistance.",
+    "In a decided wager match, the winner receives 95% of the combined pot in their platform balance.",
+    "A wallet withdrawal is separate from a match result and follows confirmation and review steps."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Online chess works best when players understand both the rules of the board and the rules of the platform. Here is the practical distinction between game validation, fair play, and money movement on Web3Chess."
+    },
+    {
+      "type": "heading",
+      "text": "The server keeps the game state"
+    },
+    {
+      "type": "paragraph",
+      "text": "Your device displays the board and sends moves. The backend checks a move against the current position and maintains the authoritative state. This keeps the game from relying only on what a browser reports."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Moves must be legal in the current position.",
+        "The correct player must make the move on their turn.",
+        "The match must still be active.",
+        "The selected time control governs the game clock."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Validation and honest play are different"
+    },
+    {
+      "type": "paragraph",
+      "text": "An engine can suggest a perfectly legal move. Checking move legality is therefore not proof that a player made the decision without assistance. Players must choose their own moves during a player match, without an engine or another person helping."
+    },
+    {
+      "type": "callout",
+      "text": "If a game raises a concern, keep the match identifier and contact support through the bot chat. One impressive move is not, by itself, proof of cheating."
+    },
+    {
+      "type": "heading",
+      "text": "Treat your connection as part of preparation"
+    },
+    {
+      "type": "paragraph",
+      "text": "A reliable connection matters, especially in bullet and blitz. Reconnect promptly if the Mini App loses connection. Do not assume that leaving the app pauses your clock or guarantees a particular reconnection grace period."
+    },
+    {
+      "type": "heading",
+      "text": "Know where the result goes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Both players commit equal stakes in a wager match. For a decided result, settlement allocates 95% of the combined pot to the winner, 3% to the platform, and 2% to the referral pool. The winner’s share is credited to their platform balance; draw handling follows separate match rules."
+    },
+    {
+      "type": "paragraph",
+      "text": "Deposits are held by Web3Chess as a platform balance. A withdrawal to your wallet is a separate request with confirmation instructions in the bot chat and additional review where required. Once a transfer is sent, the transaction can be checked on Tonviewer."
+    },
+    {
+      "type": "callout",
+      "text": "Wager matches involve real money and you can lose your stake. Play responsibly. 18+. You can train against A.I. and practise tactics without committing a stake."
+    }
+  ],
+  "relatedSlugs": [
+    "why-telegram-mini-apps-for-chess",
+    "opening-mastery-tactics"
+  ],
+  "metaDescription": "A closer look at legal-move validation, match clocks, and the difference between a platform balance and a wallet withdrawal.",
+  "sources": [
+    {
+      "title": "Web3Chess match rules",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "cta": {
+    "label": "Read the match rules",
+    "href": "/wagers"
+  }
+}

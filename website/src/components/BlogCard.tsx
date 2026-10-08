@@ -1,112 +1,101 @@
+import { Badge } from "@/components/ui/Badge";
+import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/content/blog";
-import { Icon } from "@/icons";
+import { Icon, type IconName } from "@/icons";
+import { articleArt, chessArt } from "@/lib/chess-art";
 
-interface BlogCardProps {
-  post: BlogPost;
+export type BlogSummary = Pick<
+  BlogPost,
+  | "slug"
+  | "title"
+  | "subtitle"
+  | "excerpt"
+  | "category"
+  | "author"
+  | "readingTime"
+  | "publishedAt"
+>;
+const categoryIcons: Record<BlogPost["category"], IconName> = {
+  Tactics: "target",
+  Openings: "strategy",
+  Product: "device-mobile",
+  Academy: "graduation-cap",
+  "Chess News": "globe",
+  "Chess Culture": "chats-circle",
+  "Match Rules": "scales",
+};
+export function BlogCard({
+  post,
+  featured = false,
+}: {
+  post: BlogSummary;
   featured?: boolean;
-}
-
-export function BlogCard({ post, featured = false }: BlogCardProps) {
-  if (featured) {
-    return (
-      <article className="group relative overflow-hidden rounded-card bg-surface p-8 md:p-12 transition-transform duration-200 hover:-translate-y-0.5">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex-1 space-y-5">
-            {/* Meta Pill & Category */}
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="tag">
-                {post.category}
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-mono text-caption text-fg-muted">
-                <Icon name="clock" size={14} />
-                {post.readingTime}
-              </span>
-              <span className="font-mono text-caption text-fg-muted">• {post.publishedAt}</span>
-            </div>
-
-            {/* Title */}
-            <h2 className="poster text-heading-lg text-fg">
-              <Link href={`/blog/${post.slug}`} className="transition-opacity hover:opacity-80">
-                {post.title}
-              </Link>
-            </h2>
-
-            {/* Subtitle / Excerpt */}
-            <p className="max-w-[65ch] text-body sm:text-lead text-fg-muted">
-              {post.subtitle || post.excerpt}
-            </p>
-
-            {/* Author & CTA Button */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-line">
-              <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-full bg-wash font-mono text-xs font-bold text-fg">
-                  {post.author.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-body-sm font-semibold text-fg leading-tight">{post.author.name}</p>
-                  <p className="font-mono text-overline text-fg-muted uppercase tracking-wider mt-0.5">{post.author.role}</p>
-                </div>
-              </div>
-
-              <Link
-                href={`/blog/${post.slug}`}
-                className="inline-flex items-center gap-2 rounded-control bg-inverse px-5 py-2.5 text-button text-fg-inverse transition-colors hover:bg-graphite active:scale-[.98]"
-              >
-                <span>Read Story</span>
-                <Icon name="arrow-up-right" size={16} className="flip-rtl" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
+}) {
   return (
-    <article className="group flex flex-col justify-between rounded-card bg-surface p-7 sm:p-8 transition-transform duration-200 hover:-translate-y-0.5">
-      <div className="space-y-4">
-        {/* Category & Time */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="tag">
-            {post.category}
-          </span>
-          <span className="inline-flex items-center gap-1 font-mono text-caption text-fg-muted">
+    <article
+      className={`group flex flex-col overflow-hidden rounded-card bg-surface p-6 sm:p-8 ${featured ? "lg:grid lg:grid-cols-[1.2fr_.8fr] lg:items-center lg:gap-10" : ""}`}
+    >
+      <div className="flex h-full flex-col">
+        {!featured && (
+          <Link
+            href={`/blog/${post.slug}`}
+            aria-label={`Read ${post.title}`}
+            tabIndex={-1}
+            className="journal-cover mb-6"
+            aria-hidden="true"
+          >
+            <Icon name={categoryIcons[post.category]} size={48} />
+            <span className="journal-cover-label">
+              Web3Chess journal
+            </span>
+          </Link>
+        )}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Badge icon={categoryIcons[post.category]}>{post.category}</Badge>
+          <span className="flex items-center gap-1 font-mono text-caption text-fg-muted">
             <Icon name="clock" size={14} />
             {post.readingTime}
           </span>
         </div>
-
-        {/* Title */}
-        <h3 className="poster text-heading-sm text-fg">
-          <Link href={`/blog/${post.slug}`} className="transition-opacity hover:opacity-80">
-            {post.title}
+        {featured ? (
+          <h2 className="mt-5 text-heading-md font-medium leading-tight">
+            <Link href={`/blog/${post.slug}`} className="hover:underline">
+              {post.title}
+            </Link>
+          </h2>
+        ) : (
+          <h3 className="mt-5 text-heading-sm font-medium leading-tight">
+            <Link href={`/blog/${post.slug}`} className="hover:underline">
+              {post.title}
+            </Link>
+          </h3>
+        )}
+        <p className="mt-3 text-body-sm text-fg-muted">{post.excerpt}</p>
+        <div className="mt-auto flex items-center justify-between gap-4 pt-6">
+          <span className="text-caption text-fg-muted">{post.author.name}</span>
+          <Link
+            href={`/blog/${post.slug}`}
+            aria-label={`Read ${post.title}`}
+            className="inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold"
+          >
+            Read story
+            <Icon name="arrow-up-right" size={16} />
           </Link>
-        </h3>
-
-        {/* Excerpt */}
-        <p className="line-clamp-3 text-body-sm text-fg-muted">
-          {post.excerpt}
-        </p>
-      </div>
-
-      {/* Author & Footer Link */}
-      <div className="flex items-center justify-between pt-5 mt-6 border-t border-line">
-        <div className="flex items-center gap-2.5">
-          <div className="grid size-7 place-items-center rounded-full bg-wash font-mono text-[10px] font-bold text-fg">
-            {post.author.name.charAt(0)}
-          </div>
-          <span className="text-body-sm font-semibold text-fg">{post.author.name}</span>
         </div>
-
-        <Link
-          href={`/blog/${post.slug}`}
-          className="inline-flex items-center gap-1 font-mono text-overline font-semibold uppercase tracking-wider text-fg transition-transform group-hover:translate-x-1"
-        >
-          <span>Read</span>
-          <Icon name="arrow-up-right" size={14} className="flip-rtl" />
-        </Link>
       </div>
+      {featured && (
+        <div className="mt-6 rounded-media bg-inset p-5 lg:mt-0">
+          <Image
+            src={`/illustrations/${chessArt[articleArt(post.slug, post.category)].file}.webp`}
+            width={1000}
+            height={1000}
+            sizes="(max-width: 767px) 80vw, 400px"
+            alt=""
+            className="h-auto w-full"
+          />
+        </div>
+      )}
     </article>
   );
 }

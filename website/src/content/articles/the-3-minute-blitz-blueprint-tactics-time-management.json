@@ -1,0 +1,84 @@
+{
+  "slug": "the-3-minute-blitz-blueprint-tactics-time-management",
+  "title": "Blitz chess time management: a simple decision routine",
+  "subtitle": "Notice the threat, compare candidate moves, and spend time where the position needs it.",
+  "excerpt": "Build a practical blitz routine around threats, candidate moves and clock awareness, without rigid timing rules or invented success rates.",
+  "category": "Academy",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-23",
+  "readingTime": "2 min read",
+  "takeaways": [
+    "Start by checking the opponent’s threat.",
+    "Use time for critical decisions rather than a fixed limit on every move.",
+    "Review the moments where your process broke down."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "A short clock changes the cost of a decision, but it does not make every position equally simple. A useful blitz routine helps you recognise when to act and when to calculate."
+    },
+    {
+      "type": "heading",
+      "text": "Check what changed"
+    },
+    {
+      "type": "paragraph",
+      "text": "After the opponent moves, inspect checks, captures and threats for both sides. Look at loose pieces and your king before choosing an attacking move. This is a thinking aid, not a proven seconds-per-move prescription."
+    },
+    {
+      "type": "heading",
+      "text": "Choose candidate moves"
+    },
+    {
+      "type": "paragraph",
+      "text": "Compare a small number of plausible moves. Ask what the opponent can reply and whether your intended move leaves a piece undefended. In a forcing position, calculate the forcing line rather than making an attractive move on instinct."
+    },
+    {
+      "type": "heading",
+      "text": "Read the clock and increment"
+    },
+    {
+      "type": "paragraph",
+      "text": "A time control with increment differs from one without it. Choose the current app option that gives you enough room to practise a decision process. Do not assume that a named time control guarantees a particular average thinking time or win rate."
+    },
+    {
+      "type": "heading",
+      "text": "Review one turning point"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Find the move where you first felt rushed.",
+        "Write down the threat you missed or the choice you avoided.",
+        "Compare your candidates without the game clock.",
+        "Use a slower practice game to rehearse the idea."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "You do not need an unsupported claim about how often a clock advantage wins. You need a repeatable way to notice danger and choose a move. Try it in free A.I. practice first."
+    }
+  ],
+  "relatedSlugs": [
+    "stafford-and-englund-gambits-speed-chess-weapons",
+    "opening-mastery-tactics",
+    "elo-xp-progression-guide"
+  ],
+  "updatedAt": "2026-10-07",
+  "metaDescription": "Build a practical blitz routine around threats, candidate moves and clock awareness, without rigid timing rules or invented success rates.",
+  "sources": [
+    {
+      "title": "Web3Chess Academy and product guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}
