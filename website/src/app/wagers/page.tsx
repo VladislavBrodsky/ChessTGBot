@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { SETTLEMENT } from "@/lib/config";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
   "USDT Chess Matches — Stakes, Fees & Withdrawals",
@@ -26,6 +26,15 @@ export default function WagersPage() {
         id="main"
         className="shell-wide space-y-16 py-6 md:space-y-20 md:py-10"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd(breadcrumbData([
+              { name: "Home", path: "" },
+              { name: "USDT chess matches", path: "/wagers" },
+            ])),
+          }}
+        />
         <PageHero
           eyebrow="Know the numbers · 18+"
           title={

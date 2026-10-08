@@ -93,6 +93,7 @@ jobs:
       # Build first: it is the only step that catches a bad token import from
       # design-system/website/theme.css or a server/client boundary mistake.
       - run: npm run build
+      - run: npm run seo:check
       - run: npm run typecheck
       - run: npm run lint
 
