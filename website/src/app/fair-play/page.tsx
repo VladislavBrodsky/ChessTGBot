@@ -85,7 +85,7 @@ export default function FairPlayPage() {
             ))}
           </div>
         </section>
-        <section data-surface="ink" className="rounded-block p-8 sm:p-12">
+        <section data-surface="ink" className="statement-panel">
           <Eyebrow>A clear distinction</Eyebrow>
           <h2 className="poster mt-5 text-heading-xl">
             Legal moves.

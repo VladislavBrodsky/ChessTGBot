@@ -7,6 +7,7 @@ import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
 import { Icon } from "@/icons";
+import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/privacy` },
@@ -28,10 +29,10 @@ export default function PrivacyPage() {
 
       <main id="main" className="shell-prose space-y-12 py-8 md:py-14">
         {/* Top Breadcrumb */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-control bg-surface px-4 py-2 font-mono text-overline uppercase text-fg transition-opacity hover:opacity-80"
+            className="inline-flex min-h-11 items-center gap-2 rounded-control bg-surface px-4 py-2 text-caption text-fg transition-opacity hover:opacity-80"
           >
             <Icon name="arrow-left" size={14} className="flip-rtl" />
             <span>Back to Home</span>
@@ -52,7 +53,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* Content Card */}
-        <div className="rounded-card bg-surface p-8 md:p-12 space-y-8 text-body text-fg-muted">
+        <Card className="legal-copy space-y-8 text-body text-fg-muted">
           <section className="space-y-3">
             <h2 className="poster text-heading-md text-fg">
               1. TELEGRAM DATA &amp; AUTHENTICATION
@@ -106,7 +107,7 @@ export default function PrivacyPage() {
               brokers.
             </p>
           </section>
-        </div>
+        </Card>
       </main>
 
       <Footer />

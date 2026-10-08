@@ -7,7 +7,6 @@ export function Logo({ inverse = false }: { inverse?: boolean }) {
     <span className="brand-lockup inline-flex min-w-0 items-center gap-2.5">
       <BrandMark
         className="size-11 shrink-0 sm:size-12"
-        foreground={inverse ? "var(--color-brand-symbol)" : undefined}
       />
       <span className="flex min-w-0 flex-col justify-center">
         <span className="sr-only">{BRAND.wordmark}</span>

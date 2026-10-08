@@ -22,6 +22,15 @@ export function ShareButtons({
     },
     [],
   );
+  useEffect(() => {
+    // A copied URL belongs to one position; clear it when the puzzle changes.
+    if (timer.current) clearTimeout(timer.current);
+    const frame = requestAnimationFrame(() => {
+      setStatus("");
+      setShowLink(false);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [url]);
   const shareText = title + " — Web3Chess";
   async function copy() {
     try {

@@ -129,6 +129,7 @@
   --radius-control: 8px;    /* buttons, inputs */
   --radius-media: 16px;     /* nested tiles, thumbnails */
   --radius-card: 32px;      /* cards */
+  --radius-card-compact: 24px; /* cards on small phones */
   --radius-panel: 32px;     /* panels, FAQ shell */
   --radius-frame: 40px;
   --radius-nav: 48px;       /* nav pill */
@@ -291,6 +292,10 @@
     color-scheme: light;
     -webkit-text-size-adjust: 100%;
     scroll-padding-top: 6rem;
+    scroll-padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
+  }
+  @media (max-width: 1023px) {
+    html { scroll-padding-top: 1.25rem; }
   }
 
   body {

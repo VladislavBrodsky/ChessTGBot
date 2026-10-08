@@ -32,6 +32,9 @@ export async function socialImage({
   const bodyFont = await readFile(
     join(process.cwd(), "public/fonts/onest.ttf"),
   );
+  const brandSymbol = await readFile(
+    join(process.cwd(), "public/brand", BRAND.socialAsset),
+  );
   return new ImageResponse(
     (
       <div
@@ -57,7 +60,7 @@ export async function socialImage({
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <BrandMark
-              foreground={color.brandInk}
+              src={`data:image/png;base64,${brandSymbol.toString("base64")}`}
               style={{ width: 48, height: 48 }}
             />
             <div style={{ display: "flex", flexDirection: "column" }}>

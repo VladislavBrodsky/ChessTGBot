@@ -40,7 +40,7 @@ export function WagerDemo() {
           </button>
         ))}
       </div>
-      <dl className="grid gap-4 border-t border-line pt-5 text-body-sm tabular-nums">
+      <dl className="grid gap-4 border-t border-line pt-5 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
         <div className="flex justify-between gap-4">
           <dt className="text-fg-muted">Combined pot</dt>
           <dd className="font-mono font-semibold">{fmt(pot)}</dd>

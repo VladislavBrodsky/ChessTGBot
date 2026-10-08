@@ -34,9 +34,9 @@ export function BlogCard({
 }) {
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded-card bg-surface p-6 sm:p-8 ${featured ? "lg:grid lg:grid-cols-[1.2fr_.8fr] lg:items-center lg:gap-10" : ""}`}
+      className={`site-card journal-card group flex min-w-0 flex-col bg-surface ${featured ? "lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)] lg:items-center lg:gap-10" : ""}`}
     >
-      <div className="flex h-full flex-col">
+      <div className={`flex flex-col ${featured ? "" : "h-full"}`}>
         {!featured && (
           <Link
             href={`/blog/${post.slug}`}
@@ -72,7 +72,7 @@ export function BlogCard({
           </h3>
         )}
         <p className="mt-3 text-body-sm text-fg-muted">{post.excerpt}</p>
-        <div className="mt-auto flex items-center justify-between gap-4 pt-6">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-1 pt-5">
           <span className="text-caption text-fg-muted">{post.author.name}</span>
           <Link
             href={`/blog/${post.slug}`}
@@ -85,14 +85,14 @@ export function BlogCard({
         </div>
       </div>
       {featured && (
-        <div className="mt-6 rounded-media bg-inset p-5 lg:mt-0">
+        <div className="mt-6 flex justify-center rounded-media bg-inset p-5 lg:mt-0">
           <Image
             src={`/illustrations/${chessArt[articleArt(post.slug, post.category)].file}.webp`}
             width={1000}
             height={1000}
-            sizes="(max-width: 767px) 80vw, 400px"
+            sizes="(max-width: 479px) 80vw, 320px"
             alt=""
-            className="h-auto w-full"
+            className="h-auto w-full max-w-80"
           />
         </div>
       )}

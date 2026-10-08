@@ -13,7 +13,7 @@ export function Faq() {
             {item.q}
             <span
               aria-hidden="true"
-              className="text-fg-muted transition-transform duration-150 group-open:rotate-45"
+              className="shrink-0 text-fg-muted transition-transform duration-150 group-open:rotate-45"
             >
               <svg
                 viewBox="0 0 24 24"

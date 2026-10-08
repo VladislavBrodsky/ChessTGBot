@@ -1,23 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { PlayButton } from "./PlayButton";
 
 /** Sticky bottom CTA on phones, after the hero scrolls away. Respects the iOS safe area. */
 export function MobileCta() {
   const [show, setShow] = useState(false);
+  const path = usePathname();
 
   useEffect(() => {
     let frame = 0;
     const heroActions = document.querySelector<HTMLElement>(
-      ".hero-actions, .page-hero-actions",
+      ".hero-actions, .page-hero-details",
     );
     const update = () => {
       const heroPassed = heroActions
         ? heroActions.getBoundingClientRect().bottom <= 0
         : window.scrollY > 560;
-      const nearFooter =
-        window.innerHeight + window.scrollY > document.body.offsetHeight - 700;
+      const footer = document.querySelector("footer");
+      const nearFooter = footer
+        ? footer.getBoundingClientRect().top <= window.innerHeight
+        : false;
       const editing = document.activeElement?.matches(
         'input, textarea, select, [contenteditable="true"]',
       );
@@ -39,7 +43,7 @@ export function MobileCta() {
       document.removeEventListener("focusin", schedule);
       document.removeEventListener("focusout", schedule);
     };
-  }, []);
+  }, [path]);
 
   return (
     <div

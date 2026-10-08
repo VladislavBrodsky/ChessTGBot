@@ -35,12 +35,12 @@ export default function WagersPage() {
               The full picture.
             </>
           }
-          lead="A wager match starts with equal stakes and clear rules. See how the pot is split, where your balance is held, and how a withdrawal works."
+          lead="Equal stakes. Clear fees. Understand the pot, your balance, and withdrawals before you play."
           visual={<ChessSculpture variant="wagers" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
             <PlayButton size="lg" />
-            <ButtonLink href="/academy" variant="secondary">
+            <ButtonLink href="/academy" variant="ghost">
               Practise free first
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
@@ -158,7 +158,7 @@ export default function WagersPage() {
             is not a self-custody wallet.
           </p>
         </section>
-        <section data-surface="ink" className="rounded-block p-8 sm:p-12">
+        <section data-surface="ink" className="statement-panel">
           <Eyebrow>A better starting point</Eyebrow>
           <div className="mt-5 grid gap-8 md:grid-cols-[1fr_.7fr] md:items-end">
             <div>

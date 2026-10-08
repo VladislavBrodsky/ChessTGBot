@@ -42,12 +42,12 @@ export default function AcademyPage() {
               Play better.
             </>
           }
-          lead="Good moves begin with good habits. Build your board vision with lessons, tactical puzzles, and free A.I. practice in Telegram."
+          lead="Build your board vision. Learn an idea, solve a puzzle, and try it in free A.I. practice."
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
             <PlayButton size="lg" label="Open the Academy" />
-            <ButtonLink href="#challenge" variant="secondary">
+            <ButtonLink href="#challenge" variant="ghost">
               Try a challenge
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
@@ -142,7 +142,7 @@ export default function AcademyPage() {
             ))}
           </div>
         </section>
-        <section data-surface="ink" className="rounded-block p-6 sm:p-12">
+        <section data-surface="ink" className="statement-panel">
           <Eyebrow>Your training partner</Eyebrow>
           <div className="mt-5 grid items-end gap-8 md:grid-cols-[1fr_.7fr]">
             <div>

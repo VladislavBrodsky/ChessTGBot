@@ -3,48 +3,26 @@ import { BRAND } from "@/lib/brand";
 type BrandMarkProps = {
   className?: string;
   style?: React.CSSProperties;
-  background?: string;
-  foreground?: string;
-  border?: string;
-  variant?: "symbol" | "avatar";
+  src?: string;
 };
 
-/** Open rook for lockups; the contained avatar is reserved for icons. */
+/** Pre-sized artwork avoids an image-optimization request for the tiny brand mark. */
 export function BrandMark({
   className,
   style,
-  background = "var(--color-brand-tile)",
-  foreground,
-  border = "transparent",
-  variant = "symbol",
+  src = BRAND.symbolAsset,
 }: BrandMarkProps) {
-  const ink = foreground ?? (variant === "avatar"
-    ? "var(--color-brand-symbol)"
-    : "var(--color-brand-ink)");
   return (
-    <svg
+    // This same primitive accepts an embedded PNG for ImageResponse.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
       className={className}
       style={style}
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      width={128}
+      height={128}
+      alt=""
       aria-hidden="true"
-      focusable="false"
-    >
-      {variant === "avatar" && (
-        <rect
-          x="0.5"
-          y="0.5"
-          width="63"
-          height="63"
-          rx="15.5"
-          fill={background}
-          stroke={border}
-        />
-      )}
-      <g transform={variant === "avatar" ? BRAND.avatarTransform : BRAND.symbolTransform}>
-        <path d={BRAND.markPath} fill={ink} />
-      </g>
-    </svg>
+    />
   );
 }

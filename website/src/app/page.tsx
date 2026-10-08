@@ -45,7 +45,7 @@ export default function HomePage() {
         "@id": `${SITE.url}/#organization`,
         name: SITE.name,
         url: SITE.url,
-        logo: `${SITE.url}/icon.svg`,
+        logo: `${SITE.url}/brand/w3chess-avatar.png`,
         sameAs: [SITE.telegramChannel, SITE.telegramChat],
       },
       {
@@ -83,7 +83,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
       />
       <Nav />
-      <main id="main">
+      <main id="main" className="home-main">
         <section className="shell-wide hero-section">
           <div className="hero-copy">
             <div className="hero-intro">
@@ -93,12 +93,12 @@ export default function HomePage() {
                 <br />
                 <span className="hero-emphasis">only edge</span>
               </h1>
-            </div>
-            <div className="hero-details">
-              <p className="max-w-[38ch] text-lead text-fg-muted">
+              <p className="hero-lead max-w-[38ch] text-fg-muted">
                 Your favorite game. A whole new arena. Train for free, find your
                 next rival, and put your chess skills to the test.
               </p>
+            </div>
+            <div className="hero-details">
               <div className="hero-actions flex flex-wrap gap-2.5">
                 <PlayButton size="lg" />
                 <ButtonLink
@@ -123,7 +123,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="challenge" className="shell-wide section-y">
+        <section id="challenge" className="shell-wide home-section">
           <div className="section-index">
             <span>01 / Your move, right now</span>
             <span>Three free positions</span>
@@ -161,7 +161,7 @@ export default function HomePage() {
           </Card>
         </section>
 
-        <section id="play" className="shell-wide section-y">
+        <section id="play" className="shell-wide home-section">
           <div className="section-index">
             <span>02 / From chat to checkmate</span>
             <span>Built around your day</span>
@@ -187,8 +187,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="shell-wide section-y">
-          <div data-surface="ink" className="rounded-block p-7 sm:p-12 lg:p-14">
+        <section className="shell-wide home-section">
+          <div data-surface="ink" className="statement-panel">
             <div className="section-index">
               <span>03 / The game comes first</span>
               <Icon name="strategy" size={20} />
@@ -235,7 +235,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="academy" className="shell-wide section-y">
+        <section id="academy" className="shell-wide home-section">
           <div className="section-index">
             <span>04 / Build your board vision</span>
             <span>Practice is always free</span>
@@ -278,7 +278,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="wagers" className="shell-wide section-y">
+        <section id="wagers" className="shell-wide home-section">
           <div className="section-index">
             <span>05 / Know the numbers</span>
             <span>18+ wager matches</span>
@@ -316,7 +316,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="blog" className="shell-wide section-y">
+        <section id="blog" className="shell-wide home-section">
           <div className="section-index">
             <span>06 / The chess journal</span>
             <span>Read. Think. Repeat.</span>
@@ -331,14 +331,14 @@ export default function HomePage() {
               <Icon name="arrow-up-right" size={18} />
             </ButtonLink>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {BLOG_POSTS.slice(0, 3).map((post) => (
               <BlogCard key={post.slug} post={post} />
             ))}
           </div>
         </section>
 
-        <section id="philosophy" className="shell-wide section-y">
+        <section id="philosophy" className="shell-wide home-section">
           <Card className="grid items-center gap-8 md:grid-cols-[1fr_.45fr]">
             <div className="space-y-4">
               <span className="eyebrow">Know when to call it a game</span>
@@ -362,7 +362,7 @@ export default function HomePage() {
           </Card>
         </section>
 
-        <section id="faq" className="shell-wide section-y">
+        <section id="faq" className="shell-wide home-section">
           <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
             <div className="space-y-4">
               <span className="eyebrow">Before your first move</span>

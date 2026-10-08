@@ -16,7 +16,7 @@ export function Nav() {
   useEffect(() => {
     let frame = 0;
     const heroActions = document.querySelector<HTMLElement>(
-      ".hero-actions, .page-hero-actions",
+      ".hero-actions, .page-hero-details",
     );
     const update = () =>
       setStuck(
@@ -36,7 +36,7 @@ export function Nav() {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, []);
+  }, [path]);
   useEffect(() => {
     const node = dialog.current;
     if (!node) return;

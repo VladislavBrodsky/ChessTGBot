@@ -93,7 +93,7 @@ export default function HowItWorksPage() {
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
             <PlayButton size="lg" />
-            <ButtonLink href="/academy" variant="secondary">
+            <ButtonLink href="/academy" variant="ghost">
               Practise first
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
@@ -188,7 +188,7 @@ export default function HowItWorksPage() {
             </Card>
           </div>
         </section>
-        <section data-surface="ink" className="rounded-block p-8 sm:p-12">
+        <section data-surface="ink" className="statement-panel">
           <Eyebrow>Before you sit down</Eyebrow>
           <div className="mt-5 grid gap-6 md:grid-cols-[1fr_.7fr] md:items-end">
             <div>

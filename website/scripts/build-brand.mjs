@@ -1,4 +1,4 @@
-/** Rebuild exports and metadata icons from the same vectors used by the UI. */
+/** Rebuild optimized crown artwork, lockups, and metadata icons from shared sources. */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,24 +24,31 @@ const out = join(root, "public/brand");
 await mkdir(out, { recursive: true });
 const svg = (width, height, content) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" fill="none">${content}</svg>\n`;
-const mark = (ink, avatar = false) =>
-  `<g transform="${avatar ? BRAND.avatarTransform : BRAND.symbolTransform}"><path d="${BRAND.markPath}" fill="${ink}"/></g>`;
+const source = join(out, "chess-crown-source.png");
+const symbolPng = await sharp(source).resize(128, 128).png({ compressionLevel: 9 }).toBuffer();
+const symbolData = `data:image/png;base64,${symbolPng.toString("base64")}`;
+const sourceData = `data:image/png;base64,${(await readFile(source)).toString("base64")}`;
+const mark = () => `<image href="${symbolData}" width="64" height="64"/>`;
+const monochrome = (ink) => `<path d="${BRAND.markPath}" fill="${ink}"/>`;
 const avatar = svg(64, 64,
-  `<rect width="64" height="64" rx="16" fill="${color.brandTile}"/>${mark(color.brandSymbol, true)}`);
+  `<rect width="64" height="64" rx="16" fill="${color.brandTile}"/><image href="${symbolData}" x="8" y="8" width="48" height="48"/>`);
+const rasterAvatar = avatar.replace(symbolData, sourceData);
 const { wordmark, tagline } = BRAND_LETTERING;
 const wordmarkTop = (48 - wordmark.height - 6 - tagline.height) / 2;
 const taglineTop = wordmarkTop + wordmark.height + 6;
-const lockup = (markInk, textInk, secondary) => svg(58 + Math.max(wordmark.width, tagline.width), 48,
-  `<g transform="scale(.75)">${mark(markInk)}</g><path transform="translate(58 ${wordmarkTop})" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 ${taglineTop})" d="${tagline.path}" fill="${secondary}"/>`);
+const lockup = (textInk, secondary, mono = false) => svg(58 + Math.max(wordmark.width, tagline.width), 48,
+  `<g transform="scale(.75)">${mono ? monochrome(textInk) : mark()}</g><path transform="translate(58 ${wordmarkTop})" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 ${taglineTop})" d="${tagline.path}" fill="${secondary}"/>`);
 
 await Promise.all([
-  writeFile(join(root, "src/app/icon.svg"), avatar),
+  sharp(Buffer.from(avatar)).resize(64, 64).png({ compressionLevel: 9 }).toFile(join(root, "src/app/icon.png")),
+  writeFile(join(out, "chess-crown-3d.png"), symbolPng),
+  sharp(source).resize(128, 128).webp({ quality: 92, effort: 6 }).toFile(join(out, "chess-crown-3d.webp")),
   writeFile(join(out, "w3chess-mark.svg"), avatar),
-  writeFile(join(out, "w3chess-symbol.svg"), svg(64, 64, mark(color.brandInk))),
-  writeFile(join(out, "w3chess-logo.svg"), lockup(color.brandInk, color.ink, color.slate)),
-  writeFile(join(out, "w3chess-logo-inverse.svg"), lockup(color.brandSymbol, color.paper, color.smoke)),
-  writeFile(join(out, "w3chess-logo-mono.svg"), lockup(color.ink, color.ink, color.ink)),
-  sharp(Buffer.from(avatar)).resize(180, 180).png().toFile(join(root, "src/app/apple-icon.png")),
-  sharp(Buffer.from(avatar)).resize(512, 512).png().toFile(join(out, "w3chess-avatar.png")),
+  writeFile(join(out, "w3chess-symbol.svg"), svg(64, 64, mark())),
+  writeFile(join(out, "w3chess-logo.svg"), lockup(color.ink, color.slate)),
+  writeFile(join(out, "w3chess-logo-inverse.svg"), lockup(color.paper, color.smoke)),
+  writeFile(join(out, "w3chess-logo-mono.svg"), lockup(color.ink, color.ink, true)),
+  sharp(Buffer.from(rasterAvatar)).resize(180, 180).png({ compressionLevel: 9 }).toFile(join(root, "src/app/apple-icon.png")),
+  sharp(Buffer.from(rasterAvatar)).resize(512, 512).png({ compressionLevel: 9 }).toFile(join(out, "w3chess-avatar.png")),
 ]);
 console.log(`Brand exports regenerated: ${BRAND.wordmark} · ${BRAND.tagline}`);

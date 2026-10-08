@@ -1,0 +1,9 @@
+# Crown artwork generation
+
+Generated on 2026-10-08 using the built-in imagegen tool with `transparent_background: true`. No CLI/API fallback was used.
+
+The final asset is `chess-crown-source.png`; the brand build script generates its optimized website, icon, avatar, and portable SVG variants. The existing Barlow Condensed / Onest wordmark is composed separately, so the generator does not invent typography.
+
+## Exact final prompt
+
+Use case: logo-brand. Asset type: a production website header and app-avatar chess brand SYMBOL, no lettering. Primary request: design one exceptionally professional modern chess crown emblem for CHESS / Play-to-Earn, with restrained sculptural 3D depth. A single compact open three-point crown with a distinct central peak and two shorter side peaks, an elegant broad lower band, clear large negative space inside. The outer shape suggests the crown of a chess queen. Design it as one solid machined piece, not thin wire or a generic crown outline. Precisely balanced proportions, rounded bevels, confident simple silhouette that reads at 32 pixels. Front-facing, almost orthographic camera, only subtle visible depth on the right edge. Premium satin violet ceramic, dark-violet body (#654599 and #211330) with soft lavender (#D6B6FF) bevel highlights. Brand style is editorial, warm-gray website canvas with black typography and collectible polished chess objects. Transparent background, isolated emblem, centered, occupy 84 percent of square composition. Soft clean studio lighting, crisp object edges, restrained highlights, no glow, no bloom, no neon, no wireframe, no random details, no checkerboard rendered into the image, no board, no extra chess pieces, no coins, no shields, no letters, no words, no watermark, no scene shadow extending outside the symbol. ONE finished logo mark, not a grid of concepts or a presentation mockup.

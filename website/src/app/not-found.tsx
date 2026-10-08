@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ButtonLink } from "@/components/ui/Button";
 import { PlayButton } from "@/components/PlayButton";
 import { KingMark } from "@/components/icons";
 
@@ -10,12 +10,9 @@ export default function NotFound() {
       <p className="text-body sm:text-lead text-fg-muted">The page you asked for isn&apos;t on the board.</p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <PlayButton size="md" />
-        <Link
-          href="/"
-          className="inline-flex min-h-12 items-center rounded-control border border-line-strong px-5 text-button text-fg transition-colors duration-150 hover:bg-white"
-        >
+        <ButtonLink href="/" variant="secondary">
           Back to the website
-        </Link>
+        </ButtonLink>
       </div>
     </main>
   );

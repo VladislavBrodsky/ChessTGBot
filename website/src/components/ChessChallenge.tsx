@@ -81,7 +81,7 @@ export function ChessChallenge() {
       />
       <div className="challenge-board">
         <div className="mx-auto min-w-0 w-full max-w-100">
-          <div className="mb-3 flex items-center justify-between font-mono text-caption">
+          <div className="challenge-board-heading">
             <span>{puzzle.name}</span>
             <span>0{index + 1} / 03</span>
           </div>
@@ -119,14 +119,16 @@ export function ChessChallenge() {
             }
           />
           <p className="mt-3 text-caption text-center text-fg-muted">
-            Drag a piece, or tap it then its destination.
+            {outcome === "playing"
+              ? "Drag, tap, or type your move below."
+              : "Checkmate on the board. Try the next position."}
           </p>
         </div>
       </div>
       <div className="challenge-controls space-y-5">
         <div className="rounded-media bg-inset p-4" aria-label="Challenge progress">
           <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm">
-            <span className="font-semibold">Three positions. How many can you solve?</span>
+            <span className="font-semibold">Your progress</span>
             <span className="font-mono tabular-nums">{solvedIds.length} / {CHALLENGES.length} solved</span>
           </p>
           <div className="mt-3 flex gap-2" aria-hidden="true">
@@ -170,7 +172,7 @@ export function ChessChallenge() {
             >
               Your move in chess notation
             </label>
-            <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] md:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
               <input
                 id="challenge-move"
                 name="move"
@@ -178,13 +180,15 @@ export function ChessChallenge() {
                 onChange={(e) => setMoveText(e.target.value)}
                 placeholder="e.g. Ra8"
                 autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
                 spellCheck={false}
                 aria-describedby="challenge-feedback"
                 className="min-h-12 min-w-0 flex-1 rounded-control border border-line-strong bg-surface px-3 font-mono text-body"
               />
               <Button
                 type="submit"
-                className="w-full sm:w-auto md:w-full xl:w-auto"
+                className="w-full sm:w-auto"
               >
                 Play move
                 <Icon name="arrow-right" size={16} />

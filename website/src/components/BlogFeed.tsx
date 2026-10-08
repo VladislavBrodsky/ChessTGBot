@@ -38,7 +38,7 @@ export function BlogFeed({ posts }: { posts: BlogSummary[] }) {
             </Button>
           ))}
         </div>
-        <label className="block text-caption font-semibold">
+        <label className="block w-full text-caption font-semibold sm:w-auto">
           Search the journal
           <input
             value={query}
@@ -54,7 +54,7 @@ export function BlogFeed({ posts }: { posts: BlogSummary[] }) {
         explore
       </p>
       {filtered.length ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((post) => (
             <BlogCard key={post.slug} post={post} />
           ))}

@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           url: SITE.url,
           logo: {
             "@type": "ImageObject",
-            url: `${SITE.url}/icon.svg`,
+            url: `${SITE.url}/brand/w3chess-avatar.png`,
           },
         },
         citation: post.sources?.map((source) => source.url),
@@ -155,12 +155,12 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <main
         id="main"
-        className="shell-wide space-y-12 py-8 md:space-y-16 md:py-12"
+        className="reading-page shell-wide space-y-8 py-6 md:space-y-12 md:py-10"
       >
         {/* Breadcrumb Navigation */}
         <nav
           aria-label="Breadcrumb"
-          className="flex flex-wrap items-center gap-2 font-mono text-overline uppercase text-fg-muted"
+          className="flex flex-wrap items-center gap-2 font-mono text-overline uppercase text-fg-muted [&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"
         >
           <Link href="/" className="transition-colors hover:text-fg">
             Home
@@ -189,7 +189,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
 
           {/* Headline */}
-          <h1 className="text-heading-xl font-semibold leading-tight text-fg">
+          <h1 className="article-title text-fg">
             {post.title}
           </h1>
 
@@ -214,7 +214,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         {/* Key Takeaways Box */}
         {post.takeaways && post.takeaways.length > 0 && (
-          <section className="max-w-4xl rounded-card bg-surface p-8 md:p-10">
+          <section className="site-card bg-surface">
             <div className="flex items-center gap-2.5 mb-6">
               <Eyebrow>Key takeaways</Eyebrow>
             </div>
@@ -237,14 +237,14 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* Main Article Content Body */}
-        <article className="max-w-3xl rounded-card bg-surface p-6 md:p-12 space-y-8 text-body text-fg">
+        <article className="article-body site-card space-y-6 bg-surface text-body text-fg">
           {post.content.map((block, index) => {
             switch (block.type) {
               case "heading":
                 return (
                   <h2
                     key={index}
-                    className="text-heading-md font-semibold leading-tight text-fg pt-8 first:pt-0"
+                    className="font-medium leading-tight text-fg pt-3 first:pt-0"
                   >
                     {block.text}
                   </h2>
@@ -253,7 +253,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <h3
                     key={index}
-                    className="text-heading-sm font-semibold text-fg pt-4"
+                    className="font-medium text-fg pt-2"
                   >
                     {block.text}
                   </h3>
@@ -271,7 +271,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <blockquote
                     key={index}
-                    className="my-8 rounded-control border-l-4 border-black bg-inset p-6 poster text-heading-md text-fg"
+                    className="my-6 rounded-control border-s-4 border-line-strong bg-inset p-5 text-lead font-medium text-fg"
                   >
                     {block.text}
                   </blockquote>
@@ -343,9 +343,9 @@ export default async function BlogPostPage({ params }: PageProps) {
         {relatedPosts.length > 0 && (
           <section
             aria-labelledby="related-heading"
-            className="space-y-6 pt-8 max-w-4xl"
+            className="related-stories space-y-6 pt-8"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <h2
                 id="related-heading"
                 className="font-mono text-overline uppercase text-fg-muted"
@@ -354,13 +354,13 @@ export default async function BlogPostPage({ params }: PageProps) {
               </h2>
               <Link
                 href="/blog"
-                className="font-mono text-overline uppercase text-fg hover:underline"
+                className="inline-flex min-h-11 items-center font-mono text-overline uppercase text-fg hover:underline"
               >
                 View all articles →
               </Link>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {relatedPosts.map((related) => (
                 <BlogCard key={related.slug} post={related} />
               ))}
