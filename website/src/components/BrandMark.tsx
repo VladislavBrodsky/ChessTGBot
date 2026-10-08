@@ -9,7 +9,7 @@ type BrandMarkProps = {
   variant?: "symbol" | "avatar";
 };
 
-/** Open crown for lockups; the contained avatar is reserved for icons. */
+/** Open rook for lockups; the contained avatar is reserved for icons. */
 export function BrandMark({
   className,
   style,
@@ -19,7 +19,7 @@ export function BrandMark({
   variant = "symbol",
 }: BrandMarkProps) {
   const ink = foreground ?? (variant === "avatar"
-    ? "var(--color-brand-crown)"
+    ? "var(--color-brand-symbol)"
     : "var(--color-brand-ink)");
   return (
     <svg
@@ -43,18 +43,7 @@ export function BrandMark({
         />
       )}
       <g transform={variant === "avatar" ? BRAND.avatarTransform : BRAND.symbolTransform}>
-        <path
-          d={BRAND.crownPath}
-          stroke={ink}
-          strokeWidth={BRAND.strokeWidth}
-          strokeLinejoin="round"
-        />
-        <path
-          d={BRAND.basePath}
-          stroke={ink}
-          strokeWidth={BRAND.strokeWidth}
-          strokeLinecap="round"
-        />
+        <path d={BRAND.markPath} fill={ink} />
       </g>
     </svg>
   );

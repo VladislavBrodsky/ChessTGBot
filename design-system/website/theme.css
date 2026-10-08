@@ -32,9 +32,9 @@
   --color-graphite: #2f2f2f;
   --color-mint: #d1ffca;          /* tags, links, active marks */
   --color-voltage: #fff100;       /* small brand and state accents only */
-  --color-brand-tile: #211330;    /* Telegram crown identity: logo only */
-  --color-brand-crown: #d6b6ff;   /* lilac crown: logo only */
-  --color-brand-ink: #654599;     /* open crown on light backgrounds: logo only */
+  --color-brand-tile: #211330;    /* contained logo only */
+  --color-brand-symbol: #d6b6ff; /* lilac rook on the dark tile and footer */
+  --color-brand-ink: #654599;     /* violet rook on light backgrounds */
 
   /* Semantic aliases kept so existing pages resolve */
   --color-ink: #000000;

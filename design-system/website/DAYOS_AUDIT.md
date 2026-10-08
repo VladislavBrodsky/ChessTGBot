@@ -13,7 +13,7 @@ Audited 2026-10-07 against the [requested Refero style](https://styles.refero.de
 ## Web3Chess translation
 
 - Retain Barlow Condensed for the hero, numerical facts, and one dark content statement. Use Onest at 30–40px/500 for ordinary section headings and 24–32px/500 for card headings.
-- Use the neutral `eyebrow` for supporting labels. Reserve mint pills for hero labels and useful metadata. Keep yellow in tiny accents and chess state highlights. The owner's later Telegram crown reference defines a separate violet/lilac logo identity; see `DESIGN.md` §6.5.
+- Use the neutral `eyebrow` for supporting labels. Reserve mint pills for hero labels and useful metadata. Keep yellow in tiny accents and chess state highlights. The website's current rook symbol has its own violet/lilac logo identity; see `DESIGN.md` §6.5.
 - The challenge is one white Card. Desktop: gray board workspace on the left, introduction and controls on the right. Phone: introduction, full available board width, then controls. Do not spend phone width on nested padding.
 - Let the contextual chess sculpture carry the hero. Remove the grid, orbit, extra metadata, and white caption card; retain the restrained caption and bounded motion.
 - Keep the footer compact: a direct Play action, grouped links, short legal text, and a desktop QR.

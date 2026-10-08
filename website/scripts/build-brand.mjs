@@ -24,22 +24,22 @@ const out = join(root, "public/brand");
 await mkdir(out, { recursive: true });
 const svg = (width, height, content) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" fill="none">${content}</svg>\n`;
-const crown = (ink, avatar = false) =>
-  `<g transform="${avatar ? BRAND.avatarTransform : BRAND.symbolTransform}" stroke="${ink}" stroke-width="${BRAND.strokeWidth}"><path d="${BRAND.crownPath}" stroke-linejoin="round"/><path d="${BRAND.basePath}" stroke-linecap="round"/></g>`;
+const mark = (ink, avatar = false) =>
+  `<g transform="${avatar ? BRAND.avatarTransform : BRAND.symbolTransform}"><path d="${BRAND.markPath}" fill="${ink}"/></g>`;
 const avatar = svg(64, 64,
-  `<rect width="64" height="64" rx="16" fill="${color.brandTile}"/>${crown(color.brandCrown, true)}`);
+  `<rect width="64" height="64" rx="16" fill="${color.brandTile}"/>${mark(color.brandSymbol, true)}`);
 const { wordmark, tagline } = BRAND_LETTERING;
 const wordmarkTop = (48 - wordmark.height - 6 - tagline.height) / 2;
 const taglineTop = wordmarkTop + wordmark.height + 6;
 const lockup = (markInk, textInk, secondary) => svg(58 + Math.max(wordmark.width, tagline.width), 48,
-  `<g transform="scale(.75)">${crown(markInk)}</g><path transform="translate(58 ${wordmarkTop})" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 ${taglineTop})" d="${tagline.path}" fill="${secondary}"/>`);
+  `<g transform="scale(.75)">${mark(markInk)}</g><path transform="translate(58 ${wordmarkTop})" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 ${taglineTop})" d="${tagline.path}" fill="${secondary}"/>`);
 
 await Promise.all([
   writeFile(join(root, "src/app/icon.svg"), avatar),
   writeFile(join(out, "w3chess-mark.svg"), avatar),
-  writeFile(join(out, "w3chess-crown.svg"), svg(64, 64, crown(color.brandInk))),
+  writeFile(join(out, "w3chess-symbol.svg"), svg(64, 64, mark(color.brandInk))),
   writeFile(join(out, "w3chess-logo.svg"), lockup(color.brandInk, color.ink, color.slate)),
-  writeFile(join(out, "w3chess-logo-inverse.svg"), lockup(color.brandCrown, color.paper, color.smoke)),
+  writeFile(join(out, "w3chess-logo-inverse.svg"), lockup(color.brandSymbol, color.paper, color.smoke)),
   writeFile(join(out, "w3chess-logo-mono.svg"), lockup(color.ink, color.ink, color.ink)),
   sharp(Buffer.from(avatar)).resize(180, 180).png().toFile(join(root, "src/app/apple-icon.png")),
   sharp(Buffer.from(avatar)).resize(512, 512).png().toFile(join(out, "w3chess-avatar.png")),

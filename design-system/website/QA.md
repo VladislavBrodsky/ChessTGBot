@@ -84,3 +84,10 @@ These are browser viewport checks, not measurements from physical phones or a Li
 - The visible wordmark is 26px high on phones and 28px from 640px. The complete lockup measures approximately 133 × 44px on phones and 143 × 48px from 640px. Checked 320, 375, 640, 1024, and 1440px with no document overflow.
 - Visually inspected the desktop header, mobile header/menu, inverse footer, and generated home sharing preview. The production preview reported no browser console errors. Included the existing Barlow Condensed OFL license with the reusable brand exports.
 - Brand exports, ESLint, type checking, content validation, whitespace checks, and the default Turbopack production build pass; all 37 static page/image routes generated.
+
+## Geometric rook logo
+
+- Replaced the marketing website's crown with a flat geometric rook. The header and footer use the open violet/lilac mark; the favicon, touch icon, and avatar use the contained mark on the deep-violet tile. The Mini App and Telegram avatar are unchanged.
+- Regenerated the light, inverse, and monochrome SVG lockups from one path in `src/lib/brand.ts`, along with the browser icon, touch icon, and 512px avatar. Removed the obsolete crown export.
+- Inspected the mark at 16px, 32px, and 512px; the home page header and footer at 390px and 1440px; and the 1200 × 630px generated social image. The single filled silhouette remains identifiable without a gradient, outline detail, or glow.
+- `brand:build`, type checking, ESLint, content validation, whitespace checks, and the webpack production build pass; all 37 static page/image routes generated.
