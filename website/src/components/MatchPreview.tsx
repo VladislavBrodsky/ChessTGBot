@@ -22,7 +22,7 @@ export function MatchPreview() {
     "10+0": "Ten minutes. Room to think ahead.",
   };
   return (
-    <Card className="match-preview">
+    <Card className="match-preview" data-interactive-workspace>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Eyebrow>Choose your tempo</Eyebrow>
         <span className="font-mono text-caption text-fg-muted">

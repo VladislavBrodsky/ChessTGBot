@@ -45,3 +45,9 @@ The subsequent pass reviewed all 17 content routes at phone and desktop widths, 
 | Footer/navigation | Full-width phone action, short labels, two-column community row, and a useful Ways to play route. Floating action hides when the actual footer enters view. |
 
 Measured layout and interaction results are recorded in QA.md. The design conventions are documented in DESIGN.md v2.10. These checks do not assert a measured throttled performance score or that every future content/state combination is error-free.
+
+## Academy follow-up: composition and active workspaces
+
+The owner's next screenshot identified a remaining tablet usability problem: the challenge fit the page but its board was too small, while hero actions wrapped into a narrow column. The refinement uses a full tablet hero action row and a stacked challenge until 1024px. Native phone position selection preserves full names, numbered desktop choices stay visible, and feedback is visually distinct.
+
+Academy now explains the three moves in its opening example and provides a clear lesson handoff. Floating marketing actions pause while visitors use puzzles, stake examples, and time-control previews. See DESIGN.md v2.11 for the shared conventions and the corresponding QA entry for measured reflow, loading stability, interaction checks, and limits.

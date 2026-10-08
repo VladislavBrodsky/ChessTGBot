@@ -1,4 +1,5 @@
 import { ChallengeIntro } from "./ChallengeIntro";
+import { ChallengePicker } from "./ChallengePicker";
 import { StaticChessBoard } from "./StaticChessBoard";
 import { Button } from "./ui/Button";
 import { Icon } from "@/icons";
@@ -31,7 +32,7 @@ export function ChallengePlaceholder({ error = false }: { error?: boolean }) {
             <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm"><span className="font-semibold">Your progress</span><span className="font-mono tabular-nums">0 / 3 solved</span></p>
             <div className="mt-2 flex gap-2">{CHALLENGES.map(item => <span key={item.id} className="h-1 flex-1 rounded-pill bg-line-strong" />)}</div>
           </div>
-          <div className="flex flex-wrap gap-2">{CHALLENGES.map((item, i) => <button key={item.id} disabled className={`min-h-11 rounded-control border px-3 text-caption font-medium ${i === 0 ? "border-line-strong bg-inverse text-fg-inverse" : "border-line bg-inset"}`}>{item.name}</button>)}</div>
+          <ChallengePicker disabled />
           <div className="space-y-2">
             <p className="text-caption font-semibold">Your move in chess notation</p>
             <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
@@ -39,7 +40,7 @@ export function ChallengePlaceholder({ error = false }: { error?: boolean }) {
               <Button disabled className="w-full sm:w-auto">Play move<Icon name="arrow-right" size={16} /></Button>
             </div>
           </div>
-          <p className="text-body-sm font-medium">White to move. Find checkmate in one.</p>
+          <p className="challenge-feedback text-body-sm font-medium">White to move. Find checkmate in one.</p>
           <div className="flex flex-wrap gap-2"><Button disabled variant="soft">Give me a hint</Button><Button disabled variant="soft">Show solution</Button></div>
           <div className="border-t border-line pt-4">
             <p className="mb-3 font-mono text-overline uppercase">Make it a friendly rivalry</p>

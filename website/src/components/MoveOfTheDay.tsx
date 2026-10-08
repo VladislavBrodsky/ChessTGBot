@@ -34,7 +34,7 @@ export function MoveOfTheDay() {
     return () => observer.disconnect();
   }, []);
   return (
-    <Card className="min-w-0 p-4! sm:p-8!">
+    <Card className="challenge-card min-w-0 p-4! sm:p-6! lg:p-8!" data-interactive-workspace>
       <div ref={ref}>
         <ChallengeBoundary>
           {ready ? <Challenge /> : <ChallengePlaceholder />}

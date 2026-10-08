@@ -25,7 +25,13 @@ export function MobileCta() {
       const editing = document.activeElement?.matches(
         'input, textarea, select, [contenteditable="true"]',
       );
-      setShow(heroPassed && !nearFooter && !editing);
+      const workspaceVisible = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-interactive-workspace]"),
+      ).some((workspace) => {
+        const bounds = workspace.getBoundingClientRect();
+        return bounds.top < window.innerHeight && bounds.bottom > 0;
+      });
+      setShow(heroPassed && !nearFooter && !editing && !workspaceVisible);
     };
     const schedule = () => {
       cancelAnimationFrame(frame);

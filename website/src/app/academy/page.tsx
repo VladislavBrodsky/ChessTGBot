@@ -44,7 +44,7 @@ export default function AcademyPage() {
           }}
         />
         <PageHero
-          eyebrow="The Web3Chess Academy"
+          eyebrow="Free chess academy"
           title={
             <>
               See more.
@@ -56,14 +56,14 @@ export default function AcademyPage() {
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
-            <PlayButton size="lg" label="Open Web3Chess" />
+            <PlayButton size="lg" label="Train in Telegram" />
             <ButtonLink href="#challenge" variant="ghost">
-              Try a challenge
+              Solve a free puzzle
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
           </div>
           <p className="text-caption text-fg-muted">
-            Choose Academy or A.I. practice in the Mini App · No stake for practice
+            Free lessons, puzzles, and A.I. practice. Choose Academy after opening the Mini App.
           </p>
         </PageHero>
         <section id="challenge" aria-label="Try a chess challenge">
@@ -93,6 +93,11 @@ export default function AcademyPage() {
               pieces, and prepare to castle. Learn the idea behind a move before
               memorizing a line.
             </p>
+            <ol className="opening-steps mt-6" aria-label="The ideas behind the Italian Game">
+              <li><span className="font-mono">1. e4</span><p><strong>Claim the center.</strong> Give your bishop and queen room to develop.</p></li>
+              <li><span className="font-mono">2. Nf3</span><p><strong>Develop with purpose.</strong> Bring out the knight and attack the pawn on e5.</p></li>
+              <li><span className="font-mono">3. Bc4</span><p><strong>Activate the bishop.</strong> Aim at f7 and prepare to castle.</p></li>
+            </ol>
           </div>
           <Card className="mx-auto w-full max-w-100">
             <div className="mb-4 flex items-center justify-between">
@@ -122,6 +127,10 @@ export default function AcademyPage() {
           <InfoGrid ordered items={home.academy.tracks.map((track, i) => ({
             title: track.name, body: descriptions[i], note: track.level,
           }))} />
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+            <PlayButton variant="ghost" label="Browse lessons in Telegram" />
+            <p className="text-caption text-fg-muted">Open the Mini App, then choose Academy.</p>
+          </div>
         </section>
         <section aria-labelledby="guides-heading">
           <div className="section-index">
@@ -132,25 +141,29 @@ export default function AcademyPage() {
             Learn it. Then try it.
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <Card>
+            <Card className="flex flex-col items-start">
               <h3 className="text-heading-sm font-medium">Opening principles for beginners</h3>
               <p className="mt-3 text-body text-fg-muted">
                 Control the center, develop with purpose, and keep your king safe before memorizing long variations.
               </p>
-              <ButtonLink href="/blog/opening-mastery-tactics" variant="secondary" className="mt-6">
+              <div className="mt-auto pt-6">
+              <ButtonLink href="/blog/opening-mastery-tactics" variant="secondary">
                 Read the opening guide
                 <Icon name="arrow-right" size={16} />
               </ButtonLink>
+              </div>
             </Card>
-            <Card>
+            <Card className="flex flex-col items-start">
               <h3 className="text-heading-sm font-medium">Blitz chess time management</h3>
               <p className="mt-3 text-body text-fg-muted">
                 Learn when to calculate deeply and when to choose a sound move quickly under a three-minute clock.
               </p>
-              <ButtonLink href="/blog/the-3-minute-blitz-blueprint-tactics-time-management" variant="secondary" className="mt-6">
+              <div className="mt-auto pt-6">
+              <ButtonLink href="/blog/the-3-minute-blitz-blueprint-tactics-time-management" variant="secondary">
                 Read the blitz guide
                 <Icon name="arrow-right" size={16} />
               </ButtonLink>
+              </div>
             </Card>
           </div>
         </section>
@@ -172,7 +185,7 @@ export default function AcademyPage() {
               <PlayButton
                 size="lg"
                 variant="onDark"
-                label="Open Web3Chess"
+                label="Start A.I. practice"
               />
               <p className="text-caption text-fg-muted">
                 Choose A.I. practice in the Mini App. Practice builds skills;

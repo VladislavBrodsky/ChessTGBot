@@ -12,7 +12,7 @@ export function WagerDemo() {
   const payout = winnerReceives(stake);
   const netGain = payout - stake;
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-interactive-workspace>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Eyebrow>Match example</Eyebrow>
         <span className="text-caption text-fg-muted">

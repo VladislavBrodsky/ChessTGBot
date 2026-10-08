@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Chess } from "chess.js";
 import { FogBoard } from "./FogBoard";
 import { ChallengeIntro } from "./ChallengeIntro";
+import { ChallengePicker } from "./ChallengePicker";
 import { Button } from "./ui/Button";
 import { PlayButton } from "./PlayButton";
 import { ShareButtons } from "./ShareButtons";
@@ -140,24 +141,7 @@ export function ChessChallenge() {
             <p className="mt-3 text-body-sm font-semibold" role="status">Three for three. Invite a friend to try the same boards.</p>
           )}
         </div>
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Choose a chess challenge"
-        >
-          {CHALLENGES.map((item, i) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-pressed={i === index}
-              onClick={() => reset(i)}
-              className={`min-h-11 rounded-control border px-3 text-caption font-medium ${i === index ? "border-line-strong bg-inverse text-fg-inverse" : "border-line bg-inset hover:bg-canvas"}`}
-            >
-              {item.name}
-              {solvedIds.includes(item.id) && <span className="ms-1.5" aria-label="Solved">✓</span>}
-            </button>
-          ))}
-        </div>
+        <ChallengePicker index={index} solvedIds={solvedIds} onSelect={reset} />
         {outcome === "playing" && (
           <form
             onSubmit={(event) => {
@@ -199,7 +183,8 @@ export function ChessChallenge() {
         <p
           id="challenge-feedback"
           role="status"
-          className="text-body-sm font-medium"
+          className="challenge-feedback text-body-sm font-medium"
+          data-outcome={outcome}
         >
           {feedback}
         </p>
