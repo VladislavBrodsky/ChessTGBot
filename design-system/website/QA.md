@@ -77,3 +77,10 @@ These are browser viewport checks, not measurements from physical phones or a Li
 
 - The default Turbopack production build used by Railway passes, with all 37 static page/image routes generated. ESLint, type checking, content validation, and whitespace checks also pass.
 - The brand export script uses the installed TypeScript compiler to read shared constant modules, keeping it compatible with the project's Node 20 deployment runtime.
+
+## Uppercase CHESS wordmark
+
+- Applied the owner's shorter uppercase `CHESS` direction using the established Barlow Condensed 700 display font, with `Play-to-Earn` underneath in Onest 400. Browser, footer, menu, sharing previews, and reusable SVG lockups use the same lettering and crown sources. Export filenames remain compatible with existing links.
+- The visible wordmark is 26px high on phones and 28px from 640px. The complete lockup measures approximately 133 × 44px on phones and 143 × 48px from 640px. Checked 320, 375, 640, 1024, and 1440px with no document overflow.
+- Visually inspected the desktop header, mobile header/menu, inverse footer, and generated home sharing preview. The production preview reported no browser console errors. Included the existing Barlow Condensed OFL license with the reusable brand exports.
+- Brand exports, ESLint, type checking, content validation, whitespace checks, and the default Turbopack production build pass; all 37 static page/image routes generated.

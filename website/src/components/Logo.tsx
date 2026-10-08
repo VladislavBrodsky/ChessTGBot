@@ -11,7 +11,7 @@ export function Logo({ inverse = false }: { inverse?: boolean }) {
       />
       <span className="flex min-w-0 flex-col justify-center">
         <span className="sr-only">{BRAND.wordmark}</span>
-        <BrandWordmark className={`h-[1.375rem] w-auto sm:h-6 ${inverse ? "text-white" : "text-fg"}`} />
+        <BrandWordmark className={`h-[1.625rem] w-auto sm:h-7 ${inverse ? "text-white" : "text-fg"}`} />
         <span className="mt-1.5 font-sans text-overline font-normal leading-none tracking-[.035em] text-fg-muted">
           {BRAND.tagline}
         </span>

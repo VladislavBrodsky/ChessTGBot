@@ -65,7 +65,7 @@ export async function socialImage({
                 foreground={color.ink}
                 style={{
                   width: BRAND_LETTERING.wordmark.width,
-                  height: 24,
+                  height: BRAND_LETTERING.wordmark.height,
                 }}
               />
               <span

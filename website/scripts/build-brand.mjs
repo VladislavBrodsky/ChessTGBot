@@ -29,8 +29,10 @@ const crown = (ink, avatar = false) =>
 const avatar = svg(64, 64,
   `<rect width="64" height="64" rx="16" fill="${color.brandTile}"/>${crown(color.brandCrown, true)}`);
 const { wordmark, tagline } = BRAND_LETTERING;
-const lockup = (markInk, textInk, secondary) => svg(58 + wordmark.width, 48,
-  `<g transform="scale(.75)">${crown(markInk)}</g><path transform="translate(58 3)" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 33)" d="${tagline.path}" fill="${secondary}"/>`);
+const wordmarkTop = (48 - wordmark.height - 6 - tagline.height) / 2;
+const taglineTop = wordmarkTop + wordmark.height + 6;
+const lockup = (markInk, textInk, secondary) => svg(58 + Math.max(wordmark.width, tagline.width), 48,
+  `<g transform="scale(.75)">${crown(markInk)}</g><path transform="translate(58 ${wordmarkTop})" d="${wordmark.path}" fill="${textInk}"/><path transform="translate(58 ${taglineTop})" d="${tagline.path}" fill="${secondary}"/>`);
 
 await Promise.all([
   writeFile(join(root, "src/app/icon.svg"), avatar),
