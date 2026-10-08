@@ -46,8 +46,8 @@ export default function PrivacyPage() {
           <Eyebrow>Data Protection</Eyebrow>
           <h1 className="poster text-heading-xl text-fg">Privacy Policy</h1>
           <p className="text-body sm:text-lead text-fg-muted">
-            Web3Chess is designed with minimal data collection, zero third-party
-            ad tracking, and cryptographic integrity.
+            This page explains the account, game, wallet, and device information
+            used to run Web3Chess. The website does not use third-party ad trackers.
           </p>
         </section>
 
@@ -58,11 +58,11 @@ export default function PrivacyPage() {
               1. TELEGRAM DATA &amp; AUTHENTICATION
             </h2>
             <p>
-              When you open the Mini App, Telegram securely delivers your public
-              Telegram User ID, display name, username, and language preference
-              via cryptographically signed `initData`. We never request or store
-              your Telegram password, phone number, contacts, or personal
-              private messages.
+              Telegram authentication provides a signed account identifier and
+              profile details such as your display name, username, language, and
+              available profile photo. The app uses these to sign you in and
+              display your account. We do not ask for your Telegram password,
+              contacts, or private messages.
             </p>
           </section>
 
@@ -71,22 +71,25 @@ export default function PrivacyPage() {
               2. WALLET ADDRESSES &amp; TRANSACTION RECORDS
             </h2>
             <p>
-              When initiating withdrawals to your personal TON wallet, we record
-              only your public TON address for fund routing and security audits.
-              We never request, process, or have access to your private keys,
-              seed phrases, or external wallet passwords.
+              We record public wallet addresses and deposit, balance, and
+              withdrawal transaction details to route and reconcile funds.
+              Web3Chess does not ask for your wallet private key, seed phrase,
+              or external wallet password. A platform balance is separate from
+              assets held in your personal wallet.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="poster text-heading-md text-fg">
-              3. GAME TELEMETRY &amp; ANTI-CHEAT ANALYSIS
+              3. GAME DATA &amp; ABUSE PREVENTION
             </h2>
             <p>
-              Move notations (PGN), millisecond clock timestamps, and socket
-              connectivity signals are recorded to compute ratings, maintain
-              leaderboards, and conduct automated Stockfish 17 anti-cheat
-              heuristic checks.
+              Match moves, results, clocks, and connection events are used to
+              run games, calculate ratings, and show history and leaderboards.
+              We may also retain limited security signals, including a hashed
+              sign-up IP signal, to detect referral abuse and protect accounts.
+              Server-side move validation does not prove that every opponent is
+              playing without outside assistance.
             </p>
           </section>
 
@@ -95,9 +98,11 @@ export default function PrivacyPage() {
               4. STORAGE &amp; THIRD-PARTY TRACKING
             </h2>
             <p>
-              We use local storage strictly to remember interface preferences
-              (sound effects, board theme, chess notation). We do not deploy
-              third-party advertising trackers or sell player data to external
+              Browser storage remembers interface preferences and, for web
+              sign-in, Telegram authentication data needed to keep your session
+              working. You can clear local browser data or sign out to remove
+              stored web authentication from that device. We do not deploy
+              third-party advertising trackers or sell player data to data
               brokers.
             </p>
           </section>

@@ -26,7 +26,7 @@ export const metadata = pageMetadata(
 );
 
 const facts = [
-  { value: "0", unit: "", label: "Downloads" },
+  { value: "Free", unit: "", label: "A.I. practice" },
   { value: "10", unit: "", label: "App languages" },
   { value: "1", unit: "USDT", label: "Minimum stake" },
   {
@@ -123,6 +123,14 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section id="challenge" className="shell-wide section-y">
+          <div className="section-index">
+            <span>01 / Your move, right now</span>
+            <span>Three free positions</span>
+          </div>
+          <MoveOfTheDay />
+        </section>
+
         <section
           className="shell-wide facts-section"
           aria-label="Web3Chess at a glance"
@@ -151,14 +159,6 @@ export default function HomePage() {
               </a>
             </div>
           </Card>
-        </section>
-
-        <section id="challenge" className="shell-wide section-y">
-          <div className="section-index">
-            <span>01 / A little tactical instinct</span>
-            <span>White to move</span>
-          </div>
-          <MoveOfTheDay />
         </section>
 
         <section id="play" className="shell-wide section-y">

@@ -10,6 +10,7 @@ export function WagerDemo() {
   const [stake, setStake] = useState<number>(5);
   const pot = stake * 2;
   const payout = winnerReceives(stake);
+  const netGain = payout - stake;
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -70,6 +71,14 @@ export function WagerDemo() {
           >
             {fmt(payout)}
           </dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-fg-muted">Net gain if you win</dt>
+          <dd className="font-mono font-semibold text-fg-win">+{fmt(netGain)}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-fg-muted">Stake lost if you lose</dt>
+          <dd className="font-mono font-semibold text-fg-loss">−{fmt(stake)}</dd>
         </div>
       </dl>
       <p className="rounded-media bg-inset p-4 text-caption text-fg-muted">

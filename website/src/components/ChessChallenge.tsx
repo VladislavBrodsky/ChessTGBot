@@ -21,6 +21,7 @@ export function ChessChallenge() {
     );
   });
   const puzzle = CHALLENGES[index];
+  const [solvedIds, setSolvedIds] = useState<string[]>([]);
   const [position, setPosition] = useState<string>(puzzle.fen);
   const [outcome, setOutcome] = useState<"playing" | "solved" | "revealed">(
     "playing",
@@ -52,6 +53,7 @@ export function ChessChallenge() {
       }
       setPosition(game.fen());
       setOutcome("solved");
+      setSolvedIds((current) => current.includes(puzzle.id) ? current : [...current, puzzle.id]);
       setSelected(null);
       setFeedback("You found checkmate. Nicely calculated.");
       return true;
@@ -122,6 +124,20 @@ export function ChessChallenge() {
         </div>
       </div>
       <div className="challenge-controls space-y-5">
+        <div className="rounded-media bg-inset p-4" aria-label="Challenge progress">
+          <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm">
+            <span className="font-semibold">Three positions. How many can you solve?</span>
+            <span className="font-mono tabular-nums">{solvedIds.length} / {CHALLENGES.length} solved</span>
+          </p>
+          <div className="mt-3 flex gap-2" aria-hidden="true">
+            {CHALLENGES.map((item) => (
+              <span key={item.id} className={`h-2 flex-1 rounded-pill ${solvedIds.includes(item.id) ? "bg-fg" : "bg-line-strong"}`} />
+            ))}
+          </div>
+          {solvedIds.length === CHALLENGES.length && (
+            <p className="mt-3 text-body-sm font-semibold" role="status">Three for three. Invite a friend to try the same boards.</p>
+          )}
+        </div>
         <div
           className="flex flex-wrap gap-2"
           role="group"
@@ -136,6 +152,7 @@ export function ChessChallenge() {
               className={`min-h-11 rounded-control border px-3 text-caption font-medium ${i === index ? "border-line-strong bg-inverse text-fg-inverse" : "border-line bg-inset hover:bg-canvas"}`}
             >
               {item.name}
+              {solvedIds.includes(item.id) && <span className="ms-1.5" aria-label="Solved">✓</span>}
             </button>
           ))}
         </div>
@@ -205,12 +222,18 @@ export function ChessChallenge() {
                 <Icon name="arrow-counter-clockwise" size={16} />
                 Try again
               </Button>
+              <Button variant="secondary" onClick={() => reset((index + 1) % CHALLENGES.length)}>
+                Next position
+                <Icon name="arrow-right" size={16} />
+              </Button>
               <PlayButton />
             </>
           )}
         </div>
         <ShareButtons
-          title={`Can you find the mate in one? Try ${puzzle.name}.`}
+          title={outcome === "solved"
+            ? `I found mate in ${puzzle.name}. Can you solve the same position?`
+            : `Can you find the mate in one? Try ${puzzle.name}.`}
           url={`${SITE.url}/?puzzle=${puzzle.id}#challenge`}
           compact
         />

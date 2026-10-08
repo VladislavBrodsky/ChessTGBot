@@ -57,26 +57,24 @@ export default function TermsPage() {
               1. ELIGIBILITY &amp; AGE REQUIREMENTS
             </h2>
             <p>
-              Free practice against the A.I. and daily tactical puzzle training
-              are open to global users with an active Telegram account. You must
-              be at least 18 years of age (or the legal age of majority in your
-              jurisdiction) to participate in real-money USDT or TON wager
-              matches. Real-money gaming is subject to local laws; players are
-              responsible for compliance within their own jurisdictions.
+              Free A.I. practice and tactical puzzles do not require a stake.
+              You must be at least 18 years of age (or the higher legal age in
+              your jurisdiction) to enter a USDT wager match. Availability
+              depends on local rules and in-app eligibility requirements.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="poster text-heading-md text-fg">
-              2. FAIR PLAY &amp; ZERO-TOLERANCE ANTI-CHEAT
+              2. FAIR PLAY
             </h2>
             <p>
-              External chess engines, computer assistance, opening books during
-              active wager matches, and multi-accounting to manipulate rating or
-              match pools are strictly prohibited. Every move is processed
-              server-side and analyzed against Stockfish 17 centipawn loss
-              heuristics. Accounts violating fair play policies will be
-              permanently banned and forfeits enforced.
+              Make your own moves during player matches. Chess engines, outside
+              analysis, another person choosing moves, and account manipulation
+              are not permitted. The server validates legal moves and maintains
+              the match state; legal-move validation alone cannot detect every
+              kind of outside assistance. Suspected violations may be reviewed
+              under the current in-app match rules.
             </p>
           </section>
 
@@ -85,14 +83,14 @@ export default function TermsPage() {
               3. WAGERS &amp; SETTLEMENT RULES
             </h2>
             <p>
-              When entering a cash wager match, both players commit equal
-              platform balance stakes into match escrow. The winner receives{" "}
-              {SETTLEMENT.winnerPercent}% of the total pot immediately upon
-              checkmate, opponent resignation, or opponent clock flag. A
-              platform fee of {SETTLEMENT.platformFeePercent}% is retained for
-              server operations and anti-cheat compute, and{" "}
-              {SETTLEMENT.referralFeePercent}% funds community referral rewards.
-              Matches that conclude by legitimate chess rules are final.
+              In a USDT wager match, both players commit equal stakes from
+              their platform balances. For a decided match, the winner is
+              credited {SETTLEMENT.winnerPercent}% of the combined pot to their
+              platform balance. The remaining split is{" "}
+              {SETTLEMENT.platformFeePercent}% platform fee and{" "}
+              {SETTLEMENT.referralFeePercent}% referral allocation. Draws,
+              disconnections, reviews, and other outcomes follow the current
+              in-app match rules. A balance credit is not an on-chain transfer.
             </p>
           </section>
 
@@ -101,11 +99,12 @@ export default function TermsPage() {
               4. PLATFORM BALANCE &amp; WITHDRAWALS
             </h2>
             <p>
-              Deposits are credited to your in-app platform balance. Web3Chess
-              is not a bank or self-custody wallet. Withdrawals to your personal
-              TON wallet are processed following security verification.
-              High-volume transfers receive secondary review to safeguard
-              platform solvency and prevent fraudulent account drain.
+              Eligible USDT deposits are credited to your in-app platform
+              balance when the required token, network, and account reference
+              are verified. Web3Chess is not a bank or self-custody wallet. To
+              send funds to your personal TON wallet, request a withdrawal and
+              complete the bot-chat confirmation. Some requests require review;
+              processing and network timing can vary.
             </p>
           </section>
 
@@ -115,10 +114,9 @@ export default function TermsPage() {
             </h2>
             <p>
               Wager matches involve real cryptocurrency and you can lose your
-              stake. Never wager funds you cannot comfortably afford to lose.
-              Web3Chess provides voluntary pause and cool-off options in the
-              Telegram interface. Practice against the A.I. is always 100% free
-              and unlimited.
+              stake. Set a limit before joining, never chase losses, and stop
+              when play is no longer enjoyable. Free A.I. practice is available
+              when you want to play without committing a stake.
             </p>
           </section>
         </div>
