@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Jogador",
+    "ai_engine": "Adversário de IA",
     "title": "Xadrez App",
     "welcome": "Bem-vindo, {name}",
     "welcome_greeting": "Olá,",
@@ -63,12 +65,15 @@
     "nav_learn": "Aprender",
     "nav_quests": "Missões",
     "nav_settings": "Configurações",
+    "nav_wallet": "Carteira",
     "nav_profile": "Perfil",
     "nav_logout": "Sair",
     "nav_marketplace": "Mercado",
     "draws": "Empates"
   },
   "Marketplace": {
+    "cost": "Custo",
+    "confirm": "Confirmar",
     "title": "Mercado",
     "subtitle": "Troque XP para desbloquear recompensas e temas premium",
     "back": "Voltar",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Acesso premium anual. Maximiza todos os benefícios com 30% de desconto em relação ao mensal."
   },
   "Settings": {
+    "gameplay_visuals": "Jogo e aparência",
+    "notifications_wallet": "Notificações e carteira",
+    "support_security": "Suporte e segurança",
+    "command_center": "Central de controle",
+    "admin": "Admin",
+    "manage_admin": "Gerenciar jogadores, pagamentos e avisos",
     "return": "Voltar",
     "config_core": "CONFIG NÚCLEO • V1.5",
     "title": "Configurações",
@@ -154,6 +165,7 @@
     "select": "Escolher Idioma"
   },
   "Gamification": {
+    "claim_xp_btn": "Resgatar XP",
     "daily_missions": "Tarefas Diárias",
     "claim": "Reivindicar",
     "daily_win": "Vencer uma Partida",
@@ -229,6 +241,11 @@
     "level": "Nível"
   },
   "Academy": {
+    "academy_progress": "Progresso na academia",
+    "master_the_game": "Domine o jogo passo a passo",
+    "completed": "Concluído",
+    "course_completion": "Progresso do curso",
+    "achievements": "Conquistas",
     "title": "Academia",
     "subtitle": "Quebra-cabeças e Lições",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "Rever Nível 1"
   },
   "Game": {
+    "ai_select_difficulty": "Escolha a dificuldade da IA",
+    "ai_difficulty_help": "Escolha um nível para a partida de treino.",
+    "ai_easy": "Fácil",
+    "ai_medium": "Médio",
+    "ai_hard": "Difícil",
+    "ai_start_training": "Iniciar treino",
+    "ai_create_failed": "Não foi possível iniciar uma partida contra a IA. Tente novamente.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Buscando Oponente",
     "searching_close_hint": "Pode fechar o app — avisaremos pelo Telegram quando um oponente for encontrado.",
@@ -371,6 +395,7 @@
     "move_history": "Histórico de lances",
     "game_crashed": "Conexão do jogo perdida",
     "game_crashed_desc": "A conexão com o servidor do jogo foi interrompida. Você pode tentar recarregar o jogo.",
+    "analysis_unavailable": "A análise do motor está indisponível. Tente novamente.",
     "reload_game_btn": "Recarregar jogo",
     "reject": "Recusar",
     "back": "Voltar",
@@ -415,12 +440,13 @@
     "xp_reward": "Recompensa de XP"
   },
   "Wallet": {
+    "balance_trend": "Histórico do saldo (USDT)",
     "title": "Carteira Web3",
     "connected_status": "Carteira TON Conectada",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "Gerenciar carteira",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "Carteira de entrega (seu endereço)",
     "card_await_funds_notice": "Após a compra, o USDT chega à sua carteira (alguns minutos). Depois vá à aba Cripto para recarregar seu saldo.",
     "balance_unavailable": "Saldo indisponível — toque para tentar novamente",
+    "account_unavailable": "Não foi possível verificar sua conta. Tente novamente antes de transferir fundos.",
     "link_wallet_hint": "Vincule sua carteira TON",
     "tx_game_against_ai": "Jogo contra a IA",
     "tx_game_free_pvp": "Jogo grátis contra outros jogadores",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Compartilhar",
+    "invite_title": "Você foi convidado para jogar",
+    "invite_description": "Leia o código ou abra o Telegram para jogar xadrez.",
+    "invite_qr_alt": "Código QR do convite",
+    "open_invite": "Abrir convite no Telegram",
+    "invalid_invite": "Este link de convite é inválido.",
     "dashboard_title": "Programa de Indicações",
     "total_label": "Total",
     "total_sublabel": "Indicações",

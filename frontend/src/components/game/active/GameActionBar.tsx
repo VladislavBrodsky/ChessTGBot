@@ -30,22 +30,22 @@ export function GameActionBar({
       className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-surface border border-brand-border p-3 rounded-2xl shadow-premium"
     >
       {/* Resign Button */}
-      <motion.button
+      <motion.button type="button"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onResign}
-        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
+        className="ui-tap-target flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 transition-all cursor-pointer text-sm font-semibold normal-case tracking-normal shadow-sm"
       >
         <FaFlag size={12} />
         <span>{tResign}</span>
       </motion.button>
 
       {/* Offer Draw Button */}
-      <motion.button
+      <motion.button type="button"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onOfferDraw}
-        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-xs font-black uppercase tracking-widest shadow-sm"
+        className="ui-tap-target flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-brand-border-opacity-10 bg-brand-surface hover:bg-brand-bg-opacity-5 hover:border-brand-border-opacity-25 text-brand-primary transition-all cursor-pointer text-sm font-semibold normal-case tracking-normal shadow-sm"
       >
         <FaHandshake size={14} />
         <span>{tOfferDraw}</span>

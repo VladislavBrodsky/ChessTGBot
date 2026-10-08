@@ -19,17 +19,17 @@ export default function TierComparison() {
   return (
    <div className="w-full space-y-6 mt-12 pb-12">
    <div className="flex flex-col items-center space-y-2 mb-8">
-   <h3 className="text-sm font-black text-brand-primary tracking-tighter uppercase leading-none">{tc('title')}</h3>
+   <h3 className="text-sm font-semibold text-brand-primary tracking-tighter normal-case leading-none">{tc('title')}</h3>
    <div className="h-px w-8 bg-brand-border-opacity-20" />
-   <span className="text-[10px] font-bold text-brand-primary opacity-35 tracking-[0.4em] uppercase">{tc('subtitle')}</span>
+   <span className="text-caption font-bold text-brand-primary opacity-35 tracking-normal normal-case">{tc('subtitle')}</span>
    </div>
 
    <div className="w-full glass-panel bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] overflow-hidden shadow-sm">
    {/* Table Header */}
    <div className="grid grid-cols-6 p-4 border-b border-brand-border-opacity-10 bg-purple-500/5">
-   <div className="col-span-4 text-[10px] font-black uppercase text-brand-muted tracking-widest">{tc('capability')}</div>
-   <div className="col-span-1 text-center text-[10px] font-black uppercase text-brand-muted tracking-widest">{tc('base')}</div>
-   <div className="col-span-1 text-center text-[10px] font-black uppercase text-purple-500 tracking-widest">{tc('elite')}</div>
+   <div className="col-span-4 text-caption font-semibold normal-case text-brand-muted tracking-normal">{tc('capability')}</div>
+   <div className="col-span-1 text-center text-caption font-semibold normal-case text-brand-muted tracking-normal">{tc('base')}</div>
+   <div className="col-span-1 text-center text-caption font-semibold normal-case text-purple-500 tracking-normal">{tc('elite')}</div>
    </div>
 
    {/* Table Rows */}
@@ -46,7 +46,7 @@ export default function TierComparison() {
    <div className="text-brand-primary opacity-25 group-hover:opacity-60 transition-colors">
    {row.icon}
    </div>
-   <span className="text-[10px] font-bold text-brand-muted uppercase tracking-tight">
+   <span className="text-caption font-bold text-brand-muted normal-case tracking-tight">
    {row.feature}
    </span>
    </div>
@@ -71,7 +71,7 @@ export default function TierComparison() {
 
    {/* Bottom Insight */}
    <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center">
-   <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+   <p className="text-caption font-semibold text-purple-400 normal-case tracking-normal">
    {tc('bottom_insight')}
    </p>
    </div>

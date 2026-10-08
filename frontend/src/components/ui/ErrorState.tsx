@@ -32,7 +32,7 @@ export function ErrorState({
 
       <div className="space-y-1 max-w-sm">
         <h3 className="text-sm font-bold text-brand-primary">{title}</h3>
-        <p className="text-xs leading-relaxed text-brand-muted">{message}</p>
+        <p className="text-sm leading-relaxed text-brand-muted">{message}</p>
       </div>
 
       {action ? (

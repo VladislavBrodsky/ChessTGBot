@@ -4,11 +4,8 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 import { NavbarProvider, useNavbarHideWhileMounted } from '@/context/NavbarContext';
 import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 
-// Regression guard: a commit once dropped the `isNavbarHiddenByContext` term from
-// LayoutWrapper's `shouldHideNavbar`, leaving the NavbarContext read orphaned. That
-// silently disabled `useNavbarHideWhileMounted()` for EVERY drawer/modal — the
-// visible navbar then overlapped their bottom action buttons (e.g. the AI difficulty
-// drawer's "Start Training Session" button was unreachable). This test pins the wiring.
+// Main destinations retain navigation. Explicit overlays cover it at z >= 100;
+// stale context state must never strand a player on a dashboard without a menu.
 
 jest.mock('next-intl', () => ({
   useLocale: () => 'en',
@@ -64,7 +61,7 @@ describe('LayoutWrapper navbar-hide wiring', () => {
     );
   });
 
-  it('hides the navbar while a drawer using useNavbarHideWhileMounted is mounted', async () => {
+  it('retains dashboard navigation beneath a mounted overlay', async () => {
     render(
       <NavbarProvider>
         <LayoutWrapper>
@@ -73,7 +70,7 @@ describe('LayoutWrapper navbar-hide wiring', () => {
       </NavbarProvider>,
     );
     await waitFor(() =>
-      expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'true'),
+      expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'false'),
     );
   });
 

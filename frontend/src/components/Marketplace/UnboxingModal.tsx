@@ -104,14 +104,14 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
 
                         {state === 'shaking' && (
                             <div className="space-y-8 flex flex-col items-center">
-                                <span id="unboxing-title" role="status" aria-live="polite" className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-muted">{t('unboxing')}</span>
+                                <span id="unboxing-title" role="status" aria-live="polite" className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{t('unboxing')}</span>
                                 <motion.div
                                     animate={{ x: [-8, 8, -8, 8, 0], y: [-4, 4, -4, 4, 0], rotate: [-3, 3, -3, 3, 0], scale: [1, 1.05, 1] }}
                                     transition={{ duration: 0.55, repeat: 1, ease: 'easeInOut' }}
                                     className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl relative"
                                     style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.25), rgba(11,15,23,0.9))`, borderColor: `rgba(${cfg.theme.rgb},0.4)` }}
                                 >
-                                    <span className="text-5xl font-black font-serif" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
+                                    <span className="text-5xl font-semibold font-serif" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
                                 </motion.div>
                                 <div className="h-6" />
                             </div>
@@ -125,7 +125,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
                                 className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl"
                                 style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.4), rgba(11,15,23,0.95))`, borderColor: cfg.theme.accent }}
                             >
-                                <span className="text-5xl font-black font-serif animate-ping" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
+                                <span className="text-5xl font-semibold font-serif animate-ping" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
                             </motion.div>
                         )}
 
@@ -148,7 +148,7 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
                                     />
                                 ))}
 
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] drop-shadow" style={{ color: cfg.theme.accent }}>
+                                <span className="text-caption font-semibold normal-case tracking-normal drop-shadow" style={{ color: cfg.theme.accent }}>
                                     {t('you_unlocked')}
                                 </span>
 
@@ -163,21 +163,21 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
                                     <div className="w-16 h-16 rounded-2xl bg-brand-surface opacity-95 border border-white/10 flex items-center justify-center mb-3 shadow-inner" style={{ color: cfg.theme.accent }}>
                                         {icon}
                                     </div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-muted">{kindLabel}</span>
+                                    <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{kindLabel}</span>
                                 </motion.div>
 
                                 <div className="space-y-1">
-                                    <h2 id="unboxing-title" className="text-xl font-black uppercase tracking-wider text-brand-primary leading-tight">
+                                    <h2 id="unboxing-title" className="text-xl font-semibold normal-case tracking-normal text-brand-primary leading-tight">
                                         {prizeName}
                                     </h2>
-                                    <p className="text-xs text-brand-muted font-medium">{t('added_to_inventory')}</p>
+                                    <p className="text-sm text-brand-muted font-medium">{t('added_to_inventory')}</p>
                                 </div>
 
-                                <motion.button
+                                <motion.button type="button"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={onClose}
-                                    className="px-8 py-3 rounded-full text-slate-950 text-xs font-black uppercase tracking-widest shadow-premium cursor-pointer flex items-center gap-2"
+                                    className="ui-tap-target px-8 py-3 rounded-full text-slate-950 text-sm font-semibold normal-case tracking-normal shadow-premium cursor-pointer flex items-center gap-2"
                                     style={{ background: `linear-gradient(90deg, ${cfg.theme.accent}, ${cfg.theme.glow})` }}
                                 >
                                     <FiCheck size={14} />

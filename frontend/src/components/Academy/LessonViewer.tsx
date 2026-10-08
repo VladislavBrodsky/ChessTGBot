@@ -140,9 +140,9 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                   allowFullScreen
                 />
                 {!stepComplete && (
-                  <button
+                  <button type="button"
                     onClick={markCompleteAndAdvance}
-                    className="absolute bottom-4 right-4 px-4 py-2 bg-emerald-500 text-slate-950 font-bold uppercase tracking-widest rounded-lg text-xs hover:bg-emerald-400 transition-colors shadow-md"
+                    className="ui-tap-target absolute bottom-4 right-4 px-4 py-2 bg-emerald-500 text-slate-950 font-bold normal-case tracking-normal rounded-lg text-sm hover:bg-emerald-400 transition-colors shadow-md"
                   >
                     Video Watched
                   </button>
@@ -173,25 +173,25 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
 
       {/* Navigation Controls */}
       <div className="flex justify-between items-center mt-4 w-full gap-2 pt-2 border-t border-brand-border-opacity-10">
-        <button
+        <button aria-label="Previous lesson step" type="button"
           onClick={handlePrev}
           disabled={currentStepIndex === 0}
-          className={`p-3 rounded-full border border-brand-border-opacity-10 text-brand-muted transition-colors ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-brand-surface hover:text-brand-primary cursor-pointer'}`}
+          className={`ui-tap-target p-3 rounded-full border border-brand-border-opacity-10 text-brand-muted transition-colors ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-brand-surface hover:text-brand-primary cursor-pointer'}`}
         >
           <FaChevronLeft size={12} />
         </button>
 
-        <div className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-muted">
+        <div className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
           Step {currentStepIndex + 1} of {steps.length}
         </div>
 
-        <button
+        <button type="button"
           onClick={handleNext}
           disabled={!isStepReady}
-          className={`
-            flex items-center gap-2 px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all
+          className={`ui-tap-target
+            flex items-center gap-2 px-6 py-3 rounded-full font-semibold normal-case tracking-normal text-sm transition-all
             ${isStepReady
-              ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] font-black"
+              ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] font-semibold"
               : "bg-brand-void/50 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed"
             }
           `}

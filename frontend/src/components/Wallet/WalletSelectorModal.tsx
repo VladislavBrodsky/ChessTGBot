@@ -166,9 +166,9 @@ export default function WalletSelectorModal({
         <div className="bottom-drawer-handle" />
 
         {/* Close */}
-        <button
+        <button aria-label="Close dialog" type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition-opacity text-brand-primary cursor-pointer"
+          className="ui-tap-target absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition-opacity text-brand-primary cursor-pointer"
         >
           <FaTimes size={12} />
         </button>
@@ -178,12 +178,12 @@ export default function WalletSelectorModal({
           <div className="text-center pt-1">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <span
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-muted"
+                className="text-caption font-semibold normal-case tracking-normal text-brand-muted"
               >
                 Web3 · TON Connect
               </span>
             </div>
-            <h3 className="text-[15px] font-black uppercase tracking-tight text-brand-primary">
+            <h3 className="text-[15px] font-semibold normal-case tracking-tight text-brand-primary">
               {wallet ? "Wallet Connected" : tw("connect_title")}
             </h3>
           </div>
@@ -222,17 +222,17 @@ export default function WalletSelectorModal({
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-muted">
+                    <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
                       Connected · GRAM Network
                     </span>
-                    <span className="text-[13px] font-black font-mono truncate text-brand-primary">
+                    <span className="text-[13px] font-semibold font-mono truncate text-brand-primary">
                       {getShortAddress(wallet.account.address)}
                     </span>
                   </div>
 
-                  <button
+                  <button type="button"
                     onClick={copyAddress}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all cursor-pointer bg-brand-bg-opacity-5 border border-brand-border-opacity-10"
+                    className="ui-tap-target w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all cursor-pointer bg-brand-bg-opacity-5 border border-brand-border-opacity-10"
                   >
                     {copied ? (
                       <FaCheck size={11} style={{ color: "#00C49A" }} />
@@ -246,9 +246,9 @@ export default function WalletSelectorModal({
                 </div>
               </motion.div>
 
-              <button
+              <button type="button"
                 onClick={handleDisconnect}
-                className="w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer"
+                className="ui-tap-target w-full py-3 rounded-xl text-caption font-semibold normal-case tracking-normal transition-all cursor-pointer"
                 style={{
                   background: "rgba(239,68,68,0.07)",
                   border: "1px solid rgba(239,68,68,0.18)",
@@ -262,20 +262,20 @@ export default function WalletSelectorModal({
             /* ── WALLET PICKER ── */
             <div className="space-y-3">
               {/* Subtitle */}
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-35 text-center text-brand-primary">
+              <p className="text-caption font-bold normal-case tracking-normal opacity-35 text-center text-brand-primary">
                 {tw("connect_desc")}
               </p>
 
               {/* Wallet list */}
               {WALLETS.map((w, idx) => (
-                <motion.button
+                <motion.button type="button"
                   key={w.app_name}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.06 }}
                   onClick={() => handleSelectWallet(w.app_name)}
                   disabled={connecting !== null}
-                  className="w-full relative overflow-hidden rounded-2xl flex items-center gap-4 p-3.5 transition-all cursor-pointer group"
+                  className="ui-tap-target w-full relative overflow-hidden rounded-2xl flex items-center gap-4 p-3.5 transition-all cursor-pointer group"
                   style={{
                     background: w.featured
                       ? `linear-gradient(135deg, ${w.color}14, ${w.color}05)`
@@ -305,12 +305,12 @@ export default function WalletSelectorModal({
                   {/* Info */}
                   <div className="flex flex-col items-start flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[13px] font-black uppercase tracking-wide text-brand-primary">
+                      <span className="text-[13px] font-semibold normal-case tracking-normal text-brand-primary">
                         {w.name}
                       </span>
                       {w.badge && (
                         <span
-                          className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full"
+                          className="text-caption font-semibold normal-case tracking-normal px-1.5 py-0.5 rounded-full"
                           style={{
                             background: `${w.color}20`,
                             color: w.color,
@@ -321,7 +321,7 @@ export default function WalletSelectorModal({
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold opacity-35 text-brand-primary truncate w-full text-left">
+                    <span className="text-caption font-bold opacity-35 text-brand-primary truncate w-full text-left">
                       {w.subtitle}
                     </span>
                   </div>
@@ -385,7 +385,7 @@ export default function WalletSelectorModal({
                     fill="white"
                   />
                 </svg>
-                <span className="text-[10px] font-bold uppercase tracking-widest opacity-25 text-brand-primary">
+                <span className="text-caption font-bold normal-case tracking-normal opacity-25 text-brand-primary">
                   Powered by TON Connect · GRAM Blockchain
                 </span>
               </div>

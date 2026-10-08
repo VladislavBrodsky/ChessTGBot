@@ -45,7 +45,12 @@ export default function TelegramLoginWidget({
 
     // Listen to messages from oauth.telegram.org
     const handleMessage = (event: MessageEvent) => {
-      if (typeof event.origin === 'string' && event.origin.includes('telegram.org')) {
+      let trustedTelegramOrigin = false;
+      try {
+        const origin = new URL(event.origin);
+        trustedTelegramOrigin = origin.protocol === 'https:' && (origin.hostname === 'telegram.org' || origin.hostname.endsWith('.telegram.org'));
+      } catch { /* Ignore malformed origins. */ }
+      if (trustedTelegramOrigin) {
         receivedMessage = true;
         if (isMounted) {
           setIsVerified(true);
@@ -109,7 +114,7 @@ export default function TelegramLoginWidget({
   return (
     <div className={`relative flex flex-col items-center justify-center min-h-[48px] w-full ${className}`}>
       {isLoading && !loadFailed && !isVerified && (
-        <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-brand-surface border border-brand-border text-brand-muted text-xs font-semibold animate-pulse shadow-sm">
+        <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-brand-surface border border-brand-border text-brand-muted text-sm font-semibold animate-pulse shadow-sm">
           <svg className="w-4 h-4 animate-spin text-emerald-500" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -131,7 +136,7 @@ export default function TelegramLoginWidget({
             href={`https://t.me/${botName}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98"
+            className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold normal-case tracking-normal transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98"
           >
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
               <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z" />
@@ -139,7 +144,7 @@ export default function TelegramLoginWidget({
             <span>Log in via Telegram</span>
           </a>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-brand-muted text-center font-mono">
+            <span className="text-caption text-brand-muted text-center font-mono">
               Brave Shields or ad-blocker detected
             </span>
             <button
@@ -150,7 +155,7 @@ export default function TelegramLoginWidget({
                 setIsVerified(false);
                 setRetryCount(c => c + 1);
               }}
-              className="text-[10px] text-emerald-500 hover:underline font-mono"
+              className="ui-tap-target text-caption text-emerald-500 hover:underline font-mono"
             >
               Retry
             </button>

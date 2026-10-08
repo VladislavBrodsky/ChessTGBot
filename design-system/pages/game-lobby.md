@@ -1,7 +1,7 @@
 # Game Lobby Specification
 
 **Route:** `/[locale]/game` (Lobby mode)  
-**Pattern:** Arena Dial Selector + Matchmaking State Machine + Quick Deposit  
+**Pattern:** Clear match setup + real arena state + matchmaking state machine
 **Primary Action:** Find Opponent / Play AI
 
 ---
@@ -16,7 +16,9 @@
    - High contrast selected indicator using `border-emerald-500/50 bg-emerald-500/10`.
 3. **Action Area**:
    - Large Primary Button: "Find Match" or "Play vs AI".
+   - AI opens a difficulty drawer, then creates a real computer game. Keep practice distinguishable from rated or wagered play.
    - Rake info drawer trigger (`RakeInfoDrawer` using `Drawer` primitive).
 4. **Matchmaking Overlay**:
    - Smooth animated radar scanner during matchmaking.
    - Cancel button and notification toggle.
+   - Do not show estimated active-player counts or other unsupported demand signals. Invalid arena dates show the loading/empty treatment, never a NaN countdown.

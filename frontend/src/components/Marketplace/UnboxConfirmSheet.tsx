@@ -88,7 +88,7 @@ export default function UnboxConfirmSheet({
                         {/* Header Badge */}
                         <div className="flex items-center justify-between gap-2 mb-2">
                             <span
-                                className="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.18em] border"
+                                className="px-2.5 py-1 rounded-full text-caption font-semibold normal-case tracking-normal border"
                                 style={{ color: accent, background: `rgba(${rgb},0.1)`, borderColor: `rgba(${rgb},0.3)` }}
                             >
                                 {cfg.metal} · {cfg.piece} {cfg.glyph}
@@ -97,7 +97,7 @@ export default function UnboxConfirmSheet({
                                 type="button"
                                 aria-label={t('back')}
                                 onClick={onCancel}
-                                className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                                className="ui-tap-target flex h-9 w-9 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                             >
                                 <FiX size={16} />
                             </button>
@@ -109,26 +109,26 @@ export default function UnboxConfirmSheet({
                         </div>
 
                         {/* Title & Tagline */}
-                        <h2 id={`unbox-confirm-title-${tier}`} className="text-xl font-black uppercase tracking-tight text-brand-primary">
+                        <h2 id={`unbox-confirm-title-${tier}`} className="text-xl font-semibold normal-case tracking-tight text-brand-primary">
                             {cfg.name}
                         </h2>
-                        <p className="mt-1 text-xs text-brand-muted font-medium">{cfg.tagline}</p>
+                        <p className="mt-1 text-sm text-brand-muted font-medium">{cfg.tagline}</p>
 
                         {/* Price vs Balance Card */}
                         <div className="my-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-void/60 p-3.5 flex items-center justify-between text-left">
                             <div>
-                                <span className="block text-[9px] font-black uppercase tracking-[0.16em] text-brand-muted">
+                                <span className="block text-caption font-semibold normal-case tracking-normal text-brand-muted">
                                     {t('xp_balance')}
                                 </span>
-                                <span className="block text-sm font-black text-amber-400 tabular-nums">
+                                <span className="block text-sm font-semibold text-amber-400 tabular-nums">
                                     {userXP.toLocaleString()} XP
                                 </span>
                             </div>
                             <div className="text-right">
-                                <span className="block text-[9px] font-black uppercase tracking-[0.16em] text-brand-muted">
+                                <span className="block text-caption font-semibold normal-case tracking-normal text-brand-muted">
                                     {t('cost')}
                                 </span>
-                                <span className="block text-sm font-black tabular-nums" style={{ color: accent }}>
+                                <span className="block text-sm font-semibold tabular-nums" style={{ color: accent }}>
                                     {cfg.costXP.toLocaleString()} XP
                                 </span>
                             </div>
@@ -139,7 +139,7 @@ export default function UnboxConfirmSheet({
                             <button
                                 type="button"
                                 onClick={onCancel}
-                                className="py-3.5 rounded-xl border border-brand-border-opacity-20 bg-brand-void/50 text-brand-muted hover:text-brand-primary text-xs font-black uppercase tracking-widest cursor-pointer transition-colors"
+                                className="ui-tap-target py-3.5 rounded-xl border border-brand-border-opacity-20 bg-brand-void/50 text-brand-muted hover:text-brand-primary text-sm font-semibold normal-case tracking-normal cursor-pointer transition-colors"
                             >
                                 {t('back')}
                             </button>
@@ -147,7 +147,7 @@ export default function UnboxConfirmSheet({
                                 type="button"
                                 disabled={!affordable || loading}
                                 onClick={onConfirm}
-                                className="py-3.5 rounded-xl text-slate-950 text-xs font-black uppercase tracking-widest shadow-premium cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="ui-tap-target py-3.5 rounded-xl text-slate-950 text-sm font-semibold normal-case tracking-normal shadow-premium cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
                                     background: affordable
                                         ? `linear-gradient(135deg, ${accent}, ${cfg.theme.accent2 || accent})`

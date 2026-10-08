@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "玩家",
+    "ai_engine": "AI 对手",
     "title": "国际象棋应用",
     "welcome": "欢迎, {name}",
     "welcome_greeting": "欢迎，",
@@ -63,12 +65,15 @@
     "nav_learn": "学习",
     "nav_quests": "任务",
     "nav_settings": "设置",
+    "nav_wallet": "钱包",
     "nav_profile": "个人资料",
     "nav_logout": "退出登录",
     "nav_marketplace": "市场",
     "draws": "平局"
   },
   "Marketplace": {
+    "cost": "花费",
+    "confirm": "确认",
     "title": "商城",
     "subtitle": "用XP兑换高级奖励和主题",
     "back": "返回",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "全年高级权限。相比月付享30%折扣，最大化所有权益。"
   },
   "Settings": {
+    "gameplay_visuals": "对局与外观",
+    "notifications_wallet": "通知与钱包",
+    "support_security": "支持与安全",
+    "command_center": "管理中心",
+    "admin": "管理员",
+    "manage_admin": "管理用户、付款和公告",
     "return": "返回",
     "config_core": "核心配置 • V1.5",
     "title": "设置",
@@ -154,6 +165,7 @@
     "select": "选择语言"
   },
   "Gamification": {
+    "claim_xp_btn": "领取 XP",
     "daily_missions": "每日任务",
     "claim": "领取",
     "daily_win": "赢得一局对战",
@@ -229,6 +241,11 @@
     "level": "等级"
   },
   "Academy": {
+    "academy_progress": "学院进度",
+    "master_the_game": "循序渐进掌握棋艺",
+    "completed": "已完成",
+    "course_completion": "课程进度",
+    "achievements": "成就",
     "title": "学院",
     "subtitle": "象棋谜题与课程",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "重温第 1 关"
   },
   "Game": {
+    "ai_select_difficulty": "选择 AI 难度",
+    "ai_difficulty_help": "为练习对局选择难度。",
+    "ai_easy": "简单",
+    "ai_medium": "中等",
+    "ai_hard": "困难",
+    "ai_start_training": "开始练习",
+    "ai_create_failed": "无法开始 AI 对局，请重试。",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "寻找对手",
     "searching_close_hint": "可以关闭应用——找到对手后我们会通过 Telegram 通知你。",
@@ -371,6 +395,7 @@
     "move_history": "棋谱记录",
     "game_crashed": "游戏连接已断开",
     "game_crashed_desc": "与游戏服务器的连接已中断。您可以尝试重新加载游戏。",
+    "analysis_unavailable": "引擎分析暂不可用。请重试。",
     "reload_game_btn": "重新加载游戏",
     "reject": "拒绝",
     "back": "返回",
@@ -415,12 +440,13 @@
     "xp_reward": "XP 奖励"
   },
   "Wallet": {
+    "balance_trend": "余额历史（USDT）",
     "title": "Web3 钱包",
     "connected_status": "TON 钱包已连接",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "管理钱包",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "接收钱包（您的地址）",
     "card_await_funds_notice": "购买后，USDT 将到达您的钱包（可能需要几分钟）。然后切换到“加密”标签为余额充值。",
     "balance_unavailable": "余额不可用 — 点击重试",
+    "account_unavailable": "无法验证您的账户。转账前请重试。",
     "link_wallet_hint": "绑定您的 TON 钱包",
     "tx_game_against_ai": "对战 AI",
     "tx_game_free_pvp": "与其他玩家的免费对局",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "分享",
+    "invite_title": "邀请你来下棋",
+    "invite_description": "扫描二维码或打开 Telegram 加入棋局。",
+    "invite_qr_alt": "邀请二维码",
+    "open_invite": "在 Telegram 中打开邀请",
+    "invalid_invite": "邀请链接无效。",
     "dashboard_title": "推荐计划",
     "total_label": "总计",
     "total_sublabel": "推荐人数",

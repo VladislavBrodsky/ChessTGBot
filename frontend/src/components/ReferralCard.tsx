@@ -50,13 +50,13 @@ export default function ReferralCard({ referralCode, onInteraction }: ReferralCa
                     <FaUserPlus className="text-base" />
                 </div>
                 <div className="flex flex-col space-y-1 min-w-0">
-                    <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight leading-none">
+                    <h3 className="text-sm font-semibold text-brand-primary normal-case tracking-tight leading-none">
                         {t('referral_program')}
                     </h3>
-                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider leading-none">
+                    <span className="text-caption font-semibold text-emerald-400 normal-case tracking-normal leading-none">
                         🎁 Earn 15% Lifetime Commissions + 50 XP
                     </span>
-                    <p className="text-[10px] font-bold text-brand-muted leading-relaxed pt-0.5">
+                    <p className="text-caption font-bold text-brand-muted leading-relaxed pt-0.5">
                         {t('referral_desc')}
                     </p>
                 </div>
@@ -65,21 +65,21 @@ export default function ReferralCard({ referralCode, onInteraction }: ReferralCa
             <div className="flex items-stretch gap-2 w-full pt-1">
                 <div className="flex-1 bg-brand-void/40 border border-brand-border-opacity-15 rounded-xl px-3.5 py-2.5 flex items-center justify-between shadow-sm min-w-0">
                     <div className="flex flex-col min-w-0">
-                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none mb-1">YOUR CODE</span>
-                        <span className="font-mono font-black text-brand-primary tracking-widest text-xs truncate leading-none">{displayCode}</span>
+                        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal leading-none mb-1">YOUR CODE</span>
+                        <span className="font-mono font-semibold text-brand-primary tracking-normal text-sm truncate leading-none">{displayCode}</span>
                     </div>
-                    <button
+                    <button type="button"
                         onClick={handleCopy}
-                        className="text-brand-muted hover:opacity-100 transition-opacity cursor-pointer flex items-center gap-1 shrink-0 ml-2"
+                        className="ui-tap-target text-brand-muted hover:opacity-100 transition-opacity cursor-pointer flex items-center gap-1 shrink-0 ml-2"
                     >
-                        <span className="text-[10px] font-black uppercase tracking-wider">{copied ? t('copied') : t('copy_code')}</span>
-                        {copied ? <FaCheck className="text-green-400 text-xs" /> : <FaCopy className="text-xs" />}
+                        <span className="text-caption font-semibold normal-case tracking-normal">{copied ? t('copied') : t('copy_code')}</span>
+                        {copied ? <FaCheck className="text-green-400 text-sm" /> : <FaCopy className="text-sm" />}
                     </button>
                 </div>
-                <motion.button
+                <motion.button aria-label="Invite friends" type="button"
                     whileTap={{ scale: 0.95 }}
                     onClick={handleInvite}
-                    className="w-12 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center text-lg shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer shrink-0"
+                    className="ui-tap-target w-12 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center text-lg shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer shrink-0"
                     title="Send Invite Link"
                 >
                     <FaUserPlus />

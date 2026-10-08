@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Игрок",
+    "ai_engine": "ИИ-соперник",
     "title": "Шахматы",
     "welcome": "Добро пожаловать, {name}",
     "welcome_greeting": "Добро пожаловать,",
@@ -63,12 +65,15 @@
     "nav_learn": "Обучение",
     "nav_quests": "Квесты",
     "nav_settings": "Настройки",
+    "nav_wallet": "Кошелёк",
     "nav_profile": "Профиль",
     "nav_logout": "Выйти",
     "nav_marketplace": "Маркетплейс",
     "draws": "Ничьи"
   },
   "Marketplace": {
+    "cost": "Стоимость",
+    "confirm": "Подтвердить",
     "title": "Маркет",
     "subtitle": "Обменивайте XP на премиум-награды и темы",
     "back": "Назад",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Годовой премиум-доступ. Максимум преимуществ со скидкой 30% по сравнению с месячным."
   },
   "Settings": {
+    "gameplay_visuals": "Игра и оформление",
+    "notifications_wallet": "Уведомления и кошелёк",
+    "support_security": "Поддержка и безопасность",
+    "command_center": "Панель управления",
+    "admin": "Админ",
+    "manage_admin": "Управление игроками, выплатами и объявлениями",
     "return": "Назад",
     "config_core": "v1.7",
     "title": "Настройки",
@@ -154,6 +165,7 @@
     "select": "Выберите Язык"
   },
   "Gamification": {
+    "claim_xp_btn": "Получить XP",
     "daily_missions": "Ежедневные задания",
     "claim": "Забрать",
     "daily_win": "Выиграть матч",
@@ -229,6 +241,11 @@
     "level": "Уровень"
   },
   "Academy": {
+    "academy_progress": "Прогресс в академии",
+    "master_the_game": "Осваивайте игру шаг за шагом",
+    "completed": "Завершено",
+    "course_completion": "Прогресс курса",
+    "achievements": "Достижения",
     "title": "Академия",
     "subtitle": "Шахматные задачи и уроки",
     "daily_challenge": "Дневной вызов",
@@ -281,6 +298,13 @@
     "review_level_1": "Повторить Уровень 1"
   },
   "Game": {
+    "ai_select_difficulty": "Выберите сложность ИИ",
+    "ai_difficulty_help": "Выберите уровень для тренировочной партии.",
+    "ai_easy": "Легко",
+    "ai_medium": "Средне",
+    "ai_hard": "Сложно",
+    "ai_start_training": "Начать тренировку",
+    "ai_create_failed": "Не удалось начать игру с ИИ. Попробуйте ещё раз.",
     "battle_arena": "БАТТЛ АРЕНА",
     "searching_matchmaker": "Поиск соперника",
     "searching_close_hint": "Можно закрыть приложение — мы пришлём сообщение в Telegram, когда найдём соперника.",
@@ -373,6 +397,7 @@
     "move_history": "История ходов",
     "game_crashed": "Соединение с игрой потеряно",
     "game_crashed_desc": "Соединение с игровым сервером было прервано. Вы можете попробовать перезагрузить игру.",
+    "analysis_unavailable": "Анализ движком недоступен. Повторите попытку.",
     "reload_game_btn": "Перезагрузить игру",
     "match_found": "СОПЕРНИК НАЙДЕН",
     "stakes_locked": "Ставки зафиксированы",
@@ -415,12 +440,13 @@
     "xp_reward": "Опыт"
   },
   "Wallet": {
+    "balance_trend": "История баланса (USDT)",
     "title": "Web3-кошелек",
     "connected_status": "Кошелек TON подключен",
     "usdt_balance": "Баланс USDT",
     "no_wallet": "Кошелек не подключен",
     "version": "ChessPay v1",
-    "link_ton": "КОШЕЛЁК",
+    "link_ton": "Управление кошельком",
     "deposit": "Депозит",
     "withdraw": "Вывод",
     "deposit_fee": "Комиссия на ввод:",
@@ -503,6 +529,7 @@
     "card_destination_label": "Кошелёк для зачисления (ваш адрес)",
     "card_await_funds_notice": "После покупки USDT поступит на ваш кошелёк (несколько минут). Затем перейдите на вкладку «Крипто», чтобы пополнить баланс.",
     "balance_unavailable": "Баланс недоступен — нажмите, чтобы повторить",
+    "account_unavailable": "Не удалось подтвердить ваш аккаунт. Повторите попытку перед переводом средств.",
     "link_wallet_hint": "Привяжите TON-кошелёк",
     "tx_refund": "Возврат ставки",
     "gas_link": "⛽ Есть USDT, но нет TON на комиссию? Получите немного бесплатно",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Поделиться",
+    "invite_title": "Вас пригласили играть",
+    "invite_description": "Отсканируйте код или откройте Telegram, чтобы сыграть в шахматы.",
+    "invite_qr_alt": "QR-код приглашения",
+    "open_invite": "Открыть приглашение в Telegram",
+    "invalid_invite": "Недействительная ссылка-приглашение.",
     "dashboard_title": "Реферальная программа",
     "total_label": "Всего",
     "total_sublabel": "Рефералов",

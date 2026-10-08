@@ -102,7 +102,7 @@ export default function Leaderboard() {
       >
         {/* Left: Rank & Player */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl font-black text-xs ${cfg.rankBg}`}>
+          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl font-semibold text-sm ${cfg.rankBg}`}>
             {cfg.icon || cfg.label}
           </div>
 
@@ -113,10 +113,10 @@ export default function Leaderboard() {
           />
 
           <div className="min-w-0">
-            <p className="text-xs font-bold text-brand-primary truncate">
+            <p className="text-sm font-bold text-brand-primary truncate">
               {fullName}
             </p>
-            <p className="text-[10px] text-brand-muted truncate">
+            <p className="text-caption text-brand-muted truncate">
               {activeTab === 'arena'
                 ? `${item.games_played || 0} games · ${item.win_rate || 0}% win`
                 : `${item.study_streak || 0} day streak`}
@@ -127,10 +127,10 @@ export default function Leaderboard() {
         {/* Right: Score & Mini Progress */}
         <div className="flex flex-col items-end shrink-0 ml-3">
           <div className="text-right">
-            <span className={`text-xs font-black font-mono ${item.rank === 1 ? 'text-amber-400' : 'text-brand-primary'}`}>
+            <span className={`text-sm font-semibold font-mono ${item.rank === 1 ? 'text-amber-400' : 'text-brand-primary'}`}>
               {score.toLocaleString()}
             </span>
-            <span className="text-[9px] font-bold text-brand-muted ml-1">
+            <span className="text-caption font-bold text-brand-muted ml-1">
               {activeTab === 'arena' ? 'ELO' : 'XP'}
             </span>
           </div>
@@ -158,11 +158,11 @@ export default function Leaderboard() {
           <span className="w-7 h-7 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center">
             <FaChessKnight size={13} />
           </span>
-          <h2 id="leaderboard-heading" className="text-base font-black text-brand-primary tracking-tight uppercase leading-none">
+          <h2 id="leaderboard-heading" className="text-base font-semibold text-brand-primary tracking-tight normal-case leading-none">
             {t('global_ranking')}
           </h2>
         </div>
-        <div className="flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-muted">
+        <div className="flex items-center justify-center gap-2 text-caption font-bold normal-case tracking-normal text-brand-muted">
           <span className="flex items-center gap-1 text-amber-400"><FiAward size={11} /> Season 1</span>
           <span>•</span>
           <span className="flex items-center gap-1 text-emerald-400"><FiRadio size={9} /> Live</span>
@@ -181,14 +181,14 @@ export default function Leaderboard() {
       <Card variant="solid" className="rounded-3xl overflow-hidden p-0 border-brand-border bg-brand-surface">
         <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-brand-border bg-brand-elevated/40">
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-wider text-amber-400">
+            <p className="text-caption font-semibold normal-case tracking-normal text-amber-400">
               {activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}
             </p>
-            <p className="text-[10px] text-brand-muted truncate">
+            <p className="text-caption text-brand-muted truncate">
               {metricLabel} · {activeTab === 'arena' ? 'Win games to climb' : 'Study daily to climb'}
             </p>
           </div>
-          <div className="shrink-0 text-right text-[10px] text-brand-muted font-mono">
+          <div className="shrink-0 text-right text-caption text-brand-muted font-mono">
             {leaderGap > 0 && <span className="text-amber-400 font-bold">Leader +{leaderGap.toLocaleString()}</span>}
           </div>
         </div>
@@ -201,20 +201,20 @@ export default function Leaderboard() {
           ) : (
             <li className="py-8 px-4 text-center space-y-2 list-none">
               <FaChessKnight className="mx-auto text-brand-muted" size={24} />
-              <p className="text-brand-primary font-bold text-xs uppercase tracking-wider">{t('no_data')}</p>
-              <p className="text-brand-muted text-xs">Complete a game or lesson to enter the standings.</p>
+              <p className="text-brand-primary font-bold text-sm normal-case tracking-normal">{t('no_data')}</p>
+              <p className="text-brand-muted text-sm">Complete a game or lesson to enter the standings.</p>
             </li>
           )}
         </ol>
 
         {!loading && players.length > 5 && (
           <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-brand-border bg-brand-elevated/50">
-            <span className="text-[10px] font-bold text-brand-muted">
+            <span className="text-caption font-bold text-brand-muted">
               Showing 5 of {Math.min(players.length, 50)} contenders
             </span>
-            <button
+            <button type="button"
               onClick={() => setShowModal(true)}
-              className="flex shrink-0 items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300 transition-colors cursor-pointer"
+              className="ui-tap-target flex shrink-0 items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-sm font-bold text-amber-300 transition-colors cursor-pointer"
             >
               <FaTrophy size={11} className="opacity-70" />
               View all

@@ -32,7 +32,7 @@ export function EmptyState({
       <div className="space-y-1 max-w-xs">
         <h3 className="text-base font-bold text-brand-primary">{title}</h3>
         {description && (
-          <p className="text-xs leading-relaxed text-brand-muted">{description}</p>
+          <p className="text-sm leading-relaxed text-brand-muted">{description}</p>
         )}
       </div>
 

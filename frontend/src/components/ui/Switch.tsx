@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useId } from 'react';
-import { motion } from 'framer-motion';
 import { telegramHaptic } from '@/lib/telegram';
 
 export interface SwitchProps {
@@ -12,83 +11,37 @@ export interface SwitchProps {
   disabled?: boolean;
   id?: string;
   className?: string;
+  'aria-label'?: string;
 }
 
-export function Switch({
-  checked,
-  onChange,
-  label,
-  description,
-  disabled = false,
-  id,
-  className = '',
-}: SwitchProps) {
+export function Switch({ checked, onChange, label, description, disabled = false, id, className = '', 'aria-label': ariaLabel }: SwitchProps) {
   const generatedId = useId();
   const switchId = id || generatedId;
-  const descriptionId = `${switchId}-desc`;
-
   const handleToggle = () => {
     if (disabled) return;
     telegramHaptic('selection');
     onChange(!checked);
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      handleToggle();
-    }
-  };
-
   return (
-    <div className={`flex items-center justify-between gap-3 ${className}`}>
+    <div className={`flex items-center justify-between gap-4 ${className}`}>
       {(label || description) && (
-        <div className="flex flex-col text-left cursor-pointer" onClick={handleToggle}>
-          {label && (
-            <label
-              htmlFor={switchId}
-              className={`text-xs font-bold text-brand-primary cursor-pointer select-none ${
-                disabled ? 'opacity-50' : ''
-              }`}
-            >
-              {label}
-            </label>
-          )}
-          {description && (
-            <span
-              id={descriptionId}
-              className="text-[10px] text-brand-muted font-medium select-none"
-            >
-              {description}
-            </span>
-          )}
-        </div>
+        <label htmlFor={switchId} className={`min-w-0 cursor-pointer text-start ${disabled ? 'opacity-50' : ''}`}>
+          {label && <span className="block text-sm font-medium text-brand-primary">{label}</span>}
+          {description && <span id={`${switchId}-desc`} className="mt-1 block text-caption leading-relaxed text-brand-muted">{description}</span>}
+        </label>
       )}
-
-      <button
-        id={switchId}
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-describedby={description ? descriptionId : undefined}
-        disabled={disabled}
-        onClick={handleToggle}
-        onKeyDown={handleKeyDown}
-        className={`
-          relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-void
-          ${checked ? 'bg-emerald-500' : 'bg-brand-elevated border-brand-border'}
-          ${disabled ? 'opacity-40 cursor-not-allowed' : ''}
-        `}
-      >
-        <span className="sr-only">{label || 'Toggle switch'}</span>
-        <motion.span
-          layout
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`
-            pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md ring-0
-            ${checked ? 'translate-x-5' : 'translate-x-0'}
-          `}
-        />
+      <button id={switchId} type="button" role="switch" aria-checked={checked}
+        aria-label={ariaLabel || label || 'Toggle switch'}
+        aria-describedby={description ? `${switchId}-desc` : undefined}
+        disabled={disabled} onClick={handleToggle}
+        onKeyDown={(event) => {
+          // Native buttons already synthesize keyboard clicks in browsers.
+          if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); handleToggle(); }
+        }}
+        className="ui-tap-target ui-switch inline-flex h-11 w-12 shrink-0 items-center justify-center rounded-xl disabled:cursor-not-allowed disabled:opacity-50">
+        <span aria-hidden="true" className={`relative h-6 w-11 rounded-full border transition-colors ${checked ? 'bg-brand-action border-brand-action' : 'bg-brand-elevated border-brand-muted'}`}>
+          <span className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-[inset-inline-start] duration-150 ${checked ? 'start-[22px]' : 'start-0.5'}`} />
+        </span>
       </button>
     </div>
   );

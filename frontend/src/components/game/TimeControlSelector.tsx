@@ -19,7 +19,7 @@ export default function TimeControlSelector({
   return (
     <section className="px-4 pt-3 pb-4" aria-labelledby="time-selector-title">
       <div className="flex justify-center items-center mb-3">
-        <span id="time-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
+        <span id="time-selector-title" className="text-caption font-semibold normal-case text-brand-muted tracking-normal flex items-center gap-1.5">
           <FaStopwatch className="text-brand-muted" size={9} />
           {tg('time_control')}
         </span>
@@ -41,7 +41,7 @@ export default function TimeControlSelector({
           ].map((opt) => {
             const isSelected = timeControl === opt.val;
             return (
-              <button
+              <button type="button"
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
                 aria-pressed={isSelected}
@@ -56,7 +56,7 @@ export default function TimeControlSelector({
                     });
                   }
                 }}
-                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                className={`ui-tap-target w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-caption font-semibold tracking-normal transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                   isSelected
                     ? 'arena-option--time-selected font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'

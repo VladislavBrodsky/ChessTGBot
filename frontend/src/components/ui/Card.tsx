@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
+import { telegramHaptic } from '@/lib/telegram';
 
 export type CardVariant = 'glass' | 'solid' | 'premium' | 'cyber' | 'x-panel';
 
@@ -13,30 +17,44 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   interactive = false,
   className = '', 
   children, 
+  onClick,
+  onKeyDown,
   ...props 
 }, ref) => {
   
-  const baseClasses = 'rounded-2xl overflow-hidden';
+  const baseClasses = 'ui-card rounded-2xl overflow-hidden';
   
   const variantClasses = {
     glass: 'glass-panel',
-    solid: 'bg-brand-surface border border-brand-border-opacity-10 shadow-sm',
+    solid: 'bg-brand-surface border border-brand-border',
     premium: 'bg-brand-surface border border-purple-500/20 shadow-premium relative overflow-hidden',
     cyber: 'bg-cyber-card border border-brand-primary/20 shadow-neon',
     'x-panel': 'bg-brand-surface border border-brand-border shadow-sm transition-all',
   };
 
   const interactiveClasses = interactive 
-    ? 'cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
+    ? 'cursor-pointer transition-colors duration-150 hover:border-brand-muted/40'
     : '';
 
   return (
     <div 
       ref={ref}
-      className={`${baseClasses} ${variantClasses[variant]} ${interactiveClasses} ${className}`}
+      className={twMerge(baseClasses, variantClasses[variant], interactiveClasses, className)}
+      role={interactive && onClick ? 'button' : undefined}
+      tabIndex={interactive && onClick ? 0 : undefined}
+      onClick={onClick ? (event) => { telegramHaptic('selection'); onClick(event); } : undefined}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        if (!event.defaultPrevented && interactive && onClick && event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault();
+          event.currentTarget.click();
+        }
+      }}
       {...props}
     >
       {children}
     </div>
   );
 });
+
+Card.displayName = 'Card';

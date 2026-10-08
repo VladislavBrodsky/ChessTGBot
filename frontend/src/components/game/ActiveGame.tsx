@@ -675,7 +675,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       } else {
         matchResultLabel = tg('victory_secured');
       }
-      resultColor = "text-brand-primary font-black";
+      resultColor = "text-brand-primary font-semibold";
       
       if (gameState.white_player_id === userId) {
         const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
@@ -720,7 +720,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               <FaChessKnight className="text-xl text-brand-primary animate-bounce" />
             </div>
           </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-muted animate-pulse">
+          <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted animate-pulse">
             {tg('synchronizing_arena')}
           </span>
         </div>
@@ -735,24 +735,24 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         <div className="flex items-center gap-3">
           {isGameOver && !isTelegram && (
             <Link href={`/${locale}/home`}>
-              <motion.button
+              <motion.button aria-label="Back" type="button"
                 whileTap={{ scale: 0.95 }}
-                className="text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
+                className="ui-tap-target text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
               >
                 <FaArrowLeft size={16} />
               </motion.button>
             </Link>
           )}
           {!isGameOver && (
-            <button
+            <button type="button"
               onClick={handleToggleAutoPromote}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all cursor-pointer ${
+              className={`ui-tap-target flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all cursor-pointer ${
                 autoPromote 
                   ? 'bg-brand-primary/20 border-brand-primary text-brand-primary' 
                   : 'bg-brand-surface border-brand-border-opacity-10 text-brand-muted'
               }`}
             >
-              <span className="text-[10px] font-black uppercase tracking-wider">
+              <span className="text-caption font-semibold normal-case tracking-normal">
                 {tg('auto_queen')}
               </span>
               <div className={`w-2 h-2 rounded-full ${autoPromote ? 'bg-brand-primary animate-pulse' : 'bg-brand-primary/30'}`} />
@@ -762,7 +762,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
         <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
           <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-muted uppercase">
+          <span className="text-caption font-bold tracking-normal text-brand-muted normal-case">
             {isConnected ? tg('active_sync') : tg('isolated')}
           </span>
         </div>
@@ -784,14 +784,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 ? 'border-amber-500/30 text-amber-400'
                 : 'border-brand-primary/20 text-brand-primary'
             }`}>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] block mb-1 opacity-60">
+              <span className="text-caption font-semibold normal-case tracking-normal block mb-1 opacity-60">
                 {gameNotice.type === 'error'
                   ? tg('notice_attention')
                   : gameNotice.type === 'warning'
                   ? tg('notice_warning')
                   : tg('notice_info')}
               </span>
-              <span className="text-[10px] font-black uppercase tracking-wide leading-tight block">
+              <span className="text-caption font-semibold normal-case tracking-normal leading-tight block">
                 {gameNotice.message}
               </span>
             </div>
@@ -808,8 +808,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90vw] max-w-[280px]"
         >
           <div className="p-3 rounded-2xl border border-red-500/20 bg-brand-surface shadow-premium text-center pointer-events-auto transform-gpu will-change-transform">
-            <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-0.5">{tg('system_warning')}</span>
-            <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wide leading-tight">{error}</span>
+            <span className="text-caption font-semibold text-red-500 normal-case tracking-normal block mb-0.5">{tg('system_warning')}</span>
+            <span className="text-caption font-bold text-brand-primary normal-case tracking-normal leading-tight">{error}</span>
           </div>
         </motion.div>
       )}
@@ -892,11 +892,11 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
           {/* Action Bar */}
           {!isBotGame && !isGameOver && (
-            <motion.button
+            <motion.button type="button"
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               onClick={shareGame}
-              className="w-full action-button py-[18px] rounded-2xl uppercase flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+              className="ui-tap-target w-full action-button py-[18px] rounded-2xl normal-case flex items-center justify-center gap-3 cursor-pointer shadow-sm"
             >
               {copied ? <FaCheck /> : <FaCopy />}
               <span>{copied ? "Sync Success" : "Establish Link"}</span>

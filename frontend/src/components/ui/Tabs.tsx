@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
+import { selectionKeyboard } from './selectionKeyboard';
 import { motion } from 'framer-motion';
 import { telegramHaptic } from '@/lib/telegram';
 
@@ -16,6 +17,7 @@ export interface TabsProps<T extends string = string> {
   activeTab: T;
   onChange: (tabId: T) => void;
   className?: string;
+  'aria-label'?: string;
 }
 
 export function Tabs<T extends string = string>({
@@ -23,36 +25,41 @@ export function Tabs<T extends string = string>({
   activeTab,
   onChange,
   className = '',
+  'aria-label': ariaLabel = 'View options',
 }: TabsProps<T>) {
+  const indicatorId = useId();
   return (
     <div
       role="tablist"
+      aria-label={ariaLabel}
       aria-orientation="horizontal"
       className={`flex items-center gap-1.5 p-1 bg-brand-elevated border border-brand-border rounded-2xl overflow-x-auto no-scrollbar ${className}`}
     >
-      {tabs.map((tab) => {
+      {tabs.map((tab, index) => {
         const isActive = activeTab === tab.id;
 
         return (
           <button
             key={tab.id}
+            type="button"
             role="tab"
             aria-selected={isActive}
             tabIndex={isActive ? 0 : -1}
+            onKeyDown={(event) => selectionKeyboard(event, index, tabs.length, (next) => { telegramHaptic('selection'); onChange(tabs[next].id); })}
             onClick={() => {
               telegramHaptic('selection');
               onChange(tab.id);
             }}
-            className={`
-              relative flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-200 cursor-pointer shrink-0 select-none min-h-[38px]
-              ${isActive ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}
+            className={`ui-tap-target
+              relative flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold normal-case tracking-normal transition-colors duration-200 cursor-pointer shrink-0 select-none min-h-11
+              ${isActive ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}
             `}
           >
             {isActive && (
               <motion.div
-                layoutId="activeTabIndicator"
+                layoutId={`${indicatorId}-active`}
                 transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-                className="absolute inset-0 bg-brand-primary rounded-xl shadow-sm z-0"
+                className="absolute inset-0 bg-brand-surface border border-brand-border rounded-xl shadow-sm z-0"
               />
             )}
 
@@ -62,8 +69,8 @@ export function Tabs<T extends string = string>({
               {tab.badge !== undefined && (
                 <span
                   className={`
-                    px-1.5 py-0.5 rounded-full text-[9px] font-black leading-none
-                    ${isActive ? 'bg-brand-void/20 text-brand-void' : 'bg-brand-surface text-brand-muted border border-brand-border'}
+                    px-1.5 py-0.5 rounded-full text-caption font-semibold leading-none
+                    ${isActive ? 'bg-brand-elevated text-brand-primary' : 'bg-brand-surface text-brand-muted border border-brand-border'}
                   `}
                 >
                   {tab.badge}

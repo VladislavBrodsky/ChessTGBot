@@ -106,7 +106,7 @@ export default function CustomAlertModal() {
             </div>
 
             <div className="space-y-1.5 w-full">
-              <h3 id="custom-alert-title" className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">
+              <h3 id="custom-alert-title" className="text-caption font-semibold text-blue-500 normal-case tracking-normal">
                 {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
               </h3>
               <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">
@@ -117,23 +117,23 @@ export default function CustomAlertModal() {
             <div className="w-full flex gap-2.5 pt-1">
               {modal.type === 'confirm' ? (
                 <>
-                  <button
+                  <button type="button"
                     onClick={() => handleClose(false)}
-                    className="flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-muted hover:bg-brand-primary/5 hover:text-brand-muted text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+                    className="ui-tap-target flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-muted hover:bg-brand-primary/5 hover:text-brand-muted text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer"
                   >
                     {t('cancel')}
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => handleClose(true)}
-                    className="flex-1 py-3 rounded-[12px] bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
+                    className="ui-tap-target flex-1 py-3 rounded-[12px] bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer shadow-md"
                   >
                     {t('confirm')}
                   </button>
                 </>
               ) : (
-                <button
+                <button type="button"
                   onClick={() => handleClose(true)}
-                  className="w-full py-3 rounded-[12px] bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
+                  className="ui-tap-target w-full py-3 rounded-[12px] bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer shadow-md"
                 >
                   {t('close')}
                 </button>

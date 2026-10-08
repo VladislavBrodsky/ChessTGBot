@@ -26,6 +26,8 @@ jobs:
       # npm install resolves platform-specific swc deps per-OS. npm ci and the
       # setup-node npm cache both require a lockfile, so neither is usable here.
       - run: npm install
+      - name: Translation integrity
+        run: npm run check:messages
       - name: Build static export
         run: npm run build
         env:

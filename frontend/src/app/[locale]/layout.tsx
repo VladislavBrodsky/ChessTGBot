@@ -5,17 +5,11 @@ import { NavbarProvider } from "@/context/NavbarContext";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Script from 'next/script';
 import TelegramInit from "@/components/TelegramInit";
 import Providers from "@/components/Providers";
 import { UserProvider } from "@/context/UserContext";
 import { ToastProvider } from "@/context/ToastContext";
 
-import { Outfit, Plus_Jakarta_Sans, Roboto_Mono } from 'next/font/google';
-
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
-const robotoMono = Roboto_Mono({ subsets: ['latin'], variable: '--font-geist-mono' });
 
 export const metadata: Metadata = {
     title: "Chess Game",
@@ -25,8 +19,6 @@ export const metadata: Metadata = {
 export const viewport = {
     width: "device-width",
     initialScale: 1.0,
-    maximumScale: 1.0,
-    userScalable: false,
     // Required so iOS exposes non-zero env(safe-area-inset-*). Without this,
     // env() insets are forced to 0 and fixed bottom bars (navbar) land in the
     // iOS home-indicator zone and disappear. Pairs with --app-safe-bottom.
@@ -70,6 +62,7 @@ export default async function LocaleLayout({
                 <meta httpEquiv="Pragma" content="no-cache" />
                 <meta httpEquiv="Expires" content="0" />
                 {/* Synchronous script tag so window.Telegram.WebApp is guaranteed ready before ANY React component hydrates */}
+                {/* eslint-disable-next-line @next/next/no-sync-scripts -- Telegram WebApp must be ready before hydration */}
                 <script src="https://telegram.org/js/telegram-web-app.js"></script>
                 <script
                     dangerouslySetInnerHTML={{
@@ -108,7 +101,7 @@ export default async function LocaleLayout({
                 />
             </head>
             <body
-                className={`${outfit.variable} ${plusJakarta.variable} ${robotoMono.variable} antialiased`}
+                className="antialiased"
                 suppressHydrationWarning
             >
                 <NextIntlClientProvider messages={messages}>

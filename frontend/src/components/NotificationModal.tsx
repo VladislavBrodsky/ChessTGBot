@@ -85,11 +85,11 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6">
-                            <h2 id="notification-modal-title" className="text-xl font-bold uppercase tracking-wider text-brand-primary">Updates & Info</h2>
-                            <button 
+                            <h2 id="notification-modal-title" className="text-xl font-bold normal-case tracking-normal text-brand-primary">Updates & Info</h2>
+                            <button type="button"
                                 onClick={onClose}
                                 aria-label="Close updates"
-                                className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
+                                className="ui-tap-target flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
                             >
                                 <FiX size={16} />
                             </button>
@@ -97,11 +97,11 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
 
                         {/* Tabs */}
                         <div className="mb-5 flex gap-2 rounded-2xl border border-brand-border bg-brand-elevated/70 p-1.5 shadow-inner" role="tablist" aria-label="Notification content">
-                            <button 
+                            <button type="button"
                                 onClick={() => setActiveTab('guide')}
                                 role="tab"
                                 aria-selected={activeTab === 'guide'}
-                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+                                className={`ui-tap-target flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold normal-case tracking-normal transition-all ${
                                     activeTab === 'guide' 
                                         ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
                                         : 'text-brand-muted hover:text-brand-primary'
@@ -110,11 +110,11 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                 <FiBookOpen size={14} />
                                 How to Start
                             </button>
-                            <button 
+                            <button type="button"
                                 onClick={() => setActiveTab('news')}
                                 role="tab"
                                 aria-selected={activeTab === 'news'}
-                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+                                className={`ui-tap-target flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold normal-case tracking-normal transition-all ${
                                     activeTab === 'news' 
                                         ? 'border border-brand-border bg-brand-surface text-brand-primary shadow-sm'
                                         : 'text-brand-muted hover:text-brand-primary'
@@ -139,12 +139,12 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                     >
                                         {guideSteps.map((step, idx) => (
                                             <div key={idx} className="flex gap-4 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm">
-                                                <div className="text-xl font-black tracking-tight text-purple-500">
+                                                <div className="text-xl font-semibold tracking-tight text-purple-500">
                                                     {step.step}
                                                 </div>
                                                 <div className="space-y-1">
                                                     <h3 className="text-sm font-bold text-brand-primary">{step.title}</h3>
-                                                    <p className="text-xs text-brand-muted leading-relaxed">{step.desc}</p>
+                                                    <p className="text-sm text-brand-muted leading-relaxed">{step.desc}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -160,7 +160,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                     >
                                         {newsItems.map((item) => (
                                             <div key={item.id} className="space-y-2 rounded-2xl border border-brand-border bg-brand-elevated p-4 shadow-sm transition-colors hover:border-brand-border">
-                                                <div className="flex items-center justify-between text-[10px] text-brand-muted uppercase tracking-wider">
+                                                <div className="flex items-center justify-between text-caption text-brand-muted normal-case tracking-normal">
                                                     <span>{item.date}</span>
                                                     <span className="flex items-center gap-1">
                                                         <FiClock size={10} />
@@ -168,7 +168,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                                     </span>
                                                 </div>
                                                 <h3 className="text-sm font-bold text-brand-primary">{item.title}</h3>
-                                                <p className="text-xs text-brand-muted leading-relaxed">{item.excerpt}</p>
+                                                <p className="text-sm text-brand-muted leading-relaxed">{item.excerpt}</p>
                                             </div>
                                         ))}
                                     </motion.div>

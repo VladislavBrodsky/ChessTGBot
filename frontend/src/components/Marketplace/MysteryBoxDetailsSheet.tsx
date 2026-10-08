@@ -63,7 +63,7 @@ export default function MysteryBoxDetailsSheet({
             <button
                 type="button"
                 aria-label={t('back')}
-                className="absolute inset-0 cursor-default"
+                className="ui-tap-target absolute inset-0 cursor-default"
                 onClick={onClose}
             />
             <div
@@ -77,10 +77,10 @@ export default function MysteryBoxDetailsSheet({
                 <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-brand-border-opacity-20" />
                 <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: cfg.theme.accent }}>
+                        <p className="text-caption font-semibold normal-case tracking-normal" style={{ color: cfg.theme.accent }}>
                             {cfg.metal} · {cfg.piece}
                         </p>
-                        <h2 id={`box-details-title-${tier}`} className="mt-1 text-xl font-black text-brand-primary">
+                        <h2 id={`box-details-title-${tier}`} className="mt-1 text-xl font-semibold text-brand-primary">
                             {cfg.name}
                         </h2>
                         <p className="mt-1 text-sm leading-5 text-brand-muted">{cfg.tagline}</p>
@@ -89,7 +89,7 @@ export default function MysteryBoxDetailsSheet({
                         type="button"
                         aria-label={t('back')}
                         onClick={onClose}
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
+                        className="ui-tap-target flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
                     >
                         <FiX size={18} />
                     </button>
@@ -97,10 +97,10 @@ export default function MysteryBoxDetailsSheet({
 
                 <div className="mt-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-void/60 p-4">
                     <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-primary">
+                        <h3 className="text-caption font-semibold normal-case tracking-normal text-brand-primary">
                             {t('whats_inside')}
                         </h3>
-                        <span className="text-[10px] font-black tabular-nums text-purple-500">{cfg.costXP.toLocaleString()} XP</span>
+                        <span className="text-caption font-semibold tabular-nums text-purple-500">{cfg.costXP.toLocaleString()} XP</span>
                     </div>
                     <ul className="mt-3 space-y-2.5">
                         {cfg.drops.map((drop) => (
@@ -109,7 +109,7 @@ export default function MysteryBoxDetailsSheet({
                                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: DROP_KIND_COLOR[drop.kind] }} />
                                     <span>{drop.label}</span>
                                 </span>
-                                <span className="shrink-0 font-black tabular-nums text-brand-primary">{drop.chance}%</span>
+                                <span className="shrink-0 font-semibold tabular-nums text-brand-primary">{drop.chance}%</span>
                             </li>
                         ))}
                     </ul>
@@ -122,7 +122,7 @@ export default function MysteryBoxDetailsSheet({
                         onClose();
                         onUnbox();
                     }}
-                    className={`mt-4 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-black uppercase tracking-[0.12em] transition-all ${
+                    className={`ui-tap-target mt-4 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold normal-case tracking-normal transition-all ${
                         locked
                             ? 'cursor-not-allowed border border-brand-border-opacity-10 bg-brand-bg-opacity-5 text-brand-muted'
                             : 'bg-purple-500 text-brand-void active:scale-[0.98]'

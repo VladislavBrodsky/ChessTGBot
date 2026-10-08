@@ -37,8 +37,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
         const w = window as any;
 
-        // Login page itself is always public
-        if (pathname?.includes('/login')) {
+        // Login and shareable referral QR pages are public entry points.
+        if (/\/(login|qr)(?:\/|$)/.test(pathname || '')) {
             setAuthState('authed');
             if (w.Telegram?.WebApp?.initData) {
                 w.Telegram.WebApp.ready();
@@ -125,7 +125,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                     />
                 </div>
                 <p
-                    className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse"
+                    className="text-caption font-semibold normal-case tracking-normal animate-pulse"
                     style={{ color: 'var(--color-primary, #ffffff)', opacity: 0.6 }}
                 >
                     Verifying Auth…

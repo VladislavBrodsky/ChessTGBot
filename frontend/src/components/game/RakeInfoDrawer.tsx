@@ -19,14 +19,14 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
       title={tg('platform_commission')}
       description={tg('sustain_ecosystem')}
     >
-      <div className="w-full bg-brand-elevated rounded-2xl p-5 border border-brand-border space-y-3 text-xs font-medium text-brand-muted leading-relaxed">
+      <div className="w-full bg-brand-elevated rounded-2xl p-5 border border-brand-border space-y-3 text-sm font-medium text-brand-muted leading-relaxed">
         <p>{tg('rake_desc1')}</p>
         <p>{tg('rake_desc2')}</p>
         <div className="h-px w-full bg-brand-border my-2" />
-        <p className="text-[10px] font-bold text-brand-primary uppercase tracking-wider">
+        <p className="text-caption font-bold text-brand-primary normal-case tracking-normal">
           {tg('where_rake_goes')}
         </p>
-        <ul className="list-disc pl-4 space-y-1.5 text-xs text-brand-muted">
+        <ul className="list-disc pl-4 space-y-1.5 text-sm text-brand-muted">
           <li>{tg('rake_li1')}</li>
           <li>{tg('rake_li2')}</li>
           <li>{tg('rake_li3')}</li>
@@ -37,7 +37,7 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
         variant="primary"
         size="lg"
         onClick={onClose}
-        className="w-full uppercase font-black tracking-wider"
+        className="w-full normal-case font-semibold tracking-normal"
       >
         {tg('got_it')}
       </Button>

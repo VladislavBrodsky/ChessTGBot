@@ -143,7 +143,7 @@ export default function DailyCheckinModal() {
               onClick={closeModal}
               disabled={claiming}
               aria-label="Close"
-              className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-brand-surface/60 text-brand-muted hover:text-brand-primary hover:bg-brand-elevated border border-brand-border/40 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              className="ui-tap-target absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-brand-surface/60 text-brand-muted hover:text-brand-primary hover:bg-brand-elevated border border-brand-border/40 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               <FaTimes className="text-sm" />
             </button>
@@ -158,7 +158,7 @@ export default function DailyCheckinModal() {
               <h2 id="daily-reward-title" className="mb-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-primary">
                 Daily Reward
               </h2>
-              <p id="daily-reward-subtitle" className="mb-6 max-w-[260px] text-xs font-bold uppercase tracking-[0.14em] text-brand-muted">
+              <p id="daily-reward-subtitle" className="mb-6 max-w-[260px] text-sm font-bold normal-case tracking-normal text-brand-muted">
                 Return every day to unlock massive rewards!
               </p>
 
@@ -186,12 +186,12 @@ export default function DailyCheckinModal() {
               </div>
 
               {/* Main Action Button */}
-              <motion.button
+              <motion.button type="button"
                 whileHover={{ scale: claiming ? 1 : 1.02 }}
                 whileTap={{ scale: claiming ? 1 : 0.98 }}
                 onClick={status.can_claim_today ? handleClaim : closeModal}
                 disabled={claiming}
-                className={`relative min-h-[48px] w-full overflow-hidden rounded-2xl py-3.5 text-sm font-black uppercase tracking-[0.15em] transition-all cursor-pointer ${
+                className={`ui-tap-target relative min-h-[48px] w-full overflow-hidden rounded-2xl py-3.5 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer ${
                   status.can_claim_today && !claiming
                     ? "bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 text-emerald-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)]"
                     : "bg-brand-elevated border border-brand-border text-brand-primary hover:bg-brand-surface shadow-md"
@@ -218,7 +218,7 @@ export default function DailyCheckinModal() {
                 <button 
                   type="button"
                   onClick={closeModal}
-                  className="mt-3 min-h-[44px] px-4 text-xs font-bold uppercase tracking-widest text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                  className="ui-tap-target mt-3 min-h-[44px] px-4 text-sm font-bold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
                   Skip for now
                 </button>
@@ -249,7 +249,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         <div className="absolute inset-0 bg-emerald-500/10 blur-md rounded-2xl z-0 pointer-events-none" />
       )}
       
-      <span className={`relative z-10 text-[9px] font-black uppercase tracking-widest mb-1 ${
+      <span className={`relative z-10 text-caption font-semibold normal-case tracking-normal mb-1 ${
         isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted/70' : 'text-brand-muted'
       }`}>
         Day {day}
@@ -260,8 +260,8 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
           <FaCheckCircle className="text-emerald-500 text-lg drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
         ) : isFuture && !isBig ? (
           <div className="flex flex-col items-center gap-0.5">
-            <FaLock className="text-brand-muted/40 text-xs" />
-            <span className="text-[9px] font-bold text-brand-muted/60">{reward} XP</span>
+            <FaLock className="text-brand-muted text-sm" />
+            <span className="text-caption font-bold text-brand-muted/60">{reward} XP</span>
           </div>
         ) : isBig ? (
           <div className="flex flex-col items-center">
@@ -271,17 +271,17 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
                 : 'text-purple-400/80'
             }`} />
             {!isCurrent && (
-              <span className="text-[9px] font-black text-purple-300/90">{reward} XP</span>
+              <span className="text-caption font-semibold text-purple-300/90">{reward} XP</span>
             )}
           </div>
         ) : (
           <div className={`flex flex-col items-center ${isCurrent ? 'text-emerald-400' : 'text-brand-primary'}`}>
-            <span className={`font-black tracking-tight ${
+            <span className={`font-semibold tracking-tight ${
               isCurrent ? 'text-lg text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'text-base opacity-90'
             }`}>
               {reward}
             </span>
-            <span className={`text-[8px] font-bold ${isCurrent ? 'text-emerald-400/90' : 'text-brand-muted'}`}>
+            <span className={`text-caption font-bold ${isCurrent ? 'text-emerald-400/90' : 'text-brand-muted'}`}>
               XP
             </span>
           </div>

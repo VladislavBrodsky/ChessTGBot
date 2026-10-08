@@ -27,7 +27,7 @@ export default function WagerSelector({
   return (
     <section className="px-4 pt-4 pb-3 border-b border-brand-border-opacity-10" aria-labelledby="wager-selector-title">
       <div className="flex justify-center items-center mb-3">
-        <span id="wager-selector-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.18em] flex items-center gap-1.5">
+        <span id="wager-selector-title" className="text-caption font-semibold normal-case text-brand-muted tracking-normal flex items-center gap-1.5">
           <FaCoins className="text-emerald-500" size={9} />
           {tg('select_wager')}
         </span>
@@ -51,7 +51,7 @@ export default function WagerSelector({
           ].map((opt) => {
             const isSelected = !isCustomWager && selectedWager === opt.val;
             return (
-              <button
+              <button type="button"
                 key={opt.val}
                 data-active={isSelected ? "true" : "false"}
                 aria-pressed={isSelected}
@@ -67,13 +67,13 @@ export default function WagerSelector({
                     });
                   }
                 }}
-                className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                className={`ui-tap-target w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-caption font-semibold tracking-normal transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   isSelected
                     ? 'arena-option--wager-selected font-extrabold'
                     : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
                 }`}
               >
-                {opt.val === 100000 && <FaCrown className="text-[10px] text-emerald-500 mr-1" />}
+                {opt.val === 100000 && <FaCrown className="text-caption text-emerald-500 mr-1" />}
                 <span>{opt.label}</span>
                 {isSelected && (
                   <span className="absolute bottom-1.5 w-4 h-px rounded-full bg-emerald-500" />
@@ -81,7 +81,7 @@ export default function WagerSelector({
               </button>
             );
           })}
-          <button
+          <button type="button"
             data-active={isCustomWager ? "true" : "false"}
             aria-label={tg('enter_amount')}
             aria-pressed={isCustomWager}
@@ -96,7 +96,7 @@ export default function WagerSelector({
                 });
               }
             }}
-            className={`w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-[11px] font-black tracking-wide transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+            className={`ui-tap-target w-[84px] min-h-[48px] px-2 rounded-xl shrink-0 flex items-center justify-center border text-caption font-semibold tracking-normal transition-all duration-200 cursor-pointer snap-center relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               isCustomWager
                 ? 'arena-option--wager-selected font-extrabold'
                 : 'bg-brand-void/50 border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary hover:border-brand-border-opacity-20'
@@ -118,7 +118,7 @@ export default function WagerSelector({
             step="1"
             value={customWagerInput}
             onChange={(e) => setCustomWagerInput(e.target.value)}
-            className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-[16px] font-black focus:outline-none shadow-inner tracking-wider"
+            className="w-full text-center px-3 py-2 rounded-xl border border-brand-border-opacity-20 bg-brand-void text-brand-primary text-[16px] font-semibold focus:outline-none shadow-inner tracking-normal"
             placeholder={tg('enter_amount')}
           />
         </motion.div>

@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "खिलाड़ी",
+    "ai_engine": "एआई प्रतिद्वंद्वी",
     "title": "शतरंज ऐप",
     "welcome": "स्वागत है, {name}",
     "welcome_greeting": "स्वागत है,",
@@ -63,12 +65,15 @@
     "nav_learn": "सीखें",
     "nav_quests": "अन्वेषण",
     "nav_settings": "सेटिंग्स",
+    "nav_wallet": "वॉलेट",
     "nav_profile": "प्रोफ़ाइल",
     "nav_logout": "लॉग आउट",
     "nav_marketplace": "मार्केटप्लेस",
     "draws": "ड्रा"
   },
   "Marketplace": {
+    "cost": "लागत",
+    "confirm": "पुष्टि करें",
     "title": "मार्केटप्लेस",
     "subtitle": "प्रीमियम इनाम और थीम अनलॉक करने के लिए XP बदलें",
     "back": "वापस",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "साल भर प्रीमियम एक्सेस। मासिक की तुलना में 30% छूट के साथ सभी लाभ अधिकतम।"
   },
   "Settings": {
+    "gameplay_visuals": "खेल और रूप-रंग",
+    "notifications_wallet": "सूचनाएँ और वॉलेट",
+    "support_security": "सहायता और सुरक्षा",
+    "command_center": "नियंत्रण केंद्र",
+    "admin": "व्यवस्थापक",
+    "manage_admin": "खिलाड़ियों, भुगतान और घोषणाओं को प्रबंधित करें",
     "return": "वापस",
     "config_core": "कॉन्फ़िग कोर • V1.5",
     "title": "प्राथमिकताएं",
@@ -154,6 +165,7 @@
     "select": "भाषा चुनें"
   },
   "Gamification": {
+    "claim_xp_btn": "XP प्राप्त करें",
     "daily_missions": "दैनिक कार्य",
     "claim": "दावा करें",
     "daily_win": "एक मैच जीतें",
@@ -229,6 +241,11 @@
     "level": "स्तर"
   },
   "Academy": {
+    "academy_progress": "अकादमी की प्रगति",
+    "master_the_game": "खेल को कदम-दर-कदम सीखें",
+    "completed": "पूरा हुआ",
+    "course_completion": "पाठ्यक्रम की प्रगति",
+    "achievements": "उपलब्धियाँ",
     "title": "अकादमी",
     "subtitle": "सामरिक प्रशिक्षण मॉड्यूल",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "लेवल 1 दोहराएँ"
   },
   "Game": {
+    "ai_select_difficulty": "एआई का स्तर चुनें",
+    "ai_difficulty_help": "अभ्यास के लिए एक स्तर चुनें।",
+    "ai_easy": "आसान",
+    "ai_medium": "मध्यम",
+    "ai_hard": "कठिन",
+    "ai_start_training": "अभ्यास शुरू करें",
+    "ai_create_failed": "एआई के साथ खेल शुरू नहीं हो सका। फिर कोशिश करें।",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "प्रतिद्वंद्वी की खोज",
     "searching_close_hint": "आप ऐप बंद कर सकते हैं — प्रतिद्वंद्वी मिलते ही हम आपको Telegram पर सूचित करेंगे।",
@@ -371,6 +395,7 @@
     "move_history": "चालों का इतिहास",
     "game_crashed": "खेल कनेक्शन खो गया",
     "game_crashed_desc": "खेल सर्वर से कनेक्शन बाधित हो गया था। आप खेल को फिर से लोड करने का प्रयास कर सकते हैं।",
+    "analysis_unavailable": "इंजन विश्लेषण उपलब्ध नहीं है। फिर प्रयास करें।",
     "reload_game_btn": "खेल रीलोड करें",
     "reject": "अस्वीकार करें",
     "back": "वापस",
@@ -415,12 +440,13 @@
     "xp_reward": "XP इनाम"
   },
   "Wallet": {
+    "balance_trend": "शेष राशि का इतिहास (USDT)",
     "title": "Web3 वॉलेट",
     "connected_status": "TON वॉलेट कनेक्टेड",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "वॉलेट प्रबंधित करें",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "डिलीवरी वॉलेट (आपका पता)",
     "card_await_funds_notice": "खरीद के बाद USDT आपके वॉलेट में आएगा (कुछ मिनट)। फिर बैलेंस टॉप-अप करने के लिए क्रिप्टो टैब पर जाएँ।",
     "balance_unavailable": "बैलेंस उपलब्ध नहीं — पुनः प्रयास के लिए टैप करें",
+    "account_unavailable": "आपका खाता सत्यापित नहीं हो सका। धन भेजने से पहले फिर प्रयास करें।",
     "link_wallet_hint": "अपना TON वॉलेट लिंक करें",
     "tx_game_against_ai": "AI के विरुद्ध खेल",
     "tx_game_free_pvp": "अन्य खिलाड़ियों के विरुद्ध मुफ्त खेल",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "साझा करें",
+    "invite_title": "आपको खेलने के लिए आमंत्रित किया गया है",
+    "invite_description": "शतरंज खेलने के लिए QR कोड स्कैन करें या Telegram खोलें।",
+    "invite_qr_alt": "निमंत्रण का QR कोड",
+    "open_invite": "Telegram में निमंत्रण खोलें",
+    "invalid_invite": "यह निमंत्रण लिंक अमान्य है।",
     "dashboard_title": "रेफरल कार्यक्रम",
     "total_label": "कुल",
     "total_sublabel": "रेफरल",

@@ -1,12 +1,12 @@
 'use client';
 
+import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { useTranslations, useLocale } from 'next-intl';
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { FaArrowUp, FaArrowDown, FaChevronLeft, FaWallet } from "react-icons/fa";
-import Link from "next/link";
+import { FaArrowUp, FaArrowDown, FaWallet } from "react-icons/fa";
 import DepositModal from "@/components/Wallet/DepositModal";
 import WithdrawModal from "@/components/Wallet/WithdrawModal";
 import WalletSelectorModal from "@/components/Wallet/WalletSelectorModal";
@@ -14,6 +14,7 @@ import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
 import { useUser } from "@/context/UserContext";
 import { useAudio } from "@/hooks/useAudio";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 interface Transaction {
@@ -32,7 +33,7 @@ export default function WalletPage() {
   const locale = useLocale();
 
   // Balance & wallet state
-  const { walletBalance: balance, walletAddress, syncBalance, balanceError } = useUser();
+  const { walletBalance: balance, walletAddress, syncBalance, balanceError, loadingBalance } = useUser();
   const { play: playAudio } = useAudio();
   const prevBalanceRef = useRef<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -41,15 +42,15 @@ export default function WalletPage() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if (loadingBalance || balanceError) return;
     if (prevBalanceRef.current !== null && balance > prevBalanceRef.current) {
       playAudio('topup');
     }
     prevBalanceRef.current = balance;
-  }, [balance, playAudio]);
+  }, [balance, balanceError, loadingBalance, playAudio]);
 
   // Modals
   const [activeModal, setActiveModal] = useState<'none' | 'deposit' | 'withdraw' | 'connect'>('none');
-  const [tgUser, setTgUser] = useState<any>(null);
 
   const fetchTransactions = useCallback(async () => {
     try {
@@ -58,6 +59,7 @@ export default function WalletPage() {
       const txRes = await apiFetch("/api/v1/wallet/transactions");
       if (txRes.ok) {
         const txData = await txRes.json();
+        if (!Array.isArray(txData)) throw new Error('Invalid transaction history');
         setTransactions(txData);
       } else {
         setTxError(true);
@@ -83,9 +85,6 @@ export default function WalletPage() {
     // independent and is the only wallet-specific request needed on mount.
     fetchTransactions();
     if (typeof window !== 'undefined') {
-      if (window.Telegram?.WebApp) {
-        setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
-      }
       const params = new URLSearchParams(window.location.search);
       const status = params.get('status');
       const sessionId = params.get('session_id');
@@ -96,91 +95,40 @@ export default function WalletPage() {
   }, [fetchTransactions]);
 
   return (
-    <LayoutWrapper className="w-full pt-[max(0.75rem,var(--app-safe-top))]">
-      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto pt-1 space-y-4">
+    <LayoutWrapper className="w-full ">
+      <main className="w-full app-page flex flex-col items-center mx-auto ">
       
         {/* Header Back Link */}
-        <header className="w-full flex items-center justify-between mb-1">
-          <Link href={`/${locale}/home`} className="html-back-button flex items-center text-brand-muted hover:opacity-100 transition-opacity text-xs font-bold uppercase tracking-wider space-x-1">
-            <FaChevronLeft className="text-xs" />
-            <span>{t('back')}</span>
-          </Link>
-          <h1 className="text-xs font-black text-brand-muted uppercase tracking-widest">{tw('title')}</h1>
-        </header>
+        <PageHeader title={tw('title')} backHref={`/${locale}/home`} backLabel={t('back')} />
 
         {/* HOLOGRAPHIC CYBER-CARD */}
         <section aria-labelledby="wallet-balance-heading" className="w-full">
           <h2 id="wallet-balance-heading" className="sr-only">Wallet Balance Card</h2>
-          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} onRetry={refreshWalletData} />
+          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} loading={loadingBalance} onRetry={refreshWalletData} />
         </section>
 
-        {/* QUICK ACTION TRIGGER BUTTONS */}
-        <div className="w-full grid grid-cols-3 gap-2.5">
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setActiveModal('connect'); }}
-            className="w-full"
-          >
-            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-primary/30 group">
-              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-primary-opacity-10)] text-brand-primary flex items-center justify-center transition-all group-hover:scale-110">
-                <FaWallet className="text-xs" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('link_ton')}</span>
-            </Card>
-          </motion.button>
-          
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setActiveModal('deposit'); }}
-            className="w-full"
-          >
-            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-success/30 group">
-              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-success-opacity-10)] text-brand-success flex items-center justify-center transition-all group-hover:scale-110">
-                <FaArrowDown className="text-xs" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('deposit')}</span>
-            </Card>
-          </motion.button>
-          
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setActiveModal('withdraw'); }}
-            className="w-full"
-          >
-            <Card variant="glass" className="p-3 sm:p-3.5 flex flex-col items-center justify-center space-y-1.5 border-brand-border-opacity-10 shadow-sm hover:border-brand-danger/30 group">
-              <div className="w-8 h-8 rounded-xl bg-[var(--color-brand-danger-opacity-10)] text-brand-danger flex items-center justify-center transition-all group-hover:scale-110">
-                <FaArrowUp className="text-xs" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted truncate max-w-full px-0.5">{tw('withdraw')}</span>
-            </Card>
-          </motion.button>
+        <div className="grid w-full grid-cols-2 gap-3">
+          <Button variant="action" size="lg" leftIcon={<FaArrowDown />} onClick={() => setActiveModal('deposit')}>{tw('deposit')}</Button>
+          <Button variant="secondary" size="lg" leftIcon={<FaArrowUp />}
+            disabled={loadingBalance}
+            onClick={() => { if (balanceError) { void refreshWalletData(); return; } setActiveModal('withdraw'); }}>
+            {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : tw('withdraw')}
+          </Button>
         </div>
-
-        {/* DEPOSIT/WITHDRAW COMMISSION BANNER */}
-        <div className="w-full">
-          <Card variant="glass" className="w-full p-2.5 sm:p-3 border-brand-border-opacity-10 shadow-sm flex items-center justify-between text-[10px] font-bold text-brand-muted uppercase tracking-widest relative overflow-hidden">
-            <div className="absolute inset-0 bg-brand-surface opacity-50 pointer-events-none" />
-            <span className="flex items-center gap-1.5 relative z-10">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-success shadow-neon" />
-              {tw('deposit_fee')} <strong className="text-brand-success font-black">5%</strong>
-            </span>
-            <span className="opacity-30 relative z-10">•</span>
-            <span className="flex items-center gap-1.5 relative z-10">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-neon" />
-              {tw('withdraw_fee')} <strong className="text-brand-primary font-black">$0.20</strong>
-            </span>
-          </Card>
-        </div>
+        <Card variant="solid" className="w-full p-4 sm:p-5 space-y-4">
+          <Button variant="secondary" className="w-full" leftIcon={<FaWallet />} onClick={() => setActiveModal('connect')}>{tw('link_ton')}</Button>
+          <dl className="grid grid-cols-2 gap-4 text-caption">
+            <div><dt className="text-brand-muted">{tw('deposit_fee')}</dt><dd className="mt-1 text-sm font-semibold text-brand-primary">5%</dd></div>
+            <div><dt className="text-brand-muted">{tw('withdraw_fee')}</dt><dd className="mt-1 text-sm font-semibold text-brand-primary">$0.20</dd></div>
+          </dl>
+        </Card>
 
         {/* TRANSACTION LEDGER */}
         <div className="w-full">
           <TransactionLedger 
             loading={loading}
             transactions={transactions}
-            balance={balance}
+            balance={loadingBalance || balanceError ? undefined : balance}
             error={txError}
             onRetry={refreshWalletData}
           />
@@ -192,7 +140,6 @@ export default function WalletPage() {
               onClose={() => setActiveModal('none')}
               onSuccess={refreshWalletData}
               walletAddress={walletAddress}
-              tgUser={tgUser}
               tw={tw}
             />
           )}

@@ -328,55 +328,55 @@ function ChessBoardComponent({
             {promotionMove && (
                 <div className="absolute inset-0 bg-brand-void/80 backdrop-blur-md z-30 flex items-center justify-center rounded-2xl p-6" style={{ touchAction: 'none' }}>
                     <div className="glass-panel p-6 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface max-w-[280px] w-full text-center space-y-5 shadow-premium">
-                        <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+                        <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
                             Pawn Promotion
                         </span>
                         
                         <div className="grid grid-cols-2 gap-3">
-                            <motion.button
+                            <motion.button type="button"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleSelectPromotion("q")}
-                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                                className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♛</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Queen</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Queen</span>
                             </motion.button>
                             
-                            <motion.button
+                            <motion.button type="button"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleSelectPromotion("n")}
-                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                                className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♞</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Knight</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Knight</span>
                             </motion.button>
                             
-                            <motion.button
+                            <motion.button type="button"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleSelectPromotion("r")}
-                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                                className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♜</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Rook</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Rook</span>
                             </motion.button>
                             
-                            <motion.button
+                            <motion.button type="button"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleSelectPromotion("b")}
-                                className="py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
+                                className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♝</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Bishop</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Bishop</span>
                             </motion.button>
                         </div>
                         
-                        <button
+                        <button type="button"
                             onClick={() => { setPromotionMove(null); telegramHaptic('light'); }}
-                            className="w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-brand-rose-opacity-20"
+                            className="ui-tap-target w-full py-2.5 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 text-rose-400 text-caption font-semibold normal-case tracking-normal cursor-pointer hover:bg-brand-rose-opacity-20"
                         >
                             Cancel
                         </button>

@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "لاعب",
+    "ai_engine": "خصم آلي",
     "title": "تطبيق الشطرنج",
     "welcome": "أهلاً بك، {name}",
     "welcome_greeting": "أهلاً بك،",
@@ -63,12 +65,15 @@
     "nav_learn": "التعلم",
     "nav_quests": "المهام",
     "nav_settings": "الإعدادات",
+    "nav_wallet": "المحفظة",
     "nav_profile": "الملف الشخصي",
     "nav_logout": "تسجيل الخروج",
     "nav_marketplace": "المتجر",
     "draws": "تعادل"
   },
   "Marketplace": {
+    "cost": "التكلفة",
+    "confirm": "تأكيد",
     "title": "المتجر",
     "subtitle": "استبدل نقاط XP لفتح مكافآت وسمات مميزة",
     "back": "رجوع",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "وصول مميز لعام كامل. أقصى استفادة مع خصم 30% مقارنة بالشهري."
   },
   "Settings": {
+    "gameplay_visuals": "اللعب والمظهر",
+    "notifications_wallet": "الإشعارات والمحفظة",
+    "support_security": "الدعم والأمان",
+    "command_center": "مركز التحكم",
+    "admin": "المشرف",
+    "manage_admin": "إدارة اللاعبين والمدفوعات والإعلانات",
     "return": "عودة",
     "config_core": "تكوين النواة • V1.5",
     "title": "الإعدادات",
@@ -154,6 +165,7 @@
     "select": "اختر اللغة"
   },
   "Gamification": {
+    "claim_xp_btn": "استلام XP",
     "daily_missions": "مهام يومية",
     "claim": "مطالبة",
     "daily_win": "الفوز بمباراة",
@@ -229,6 +241,11 @@
     "level": "مستوى"
   },
   "Academy": {
+    "academy_progress": "التقدم في الأكاديمية",
+    "master_the_game": "أتقن اللعبة خطوة بخطوة",
+    "completed": "مكتمل",
+    "course_completion": "تقدم الدورة",
+    "achievements": "الإنجازات",
     "title": "الأكاديمية",
     "subtitle": "ألغاز ودروس الشطرنج",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "مراجعة المستوى 1"
   },
   "Game": {
+    "ai_select_difficulty": "اختر مستوى الذكاء الاصطناعي",
+    "ai_difficulty_help": "اختر مستوى لمباراة تدريبية.",
+    "ai_easy": "سهل",
+    "ai_medium": "متوسط",
+    "ai_hard": "صعب",
+    "ai_start_training": "بدء التدريب",
+    "ai_create_failed": "تعذر بدء مباراة ضد الذكاء الاصطناعي. حاول مرة أخرى.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "البحث عن منافس",
     "searching_close_hint": "يمكنك إغلاق التطبيق — سنرسل لك رسالة على تيليجرام عند العثور على خصم.",
@@ -371,6 +395,7 @@
     "move_history": "سجل الحركات",
     "game_crashed": "فقد الاتصال باللعبة",
     "game_crashed_desc": "انقطع الاتصال بخادم اللعبة. يمكنك محاولة إعادة تحميل اللعبة.",
+    "analysis_unavailable": "تحليل المحرك غير متاح. أعد المحاولة.",
     "reload_game_btn": "إعادة تحميل اللعبة",
     "reject": "رفض",
     "back": "رجوع",
@@ -415,12 +440,13 @@
     "xp_reward": "مكافأة XP"
   },
   "Wallet": {
+    "balance_trend": "سجل الرصيد (USDT)",
     "title": "محفظة Web3",
     "connected_status": "محفظة TON متصلة",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "إدارة المحفظة",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "محفظة الاستلام (عنوانك)",
     "card_await_funds_notice": "بعد الشراء يصل USDT إلى محفظتك (قد يستغرق بضع دقائق). ثم انتقل إلى تبويب الكريبتو لشحن رصيدك.",
     "balance_unavailable": "الرصيد غير متاح — انقر لإعادة المحاولة",
+    "account_unavailable": "تعذر التحقق من حسابك. أعد المحاولة قبل تحويل الأموال.",
     "link_wallet_hint": "اربط محفظة TON الخاصة بك",
     "tx_game_against_ai": "لعبة ضد الذكاء الاصطناعي",
     "tx_game_free_pvp": "لعبة مجانية ضد لاعبين آخرين",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "مشاركة",
+    "invite_title": "أنت مدعو للعب",
+    "invite_description": "امسح الرمز أو افتح تيليجرام للعب الشطرنج.",
+    "invite_qr_alt": "رمز QR للدعوة",
+    "open_invite": "افتح الدعوة في تيليجرام",
+    "invalid_invite": "رابط الدعوة غير صالح.",
     "dashboard_title": "برنامج الإحالة",
     "total_label": "الإجمالي",
     "total_sublabel": "الإحالات",

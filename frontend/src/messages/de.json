@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Spieler",
+    "ai_engine": "KI-Gegner",
     "title": "Schach App",
     "welcome": "Willkommen, {name}",
     "welcome_greeting": "Willkommen,",
@@ -63,12 +65,15 @@
     "nav_learn": "Lernen",
     "nav_quests": "Quests",
     "nav_settings": "Einstellungen",
+    "nav_wallet": "Wallet",
     "nav_profile": "Profil",
     "nav_logout": "Abmelden",
     "nav_marketplace": "Marktplatz",
     "draws": "Remis"
   },
   "Marketplace": {
+    "cost": "Kosten",
+    "confirm": "Bestätigen",
     "title": "Marktplatz",
     "subtitle": "Tausche XP gegen Premium-Belohnungen & Designs",
     "back": "Zurück",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Ganzjähriger Premium-Zugang. Maximaler Nutzen mit 30% Rabatt gegenüber dem Monatsabo."
   },
   "Settings": {
+    "gameplay_visuals": "Spiel und Darstellung",
+    "notifications_wallet": "Benachrichtigungen und Wallet",
+    "support_security": "Hilfe und Sicherheit",
+    "command_center": "Kontrollzentrum",
+    "admin": "Admin",
+    "manage_admin": "Nutzer, Auszahlungen und Mitteilungen verwalten",
     "return": "Zurück",
     "config_core": "KONFIG KERN • V1.5",
     "title": "Einstellungen",
@@ -154,6 +165,7 @@
     "select": "Sprache Wählen"
   },
   "Gamification": {
+    "claim_xp_btn": "XP abholen",
     "daily_missions": "Tägliche Aufgaben",
     "claim": "Einfordern",
     "daily_win": "Gewinne ein Spiel",
@@ -229,6 +241,11 @@
     "level": "Level"
   },
   "Academy": {
+    "academy_progress": "Akademiefortschritt",
+    "master_the_game": "Meistere das Spiel Schritt für Schritt",
+    "completed": "Abgeschlossen",
+    "course_completion": "Kursfortschritt",
+    "achievements": "Erfolge",
     "title": "Akademie",
     "subtitle": "Schachrätsel & Lektionen",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "Level 1 wiederholen"
   },
   "Game": {
+    "ai_select_difficulty": "KI-Schwierigkeitsgrad wählen",
+    "ai_difficulty_help": "Wähle eine Stufe für dein Übungsspiel.",
+    "ai_easy": "Leicht",
+    "ai_medium": "Mittel",
+    "ai_hard": "Schwer",
+    "ai_start_training": "Übungsspiel starten",
+    "ai_create_failed": "Das KI-Spiel konnte nicht gestartet werden. Bitte erneut versuchen.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Gegnersuche",
     "searching_close_hint": "Du kannst die App schließen — wir benachrichtigen dich per Telegram, sobald ein Gegner gefunden ist.",
@@ -371,6 +395,7 @@
     "move_history": "Spielverlauf",
     "game_crashed": "Spielverbindung verloren",
     "game_crashed_desc": "Die Verbindung zum Spielserver wurde unterbrochen. Sie können versuchen, das Spiel neu zu laden.",
+    "analysis_unavailable": "Die Engine-Analyse ist nicht verfügbar. Versuche es erneut.",
     "reload_game_btn": "Spiel neu laden",
     "reject": "Ablehnen",
     "back": "Zurück",
@@ -415,12 +440,13 @@
     "xp_reward": "XP-Belohnung"
   },
   "Wallet": {
+    "balance_trend": "Kontostandverlauf (USDT)",
     "title": "Web3 Wallet",
     "connected_status": "TON Wallet verbunden",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "Wallet verwalten",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "Empfänger-Wallet (deine Adresse)",
     "card_await_funds_notice": "Nach dem Kauf trifft USDT in deiner Wallet ein (einige Minuten). Wechsle dann zum Krypto-Tab, um dein Guthaben aufzuladen.",
     "balance_unavailable": "Guthaben nicht verfügbar – tippen zum Wiederholen",
+    "account_unavailable": "Dein Konto konnte nicht bestätigt werden. Versuche es vor einer Überweisung erneut.",
     "link_wallet_hint": "TON-Wallet verknüpfen",
     "tx_game_against_ai": "Spiel gegen KI",
     "tx_game_free_pvp": "Kostenloses Spiel gegen andere Spieler",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Teilen",
+    "invite_title": "Du bist zum Spielen eingeladen",
+    "invite_description": "Scanne den Code oder öffne Telegram, um Schach zu spielen.",
+    "invite_qr_alt": "QR-Code der Einladung",
+    "open_invite": "Einladung in Telegram öffnen",
+    "invalid_invite": "Dieser Einladungslink ist ungültig.",
     "dashboard_title": "Empfehlungsprogramm",
     "total_label": "Gesamt",
     "total_sublabel": "Empfehlungen",

@@ -75,7 +75,6 @@ jest.mock('@/lib/api', () => ({
 }));
 
 jest.mock('@/components/Leaderboard', () => () => <div data-testid="leaderboard">Leaderboard Mock</div>);
-jest.mock('@/components/NewsSection', () => () => <div data-testid="news-section">NewsSection Mock</div>);
 jest.mock('@/components/XPProgressBar', () => () => <div data-testid="xp-progress-bar">XPProgressBar Mock</div>);
 jest.mock('@/components/LayoutWrapper', () => ({ children }: any) => <div>{children}</div>);
 // Mocked because it fetches its claim status on mount, which otherwise
@@ -100,7 +99,7 @@ describe('Home', () => {
         // Check for quick links
         expect(screen.getByText(/Play Chess/i)).toBeInTheDocument()
         expect(screen.getByText(/Academy/i)).toBeInTheDocument()
-        expect(screen.getByText(/Daily Tasks/i)).toBeInTheDocument()
+        expect(screen.getAllByText(/Daily Tasks/i).length).toBeGreaterThan(0)
     })
 
     // Stats row contents were deliberately reverted to win rate + streak in

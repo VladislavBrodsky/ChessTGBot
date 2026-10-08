@@ -91,7 +91,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       <LayoutWrapper className="w-full">
         <div className="flex h-[calc(100vh-var(--app-safe-top)-var(--app-safe-bottom))] items-center justify-center flex-col gap-4">
           <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-brand-muted">
+          <p className="text-caption font-semibold normal-case tracking-normal animate-pulse text-brand-muted">
             INITIALIZING LESSON...
           </p>
         </div>
@@ -102,11 +102,11 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   if (!lessonData) {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4 px-6 text-center">
-        <h2 className="text-xl font-black text-brand-primary uppercase tracking-widest">Signal Lost</h2>
-        <p className="text-xs font-bold text-brand-muted uppercase tracking-widest mb-4">Lesson coordinates not found.</p>
-        <button 
+        <h2 className="text-xl font-semibold text-brand-primary normal-case tracking-normal">Signal Lost</h2>
+        <p className="text-sm font-bold text-brand-muted normal-case tracking-normal mb-4">Lesson coordinates not found.</p>
+        <button type="button"
           onClick={() => router.push(`/${locale}/academy`)} 
-          className="px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-xs font-black uppercase tracking-widest text-brand-primary"
+          className="ui-tap-target px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-sm font-semibold normal-case tracking-normal text-brand-primary"
         >
           Return to Academy
         </button>
@@ -117,7 +117,7 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   if (completed) {
    return (
    <LayoutWrapper className="relative w-full">
-   <div className="w-full h-full min-h-[70vh] flex flex-col items-center justify-center text-center px-4 max-w-sm md:max-w-xl lg:max-w-3xl mx-auto z-10">
+   <div className="w-full h-full min-h-[70vh] flex flex-col items-center justify-center text-center app-page mx-auto z-10">
   <motion.div
   initial={{ scale: 0.9, opacity: 0, y: 20 }}
   animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -131,27 +131,27 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
       <FaCheck className="text-4xl text-white drop-shadow-md" />
     </div>
 
-    <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 mb-2 uppercase tracking-tight">LESSON COMPLETE!</h1>
-    <p className="text-[11px] font-black text-emerald-400/80 mb-8 uppercase tracking-[0.2em]">You have mastered {lessonData.title}</p>
+    <h1 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 mb-2 normal-case tracking-tight">LESSON COMPLETE!</h1>
+    <p className="text-caption font-semibold text-emerald-400/80 mb-8 normal-case tracking-normal">You have mastered {lessonData.title}</p>
   
       <div className="flex justify-center mb-10">
         <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden">
           <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
           <div className="absolute top-0 left-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full -ml-16 -mt-16 pointer-events-none" />
           
-          <span className="text-emerald-500 font-black text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.3)] relative z-10">+{earnedXP}</span>
-          <span className="text-[10px] text-emerald-500/80 font-black uppercase tracking-[0.3em] mt-2 relative z-10">Chess XP</span>
+          <span className="text-emerald-500 font-semibold text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.3)] relative z-10">+{earnedXP}</span>
+          <span className="text-caption text-emerald-500/80 font-semibold normal-case tracking-normal mt-2 relative z-10">Chess XP</span>
         </div>
       </div>
   
     <div className="flex flex-col md:flex-row gap-4 justify-center w-full">
       <Link href={`/${locale}/academy`} className="flex-1 w-full">
-        <button className="w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-black uppercase tracking-widest rounded-2xl cursor-pointer transition-all text-xs">
+        <button type="button" className="ui-tap-target w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-semibold normal-case tracking-normal rounded-2xl cursor-pointer transition-all text-sm">
           Back
         </button>
       </Link>
       <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full">
-        <button className="w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-black uppercase tracking-widest rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-xs flex items-center justify-center gap-3">
+        <button type="button" className="ui-tap-target w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-semibold normal-case tracking-normal rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-sm flex items-center justify-center gap-3">
           <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
         </button>
       </a>
@@ -165,22 +165,22 @@ export default function LessonClient({ lessonId }: LessonClientProps) {
   }
 
   return (
-    <LayoutWrapper className="w-full pt-[max(1rem,var(--app-safe-top))] pb-[max(1rem,var(--app-safe-bottom))]">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 h-full flex flex-col">
+    <LayoutWrapper className="w-full pb-[max(1rem,var(--app-safe-bottom))]">
+      <div className="w-full app-page mx-auto h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4 pt-2">
-          <Link 
+          <Link aria-label="Back"
             href={`/${locale}/academy`} 
             className="html-back-button p-2.5 glass-panel rounded-xl text-brand-muted hover:text-brand-primary hover:bg-brand-surface/80 transition-all cursor-pointer border border-brand-border-opacity-10 shrink-0"
           >
             <FaArrowLeft size={14} />
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="text-base md:text-lg font-black tracking-tight text-brand-primary uppercase truncate leading-snug">
+            <h1 className="text-base md:text-lg font-semibold tracking-tight text-brand-primary normal-case truncate leading-snug">
               {lessonData.title}
             </h1>
             {lessonData.track && (
-              <p className="text-[9px] text-emerald-400 font-bold uppercase tracking-[0.2em] truncate">
+              <p className="text-caption text-emerald-400 font-bold normal-case tracking-normal truncate">
                 {lessonData.track}
               </p>
             )}

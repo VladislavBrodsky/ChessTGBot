@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
+import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import WalletConnect from '@/components/WalletConnect';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
@@ -17,6 +18,8 @@ import WagerSelector from './WagerSelector';
 import TimeControlSelector from './TimeControlSelector';
 import ArenaBanner from './ArenaBanner';
 import RakeInfoDrawer from './RakeInfoDrawer';
+import AiDifficultyDrawer from './AiDifficultyDrawer';
+import { Button } from '@/components/ui/Button';
 
 const DepositModal = dynamic(() => import('../Wallet/DepositModal'), {
   ssr: false,
@@ -33,7 +36,7 @@ export default function PlayLobby() {
   const pathname = usePathname();
 
   const [tgUser, setTgUser] = useState<any>(null);
-  const { stats, walletBalance, syncBalance, balanceError } = useUser();
+  const { stats, walletBalance, syncBalance, balanceError, loadingBalance } = useUser();
   const { play: playAudio } = useAudio();
 
   // Matchmaking configs
@@ -48,6 +51,7 @@ export default function PlayLobby() {
   const [notifyRequestPending, setNotifyRequestPending] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
+  const [showAiDifficulty, setShowAiDifficulty] = useState(false);
 
   // Time control
   const [timeControl, setTimeControl] = useState<number>(600); // 10 minutes default
@@ -124,48 +128,6 @@ export default function PlayLobby() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Visual Header Stats states (Players Online & Active Users)
-  const [playersOnline, setPlayersOnline] = useState<number>(782);
-  const [activeUsers, setActiveUsers] = useState<number>(3768);
-  const [contendersCount, setContendersCount] = useState<number>(5);
-
-  useEffect(() => {
-    const calcPlayersOnline = () => {
-      const now = Date.now();
-      const fiveMinutesMs = 5 * 60 * 1000;
-      const intervalIndex = Math.floor(now / fiveMinutesMs);
-      const seed = intervalIndex * 98765;
-      const rand = (seed % 101) / 100;
-      return Math.floor(rand * (845 - 761 + 1)) + 761;
-    };
-
-    const calcActiveUsers = () => {
-      const startEpoch = new Date("2026-06-01T00:00:00Z").getTime();
-      const now = Date.now();
-      const elapsedMs = Math.max(0, now - startEpoch);
-      const sixHoursMs = 6 * 60 * 60 * 1000;
-      const intervals = Math.floor(elapsedMs / sixHoursMs);
-
-      let totalIncrement = 0;
-      for (let i = 0; i < intervals; i++) {
-        const seed = (i + 7) * 12345;
-        const rand = (seed % 103) / 102;
-        const increment = Math.floor(rand * (315 - 213 + 1)) + 213;
-        totalIncrement += increment;
-      }
-      return 3768 + totalIncrement;
-    };
-
-    setPlayersOnline(calcPlayersOnline());
-    setActiveUsers(calcActiveUsers());
-
-    const interval = setInterval(() => {
-      setPlayersOnline(calcPlayersOnline());
-      setActiveUsers(calcActiveUsers());
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Refresh balance in background on mount
   useEffect(() => {
@@ -206,6 +168,11 @@ export default function PlayLobby() {
   const startMatchmaking = useCallback(() => {
     if (submittingRef.current) return;
     setMatchmakingError("");
+    if (balanceError || loadingBalance) {
+      setMatchmakingError(tw('balance_unavailable'));
+      if (balanceError) void syncBalance();
+      return;
+    }
     const socket = getSocket();
     const wagerInCents = isCustomWager
       ? Math.round(parseFloat(customWagerInput) * 100)
@@ -238,7 +205,7 @@ export default function PlayLobby() {
       bid_amount: wagerInCents,
       time_control: timeControl 
     });
-  }, [isCustomWager, customWagerInput, selectedWager, walletBalance, timeControl]);
+  }, [isCustomWager, customWagerInput, selectedWager, walletBalance, timeControl, balanceError, loadingBalance, syncBalance, tw]);
 
   // Active Webhook/Balance Polling to detect deposit and start matchmaking automatically
   useEffect(() => {
@@ -248,7 +215,7 @@ export default function PlayLobby() {
       ? Math.round(parseFloat(customWagerInput) * 100)
       : selectedWager;
 
-    if (walletBalance >= wagerInCents) {
+    if (!balanceError && !loadingBalance && walletBalance >= wagerInCents) {
       setShowDepositDrawer(false);
 
       const timer = setTimeout(() => {
@@ -262,7 +229,7 @@ export default function PlayLobby() {
     }, 4000);
 
     return () => clearInterval(pollInterval);
-  }, [walletBalance, showDepositDrawer, selectedWager, isCustomWager, customWagerInput, startMatchmaking, syncBalance]);
+  }, [walletBalance, balanceError, loadingBalance, showDepositDrawer, selectedWager, isCustomWager, customWagerInput, startMatchmaking, syncBalance]);
 
   // Matchmaking Timer
   useEffect(() => {
@@ -270,15 +237,9 @@ export default function PlayLobby() {
     if (matchmakingState === 'searching') {
       interval = setInterval(() => {
         setSearchTimer(prev => prev + 1);
-        setContendersCount(prev => {
-          const delta = Math.random() > 0.5 ? 1 : -1;
-          const next = prev + delta;
-          return next >= 4 && next <= 9 ? next : (next < 4 ? 4 : 9);
-        });
       }, 1000);
     } else {
       setSearchTimer(0);
-      setContendersCount(5);
     }
     return () => clearInterval(interval);
   }, [matchmakingState]);
@@ -414,6 +375,11 @@ export default function PlayLobby() {
 
   const handleLauncherClick = () => {
     if (isCreating || matchmakingState === 'searching' || submittingRef.current) return;
+    if (balanceError || loadingBalance) {
+      setMatchmakingError(tw('balance_unavailable'));
+      if (balanceError) void syncBalance();
+      return;
+    }
 
     const wagerInCents = isCustomWager
       ? Math.round(parseFloat(customWagerInput) * 100)
@@ -459,6 +425,11 @@ export default function PlayLobby() {
 
   const playVsFriend = async () => {
     if (isCreating || submittingRef.current) return;
+    if (balanceError || loadingBalance) {
+      setMatchmakingError(tw('balance_unavailable'));
+      if (balanceError) void syncBalance();
+      return;
+    }
 
     if (isNaN(chosenWager) || chosenWager < 100) {
       setMatchmakingError("Minimum wager is $1.00.");
@@ -504,31 +475,40 @@ export default function PlayLobby() {
   const chosenWager = isCustomWager 
     ? Math.round(parseFloat(customWagerInput) * 100) 
     : selectedWager;
+
+  const startAiGame = async (difficulty: string) => {
+    if (isCreating) return;
+    setIsCreating(true);
+    setMatchmakingError('');
+    try {
+      const res = await apiFetch(`/api/v1/game/create?type=computer&difficulty=${encodeURIComponent(difficulty)}&time_control=${timeControl}&wager=0`, { method: 'POST' });
+      if (!res.ok) throw new Error('AI game creation failed');
+      const data = await res.json();
+      if (!data?.game_id) throw new Error('Missing game ID');
+      telegramHaptic('success');
+      setShowAiDifficulty(false);
+      router.push(`/${locale}/game?id=${data.game_id}`);
+    } catch (error) {
+      console.error('Failed to create AI game', error);
+      setMatchmakingError(tg('ai_create_failed'));
+      telegramHaptic('error');
+    } finally {
+      setIsCreating(false);
+    }
+  };
   
-  const hasSufficient = walletBalance >= chosenWager;
+  const hasSufficient = !balanceError && !loadingBalance && walletBalance >= chosenWager;
 
   return (
-    <LayoutWrapper className="justify-start pt-2">
-      <div className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-4">
+    <LayoutWrapper className="justify-start ">
+      <div className="w-full app-page flex flex-col items-center mx-auto ">
         
-        {/* Visual Header */}
-        <header className="flex flex-col items-center w-full mt-2 space-y-2 text-center">
-          <div className="flex items-center gap-2.5 text-brand-primary text-[28px] font-black tracking-tight select-none">
-            <span className="w-9 h-9 rounded-xl bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-emerald-500 shadow-inner-glow">
-              <FaChessKnight className="text-lg" aria-hidden="true" />
-            </span>
-            <h1>{tg('battle_arena')}</h1>
-          </div>
+        <PageHeader title={t('play')} description={`${tg('select_wager')} · ${tg('time_control')}`} />
 
-          <div role="status" className="flex items-center gap-2.5 text-[10px] font-bold tracking-[0.18em] text-brand-muted uppercase select-none">
-            <div className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-              <span className="text-emerald-400">{playersOnline} {tg('online')}</span>
-            </div>
-            <span className="w-px h-3 bg-brand-border-opacity-20" aria-hidden="true" />
-            <span>{activeUsers.toLocaleString()} {tg('active_users')}</span>
-          </div>
-        </header>
+        <Button variant="secondary" size="lg" className="w-full justify-start" leftIcon={<FaRobot size={22} />}
+          onClick={() => setShowAiDifficulty(true)} disabled={isCreating}>
+          {tg('train_ai')}
+        </Button>
 
         {/* Wallet actions come before the event: funding is the prerequisite to playing. */}
         <AnimatePresence mode="wait">
@@ -553,12 +533,12 @@ export default function PlayLobby() {
                   <FaWallet size={11} aria-hidden="true" />
                 </span>
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-[9px] font-black uppercase leading-none tracking-[0.14em] text-brand-muted">
+                  <span className="truncate text-caption font-semibold normal-case leading-none tracking-normal text-brand-muted">
                     {tg('cyber_balance')}
                   </span>
-                  <span className={`mt-1 truncate text-sm font-black leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
+                  <span className={`mt-1 truncate text-sm font-semibold leading-none tabular-nums ${balanceError ? 'text-amber-500' : hasSufficient && chosenWager > 0 ? 'text-emerald-400' : 'text-brand-primary'}`}>
                     {/* Never present a failed balance fetch as "$0.00" */}
-                    {balanceError ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
+                    {balanceError || loadingBalance ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}
                   </span>
                 </span>
               </Link>
@@ -581,7 +561,7 @@ export default function PlayLobby() {
               className="w-full p-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-brand-surface to-emerald-950/10 flex flex-col items-center justify-center space-y-6 text-center shadow-[0_8px_48px_rgba(16,185,129,0.25)] relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-conic-radar opacity-10 pointer-events-none" />
-              <div className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.25em] animate-pulse">
+              <div className="text-caption font-semibold text-emerald-400 normal-case tracking-normal animate-pulse">
                 {tg('match_found')}
               </div>
               
@@ -598,10 +578,10 @@ export default function PlayLobby() {
                       onError={(e: any) => { e.target.src = "/icon.png"; }}
                     />
                   </div>
-                  <span className="text-[10px] font-black text-brand-primary truncate max-w-[80px]">
+                  <span className="text-caption font-semibold text-brand-primary truncate max-w-[80px]">
                     {tgUser?.first_name || tg('you_label')}
                   </span>
-                  <span className="text-[10px] font-bold text-brand-muted">
+                  <span className="text-caption font-bold text-brand-muted">
                     {stats?.elo || 1000} ELO
                   </span>
                 </div>
@@ -610,7 +590,7 @@ export default function PlayLobby() {
                 <div className="relative flex items-center justify-center w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping" />
                   <div className="w-10 h-10 rounded-full bg-brand-void border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    <span className="text-[11px] font-black text-emerald-400 tracking-tighter">{tg('vs')}</span>
+                    <span className="text-caption font-semibold text-emerald-400 tracking-tighter">{tg('vs')}</span>
                   </div>
                 </div>
 
@@ -625,24 +605,21 @@ export default function PlayLobby() {
                       onError={(e: any) => { e.target.src = "/icon.png"; }}
                     />
                   </div>
-                  <span className="text-[10px] font-black text-emerald-400 truncate max-w-[80px]">
+                  <span className="text-caption font-semibold text-emerald-400 truncate max-w-[80px]">
                     {tg('opponent')}
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-400/50">
-                    {stats?.elo ? Math.min(Math.max(stats.elo + (Math.random() > 0.5 ? 20 : -20), 800), 2200) : 1000} ELO
                   </span>
                 </div>
               </div>
 
               {/* Stake & loading */}
               <div className="w-full p-3 rounded-2xl bg-brand-void border border-brand-border-opacity-10 text-center">
-                <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block mb-0.5">{tg('stakes_locked')}</span>
-                <span className="text-xs font-black text-emerald-400">
+                <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block mb-0.5">{tg('stakes_locked')}</span>
+                <span className="text-sm font-semibold text-emerald-400">
                   ${((matchFoundData?.bid_amount || 0) / 100).toFixed(2)} USDT
                 </span>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-emerald-400/60 uppercase tracking-widest animate-pulse">
+              <div className="flex items-center justify-center gap-2 text-caption font-bold text-emerald-400/60 normal-case tracking-normal animate-pulse">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>{tg('entering_arena')}</span>
               </div>
@@ -659,10 +636,10 @@ export default function PlayLobby() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.18)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" />
               <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
               
-              {/* Active Contenders Badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-500 animate-pulse text-[10px] font-black uppercase tracking-widest relative z-10">
+              {/* Search status is real; participant counts are unavailable. */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-500 animate-pulse text-caption font-semibold normal-case tracking-normal relative z-10">
                 <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
-                <span>{tg('scanning_contenders', { count: contendersCount })}</span>
+                <span>{tg('searching_matchmaker')}</span>
               </div>
 
               {/* Conic sonar radar widget */}
@@ -678,12 +655,12 @@ export default function PlayLobby() {
               </div>
 
               <div className="flex flex-col space-y-1">
-                <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tg('searching_matchmaker')}</span>
-                <span className="text-xs font-black text-brand-primary tracking-wide uppercase">{tg('searching_opponent')}</span>
-                <span className="text-2xl font-black text-brand-muted tracking-tighter">
+                <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tg('searching_matchmaker')}</span>
+                <span className="text-sm font-semibold text-brand-primary tracking-normal normal-case">{tg('searching_opponent')}</span>
+                <span className="text-2xl font-semibold text-brand-muted tracking-tighter">
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
-                <span className="text-[10px] font-extrabold text-brand-muted uppercase tracking-[0.2em] mt-1">
+                <span className="text-caption font-extrabold text-brand-muted normal-case tracking-normal mt-1">
                   {tg('est_wait')}
                 </span>
               </div>
@@ -691,18 +668,18 @@ export default function PlayLobby() {
               {/* Win Up To Pill (Viral/FOMO) */}
               {chosenWager > 0 && (
                 <div className="px-6 py-2.5 rounded-full bg-[var(--color-emerald-opacity-10)] border border-emerald-500/35 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)] animate-pulse shrink-0">
-                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.15em] mb-1 flex items-center gap-1">
-                    <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')}
+                  <span className="text-caption font-semibold text-emerald-500 normal-case tracking-normal mb-1 flex items-center gap-1">
+                    <FaFire className="text-emerald-500 text-caption" /> {tg('win_up_to')}
                   </span>
-                  <span className="text-lg font-black text-emerald-500 tracking-tight leading-none">
+                  <span className="text-lg font-semibold text-emerald-500 tracking-tight leading-none">
                     ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                   </span>
                 </div>
               )}
 
               <div className="w-full p-3.5 rounded-xl border border-brand-border-opacity-15 bg-brand-void text-center shadow-sm">
-                <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest block mb-0.5">{tg('wager_tier')}</span>
-                <span className="text-sm font-black text-brand-primary">
+                <span className="text-caption font-bold text-brand-muted normal-case tracking-normal block mb-0.5">{tg('wager_tier')}</span>
+                <span className="text-sm font-semibold text-brand-primary">
                   ${(chosenWager / 100).toFixed(2)} USDT
                 </span>
               </div>
@@ -710,19 +687,19 @@ export default function PlayLobby() {
               {searchTimer >= 15 && chosenWager === 0 && (
                 notifySearchEnabled ? (
                   <div className="w-full p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-500">
-                    <span className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest">
+                    <span className="flex items-center justify-center gap-2 text-sm font-semibold normal-case tracking-normal">
                       <FaBell />
                       Telegram alert enabled
                     </span>
-                    <span className="block mt-1 text-[10px] font-bold opacity-70">
+                    <span className="block mt-1 text-caption font-bold opacity-70">
                       We will keep searching for up to 30 minutes. You can leave this screen.
                     </span>
                   </div>
                 ) : (
-                  <button
+                  <button type="button"
                     onClick={enableMatchNotifications}
                     disabled={notifyRequestPending}
-                    className="w-full py-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50 text-cyan-500 text-xs font-black uppercase tracking-widest transition-all cursor-pointer disabled:cursor-wait"
+                    className="ui-tap-target w-full py-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50 text-cyan-500 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer disabled:cursor-wait"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <FaBell />
@@ -732,9 +709,9 @@ export default function PlayLobby() {
                 )
               )}
 
-              <button
+              <button type="button"
                 onClick={cancelMatchmaking}
-                className="w-full py-3 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 hover:bg-brand-rose-opacity-20 text-rose-400 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
+                className="ui-tap-target w-full py-3 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 hover:bg-brand-rose-opacity-20 text-rose-400 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer"
               >
                 {tg('disconnect_search')}
               </button>
@@ -777,44 +754,44 @@ export default function PlayLobby() {
                 {chosenWager > 0 && (
                   <div className="mx-3 mb-3 rounded-2xl overflow-hidden animate-fade-in">
                     <div className="flex items-center justify-between px-2 py-2.5 bg-brand-void/60 border border-brand-border-opacity-10 rounded-2xl">
-                      <button
+                      <button type="button"
                         onClick={scrollToWager}
-                        className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
+                        className="ui-tap-target flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
-                          <FaWallet className="text-brand-primary/45 text-[10px]" /> {tg('stake')}
+                        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-0.5 flex items-center gap-0.5">
+                          <FaWallet className="text-brand-primary/45 text-caption" /> {tg('stake')}
                         </span>
-                        <span className="text-[11px] font-black text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
+                        <span className="text-caption font-semibold text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                       </button>
                       
                       <div className="w-px h-7 bg-brand-border-opacity-10 self-center" />
                       
-                      <motion.button
+                      <motion.button type="button"
                         onClick={() => {
                           telegramHaptic('light');
                           setShowRakeInfo(true);
                         }}
                         aria-label={tg('win_up_to')}
-                        className="relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 cursor-pointer hover:brightness-110 active:scale-95 transition-all duration-150 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+                        className="ui-tap-target relative overflow-hidden flex-1 flex flex-col items-center justify-center px-2 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 cursor-pointer hover:brightness-110 active:scale-95 transition-all duration-150 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                       >
-                        <span className="relative z-10 text-[10px] font-black text-emerald-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5 drop-shadow-md">
-                          <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')}
+                        <span className="relative z-10 text-caption font-semibold text-emerald-500 normal-case tracking-normal mb-0.5 flex items-center gap-0.5 drop-shadow-md">
+                          <FaFire className="text-emerald-500 text-caption" /> {tg('win_up_to')}
                         </span>
-                        <span className="relative z-10 text-[11px] font-black text-emerald-400 tracking-tight leading-none drop-shadow-md">
+                        <span className="relative z-10 text-caption font-semibold text-emerald-400 tracking-tight leading-none drop-shadow-md">
                           ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                         </span>
                       </motion.button>
                       
                       <div className="w-px h-7 bg-brand-border-opacity-10 self-center" />
                       
-                      <button
+                      <button type="button"
                         onClick={scrollToTimeControl}
-                        className="flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
+                        className="ui-tap-target flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-0.5 flex items-center gap-0.5">
-                          <FaClock className="text-brand-primary/45 text-[10px]" /> {tg('time')}
+                        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-0.5 flex items-center gap-0.5">
+                          <FaClock className="text-brand-primary/45 text-caption" /> {tg('time')}
                         </span>
-                        <span className="text-[11px] font-black text-emerald-500 uppercase">
+                        <span className="text-caption font-semibold text-emerald-500 normal-case">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
                         </span>
                       </button>
@@ -824,12 +801,12 @@ export default function PlayLobby() {
 
                 {/* Launcher Button */}
                 <div className="px-3 pb-3">
-                  <motion.button
+                  <motion.button type="button"
                     whileHover={!isCreating ? { scale: 1.015 } : {}}
                     whileTap={!isCreating ? { scale: 0.985 } : {}}
                     onClick={handleLauncherClick}
-                    disabled={isCreating}
-                    className={`w-full p-4 flex flex-col items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-center ${
+                    disabled={isCreating || loadingBalance}
+                    className={`ui-tap-target w-full p-4 flex flex-col items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-center ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
                         : 'arena-topup-launcher rounded-[20px] bg-gradient-to-br from-[#2a2a30] to-[#16161a] border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
@@ -848,15 +825,15 @@ export default function PlayLobby() {
                       <FaChessKnight className={`text-[20px] drop-shadow-lg ${hasSufficient ? 'text-emerald-500' : 'text-brand-primary'}`} />
                     </div>
                     <div className="flex flex-col min-w-0 z-10 items-center justify-center">
-                      <span className={`text-sm font-black leading-none tracking-wide uppercase ${
+                      <span className={`text-sm font-semibold leading-none tracking-normal normal-case ${
                         hasSufficient ? 'text-emerald-500' : 'text-brand-primary'
                       }`}>
-                        {hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
+                        {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : hasSufficient ? t('execute_matchmaking') : tg('top_up_play')}
                       </span>
-                      <span className={`text-[10px] font-black uppercase tracking-widest mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-muted' : 'text-brand-muted'}`}>
-                        {hasSufficient ? (
+                      <span className={`text-caption font-semibold normal-case tracking-normal mt-1 flex items-center gap-1 ${hasSufficient ? 'text-brand-muted' : 'text-brand-muted'}`}>
+                        {balanceError ? t('retry') : loadingBalance ? null : hasSufficient ? (
                           <>
-                            <FaFire className="text-emerald-500 text-[10px]" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
+                            <FaFire className="text-emerald-500 text-caption" /> {tg('win_up_to')} ${((chosenWager * 2 * 0.95) / 100).toFixed(2)}
                           </>
                         ) : (
                           tg('amount_needed', { amount: `$${((chosenWager - walletBalance) / 100).toFixed(2)}` })
@@ -869,19 +846,19 @@ export default function PlayLobby() {
 
               {/* Matchmaking Error */}
               {matchmakingError && (
-                <div className="p-3 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-2xl text-rose-400 text-[10px] font-black uppercase tracking-wider text-center shadow-sm">
+                <div className="p-3 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-2xl text-rose-400 text-caption font-semibold normal-case tracking-normal text-center shadow-sm">
                   {matchmakingError}
                 </div>
               )}
 
               {/* Secondary Actions — Play with Friend Wager Match */}
               <div className="w-full">
-                <motion.button
+                <motion.button type="button"
                   whileHover={!isCreating ? { scale: 1.015 } : {}}
                   whileTap={!isCreating ? { scale: 0.985 } : {}}
                   onClick={playVsFriend}
-                  disabled={isCreating}
-                  className="relative overflow-hidden rounded-2xl p-4 flex items-center justify-between w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
+                  disabled={isCreating || loadingBalance}
+                  className="ui-tap-target relative overflow-hidden rounded-2xl p-4 flex items-center justify-between w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
                 >
                   <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" aria-hidden="true" />
                   <div className="flex items-center gap-3.5">
@@ -891,15 +868,15 @@ export default function PlayLobby() {
                       <FaShareAlt className="text-base group-hover:scale-110 transition-transform" />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-black leading-none text-purple-500 tracking-wide uppercase drop-shadow-md">
+                      <span className="text-sm font-semibold leading-none text-purple-500 tracking-normal normal-case drop-shadow-md">
                         PLAY WITH FRIEND
                       </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80 text-purple-400">
+                      <span className="text-caption font-semibold normal-case tracking-normal mt-1 opacity-80 text-purple-400">
                         SHARE WAGER CHALLENGE LINK
                       </span>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-purple-400/90 tracking-wider uppercase px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                  <span className="text-sm font-semibold text-purple-400/90 tracking-normal normal-case px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
                     ${(chosenWager / 100).toFixed(2)}
                   </span>
                 </motion.button>
@@ -909,8 +886,8 @@ export default function PlayLobby() {
               {stats?.recent_games && stats.recent_games.length > 0 && (
                 <div className="w-full space-y-3 pt-2">
                   <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
-                    <FaChessPawn className="text-brand-muted text-[10px]" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary opacity-45">{t('recent_activity')}</h3>
+                    <FaChessPawn className="text-brand-muted text-caption" />
+                    <h3 className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45">{t('recent_activity')}</h3>
                   </div>
                   <div className="space-y-2.5">
                     {stats.recent_games.slice(0, 3).map((game: any, idx: number) => {
@@ -930,30 +907,30 @@ export default function PlayLobby() {
                             {/* Outcome Icon Badge */}
                             {game.result === 'win' ? (
                               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500/20 to-teal-500/5 border border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaTrophy className="text-xs" />
+                                <FaTrophy className="text-sm" />
                               </div>
                             ) : game.result === 'loss' ? (
                               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-500/15 to-brand-void border border-red-500/20 text-red-400/80 shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaFlag className="text-xs" />
+                                <FaFlag className="text-sm" />
                               </div>
                             ) : (
                               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-surface to-brand-void border border-brand-border-opacity-15 text-brand-muted shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaHandshake className="text-xs" />
+                                <FaHandshake className="text-sm" />
                               </div>
                             )}
 
                             <div className="flex flex-col justify-center">
                               <div className="flex items-center gap-1.5 mb-1">
                                 {isAi ? (
-                                  <FaRobot className="text-[10px] text-brand-muted shrink-0" />
+                                  <FaRobot className="text-caption text-brand-muted shrink-0" />
                                 ) : (
-                                  <FaChessKnight className="text-[10px] text-brand-muted shrink-0" />
+                                  <FaChessKnight className="text-caption text-brand-muted shrink-0" />
                                 )}
-                                <span className="text-xs font-black text-brand-primary tracking-tight leading-none group-hover:text-white transition-colors duration-200">
+                                <span className="text-sm font-semibold text-brand-primary tracking-tight leading-none group-hover:text-white transition-colors duration-200">
                                   {t('vs')} {getOpponentName(game.opponent.name)}
                                 </span>
                               </div>
-                              <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">
+                              <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal leading-none">
                                 {game.opponent.elo} {t('elo')}
                               </span>
                             </div>
@@ -962,28 +939,28 @@ export default function PlayLobby() {
                           <div className="flex items-center gap-3.5 relative z-10">
                             {/* ELO Change Pill */}
                             {game.elo_change > 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] normal-case tracking-normal">
                                 + {game.elo_change} ELO
                               </div>
                             ) : game.elo_change < 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-red-500/10 border border-red-500/20 text-red-400/90 uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-red-500/10 border border-red-500/20 text-red-400/90 normal-case tracking-normal">
                                 - {Math.abs(game.elo_change)} ELO
                               </div>
                             ) : (
-                              <div className="px-3 py-1.5 rounded-full text-[10px] font-black bg-brand-surface border border-brand-border-opacity-15 text-brand-muted uppercase tracking-wider">
+                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-brand-surface border border-brand-border-opacity-15 text-brand-muted normal-case tracking-normal">
                                 0 ELO
                               </div>
                             )}
 
                             {/* Share Action */}
-                            <motion.button
+                            <motion.button aria-label="Share" type="button"
                               whileHover={{ scale: 1.08 }}
                               whileTap={{ scale: 0.92 }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleShareResult(game);
                               }}
-                              className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center hover:border-brand-primary/45 hover:bg-brand-primary/5 transition-all text-brand-muted hover:opacity-100 cursor-pointer shadow-sm shrink-0"
+                              className="ui-tap-target w-8 h-8 rounded-full bg-brand-surface border border-brand-border-opacity-10 flex items-center justify-center hover:border-brand-primary/45 hover:bg-brand-primary/5 transition-all text-brand-muted hover:opacity-100 cursor-pointer shadow-sm shrink-0"
                             >
                               <FaShareAlt size={10} />
                             </motion.button>
@@ -1002,12 +979,12 @@ export default function PlayLobby() {
 
 
         {/* Lobby Quick Deposit Drawer */}
+        {showAiDifficulty && <AiDifficultyDrawer onClose={() => setShowAiDifficulty(false)} onSelect={startAiGame} isCreating={isCreating} />}
         <AnimatePresence>
           {showDepositDrawer && (
             <DepositModal
               chosenWager={chosenWager}
               walletBalance={walletBalance}
-              tgUser={tgUser}
               onClose={() => setShowDepositDrawer(false)}
               onSuccess={async () => {
                 await syncBalance();

@@ -305,7 +305,7 @@ export default function PuzzleBoard({
         />
         {shake && (
           <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <div className="bg-red-500 text-white font-black uppercase text-sm px-4 py-2 rounded-xl shadow-lg border border-red-400">
+            <div className="bg-red-500 text-white font-semibold normal-case text-sm px-4 py-2 rounded-xl shadow-lg border border-red-400">
               Illegal Move!
             </div>
           </div>
@@ -314,13 +314,13 @@ export default function PuzzleBoard({
 
       <div className="flex flex-col items-center">
         <div className="flex gap-4">
-          <button onClick={reset} className="p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
+          <button aria-label="Reset puzzle" type="button" onClick={reset} className="ui-tap-target p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
             <FaUndo />
           </button>
-          <button 
+          <button aria-label="Show hint" type="button"
             onClick={handleHint} 
             disabled={!hintsEnabled || status !== 'playing'}
-            className={`p-4 rounded-xl transition-all ${
+            className={`ui-tap-target p-4 rounded-xl transition-all ${
               hintsEnabled && status === 'playing'
                 ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] cursor-pointer' 
                 : 'bg-brand-primary/5 text-brand-muted cursor-not-allowed'
@@ -331,10 +331,10 @@ export default function PuzzleBoard({
           </button>
           
           {solution && solution.length > 0 && (
-            <button 
+            <button aria-label="Show solution" type="button"
               onClick={handleGiveUp} 
               disabled={status !== 'playing'}
-              className="p-4 rounded-xl transition-all bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 cursor-pointer shadow-[0_0_15px_rgba(243,24,24,0.1)]"
+              className="ui-tap-target p-4 rounded-xl transition-all bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 cursor-pointer shadow-[0_0_15px_rgba(243,24,24,0.1)]"
               title="Give Up / Show Solution"
             >
               <FaFlag />
@@ -342,7 +342,7 @@ export default function PuzzleBoard({
           )}
         </div>
         {hintsEnabled && !showHintText && status === 'playing' && (
-          <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mt-2">
+          <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-2">
             Hints available (Levels 1-10)
           </span>
         )}
@@ -356,8 +356,8 @@ export default function PuzzleBoard({
             exit={{ opacity: 0, height: 0 }}
             className="w-full text-center px-4 -mt-2"
           >
-            <div className="text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 inline-block">
-              <span className="font-bold uppercase tracking-wider block mb-1">Coach Hint:</span>
+            <div className="text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 inline-block">
+              <span className="font-bold normal-case tracking-normal block mb-1">Coach Hint:</span>
               {dynamicHintText}
             </div>
           </motion.div>
@@ -372,15 +372,15 @@ export default function PuzzleBoard({
         >
           <div className="flex items-center gap-2 bg-green-500/10 text-green-400 px-4 py-1.5 rounded-full border border-green-500/20">
             <FaFlag className="text-sm" />
-            <h3 className="text-sm font-black uppercase tracking-widest">SOLVED</h3>
+            <h3 className="text-sm font-semibold normal-case tracking-normal">SOLVED</h3>
           </div>
           {dynamicSuccessExplanation ? (
-            <div className="text-xs font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
-              <span className="text-[10px] font-black uppercase text-green-400 mb-2 block tracking-widest">Grandmaster Explanation:</span>
+            <div className="text-sm font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
+              <span className="text-caption font-semibold normal-case text-green-400 mb-2 block tracking-normal">Grandmaster Explanation:</span>
               <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>
           ) : (
-            <p className="text-xs text-green-400/60 font-bold uppercase tracking-widest">+50 Chess XP</p>
+            <p className="text-sm text-green-400/60 font-bold normal-case tracking-normal">+50 Chess XP</p>
           )}
         </motion.div>
       )}

@@ -57,10 +57,10 @@ export function WaitingOpponentCard({
         </div>
 
         <div className="flex flex-col space-y-1.5 mb-6">
-          <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest animate-pulse">
+          <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal animate-pulse">
             {tWaitingOpponentTitle}
           </span>
-          <span className="text-sm font-bold text-brand-primary uppercase tracking-wide">
+          <span className="text-sm font-bold text-brand-primary normal-case tracking-normal">
             {tShareInviteHint}
           </span>
         </div>
@@ -68,20 +68,20 @@ export function WaitingOpponentCard({
         {/* Match details card */}
         <div className="w-full grid grid-cols-2 gap-3 mb-6 bg-brand-void/50 border border-brand-border-opacity-5 rounded-2xl p-4 shadow-sm">
           <div className="flex flex-col items-start text-left">
-            <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
+            <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mb-1">
               {tWagerTier}
             </span>
-            <span className="text-xs font-black text-emerald-400">
+            <span className="text-sm font-semibold text-emerald-400">
               {gameState?.bid_amount > 0 
                 ? `$${(gameState.bid_amount / 100).toFixed(2)} USDT` 
                 : tFreeMatch}
             </span>
           </div>
           <div className="flex flex-col items-end text-right border-l border-brand-border-opacity-10 pl-3">
-            <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-1">
+            <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mb-1">
               {tTimeControl}
             </span>
-            <span className="text-xs font-black text-amber-400 uppercase">
+            <span className="text-sm font-semibold text-amber-400 normal-case">
               {gameState?.time_control_seconds >= 60 
                 ? `${gameState.time_control_seconds / 60} MIN` 
                 : `${gameState?.time_control_seconds || 600}s`}
@@ -92,32 +92,32 @@ export function WaitingOpponentCard({
         {/* Share link widget */}
         <div className="w-full space-y-3">
           <div className="relative w-full flex items-center bg-brand-void/80 border border-brand-border-opacity-10 rounded-xl px-3.5 py-3 shadow-inner-glow overflow-hidden">
-            <span className="text-[10px] font-mono text-brand-muted truncate select-all pr-8 w-full text-left">
+            <span className="text-caption font-mono text-brand-muted truncate select-all pr-8 w-full text-left">
               {inviteLink}
             </span>
-            <button
+            <button type="button"
               onClick={onCopyInvite}
-              className="absolute right-2 text-brand-muted hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
+              className="ui-tap-target absolute right-2 text-brand-muted hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
             >
-              {copied ? <FaCheck className="text-emerald-400 text-[11px]" /> : <FaCopy className="text-[11px]" />}
+              {copied ? <FaCheck className="text-emerald-400 text-caption" /> : <FaCopy className="text-caption" />}
             </button>
           </div>
 
           <div className="grid grid-cols-1 gap-2.5 w-full">
-            <motion.button
+            <motion.button type="button"
               whileTap={{ scale: 0.985 }}
               onClick={onShareInvite}
-              className="w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-[0.2em] cursor-pointer shadow-neon"
+              className="ui-tap-target w-full bg-brand-primary text-brand-void py-3.5 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-neon"
             >
               <FaShareAlt size={11} />
               <span>{tInviteOnTelegram}</span>
             </motion.button>
 
             {gameState?.white_player_id === userId && (
-              <motion.button
+              <motion.button type="button"
                 whileTap={{ scale: 0.985 }}
                 onClick={onAbortGame}
-                className="w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer transition-all shadow-sm"
+                className="ui-tap-target w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer transition-all shadow-sm"
               >
                 <span>{tCancelRefundMatch}</span>
               </motion.button>
@@ -128,7 +128,7 @@ export function WaitingOpponentCard({
       </div>
       
       <div className="w-full text-center px-4">
-        <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider leading-relaxed">
+        <p className="text-caption font-semibold text-brand-muted normal-case tracking-normal leading-relaxed">
           {tWaitingKeepOpen}
         </p>
       </div>

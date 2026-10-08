@@ -83,10 +83,10 @@ export default function BadgeShowcaseModal({
           <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
           {/* Close button */}
-          <button
+          <button type="button"
             onClick={handleModalClose}
             aria-label="Close"
-            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-brand-void/50 border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary flex items-center justify-center transition-colors cursor-pointer text-xs"
+            className="ui-tap-target absolute top-4 right-4 w-8 h-8 rounded-full bg-brand-void/50 border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary flex items-center justify-center transition-colors cursor-pointer text-sm"
           >
             ✕
           </button>
@@ -102,25 +102,25 @@ export default function BadgeShowcaseModal({
             </div>
 
             {/* Floating Level / Tier Pill */}
-            <div className="absolute -bottom-2 px-3 py-0.5 rounded-full bg-brand-surface border border-amber-400/50 text-amber-400 font-black text-[9px] uppercase tracking-wider shadow-sm flex items-center gap-1">
-              <FaStar className="text-[8px]" />
+            <div className="absolute -bottom-2 px-3 py-0.5 rounded-full bg-brand-surface border border-amber-400/50 text-amber-400 font-semibold text-caption normal-case tracking-normal shadow-sm flex items-center gap-1">
+              <FaStar className="text-caption" />
               <span>TIER {currentTier}</span>
             </div>
           </div>
 
           {/* Badge Titles */}
           <div className="space-y-1 relative z-10">
-            <h3 className="text-xl font-black uppercase text-brand-primary tracking-tight header-balanced">
+            <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight header-balanced">
               {badge.title}
             </h3>
-            <p className="text-xs font-medium text-brand-muted leading-relaxed text-pretty max-w-[260px] mx-auto">
+            <p className="text-sm font-medium text-brand-muted leading-relaxed text-pretty max-w-[260px] mx-auto">
               {badge.description}
             </p>
           </div>
 
           {/* Tier Progress Steps */}
           <div className="w-full rounded-2xl border border-brand-border-opacity-10 bg-brand-void/50 p-3 space-y-2.5 text-left">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-brand-muted">
+            <div className="flex items-center justify-between text-caption font-semibold normal-case tracking-normal text-brand-muted">
               <span>Mastery Tiers</span>
               <span className="text-amber-400">+{xp} Total XP</span>
             </div>
@@ -129,7 +129,7 @@ export default function BadgeShowcaseModal({
               {tiers.map((t) => (
                 <div
                   key={t.tier}
-                  className={`flex items-center justify-between p-2 rounded-xl border text-xs transition-all ${
+                  className={`flex items-center justify-between p-2 rounded-xl border text-sm transition-all ${
                     t.isUnlocked
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                       : 'bg-brand-surface/40 border-brand-border-opacity-10 text-brand-muted opacity-60'
@@ -137,25 +137,25 @@ export default function BadgeShowcaseModal({
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                      className={`w-5 h-5 rounded-full flex items-center justify-center text-caption font-semibold shrink-0 ${
                         t.isUnlocked
                           ? 'bg-emerald-500/20 text-emerald-400'
                           : 'bg-brand-elevated text-brand-muted'
                       }`}
                     >
-                      {t.isUnlocked ? <FaCheck className="text-[8px]" /> : t.tier}
+                      {t.isUnlocked ? <FaCheck className="text-caption" /> : t.tier}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="font-bold text-[10px] uppercase text-brand-primary truncate">
+                      <span className="font-bold text-caption normal-case text-brand-primary truncate">
                         {t.label}
                       </span>
-                      <span className="text-[8px] text-brand-muted truncate">
+                      <span className="text-caption text-brand-muted truncate">
                         {t.requirement}
                       </span>
                     </div>
                   </div>
 
-                  <span className="text-[9px] font-black uppercase tracking-wider text-amber-400 shrink-0">
+                  <span className="text-caption font-semibold normal-case tracking-normal text-amber-400 shrink-0">
                     +{t.xpReward} XP
                   </span>
                 </div>
@@ -170,7 +170,7 @@ export default function BadgeShowcaseModal({
                 variant="primary"
                 size="md"
                 onClick={handleShare}
-                className="flex-1 text-xs"
+                className="flex-1 text-sm"
                 leftIcon={<FaShareAlt size={12} />}
               >
                 Share Trophy
@@ -180,7 +180,7 @@ export default function BadgeShowcaseModal({
               variant={isUnlocked ? 'outline' : 'primary'}
               size="md"
               onClick={handleModalClose}
-              className={isUnlocked ? 'flex-1 text-xs' : 'w-full text-xs'}
+              className={isUnlocked ? 'flex-1 text-sm' : 'w-full text-sm'}
             >
               {isUnlocked ? 'Close' : 'Keep Playing'}
             </Button>

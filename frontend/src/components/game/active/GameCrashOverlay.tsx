@@ -32,22 +32,22 @@ export function GameCrashOverlay({
       >
         {/* Warning Icon with pulse */}
         <div className="relative w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 text-red-500 animate-pulse">
-          <span className="text-3xl font-black">⚠️</span>
+          <span className="text-3xl font-semibold">⚠️</span>
         </div>
 
-        <h2 id="game-crashed-title" className="text-lg font-black uppercase tracking-wider text-brand-primary">
+        <h2 id="game-crashed-title" className="text-lg font-semibold normal-case tracking-normal text-brand-primary">
           {tGameCrashed}
         </h2>
 
-        <p className="text-xs text-brand-muted leading-relaxed px-2">
+        <p className="text-sm text-brand-muted leading-relaxed px-2">
           {tGameCrashedDesc}
         </p>
 
-        <motion.button
+        <motion.button type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => window.location.reload()}
-          className="w-full mt-2 py-3.5 rounded-xl bg-brand-primary text-brand-void font-black text-xs uppercase tracking-widest hover:opacity-90 shadow-md cursor-pointer transition-all"
+          className="ui-tap-target w-full mt-2 py-3.5 rounded-xl bg-brand-primary text-brand-void font-semibold text-sm normal-case tracking-normal hover:opacity-90 shadow-md cursor-pointer transition-all"
         >
           {tReloadGameBtn}
         </motion.button>

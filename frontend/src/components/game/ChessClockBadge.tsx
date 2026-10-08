@@ -82,7 +82,7 @@ export function ChessClockBadge({
           : 'bg-brand-void/40 border-brand-border text-brand-muted opacity-85'
       }`}
     >
-      <span className="text-sm font-black tracking-tighter font-mono">
+      <span className="text-sm font-semibold tracking-tighter font-mono">
         {formatTime(timeLeft)}
       </span>
     </div>

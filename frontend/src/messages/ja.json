@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "プレイヤー",
+    "ai_engine": "AI 対戦相手",
     "title": "チェスアプリ",
     "welcome": "ようこそ、{name}",
     "welcome_greeting": "ようこそ、",
@@ -63,12 +65,15 @@
     "nav_learn": "学ぶ",
     "nav_quests": "クエスト",
     "nav_settings": "設定",
+    "nav_wallet": "ウォレット",
     "nav_profile": "プロフィール",
     "nav_logout": "ログアウト",
     "nav_marketplace": "市場",
     "draws": "引き分け"
   },
   "Marketplace": {
+    "cost": "費用",
+    "confirm": "確認",
     "title": "マーケット",
     "subtitle": "XPを交換してプレミアム報酬とテーマを解放",
     "back": "戻る",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "1年間のプレミアムアクセス。月額比30%割引ですべての特典を最大化。"
   },
   "Settings": {
+    "gameplay_visuals": "ゲームと表示",
+    "notifications_wallet": "通知とウォレット",
+    "support_security": "サポートとセキュリティ",
+    "command_center": "管理センター",
+    "admin": "管理者",
+    "manage_admin": "ユーザー、支払い、お知らせを管理",
     "return": "戻る",
     "config_core": "コア設定 • V1.5",
     "title": "設定",
@@ -154,6 +165,7 @@
     "select": "言語を選択"
   },
   "Gamification": {
+    "claim_xp_btn": "XP を受け取る",
     "daily_missions": "デイリータスク",
     "claim": "受け取る",
     "daily_win": "対局に勝利する",
@@ -229,6 +241,11 @@
     "level": "レベル"
   },
   "Academy": {
+    "academy_progress": "アカデミーの進捗",
+    "master_the_game": "一歩ずつチェスを身につけよう",
+    "completed": "完了",
+    "course_completion": "コースの進捗",
+    "achievements": "実績",
     "title": "アカデミー",
     "subtitle": "チェスパズル＆レッスン",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "レベル1を復習"
   },
   "Game": {
+    "ai_select_difficulty": "AI の難易度を選択",
+    "ai_difficulty_help": "練習対局のレベルを選んでください。",
+    "ai_easy": "簡単",
+    "ai_medium": "普通",
+    "ai_hard": "難しい",
+    "ai_start_training": "練習対局を開始",
+    "ai_create_failed": "AI 対局を開始できませんでした。もう一度お試しください。",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "対戦相手を探す",
     "searching_close_hint": "アプリを閉じてもOK — 対戦相手が見つかったらTelegramでお知らせします。",
@@ -371,6 +395,7 @@
     "move_history": "棋譜履歴",
     "game_crashed": "ゲームの接続が切れました",
     "game_crashed_desc": "ゲームサーバーへの接続が中断されました。ゲームを再読み込みしてください。",
+    "analysis_unavailable": "エンジン解析を利用できません。もう一度お試しください。",
     "reload_game_btn": "ゲームを再読み込み",
     "reject": "拒否",
     "back": "戻る",
@@ -415,12 +440,13 @@
     "xp_reward": "XP報酬"
   },
   "Wallet": {
+    "balance_trend": "残高履歴（USDT）",
     "title": "Web3ウォレット",
     "connected_status": "TONウォレット接続完了",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "ウォレットを管理",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "受取ウォレット（あなたのアドレス）",
     "card_await_funds_notice": "購入後、USDTがウォレットに届きます（数分かかる場合あり）。その後「暗号」タブで残高をチャージしてください。",
     "balance_unavailable": "残高を取得できません — タップして再試行",
+    "account_unavailable": "アカウントを確認できませんでした。送金前に再試行してください。",
     "link_wallet_hint": "TONウォレットを連携",
     "tx_game_against_ai": "AIとの対局",
     "tx_game_free_pvp": "他のプレイヤーとの無料対局",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "共有",
+    "invite_title": "対局への招待が届きました",
+    "invite_description": "QR コードを読み取るか Telegram を開いてチェスを始めましょう。",
+    "invite_qr_alt": "招待用 QR コード",
+    "open_invite": "Telegram で招待を開く",
+    "invalid_invite": "この招待リンクは無効です。",
     "dashboard_title": "紹介プログラム",
     "total_label": "合計",
     "total_sublabel": "紹介数",

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
+import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
@@ -246,8 +247,8 @@ export default function AcademyPage() {
 
   if (loading) {
     return (
-      <LayoutWrapper className="w-full px-4">
-        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-8 animate-pulse">
+      <LayoutWrapper className="w-full ">
+        <div className="w-full app-page mx-auto animate-pulse">
           {/* Header Skeleton */}
           <div className="flex flex-col items-center w-full mb-4">
             <div className="h-8 bg-brand-primary opacity-10 rounded-lg w-1/2 mb-3" />
@@ -307,7 +308,7 @@ export default function AcademyPage() {
   }
 
   return (
-    <LayoutWrapper className="w-full px-3.5 pt-[max(0.75rem,var(--app-safe-top))]">
+    <LayoutWrapper className="w-full ">
       {showConfetti && typeof window !== 'undefined' && (
         <div className="fixed inset-0 z-20 pointer-events-none flex items-center justify-center">
           <Confetti
@@ -319,33 +320,24 @@ export default function AcademyPage() {
           />
         </div>
       )}
-      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-1 space-y-4">
+      <main className="w-full app-page mx-auto ">
 
         {/* Header */}
-        <header className="flex flex-col items-center w-full mb-2">
-          <motion.h1
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2.5 text-brand-primary text-2xl sm:text-3xl font-black tracking-tighter select-none uppercase header-balanced"
-          >
-            <FaBrain className="text-xl opacity-80" />
-            {t('title')}
-          </motion.h1>
-          <div className="h-px w-8 bg-brand-border-opacity-10 my-1.5" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-muted">{t('subtitle')}</span>
+        <header className="flex flex-col items-start w-full gap-3">
+          <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
 
           {stats && (
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-start gap-3">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full mt-4 shadow-md transition-all duration-300 w-full max-w-sm ${
+                className={`flex items-center justify-center gap-3 text-caption font-semibold normal-case tracking-normal py-2 px-4 rounded-xl shadow-md transition-all duration-300 w-full max-w-sm ${
                   stats.is_premium
                     ? 'bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
                     : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-muted'
                 }`}
               >
-                <span>{stats.is_premium ? '👑 Premium' : 'Regular'}</span>
+                <span>{stats.is_premium ? 'Premium' : 'Regular'}</span>
                 <div className="w-px h-2.5 bg-brand-border-opacity-10" />
                 <span>Level {stats.level}</span>
                 <div className="w-1 h-1 bg-current opacity-40 rounded-full" />
@@ -354,10 +346,10 @@ export default function AcademyPage() {
 
               {/* Badges & Streak Row */}
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
+                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-caption">
                   <FaFire className="text-amber-500" /> {stats.study_streak || 0} Day Streak
                 </Badge>
-                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-[10px]">
+                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-caption">
                   <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}
                 </Badge>
               </div>
@@ -384,11 +376,12 @@ export default function AcademyPage() {
           <Card 
             variant="solid" 
             interactive
+            aria-label="Next chess quote"
             onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
             className="w-full text-center px-6 py-4 group"
           >
-            <p className="text-xs font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
+            <p className="text-sm font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
+            <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
           </Card>
         </motion.div>
 
@@ -422,16 +415,16 @@ export default function AcademyPage() {
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-4">
               <Badge variant="secondary" className="gap-1.5 text-brand-primary bg-brand-void/60 border-brand-border-opacity-10 opacity-70">
-                <FaFire className="text-emerald-500 animate-pulse text-[10px]" /> {t('daily_challenge')}
+                <FaFire className="text-emerald-500 animate-pulse text-caption" /> {t('daily_challenge')}
               </Badge>
               {!allSolved && (
                 <Badge variant="emerald" className="gap-1 shadow-[0_0_10px_rgba(16,185,129,0.15)] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                  <FaTrophy className="text-[10px]" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
+                  <FaTrophy className="text-caption" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
                 </Badge>
               )}
             </div>
 
-            <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent uppercase mb-2">
+            <h2 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent normal-case mb-2">
               {allSolved
                 ? t('all_levels_solved')
                 : nextPuzzle
@@ -439,7 +432,7 @@ export default function AcademyPage() {
                   : t('mate_in_2')
               }
             </h2>
-            <p className="text-xs text-brand-muted font-medium mb-6 leading-relaxed">
+            <p className="text-sm text-brand-muted font-medium mb-6 leading-relaxed">
               {allSolved
                 ? t('all_levels_congrats')
                 : nextPuzzle
@@ -451,7 +444,7 @@ export default function AcademyPage() {
             <Button
               variant="action"
               className="w-full shadow-neon relative overflow-hidden"
-              leftIcon={<FaPlay className="text-[10px]" />}
+              leftIcon={<FaPlay className="text-caption" />}
             >
               <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-20),transparent)] -translate-x-full animate-shimmer" />
               <span className="relative z-10">
@@ -467,7 +460,7 @@ export default function AcademyPage() {
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
             <FaChessRook className="text-brand-muted text-xl" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">{t('tactics_grid')}</h3>
+            <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('tactics_grid')}</h3>
           </div>
           <Card variant="solid" className="w-full shadow-premium relative overflow-hidden">
             {/* Backlight Orbs */}
@@ -477,10 +470,10 @@ export default function AcademyPage() {
             {/* Progress Header */}
             <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted flex items-center gap-1.5">
-                  <FaBrain className="text-brand-muted text-[10px]" /> {t('tactics_grid')}
+                <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted flex items-center gap-1.5">
+                  <FaBrain className="text-brand-muted text-caption" /> {t('tactics_grid')}
                 </span>
-                <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+                <span className="text-caption font-semibold text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
                   {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
                 </span>
               </div>
@@ -522,7 +515,7 @@ export default function AcademyPage() {
                   } else if (isActive) {
                     bgClass = [
                       "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
-                      "text-slate-900 font-black z-10 scale-110",
+                      "text-slate-900 font-semibold z-10 scale-110",
                       "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_var(--color-brand-border-opacity-20)]",
                       "animate-active-portal",
                     ].join(" ");
@@ -531,10 +524,10 @@ export default function AcademyPage() {
                   }
 
                   return (
-                    <button
+                    <button type="button"
                       key={id}
                       onClick={() => setSelectedLevel({ id, info: puzzleInfo })}
-                      className={`relative aspect-square rounded-xl border flex items-center justify-center text-[10px] transition-all duration-200 cursor-pointer ${bgClass}`}
+                      className={`ui-tap-target relative aspect-square rounded-xl border flex items-center justify-center text-caption transition-all duration-200 cursor-pointer ${bgClass}`}
                     >
                       <span>{id}</span>
                       {statusMark}
@@ -545,7 +538,7 @@ export default function AcademyPage() {
             </div>
 
             {/* Legend */}
-            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
+            <div className="flex justify-between items-center text-caption font-semibold normal-case tracking-normal px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
               <span className="tc-legend-unlocked flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border">
                 <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
                 {t('unlocked')}
@@ -567,7 +560,7 @@ export default function AcademyPage() {
           
           <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
             <FaChessKnight className="text-brand-muted text-xl" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">{t('mastery_tracks')}</h3>
+            <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('mastery_tracks')}</h3>
           </div>
 
           {/* Category-grouped lessons */}
@@ -607,11 +600,11 @@ export default function AcademyPage() {
                   <div className="flex items-center justify-between mb-3 px-1">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{cat.emoji}</span>
-                      <h4 className="text-xs font-black uppercase tracking-widest text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
+                      <h4 className="text-sm font-semibold normal-case tracking-normal text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-brand-muted">{completedInCat}/{catLessons.length}</span>
-                      {catProgress === 100 && <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">✓ Done</span>}
+                      <span className="text-caption font-bold text-brand-muted">{completedInCat}/{catLessons.length}</span>
+                      {catProgress === 100 && <span className="text-caption font-semibold normal-case tracking-normal px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">✓ Done</span>}
                     </div>
                   </div>
                   {/* Category progress bar */}
@@ -625,14 +618,14 @@ export default function AcademyPage() {
                   {/* Toggle Show Completed Button */}
                   {completedInCat > 0 && (
                     <div className="flex justify-end mb-4 px-1">
-                      <button 
+                      <button type="button"
                         onClick={() => setShowCompletedCat(prev => ({...prev, [cat.id]: !prev[cat.id]}))}
-                        className="text-[10px] font-bold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
+                        className="ui-tap-target text-caption font-bold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
                       >
                         {isExpanded ? (
-                          <><span>Hide Completed</span><FaChevronUp className="text-[8px]"/></>
+                          <><span>Hide Completed</span><FaChevronUp className="text-caption"/></>
                         ) : (
-                          <><span>Show Completed ({completedInCat})</span><FaChevronDown className="text-[8px]"/></>
+                          <><span>Show Completed ({completedInCat})</span><FaChevronDown className="text-caption"/></>
                         )}
                       </button>
                     </div>
@@ -673,7 +666,7 @@ export default function AcademyPage() {
           <div className="opacity-90 mt-8">
             <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
               <FaTrophy className="text-brand-muted text-xl" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-brand-muted text-center">Next Milestone</h3>
+              <h3 className="text-section-title font-semibold text-brand-primary text-start">Next Milestone</h3>
             </div>
             
             <Card variant="solid" className="w-full p-5 relative overflow-hidden">
@@ -681,12 +674,12 @@ export default function AcademyPage() {
               
               <div className="flex justify-between items-end mb-3 relative z-10">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-1">Current Title</p>
-                  <p className="text-sm font-black text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
+                  <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-1">Current Title</p>
+                  <p className="text-sm font-semibold text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-1">Next Level</p>
-                  <p className="text-sm font-black text-emerald-400">{`Level ${xpProgress!.displayedLevel + 1}`}</p>
+                  <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-1">Next Level</p>
+                  <p className="text-sm font-semibold text-emerald-400">{`Level ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
               
@@ -700,8 +693,8 @@ export default function AcademyPage() {
               </div>
               
               <div className="text-center relative z-10 mt-3">
-                <p className="text-[10px] font-bold text-brand-muted">
-                  You need <span className="text-emerald-400 font-black">{Math.max(0, xpProgress!.nextLevelXp - stats.xp)} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!
+                <p className="text-caption font-bold text-brand-muted">
+                  You need <span className="text-emerald-400 font-semibold">{Math.max(0, xpProgress!.nextLevelXp - stats.xp)} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!
                 </p>
               </div>
               </Card>
@@ -739,17 +732,17 @@ export default function AcademyPage() {
           <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-500 to-purple-400 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] mb-3 animate-bounce">
             <span className="text-xl">👑</span>
           </div>
-          <h2 className="text-xl font-black uppercase tracking-widest mb-1 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent drop-shadow">
+          <h2 className="text-xl font-semibold normal-case tracking-normal mb-1 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent drop-shadow">
             {t('unlock_grid')}
           </h2>
-          <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em] mb-6">
+          <p className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-6">
             {t('level_premium_req')}
           </p>
         </div>
       
         <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-premium relative z-10">
-          <p className="text-center font-black text-purple-400 text-xs uppercase tracking-widest mb-1">{t('premium_perks')}</p>
-          <ul className="space-y-2.5 text-[11px] text-brand-muted">
+          <p className="text-center font-semibold text-purple-400 text-sm normal-case tracking-normal mb-1">{t('premium_perks')}</p>
+          <ul className="space-y-2.5 text-caption text-brand-muted">
             <li className="flex items-start gap-2.5">
               <span className="text-purple-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
               <span className="leading-tight">{t('perk_li1')}</span>
@@ -764,39 +757,39 @@ export default function AcademyPage() {
             </li>
           </ul>
           <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-          <div className="flex justify-between items-center text-[10px] text-brand-muted uppercase tracking-widest bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
-            <span className="flex items-center gap-1"><FaTrophy className="text-emerald-500 text-[10px]" /> {stats?.xp || 0} XP</span>
-            <span className="flex items-center gap-1"><FaWallet className="text-brand-muted text-[10px]" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
+          <div className="flex justify-between items-center text-caption text-brand-muted normal-case tracking-normal bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
+            <span className="flex items-center gap-1"><FaTrophy className="text-emerald-500 text-caption" /> {stats?.xp || 0} XP</span>
+            <span className="flex items-center gap-1"><FaWallet className="text-brand-muted text-caption" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
           </div>
         </div>
       
         <div className="w-full flex flex-col gap-3 relative z-10">
-          <motion.button
+          <motion.button type="button"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleUpgradeWithXp}
-            className="w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
+            className="ui-tap-target w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
           >
-            <span className="text-xs uppercase font-black tracking-[0.2em]">{t('unlock_with_xp')}</span>
-            <span className="text-[10px] font-bold text-brand-muted">{t('free_unlock_path')}</span>
+            <span className="text-sm normal-case font-semibold tracking-normal">{t('unlock_with_xp')}</span>
+            <span className="text-caption font-bold text-brand-muted">{t('free_unlock_path')}</span>
           </motion.button>
           
-          <motion.button
+          <motion.button type="button"
             whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(168, 85, 247, 0.45)" }}
             whileTap={{ scale: 0.98 }}
             onClick={handleUpgradeWithBalance}
-            className="w-full bg-purple-500 hover:bg-purple-600 text-white border border-purple-400/30 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden transition-colors"
+            className="ui-tap-target w-full bg-purple-500 hover:bg-purple-600 text-white border border-purple-400/30 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden transition-colors"
           >
             <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
-            <span className="text-xs uppercase font-black tracking-[0.2em] relative z-10">{t('buy_premium')}</span>
-            <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{t('instant_activation')}</span>
+            <span className="text-sm normal-case font-semibold tracking-normal relative z-10">{t('buy_premium')}</span>
+            <span className="text-caption font-semibold normal-case tracking-normal opacity-80">{t('instant_activation')}</span>
           </motion.button>
     
-          <motion.button
+          <motion.button type="button"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowPremiumPromo(false)}
-            className="w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary/95 transition-all"
+            className="ui-tap-target w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary/95 transition-all"
           >
             <span>{t('cancel')}</span>
           </motion.button>
@@ -849,15 +842,15 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{band.emoji}</span>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-muted">
+                    <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
                       {isCompleted ? '✅ Solved' : isPremLocked ? '👑 Premium Required' : isXpLocked ? '🔒 XP Required' : isSeqLocked ? '🔒 Sequential Lock' : '▶ Available'}
                     </p>
-                    <h3 className="text-lg font-black tracking-tight text-brand-primary uppercase leading-none">
+                    <h3 className="text-lg font-semibold tracking-tight text-brand-primary normal-case leading-none">
                       Level {id} — {band.theme}
                     </h3>
                   </div>
                 </div>
-                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-muted' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-muted'}`}>
+                <span className={`text-caption font-semibold px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-muted' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-muted'}`}>
                   #{id} / 100
                 </span>
               </div>
@@ -877,8 +870,8 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
                   <span className="text-emerald-400 text-lg">💡</span>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Hint Available</p>
-                    <p className="text-[10px] text-emerald-400/70 font-medium">Use the hint button inside the puzzle to reveal the best next move.</p>
+                    <p className="text-caption font-semibold normal-case tracking-normal text-emerald-400">Hint Available</p>
+                    <p className="text-caption text-emerald-400/70 font-medium">Use the hint button inside the puzzle to reveal the best next move.</p>
                   </div>
                 </div>
               )}
@@ -886,53 +879,53 @@ export default function AcademyPage() {
               {/* XP reward */}
               {info?.xp_reward && (
                 <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400/70">Reward for solving</span>
-                  <span className="text-sm font-black text-emerald-400">+{info.xp_reward} XP</span>
+                  <span className="text-caption font-semibold normal-case tracking-normal text-emerald-400/70">Reward for solving</span>
+                  <span className="text-sm font-semibold text-emerald-400">+{info.xp_reward} XP</span>
                 </div>
               )}
 
               {/* CTAs */}
               <div className="space-y-2 pt-1">
                 {isSeqLocked && (
-                  <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-[10px] font-black uppercase tracking-widest text-brand-muted">
+                  <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-caption font-semibold normal-case tracking-normal text-brand-muted">
                     🔒 Complete Level {id - 1} first
                   </div>
                 )}
                 {isPremLocked && !isSeqLocked && (
-                  <motion.button
+                  <motion.button type="button"
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
-                    className="w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-black uppercase tracking-widest text-[11px] shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
+                    className="ui-tap-target w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-semibold normal-case tracking-normal text-caption shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
                   >
                     👑 Unlock with Premium
                   </motion.button>
                 )}
                 {isXpLocked && !isSeqLocked && !isPremLocked && (
-                  <motion.button
+                  <motion.button type="button"
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { setSelectedLevel(null); handlePuzzleClick(id, info); }}
-                    className="w-full py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-black uppercase tracking-widest text-[11px]"
+                    className="ui-tap-target w-full py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-semibold normal-case tracking-normal text-caption"
                   >
                     🔓 Spend {info?.xp_cost ?? '—'} XP to Unlock
                   </motion.button>
                 )}
                 {isPlayable && (
-                  <motion.button
+                  <motion.button type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { setSelectedLevel(null); router.push(`/${locale}/academy/puzzle?id=${id}`); }}
-                    className="w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-black uppercase tracking-widest text-[11px] shadow-neon relative overflow-hidden"
+                    className="ui-tap-target w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-semibold normal-case tracking-normal text-caption shadow-neon relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-10),transparent)] -translate-x-full animate-shimmer" />
                     <span className="relative z-10 flex items-center justify-center gap-2">
-                      <FaPlay className="text-[10px]" />
+                      <FaPlay className="text-caption" />
                       {isCompleted ? 'Replay Level' : 'Start Level'}
                     </span>
                   </motion.button>
                 )}
-                <button
+                <button type="button"
                   onClick={() => setSelectedLevel(null)}
-                  className="w-full py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest text-brand-muted hover:text-brand-muted transition-colors"
+                  className="ui-tap-target w-full py-2.5 rounded-xl text-caption normal-case font-semibold tracking-normal text-brand-muted hover:text-brand-muted transition-colors"
                 >
                   {t('cancel')}
                 </button>

@@ -8,7 +8,9 @@ const Onboarding = dynamic(() => import('./Onboarding'), { ssr: false });
 const NotificationModal = dynamic(() => import('./NotificationModal'), { ssr: false });
 import AnimatedBackground from './AnimatedBackground';
 import { useState, useEffect } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useDesktopNavigation } from '@/hooks/useDesktopNavigation';
+import { Button } from './ui/Button';
 import { useNavbar } from '@/context/NavbarContext';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -23,11 +25,11 @@ interface LayoutWrapperProps {
     hideHeaderControls?: boolean;
 }
 
-let globalIsTelegramWeb: boolean | null = null;
-let globalIsDesktopBrowser: boolean | null = null;
 
 export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
     const locale = useLocale();
+    const t = useTranslations('Index');
+    const isDesktopBrowser = useDesktopNavigation();
     const pathname = usePathname();
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
     const { activeGameId, isCheckingActiveGame, urlGameId } = useActiveGame();
@@ -37,34 +39,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
     const [showNotifications, setShowNotifications] = useState<boolean>(false);
     
-    const [_isTelegramWeb, setIsTelegramWeb] = useState<boolean>(() => {
-        if (globalIsTelegramWeb !== null) return globalIsTelegramWeb;
-        return false;
-    });
-
-    const [isDesktopBrowser, setIsDesktopBrowser] = useState<boolean>(() => {
-        if (globalIsDesktopBrowser !== null) return globalIsDesktopBrowser;
-        return false;
-    });
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const isIframe = window.self !== window.top;
-            const isWebPlatform = window.Telegram?.WebApp && ['weba', 'webk', 'web', 'desktop', 'unknown'].includes(window.Telegram.WebApp.platform as string);
-            const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-            
-            const isTgWeb = !!(isIframe || isWebPlatform);
-            const hasWebAuth = !!localStorage.getItem('telegram_web_auth');
-            const isDesktop = !isTMA && hasWebAuth && window.innerWidth >= 768;
-
-            globalIsTelegramWeb = isTgWeb;
-            globalIsDesktopBrowser = isDesktop;
-
-            setIsTelegramWeb(isTgWeb);
-            setIsDesktopBrowser(isDesktop);
-        }
-    }, []);
-
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const completed = localStorage.getItem("onboarding_completed");
@@ -87,7 +61,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
         (cleanPathname.endsWith('/game') && !activeGameId && !urlGameId) ||
         (cleanPathname.endsWith('/academy') && !cleanPathname.includes('/lesson/') && !cleanPathname.includes('/puzzle'));
 
-    const shouldHideNavbar = isNavbarHiddenByContext || showOnboarding || (
+    const shouldHideNavbar = showOnboarding || (!isMainNavbarPage && isNavbarHiddenByContext) || (
         !isMainNavbarPage && !!activeGameId
     );
 
@@ -97,39 +71,39 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
 
             {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
-                    <button 
+                    <Button
+                        variant="ghost"
+                        aria-label="Notifications"
                         onClick={() => setShowNotifications(true)}
-                        className="relative w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
+                        className="relative w-11 h-11 p-0 flex items-center justify-center rounded-xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >
                         <FiBell size={15} />
                         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-                    </button>
+                    </Button>
                     {!pathname.endsWith('/settings') && (
-                        <Link href={`/${locale}/settings`}>
-                            <button className="w-8 h-8 pb-[0.5px] flex items-center justify-center rounded-xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer">
-                                <FiSettings size={15} />
-                            </button>
+                        <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button">
+                            <FiSettings size={20} aria-hidden="true" />
                         </Link>
                     )}
                 </div>
             )}
 
-            <main className={`relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
+            <div className={`app-content relative z-10 w-full flex flex-col items-center min-h-[100dvh] ${
                 isDesktopBrowser
-                    ? 'md:pl-[72px] pt-6 pb-12'
-                    : 'pt-[calc(20px+var(--app-safe-top))] pb-[calc(88px+var(--app-safe-bottom))]'
+                    ? 'app-content--desktop'
+                    : 'app-content--mobile'
             } ${className}`}>
                 {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] mt-3.5 opacity-40 animate-pulse text-brand-primary">
+                        <span className="text-caption font-semibold normal-case tracking-normal mt-3.5 opacity-40 animate-pulse text-brand-primary">
                             INITIALIZING ARENA...
                         </span>
                     </div>
                 ) : (
                     children
                 )}
-            </main>
+            </div>
 
             <Navbar hide={shouldHideNavbar} />
 

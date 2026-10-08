@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Player",
+    "ai_engine": "AI opponent",
     "title": "Chess App",
     "welcome": "Welcome, {name}",
     "welcome_greeting": "Welcome,",
@@ -63,12 +65,15 @@
     "nav_learn": "Learn",
     "nav_quests": "Quests",
     "nav_settings": "Settings",
+    "nav_wallet": "Wallet",
     "nav_profile": "Profile",
     "nav_logout": "Logout",
     "nav_marketplace": "Marketplace",
     "draws": "Draws"
   },
   "Marketplace": {
+    "cost": "Cost",
+    "confirm": "Confirm",
     "title": "Marketplace",
     "subtitle": "Exchange XP to unlock premium rewards & themes",
     "back": "Back",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Year-long premium access. Maximizes all benefits with a 30% discount vs monthly."
   },
   "Settings": {
+    "gameplay_visuals": "Gameplay & visuals",
+    "notifications_wallet": "Notifications & wallet",
+    "support_security": "Support & security",
+    "command_center": "Command center",
+    "admin": "Admin",
+    "manage_admin": "Manage users, payouts & broadcasts",
     "return": "Back",
     "config_core": "v1.7",
     "title": "Settings",
@@ -154,6 +165,7 @@
     "select": "Choose Language"
   },
   "Gamification": {
+    "claim_xp_btn": "Claim XP",
     "daily_missions": "Daily Tasks",
     "claim": "Claim",
     "daily_win": "Win a Match",
@@ -229,6 +241,11 @@
     "level": "Level"
   },
   "Academy": {
+    "academy_progress": "Academy progress",
+    "master_the_game": "Master the game step by step",
+    "completed": "Completed",
+    "course_completion": "Course completion",
+    "achievements": "Achievements",
     "title": "Academy",
     "subtitle": "Chess Puzzles & Lessons",
     "daily_challenge": "Daily Challenge",
@@ -281,6 +298,13 @@
     "review_level_1": "Review Level 1"
   },
   "Game": {
+    "ai_select_difficulty": "Choose AI difficulty",
+    "ai_difficulty_help": "Choose a level for your practice game.",
+    "ai_easy": "Easy",
+    "ai_medium": "Medium",
+    "ai_hard": "Hard",
+    "ai_start_training": "Start practice game",
+    "ai_create_failed": "Could not start an AI game. Please try again.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Finding Opponent",
     "searching_close_hint": "You can close the app — we'll message you on Telegram when an opponent is found.",
@@ -373,6 +397,7 @@
     "move_history": "Move History",
     "game_crashed": "Game Connection Lost",
     "game_crashed_desc": "The connection to the game server was interrupted. You can try to reload the game.",
+    "analysis_unavailable": "Engine analysis is unavailable. Try again.",
     "reload_game_btn": "Reload Game",
     "match_found": "MATCH FOUND",
     "stakes_locked": "Stakes locked",
@@ -415,12 +440,13 @@
     "xp_reward": "XP Reward"
   },
   "Wallet": {
+    "balance_trend": "Balance history (USDT)",
     "title": "Web3 Wallet",
     "connected_status": "TON Wallet Connected",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "Manage wallet",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -504,6 +530,7 @@
     "card_destination_label": "Delivery Wallet (Your Address)",
     "card_await_funds_notice": "After purchase, USDT arrives in your wallet (may take a few minutes). Then switch to the Crypto tab to top up your platform balance.",
     "balance_unavailable": "Balance unavailable — tap to retry",
+    "account_unavailable": "We couldn't verify your account. Retry before transferring funds.",
     "link_wallet_hint": "Link your TON wallet",
     "gas_link": "⛽ Have USDT but no TON for gas? Get a free splash",
     "gas_requesting": "Requesting gas…",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Share",
+    "invite_title": "You are invited to play",
+    "invite_description": "Scan the code or open Telegram to join a chess game.",
+    "invite_qr_alt": "Referral invitation QR code",
+    "open_invite": "Open invitation in Telegram",
+    "invalid_invite": "This invitation link is invalid.",
     "dashboard_title": "Referral Program",
     "total_label": "Total",
     "total_sublabel": "Referrals",

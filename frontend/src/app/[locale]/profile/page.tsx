@@ -1,19 +1,20 @@
 'use client';
 
+import { PageHeader } from '@/components/ui/PageHeader';
+import Link from 'next/link';
+import { FiSettings, FiCreditCard } from 'react-icons/fi';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { getFullPhotoUrl } from "@/lib/api";
 import { useState } from "react";
 import { FaChessKing, FaChessPawn, FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
-import DailyGoalsBento from "@/components/DailyGoalsBento";
 import { Card } from "@/components/ui/Card";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useUser } from "@/context/UserContext";
 
 // SVG Elo history chart component
@@ -84,7 +85,6 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
 export default function ProfilePage() {
  const t = useTranslations('Index');
  const locale = useLocale();
- const router = useRouter();
 
  // Dynamic locales mapping for Chess.com-style metric parameters
  const localizedLabels: Record<string, Record<string, string>> = {
@@ -102,9 +102,20 @@ export default function ProfilePage() {
 
  const labels = localizedLabels[locale] || localizedLabels['en'];
 
- const { stats } = useUser();
+ const { stats, statsError, syncStats } = useUser();
  const [photoError, setPhotoError] = useState(false);
- const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
+  const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
+
+  if (statsError && !stats) {
+    return (
+      <LayoutWrapper className="w-full" hideHeaderControls>
+        <main className="w-full app-page mx-auto">
+          <PageHeader title={t('nav_profile')} />
+          <ErrorState title={t('load_failed')} message={t('load_failed')} onRetry={() => syncStats()} retryLabel={t('retry')} />
+        </main>
+      </LayoutWrapper>
+    );
+  }
 
   // Parse unlocked items
   const unlockedItems: string[] = (() => {
@@ -119,36 +130,36 @@ export default function ProfilePage() {
   })();
 
   // Determine active profile border
-  let borderOuterClass = "absolute inset-0 rounded-full border border-brand-primary/30 animate-pulse scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none";
+  let borderOuterClass = "absolute inset-0 rounded-full border border-brand-primary/30 scale-110 shadow-[0_0_24px_rgba(var(--brand-primary),0.2)] pointer-events-none";
   let borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-2 border-brand-primary/10 flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.15)]";
   
   if (unlockedItems.includes("border_platinum")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-purple-500/50 animate-pulse scale-110 shadow-[0_0_32px_rgba(168,85,247,0.4)] pointer-events-none";
+    borderOuterClass = "absolute inset-0 rounded-full border border-purple-500/50 scale-110 shadow-[0_0_32px_rgba(168,85,247,0.4)] pointer-events-none";
     borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-purple-500/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.3)]";
   } else if (unlockedItems.includes("border_gold")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-amber-400/50 animate-pulse scale-110 shadow-[0_0_32px_rgba(251,191,36,0.4)] pointer-events-none";
+    borderOuterClass = "absolute inset-0 rounded-full border border-amber-400/50 scale-110 shadow-[0_0_32px_rgba(251,191,36,0.4)] pointer-events-none";
     borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-amber-400/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(251,191,36,0.3)]";
   } else if (unlockedItems.includes("border_silver")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-slate-300/50 animate-pulse scale-110 shadow-[0_0_24px_rgba(203,213,225,0.4)] pointer-events-none";
+    borderOuterClass = "absolute inset-0 rounded-full border border-slate-300/50 scale-110 shadow-[0_0_24px_rgba(203,213,225,0.4)] pointer-events-none";
     borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-slate-300/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(203,213,225,0.2)]";
   } else if (unlockedItems.includes("border_bronze")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-orange-700/50 animate-pulse scale-110 shadow-[0_0_24px_rgba(194,65,12,0.4)] pointer-events-none";
+    borderOuterClass = "absolute inset-0 rounded-full border border-orange-700/50 scale-110 shadow-[0_0_24px_rgba(194,65,12,0.4)] pointer-events-none";
     borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-orange-700/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(194,65,12,0.2)]";
   }
 
   return (
     <LayoutWrapper className="w-full" hideHeaderControls>
-      <main className="w-full max-w-md md:max-w-xl lg:max-w-3xl flex flex-col items-center px-4 mx-auto space-y-4 pt-1">
+      <main className="w-full app-page flex flex-col items-center mx-auto ">
 
+  <PageHeader title={t('nav_profile')} actions={<>
+    <Link href={`/${locale}/wallet`} aria-label={t('nav_wallet')} className="ui-icon-button"><FiCreditCard size={20} /></Link>
+    <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button"><FiSettings size={20} /></Link>
+  </>} />
   {/* Profile Header */}
   <header className="w-full flex flex-col items-center text-center">
   <div className="relative mb-3">
    {/* Outer rotating/pulsing ring */}
-   <motion.div 
-     animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.6, 1, 0.6] }} 
-     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-     className={borderOuterClass} 
-   />
+   <div className={borderOuterClass} aria-hidden="true" />
    <div className={borderInnerClass}>
   {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
   // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
@@ -163,19 +174,19 @@ export default function ProfilePage() {
   )}
   </div>
     {/* Floating Level & Tier Badge */}
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full border border-amber-400/40 bg-brand-surface text-amber-400 text-[9px] font-black uppercase tracking-wider whitespace-nowrap shadow-sm flex items-center gap-1">
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full border border-amber-400/40 bg-brand-surface text-amber-400 text-caption font-semibold normal-case tracking-normal whitespace-nowrap shadow-sm flex items-center gap-1">
       <span>LVL {stats?.level || 1}</span>
-      <span className="text-[8px]">⚡</span>
+      <span className="text-caption">⚡</span>
     </div>
   </div>
-  <h1 className="text-xl sm:text-2xl font-black text-brand-primary tracking-tighter uppercase mb-0.5 header-balanced">
+  <h2 className="text-xl sm:text-2xl font-semibold text-brand-primary tracking-tighter normal-case mb-0.5 header-balanced">
   {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : (t.has('combatant') ? t('combatant') : 'Combatant'))}
-  </h1>
+  </h2>
   
   {stats && stats.study_streak > 0 && (
      <div className="flex items-center gap-1.5 mb-2.5 text-brand-gold bg-brand-gold/10 px-3 py-0.5 rounded-full border border-brand-gold/20 shadow-neon">
-         <FaFire className="text-xs" />
-         <span className="text-[9px] font-black uppercase tracking-widest">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
+         <FaFire className="text-sm" />
+         <span className="text-caption font-semibold normal-case tracking-normal">{stats.study_streak} {t.has('day_streak') ? t('day_streak') : 'Day Streak'}</span>
      </div>
   )}
   
@@ -197,12 +208,12 @@ export default function ProfilePage() {
       </div>
     ) : (
       <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface shadow-sm">
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">{t('elo')}</span>
-        <span className="text-2xl font-black text-brand-primary leading-tight">{stats.elo || 1000}</span>
-        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
-          <span>{labels.global_rank} #{stats.global_rank || 1}</span>
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-1">{t('elo')}</span>
+        <span className="text-2xl font-semibold text-brand-primary leading-tight">{Number.isFinite(stats.elo) ? stats.elo : '—'}</span>
+        <div className="flex items-center gap-1.5 mt-1.5 text-caption font-semibold text-brand-muted normal-case tracking-normal">
+          <span>{labels.global_rank} {Number.isFinite(stats.global_rank) ? `#${stats.global_rank}` : '—'}</span>
           <span>•</span>
-          <span>{stats.percentile?.toFixed(0) || 100}%</span>
+          <span>{Number.isFinite(stats.percentile) ? `${stats.percentile.toFixed(0)}%` : '—'}</span>
         </div>
       </div>
     )}
@@ -216,9 +227,9 @@ export default function ProfilePage() {
       </div>
     ) : (
       <div className="p-4 flex flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface shadow-sm">
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">{labels.games_played}</span>
-        <span className="text-2xl font-black text-brand-primary leading-tight">{stats.games_played || 0}</span>
-        <div className="flex items-center gap-1 mt-1.5 text-[10px] font-black text-brand-muted uppercase tracking-wider">
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-1">{labels.games_played}</span>
+        <span className="text-2xl font-semibold text-brand-primary leading-tight">{stats.games_played || 0}</span>
+        <div className="flex items-center gap-1 mt-1.5 text-caption font-semibold text-brand-muted normal-case tracking-normal">
           <span>{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} PTS</span>
         </div>
       </div>
@@ -242,8 +253,8 @@ export default function ProfilePage() {
   ) : (
     <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-3.5 shadow-sm">
       <div className="flex justify-between items-center px-0.5">
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{labels.breakdown}</span>
-        <span className="text-[10px] font-black text-brand-success uppercase tracking-wider">{stats.win_rate?.toFixed(1) || 0}% WR</span>
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{labels.breakdown}</span>
+        <span className="text-caption font-semibold text-brand-success normal-case tracking-normal">{stats.win_rate?.toFixed(1) || 0}% WR</span>
       </div>
 
       {/* Segmented Progress Bar */}
@@ -262,19 +273,19 @@ export default function ProfilePage() {
       {/* Metric readouts */}
       <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase text-brand-success tracking-widest">{labels.wins}</span>
-          <span className="text-xs font-black text-brand-primary mt-0.5">{stats.wins || 0}</span>
-          <span className="text-[10px] font-bold text-brand-muted">({stats.win_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-caption font-semibold normal-case text-brand-success tracking-normal">{labels.wins}</span>
+          <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.wins || 0}</span>
+          <span className="text-caption font-bold text-brand-muted">({stats.win_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col border-x border-brand-border-opacity-10">
-          <span className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest">{labels.draws}</span>
-          <span className="text-xs font-black text-brand-primary mt-0.5">{stats.draws || 0}</span>
-          <span className="text-[10px] font-bold text-brand-muted">({stats.draw_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-caption font-semibold normal-case text-slate-500 dark:text-slate-400 tracking-normal">{labels.draws}</span>
+          <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.draws || 0}</span>
+          <span className="text-caption font-bold text-brand-muted">({stats.draw_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase text-brand-danger tracking-widest">{labels.losses}</span>
-          <span className="text-xs font-black text-brand-primary mt-0.5">{stats.losses || 0}</span>
-          <span className="text-[10px] font-bold text-brand-muted">({stats.loss_rate?.toFixed(0) || 0}%)</span>
+          <span className="text-caption font-semibold normal-case text-brand-danger tracking-normal">{labels.losses}</span>
+          <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.losses || 0}</span>
+          <span className="text-caption font-bold text-brand-muted">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
       </div>
     </div>
@@ -282,22 +293,14 @@ export default function ProfilePage() {
   </section>
 
   {/* ELO History Chart */}
-  {stats && (
+  {stats && Number.isFinite(stats.elo) && (
     <section aria-labelledby="elo-history-heading" className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-2 shadow-sm">
       <div className="flex justify-between items-center px-1 mb-2">
-        <h2 id="elo-history-heading" className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Rating Trajectory</h2>
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Last 10 Games</span>
+        <h2 id="elo-history-heading" className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Rating Trajectory</h2>
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Last 10 Games</span>
       </div>
-      <EloHistoryChart recentGames={stats.recent_games} currentElo={stats.elo || 1000} />
+      <EloHistoryChart recentGames={stats.recent_games} currentElo={Number.isFinite(stats.elo) ? stats.elo : 0} />
     </section>
-  )}
-
-  {/* Daily Combat Goals Bento */}
-  {stats && (
-    <DailyGoalsBento
-      percentile={stats.percentile || 74}
-      xpCurrent={Math.min(300, (stats.xp || 0) % 500)}
-    />
   )}
 
  {/* Gamification Sections */}
@@ -307,18 +310,18 @@ export default function ProfilePage() {
  {/* Inventory & Boosters */}
  {stats && (stats.xp_multiplier > 1.0 || unlockedItems.length > 0) && (
    <section aria-labelledby="inventory-heading" className="w-full space-y-4">
-     <h2 id="inventory-heading" className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">Inventory & Boosters</h2>
+     <h2 id="inventory-heading" className="text-sm font-semibold text-brand-muted normal-case tracking-normal">Inventory & Boosters</h2>
      <div className="grid grid-cols-2 gap-3">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
          <Card variant="glass" className="p-4 border-brand-primary/30 shadow-premium bg-gradient-to-br from-brand-primary/15 to-transparent relative overflow-hidden flex flex-col items-center text-center">
            <div className="absolute -right-4 -top-4 text-6xl opacity-10">🚀</div>
-           <span className="text-[10px] font-black text-purple-400/80 uppercase tracking-widest mb-2">Active Booster</span>
-           <span className="text-2xl font-black text-brand-primary drop-shadow-md">
+           <span className="text-caption font-semibold text-purple-400/80 normal-case tracking-normal mb-2">Active Booster</span>
+           <span className="text-2xl font-semibold text-brand-primary drop-shadow-md">
              {stats.xp_multiplier}x XP
            </span>
            {stats.multiplier_expires_at && (
-             <span className="text-[10px] text-purple-400/60 font-bold mt-2">
+             <span className="text-caption text-purple-400/60 font-bold mt-2">
                Expires: {new Date(stats.multiplier_expires_at).toLocaleDateString()}
              </span>
            )}
@@ -327,11 +330,11 @@ export default function ProfilePage() {
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
          <Card variant="glass" className="p-4 border-brand-border-opacity-20 shadow-premium flex flex-col items-center text-center justify-center">
-           <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Cosmetics Owned</span>
-           <span className="text-2xl font-black text-brand-primary">
+           <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-1">Cosmetics Owned</span>
+           <span className="text-2xl font-semibold text-brand-primary">
              {unlockedItems.length}
            </span>
-           <span className="text-[9px] font-bold text-brand-muted uppercase tracking-widest mt-1">Profile Styles</span>
+           <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-1">Profile Styles</span>
          </Card>
        )}
      </div>
@@ -340,7 +343,7 @@ export default function ProfilePage() {
 
  {/* Recent Games History */}
  <section aria-labelledby="recent-activity-heading" className="w-full space-y-4">
-   <h2 id="recent-activity-heading" className="text-sm font-black text-brand-muted uppercase tracking-[0.2em]">{t('recent_activity')}</h2>
+   <h2 id="recent-activity-heading" className="text-sm font-semibold text-brand-muted normal-case tracking-normal">{t('recent_activity')}</h2>
    
    {!stats ? (
       <SkeletonList count={3} />
@@ -362,13 +365,12 @@ export default function ProfilePage() {
              : "hover:border-brand-primary/30 bg-brand-surface border-brand-border-opacity-20 shadow-[0_4px_16px_rgba(0,0,0,0.1)]";
 
          return (
-           <motion.li
-             key={game.game_id}
-             whileHover={{ scale: 1.01 }}
-             whileTap={{ scale: 0.99 }}
-             onClick={() => router.push(`/${locale}/game/review/${game.game_id}`)}
-             className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all duration-300 relative overflow-hidden list-item-contain ${rowGlow}`}
-           >
+           <li key={game.game_id} className="list-item-contain">
+             <Link
+               href={`/${locale}/game/review?gameId=${encodeURIComponent(game.game_id)}`}
+               aria-label={`${t('recent_activity')}: ${game.opponent?.name || t('ai_engine')}, ${game.result}`}
+               className={`p-4 rounded-2xl border flex justify-between items-center min-h-11 transition-colors relative overflow-hidden focus-visible:outline-2 focus-visible:outline-brand-action ${rowGlow}`}
+             >
              {/* Glows removed for performance in repeating lists */}
 
              <div className="flex items-center gap-3 relative z-10 min-w-0 flex-1 pr-2">
@@ -376,29 +378,30 @@ export default function ProfilePage() {
                  <FaChessPawn className="text-brand-muted drop-shadow-sm" />
                </div>
                <div className="flex flex-col min-w-0 flex-1">
-                 <span className="text-xs font-black text-brand-primary uppercase tracking-tight truncate header-balanced">
-                   vs {game.opponent?.name || (typeof t?.has === 'function' && t.has('ai_engine') ? t('ai_engine') : 'AI Engine')}
+                 <span className="text-sm font-semibold text-brand-primary normal-case tracking-tight truncate header-balanced">
+                   vs {game.opponent?.name || t('ai_engine')}
                  </span>
-                 <span className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] truncate">
-                   {t('opponent_elo')}: {game.opponent?.elo || 1000}
+                 <span className="text-caption font-bold text-brand-muted normal-case tracking-normal truncate">
+                   {t('opponent_elo')}: {game.opponent?.elo ?? '—'}
                  </span>
                </div>
              </div>
              
              <div className="flex items-center gap-4 relative z-10 shrink-0">
                <div className="flex flex-col items-end">
-                 <span className={`px-2 py-0.5 rounded border text-[10px] font-black uppercase tracking-widest ${badgeColor}`}>
+                 <span className={`px-2 py-0.5 rounded border text-caption font-semibold normal-case tracking-normal ${badgeColor}`}>
                    {game.result}
                  </span>
-                 <span className={`text-[10px] font-black mt-1.5 drop-shadow-sm ${
+                 <span className={`text-caption font-semibold mt-1.5 drop-shadow-sm ${
                     game.elo_change > 0 ? 'text-brand-success' : game.elo_change < 0 ? 'text-brand-danger' : 'text-brand-muted'
                   }`}>
                     {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} ELO
                   </span>
                </div>
-               <span className="text-brand-muted text-xs">▶</span>
+               <span className="text-brand-muted text-sm">▶</span>
              </div>
-           </motion.li>
+             </Link>
+           </li>
          );
        })}
      </ol>

@@ -64,7 +64,7 @@ export default function FriendInviteDrawer({
             type="text"
             value={inviteLink}
             onClick={(e) => (e.currentTarget as HTMLInputElement).select()}
-            className="w-full py-2.5 px-3 rounded-xl bg-brand-surface border border-brand-border text-xs font-mono text-brand-primary text-center select-all focus:outline-none focus:border-brand-primary/40 shadow-inner"
+            className="w-full py-2.5 px-3 rounded-xl bg-brand-surface border border-brand-border text-sm font-mono text-brand-primary text-center select-all focus:outline-none focus:border-brand-primary/40 shadow-inner"
           />
         </div>
         
@@ -73,7 +73,7 @@ export default function FriendInviteDrawer({
             variant="primary"
             size="lg"
             onClick={shareInviteLink}
-            className="w-full uppercase font-black tracking-wider flex items-center justify-center gap-2"
+            className="w-full normal-case font-semibold tracking-normal flex items-center justify-center gap-2"
           >
             <FaShareAlt size={12} />
             <span>{tg('share_invite')}</span>

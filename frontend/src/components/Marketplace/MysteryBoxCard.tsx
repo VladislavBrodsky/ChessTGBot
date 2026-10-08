@@ -57,13 +57,13 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                             {cfg.glyph}
                         </span>
                         <div className="min-w-0 text-left">
-                            <span className="block text-[8px] font-black uppercase tracking-[0.16em] truncate" style={{ color: accent }}>{cfg.metal}</span>
-                            <span className="block text-[7px] font-bold uppercase tracking-widest text-brand-muted truncate">{cfg.piece}</span>
+                            <span className="block text-caption font-semibold normal-case tracking-normal truncate" style={{ color: accent }}>{cfg.metal}</span>
+                            <span className="block text-caption font-bold normal-case tracking-normal text-brand-muted truncate">{cfg.piece}</span>
                         </div>
                     </div>
                     {cfg.limited && (
                         <span
-                            className="shrink-0 px-2 py-1 rounded-full text-[7px] font-black uppercase tracking-[0.14em] border"
+                            className="shrink-0 px-2 py-1 rounded-full text-caption font-semibold normal-case tracking-normal border"
                             style={{ color: accent, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
                         >
                             {t('limited')}
@@ -84,8 +84,8 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                 </div>
 
                 <div className="text-left z-10 min-h-[45px]">
-                    <h3 className="text-[13px] font-black uppercase tracking-tight leading-tight text-brand-primary">{cfg.name}</h3>
-                    <p className="text-[9px] text-brand-muted leading-snug mt-1 font-medium">{cfg.tagline}</p>
+                    <h3 className="text-[13px] font-semibold normal-case tracking-tight leading-tight text-brand-primary">{cfg.name}</h3>
+                    <p className="text-caption text-brand-muted leading-snug mt-1 font-medium">{cfg.tagline}</p>
                     {cfg.limited && <SeasonalCountdown className="mt-1.5" accent={accent} />}
                 </div>
 
@@ -93,7 +93,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     type="button"
                     onClick={() => setShowDetails(true)}
                     aria-haspopup="dialog"
-                    className="z-10 min-h-11 w-full mt-1 flex items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-[8px] font-black uppercase tracking-[0.15em] text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                    className="ui-tap-target z-10 min-h-11 w-full mt-1 flex items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
                     <span>{t('whats_inside')}</span>
                     <FiChevronDown size={11} className="-rotate-90" />
@@ -103,7 +103,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     type="button"
                     disabled={locked}
                     onClick={onUnbox}
-                    className={`z-10 w-full min-h-11 mt-1 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 relative overflow-hidden ${
+                    className={`ui-tap-target z-10 w-full min-h-11 mt-1 rounded-xl text-caption font-semibold normal-case tracking-normal transition-all duration-300 relative overflow-hidden ${
                         locked
                             ? 'bg-brand-elevated/80 text-brand-muted border border-brand-border-opacity-20 cursor-not-allowed shadow-inner'
                             : 'bg-amber-500 text-brand-void font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] active:scale-[0.98] cursor-pointer'

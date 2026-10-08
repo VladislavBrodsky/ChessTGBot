@@ -34,28 +34,28 @@ export function DepositSuccessView({
         animate={{ scale: 1, opacity: 1 }}
         className="w-full max-w-sm rounded-[24px] p-6 text-center relative border border-emerald-500/30 bg-brand-void shadow-2xl space-y-4 transform-gpu will-change-transform"
       >
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-black animate-pulse">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto text-3xl font-semibold animate-pulse">
           ✓
         </div>
         <div className="space-y-1">
-          <h2 className="text-lg font-black text-emerald-500 uppercase tracking-wider animate-pulse-slow">
+          <h2 className="text-lg font-semibold text-emerald-500 normal-case tracking-normal animate-pulse-slow">
             Top-Up Successful!
           </h2>
-          <p className="text-xs text-brand-muted font-bold uppercase tracking-widest">
+          <p className="text-sm text-brand-muted font-bold normal-case tracking-normal">
             {successMessage}
           </p>
         </div>
         <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
-          <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45">
+          <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45">
             Updated Balance
           </span>
-          <div className="text-2xl font-black text-emerald-400 mt-1">
-            ${(walletBalance ? walletBalance / 100 : 0).toFixed(2)} USDT
+          <div className="text-2xl font-semibold text-emerald-400 mt-1">
+            {typeof walletBalance === 'number' && Number.isFinite(walletBalance) ? `$${(walletBalance / 100).toFixed(2)}` : '—'} USDT
           </div>
         </div>
-        <button
+        <button type="button"
           onClick={onClose}
-          className="w-full py-3 rounded-xl bg-emerald-500 text-brand-void text-xs font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+          className="ui-tap-target w-full py-3 rounded-xl bg-emerald-500 text-brand-void text-sm font-semibold normal-case tracking-normal shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
         >
           Acknowledge & Close
         </button>

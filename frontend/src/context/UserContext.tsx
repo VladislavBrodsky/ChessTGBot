@@ -1,9 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 // apiFetch removed since we useSWRFetch
 import { useSWRFetch } from '@/hooks/useSWRFetch';
-import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
+import { usePathname } from 'next/navigation';
+import { getInitDataNow, waitForInitData } from '@/lib/telegramAuth';
 
 interface UserContextType {
     walletBalance: number;
@@ -47,17 +48,21 @@ const STATS_SWR_OPTIONS = {
 };
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-    const isAuthenticated = useCallback((): boolean => {
-        if (typeof window === 'undefined') return false;
-        const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-        // Runs during render; localStorage can throw inside Telegram Web's cross-origin
-        // (third-party) iframe when the browser blocks third-party storage.
-        let hasWebAuth = false;
-        try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
-        return isTMA || hasWebAuth || hasE2ETestIdentity();
-    }, []);
-
-    const authenticated = isAuthenticated();
+    const pathname = usePathname();
+    const [authenticated, setAuthenticated] = useState(false);
+    useEffect(() => {
+        let cancelled = false;
+        const current = Boolean(getInitDataNow());
+        setAuthenticated(current);
+        if (!current) {
+            // The Telegram SDK may arrive after the first render. Reuse the same
+            // readiness gate as apiFetch so SWR does not stay disabled forever.
+            void waitForInitData().then(credential => {
+                if (!cancelled) setAuthenticated(Boolean(credential));
+            });
+        }
+        return () => { cancelled = true; };
+    }, [pathname]);
     const { data: balanceData, error: balanceSWR_Error, isLoading: loadingBalance, mutate: syncBalance } = useSWRFetch(
         authenticated ? '/api/v1/wallet/balance' : null,
         BALANCE_SWR_OPTIONS,

@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Jugador",
+    "ai_engine": "Rival de IA",
     "title": "Ajedrez App",
     "welcome": "Bienvenido, {name}",
     "welcome_greeting": "Hola,",
@@ -63,12 +65,15 @@
     "nav_learn": "Aprender",
     "nav_quests": "Misiones",
     "nav_settings": "Ajustes",
+    "nav_wallet": "Billetera",
     "nav_profile": "Perfil",
     "nav_logout": "Cerrar sesión",
     "nav_marketplace": "Mercado",
     "draws": "Empates"
   },
   "Marketplace": {
+    "cost": "Costo",
+    "confirm": "Confirmar",
     "title": "Mercado",
     "subtitle": "Cambia XP para desbloquear recompensas y temas premium",
     "back": "Atrás",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Acceso premium anual. Maximiza todos los beneficios con un 30% de descuento frente al mensual."
   },
   "Settings": {
+    "gameplay_visuals": "Juego y apariencia",
+    "notifications_wallet": "Notificaciones y billetera",
+    "support_security": "Soporte y seguridad",
+    "command_center": "Centro de control",
+    "admin": "Administrador",
+    "manage_admin": "Gestionar usuarios, pagos y avisos",
     "return": "Voltar",
     "config_core": "CONFIG NÚCLEO • V1.5",
     "title": "Configuración",
@@ -154,6 +165,7 @@
     "select": "Elige Idioma"
   },
   "Gamification": {
+    "claim_xp_btn": "Reclamar XP",
     "daily_missions": "Tareas Diarias",
     "claim": "Reclamar",
     "daily_win": "Ganar una Partida",
@@ -229,6 +241,11 @@
     "level": "Nivel"
   },
   "Academy": {
+    "academy_progress": "Progreso en la academia",
+    "master_the_game": "Domina el juego paso a paso",
+    "completed": "Completado",
+    "course_completion": "Progreso del curso",
+    "achievements": "Logros",
     "title": "Academia",
     "subtitle": "Rompecabezas y Lecciones",
     "daily_challenge": "Desafío Diario",
@@ -281,6 +298,13 @@
     "review_level_1": "Repetir Nivel 1"
   },
   "Game": {
+    "ai_select_difficulty": "Elige la dificultad de la IA",
+    "ai_difficulty_help": "Elige un nivel para tu partida de práctica.",
+    "ai_easy": "Fácil",
+    "ai_medium": "Intermedio",
+    "ai_hard": "Difícil",
+    "ai_start_training": "Empezar partida de práctica",
+    "ai_create_failed": "No se pudo iniciar la partida contra la IA. Inténtalo de nuevo.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Buscando Oponente",
     "searching_close_hint": "Puedes cerrar la app: te avisaremos por Telegram cuando encontremos un oponente.",
@@ -371,6 +395,7 @@
     "move_history": "Historial de movimientos",
     "game_crashed": "Conexión del juego perdida",
     "game_crashed_desc": "Se interrumpió la conexión con el servidor del juego. Puedes intentar recargar el juego.",
+    "analysis_unavailable": "El análisis del motor no está disponible. Inténtalo de nuevo.",
     "reload_game_btn": "Recargar juego",
     "reject": "Rechazar",
     "back": "Atrás",
@@ -415,12 +440,13 @@
     "xp_reward": "Recompensa XP"
   },
   "Wallet": {
+    "balance_trend": "Historial de saldo (USDT)",
     "title": "Billetera Web3",
     "connected_status": "Billetera TON Conectada",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "Gestionar billetera",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "Cartera de entrega (tu dirección)",
     "card_await_funds_notice": "Tras la compra, el USDT llega a tu cartera (unos minutos). Luego cambia a la pestaña Cripto para recargar tu saldo.",
     "balance_unavailable": "Saldo no disponible — toca para reintentar",
+    "account_unavailable": "No pudimos verificar tu cuenta. Reintenta antes de transferir fondos.",
     "link_wallet_hint": "Vincula tu billetera TON",
     "tx_game_against_ai": "Partida contra la IA",
     "tx_game_free_pvp": "Partida gratis contra otros jugadores",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Compartir",
+    "invite_title": "Te invitan a jugar",
+    "invite_description": "Escanea el código o abre Telegram para jugar al ajedrez.",
+    "invite_qr_alt": "Código QR de invitación",
+    "open_invite": "Abrir invitación en Telegram",
+    "invalid_invite": "Este enlace de invitación no es válido.",
     "dashboard_title": "Programa de Referidos",
     "total_label": "Total",
     "total_sublabel": "Referidos",

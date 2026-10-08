@@ -15,8 +15,8 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(({
 }, ref) => {
   
   // Enforcing the typography hierarchy rule from the audit: 
-  // Badges get the bold uppercase tracking-widest styling
-  const baseClasses = 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border';
+  // Badges get the bold normal-case tracking-normal styling
+  const baseClasses = 'inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold normal-case tracking-normal border';
   
   const variantClasses = {
     primary: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',

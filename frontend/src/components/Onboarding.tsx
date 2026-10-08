@@ -140,9 +140,9 @@ export default function Onboarding({ onClose }: OnboardingProps) {
         className="glass-panel w-[calc(100%-2rem)] max-w-[420px] max-h-[95vh] rounded-[32px] p-6 sm:p-8 shadow-premium flex flex-col justify-between min-h-[450px] sm:min-h-[500px] relative z-10 overflow-y-auto no-scrollbar"
       >
         {/* Skip button top right */}
-        <button
+        <button type="button"
           onClick={handleComplete}
-          className="absolute top-5 right-5 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none"
+          className="ui-tap-target absolute top-5 right-5 text-brand-muted hover:text-brand-primary transition-colors p-2 z-20 rounded-full focus:outline-none"
           title={t('skip')}
           aria-label={t('skip')}
         >
@@ -179,10 +179,10 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               </div>
 
               {/* Title & Subtitle */}
-              <span className={`text-xs font-black tracking-[0.2em] uppercase mb-3 ${slides[currentSlide].accentColor}`}>
+              <span className={`text-sm font-semibold tracking-normal normal-case mb-3 ${slides[currentSlide].accentColor}`}>
                 {slides[currentSlide].subtitle}
               </span>
-              <h2 id="onboarding-title" className="text-3xl font-black text-brand-primary tracking-tight mb-4 leading-tight">
+              <h2 id="onboarding-title" className="text-3xl font-semibold text-brand-primary tracking-tight mb-4 leading-tight">
                 {slides[currentSlide].title}
               </h2>
 
@@ -199,7 +199,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
           {/* Slide Indicator Dots */}
           <div className="flex justify-center gap-2.5" role="tablist" aria-label="Onboarding Progress">
             {slides.map((_, idx) => (
-              <button
+              <button type="button"
                 key={idx}
                 onClick={() => {
                   setDirection(idx > currentSlide ? 1 : -1);
@@ -208,7 +208,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
                 role="tab"
                 aria-selected={idx === currentSlide}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-500 focus:outline-none ${
+                className={`ui-tap-target h-2.5 rounded-full transition-all duration-500 focus:outline-none ${
                   idx === currentSlide 
                     ? 'w-10 bg-brand-primary shadow-[var(--shadow-neon)]' 
                     : 'w-2.5 bg-brand-border hover:bg-brand-muted'
@@ -220,19 +220,19 @@ export default function Onboarding({ onClose }: OnboardingProps) {
           {/* Action Buttons */}
           <div className="flex w-full gap-4">
             {currentSlide > 0 && (
-              <button
+              <button type="button"
                 onClick={handleBack}
                 aria-label={t('back')}
-                className="glass-button flex items-center justify-center w-14 h-14 rounded-2xl active:scale-95 flex-shrink-0"
+                className="ui-tap-target glass-button flex items-center justify-center w-14 h-14 rounded-2xl active:scale-95 flex-shrink-0"
               >
                 <FaArrowLeft className="text-lg" />
               </button>
             )}
 
-            <button
+            <button type="button"
               onClick={handleNext}
               aria-label={currentSlide === slides.length - 1 ? t('get_started') : t('next')}
-              className={`flex flex-1 items-center justify-center gap-2 px-6 h-14 rounded-2xl font-black text-sm tracking-[0.15em] uppercase transition-all active:scale-95 focus:outline-none ${
+              className={`ui-tap-target flex flex-1 items-center justify-center gap-2 px-6 h-14 rounded-2xl font-semibold text-sm tracking-normal normal-case transition-all active:scale-95 focus:outline-none ${
                 currentSlide === slides.length - 1
                   ? 'action-button'
                   : 'glass-button'

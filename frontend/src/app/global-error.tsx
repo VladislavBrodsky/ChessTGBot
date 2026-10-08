@@ -37,13 +37,13 @@ export default function GlobalError({
                     padding: '0 24px',
                 }}
             >
-                <h2 style={{ fontSize: 18, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.02em', margin: '0 0 8px' }}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, textTransform: 'normal-case', letterSpacing: '-0.02em', margin: '0 0 8px' }}>
                     Something went wrong
                 </h2>
                 <p style={{ fontSize: 12, opacity: 0.5, maxWidth: 300, margin: '0 0 28px' }}>
                     The app hit an unexpected error and has been notified.
                 </p>
-                <button
+                <button className="ui-tap-target" type="button"
                     onClick={reset}
                     style={{
                         padding: '12px 32px',
@@ -53,7 +53,7 @@ export default function GlobalError({
                         color: '#080808',
                         fontSize: 11,
                         fontWeight: 800,
-                        textTransform: 'uppercase',
+                        textTransform: 'normal-case',
                         letterSpacing: '0.05em',
                         cursor: 'pointer',
                     }}

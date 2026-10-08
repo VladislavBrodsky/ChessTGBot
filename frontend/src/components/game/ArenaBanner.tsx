@@ -34,6 +34,7 @@ interface ArenaStatus {
 }
 
 const fmtCountdown = (ms: number): string => {
+  if (!Number.isFinite(ms)) return '—';
   if (ms <= 0) return '00:00';
   const s = Math.floor(ms / 1000);
   const hh = Math.floor(s / 3600);
@@ -56,6 +57,7 @@ export default function ArenaBanner() {
       const res = await apiFetch('/api/v1/arena/status');
       if (!res.ok) return;
       const data: ArenaStatus = await res.json();
+      if (!data || !['scheduled', 'live', 'settling', 'finished'].includes(data.status) || !Number.isFinite(Date.parse(data.starts_at)) || !Number.isFinite(Date.parse(data.ends_at))) return;
       if (serverOffsetRef.current === 0) {
         serverOffsetRef.current = new Date(data.server_now).getTime() - Date.now();
       }
@@ -136,20 +138,20 @@ export default function ArenaBanner() {
             <FaTrophy size={16} />
           </div>
           <div className="flex flex-col min-w-0 justify-center">
-            <span className="text-[12px] font-black uppercase tracking-[0.14em] text-brand-primary truncate leading-tight">
+            <span className="text-[12px] font-semibold normal-case tracking-normal text-brand-primary truncate leading-tight">
               {t('title')}
             </span>
             {isLive ? (
-              <span className="text-[10px] font-bold text-purple-500 uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+              <span className="text-caption font-bold text-purple-500 normal-case tracking-normal flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                 {t('live_now')} · {t('ends_in')} {fmtCountdown(endsIn)}
               </span>
             ) : arena.status === 'settling' || arena.status === 'finished' ? (
-              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
+              <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
                 {t('finished')} · {t('next_in')} {fmtCountdown(startsIn)}
               </span>
             ) : (
-              <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
+              <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
                 {t('starts_in')} {fmtCountdown(startsIn)}
               </span>
             )}
@@ -158,23 +160,23 @@ export default function ArenaBanner() {
 
         {!isLive && arena.status === 'scheduled' && (
           <div className="arena-reward-badge shrink-0 rounded-xl border px-2.5 py-2 text-right">
-            <span className="block text-[9px] font-black uppercase tracking-wider text-purple-500">XP</span>
-            <span className="block mt-0.5 text-[10px] font-black tabular-nums text-brand-primary">{prizes}</span>
+            <span className="block text-caption font-semibold normal-case tracking-normal text-purple-500">XP</span>
+            <span className="block mt-0.5 text-caption font-semibold tabular-nums text-brand-primary">{prizes}</span>
           </div>
         )}
 
         {isLive && (
           joined ? (
-            <button
+            <button type="button"
               onClick={handleLeave}
-              className="shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider border border-red-500/30 text-red-400 bg-red-500/10 active:scale-95 hover:bg-red-500/20 transition-all duration-200"
+              className="ui-tap-target shrink-0 px-4 py-2.5 rounded-xl text-caption font-semibold normal-case tracking-normal border border-red-500/30 text-red-400 bg-red-500/10 active:scale-95 hover:bg-red-500/20 transition-all duration-200"
             >
               {t('leave')}
             </button>
           ) : (
-            <button
+            <button type="button"
               onClick={handleJoin}
-              className="shrink-0 min-h-[44px] px-4 rounded-xl text-[10px] font-black uppercase tracking-wider bg-purple-500 text-brand-void hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+              className="ui-tap-target shrink-0 min-h-[44px] px-4 rounded-xl text-caption font-semibold normal-case tracking-normal bg-purple-500 text-brand-void hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
             >
               <FaBolt size={10} /> {t('join')}
             </button>
@@ -192,7 +194,7 @@ export default function ArenaBanner() {
           >
             <div className="p-3 rounded-2xl bg-brand-primary/5 border border-brand-primary/10 flex items-start gap-2.5">
               <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-brand-primary/40" />
-              <p className="text-[11px] font-medium text-brand-muted leading-relaxed">
+              <p className="text-caption font-medium text-brand-muted leading-relaxed">
                 {t('waiting_hint')}
               </p>
             </div>
@@ -203,7 +205,7 @@ export default function ArenaBanner() {
       {isLive && arena.standings.length > 0 && (
         <div className="mt-4 flex flex-col gap-1.5">
           {arena.standings.slice(0, 3).map((row) => (
-            <div key={row.user_id} className={`flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-muted'}`}>
+            <div key={row.user_id} className={`flex items-center justify-between text-caption font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-muted'}`}>
               <div className="flex items-center gap-2 truncate">
                 <span className="w-5 text-center text-[13px]">
                   {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `${row.rank}.`}
@@ -211,26 +213,26 @@ export default function ArenaBanner() {
                 <span className="truncate">{row.name} {row.user_id === arena.me?.user_id && <span className="opacity-60 font-medium">({t('you')})</span>}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="opacity-60 text-[10px] font-medium tracking-wide">
+                <span className="opacity-60 text-caption font-medium tracking-normal">
                   {row.wins}W {row.draws}D {row.losses}L
                 </span>
-                <span className="tabular-nums font-black bg-brand-surface/80 px-2 py-0.5 rounded-md text-[10px] shadow-sm">
+                <span className="tabular-nums font-semibold bg-brand-surface/80 px-2 py-0.5 rounded-md text-caption shadow-sm">
                   {row.score} {t('pts')}
                 </span>
               </div>
             </div>
           ))}
           {arena.me && arena.me.rank > 3 && (
-            <div className="flex items-center justify-between text-[11px] font-bold p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mt-0.5">
+            <div className="flex items-center justify-between text-caption font-bold p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mt-0.5">
               <div className="flex items-center gap-2 truncate">
-                <span className="w-5 text-center opacity-70 text-[11px]">{arena.me.rank}.</span>
+                <span className="w-5 text-center opacity-70 text-caption">{arena.me.rank}.</span>
                 <span className="truncate">{arena.me.name} <span className="opacity-60 font-medium">({t('you')})</span></span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="opacity-60 text-[10px] font-medium tracking-wide">
+                <span className="opacity-60 text-caption font-medium tracking-normal">
                   {arena.me.wins}W {arena.me.draws}D {arena.me.losses}L
                 </span>
-                <span className="tabular-nums font-black bg-brand-surface/80 px-2 py-0.5 rounded-md text-[10px] shadow-sm">
+                <span className="tabular-nums font-semibold bg-brand-surface/80 px-2 py-0.5 rounded-md text-caption shadow-sm">
                   {arena.me.score} {t('pts')}
                 </span>
               </div>

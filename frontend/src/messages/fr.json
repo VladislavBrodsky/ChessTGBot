@@ -1,5 +1,7 @@
 {
   "Index": {
+    "combatant": "Joueur",
+    "ai_engine": "Adversaire IA",
     "title": "Application Échecs",
     "welcome": "Bienvenue, {name}",
     "welcome_greeting": "Bienvenue,",
@@ -63,12 +65,15 @@
     "nav_learn": "Apprendre",
     "nav_quests": "Quêtes",
     "nav_settings": "Paramètres",
+    "nav_wallet": "Portefeuille",
     "nav_profile": "Profil",
     "nav_logout": "Déconnexion",
     "nav_marketplace": "Marché",
     "draws": "Nuls"
   },
   "Marketplace": {
+    "cost": "Coût",
+    "confirm": "Confirmer",
     "title": "Marché",
     "subtitle": "Échangez vos XP pour débloquer des récompenses et thèmes premium",
     "back": "Retour",
@@ -112,6 +117,12 @@
     "premium_1y_desc": "Accès premium annuel. Maximise tous les avantages avec 30% de réduction par rapport au mensuel."
   },
   "Settings": {
+    "gameplay_visuals": "Jeu et apparence",
+    "notifications_wallet": "Notifications et portefeuille",
+    "support_security": "Assistance et sécurité",
+    "command_center": "Centre de contrôle",
+    "admin": "Admin",
+    "manage_admin": "Gérer les joueurs, paiements et annonces",
     "return": "Retour",
     "config_core": "CONFIG NOYAU • V1.5",
     "title": "Paramètres",
@@ -154,6 +165,7 @@
     "select": "Choisir la Langue"
   },
   "Gamification": {
+    "claim_xp_btn": "Récupérer les XP",
     "daily_missions": "Tâches Quotidiennes",
     "claim": "Réclamer",
     "daily_win": "Gagner un Match",
@@ -229,6 +241,11 @@
     "level": "Niveau"
   },
   "Academy": {
+    "academy_progress": "Progression dans l’académie",
+    "master_the_game": "Maîtrisez le jeu étape par étape",
+    "completed": "Terminé",
+    "course_completion": "Progression du cours",
+    "achievements": "Succès",
     "title": "Académie",
     "subtitle": "Énigmes et Leçons",
     "daily_challenge": "Défi Quotidien",
@@ -281,6 +298,13 @@
     "review_level_1": "Revoir le Niveau 1"
   },
   "Game": {
+    "ai_select_difficulty": "Choisir la difficulté de l’IA",
+    "ai_difficulty_help": "Choisissez un niveau pour votre partie d’entraînement.",
+    "ai_easy": "Facile",
+    "ai_medium": "Moyen",
+    "ai_hard": "Difficile",
+    "ai_start_training": "Commencer l’entraînement",
+    "ai_create_failed": "Impossible de démarrer une partie contre l’IA. Réessayez.",
     "battle_arena": "BATTLE ARENA",
     "searching_matchmaker": "Recherche d'Adversaire",
     "searching_close_hint": "Vous pouvez fermer l'app — nous vous préviendrons sur Telegram dès qu'un adversaire sera trouvé.",
@@ -371,6 +395,7 @@
     "move_history": "Historique des coups",
     "game_crashed": "Connexion au jeu perdue",
     "game_crashed_desc": "La connexion au serveur de jeu a été interrompue. Vous pouvez essayer de recharger le jeu.",
+    "analysis_unavailable": "L’analyse du moteur est indisponible. Réessayez.",
     "reload_game_btn": "Recharger le jeu",
     "reject": "Refuser",
     "back": "Retour",
@@ -415,12 +440,13 @@
     "xp_reward": "Récompense XP"
   },
   "Wallet": {
+    "balance_trend": "Historique du solde (USDT)",
     "title": "Portefeuille Web3",
     "connected_status": "Portefeuille TON Connecté",
     "usdt_balance": "USDT Balance",
     "no_wallet": "No Wallet Connected",
     "version": "ChessPay v1",
-    "link_ton": "WALLET",
+    "link_ton": "Gérer le portefeuille",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "deposit_fee": "Deposit Fee:",
@@ -500,6 +526,7 @@
     "card_destination_label": "Portefeuille de réception (votre adresse)",
     "card_await_funds_notice": "Après l’achat, l’USDT arrive sur votre portefeuille (quelques minutes). Passez ensuite à l’onglet Crypto pour recharger votre solde.",
     "balance_unavailable": "Solde indisponible — touchez pour réessayer",
+    "account_unavailable": "Impossible de vérifier votre compte. Réessayez avant de transférer des fonds.",
     "link_wallet_hint": "Liez votre portefeuille TON",
     "tx_game_against_ai": "Partie contre l'IA",
     "tx_game_free_pvp": "Partie gratuite contre d'autres joueurs",
@@ -608,6 +635,12 @@
     "item3_date": "SOON"
   },
   "Referral": {
+    "share_invite": "Partager",
+    "invite_title": "Vous êtes invité à jouer",
+    "invite_description": "Scannez le code ou ouvrez Telegram pour jouer aux échecs.",
+    "invite_qr_alt": "Code QR de l’invitation",
+    "open_invite": "Ouvrir l’invitation dans Telegram",
+    "invalid_invite": "Ce lien d’invitation est invalide.",
     "dashboard_title": "Programme de Parrainage",
     "total_label": "Total",
     "total_sublabel": "Parrainages",

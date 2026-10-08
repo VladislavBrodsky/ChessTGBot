@@ -55,10 +55,10 @@ export default function ThemeConfirmSheet({
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(168,85,247,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
                     {/* Close Button */}
-                    <button
+                    <button aria-label="Close dialog" type="button"
                         onClick={onCancel}
                         disabled={loading}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                        className="ui-tap-target absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                     >
                         <FaTimes size={14} />
                     </button>
@@ -69,14 +69,14 @@ export default function ThemeConfirmSheet({
                     </div>
 
                     {/* Title */}
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-400 block mb-1">
+                    <span className="text-caption font-semibold normal-case tracking-normal text-purple-400 block mb-1">
                         UNLOCK THEME
                     </span>
-                    <h3 className="text-xl font-black uppercase text-brand-primary tracking-tight">
+                    <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight">
                         {themeName}
                     </h3>
                     {themeDescription && (
-                        <p className="mt-1.5 text-xs font-medium text-brand-muted max-w-xs mx-auto">
+                        <p className="mt-1.5 text-sm font-medium text-brand-muted max-w-xs mx-auto">
                             {themeDescription}
                         </p>
                     )}
@@ -84,18 +84,18 @@ export default function ThemeConfirmSheet({
                     {/* Cost vs. Balance Card */}
                     <div className="mt-5 p-4 rounded-2xl bg-brand-elevated border border-brand-border-opacity-10 grid grid-cols-2 gap-3 text-left">
                         <div>
-                            <span className="text-[9px] font-black uppercase tracking-wider text-brand-muted block">
+                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted block">
                                 UNLOCK COST
                             </span>
-                            <span className="text-base font-black text-amber-400 flex items-center gap-1.5 mt-0.5">
+                            <span className="text-base font-semibold text-amber-400 flex items-center gap-1.5 mt-0.5">
                                 <FaGem size={13} /> {priceXP.toLocaleString()} XP
                             </span>
                         </div>
                         <div className="border-l border-brand-border-opacity-10 pl-3">
-                            <span className="text-[9px] font-black uppercase tracking-wider text-brand-muted block">
+                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted block">
                                 YOUR BALANCE
                             </span>
-                            <span className="text-base font-black text-brand-primary flex items-center gap-1.5 mt-0.5">
+                            <span className="text-base font-semibold text-brand-primary flex items-center gap-1.5 mt-0.5">
                                 {userXP.toLocaleString()} XP
                             </span>
                         </div>
@@ -103,10 +103,10 @@ export default function ThemeConfirmSheet({
 
                     {/* Actions */}
                     <div className="mt-6 flex flex-col gap-2.5">
-                        <button
+                        <button type="button"
                             onClick={onConfirm}
                             disabled={loading || userXP < priceXP}
-                            className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                            className="ui-tap-target w-full py-4 rounded-2xl font-semibold normal-case tracking-normal text-sm bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {loading ? (
                                 <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
@@ -115,10 +115,10 @@ export default function ThemeConfirmSheet({
                             )}
                         </button>
 
-                        <button
+                        <button type="button"
                             onClick={onCancel}
                             disabled={loading}
-                            className="w-full py-3.5 rounded-2xl font-black uppercase tracking-widest text-[11px] text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                            className="ui-tap-target w-full py-3.5 rounded-2xl font-semibold normal-case tracking-normal text-caption text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                         >
                             CANCEL
                         </button>

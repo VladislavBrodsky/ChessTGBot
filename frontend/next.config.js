@@ -48,7 +48,8 @@ const nextConfig = {
         async headers() {
             const cspHeader = `
                 default-src 'self';
-                script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org https://*.telegram.org;
+                script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org https://*.telegram.org https://cdn.jsdelivr.net;
+                worker-src 'self' blob:;
                 style-src 'self' 'unsafe-inline';
                 img-src 'self' blob: data: https:;
                 font-src 'self' data:;

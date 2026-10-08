@@ -173,8 +173,8 @@ function BarChart({
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-3">
-        <p className="admin-chart-label text-[11px] uppercase tracking-widest font-bold">{label}</p>
-        <p className="admin-chart-total text-[11px] font-black">
+        <p className="admin-chart-label text-caption normal-case tracking-normal font-bold">{label}</p>
+        <p className="admin-chart-total text-caption font-semibold">
           {valueKey.includes('cents') ? cents(total) : fmt(total)} total
         </p>
       </div>
@@ -191,7 +191,7 @@ function BarChart({
               onClick={() => setHovered(hovered === i ? null : i)}
             >
               {hovered === i && (
-                <div className="admin-chart-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded-lg px-2 py-1 text-[10px] whitespace-nowrap z-10 pointer-events-none shadow-lg">
+                <div className="admin-chart-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded-lg px-2 py-1 text-caption whitespace-nowrap z-10 pointer-events-none shadow-lg">
                   <div className="font-bold">{d.date.slice(5)}</div>
                   <div className="admin-chart-total">{valueKey.includes('cents') ? cents(values[i]) : fmt(values[i])}</div>
                 </div>
@@ -206,7 +206,7 @@ function BarChart({
           );
         })}
       </div>
-      <div className="admin-chart-axis flex justify-between mt-1.5 text-[10px]">
+      <div className="admin-chart-axis flex justify-between mt-1.5 text-caption">
         <span>{data[0]?.date?.slice(5)}</span>
         <span className="opacity-50">14 days</span>
         <span>{data[data.length - 1]?.date?.slice(5)}</span>
@@ -247,13 +247,13 @@ function KpiCard({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-w-0 flex-1">
-        <p className="admin-kpi-value text-lg sm:text-2xl font-black leading-none tracking-wide mb-1">
+        <p className="admin-kpi-value text-lg sm:text-2xl font-semibold leading-none tracking-normal mb-1">
           {value}
         </p>
-        <p className="admin-kpi-label text-[10px] sm:text-[11px] uppercase tracking-wider font-black leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+        <p className="admin-kpi-label text-caption sm:text-caption normal-case tracking-normal font-semibold leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
           {label}
         </p>
-        {sub && <p className="admin-kpi-sub text-[10px] sm:text-[11px] mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
+        {sub && <p className="admin-kpi-sub text-caption sm:text-caption mt-1 whitespace-normal break-words leading-tight">{sub}</p>}
       </div>
     </motion.div>
   );
@@ -270,28 +270,28 @@ function Pagination({ page, pages, onPage }: { page: number; pages: number; onPa
 
   return (
     <div className="flex justify-center items-center gap-1.5 mt-5">
-      <button
+      <button type="button"
         disabled={page === 1}
         onClick={() => onPage(page - 1)}
-        className="w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
+        className="ui-tap-target w-8 h-8 rounded-lg text-sm font-semibold flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
       >‹</button>
       {visiblePages.map(p => (
-        <button
+        <button type="button"
           key={p}
           onClick={() => onPage(p)}
-          className={`w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all ${
+          className={`ui-tap-target w-8 h-8 rounded-lg text-sm font-semibold flex items-center justify-center transition-all ${
             p === page
               ? 'bg-brand-primary text-white shadow-[0_0_12px_var(--color-brand-primary)]'
               : 'bg-white/5 hover:bg-white/10 border border-white/5 text-brand-muted'
           }`}
         >{p}</button>
       ))}
-      <button
+      <button type="button"
         disabled={page >= pages}
         onClick={() => onPage(page + 1)}
-        className="w-8 h-8 rounded-lg text-xs font-black flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
+        className="ui-tap-target w-8 h-8 rounded-lg text-sm font-semibold flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 hover:bg-white/10 border border-white/5"
       >›</button>
-      <span className="text-[10px] text-brand-muted ml-1">{page}/{pages}</span>
+      <span className="text-caption text-brand-muted ml-1">{page}/{pages}</span>
     </div>
   );
 }
@@ -311,16 +311,16 @@ function AccessDenied() {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="glass-panel p-8 text-center max-w-sm md:max-w-xl lg:max-w-3xl w-full"
+        className="glass-panel p-8 text-center app-page w-full"
       >
         <div className="text-6xl mb-4">🚫</div>
-        <h1 className="text-2xl font-black mb-2 text-rose-500 shadow-neon">Access Denied</h1>
+        <h1 className="text-2xl font-semibold mb-2 text-rose-500 shadow-neon">Access Denied</h1>
         <p className="text-brand-muted text-sm mb-6">
           This panel is restricted to admin accounts only.
         </p>
-        <button 
+        <button type="button"
           onClick={() => router.back()}
-          className="glass-button w-full py-3 text-sm font-bold uppercase tracking-widest"
+          className="ui-tap-target glass-button w-full py-3 text-sm font-bold normal-case tracking-normal"
         >
           Go Back
         </button>
@@ -339,10 +339,10 @@ function DashboardTab({ stats }: { stats: Stats }) {
       {/* Greeting Banner */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-black text-white">{greeting}, Admin 👋</h2>
-          <p className="admin-kpi-sub text-[11px] mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <h2 className="text-lg font-semibold text-white">{greeting}, Admin 👋</h2>
+          <p className="admin-kpi-sub text-caption mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div className="admin-live-badge px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest">
+        <div className="admin-live-badge px-4 py-2 rounded-xl text-caption font-semibold normal-case tracking-normal">
           ● Live
         </div>
       </div>
@@ -412,7 +412,7 @@ function UsersTab() {
       {/* Search Bar */}
       <div className="flex gap-2 mb-5">
         <div className="flex-1 relative">
-          <FaUsers className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-xs" />
+          <FaUsers className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-sm" />
           <input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
@@ -421,21 +421,21 @@ function UsersTab() {
             className="w-full pl-9 pr-4 bg-[#0A0A0A]/60 backdrop-blur-xl border border-brand-primary/30 rounded-xl py-2.5 text-white text-sm outline-none focus:border-brand-primary focus:shadow-[0_0_15px_var(--color-brand-primary)] transition-all"
           />
         </div>
-        <button
+        <button type="button"
           onClick={() => { setSearch(searchInput); setPage(1); }}
-          className="action-button px-5 py-2.5 text-xs"
+          className="ui-tap-target action-button px-5 py-2.5 text-sm"
         >Search</button>
         {search && (
-          <button
+          <button type="button"
             onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-            className="glass-button px-4 py-2.5 text-xs font-bold"
+            className="ui-tap-target glass-button px-4 py-2.5 text-sm font-bold"
           >✕ Clear</button>
         )}
       </div>
 
       {/* Count + Loading indicator */}
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[11px] text-brand-muted">
+        <p className="text-caption text-brand-muted">
           {loading ? 'Loading…' : total > 0 ? `${fmt(total)} users found` : 'No results'}
         </p>
         {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />}
@@ -443,11 +443,11 @@ function UsersTab() {
 
       {/* Table */}
       <div className="glass-panel overflow-x-auto p-1">
-        <table className="w-full text-xs text-left border-collapse">
+        <table className="w-full text-sm text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
               {['User', 'ELO', 'W/L/D', 'Balance', 'Level', 'Status', ''].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-caption normal-case tracking-normal whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -467,10 +467,10 @@ function UsersTab() {
               >
                 <td className="px-4 py-3">
                   <div className="font-bold text-white group-hover:text-brand-primary transition-colors">{u.first_name} {u.last_name || ''}</div>
-                  <div className="text-[10px] text-brand-muted mt-0.5">{u.username ? `@${u.username}` : `#${u.telegram_id}`}</div>
+                  <div className="text-caption text-brand-muted mt-0.5">{u.username ? `@${u.username}` : `#${u.telegram_id}`}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="font-black text-brand-primary text-sm">{u.elo}</span>
+                  <span className="font-semibold text-brand-primary text-sm">{u.elo}</span>
                 </td>
                 <td className="px-4 py-3 text-brand-muted">
                   <span className="text-green-500">{u.wins}</span>/<span className="text-red-500">{u.losses}</span>/<span className="text-blue-400">{u.draws}</span>
@@ -479,17 +479,17 @@ function UsersTab() {
                   {cents(u.balance_cents)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-[10px] font-black border border-brand-primary/20">L{u.level}</span>
+                  <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-caption font-semibold border border-brand-primary/20">L{u.level}</span>
                 </td>
                 <td className="px-4 py-3">
                   {u.is_premium ? (
-                    <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-[10px] font-black border border-brand-primary/20">⭐ {u.premium_tier || 'PRO'}</span>
+                    <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-caption font-semibold border border-brand-primary/20">⭐ {u.premium_tier || 'PRO'}</span>
                   ) : (
-                    <span className="text-brand-muted text-[10px]">Standard</span>
+                    <span className="text-brand-muted text-caption">Standard</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-brand-primary/60 group-hover:text-brand-primary text-[11px] font-bold transition-colors">→</span>
+                  <span className="text-brand-primary/60 group-hover:text-brand-primary text-caption font-bold transition-colors">→</span>
                 </td>
               </tr>
             ))}
@@ -520,19 +520,19 @@ function UsersTab() {
               {/* Modal Header */}
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-xl font-black text-brand-primary">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-xl font-semibold text-brand-primary">
                     {selectedUser.first_name[0]}
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-white">{selectedUser.first_name} {selectedUser.last_name || ''}</h2>
-                    <p className="text-[11px] text-brand-muted">
+                    <h2 className="text-lg font-semibold text-white">{selectedUser.first_name} {selectedUser.last_name || ''}</h2>
+                    <p className="text-caption text-brand-muted">
                       {selectedUser.username ? `@${selectedUser.username} · ` : ''}{selectedUser.telegram_id}
                     </p>
                   </div>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => { setSelectedUser(null); setUserDetail(null); }}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-brand-muted hover:text-white transition-all text-lg leading-none"
+                  className="ui-tap-target w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-brand-muted hover:text-white transition-all text-lg leading-none"
                 >
                   ✕
                 </button>
@@ -551,8 +551,8 @@ function UsersTab() {
                   { k: 'Referrals', v: userDetail ? fmt(userDetail.referral_count) : '…', color: '#14b8a6' },
                 ].map(({ k, v, color }) => (
                   <div key={k} className="rounded-xl p-3 border border-white/5 bg-white/3 hover:border-white/10 transition-all" style={{ background: `${color}08` }}>
-                    <p className="text-[10px] uppercase tracking-[0.08em] mb-1 font-bold" style={{ color }}>{k}</p>
-                    <p className="text-sm font-black text-white truncate" title={String(v)}>{v}</p>
+                    <p className="text-caption normal-case tracking-normal mb-1 font-bold" style={{ color }}>{k}</p>
+                    <p className="text-sm font-semibold text-white truncate" title={String(v)}>{v}</p>
                   </div>
                 ))}
               </div>
@@ -562,14 +562,14 @@ function UsersTab() {
                 <div className="flex gap-3 mb-5 flex-wrap">
                   {selectedUser.wallet_address && (
                     <div className="flex-1 min-w-[180px] bg-white/3 border border-white/5 rounded-xl p-3">
-                      <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Wallet</p>
-                      <p className="text-[11px] font-mono text-white/80 truncate">{selectedUser.wallet_address}</p>
+                      <p className="text-caption text-brand-muted normal-case tracking-normal mb-1">Wallet</p>
+                      <p className="text-caption font-mono text-white/80 truncate">{selectedUser.wallet_address}</p>
                     </div>
                   )}
                   {selectedUser.referral_code && (
                     <div className="bg-white/3 border border-white/5 rounded-xl p-3">
-                      <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Referral Code</p>
-                      <p className="text-[11px] font-mono text-brand-primary font-bold">{selectedUser.referral_code}</p>
+                      <p className="text-caption text-brand-muted normal-case tracking-normal mb-1">Referral Code</p>
+                      <p className="text-caption font-mono text-brand-primary font-bold">{selectedUser.referral_code}</p>
                     </div>
                   )}
                 </div>
@@ -578,7 +578,7 @@ function UsersTab() {
               {/* Recent Transactions */}
               {userDetail && userDetail.transactions.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.1em] text-brand-muted mb-3">Recent Transactions</p>
+                  <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-3">Recent Transactions</p>
                   <div className="space-y-1">
                     {userDetail.transactions.slice(0, 8).map(tx => (
                       <div key={tx.id} className="flex justify-between items-center py-2 px-3 rounded-lg bg-white/3 hover:bg-white/5 transition-colors">
@@ -587,12 +587,12 @@ function UsersTab() {
                             background: `${TX_COLORS[tx.type] || '#6b7280'}15`,
                             color: TX_COLORS[tx.type] || '#6b7280',
                             borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
-                          }} className="rounded-lg px-2.5 py-1 text-[10px] font-bold border">
+                          }} className="rounded-lg px-2.5 py-1 text-caption font-bold border">
                             {tx.type.replace('_', ' ')}
                           </span>
-                          <span className="text-[10px] text-brand-muted">{formatDate(tx.created_at)}</span>
+                          <span className="text-caption text-brand-muted">{formatDate(tx.created_at)}</span>
                         </div>
-                        <span className="text-xs font-bold" style={{ color: tx.amount_cents >= 0 ? '#22c55e' : '#f97316' }}>
+                        <span className="text-sm font-bold" style={{ color: tx.amount_cents >= 0 ? '#22c55e' : '#f97316' }}>
                           {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
                         </span>
                       </div>
@@ -672,39 +672,39 @@ function TransactionsTab() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <FaTriangleExclamation className="text-amber-400 text-base" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-amber-300">
+              <h3 className="text-sm font-semibold normal-case tracking-normal text-amber-300">
                 Pending Withdrawal Reviews ({pendingWithdrawals.length})
               </h3>
             </div>
-            <span className="text-[10px] text-amber-400/80 font-mono uppercase tracking-wider">Velocity Guard Active</span>
+            <span className="text-caption text-amber-400/80 font-mono normal-case tracking-normal">Velocity Guard Active</span>
           </div>
 
           <div className="space-y-3">
             {pendingWithdrawals.map(pw => (
-              <div key={pw.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+              <div key={pw.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-sm">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-brand-muted">#{pw.id}</span>
                     <span className="font-bold text-white">User #{pw.user_id}</span>
-                    <span className="font-black text-amber-400">${pw.amount_usd.toFixed(2)} USDT</span>
+                    <span className="font-semibold text-amber-400">${pw.amount_usd.toFixed(2)} USDT</span>
                   </div>
-                  <div className="text-[10px] text-brand-muted font-mono mt-1 truncate max-w-xs sm:max-w-md">
+                  <div className="text-caption text-brand-muted font-mono mt-1 truncate max-w-xs sm:max-w-md">
                     To: {pw.destination_address || 'Unspecified'}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <button
+                  <button type="button"
                     onClick={() => handleWithdrawalAction(pw.id, 'approve')}
                     disabled={actionLoading === pw.id}
-                    className="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50"
+                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50"
                   >
                     {actionLoading === pw.id ? 'Processing…' : '✓ Approve'}
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => handleWithdrawalAction(pw.id, 'reject')}
                     disabled={actionLoading === pw.id}
-                    className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50"
+                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50"
                   >
                     {actionLoading === pw.id ? 'Processing…' : '✕ Reject'}
                   </button>
@@ -717,17 +717,17 @@ function TransactionsTab() {
 
       {/* Filter Pills */}
       <div className="flex flex-wrap gap-2 mb-5">
-        <button
+        <button type="button"
           onClick={() => { setTypeFilter(''); setPage(1); }}
-          className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+          className={`ui-tap-target px-3 py-1.5 rounded-lg text-caption font-semibold normal-case tracking-normal transition-all border ${
             !typeFilter ? 'bg-brand-primary text-white border-brand-primary' : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
           }`}
         >All Types</button>
         {TX_TYPES.map(t => (
-          <button
+          <button type="button"
             key={t}
             onClick={() => { setTypeFilter(typeFilter === t ? '' : t); setPage(1); }}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+            className={`ui-tap-target px-3 py-1.5 rounded-lg text-caption font-semibold normal-case tracking-normal transition-all border ${
               typeFilter === t
                 ? 'text-white border-transparent'
                 : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
@@ -737,10 +737,10 @@ function TransactionsTab() {
         ))}
         <div className="w-px bg-white/10 self-stretch mx-1" />
         {STATUSES.map(s => (
-          <button
+          <button type="button"
             key={s}
             onClick={() => { setStatusFilter(statusFilter === s ? '' : s); setPage(1); }}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+            className={`ui-tap-target px-3 py-1.5 rounded-lg text-caption font-semibold normal-case tracking-normal transition-all border ${
               statusFilter === s
                 ? 'text-white border-transparent'
                 : 'bg-white/5 text-brand-muted border-white/10 hover:border-white/20'
@@ -748,7 +748,7 @@ function TransactionsTab() {
             style={statusFilter === s ? { background: STATUS_COLORS[s] || '#6b7280', borderColor: STATUS_COLORS[s] } : {}}
           >{s}</button>
         ))}
-        <span className="ml-auto text-[11px] text-brand-muted self-center">
+        <span className="ml-auto text-caption text-brand-muted self-center">
           {total > 0 ? `${fmt(total)} records` : ''}
         </span>
       </div>
@@ -761,15 +761,15 @@ function TransactionsTab() {
           <div className="flex items-start gap-2.5">
             <FaTriangleExclamation className="mt-0.5 shrink-0 text-red-400" />
             <div>
-              <p className="text-xs font-black text-red-300">Couldn&apos;t refresh transactions</p>
-              <p className="mt-0.5 text-[10px] text-brand-muted">Showing the last successfully loaded data.</p>
+              <p className="text-sm font-semibold text-red-300">Couldn&apos;t refresh transactions</p>
+              <p className="mt-0.5 text-caption text-brand-muted">Showing the last successfully loaded data.</p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => { void retryTransactions(); }}
             disabled={isValidating}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-400/25 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-red-300 transition-colors hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+            className="ui-tap-target inline-flex items-center justify-center gap-2 rounded-lg border border-red-400/25 px-3 py-2 text-caption font-semibold normal-case tracking-normal text-red-300 transition-colors hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FaArrowsRotate className={isValidating ? 'animate-spin' : ''} />
             {isValidating ? 'Retrying…' : 'Retry'}
@@ -779,11 +779,11 @@ function TransactionsTab() {
 
       {/* Table */}
       <div className="glass-panel overflow-x-auto p-1">
-        <table className="w-full text-xs text-left border-collapse">
+        <table className="w-full text-sm text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
               {['#', 'User', 'Type', 'Amount', 'Fee', 'Status', 'Reference', 'Date'].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-caption normal-case tracking-normal whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -801,14 +801,14 @@ function TransactionsTab() {
                       <FaTriangleExclamation />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-brand-primary">Couldn&apos;t load transactions</p>
-                      <p className="mt-1 text-[11px] text-brand-muted">The request failed. No transaction data was returned.</p>
+                      <p className="text-sm font-semibold text-brand-primary">Couldn&apos;t load transactions</p>
+                      <p className="mt-1 text-caption text-brand-muted">The request failed. No transaction data was returned.</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => { void retryTransactions(); }}
                       disabled={isValidating}
-                      className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-[10px] font-black uppercase tracking-wider text-white transition-colors hover:bg-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+                      className="ui-tap-target inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-caption font-semibold normal-case tracking-normal text-white transition-colors hover:bg-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <FaArrowsRotate className={isValidating ? 'animate-spin' : ''} />
                       {isValidating ? 'Retrying…' : 'Retry'}
@@ -820,14 +820,14 @@ function TransactionsTab() {
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">No transactions</td></tr>
             ) : txs.map(tx => (
               <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px]">{tx.id}</td>
-                <td className="px-4 py-2.5 font-mono text-[10px] text-brand-muted">{tx.user_id}</td>
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-caption">{tx.id}</td>
+                <td className="px-4 py-2.5 font-mono text-caption text-brand-muted">{tx.user_id}</td>
                 <td className="px-4 py-2.5">
                   <span style={{
                     background: `${TX_COLORS[tx.type] || '#6b7280'}18`,
                     color: TX_COLORS[tx.type] || '#6b7280',
                     borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
-                  }} className="rounded-lg px-2.5 py-1 text-[10px] font-bold border">
+                  }} className="rounded-lg px-2.5 py-1 text-caption font-bold border">
                     {tx.type.replace('_', ' ')}
                   </span>
                 </td>
@@ -840,11 +840,11 @@ function TransactionsTab() {
                     background: `${STATUS_COLORS[tx.status] || '#6b7280'}18`,
                     color: STATUS_COLORS[tx.status] || '#6b7280',
                     borderColor: `${STATUS_COLORS[tx.status] || '#6b7280'}30`,
-                  }} className="rounded-lg px-2.5 py-1 text-[10px] font-black border">
+                  }} className="rounded-lg px-2.5 py-1 text-caption font-semibold border">
                     {tx.status}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px] max-w-[100px] truncate">
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-caption max-w-[100px] truncate">
                   {tx.reference_id ? (
                     tx.reference_id.length > 20
                       ? <a href={`https://tonviewer.com/transaction/${tx.reference_id}`} target="_blank" rel="noreferrer" className="text-brand-primary hover:text-brand-primary transition-colors" onClick={e => e.stopPropagation()}>
@@ -853,7 +853,7 @@ function TransactionsTab() {
                       : tx.reference_id
                   ) : '—'}
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-[10px]">{formatDate(tx.created_at)}</td>
+                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-caption">{formatDate(tx.created_at)}</td>
               </tr>
             ))}
           </tbody>
@@ -878,7 +878,7 @@ function GamesTab() {
   const EloDelta = ({ before, after }: { before: number; after: number }) => {
     const delta = after - before;
     return (
-      <span className={`text-[10px] font-bold ${ delta > 0 ? 'text-green-400' : delta < 0 ? 'text-red-400' : 'text-brand-muted' }`}>
+      <span className={`text-caption font-bold ${ delta > 0 ? 'text-green-400' : delta < 0 ? 'text-red-400' : 'text-brand-muted' }`}>
         {delta > 0 ? '+' : ''}{delta}
       </span>
     );
@@ -887,17 +887,17 @@ function GamesTab() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[11px] text-brand-muted">
+        <p className="text-caption text-brand-muted">
           {total > 0 ? `${fmt(total)} online games total` : 'No games yet'}
         </p>
         {loading && <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />}
       </div>
       <div className="glass-panel overflow-x-auto p-1">
-        <table className="w-full text-xs text-left border-collapse">
+        <table className="w-full text-sm text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10">
               {['Game', 'White', 'Black', 'Result', 'Moves', 'Duration', 'Wager', 'Date'].map(h => (
-                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-[10px] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-4 py-3 text-brand-muted font-bold text-caption normal-case tracking-normal whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -911,26 +911,26 @@ function GamesTab() {
               <tr><td colSpan={8} className="text-center py-12 text-brand-muted">No games found</td></tr>
             ) : games.map(g => (
               <tr key={g.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-2.5 text-brand-muted font-mono text-[10px]">{g.game_id?.slice(0, 8)}…</td>
+                <td className="px-4 py-2.5 text-brand-muted font-mono text-caption">{g.game_id?.slice(0, 8)}…</td>
                 <td className="px-4 py-2.5">
-                  <div className="font-mono text-[11px]">{g.white_player_id}</div>
-                  <div className="text-[10px] text-brand-muted mt-0.5">
+                  <div className="font-mono text-caption">{g.white_player_id}</div>
+                  <div className="text-caption text-brand-muted mt-0.5">
                     {g.white_elo_before} → {g.white_elo_after} <EloDelta before={g.white_elo_before} after={g.white_elo_after} />
                   </div>
                 </td>
                 <td className="px-4 py-2.5">
-                  <div className="font-mono text-[11px]">{g.black_player_id}</div>
-                  <div className="text-[10px] text-brand-muted mt-0.5">
+                  <div className="font-mono text-caption">{g.black_player_id}</div>
+                  <div className="text-caption text-brand-muted mt-0.5">
                     {g.black_elo_before} → {g.black_elo_after} <EloDelta before={g.black_elo_before} after={g.black_elo_after} />
                   </div>
                 </td>
                 <td className="px-4 py-2.5">
-                  <span className={`text-[11px] font-bold ${
+                  <span className={`text-caption font-bold ${
                     !g.winner ? 'text-blue-400' : g.winner === 'w' ? 'text-white' : 'text-brand-muted'
                   }`}>
                     {!g.winner ? '🤝 Draw' : g.winner === 'w' ? '⬜ White' : '⬛ Black'}
                   </span>
-                  {g.result_type && <div className="text-[10px] text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
+                  {g.result_type && <div className="text-caption text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
                 </td>
                 <td className="px-4 py-2.5 tabular-nums">{g.total_moves}</td>
                 <td className="px-4 py-2.5 text-brand-muted tabular-nums">
@@ -939,7 +939,7 @@ function GamesTab() {
                 <td className={`px-4 py-2.5 tabular-nums ${g.bid_amount_cents > 0 ? 'text-green-400 font-bold' : 'text-brand-muted'}`}>
                   {g.bid_amount_cents > 0 ? cents(g.bid_amount_cents) : '—'}
                 </td>
-                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-[10px]">{formatDate(g.created_at)}</td>
+                <td className="px-4 py-2.5 text-brand-muted whitespace-nowrap text-caption">{formatDate(g.created_at)}</td>
               </tr>
             ))}
           </tbody>
@@ -1002,20 +1002,20 @@ function BroadcastsTab() {
     <div>
       {/* Composer */}
       <div className="glass-panel p-6 mb-6">
-        <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-brand-primary">
+        <h3 className="text-sm font-semibold mb-4 normal-case tracking-normal text-brand-primary">
           📢 New Broadcast
         </h3>
 
         <div className="mb-4">
-          <label className="text-[11px] text-brand-muted block mb-2 uppercase tracking-[0.08em]">
+          <label className="text-caption text-brand-muted block mb-2 normal-case tracking-normal">
             Target Audience
           </label>
           <div className="flex flex-wrap gap-2">
             {AUDIENCES.map(a => (
-              <button
+              <button type="button"
                 key={a.value}
                 onClick={() => setAudience(a.value)}
-                className={`px-4 py-2 rounded-xl text-xs transition-all ${
+                className={`ui-tap-target px-4 py-2 rounded-xl text-sm transition-all ${
                   audience === a.value 
                     ? 'bg-brand-primary text-white shadow-neon font-bold' 
                     : 'bg-white/5 border border-white/10 text-brand-primary hover:bg-white/10'
@@ -1028,7 +1028,7 @@ function BroadcastsTab() {
         </div>
 
         <div className="mb-4">
-          <label className="text-[11px] text-brand-muted block mb-2 uppercase tracking-[0.08em]">
+          <label className="text-caption text-brand-muted block mb-2 normal-case tracking-normal">
             Message <span className="font-normal">(HTML supported: &lt;b&gt;, &lt;i&gt;, &lt;a&gt;)</span>
           </label>
           <textarea
@@ -1038,7 +1038,7 @@ function BroadcastsTab() {
             rows={5}
             className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-brand-primary text-sm resize-y outline-none focus:border-brand-primary transition-colors"
           />
-          <p className="text-[10px] text-brand-muted mt-1">{message.length} characters</p>
+          <p className="text-caption text-brand-muted mt-1">{message.length} characters</p>
         </div>
 
         {successMsg && (
@@ -1052,10 +1052,10 @@ function BroadcastsTab() {
           </motion.p>
         )}
 
-        <button
+        <button type="button"
           onClick={sendBroadcast}
           disabled={sending || !message.trim()}
-          className={`w-full md:w-auto px-8 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all ${
+          className={`ui-tap-target w-full md:w-auto px-8 py-3 rounded-xl text-sm font-semibold normal-case tracking-normal transition-all ${
             sending || !message.trim() 
               ? 'bg-white/5 text-brand-muted cursor-not-allowed' 
               : 'action-button'
@@ -1066,7 +1066,7 @@ function BroadcastsTab() {
       </div>
 
       {/* Broadcast History */}
-      <h3 className="text-xs font-bold uppercase tracking-widest text-brand-muted mb-3">
+      <h3 className="text-sm font-bold normal-case tracking-normal text-brand-muted mb-3">
         Campaign History
       </h3>
 
@@ -1086,17 +1086,17 @@ function BroadcastsTab() {
               <span style={{
                 background: `${STATUS_COLORS[b.status] || '#6b7280'}20`,
                 color: STATUS_COLORS[b.status] || '#6b7280',
-              }} className="rounded-md px-2 py-1 text-[10px] font-bold mr-2">
+              }} className="rounded-md px-2 py-1 text-caption font-bold mr-2">
                 {b.status.toUpperCase()}
               </span>
-              <span className="text-[11px] text-brand-muted">
+              <span className="text-caption text-brand-muted">
                 #{b.id} · {b.audience} · {formatDate(b.created_at)}
               </span>
             </div>
             {(b.status === 'pending' || b.status === 'running') && (
-              <button
+              <button type="button"
                 onClick={() => cancelBroadcast(b.id)}
-                className="bg-rose-500/20 hover:bg-rose-500/40 text-rose-500 rounded-lg px-3 py-1 text-xs font-bold transition-colors"
+                className="ui-tap-target bg-rose-500/20 hover:bg-rose-500/40 text-rose-500 rounded-lg px-3 py-1 text-sm font-bold transition-colors"
               >
                 Cancel
               </button>
@@ -1114,7 +1114,7 @@ function BroadcastsTab() {
               }} className="h-full rounded transition-all duration-500" />
             </div>
           </div>
-          <div className="flex gap-4 text-[11px] text-brand-muted">
+          <div className="flex gap-4 text-caption text-brand-muted">
             <span>✅ {fmt(b.sent_count)} sent</span>
             <span>❌ {fmt(b.failed_count)} failed</span>
             <span>👥 {fmt(b.total_count)} total</span>
@@ -1141,7 +1141,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const c = cfg[status] ?? { color: '#6b7280', icon: <FaGear />, label: status };
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider" style={{ color: c.color, background: `${c.color}18`, border: `1px solid ${c.color}40` }}>
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-semibold normal-case tracking-normal" style={{ color: c.color, background: `${c.color}18`, border: `1px solid ${c.color}40` }}>
       {c.icon} {c.label}
     </span>
   );
@@ -1163,15 +1163,15 @@ function SysCard({ icon, title, status, latency, rows }: {
             {icon}
           </div>
           <div>
-            <div className="text-white font-black text-sm">{title}</div>
-            {latency != null && <div className="text-[10px] text-brand-muted">{latency}ms latency</div>}
+            <div className="text-white font-semibold text-sm">{title}</div>
+            {latency != null && <div className="text-caption text-brand-muted">{latency}ms latency</div>}
           </div>
         </div>
         <StatusBadge status={status} />
       </div>
       <div className="space-y-2">
         {rows.map((r, i) => (
-          <div key={i} className="flex justify-between items-start gap-2 text-[11px]">
+          <div key={i} className="flex justify-between items-start gap-2 text-caption">
             <span className="text-brand-muted font-medium shrink-0">{r.label}</span>
             <span className="text-white/80 font-semibold text-right break-all">{r.value}</span>
           </div>
@@ -1192,17 +1192,17 @@ function SystemTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-white font-black text-xl">System Status</h2>
-          <p className="text-brand-muted text-[11px] mt-0.5">
+          <h2 className="text-white font-semibold text-xl">System Status</h2>
+          <p className="text-brand-muted text-caption mt-0.5">
             {data ? `Last checked: ${new Date(data.checked_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Checking systems…'}
           </p>
         </div>
         <div className="flex items-center gap-3">
           {data && <StatusBadge status={data.overall} />}
-          <button
+          <button type="button"
             onClick={() => fetchStatus()}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest bg-brand-primary/20 border border-brand-primary/40 text-brand-primary hover:bg-brand-primary/30 transition-all disabled:opacity-50"
+            className="ui-tap-target flex items-center gap-2 px-4 py-2 rounded-xl text-caption font-semibold normal-case tracking-normal bg-brand-primary/20 border border-brand-primary/40 text-brand-primary hover:bg-brand-primary/30 transition-all disabled:opacity-50"
           >
             <FaArrowsRotate className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
@@ -1314,18 +1314,18 @@ function SystemTab() {
 
       {sys?.ledger_audit?.mismatches && sys.ledger_audit.mismatches.length > 0 && (
         <div className="glass-panel p-6 border-amber-500/30 bg-amber-950/5 mt-6">
-          <h3 className="text-sm font-black mb-4 uppercase tracking-widest text-amber-500 flex items-center gap-2">
+          <h3 className="text-sm font-semibold mb-4 normal-case tracking-normal text-amber-500 flex items-center gap-2">
             ⚠️ Ledger Anomalies Details
           </h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left border-collapse">
+            <table className="w-full text-sm text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold">User</th>
-                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold">Telegram ID</th>
-                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Profile Balance</th>
-                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Ledger Sum</th>
-                  <th className="px-4 py-2 text-brand-muted uppercase tracking-wider font-bold text-right">Difference</th>
+                  <th className="px-4 py-2 text-brand-muted normal-case tracking-normal font-bold">User</th>
+                  <th className="px-4 py-2 text-brand-muted normal-case tracking-normal font-bold">Telegram ID</th>
+                  <th className="px-4 py-2 text-brand-muted normal-case tracking-normal font-bold text-right">Profile Balance</th>
+                  <th className="px-4 py-2 text-brand-muted normal-case tracking-normal font-bold text-right">Ledger Sum</th>
+                  <th className="px-4 py-2 text-brand-muted normal-case tracking-normal font-bold text-right">Difference</th>
                 </tr>
               </thead>
               <tbody>
@@ -1334,7 +1334,7 @@ function SystemTab() {
                   return (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="px-4 py-2.5 font-bold text-white">{m.first_name}</td>
-                      <td className="px-4 py-2.5 font-mono text-[11px] text-brand-muted">{m.telegram_id}</td>
+                      <td className="px-4 py-2.5 font-mono text-caption text-brand-muted">{m.telegram_id}</td>
                       <td className="px-4 py-2.5 font-mono text-right tabular-nums text-white">{cents(m.balance)}</td>
                       <td className="px-4 py-2.5 font-mono text-right tabular-nums text-white">{cents(m.ledger_sum)}</td>
                       <td className="px-4 py-2.5 font-mono text-right tabular-nums text-amber-400 font-bold">
@@ -1382,10 +1382,10 @@ export default function AdminPage() {
           
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
             
-            <h1 className="text-3xl font-black text-white tracking-wide mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.18)]">
+            <h1 className="text-3xl font-semibold text-white tracking-normal mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.18)]">
               ADMIN COMMAND
             </h1>
-            <p className="admin-kpi-sub text-[10px] uppercase tracking-[0.2em] font-black">
+            <p className="admin-kpi-sub text-caption normal-case tracking-normal font-semibold">
               FinChess Arena · Restricted Access
             </p>
           </motion.div>
@@ -1396,10 +1396,10 @@ export default function AdminPage() {
           {TABS.map(tab => {
             const Icon = tab === 'Dashboard' ? FaChartPie : tab === 'Users' ? FaUsers : tab === 'Transactions' ? FaCreditCard : tab === 'Games' ? FaChess : tab === 'Broadcasts' ? FaBullhorn : FaServer;
             return (
-              <button
+              <button type="button"
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`admin-tab flex-none px-5 md:px-6 py-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                className={`ui-tap-target admin-tab flex-none px-5 md:px-6 py-3 rounded-xl text-caption md:text-caption font-semibold normal-case tracking-normal transition-all flex items-center gap-2 ${
                   activeTab === tab 
                     ? 'admin-tab-active'
                     : ''
@@ -1430,13 +1430,13 @@ export default function AdminPage() {
             ) : activeTab === 'Dashboard' && error ? (
               <div className="glass-panel p-8 text-center max-w-lg mx-auto my-8 border border-red-500/20 bg-red-500/5">
                 <div className="text-4xl mb-3">⚠️</div>
-                <h3 className="text-lg font-black text-white mb-2">Couldn&apos;t load metrics</h3>
-                <p className="text-xs text-brand-muted mb-4">
+                <h3 className="text-lg font-semibold text-white mb-2">Couldn&apos;t load metrics</h3>
+                <p className="text-sm text-brand-muted mb-4">
                   {error.info?.message || error.message || 'An error occurred while connecting to the admin stats API.'}
                 </p>
-                <button
+                <button type="button"
                   onClick={() => { void retryStats(); }}
-                  className="action-button px-6 py-2.5 text-xs font-black uppercase tracking-wider"
+                  className="ui-tap-target action-button px-6 py-2.5 text-sm font-semibold normal-case tracking-normal"
                 >
                   Retry Loading
                 </button>

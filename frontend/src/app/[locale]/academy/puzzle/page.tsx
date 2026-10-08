@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, Suspense } from "react";
+import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { apiFetch } from "@/lib/api";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import { motion } from "framer-motion";
-import { FaArrowLeft, FaTelegramPlane } from "react-icons/fa";
+import { FaTelegramPlane } from "react-icons/fa";
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
@@ -92,23 +93,10 @@ function PuzzleContent() {
   };
 
   return (
-    <LayoutWrapper className="pb-32 pt-6">
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto px-4 space-y-6">
+    <LayoutWrapper className="">
+      <div className="w-full app-page mx-auto ">
 
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link href={`/${locale}/academy`} className="html-back-button p-3 glass-panel rounded-xl text-brand-muted hover:opacity-100 transition-opacity cursor-pointer">
-            <FaArrowLeft />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-brand-primary uppercase leading-none mb-1">
-              {puzzle ? puzzle.title : "Tactical Level"}
-            </h1>
-            <p className="text-xs text-brand-muted font-bold uppercase tracking-widest">
-              {puzzle ? puzzle.description : "Solve the puzzle"}
-            </p>
-          </div>
-        </div>
+        <PageHeader title={puzzle ? puzzle.title : 'Tactical level'} description={puzzle ? puzzle.description : 'Solve the puzzle'} backHref={`/${locale}/academy`} />
 
         <div className="glass-panel p-6 rounded-3xl border border-brand-border-opacity-10 bg-brand-surface shadow-sm">
           {loading ? (
@@ -135,7 +123,7 @@ function PuzzleContent() {
               <div className="h-2 bg-brand-primary opacity-10 rounded w-1/2" />
             </div>
           ) : error ? (
-            <div className="text-center py-12 text-xs font-bold text-rose-400 uppercase tracking-wider">
+            <div className="text-center py-12 text-sm font-bold text-rose-400 normal-case tracking-normal">
               {error}
             </div>
           ) : puzzle ? (
@@ -160,30 +148,30 @@ function PuzzleContent() {
             {/* Glowing background */}
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
             
-            <h2 className="text-2xl font-black text-emerald-400 mb-2 uppercase tracking-tight">{t('excellent')}</h2>
-            <p className="text-xs font-bold text-brand-muted uppercase tracking-widest mb-4">Level Completed Successfully</p>
+            <h2 className="text-2xl font-semibold text-emerald-400 mb-2 normal-case tracking-tight">{t('excellent')}</h2>
+            <p className="text-sm font-bold text-brand-muted normal-case tracking-normal mb-4">Level Completed Successfully</p>
             
             {earnedXP && (
               <div className="flex justify-center gap-4 mb-6">
                 <div className="flex flex-col items-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[80px]">
-                  <span className="text-emerald-400 font-black text-xl">+{earnedXP}</span>
-                  <span className="text-[9px] text-emerald-400/60 font-black uppercase tracking-widest">XP</span>
+                  <span className="text-emerald-400 font-semibold text-xl">+{earnedXP}</span>
+                  <span className="text-caption text-emerald-400/60 font-semibold normal-case tracking-normal">XP</span>
                 </div>
                 <div className="flex flex-col items-center p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl min-w-[80px]">
-                  <span className="text-blue-400 font-black text-xl">+{earnedELO}</span>
-                  <span className="text-[9px] text-blue-400/60 font-black uppercase tracking-widest">ELO</span>
+                  <span className="text-blue-400 font-semibold text-xl">+{earnedELO}</span>
+                  <span className="text-caption text-blue-400/60 font-semibold normal-case tracking-normal">ELO</span>
                 </div>
               </div>
             )}
             
             <div className="flex gap-3 justify-center w-full mt-2">
               <Link href={`/${locale}/academy`} className="flex-1">
-                <button className="w-full px-4 py-3.5 bg-brand-elevated border border-brand-border hover:border-brand-border-opacity-30 text-brand-primary font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all text-xs">
+                <button type="button" className="ui-tap-target w-full px-4 py-3.5 bg-brand-elevated border border-brand-border hover:border-brand-border-opacity-30 text-brand-primary font-semibold normal-case tracking-normal rounded-xl cursor-pointer transition-all text-sm">
                   {t('continue')}
                 </button>
               </Link>
               <a href={`https://t.me/share/url?url=https://t.me/chess_matbot/app&text=${encodeURIComponent(`I just cracked a tactical puzzle on Web3Chess Academy! ♟️🔥 Can you solve it?`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2]">
-                <button className="w-full px-4 py-3.5 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-black uppercase tracking-widest rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-xs flex items-center justify-center gap-2">
+                <button type="button" className="ui-tap-target w-full px-4 py-3.5 bg-[#2AABEE] hover:bg-[#229ED9] text-white font-semibold normal-case tracking-normal rounded-xl cursor-pointer shadow-[0_0_15px_rgba(42,171,238,0.4)] transition-all text-sm flex items-center justify-center gap-2">
                   <FaTelegramPlane className="text-base" /> Share
                 </button>
               </a>
@@ -198,7 +186,7 @@ function PuzzleContent() {
 
 export default function PuzzlePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-muted font-black uppercase tracking-[0.5em] animate-pulse">Initializing Tactics...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-brand-muted font-semibold normal-case tracking-normal animate-pulse">Initializing Tactics...</div>}>
       <PuzzleContent />
     </Suspense>
   );

@@ -99,10 +99,10 @@ export default function TaskSuccessModal() {
 
               {/* Title Header */}
               <div className="space-y-1">
-                <h2 id="task-success-title" className="text-[10px] font-black uppercase tracking-[0.3em] bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 bg-clip-text text-transparent">
+                <h2 id="task-success-title" className="text-caption font-semibold normal-case tracking-normal bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 bg-clip-text text-transparent">
                   Mission Completed
                 </h2>
-                <h3 className="text-sm font-black text-brand-primary uppercase tracking-wide px-2 mt-1 line-clamp-2">
+                <h3 className="text-sm font-semibold text-brand-primary normal-case tracking-normal px-2 mt-1 line-clamp-2">
                   {success.title}
                 </h3>
               </div>
@@ -110,19 +110,19 @@ export default function TaskSuccessModal() {
               {/* Big Reward Glow Box */}
               <div className="w-full py-4 px-3 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/10 flex flex-col items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.1),transparent_70%)]" />
-                <span className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest block mb-1 z-10">Reward Received</span>
+                <span className="text-caption font-semibold text-emerald-500/60 normal-case tracking-normal block mb-1 z-10">Reward Received</span>
                 <div className="flex items-center gap-1.5 z-10">
                   <FaCoins className="text-emerald-400 text-base" />
-                  <span className="text-2xl font-black text-brand-primary tracking-tight leading-none">
+                  <span className="text-2xl font-semibold text-brand-primary tracking-tight leading-none">
                     +{success.xpReward} XP
                   </span>
                 </div>
               </div>
 
               {/* Action Pulsing Button */}
-              <button
+              <button type="button"
                 onClick={handleClose}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-black text-[11px] font-black uppercase tracking-widest shadow-[0_4px_16px_rgba(16,185,129,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
+                className="ui-tap-target w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-black text-caption font-semibold normal-case tracking-normal shadow-[0_4px_16px_rgba(16,185,129,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
               >
                 AWESOME!
               </button>

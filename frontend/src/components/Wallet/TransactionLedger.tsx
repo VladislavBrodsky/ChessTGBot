@@ -27,7 +27,8 @@ interface TransactionLedgerProps {
   onRetry?: () => void;
 }
 
-function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Transaction[]; balance?: number }) {
+function BalanceHistoryChart({ transactions, balance }: { transactions: Transaction[]; balance: number }) {
+  const tw = useTranslations('Wallet');
   if (!transactions || transactions.length === 0) return null;
 
   let currentVal = balance;
@@ -71,32 +72,32 @@ function BalanceHistoryChart({ transactions, balance = 0 }: { transactions: Tran
   return (
     <div className="w-full rounded-2xl border border-brand-border bg-brand-surface overflow-hidden p-3.5 space-y-2 mt-1 mb-3">
       <div className="flex justify-between items-center px-1">
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
-          Balance Trend (USDT)
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
+          {tw('balance_trend')}
         </span>
-        <span className="text-[10px] font-mono text-emerald-400 font-bold">
+        <span className="text-caption font-mono text-emerald-400 font-bold">
           ${minAmt.toFixed(2)} - ${maxAmt.toFixed(2)}
         </span>
       </div>
 
       <div className="w-full relative px-1 py-1">
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" style={{ height: HEIGHT }}>
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={tw('balance_trend')} className="w-full" style={{ height: HEIGHT }}>
           <defs>
             <linearGradient id="walletChartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--brand-success)" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="var(--brand-success)" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path d={areaD} fill="url(#walletChartGrad)" />
-          <path d={pathD} fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" />
+          <path d={pathD} fill="none" stroke="var(--brand-success)" strokeWidth="2" strokeLinecap="round" />
           {pts.map((p, i) => (
             <circle
               key={i}
               cx={p.x}
               cy={p.y}
               r={i === pts.length - 1 ? 3.5 : 2}
-              fill={i === pts.length - 1 ? '#10b981' : '#a7f3d0'}
-              stroke="#000"
+              fill={i === pts.length - 1 ? 'var(--brand-success)' : 'var(--text-muted)'}
+              stroke="var(--bg-surface)"
               strokeWidth="1"
             />
           ))}
@@ -119,26 +120,21 @@ export default function TransactionLedger({
     <section aria-labelledby="tx-history-heading" className="w-full space-y-3">
       {/* Ledger Header */}
       <div className="flex items-center justify-between px-1">
-        <h2 id="tx-history-heading" className="text-xs font-black uppercase tracking-wider text-brand-primary flex items-center gap-2">
-          <FaHistory className="text-brand-muted text-xs" />
-          {tw('tx_history_title')}
+        <h2 id="tx-history-heading" className="text-section-title font-semibold text-brand-primary flex items-center gap-2">
+          <FaHistory className="text-brand-muted text-sm" />
+          {tw('ledger')}
         </h2>
-        {transactions && transactions.length > 0 && (
-          <span className="text-[10px] font-bold text-brand-muted">
-            {transactions.length} records
-          </span>
-        )}
       </div>
 
       {/* Sparkline chart */}
-      {!loading && !error && transactions && transactions.length > 0 && (
+      {!error && balance !== undefined && transactions && transactions.length > 0 && (
         <BalanceHistoryChart transactions={transactions} balance={balance} />
       )}
 
       {/* Ledger List */}
-      {loading ? (
+      {loading && transactions.length === 0 ? (
         <SkeletonList count={4} />
-      ) : error ? (
+      ) : error && transactions.length === 0 ? (
         <ErrorState
           title={tw('tx_load_failed')}
           onRetry={onRetry}
@@ -148,7 +144,6 @@ export default function TransactionLedger({
         <EmptyState
           icon={<FaHistory className="h-6 w-6 text-brand-muted" />}
           title={tw('no_entries')}
-          description="Your deposits, withdrawals, and game settlements will appear here."
         />
       ) : (
         <ol role="list" className="w-full flex flex-col space-y-2 list-none m-0 p-0">
@@ -164,7 +159,7 @@ export default function TransactionLedger({
                 className="w-full flex items-center justify-between p-3 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-border-opacity-20 transition-all list-item-contain"
               >
                 <div className="flex items-center space-x-3 min-w-0">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs shrink-0 border ${
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 border ${
                     tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
                       ? 'bg-brand-elevated border-brand-border text-brand-muted' :
                     isPositive
@@ -175,11 +170,11 @@ export default function TransactionLedger({
                   }`}>
                     {tx.type === 'game_against_ai' ? <FaRobot className="text-sm" /> :
                      tx.type === 'game_free_pvp' ? <FaGamepad className="text-sm" /> :
-                     isPositive ? <FaArrowDown className="text-xs" /> : <FaArrowUp className="text-xs" />}
+                     isPositive ? <FaArrowDown className="text-sm" /> : <FaArrowUp className="text-sm" />}
                   </div>
 
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold text-brand-primary truncate">
+                    <span className="text-sm font-medium text-brand-primary">
                       {tx.type === 'deposit' ? tw('tx_deposit') :
                       tx.type === 'withdrawal' ? tw('tx_withdrawal') :
                       tx.type === 'game_against_ai' ? tw('tx_game_against_ai') :
@@ -190,14 +185,14 @@ export default function TransactionLedger({
                       tx.type === 'game_rake' ? tw('tx_rake') : 
                       tx.type}
                     </span>
-                    <span className="text-[10px] text-brand-muted">
+                    <span className="text-caption text-brand-muted">
                       {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex flex-col items-end shrink-0 pl-2">
-                  <span className={`text-xs font-black font-mono ${
+                  <span className={`text-sm font-semibold font-mono ${
                     isZero ? 'text-brand-muted' :
                     isPositive ? 'text-emerald-400' :
                     'text-rose-400'
@@ -205,7 +200,7 @@ export default function TransactionLedger({
                     {isZero ? '$0.00' : `${isPositive ? '+' : '-'}${formattedAmt}`}
                   </span>
                   {formattedFee && (
-                    <span className="text-[9px] text-brand-muted">
+                    <span className="text-caption text-brand-muted">
                       {formattedFee}
                     </span>
                   )}

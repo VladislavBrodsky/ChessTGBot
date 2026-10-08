@@ -8,6 +8,7 @@ import { apiFetch } from '@/lib/api';
 
 import { useUser } from '@/context/UserContext';
 import { triggerTaskSuccess } from '@/lib/telegram';
+import { ErrorState } from '@/components/ui/ErrorState';
 
 const TaskSkeleton = () => (
     <div className="w-full flex flex-col space-y-3">
@@ -28,22 +29,24 @@ const TaskSkeleton = () => (
 
 export default function DailyTasks() {
     const t = useTranslations('Gamification');
+    const ti = useTranslations('Index');
     const { syncStats } = useUser();
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [claimingId, setClaimingId] = useState<number | null>(null);
+    const [loadError, setLoadError] = useState(false);
 
     const fetchTasks = async () => {
+        setLoadError(false);
         try {
             const res = await apiFetch("/api/v1/gamification/tasks");
-            if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    setTasks(data);
-                }
-            }
+            if (!res.ok) throw new Error('Task feed unavailable');
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error('Invalid task feed');
+            setTasks(data.filter(task => typeof task.title_key === 'string' && task.title_key.startsWith('daily_')));
         } catch (err) {
             console.error("Failed to fetch daily tasks:", err);
+            setLoadError(true);
         } finally {
             setLoading(false);
         }
@@ -91,8 +94,8 @@ export default function DailyTasks() {
     return (
         <section aria-labelledby="daily-missions-title" className="w-full space-y-4">
             <div className="flex items-center gap-2 mb-2">
-                <FaTrophy className="text-brand-primary text-xs" />
-                <h3 id="daily-missions-title" className="text-[10px] font-black uppercase text-brand-muted tracking-[0.2em]">
+                <FaTrophy className="text-brand-primary text-sm" />
+                <h3 id="daily-missions-title" className="text-caption font-semibold normal-case text-brand-muted tracking-normal">
                     {t('daily_missions')}
                 </h3>
             </div>
@@ -109,6 +112,8 @@ export default function DailyTasks() {
                         >
                             <TaskSkeleton />
                         </motion.div>
+                    ) : loadError && tasks.length === 0 ? (
+                        <ErrorState key="error" title={ti('load_failed')} onRetry={fetchTasks} retryLabel={ti('retry')} />
                     ) : tasks.length === 0 ? (
                         <motion.div
                             key="empty"
@@ -116,7 +121,7 @@ export default function DailyTasks() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="text-center py-8 text-xs font-bold text-brand-muted uppercase tracking-widest"
+                            className="text-center py-8 text-sm font-bold text-brand-muted normal-case tracking-normal"
                         >
                             {t('no_missions')}
                         </motion.div>
@@ -150,13 +155,13 @@ export default function DailyTasks() {
                                                 : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.4)]'
                                                 : 'bg-brand-elevated text-brand-muted border border-brand-border-opacity-10'}
                                             `}>
-                                                {status === 'completed' ? <FaCheck className="text-xs" /> : <FaGift className={status === 'claimable' ? 'animate-pulse text-xs' : 'text-xs'} />}
+                                                {status === 'completed' ? <FaCheck className="text-sm" /> : <FaGift className={status === 'claimable' ? 'animate-pulse text-sm' : 'text-sm'} />}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <h4 className="text-xs font-bold text-brand-primary uppercase tracking-wide leading-snug header-balanced truncate">
+                                                <h4 className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-snug header-balanced truncate">
                                                     {t(task.title_key)}
                                                 </h4>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-brand-muted uppercase tracking-wider mt-0.5">
+                                                <div className="flex items-center gap-2 text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
                                                     <span className="text-amber-400">+{task.xp_reward} XP</span>
                                                     <span>•</span>
                                                     <span>{task.progress} / {task.target_count}</span>
@@ -165,12 +170,12 @@ export default function DailyTasks() {
                                         </div>
 
                                         {status === 'claimable' && (
-                                            <motion.button
+                                            <motion.button type="button"
                                                 whileHover={{ scale: 1.04 }}
                                                 whileTap={{ scale: 0.94 }}
                                                 onClick={() => handleClaim(task.task_id)}
                                                 disabled={claimingId === task.task_id}
-                                                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.35)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] text-[10px] font-black uppercase tracking-wider cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all select-none"
+                                                className="ui-tap-target px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.35)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] text-caption font-semibold normal-case tracking-normal cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all select-none"
                                             >
                                                 {claimingId === task.task_id ? '...' : t('claim')}
                                             </motion.button>

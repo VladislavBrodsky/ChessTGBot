@@ -61,10 +61,10 @@ export default function DailyHintCard() {
           <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'linear-gradient(var(--color-brand-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-primary) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
 
           <div className="flex flex-col gap-1.5 z-10">
-            <h3 className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400/90 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]">
+            <h3 className="text-sm font-semibold normal-case tracking-normal text-emerald-400/90 flex items-center gap-2 drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]">
               <FaLightbulb className="text-sm" /> Hint of the Day
             </h3>
-            <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] flex items-center gap-1">
+            <p className="text-caption font-bold text-brand-muted normal-case tracking-normal flex items-center gap-1">
               Tap to reveal tip <span className="w-1 h-1 rounded-full bg-emerald-500/50" /> Earn XP
             </p>
           </div>
@@ -106,16 +106,16 @@ export default function DailyHintCard() {
             </motion.div>
             
             <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-              <p className="text-xs font-medium text-brand-muted leading-relaxed drop-shadow-md italic text-pretty">
+              <p className="text-sm font-medium text-brand-muted leading-relaxed drop-shadow-md italic text-pretty">
                 "{hint}"
               </p>
               <motion.p 
                 initial={{ opacity: 0, x: 10 }}
                 animate={isFlipped ? { opacity: 1, x: 0 } : { opacity: 0, x: 10 }}
                 transition={{ delay: 0.3 }}
-                className="text-[9px] font-black uppercase tracking-[0.25em] text-emerald-500 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
+                className="text-caption font-semibold normal-case tracking-normal text-emerald-500 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)] flex items-center gap-1.5"
               >
-                +10 XP <span className="text-brand-muted normal-case font-normal tracking-normal text-[8px]">(Rewarded)</span>
+                +10 XP <span className="text-brand-muted normal-case font-normal tracking-normal text-caption">(Rewarded)</span>
               </motion.p>
             </div>
           </div>

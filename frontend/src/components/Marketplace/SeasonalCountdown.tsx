@@ -32,7 +32,7 @@ export default function SeasonalCountdown({ accent, className = '' }: { accent: 
     if (!remaining) return null;
 
     return (
-        <div className={`inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.15em] ${className}`} style={{ color: accent }}>
+        <div className={`inline-flex items-center gap-1.5 text-caption font-semibold normal-case tracking-normal ${className}`} style={{ color: accent }}>
             <FiClock size={10} />
             <span>{t('season_ends', { d: remaining.d, h: remaining.h, m: remaining.m })}</span>
         </div>

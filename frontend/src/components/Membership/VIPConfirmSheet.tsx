@@ -56,10 +56,10 @@ export default function VIPConfirmSheet({
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-56 h-56 bg-[radial-gradient(circle,rgba(168,85,247,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
                     {/* Close Button */}
-                    <button
+                    <button aria-label="Close dialog" type="button"
                         onClick={onCancel}
                         disabled={loading}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                        className="ui-tap-target absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                     >
                         <FaTimes size={14} />
                     </button>
@@ -70,20 +70,20 @@ export default function VIPConfirmSheet({
                     </div>
 
                     {/* Title */}
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-400 block mb-1">
+                    <span className="text-caption font-semibold normal-case tracking-normal text-purple-400 block mb-1">
                         VIP MEMBERSHIP PASS
                     </span>
-                    <h3 className="text-xl font-black uppercase text-brand-primary tracking-tight">
+                    <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight">
                         {title}
                     </h3>
-                    <p className="mt-1 text-xs font-medium text-brand-muted max-w-xs mx-auto">
+                    <p className="mt-1 text-sm font-medium text-brand-muted max-w-xs mx-auto">
                         {description}
                     </p>
 
                     {/* Perks List */}
                     <div className="mt-4 p-3.5 rounded-2xl bg-brand-elevated border border-brand-border-opacity-10 text-left space-y-2">
                         {perks.map((perk, i) => (
-                            <div key={i} className="flex items-center gap-2.5 text-xs font-bold text-brand-primary">
+                            <div key={i} className="flex items-center gap-2.5 text-sm font-bold text-brand-primary">
                                 <div className="w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
                                     <FaCheck size={9} />
                                 </div>
@@ -94,20 +94,20 @@ export default function VIPConfirmSheet({
 
                     {/* Pricing Summary */}
                     <div className="mt-4 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-purple-400">
+                        <span className="text-caption font-semibold normal-case tracking-normal text-purple-400">
                             PAYMENT AMOUNT
                         </span>
-                        <span className="text-base font-black text-brand-primary">
+                        <span className="text-base font-semibold text-brand-primary">
                             {costText}
                         </span>
                     </div>
 
                     {/* Actions */}
                     <div className="mt-5 flex flex-col gap-2.5">
-                        <button
+                        <button type="button"
                             onClick={onConfirm}
                             disabled={loading}
-                            className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                            className="ui-tap-target w-full py-4 rounded-2xl font-semibold normal-case tracking-normal text-sm bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {loading ? (
                                 <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
@@ -116,10 +116,10 @@ export default function VIPConfirmSheet({
                             )}
                         </button>
 
-                        <button
+                        <button type="button"
                             onClick={onCancel}
                             disabled={loading}
-                            className="w-full py-3.5 rounded-2xl font-black uppercase tracking-widest text-[11px] text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                            className="ui-tap-target w-full py-3.5 rounded-2xl font-semibold normal-case tracking-normal text-caption text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                         >
                             CANCEL
                         </button>

@@ -92,9 +92,9 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
         return (
             <div className="w-full min-w-0">
                 {wallet ? (
-                    <button
+                    <button type="button"
                         onClick={handleTopUpClick}
-                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-text-brand-muted shadow-sm"
+                        className="ui-tap-target arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-caption font-semibold normal-case tracking-normal active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-text-brand-muted shadow-sm"
                         title={`Connected: ${getShortAddress(wallet.account.address)}`}
                     >
                         <FaWallet size={10} className="shrink-0 text-emerald-500" />
@@ -102,9 +102,9 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
                     </button>
                 ) : (
-                    <button
+                    <button type="button"
                         onClick={handleTopUpClick}
-                        className="arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-premium"
+                        className="ui-tap-target arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-caption font-semibold normal-case tracking-normal active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-premium"
                     >
                         <FaWallet size={10} />
                         <span>{tw('top_up')}</span>
@@ -127,20 +127,20 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                             <FaWallet size={10} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary opacity-45 truncate">
+                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45 truncate">
                                 {wallet ? tw('active') : tw('wallet')}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-wide text-brand-muted truncate">
+                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted truncate">
                                 {wallet ? getShortAddress(wallet.account.address) : tw('unlinked')}
                             </span>
                         </div>
                     </div>
 
-                    <button
+                    <button type="button"
                         onClick={wallet ? handleDisconnect : handleTopUpClick}
                         className={wallet 
                           ? "w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/20 active:scale-95 transition-all shrink-0 cursor-pointer shadow-sm"
-                          : "py-1 px-2 rounded-lg bg-emerald-500 text-brand-void text-[10px] font-black uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+                          : "py-1 px-2 rounded-lg bg-emerald-500 text-brand-void text-caption font-semibold normal-case tracking-normal hover:brightness-110 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
                         }
                     >
                         {wallet ? <FaTimes size={9} /> : tw('top_up')}

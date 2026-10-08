@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaCheck } from "react-icons/fa";
 import Confetti from "react-confetti";
@@ -79,9 +80,8 @@ export default function MembershipPage() {
   const MONTHLY_CENTS = 2900;
   const ANNUAL_CENTS  = 29580;
 
-  const { walletBalance, walletAddress, syncBalance, stats, syncStats } = useUser();
+  const { walletBalance, walletAddress, syncBalance, stats, syncStats, balanceError, loadingBalance } = useUser();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
-  const [tgUser, setTgUser] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showInsufficient, setShowInsufficient] = useState(false);
@@ -94,7 +94,6 @@ export default function MembershipPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
-      if (window.Telegram?.WebApp) setTgUser(window.Telegram.WebApp.initDataUnsafe?.user);
       
       const params = new URLSearchParams(window.location.search);
       const status = params.get('status');
@@ -195,6 +194,11 @@ export default function MembershipPage() {
   // Upgrade balance subscription monthly → annual (prorated)
   const handleUpgradeBalance = async () => {
     if (submitting) return;
+    if (balanceError || loadingBalance) {
+      telegramHaptic('warning');
+      if (balanceError) void syncBalance();
+      return;
+    }
 
     // Calculate prorated upgrade cost
     const now = Date.now();
@@ -260,6 +264,11 @@ export default function MembershipPage() {
 
   const handleSubscribeBalance = async () => {
     if (submitting) return;
+    if (balanceError || loadingBalance) {
+      telegramHaptic('warning');
+      if (balanceError) void syncBalance();
+      return;
+    }
     if (walletBalance < cost) { telegramHaptic('warning'); setShowInsufficient(true); return; }
     setSubmitting(true);
     try {
@@ -283,22 +292,10 @@ export default function MembershipPage() {
   return (
     <LayoutWrapper className="w-full relative pt-[max(0.75rem,var(--app-safe-top))]">
 
-      <main className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center mx-auto space-y-4 px-3.5 pt-1 pb-[calc(84px+var(--app-safe-bottom))] relative z-10">
+      <main className="app-page app-page--focused">
 
         {/* Hero with Gold Accents */}
-        <header className="w-full flex flex-col items-center text-center pt-1 pb-1 space-y-2">
-          <div className="w-14 h-14 rounded-[20px] bg-brand-elevated text-purple-500 flex items-center justify-center border border-brand-border-opacity-20 shadow-sm">
-            <IconCrown />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase text-brand-primary leading-none header-balanced">
-              {stripEmojis(tm('title'))}
-            </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted mt-1.5">
-              {tm('subtitle')}
-            </p>
-          </div>
-        </header>
+        <PageHeader title={stripEmojis(tm('title'))} description={tm('subtitle')} backHref={`/${locale}/settings`} />
 
         {/* ── Active membership badge ──────────────────────────── */}
         {stats?.is_premium && stats.premium_expires_at && (
@@ -309,8 +306,8 @@ export default function MembershipPage() {
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">{tm('active_membership')}</span>
-              <span className="text-xs font-bold text-brand-primary">
+              <span className="text-caption font-semibold normal-case tracking-normal text-emerald-500">{tm('active_membership')}</span>
+              <span className="text-sm font-bold text-brand-primary">
                 Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
             </div>
@@ -320,9 +317,9 @@ export default function MembershipPage() {
         {/* ── Pricing Selector (Cards Side-by-Side) ─────────────── */}
         <div className="grid grid-cols-2 gap-3 w-full max-[350px]:grid-cols-1">
           {/* Monthly Card */}
-          <button
+          <button type="button"
             onClick={() => { telegramHaptic('selection'); setBillingPeriod('monthly'); }}
-            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
+            className={`ui-tap-target p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
               billingPeriod === 'monthly'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
                 : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
@@ -330,25 +327,25 @@ export default function MembershipPage() {
           >
             {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && (
               <div className="absolute top-0 right-0">
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
+                <div className="px-2 py-1 text-caption font-semibold normal-case tracking-normal rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
                   Current Plan
                 </div>
               </div>
             )}
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">{tm('monthly')}</span>
+            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{tm('monthly')}</span>
             <div>
               <div className="flex items-end leading-none">
-                <span className="text-2xl font-black tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
-                <span className="text-xs font-black text-brand-muted mb-0.5">.00</span>
+                <span className="text-2xl font-semibold tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
+                <span className="text-sm font-semibold text-brand-muted mb-0.5">.00</span>
               </div>
-              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-muted">{tm('per_month')}</span>
+              <span className="text-caption font-bold block mt-1 normal-case text-brand-muted">{tm('per_month')}</span>
             </div>
           </button>
 
           {/* Annual Card */}
-          <button
+          <button type="button"
             onClick={() => { telegramHaptic('selection'); setBillingPeriod('annual'); }}
-            className={`p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
+            className={`ui-tap-target p-4 rounded-2xl text-left transition-all flex flex-col justify-between h-32 border relative overflow-hidden ${
               billingPeriod === 'annual'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
                 : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
@@ -357,23 +354,23 @@ export default function MembershipPage() {
             {/* Badges */}
             <div className="absolute top-0 right-0 flex flex-col items-end">
               {stats?.is_premium && stats.premium_billing_period === 'annual' ? (
-                <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
+                <div className="px-2 py-1 text-caption font-semibold normal-case tracking-normal rounded-bl-xl bg-brand-elevated border-b border-l border-brand-border-opacity-20 text-brand-muted">
                   Current Plan
                 </div>
               ) : (
-                <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl bg-purple-500 text-white">
+                <div className="px-2 py-1 text-caption font-semibold normal-case tracking-normal rounded-bl-xl bg-purple-500 text-white">
                   {tm('discount')}
                 </div>
               )}
             </div>
 
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">{tm('annual')}</span>
+            <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary">{tm('annual')}</span>
             <div>
               <div className="flex items-end leading-none">
-                <span className="text-2xl font-black tracking-tighter text-brand-primary">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-xs font-black text-brand-muted mb-0.5">/mo</span>
+                <span className="text-2xl font-semibold tracking-tighter text-brand-primary">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
+                <span className="text-sm font-semibold text-brand-muted mb-0.5">/mo</span>
               </div>
-              <span className="text-[10px] font-bold block mt-1 uppercase text-brand-muted">
+              <span className="text-caption font-bold block mt-1 normal-case text-brand-muted">
                 {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
               </span>
             </div>
@@ -393,10 +390,10 @@ export default function MembershipPage() {
                   {f.icon}
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary leading-none mb-0.5">
+                  <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary leading-none mb-0.5">
                     {stripEmojis(f.title)}
                   </span>
-                  <span className="text-[10px] text-brand-muted font-medium leading-snug truncate">
+                  <span className="text-caption text-brand-muted font-medium leading-snug truncate">
                     {stripEmojis(f.desc)}
                   </span>
                 </div>
@@ -411,47 +408,47 @@ export default function MembershipPage() {
           {stats?.is_premium ? (
             (stats.premium_billing_period || 'monthly') === 'monthly' && billingPeriod === 'annual' ? (
               <>
-                <motion.button
+                <motion.button type="button"
                   whileHover={submitting ? {} : { scale: 1.015 }}
                   whileTap={submitting ? {} : { scale: 0.985 }}
                   onClick={stats.has_stripe_subscription ? handleUpgradeStripe : handleUpgradeBalance}
-                  disabled={submitting}
-                  className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
+                  disabled={submitting || (!stats.has_stripe_subscription && loadingBalance)}
+                  className={`ui-tap-target w-full py-4 rounded-[20px] font-semibold normal-case tracking-normal text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
                     submitting 
                       ? 'opacity-60 cursor-not-allowed bg-purple-500 text-white' 
                   : 'bg-purple-500 text-white hover:brightness-95'
                   }`}
                 >
                   {submitting && <div className="w-4 h-4 rounded-full border-2 border-brand-void border-t-transparent animate-spin mr-2.5" />}
-                  {submitting ? tm('processing') : "UPGRADE TO ANNUAL (-15%)"}
+                  {submitting ? tm('processing') : !stats.has_stripe_subscription && balanceError ? tw('balance_unavailable') : !stats.has_stripe_subscription && loadingBalance ? `${tw('usdt_balance')}…` : "UPGRADE TO ANNUAL (-15%)"}
                 </motion.button>
 
                 {stats.has_stripe_subscription && (
-                  <button
+                  <button type="button"
                     onClick={handleUpgradeBalance}
-                    disabled={submitting}
-                    className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
+                    disabled={submitting || loadingBalance}
+                    className="ui-tap-target w-full py-2.5 rounded-[16px] font-bold text-caption normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
                   >
-                    Upgrade using internal balance
+                    {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : 'Upgrade using internal balance'}
                   </button>
                 )}
               </>
             ) : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? (
               <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
+                <span className="relative z-10 text-caption font-semibold normal-case tracking-normal text-purple-500">
                   You're on the best plan!
                 </span>
-                <span className="text-[10px] text-brand-muted font-medium">
+                <span className="text-caption text-brand-muted font-medium">
                   Your annual subscription is active and gives you the maximum discount.
                 </span>
               </div>
             ) : stats?.has_stripe_subscription ? (
-              <motion.button
+              <motion.button type="button"
                 whileHover={submitting ? {} : { scale: 1.015 }}
                 whileTap={submitting ? {} : { scale: 0.985 }}
                 onClick={handleManageSubscription}
                 disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-sm relative overflow-hidden ${
+                className={`ui-tap-target w-full py-4 rounded-[20px] font-semibold normal-case tracking-normal text-[12px] transition-all flex items-center justify-center shadow-sm relative overflow-hidden ${
                   submitting 
                     ? 'opacity-60 cursor-not-allowed bg-brand-surface text-brand-primary border border-brand-border-opacity-10' 
                     : 'bg-brand-surface text-brand-primary border border-brand-border-opacity-10 hover:border-purple-500/50'
@@ -462,22 +459,22 @@ export default function MembershipPage() {
               </motion.button>
             ) : (
               <div className="relative overflow-hidden w-full py-4 px-5 rounded-[20px] bg-brand-surface border border-purple-500/30 flex flex-col items-center gap-1 text-center">
-                <span className="relative z-10 text-[10px] font-black uppercase tracking-widest text-purple-500">
+                <span className="relative z-10 text-caption font-semibold normal-case tracking-normal text-purple-500">
                   Active via In-App Balance
                 </span>
-                <span className="text-[10px] text-brand-muted font-medium">
+                <span className="text-caption text-brand-muted font-medium">
                   Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
                 </span>
               </div>
             )
           ) : (
             <>
-              <motion.button
+              <motion.button type="button"
                 whileHover={submitting ? {} : { scale: 1.015 }}
                 whileTap={submitting ? {} : { scale: 0.985 }}
                 onClick={handleSubscribeStripe}
                 disabled={submitting}
-                className={`w-full py-4 rounded-[20px] font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
+                className={`ui-tap-target w-full py-4 rounded-[20px] font-semibold normal-case tracking-normal text-[12px] transition-all flex items-center justify-center shadow-premium relative overflow-hidden ${
                   submitting 
                     ? 'opacity-60 cursor-not-allowed bg-purple-500 text-white' 
                   : 'bg-purple-500 text-white hover:brightness-95'
@@ -487,21 +484,21 @@ export default function MembershipPage() {
                 {submitting ? tm('processing') : "Subscribe with Card"}
               </motion.button>
 
-              <button
+              <button type="button"
                 onClick={handleSubscribeBalance}
-                disabled={submitting}
-                className="w-full py-2.5 rounded-[16px] font-bold text-[10px] uppercase tracking-wider text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
+                disabled={submitting || loadingBalance}
+                className="ui-tap-target w-full py-2.5 rounded-[16px] font-bold text-caption normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors flex items-center justify-center border border-transparent hover:border-brand-border-opacity-20 hover:bg-brand-elevated"
               >
-                Pay with internal balance
+                {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : 'Pay with internal balance'}
               </button>
             </>
           )}
         </div>
 
         {/* ── Compare tiers toggle ─────────────────────────────── */}
-        <button
+        <button type="button"
           onClick={() => { telegramHaptic('light'); setShowComparison(v => !v); }}
-          className="text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-brand-primary transition-colors py-1 mt-1"
+          className="ui-tap-target text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors py-1 mt-1"
         >
           {showComparison ? `▴ ${tm('hide_comparison')}` : `▾ ${tm('compare_tiers')}`}
         </button>
@@ -522,28 +519,28 @@ export default function MembershipPage() {
         {/* ── XP Upgrade (Free Path) ───────────────────────────── */}
         {stats && !stats.is_premium && (
           <div className="w-full bg-brand-surface border border-brand-border-opacity-20 p-5 rounded-[24px] space-y-3 text-center shadow-sm">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-500 opacity-80 block">
+            <span className="text-caption font-semibold normal-case tracking-normal text-purple-500 opacity-80 block">
               {tm('xp_upgrade_badge')}
             </span>
-            <h3 className="text-sm font-black text-brand-primary uppercase tracking-tight">
+            <h3 className="text-sm font-semibold text-brand-primary normal-case tracking-tight">
               {tm('xp_upgrade_title')}
             </h3>
-            <p className="text-[10px] text-brand-muted leading-relaxed">
+            <p className="text-caption text-brand-muted leading-relaxed">
               {tm('xp_upgrade_desc')}
             </p>
-            <div className="bg-purple-500/10 rounded-xl py-2 border border-purple-500/25 text-[10px] font-black uppercase text-purple-500 tracking-widest max-w-[220px] mx-auto">
+            <div className="bg-purple-500/10 rounded-xl py-2 border border-purple-500/25 text-caption font-semibold normal-case text-purple-500 tracking-normal max-w-[220px] mx-auto">
               {tm('xp_upgrade_cost', { xp: stats.xp })}
             </div>
-            <button
+            <button type="button"
               onClick={handleXpUpgrade}
-              className="w-full py-3 rounded-2xl border border-purple-500/30 bg-transparent text-purple-500 text-[11px] font-black uppercase tracking-widest hover:bg-purple-500/5 transition-all active:scale-[0.98]"
+              className="ui-tap-target w-full py-3 rounded-2xl border border-purple-500/30 bg-transparent text-purple-500 text-caption font-semibold normal-case tracking-normal hover:bg-purple-500/5 transition-all active:scale-[0.98]"
             >
               {tm('xp_upgrade_btn')}
             </button>
           </div>
         )}
 
-        <p className="w-full text-[10px] text-brand-muted text-center leading-relaxed font-bold uppercase tracking-widest px-4 pb-8">
+        <p className="w-full text-caption text-brand-muted text-center leading-relaxed font-bold normal-case tracking-normal px-4 pb-8">
           {tm('legal')}
         </p>
       </main>
@@ -574,13 +571,13 @@ export default function MembershipPage() {
                 <IconCrown />
               </div>
               <div className="space-y-1.5">
-                <h2 className="text-xl font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('success_title'))}</h2>
-                <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest">{stripEmojis(tm('success_subtitle'))}</p>
+                <h2 className="text-xl font-semibold text-brand-primary normal-case tracking-normal">{stripEmojis(tm('success_title'))}</h2>
+                <p className="text-caption font-bold text-purple-500 normal-case tracking-normal">{stripEmojis(tm('success_subtitle'))}</p>
               </div>
-              <p className="text-[11px] text-brand-muted px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
-              <button
+              <p className="text-caption text-brand-muted px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
+              <button type="button"
                 onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}
-                className="w-full py-4 rounded-2xl bg-purple-500 text-white font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                className="ui-tap-target w-full py-4 rounded-2xl bg-purple-500 text-white font-semibold normal-case tracking-normal text-caption active:scale-[0.98] transition-all"
               >
                 {stripEmojis(tm('success_btn'))}
               </button>
@@ -610,8 +607,8 @@ export default function MembershipPage() {
                 </svg>
               </div>
               <div className="space-y-1.5">
-                <h2 className="text-lg font-black text-brand-primary uppercase tracking-wider">{stripEmojis(tm('insufficient_title'))}</h2>
-                <p className="text-[11px] text-brand-muted px-2 leading-relaxed">
+                <h2 className="text-lg font-semibold text-brand-primary normal-case tracking-normal">{stripEmojis(tm('insufficient_title'))}</h2>
+                <p className="text-caption text-brand-muted px-2 leading-relaxed">
                   {tm('insufficient_desc', {
                     cost: (cost / 100).toFixed(2),
                     balance: (walletBalance / 100).toFixed(2)
@@ -619,15 +616,15 @@ export default function MembershipPage() {
                 </p>
               </div>
               <div className="w-full flex flex-col space-y-2.5">
-                <button
+                <button type="button"
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); setShowDepositModal(true); }}
-                  className="w-full py-4 rounded-2xl bg-purple-500 text-white text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all"
+                  className="ui-tap-target w-full py-4 rounded-2xl bg-purple-500 text-white text-caption font-semibold normal-case tracking-normal active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_topup_btn')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => { telegramHaptic('light'); setShowInsufficient(false); }}
-                  className="w-full py-3.5 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 text-brand-muted font-black uppercase tracking-widest text-[11px] active:scale-[0.98] transition-all"
+                  className="ui-tap-target w-full py-3.5 rounded-2xl bg-brand-surface border border-brand-border-opacity-10 text-brand-muted font-semibold normal-case tracking-normal text-caption active:scale-[0.98] transition-all"
                 >
                   {tm('insufficient_cancel_btn')}
                 </button>
@@ -644,7 +641,6 @@ export default function MembershipPage() {
             onClose={() => setShowDepositModal(false)}
             onSuccess={async () => { await syncBalance(); syncStats(); setShowDepositModal(false); }}
             walletAddress={walletAddress}
-            tgUser={tgUser}
             tw={tw}
             chosenWager={cost}
             walletBalance={walletBalance}

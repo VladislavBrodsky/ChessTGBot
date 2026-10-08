@@ -45,13 +45,13 @@ export default function LocaleError({
             <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-5 text-rose-400 text-2xl">
                 ⚠
             </div>
-            <h2 className="text-lg font-black uppercase tracking-tight mb-2">Something went wrong</h2>
-            <p className="text-[11px] font-bold text-brand-muted uppercase tracking-widest max-w-[280px] mb-8">
+            <h2 className="text-lg font-semibold normal-case tracking-tight mb-2">Something went wrong</h2>
+            <p className="text-caption font-bold text-brand-muted normal-case tracking-normal max-w-[280px] mb-8">
                 The app hit an unexpected error. Our team has been notified automatically.
             </p>
-            <button
+            <button type="button"
                 onClick={reset}
-                className="px-8 py-3 rounded-2xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider active:scale-95 transition-transform"
+                className="ui-tap-target px-8 py-3 rounded-2xl bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal active:scale-95 transition-transform"
             >
                 Try again
             </button>

@@ -47,20 +47,20 @@ export function GamePlayerCard({
             <PlayerAvatar
               userId={userId}
               fallbackText="YOU"
-              textClassName="text-xs font-black text-brand-void uppercase tracking-tighter"
+              textClassName="text-sm font-semibold text-brand-void normal-case tracking-tighter"
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+            <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
               {username}
             </span>
             {isTurn ? (
-              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+              <span className="text-caption font-semibold text-emerald-400 normal-case tracking-normal flex items-center gap-1.5 animate-pulse">
                 {turnLabel}
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               </span>
             ) : (
-              <span className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
                 {eloText}
               </span>
             )}
@@ -96,11 +96,11 @@ export function GamePlayerCard({
           />
         </div>
         <div className="flex flex-col">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+          <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
             {username}
           </span>
           {isTurn ? (
-            <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1 animate-pulse">
+            <span className="text-caption font-semibold text-purple-400 normal-case tracking-normal flex items-center gap-1 animate-pulse">
               {turnLabel}
               <span className="inline-flex gap-0.5 ml-0.5">
                 <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -109,7 +109,7 @@ export function GamePlayerCard({
               </span>
             </span>
           ) : (
-            <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
+            <span className="text-caption font-medium text-brand-muted normal-case tracking-normal">
               {isBot ? botLabel : eloText}
             </span>
           )}

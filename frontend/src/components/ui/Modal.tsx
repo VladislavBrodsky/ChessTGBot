@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavbar } from '@/context/NavbarContext';
 import { telegramHaptic } from '@/lib/telegram';
+import { useDialog } from '@/hooks/useDialog';
+import { Button } from './Button';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -29,6 +31,10 @@ export function Modal({
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const { pushHide, popHide } = useNavbar();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  useDialog(isOpen && mounted, dialogRef, onClose);
 
   useEffect(() => {
     setMounted(true);
@@ -40,16 +46,7 @@ export function Modal({
     return () => popHide();
   }, [isOpen, pushHide, popHide]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+
 
   if (!mounted) return null;
 
@@ -64,7 +61,7 @@ export function Modal({
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="ui-modal-viewport fixed inset-0 z-[100] flex items-center justify-center px-4"
           role="presentation"
         >
           {/* Backdrop */}
@@ -77,49 +74,56 @@ export function Modal({
               telegramHaptic('light');
               onClose();
             }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-brand-overlay"
           />
 
           {/* Modal Box */}
           <motion.div
             role="dialog"
             aria-modal="true"
+            ref={dialogRef}
+            tabIndex={-1}
+            aria-labelledby={title ? titleId : undefined}
+            aria-label={title ? undefined : "Dialog"}
+            aria-describedby={description ? descriptionId : undefined}
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className={`relative z-10 w-full ${maxWidthClasses[maxWidth]} rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-2xl ${className}`}
+            className={`relative z-10 w-full ${maxWidthClasses[maxWidth]} ui-dialog rounded-3xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xl ${className}`}
           >
             {/* Header */}
             {(title || showCloseButton) && (
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   {title && (
-                    <h2 className="text-xl font-bold tracking-tight text-brand-primary">
+                    <h2 id={titleId} className="text-section-title font-semibold text-brand-primary">
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <p className="mt-1 text-sm leading-relaxed text-brand-muted">
+                    <p id={descriptionId} className="mt-1 text-sm leading-relaxed text-brand-muted">
                       {description}
                     </p>
                   )}
                 </div>
 
                 {showCloseButton && (
-                  <button
+                  <Button
+                    variant="ghost"
                     type="button"
                     onClick={() => {
                       telegramHaptic('light');
                       onClose();
                     }}
                     aria-label="Close modal"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-elevated text-brand-muted hover:text-brand-primary transition-colors focus-visible:outline-2 focus-visible:outline-white"
+                    className="h-11 w-11 shrink-0 p-0"
+                    enableHaptic={false}
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                  </button>
+                  </Button>
                 )}
               </div>
             )}

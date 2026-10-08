@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaCopy, FaCheck, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
+import { FaTimes, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -12,6 +12,9 @@ import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { beginCell, Address, Cell } from '@ton/core';
 import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
 import { useUser } from "@/context/UserContext";
+import { useTranslations } from 'next-intl';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 import {
   DepositSuccessView,
@@ -23,7 +26,6 @@ interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
   walletAddress?: string;
-  tgUser: any;
   tw: any;
   chosenWager?: number;
   walletBalance?: number;
@@ -42,7 +44,6 @@ export default function DepositModal({
   onClose,
   onSuccess,
   walletAddress,
-  tgUser,
   tw,
   chosenWager,
   walletBalance,
@@ -50,7 +51,8 @@ export default function DepositModal({
   useNavbarHideWhileMounted();
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
-  const { stats } = useUser();
+  const ti = useTranslations('Index');
+  const { stats, loadingStats, syncStats } = useUser();
 
   const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
@@ -90,8 +92,10 @@ export default function DepositModal({
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
   const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
 
-  const tgId = tgUser?.id || stats?.telegram_id || 1029384;
-  const memoComment = `ref_${tgId}`;
+  // The memo must identify the account confirmed by the API, never client-only Telegram data.
+  const tgId = Number(stats?.telegram_id);
+  const hasVerifiedAccountId = Number.isSafeInteger(tgId) && tgId > 0;
+  const memoComment = hasVerifiedAccountId ? `ref_${tgId}` : '';
 
   useEffect(() => {
     logTelemetryEvent('deposit_modal_open', {
@@ -201,6 +205,10 @@ export default function DepositModal({
   };
 
   const handleWeb3Deposit = async () => {
+    if (!hasVerifiedAccountId) {
+      setErrorMessage(tw('account_unavailable'));
+      return;
+    }
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt <= 0) {
       setErrorMessage(tw('invalid_amount'));
@@ -238,7 +246,7 @@ export default function DepositModal({
       // Construct a comment cell using @ton/core
       const commentCell = beginCell()
         .storeUint(0, 32)
-        .storeStringTail(`ref_${tgId}`)
+        .storeStringTail(memoComment)
         .endCell();
 
       if (currency === 'GRAM') {
@@ -396,6 +404,10 @@ export default function DepositModal({
   };
 
   const handleManualVerify = async () => {
+    if (!hasVerifiedAccountId) {
+      setErrorMessage(tw('account_unavailable'));
+      return;
+    }
     if (!manualTxHash.trim()) return;
     trackDepositInitiated('manual_transfer', parseFloat(depositAmount) || 0);
     funnelStateRef.current = 'submitted';
@@ -614,36 +626,36 @@ export default function DepositModal({
         className="bottom-drawer-sheet relative z-10 pb-[calc(32px+var(--app-safe-bottom))] sm:pb-[calc(16px+var(--app-safe-bottom))]"
       >
         <div className="bottom-drawer-handle" />
-        <button
+        <button aria-label="Close dialog" type="button"
           onClick={closeDeposit}
           disabled={processing}
-          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary cursor-pointer"
+          className="ui-tap-target absolute top-4 right-4 text-brand-muted hover:text-brand-primary cursor-pointer"
         >
           <FaTimes />
         </button>
 
         <div className="space-y-4">
           <div className="flex flex-col">
-            <h3 className="text-base font-black uppercase tracking-widest text-brand-primary leading-tight">{tw('deposit_invoice')}</h3>
+            <h3 className="text-base font-semibold normal-case tracking-normal text-brand-primary leading-tight">{tw('deposit_invoice')}</h3>
             {chosenWager !== undefined && walletBalance !== undefined && (
-              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-[0.2em] mt-0.5">
+              <p className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
                 Quick Top Up & Play
               </p>
             )}
           </div>
 
           {chosenWager !== undefined && walletBalance !== undefined && (
-            <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-xs font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">
-              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+            <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-sm font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">
+              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
                 <div className="text-left opacity-50">Wager Stake</div>
-                <div className="text-right text-brand-primary font-black">${(chosenWager / 100).toFixed(2)} USDT</div>
+                <div className="text-right text-brand-primary font-semibold">${(chosenWager / 100).toFixed(2)} USDT</div>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider">
+              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
                 <div className="text-left opacity-50">Your Balance</div>
-                <div className="text-right text-brand-muted font-black">${(walletBalance / 100).toFixed(2)} USDT</div>
+                <div className="text-right text-brand-muted font-semibold">${(walletBalance / 100).toFixed(2)} USDT</div>
               </div>
               <div className="h-px bg-brand-border-opacity-5 my-0.5" />
-              <div className="grid grid-cols-2 gap-2 text-[11px] uppercase tracking-widest font-black">
+              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal font-semibold">
                 <div className="text-left text-brand-muted">Deficit Needed</div>
                 <div className="text-right text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
               </div>
@@ -662,7 +674,7 @@ export default function DepositModal({
                   type="button"
                   disabled={processing}
                   onClick={() => { telegramHaptic('light'); setActiveTab(tab); setErrorMessage(""); }}
-                  className={`relative z-10 flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
+                  className={`ui-tap-target relative z-10 flex-1 py-2 rounded-lg text-caption font-semibold normal-case tracking-normal transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
                 >
                   {tab === 'crypto' ? tw('tab_crypto') : tw('tab_card')}
                 </button>
@@ -670,25 +682,36 @@ export default function DepositModal({
             </div>
           )}
 
-          {activeTab === 'crypto' && (
+          {activeTab === 'crypto' && !hasVerifiedAccountId && (
+            loadingStats ? <Skeleton variant="rectangular" width="100%" height={120} /> : (
+              <ErrorState
+                title={ti('load_failed')}
+                message={tw('account_unavailable')}
+                onRetry={() => { void syncStats(); }}
+                retryLabel={ti('retry')}
+              />
+            )
+          )}
+
+          {activeTab === 'crypto' && hasVerifiedAccountId && (
           <div className="space-y-4">
-            <p className="text-[10px] font-bold text-brand-muted uppercase tracking-wider text-center">
+            <p className="text-caption font-bold text-brand-muted normal-case tracking-normal text-center">
               Deposit instantly using your connected Web3 wallet.
             </p>
 
             {/* Currency Selector Dropdown */}
             <div className="flex flex-col space-y-1.5 relative">
-              <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Asset</label>
+              <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Asset</label>
               <button
                 type="button"
                 // Only interactive when more than one asset is offered. Under
                 // USDT-only settlement there is a single asset, so this is a
                 // static display (no dropdown).
                 onClick={() => { if (!processing && currenciesList.length > 1) setShowCurrencyDropdown(!showCurrencyDropdown); }}
-                className={`w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
+                className={`ui-tap-target w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-sm text-brand-primary font-semibold flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
+                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-caption font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
                     <FaCoins />
                   </div>
                   <span>{selectedCurrencyObj?.name} ({currency})</span>
@@ -714,15 +737,15 @@ export default function DepositModal({
                           setCurrency(c.symbol as any);
                           setShowCurrencyDropdown(false);
                         }}
-                        className={`w-full py-2.5 px-3.5 text-left text-xs font-bold hover:bg-brand-bg-opacity-5 flex items-center justify-between cursor-pointer ${currency === c.symbol ? 'text-brand-primary bg-brand-bg-opacity-10' : 'text-brand-muted'}`}
+                        className={`ui-tap-target w-full py-2.5 px-3.5 text-left text-sm font-bold hover:bg-brand-bg-opacity-5 flex items-center justify-between cursor-pointer ${currency === c.symbol ? 'text-brand-primary bg-brand-bg-opacity-10' : 'text-brand-muted'}`}
                       >
                         <div className="flex items-center space-x-2.5">
-                          <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px]" style={{ backgroundColor: c.color + '20', color: c.color }}>
+                          <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-caption" style={{ backgroundColor: c.color + '20', color: c.color }}>
                             <FaCoins />
                           </div>
                           <span>{c.name}</span>
                         </div>
-                        <span className="text-[10px] opacity-40">{c.symbol}</span>
+                        <span className="text-caption opacity-40">{c.symbol}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -733,15 +756,15 @@ export default function DepositModal({
             {/* Deposit Amount in USD */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Amount (USD)</label>
+                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Amount (USD)</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-3.5 text-brand-muted text-[10px] font-black font-mono">$</span>
+                  <span className="absolute left-3 top-3.5 text-brand-muted text-caption font-semibold font-mono">$</span>
                   <input
                     type="number"
                     value={depositAmount}
                     disabled={processing}
                     onChange={(e) => setDepositAmount(e.target.value)}
-                    className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-[16px] text-brand-primary font-black focus:outline-none focus:border-brand-primary"
+                    className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 pl-7 pr-3 text-[16px] text-brand-primary font-semibold focus:outline-none focus:border-brand-primary"
                     placeholder="10.00"
                     min="1"
                   />
@@ -750,17 +773,17 @@ export default function DepositModal({
 
               {/* Converted Token Amount */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Equivalent ({currency})</label>
-                <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-xs text-brand-primary font-black flex items-center space-x-1 shadow-inner h-[40px]">
+                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Equivalent ({currency})</label>
+                <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-sm text-brand-primary font-semibold flex items-center space-x-1 shadow-inner h-[40px]">
                   <span className="truncate">{tokenAmount}</span>
-                  <span className="text-[10px] opacity-40 shrink-0">{currency}</span>
+                  <span className="text-caption opacity-40 shrink-0">{currency}</span>
                 </div>
               </div>
             </div>
 
             {/* Fee Breakdown Display */}
             {!isNaN(parseFloat(depositAmount)) && parseFloat(depositAmount) > 0 && (
-              <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-muted">
+              <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-caption font-bold normal-case tracking-normal text-brand-muted">
                 <div className="flex justify-between">
                   <span>Credited to Balance:</span>
                   <span className="text-emerald-400 font-mono">${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
@@ -769,7 +792,7 @@ export default function DepositModal({
                   <span>Platform Fee (5%):</span>
                   <span className="text-rose-400 font-mono">${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
+                <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-semibold text-brand-primary">
                   <span>Total Charged:</span>
                   <span className="font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
                 </div>
@@ -781,16 +804,16 @@ export default function DepositModal({
               <button
                 type="button"
                 onClick={() => tonConnectUI.openModal()}
-                className="w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="ui-tap-target w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-caption font-semibold normal-case tracking-normal shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaWallet size={11} />
                 <span>{walletAddress ? "Reconnect Wallet App" : "Connect Wallet to Top Up"}</span>
               </button>
             ) : (
-              <button
+              <button type="button"
                 onClick={handleWeb3Deposit}
                 disabled={processing}
-                className="w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-[11px] font-black uppercase tracking-widest shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="ui-tap-target w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-caption font-semibold normal-case tracking-normal shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {processing ? (
                   <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-void border-t-transparent animate-spin" />
@@ -808,12 +831,12 @@ export default function DepositModal({
                   type="button"
                   onClick={handleGasGrant}
                   disabled={gasGrantBusy}
-                  className="text-[10px] font-black text-brand-primary/45 hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                  className="ui-tap-target text-caption font-semibold text-brand-primary/45 hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {gasGrantBusy ? tw('gas_requesting') : tw('gas_link')}
                 </button>
                 {gasGrantMsg && (
-                  <p className="text-[10px] font-bold text-brand-muted leading-relaxed text-center px-2">{gasGrantMsg}</p>
+                  <p className="text-caption font-bold text-brand-muted leading-relaxed text-center px-2">{gasGrantMsg}</p>
                 )}
               </div>
             )}
@@ -823,10 +846,10 @@ export default function DepositModal({
               <button
                 type="button"
                 onClick={() => { setShowManualFallback(!showManualFallback); setMemoConfirmed(false); }}
-                className="w-full flex items-center justify-between py-1 text-[10px] font-black text-brand-muted hover:text-brand-primary uppercase tracking-wider transition-colors cursor-pointer"
+                className="ui-tap-target w-full flex items-center justify-between py-1 text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer"
               >
                 <span>Or Pay Manually (Direct Transfer)</span>
-                <span className="text-xs transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+                <span className="text-sm transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
 
               {showManualFallback && (
@@ -866,14 +889,13 @@ export default function DepositModal({
                   setMemoConfirmed={setMemoConfirmed}
                   setManualTxHash={setManualTxHash}
                   onManualVerify={handleManualVerify}
-                  transferInstructionsText={tw('transfer_instructions', { currency, symbol: currency })}
                   commentMemoText={tw('comment_memo')}
                 />
               )}
             </div>
 
             {/* Commission Alert */}
-            <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-[10px] font-bold text-brand-muted uppercase tracking-wider">
+            <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-caption font-bold text-brand-muted normal-case tracking-normal">
               <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
             </div>
           </div>
@@ -890,14 +912,14 @@ export default function DepositModal({
 
           {/* Messages */}
           <div className="w-full pt-1">
-            {successMessage && successMessage.trim() && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider text-center">{successMessage}</div>}
-            {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider text-center">{errorMessage}</div>}
+            {successMessage && successMessage.trim() && <div className="p-2.5 mb-2 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-caption font-bold normal-case tracking-normal text-center">{successMessage}</div>}
+            {errorMessage && <div className="p-2.5 mb-2 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-caption font-bold normal-case tracking-normal text-center">{errorMessage}</div>}
             
             {chosenWager !== undefined && (
-              <button
+              <button type="button"
                 onClick={closeDeposit}
                 disabled={processing}
-                className="w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-muted text-[10px] font-bold uppercase tracking-widest hover:border-brand-primary transition-all cursor-pointer"
+                className="ui-tap-target w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-muted text-caption font-bold normal-case tracking-normal hover:border-brand-primary transition-all cursor-pointer"
               >
                 Back
               </button>

@@ -1,11 +1,15 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
 import { FaTrophy, FaStar, FaShieldAlt, FaBook, FaFire, FaCoins, FaLock } from "react-icons/fa";
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useLocale, useTranslations } from 'next-intl';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import BadgeShowcaseModal from "@/components/BadgeShowcaseModal";
-import { telegramHaptic } from "@/lib/telegram";
+import { Card } from '@/components/ui/Card';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Achievement {
   id: number;
@@ -28,27 +32,39 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export default function AchievementsPage() {
+  const locale = useLocale();
+  const t = useTranslations('Academy');
+  const ti = useTranslations('Index');
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBadge, setSelectedBadge] = useState<Achievement | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  const loadAchievements = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const res = await apiFetch('/api/v1/gamification/achievements');
+      if (!res.ok) throw new Error('Achievements unavailable');
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('Invalid achievements');
+      setAchievements(data);
+    } catch (error) {
+      console.error('Could not load achievements', error);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    apiFetch('/api/v1/gamification/achievements')
-      .then(res => res.json())
-      .then(data => {
-        setAchievements(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+    void loadAchievements();
+  }, [loadAchievements]);
 
   if (loading) {
     return (
-      <LayoutWrapper className="pb-32 px-4 md:px-6">
-        <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 pt-6" role="status" aria-label="Loading achievements">
+      <LayoutWrapper className="">
+        <div className="w-full app-page mx-auto " role="status" aria-label="Loading achievements">
           <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
           <div className="mx-auto h-3 w-28 rounded-full bg-brand-bg-opacity-5" />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -64,30 +80,21 @@ export default function AchievementsPage() {
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
-    <LayoutWrapper className="pb-32 px-4 md:px-6">
-      <div className="pt-6 w-full max-w-sm md:max-w-xl lg:max-w-3xl mx-auto space-y-8 relative z-10 flex flex-col">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-black text-brand-primary uppercase tracking-tight header-balanced">Achievements</h1>
-          <p className="text-sm font-bold text-brand-muted tracking-widest uppercase">
-            Unlocked {unlockedCount} / {achievements.length}
-          </p>
-        </div>
+    <LayoutWrapper className="">
+      <div className="w-full app-page mx-auto relative z-10 flex flex-col">
+        <PageHeader title={t('achievements')} description={`${t('unlocked')}: ${unlockedCount} / ${achievements.length}`} backHref={`/${locale}/academy`} />
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {loadError && <ErrorState title={ti('load_failed')} onRetry={loadAchievements} retryLabel={ti('retry')} />}
+        {!loadError && achievements.length === 0 && <EmptyState title={t('achievements')} />}
+
+        {!loadError && achievements.length > 0 && <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {achievements.map((ach) => (
-            <div
+            <Card
               key={ach.id}
-              role="button"
-              tabIndex={0}
+              variant="solid"
+              interactive
               onClick={() => {
-                telegramHaptic('selection');
                 setSelectedBadge(ach);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  telegramHaptic('selection');
-                  setSelectedBadge(ach);
-                }
               }}
               className={`relative p-4 rounded-2xl border flex flex-col items-center text-center transition-all cursor-pointer select-none active:scale-[0.97] ${
                 ach.unlocked 
@@ -99,23 +106,23 @@ export default function AchievementsPage() {
                 {iconMap[ach.icon] || <FaTrophy />}
               </div>
               
-              <h3 className="text-sm font-black text-brand-primary uppercase mb-1 header-balanced">{ach.title}</h3>
-              <p className="text-[10px] text-brand-muted font-medium leading-tight mb-3 flex-1 text-pretty">{ach.description}</p>
+              <h3 className="text-sm font-semibold text-brand-primary normal-case mb-1 header-balanced">{ach.title}</h3>
+              <p className="text-caption text-brand-muted font-medium leading-tight mb-3 flex-1 text-pretty">{ach.description}</p>
               
               {ach.xp_reward > 0 && (
                 <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                  <span className="text-[9px] font-black uppercase">+{ach.xp_reward} XP</span>
+                  <span className="text-caption font-semibold normal-case">+{ach.xp_reward} XP</span>
                 </div>
               )}
               
               {!ach.unlocked && (
                 <div className="absolute top-2 right-2">
-                  <FaLock className="text-xs text-slate-500" />
+                  <FaLock className="text-sm text-slate-500" />
                 </div>
               )}
-            </div>
+            </Card>
           ))}
-        </div>
+        </div>}
       </div>
 
       <BadgeShowcaseModal

@@ -43,22 +43,23 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 16, scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+      role={isError ? 'alert' : 'status'}
       className={`
         pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl
         bg-brand-surface border ${borderClass} shadow-[0_8px_30px_rgba(0,0,0,0.8)]
-        min-w-[260px] max-w-sm text-xs font-bold text-brand-primary
+        w-full max-w-sm text-sm font-medium text-brand-primary
       `}
     >
       <div className="flex items-center gap-2.5 min-w-0">
         {icon}
-        <span className="truncate leading-snug">{toast.message}</span>
+        <span className="break-words leading-relaxed">{toast.message}</span>
       </div>
 
       <button
         type="button"
         onClick={() => onDismiss(toast.id)}
         aria-label="Dismiss toast"
-        className="p-1 rounded-lg text-brand-muted hover:text-brand-primary hover:bg-white/[0.06] transition-colors cursor-pointer"
+        className="ui-tap-target p-1 rounded-lg text-brand-muted hover:text-brand-primary hover:bg-white/[0.06] transition-colors cursor-pointer"
       >
         <FiX className="h-3.5 w-3.5" />
       </button>

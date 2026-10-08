@@ -107,6 +107,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   const router = useRouter();
   const locale = useLocale();
   const tg = useTranslations('Game');
+  const ti = useTranslations('Index');
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +123,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   // AI Analysis states
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<{
     evaluations: number[];
     bestMoves: string[];
@@ -132,15 +134,19 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
     if (isAnalyzing || fens.length === 0) return;
     setIsAnalyzing(true);
     setAnalysisProgress(0);
+    setAnalysisError(null);
 
+    let worker: Worker | null = null;
+    let workerUrl: string | null = null;
     try {
       const workerCode = `importScripts("https://cdn.jsdelivr.net/npm/stockfish@10.0.2/src/stockfish.js");`;
       const blob = new Blob([workerCode], { type: "application/javascript" });
-      const workerUrl = URL.createObjectURL(blob);
-      const worker = new Worker(workerUrl);
+      workerUrl = URL.createObjectURL(blob);
+      const activeWorker = new Worker(workerUrl);
+      worker = activeWorker;
 
-      worker.postMessage("uci");
-      worker.postMessage("isready");
+      activeWorker.postMessage("uci");
+      activeWorker.postMessage("isready");
 
       const newEvaluations: number[] = [];
       const newBestMoves: string[] = [];
@@ -148,8 +154,20 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
       for (let i = 0; i < fens.length; i++) {
         const fen = fens[i];
 
-        const { evaluation, bestMove } = await new Promise<{ evaluation: number; bestMove: string }>((resolve) => {
+        const { evaluation, bestMove } = await new Promise<{ evaluation: number; bestMove: string }>((resolve, reject) => {
           let currentEval = 0;
+          const timeout = window.setTimeout(() => fail(), 12000);
+
+          const cleanup = () => {
+            window.clearTimeout(timeout);
+            activeWorker.removeEventListener('message', onMessage);
+            activeWorker.removeEventListener('error', onError);
+          };
+          const fail = () => {
+            cleanup();
+            reject(new Error('Engine worker unavailable'));
+          };
+          const onError = () => fail();
 
           const onMessage = (e: MessageEvent) => {
             const line = e.data;
@@ -175,23 +193,22 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
               if (line.startsWith("bestmove")) {
                 const best = line.split(" ")[1];
-                worker.removeEventListener("message", onMessage);
+                cleanup();
                 resolve({ evaluation: currentEval, bestMove: best });
               }
             }
           };
 
-          worker.addEventListener("message", onMessage);
-          worker.postMessage(`position fen ${fen}`);
-          worker.postMessage("go depth 6");
+          activeWorker.addEventListener("message", onMessage);
+          activeWorker.addEventListener('error', onError);
+          activeWorker.postMessage(`position fen ${fen}`);
+          activeWorker.postMessage("go depth 6");
         });
 
         newEvaluations.push(evaluation);
         newBestMoves.push(bestMove);
         setAnalysisProgress(Math.round(((i + 1) / fens.length) * 100));
       }
-
-      worker.terminate();
 
       // Now compute classifications
       const classifications: ('book' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder')[] = [];
@@ -230,7 +247,10 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
       });
     } catch (err) {
       console.error("Analysis execution failed:", err);
+      setAnalysisError(tg('analysis_unavailable'));
     } finally {
+      worker?.terminate();
+      if (workerUrl) URL.revokeObjectURL(workerUrl);
       setIsAnalyzing(false);
     }
   };
@@ -308,7 +328,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
   if (loading) {
     return (
-      <LayoutWrapper className="justify-center items-center px-4">
+      <LayoutWrapper className="justify-center items-center ">
         <div className="w-full max-w-sm md:max-w-md flex flex-col items-center space-y-4 py-8">
           <div className="flex items-center justify-between w-full">
             <Skeleton variant="rectangular" width={36} height={36} className="rounded-xl" />
@@ -327,7 +347,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
   if (error || !gameData) {
     return (
-      <LayoutWrapper className="justify-center items-center px-4">
+      <LayoutWrapper className="justify-center items-center ">
         <ErrorState
           title="Match Review Unavailable"
           message={error || "Unable to locate match history or reconstructed moves."}
@@ -361,27 +381,27 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   }
 
   return (
-    <LayoutWrapper className="pb-12 justify-start pt-6">
+    <LayoutWrapper className="pb-12 justify-start ">
       {/* Header / Nav */}
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex justify-between items-center mb-4 relative z-10 px-2 mx-auto">
-        <motion.button
+      <div className="w-full app-page flex justify-between items-center mb-4 relative z-10 px-2 mx-auto">
+        <motion.button type="button"
           whileTap={{ scale: 0.95 }}
           onClick={() => router.push(`/${locale}/profile`)}
-          className="html-back-button text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer bg-transparent border-0"
+          className="ui-tap-target html-back-button text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-caption font-bold normal-case tracking-normal cursor-pointer bg-transparent border-0"
         >
           <FaArrowLeft />
           <span>{tg('back')}</span>
         </motion.button>
         <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
-          <FaGamepad className="text-[10px] text-brand-primary opacity-45" />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-brand-muted uppercase">
+          <FaGamepad className="text-caption text-brand-primary opacity-45" />
+          <span className="text-caption font-bold tracking-normal text-brand-muted normal-case">
             {gameData.game_type === 'computer' ? "A.I. Training" : "Duel Ledger"}
           </span>
         </div>
       </div>
 
       {/* Main Review Body */}
-      <div className="w-full max-w-sm md:max-w-xl lg:max-w-3xl flex flex-col items-center gap-4 mx-auto">
+      <div className="w-full app-page flex flex-col items-center gap-4 mx-auto">
         
         {/* Opponent Widget (Black) */}
         <Card variant="glass" className={`w-full flex justify-between items-center px-4 py-3 transition-all ${
@@ -396,16 +416,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+              <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
                 {gameData.black_name}
               </span>
-              <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
+              <span className="text-caption font-medium text-brand-muted normal-case tracking-normal">
                 {gameData.black_elo_before} → {gameData.black_elo_after} ELO
               </span>
             </div>
           </div>
           {isBlackWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-caption font-semibold normal-case tracking-normal">
               Winner
             </span>
           )}
@@ -462,16 +482,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-brand-primary uppercase tracking-tight">
+              <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
                 {gameData.white_name}
               </span>
-              <span className="text-[10px] font-medium text-brand-muted uppercase tracking-[0.2em]">
+              <span className="text-caption font-medium text-brand-muted normal-case tracking-normal">
                 {gameData.white_elo_before} → {gameData.white_elo_after} ELO
               </span>
             </div>
           </div>
           {isWhiteWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-caption font-semibold normal-case tracking-normal">
               Winner
             </span>
           )}
@@ -480,25 +500,25 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Control Interface */}
         <div className="w-full flex items-center justify-between px-3 py-2 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl shadow-sm">
           <div className="flex items-center gap-1">
-            <button
+            <button aria-label="Go to first move" type="button"
               onClick={() => { setCurrentStep(0); setIsPlaying(false); }}
               disabled={currentStep === 0}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaFastBackward size={10} />
             </button>
-            <button
+            <button aria-label="Previous move" type="button"
               onClick={() => { setCurrentStep(prev => Math.max(0, prev - 1)); setIsPlaying(false); }}
               disabled={currentStep === 0}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaChevronLeft size={10} />
             </button>
           </div>
 
-          <button
+          <button type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-6 py-2 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:opacity-90 shadow-sm"
+            className="ui-tap-target px-6 py-2 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center gap-2 text-caption font-semibold normal-case tracking-normal cursor-pointer hover:opacity-90 shadow-sm"
           >
             {isPlaying ? (
               <>
@@ -514,17 +534,17 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           </button>
 
           <div className="flex items-center gap-1">
-            <button
+            <button aria-label="Next move" type="button"
               onClick={() => { setCurrentStep(prev => Math.min(totalSteps - 1, prev + 1)); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaChevronRight size={10} />
             </button>
-            <button
+            <button aria-label="Go to last move" type="button"
               onClick={() => { setCurrentStep(totalSteps - 1); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
-              className="p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+              className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaFastForward size={10} />
             </button>
@@ -532,31 +552,35 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </div>
 
         {/* Step Indicator */}
-        <div className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
+        <div className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
           Move {Math.floor((currentStep + 1) / 2)} / {Math.floor(sanMoves.length / 2)} ({currentStep} / {sanMoves.length} half-moves)
         </div>
 
         {/* A.I. Analysis Panel */}
-        {!analysis && !isAnalyzing && (
+        {!analysis && !isAnalyzing && !analysisError && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3">
-            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
               A.I. Engine Review
             </span>
-            <p className="text-[10px] text-brand-muted uppercase tracking-wide">
+            <p className="text-caption text-brand-muted normal-case tracking-normal">
               Run engine analysis to evaluate move accuracy and discover blunders.
             </p>
-            <button
+            <button type="button"
               onClick={runAnalysis}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-premium hover:opacity-90 transition-all border-0"
+              className="ui-tap-target w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white text-caption font-semibold normal-case tracking-normal cursor-pointer shadow-premium hover:opacity-90 transition-all border-0"
             >
               ⚡ Run A.I. Game Analysis
             </button>
           </div>
         )}
 
+        {analysisError && !isAnalyzing && (
+          <ErrorState title={tg('analysis_unavailable')} message={analysisError} onRetry={runAnalysis} retryLabel={ti('retry')} />
+        )}
+
         {isAnalyzing && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3 animate-pulse">
-            <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
               Analyzing game moves...
             </span>
             <div className="w-full bg-brand-void rounded-full h-2 overflow-hidden border border-brand-border-opacity-5">
@@ -565,7 +589,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                 style={{ width: `${analysisProgress}%` }}
               />
             </div>
-            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
+            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
               {analysisProgress}% Complete
             </span>
           </div>
@@ -577,19 +601,19 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             {currentStep > 0 && (
               <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest">
+                  <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal">
                     Move Analysis
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-brand-primary">
+                  <span className="text-caption font-mono font-bold text-brand-primary">
                     Eval: {formatEval(analysis.evaluations[currentStep])}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
+                  <span className={`px-2.5 py-1 rounded-lg border text-caption font-semibold normal-case tracking-normal ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
                     {getClassificationLabel(analysis.classifications[currentStep], locale)}
                   </span>
                   {(analysis.classifications[currentStep] === 'blunder' || analysis.classifications[currentStep] === 'mistake') && analysis.bestMoves[currentStep - 1] && (
-                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                    <span className="text-caption font-bold text-amber-400 normal-case tracking-normal">
                       💡 Best was: {formatUci(analysis.bestMoves[currentStep - 1])}
                     </span>
                   )}
@@ -599,13 +623,13 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
             {/* Accuracy Standings Summary */}
             <div className="space-y-3">
-              <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-widest block">
+              <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
                 Move Accuracy Summary
               </span>
               <div className="grid grid-cols-2 gap-4">
                 {/* White stats */}
                 <div className="space-y-1.5 text-left">
-                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wider block border-b border-brand-border-opacity-5 pb-1">
+                  <span className="text-caption font-semibold text-brand-primary normal-case tracking-normal block border-b border-brand-border-opacity-5 pb-1">
                     {gameData.white_name} (White)
                   </span>
                   {(() => {
@@ -614,7 +638,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                       whiteStats[analysis.classifications[i]]++;
                     }
                     return (
-                      <div className="grid grid-cols-2 gap-y-1 text-[10px] font-bold font-mono">
+                      <div className="grid grid-cols-2 gap-y-1 text-caption font-bold font-mono">
                         <span className="text-emerald-400">Excellent:</span>
                         <span className="text-right text-brand-primary">{whiteStats.excellent + whiteStats.book}</span>
                         <span className="text-blue-400">Good:</span>
@@ -632,7 +656,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                 
                 {/* Black stats */}
                 <div className="space-y-1.5 text-left border-l border-brand-border-opacity-10 pl-4">
-                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wider block border-b border-brand-border-opacity-5 pb-1">
+                  <span className="text-caption font-semibold text-brand-primary normal-case tracking-normal block border-b border-brand-border-opacity-5 pb-1">
                     {gameData.black_name} (Black)
                   </span>
                   {(() => {
@@ -641,7 +665,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                       blackStats[analysis.classifications[i]]++;
                     }
                     return (
-                      <div className="grid grid-cols-2 gap-y-1 text-[10px] font-bold font-mono">
+                      <div className="grid grid-cols-2 gap-y-1 text-caption font-bold font-mono">
                         <span className="text-emerald-400">Excellent:</span>
                         <span className="text-right text-brand-primary">{blackStats.excellent + blackStats.book}</span>
                         <span className="text-blue-400">Good:</span>
@@ -664,10 +688,10 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Move History Log Panel */}
         <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-brand-border-opacity-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
+            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
               Move Ledger
             </span>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-muted">
+            <div className="flex items-center gap-1.5 text-caption font-bold text-brand-muted">
               <FaRegClock />
               <span>{new Date(gameData.ended_at).toLocaleDateString()}</span>
             </div>
@@ -675,7 +699,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
           <div className="max-h-[140px] overflow-y-auto pr-1 space-y-1.5 custom-scrollbar">
             {movePairs.length === 0 ? (
-              <span className="text-[10px] text-brand-muted uppercase block text-center py-4">
+              <span className="text-caption text-brand-muted normal-case block text-center py-4">
                 No moves played.
               </span>
             ) : (
@@ -688,14 +712,14 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                   const isBlackActive = currentStep === blackStepIdx;
 
                   return (
-                    <div key={pair.index} className="flex items-center text-xs font-mono py-0.5 border-b border-brand-border-opacity-5">
+                    <div key={pair.index} className="flex items-center text-sm font-mono py-0.5 border-b border-brand-border-opacity-5">
                       <span className="text-brand-muted w-8">{pair.index}.</span>
                       
                       <span
                         onClick={() => { setCurrentStep(whiteStepIdx); setIsPlaying(false); }}
                         className={`cursor-pointer px-1.5 py-0.5 rounded font-bold transition-all hover:bg-brand-void/50 ${
                           isWhiteActive 
-                            ? 'bg-brand-primary text-brand-void font-black' 
+                            ? 'bg-brand-primary text-brand-void font-semibold'
                             : 'text-brand-muted hover:opacity-100'
                         }`}
                       >
@@ -707,7 +731,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                           onClick={() => { setCurrentStep(blackStepIdx); setIsPlaying(false); }}
                           className={`cursor-pointer px-1.5 py-0.5 rounded font-bold transition-all ml-4 hover:bg-brand-void/50 ${
                             isBlackActive 
-                              ? 'bg-brand-primary text-brand-void font-black' 
+                              ? 'bg-brand-primary text-brand-void font-semibold'
                               : 'text-brand-muted hover:opacity-100'
                           }`}
                         >
@@ -724,10 +748,10 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         {/* Game termination banner */}
         <div className="w-full text-center px-4 py-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/40">
-          <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary opacity-45 block mb-1">
+          <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45 block mb-1">
             Termination Detail
           </span>
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-tight block">
+          <span className="text-sm font-bold text-brand-primary normal-case tracking-tight block">
             {gameData.result_type === 'timeout' 
               ? "Defeated by Clock Expired" 
               : gameData.result_type === 'resignation' 

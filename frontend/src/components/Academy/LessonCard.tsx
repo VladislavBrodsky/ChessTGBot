@@ -75,29 +75,29 @@ export default function LessonCard({
       <div className="relative z-10 p-4 flex flex-col h-full">
         {/* Top row: difficulty badge + status icon */}
         <div className="flex justify-between items-center mb-3">
-          <span className={`text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg border ${diff.color} ${diff.bg} ${diff.border}`}>
+          <span className={`text-caption font-semibold normal-case tracking-normal px-2.5 py-1 rounded-lg border ${diff.color} ${diff.bg} ${diff.border}`}>
             {difficulty}
           </span>
           {locked ? (
-            <FaLock className="text-brand-muted text-xs" />
+            <FaLock className="text-brand-muted text-sm" />
           ) : isCompleted ? (
-            <div className="flex items-center gap-1 text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+            <div className="flex items-center gap-1 text-caption font-semibold text-emerald-500 normal-case tracking-normal">
               <FaCheckCircle className="text-sm text-emerald-400" />
             </div>
           ) : (
-            <span className="text-[9px] font-black uppercase tracking-widest text-amber-400 border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 rounded-full">
+            <span className="text-caption font-semibold normal-case tracking-normal text-amber-400 border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 rounded-full">
               {duration}
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-black tracking-tight text-brand-primary uppercase leading-tight mb-1.5 header-balanced">
+        <h3 className="text-sm font-semibold tracking-tight text-brand-primary normal-case leading-tight mb-1.5 header-balanced">
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-[11px] text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3 text-pretty">
+        <p className="text-caption text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3 text-pretty">
           {description}
         </p>
 
@@ -119,7 +119,7 @@ export default function LessonCard({
 
           {/* Status row */}
           <div className="flex justify-between items-center">
-            <span className={`text-[10px] font-black uppercase tracking-wide ${
+            <span className={`text-caption font-semibold normal-case tracking-normal ${
               isCompleted ? "text-emerald-400" : "text-brand-muted"
             }`}>
               {isCompleted ? "Completed ✓" : "Start learning"}
@@ -127,7 +127,7 @@ export default function LessonCard({
             {!locked && (
               <motion.span
                 whileHover={{ x: 2 }}
-                className="flex items-center gap-1 text-[10px] font-black text-brand-muted hover:text-brand-primary transition-colors"
+                className="flex items-center gap-1 text-caption font-semibold text-brand-muted hover:text-brand-primary transition-colors"
               >
                 {isCompleted ? "Review" : "Start"}
                 <FaChevronRight size={6} />

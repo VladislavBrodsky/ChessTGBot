@@ -25,7 +25,7 @@ export function CardDepositSection({
       <div className="flex justify-center mb-2">
         <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">
+          <span className="text-caption font-semibold normal-case tracking-normal text-emerald-500">
             Instant Card Top-Up
           </span>
         </div>
@@ -44,29 +44,29 @@ export function CardDepositSection({
 
       {/* Amount (USD) */}
       <div className="flex flex-col space-y-1.5">
-        <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
+        <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
           Amount (USD)
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-3.5 text-brand-muted text-[10px] font-black font-mono">$</span>
+          <span className="absolute left-3 top-3.5 text-brand-muted text-caption font-semibold font-mono">$</span>
           <input
             type="number"
             value={depositAmount}
             disabled={processing}
             onChange={(e) => setDepositAmount(e.target.value)}
-            className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-3 pl-8 pr-4 text-sm text-brand-primary font-black focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:shadow-[0_0_15px_rgba(255,215,0,0.1)] transition-all"
+            className="w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-3 pl-8 pr-4 text-sm text-brand-primary font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:shadow-[0_0_15px_rgba(255,215,0,0.1)] transition-all"
             placeholder="10.00"
             min="1"
           />
         </div>
-        <span className="text-[10px] font-bold text-brand-muted uppercase tracking-wider">
+        <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
           Minimum top-up is $1.00 USD
         </span>
       </div>
 
       {/* Fee Breakdown Display */}
       {isValidAmt && (
-        <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-[10px] font-bold uppercase tracking-wider text-brand-muted animate-fade-in">
+        <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-caption font-bold normal-case tracking-normal text-brand-muted animate-fade-in">
           <div className="flex justify-between">
             <span>Credited to Balance:</span>
             <span className="text-emerald-400 font-mono">${(parsedAmt * 0.95).toFixed(2)}</span>
@@ -75,7 +75,7 @@ export function CardDepositSection({
             <span>Platform Fee (5%):</span>
             <span className="text-rose-400 font-mono">${(parsedAmt * 0.05).toFixed(2)}</span>
           </div>
-          <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-black text-brand-primary">
+          <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-semibold text-brand-primary">
             <span>Total Charged:</span>
             <span className="font-mono">${parsedAmt.toFixed(2)}</span>
           </div>
@@ -86,7 +86,7 @@ export function CardDepositSection({
         type="button"
         onClick={onCardTopUp}
         disabled={processing || !isValidAmt}
-        className="group relative overflow-hidden w-full py-3.5 rounded-xl border border-white/10 bg-gradient-to-r from-[#635BFF] to-[#4338CA] text-white text-[11px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(99,91,255,0.25)] hover:shadow-[0_0_25px_rgba(99,91,255,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        className="ui-tap-target group relative overflow-hidden w-full py-3.5 rounded-xl border border-white/10 bg-gradient-to-r from-[#635BFF] to-[#4338CA] text-white text-caption font-semibold normal-case tracking-normal shadow-[0_0_20px_rgba(99,91,255,0.25)] hover:shadow-[0_0_25px_rgba(99,91,255,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
       >
         <div className="absolute inset-0 bg-white/20 translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-700 ease-in-out" />
         {processing ? (
@@ -100,7 +100,7 @@ export function CardDepositSection({
         <svg className="w-2.5 h-2.5 fill-brand-primary" viewBox="0 0 448 512">
           <path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z" />
         </svg>
-        <span className="text-[9px] font-bold text-brand-primary uppercase tracking-widest">
+        <span className="text-caption font-bold text-brand-primary normal-case tracking-normal">
           Guaranteed safe & secure
         </span>
       </div>

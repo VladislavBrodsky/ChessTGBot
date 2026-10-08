@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useUser } from '@/context/UserContext';
 import { useTranslations, useLocale } from 'next-intl';
@@ -271,21 +272,8 @@ export default function MarketplacePage() {
 
     return (
         <LayoutWrapper className="w-full px-3.5 md:px-6 pt-[max(0.75rem,var(--app-safe-top))]">
-            {/* Ambient background light */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.1)_0%,transparent_70%)] pointer-events-none -z-10" />
-            
-            <main className="flex w-full max-w-md flex-col items-center mx-auto space-y-4 pt-1 md:max-w-xl lg:max-w-3xl">
-                    <header className="flex w-full flex-col items-center text-center relative pt-1 md:pt-4 mb-1">
-                        <motion.div animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-20 bg-[radial-gradient(circle,rgba(245,158,11,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
-                        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-black uppercase leading-none tracking-tight text-brand-primary header-balanced">
-                            <FaGem className="text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
-                            {t('title')}
-                        </h1>
-                        <p className="mt-1.5 max-w-xs text-[10px] font-bold uppercase leading-relaxed tracking-[0.14em] text-brand-muted flex flex-col items-center">
-                            <span>EXCHANGE XP TO UNLOCK</span>
-                            <span>PREMIUM REWARDS & THEMES</span>
-                        </p>
-                    </header>
+            <main className="app-page">
+                    <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
                         <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
@@ -294,12 +282,12 @@ export default function MarketplacePage() {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" />
                             <div className="flex items-center justify-between gap-4 relative z-10">
                                 <div className="space-y-1 text-left">
-                                <span className="text-[10px] font-black uppercase tracking-[0.16em] text-brand-muted">{t('xp_balance')}</span>
+                                <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{t('xp_balance')}</span>
                                 {loadingStats ? (
                                     <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
                                 ) : (
                                     <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                        className="mt-2 block text-3xl font-black leading-none tabular-nums text-amber-400 drop-shadow-sm">
+                                        className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-amber-400 drop-shadow-sm">
                                         {userXP.toLocaleString()} XP
                                     </motion.span>
                                 )}
@@ -310,10 +298,10 @@ export default function MarketplacePage() {
                             </div>
                             {nextBox && !loadingStats && (
                                 <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
-                                    <p className="text-xs leading-5 text-brand-muted">
+                                    <p className="text-sm leading-5 text-brand-muted">
                                         <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
                                     </p>
-                                    <Link href={`/${locale}/academy`} className="shrink-0 text-[10px] font-black uppercase tracking-[0.12em] text-amber-400 hover:text-amber-300 transition-colors drop-shadow-[0_0_5px_rgba(245,158,11,0.3)]">
+                                    <Link href={`/${locale}/academy`} className="shrink-0 text-caption font-semibold normal-case tracking-normal text-amber-400 hover:text-amber-300 transition-colors drop-shadow-[0_0_5px_rgba(245,158,11,0.3)]">
                                         {ti('academy')}
                                     </Link>
                                 </div>
@@ -325,7 +313,7 @@ export default function MarketplacePage() {
                     <AnimatePresence>
                         {recentWins.length > 0 && (
                             <motion.div key="recent-wins" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                                <h3 className="text-[10px] font-black uppercase text-brand-muted tracking-[0.3em] text-center w-full mb-3">{t('recently_won')}</h3>
+                                <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('recently_won')}</h3>
                                 <div className="flex gap-2.5 overflow-x-auto pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                     {recentWins.map((w) => {
                                         const c = BOX_CONFIG[w.tier].theme;
@@ -333,7 +321,7 @@ export default function MarketplacePage() {
                                             <div key={w.at} className="premium-liquid-content shrink-0 px-3.5 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-sm transition-all hover:-translate-y-0.5"
                                                 style={{ borderColor: `rgba(${c.rgb},0.25)`, background: `rgba(${c.rgb},0.08)` }}>
                                                 <FiBox size={13} style={{ color: c.accent }} className="drop-shadow-md" />
-                                                <span className="text-[10px] font-black tracking-wide text-brand-primary whitespace-nowrap">{w.name}</span>
+                                                <span className="text-caption font-semibold tracking-normal text-brand-primary whitespace-nowrap">{w.name}</span>
                                             </div>
                                         );
                                     })}
@@ -363,7 +351,7 @@ export default function MarketplacePage() {
                     {(activeTab === 'all' || activeTab === 'boxes') && (
                         <section className="w-full space-y-4" aria-labelledby="marketplace-vaults-title">
                             <div className="text-center relative">
-                                <h2 id="marketplace-vaults-title" className="text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_boxes')}</h2>
+                                <h2 id="marketplace-vaults-title" className="text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_boxes')}</h2>
                             </div>
                             {/* Ultra-premium 2026: Enforce exactly 2 columns for a robust, chunky layout */}
                             <div className="grid w-full grid-cols-2 items-start gap-3 md:gap-4">
@@ -382,7 +370,7 @@ export default function MarketplacePage() {
 
                     {(activeTab === 'all' || activeTab === 'premium') && (
                         <section className="w-full space-y-4 mt-2" aria-labelledby="marketplace-premium-title">
-                            <h2 id="marketplace-premium-title" className="text-center text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_premium')}</h2>
+                            <h2 id="marketplace-premium-title" className="text-center text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_premium')}</h2>
                             <div className="grid grid-cols-1 gap-3 w-full">
                                 {directPurchases.map((item) => {
                                     const affordable = userXP >= item.cost;
@@ -394,13 +382,13 @@ export default function MarketplacePage() {
                                         >
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="min-w-0">
-                                                <h3 className="flex items-center gap-2 text-base font-black text-brand-primary">
+                                                <h3 className="flex items-center gap-2 text-base font-semibold text-brand-primary">
                                                     <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                                                     {item.name}
                                                 </h3>
                                                 <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                                 </div>
-                                                <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                                                <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-caption text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
                                                     {item.cost.toLocaleString()} XP
                                                 </Badge>
                                             </div>
@@ -421,7 +409,7 @@ export default function MarketplacePage() {
 
                     {(activeTab === 'all' || activeTab === 'themes') && (
                         <section className="w-full space-y-4 mt-2 pb-10" aria-labelledby="marketplace-themes-title">
-                            <h2 id="marketplace-themes-title" className="text-center text-xs font-black uppercase tracking-[0.25em] text-brand-primary drop-shadow-md">{t('section_themes')}</h2>
+                            <h2 id="marketplace-themes-title" className="text-center text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_themes')}</h2>
                             {loadingThemes ? (
                                 <div className="grid grid-cols-1 gap-3 w-full">
                                     {[0, 1, 2].map((i) => (
@@ -469,10 +457,10 @@ export default function MarketplacePage() {
                                                         <div className="flex items-center gap-2">
                                                             <h3 className="truncate text-sm font-bold leading-none text-brand-primary group-hover:text-white transition-colors">{theme.name}</h3>
                                                             {theme.owned && (
-                                                                <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-[8px] font-black uppercase text-emerald-500 drop-shadow-sm">{t('owned')}</Badge>
+                                                                <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-caption font-semibold normal-case text-emerald-500 drop-shadow-sm">{t('owned')}</Badge>
                                                             )}
                                                         </div>
-                                                        <p className="text-[10px] text-brand-muted leading-tight line-clamp-1 font-medium">{theme.description || t('theme_default_desc')}</p>
+                                                        <p className="text-caption text-brand-muted leading-tight line-clamp-1 font-medium">{theme.description || t('theme_default_desc')}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -482,7 +470,7 @@ export default function MarketplacePage() {
                                                             telegramHaptic('light');
                                                             setPreviewTheme(theme);
                                                         }}
-                                                        className="p-2 rounded-xl bg-brand-elevated hover:bg-brand-border-opacity-20 text-brand-muted hover:text-brand-primary transition-colors text-xs cursor-pointer"
+                                                        className="ui-tap-target p-2 rounded-xl bg-brand-elevated hover:bg-brand-border-opacity-20 text-brand-muted hover:text-brand-primary transition-colors text-sm cursor-pointer"
                                                         title="Preview theme"
                                                         aria-label="Preview theme"
                                                     >
@@ -490,9 +478,9 @@ export default function MarketplacePage() {
                                                     </button>
                                                     {theme.owned ? (
                                                         activeThemeCode === theme.code ? (
-                                                            <Button disabled variant="secondary" size="sm" className="shrink-0 border-emerald-500/20 bg-emerald-500/10 text-[10px] font-black uppercase tracking-widest text-emerald-500 shadow-[inset_0_0_10px_rgba(16,185,129,0.1)]">{t('active')}</Button>
+                                                            <Button disabled variant="secondary" size="sm" className="shrink-0 border-emerald-500/20 bg-emerald-500/10 text-caption font-semibold normal-case tracking-normal text-emerald-500 shadow-[inset_0_0_10px_rgba(16,185,129,0.1)]">{t('active')}</Button>
                                                         ) : (
-                                                            <Button onClick={() => handleEquipTheme(theme.code)} variant="secondary" size="sm" className="shrink-0 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-colors">{t('equip')}</Button>
+                                                            <Button onClick={() => handleEquipTheme(theme.code)} variant="secondary" size="sm" className="shrink-0 text-caption font-semibold normal-case tracking-normal hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-colors">{t('equip')}</Button>
                                                         )
                                                     ) : (
                                                         <Button
@@ -500,7 +488,7 @@ export default function MarketplacePage() {
                                                             variant={affordable ? 'primary' : 'secondary'}
                                                             size="sm"
                                                             disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                            className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
+                                                            className={`shrink-0 text-caption font-semibold normal-case tracking-normal ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
                                                         >
                                                             {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
                                                         </Button>

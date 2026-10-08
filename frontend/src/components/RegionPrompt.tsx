@@ -98,37 +98,37 @@ export default function RegionPrompt() {
           >
             <div className="text-center mb-4">
               <span className="text-2xl">🏟️</span>
-              <h2 id="region-prompt-title" className="text-base font-black uppercase tracking-wide text-brand-primary mt-2">
+              <h2 id="region-prompt-title" className="text-base font-semibold normal-case tracking-normal text-brand-primary mt-2">
                 {t('title')}
               </h2>
-              <p className="text-[11px] font-bold text-brand-muted mt-1.5 leading-relaxed">
+              <p className="text-caption font-bold text-brand-muted mt-1.5 leading-relaxed">
                 {t('subtitle')}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               {REGIONS.map((r) => (
-                <button
+                <button type="button"
                   key={r.id}
                   onClick={() => choose(r.id)}
                   disabled={!!saving}
-                  className={`flex flex-col items-center gap-2 rounded-2xl border p-4 transition-all ${
+                  className={`ui-tap-target flex flex-col items-center gap-2 rounded-2xl border p-4 transition-all ${
                     saving === r.id
                       ? 'border-emerald-400/50 bg-emerald-500/10'
                       : 'border-brand-primary/10 bg-brand-bg-opacity-5 hover:border-brand-primary/30'
                   } ${saving && saving !== r.id ? 'opacity-40' : ''}`}
                 >
                   <span className="text-xl text-brand-muted">{r.icon}</span>
-                  <span className="text-[10px] font-black uppercase tracking-wide text-brand-primary text-center leading-tight">
+                  <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary text-center leading-tight">
                     {t(`region_${r.id}`)}
                   </span>
                 </button>
               ))}
             </div>
 
-            <button
+            <button type="button"
               onClick={dismiss}
-              className="w-full mt-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-brand-muted transition-colors"
+              className="ui-tap-target w-full mt-4 py-2.5 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-muted transition-colors"
             >
               {t('skip')}
             </button>

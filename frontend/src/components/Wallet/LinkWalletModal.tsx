@@ -77,22 +77,22 @@ export default function LinkWalletModal({
         className="bottom-drawer-sheet relative z-10"
       >
         <div className="bottom-drawer-handle" />
-        <button
+        <button aria-label="Close dialog" type="button"
           onClick={onClose}
           disabled={processing}
-          className="absolute top-4 right-4 text-brand-muted hover:text-brand-primary"
+          className="ui-tap-target absolute top-4 right-4 text-brand-muted hover:text-brand-primary"
         >
           <FaTimes />
         </button>
 
         <div className="space-y-4">
-          <h3 className="text-base font-black uppercase tracking-widest text-brand-primary ">{tw('connect_title')}</h3>
-          <p className="text-[10px] font-bold text-brand-muted uppercase tracking-wider text-center">
+          <h3 className="text-base font-semibold normal-case tracking-normal text-brand-primary ">{tw('connect_title')}</h3>
+          <p className="text-caption font-bold text-brand-muted normal-case tracking-normal text-center">
             {tw('connect_desc')}
           </p>
 
           <div className="flex flex-col space-y-1">
-            <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('ton_address')}</label>
+            <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tw('ton_address')}</label>
             <input
               type="text"
               value={connectAddressInput}
@@ -102,13 +102,13 @@ export default function LinkWalletModal({
             />
           </div>
 
-          {successMessage && <div className="p-2.5 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-[10px] font-bold uppercase tracking-wider">{successMessage}</div>}
-          {errorMessage && <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-[10px] font-bold uppercase tracking-wider">{errorMessage}</div>}
+          {successMessage && <div className="p-2.5 bg-brand-emerald-opacity-10 border border-brand-emerald-opacity-20 rounded-lg text-emerald-500 text-caption font-bold normal-case tracking-normal">{successMessage}</div>}
+          {errorMessage && <div className="p-2.5 bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 rounded-lg text-rose-400 text-caption font-bold normal-case tracking-normal">{errorMessage}</div>}
 
-          <button
+          <button type="button"
             onClick={handleConnectSubmit}
             disabled={processing}
-            className="w-full py-2.5 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-xs font-black uppercase tracking-widest hover:bg-brand-primary-hover transition-all"
+            className="ui-tap-target w-full py-2.5 rounded-xl border border-brand-border-opacity-20 bg-brand-primary text-brand-void text-sm font-semibold normal-case tracking-normal hover:bg-brand-primary-hover transition-all"
           >
             {processing ? tw('linking_address') : tw('verify_link')}
           </button>

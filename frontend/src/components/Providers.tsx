@@ -9,6 +9,7 @@ import TaskSuccessModal from './TaskSuccessModal';
 import ClientErrorReporter from './ClientErrorReporter';
 import TelemetryReporter from './TelemetryReporter';
 import { ReducedMotionProvider } from '@/context/ReducedMotionContext';
+import AuthGuard from './AuthGuard';
 
 // Lazy-load the TON Connect provider so its JS chunk (the TON SDK) and its
 // network cost (wallets-v2.json + ~35 wallet icon PNGs from config.ton.org) are
@@ -52,9 +53,9 @@ export default function Providers({ children }: { children: ReactNode }) {
         } catch { /* detection is best-effort */ }
     }, []);
 
-    const pageContent = needsTonConnect ? (
+    const pageContent = <AuthGuard>{needsTonConnect ? (
         <TonConnectProvider>{children}</TonConnectProvider>
-    ) : children;
+    ) : children}</AuthGuard>;
 
     return (
         <SWRConfig value={{

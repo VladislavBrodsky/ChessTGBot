@@ -1,99 +1,50 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { FaCoins, FaWallet, FaRedoAlt } from "react-icons/fa";
-import { useTranslations } from "next-intl";
+import { FiCreditCard, FiLink } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface CyberCardProps {
   balance: number;
   walletAddress: string;
-  /** Last balance fetch failed — show "unavailable" instead of a false $0.00. */
   balanceError?: boolean;
+  loading?: boolean;
   onRetry?: () => void;
 }
 
-export default function CyberCard({ balance, walletAddress, balanceError = false, onRetry }: CyberCardProps) {
+/** Platform balance and a linked TON wallet are separate, explicit concepts. */
+export default function CyberCard({ balance, walletAddress, balanceError = false, loading = false, onRetry }: CyberCardProps) {
   const tw = useTranslations('Wallet');
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full relative overflow-hidden rounded-3xl p-5 glass-panel border border-brand-border-opacity-10 bg-cyber-card shadow-premium flex flex-col justify-between min-h-[140px] select-none"
-    >
-      {/* Ambient glowing blobs */}
-      <motion.div 
-        animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }} 
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.25)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.15, 1] }} 
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-0 left-0 w-24 h-24 bg-[radial-gradient(circle,rgba(6,182,212,0.25)_0%,transparent_70%)] rounded-full -ml-8 -mb-8 pointer-events-none" 
-      />
-
-      {/* Card Top */}
-      <div className="flex justify-between items-start z-10">
-        <div className="flex flex-col">
-          {/* Status must reflect the ACTUAL connection state — this card previously
-              always said "TON Wallet Connected" while the footer said the opposite. */}
-          <span className="text-[10px] font-black text-brand-primary opacity-45 uppercase tracking-[0.25em] mb-1.5">
-            {walletAddress ? tw('connected_status') : tw('no_wallet')}
-          </span>
-          <div className="flex items-center space-x-2">
-            <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/10">
-              <FaCoins className="text-emerald-500 text-[10px]" />
-            </div>
-            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('usdt_balance')}</span>
-          </div>
+    <Card variant="solid" className="wallet-balance-card p-5 sm:p-6 space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-medium text-brand-muted">{tw('usdt_balance')}</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-brand-success"><FiCreditCard size={21} aria-hidden="true" /></span>
+      </div>
+      {loading ? (
+        <div role="status" aria-label={tw('usdt_balance')} className="space-y-2"><Skeleton width={160} height={40} /><Skeleton width={90} height={16} /></div>
+      ) : balanceError ? (
+        <div className="space-y-2">
+          <p className="text-4xl font-semibold text-brand-muted">$ —</p>
+          <Button variant="secondary" size="sm" onClick={onRetry}>{tw('balance_unavailable')}</Button>
         </div>
-
-        {/* Right Corner indicator (pulsing green dot if connected, red if not) */}
-        <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-brand-bg-opacity-5 border border-brand-border-opacity-10 shadow-sm shrink-0">
-          <FaWallet size={11} className="text-brand-muted" />
-          <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${walletAddress ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'} animate-pulse`} />
+      ) : (
+        <p className="flex flex-wrap items-baseline gap-2">
+          <span className="text-[40px] leading-tight font-semibold tracking-tight tabular-nums">${(balance / 100).toFixed(2)}</span>
+          <span className="text-sm font-medium text-brand-muted">USDT</span>
+        </p>
+      )}
+      <div className="flex items-start gap-3 border-t border-brand-border pt-4">
+        <FiLink size={18} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
+        <div className="min-w-0">
+          {loading ? <Skeleton width={170} height={16} /> : <>
+            <p className="text-sm font-medium">{walletAddress ? tw('connected_status') : tw('no_wallet')}</p>
+            <p className="mt-1 text-caption text-brand-muted break-all">{walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : tw('link_wallet_hint')}</p>
+          </>}
         </div>
       </div>
-
-      {/* Card Middle Balance */}
-      <div className="z-10 my-auto flex flex-col justify-center">
-        {balanceError ? (
-          <button
-            onClick={onRetry}
-            className="flex flex-col items-start gap-1.5 text-left active:scale-95 transition-transform"
-            aria-label={tw('balance_unavailable')}
-          >
-            <div className="flex items-baseline space-x-1.5">
-              <span className="text-4xl font-black text-brand-muted tracking-tighter leading-none">— .—</span>
-              <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">USDT</span>
-            </div>
-            <span className="flex items-center gap-1.5 text-[10px] font-black text-amber-500 uppercase tracking-widest">
-              <FaRedoAlt className="text-[10px]" />
-              {tw('balance_unavailable')}
-            </span>
-          </button>
-        ) : (
-          <div className="flex items-baseline space-x-1.5">
-            <span className="text-[20px] font-extrabold text-brand-primary leading-none">$</span>
-            <h2 className="text-4xl font-black text-brand-primary tracking-tighter leading-none bg-clip-text">
-              {(balance / 100).toFixed(2)}
-            </h2>
-            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">USDT</span>
-          </div>
-        )}
-      </div>
-
-      {/* Card Bottom Linked Wallet */}
-      <div className="flex justify-between items-center z-10 pt-3 border-t border-brand-border-opacity-5">
-        <div className="flex items-center space-x-2">
-          <span className={`w-1.5 h-1.5 rounded-full ${walletAddress ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0`} />
-          <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest font-mono">
-            {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : tw('link_wallet_hint')}
-          </span>
-        </div>
-        <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{tw('version')}</span>
-      </div>
-    </motion.div>
+    </Card>
   );
 }

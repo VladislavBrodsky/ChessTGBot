@@ -57,7 +57,7 @@ export default function IncomingRematchDrawer({
 
         {/* Text Headers */}
         <div className="space-y-1.5 w-full">
-          <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">
+          <h3 className="text-caption font-semibold text-emerald-500 normal-case tracking-normal">
             {tg('rematch_dialog_title')}
           </h3>
           <p className="text-[12px] font-bold text-brand-primary leading-relaxed px-1">
@@ -68,24 +68,24 @@ export default function IncomingRematchDrawer({
         {/* Proposed Wager & Settings Detail Box */}
         <div className="w-full bg-brand-bg-opacity-5 rounded-2xl py-3.5 px-4 border border-brand-border-opacity-10 text-center shadow-inner-glow space-y-3">
           <div>
-            <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest block mb-0.5">
+            <span className="text-caption font-bold text-brand-muted normal-case tracking-normal block mb-0.5">
               {tg('proposed_wager')}
             </span>
-            <span className="text-lg font-black text-brand-primary">
+            <span className="text-lg font-semibold text-brand-primary">
               ${((incomingRematch.wager) / 100).toFixed(2)} USDT
             </span>
             {incomingRematch.double_stakes && (
-              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mt-0.5 animate-pulse">
+              <span className="text-caption font-bold text-emerald-500 normal-case tracking-normal block mt-0.5 animate-pulse">
                 {tg('double_stakes_active')}
               </span>
             )}
           </div>
           <div className="border-t border-brand-border-opacity-10 pt-2.5 flex items-center justify-between px-2">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-brand-muted uppercase tracking-widest">
-              <FaRegClock className="text-[10px]" />
+            <div className="flex items-center gap-1 text-caption font-bold text-brand-muted normal-case tracking-normal">
+              <FaRegClock className="text-caption" />
               <span>Time Control</span>
             </div>
-            <span className="text-[11px] font-black text-brand-primary">
+            <span className="text-caption font-semibold text-brand-primary">
               {Math.round(timeControl / 60)} min
             </span>
           </div>
@@ -94,22 +94,22 @@ export default function IncomingRematchDrawer({
         {/* Accept/Reject Buttons */}
         <div className="w-full flex gap-2.5 pt-1">
           {/* Reject button */}
-          <motion.button
+          <motion.button type="button"
             whileTap={{ scale: 0.96 }}
             onClick={onDecline}
-            className="flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+            className="ui-tap-target flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <FaTimes className="text-[10px]" />
+            <FaTimes className="text-caption" />
             <span>{tg('reject')}</span>
           </motion.button>
           
           {/* Accept button */}
-          <motion.button
+          <motion.button type="button"
             whileTap={{ scale: 0.96 }}
             onClick={onAccept}
-            className="flex-1 py-3 rounded-xl bg-brand-primary text-brand-void text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
+            className="ui-tap-target flex-1 py-3 rounded-xl bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
           >
-            <FaCheck className="text-[10px]" />
+            <FaCheck className="text-caption" />
             <span>{tg('accept')}</span>
           </motion.button>
         </div>
