@@ -14,10 +14,28 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 480);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    let frame = 0;
+    const heroActions = document.querySelector<HTMLElement>(
+      ".hero-actions, .page-hero-actions",
+    );
+    const update = () =>
+      setStuck(
+        heroActions
+          ? heroActions.getBoundingClientRect().bottom <= 0
+          : window.scrollY > 480,
+      );
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
   }, []);
   useEffect(() => {
     const node = dialog.current;

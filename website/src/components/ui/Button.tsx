@@ -5,6 +5,7 @@ export const buttonStyles = {
   primary: "bg-inverse text-fg-inverse hover:opacity-85",
   secondary: "border border-line-strong text-fg hover:bg-surface",
   soft: "bg-inset text-fg hover:bg-surface",
+  ghost: "text-fg hover:bg-inset",
 } as const;
 
 export function buttonClass(

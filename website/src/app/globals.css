@@ -100,16 +100,51 @@
     margin-block-start: 0.25rem;
   }
   .facts-section {
-    padding-block: 1.75rem;
-    border-block: 1px solid var(--line-hairline);
+    padding-block-end: 0.5rem;
+  }
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .fact-item {
-    padding-inline: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-inline-size: 0;
+    padding-block-end: 1.25rem;
+    padding-inline-end: 1rem;
+  }
+  .fact-item:nth-child(even) {
+    padding-inline: 1rem 0;
     border-inline-start: 1px solid var(--line-hairline);
   }
-  .fact-item:first-child {
-    padding-inline-start: 0;
-    border-inline-start: 0;
+  .fact-item:nth-child(n + 3) {
+    padding-block: 1.25rem 0;
+    border-block-start: 1px solid var(--line-hairline);
+  }
+  .fact-value {
+    order: -1;
+    white-space: nowrap;
+  }
+  .facts-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: 1.5rem;
+    row-gap: 0.25rem;
+    margin-block-start: 1.25rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--line-hairline);
+  }
+  .facts-summary > p {
+    flex: 1 1 18rem;
+  }
+  .facts-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-block-size: 2.75rem;
   }
   .section-index {
     display: flex;
@@ -161,6 +196,24 @@
     text-transform: uppercase;
   }
   @media (min-width: 768px) {
+    .facts-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .fact-item,
+    .fact-item:nth-child(even),
+    .fact-item:nth-child(n + 3) {
+      padding-block: 0;
+      padding-inline: clamp(1rem, 2.2vw, 2rem);
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--line-hairline);
+    }
+    .fact-item:first-child {
+      padding-inline-start: 0;
+      border-inline-start: 0;
+    }
+    .fact-item:last-child {
+      padding-inline-end: 0;
+    }
     .challenge-layout {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       column-gap: clamp(1.5rem, 3.5vw, 3rem);
@@ -216,6 +269,7 @@
     .hero-section {
       gap: 1rem;
       padding-block-start: 1.5rem;
+      padding-block-end: 2rem;
     }
     .hero-title {
       font-size: clamp(4rem, 17.5vw, 6rem);
@@ -227,10 +281,10 @@
       font-size: 1.125rem;
       line-height: 1.5;
     }
-    .hero-details > div {
+    .hero-actions {
       width: 100%;
     }
-    .hero-details > div > a {
+    .hero-actions > a {
       flex: 1 1 100%;
     }
     .stage-caption {
@@ -253,10 +307,6 @@
     }
     .page-hero-actions > a {
       flex: 1 1 100%;
-    }
-    .fact-item:nth-child(3) {
-      padding-inline-start: 0;
-      border-inline-start: 0;
     }
     .section-index > span:last-child {
       display: none;

@@ -26,13 +26,13 @@ export const metadata = pageMetadata(
 );
 
 const facts = [
-  { value: "0", unit: "downloads", label: "Made for Telegram" },
-  { value: "10", unit: "app languages", label: "Your game. Your language." },
-  { value: "1", unit: "USDT minimum", label: "Choose your match stake" },
+  { value: "0", unit: "", label: "Downloads" },
+  { value: "10", unit: "", label: "App languages" },
+  { value: "1", unit: "USDT", label: "Minimum stake" },
   {
     value: `${SETTLEMENT.winnerPercent}%`,
-    unit: "winner share",
-    label: "Of the combined match pot",
+    unit: "",
+    label: "Winner’s share",
   },
 ];
 
@@ -99,24 +99,23 @@ export default function HomePage() {
                 Your favorite game. A whole new arena. Train for free, find your
                 next rival, and put your chess skills to the test.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="hero-actions flex flex-wrap gap-2.5">
                 <PlayButton size="lg" />
                 <ButtonLink
                   href="#challenge"
-                  variant="secondary"
-                  className="min-h-14"
+                  variant="ghost"
                 >
-                  Try a chess challenge
-                  <Icon name="arrow-up-right" size={18} />
+                  Try a free puzzle
+                  <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
-              <p className="flex items-center gap-2 text-caption text-fg-muted">
-                <Icon name="check-circle" size={16} />
-                No download · Free A.I. practice · Human matches from 1 USDT
-              </p>
-              <p className="text-caption text-fg-muted">
-                Wager matches: 18+. You can lose your stake.
-              </p>
+              <div className="hero-support space-y-2 text-caption text-fg-muted">
+                <p className="flex items-center gap-2">
+                  <Icon name="check-circle" size={16} className="shrink-0" />
+                  Free A.I. practice · No download
+                </p>
+                <p>18+ wager matches · You can lose your stake.</p>
+              </div>
             </div>
           </div>
           <div className="hero-visual">
@@ -128,26 +127,30 @@ export default function HomePage() {
           className="shell-wide facts-section"
           aria-label="Web3Chess at a glance"
         >
-          <dl className="grid grid-cols-2 gap-y-6 md:grid-cols-4">
-            {facts.map((fact) => (
-              <div key={fact.unit} className="fact-item">
-                <dt className="text-caption text-fg-muted">{fact.label}</dt>
-                <dd className="mt-2 flex flex-wrap items-baseline gap-x-2">
-                  <span className="poster text-stat">{fact.value}</span>
-                  <span className="font-mono text-caption">{fact.unit}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-6 text-caption text-fg-muted">
-            Settlement: {SETTLEMENT.platformFeePercent}% platform fee +{" "}
-            {SETTLEMENT.referralFeePercent}% referral allocation. Wager matches
-            involve real money.{" "}
-            <a href="/wagers" className="link-inline">
-              See the full breakdown
-            </a>
-            .
-          </p>
+          <Card>
+            <dl className="facts-grid">
+              {facts.map((fact) => (
+                <div key={fact.label} className="fact-item">
+                  <dt className="text-caption text-fg-muted">{fact.label}</dt>
+                  <dd className="fact-value flex items-baseline gap-1.5">
+                    <span className="poster text-stat tabular-nums">{fact.value}</span>
+                    {fact.unit && <span className="text-label font-semibold">{fact.unit}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <div className="facts-summary">
+              <p className="text-caption text-fg-muted">
+                Combined pot: {SETTLEMENT.winnerPercent}% winner ·{" "}
+                {SETTLEMENT.platformFeePercent}% platform fee ·{" "}
+                {SETTLEMENT.referralFeePercent}% referral pool.
+              </p>
+              <a href="/wagers" className="facts-link link-inline text-caption">
+                Stakes & fees
+                <Icon name="arrow-right" size={16} />
+              </a>
+            </div>
+          </Card>
         </section>
 
         <section id="challenge" className="shell-wide section-y">

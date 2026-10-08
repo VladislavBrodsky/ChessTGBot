@@ -9,13 +9,19 @@ export function MobileCta() {
 
   useEffect(() => {
     let frame = 0;
+    const heroActions = document.querySelector<HTMLElement>(
+      ".hero-actions, .page-hero-actions",
+    );
     const update = () => {
+      const heroPassed = heroActions
+        ? heroActions.getBoundingClientRect().bottom <= 0
+        : window.scrollY > 560;
       const nearFooter =
         window.innerHeight + window.scrollY > document.body.offsetHeight - 700;
       const editing = document.activeElement?.matches(
         'input, textarea, select, [contenteditable="true"]',
       );
-      setShow(window.scrollY > 560 && !nearFooter && !editing);
+      setShow(heroPassed && !nearFooter && !editing);
     };
     const schedule = () => {
       cancelAnimationFrame(frame);
@@ -37,6 +43,7 @@ export function MobileCta() {
 
   return (
     <div
+      data-mobile-cta
       inert={!show}
       aria-hidden={!show}
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas px-4 pt-3 transition-transform duration-200 lg:hidden ${

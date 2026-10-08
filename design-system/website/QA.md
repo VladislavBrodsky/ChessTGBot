@@ -91,3 +91,11 @@ These are browser viewport checks, not measurements from physical phones or a Li
 - Regenerated the light, inverse, and monochrome SVG lockups from one path in `src/lib/brand.ts`, along with the browser icon, touch icon, and 512px avatar. Removed the obsolete crown export.
 - Inspected the mark at 16px, 32px, and 512px; the home page header and footer at 390px and 1440px; and the 1200 × 630px generated social image. The single filled silhouette remains identifiable without a gradient, outline detail, or glow.
 - `brand:build`, type checking, ESLint, content validation, whitespace checks, and the webpack production build pass; all 37 static page/image routes generated.
+
+## Home actions and product facts
+
+- Replaced the competing outlined puzzle button with the shared 48px ghost action beside the 56px Play action. Condensed the supporting copy into a free-practice/no-download line and a separate readable 18+ risk line.
+- The product facts now share one white Card with aligned figures, short Onest labels, an inline USDT unit, and a clear combined-pot split. Checked 320, 375, 640, 768, 1024, and 1440px: no page or figure overflow, consistent row heights, and a 44px Stakes & fees link.
+- The phone Play action and desktop sticky navigation now follow the actual hero action boundary instead of fixed scroll thresholds. Verified both remain hidden while the hero actions are visible and appear after they pass; the phone action also hides during input focus and near the footer. Scroll/resize updates run once per animation frame.
+- Verified the free-puzzle anchor opens the loaded challenge and the fee link opens Wagers. Checked the shared timing on the Wagers hero. Visually inspected the production preview on desktop and at 320px; its browser console reported no errors.
+- ESLint, type checking, content validation, whitespace checks, and the default Turbopack production build pass; all 37 static page/image routes generated. No additional client widget, animated counter, image, or font was added.
