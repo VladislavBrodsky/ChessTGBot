@@ -12,11 +12,11 @@ import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { home } from "@/content/home";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Chess Academy — Openings, Tactics & Free Practice",
-  "Build your chess skills with opening principles, tactical patterns, endgame lessons, and free A.I. practice inside Telegram.",
+  "Free Chess Practice & Tactics",
+  "Solve free chess puzzles, study opening principles and tactical patterns, then practise against A.I. in the Web3Chess Telegram Mini App.",
   "/academy",
 );
 const descriptions = [
@@ -33,6 +33,15 @@ export default function AcademyPage() {
         id="main"
         className="shell-wide space-y-16 py-6 md:space-y-20 md:py-10"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd(breadcrumbData([
+              { name: "Home", path: "" },
+              { name: "Chess Academy", path: "/academy" },
+            ])),
+          }}
+        />
         <PageHero
           eyebrow="The Web3Chess Academy"
           title={
@@ -46,14 +55,14 @@ export default function AcademyPage() {
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
-            <PlayButton size="lg" label="Open the Academy" />
+            <PlayButton size="lg" label="Open Web3Chess" />
             <ButtonLink href="#challenge" variant="ghost">
               Try a challenge
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
           </div>
           <p className="text-caption text-fg-muted">
-            No stake for practice · No app download
+            Choose Academy or A.I. practice in the Mini App · No stake for practice
           </p>
         </PageHero>
         <section id="challenge" aria-label="Try a chess challenge">
@@ -142,6 +151,37 @@ export default function AcademyPage() {
             ))}
           </div>
         </section>
+        <section aria-labelledby="guides-heading">
+          <div className="section-index">
+            <span>03 / Take a useful idea into your next game</span>
+            <span>Two practical guides</span>
+          </div>
+          <h2 id="guides-heading" className="editorial-title mb-8">
+            Learn it. Then try it.
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <h3 className="text-heading-sm font-medium">Opening principles for beginners</h3>
+              <p className="mt-3 text-body text-fg-muted">
+                Control the center, develop with purpose, and keep your king safe before memorizing long variations.
+              </p>
+              <ButtonLink href="/blog/opening-mastery-tactics" variant="secondary" className="mt-6">
+                Read the opening guide
+                <Icon name="arrow-right" size={16} />
+              </ButtonLink>
+            </Card>
+            <Card>
+              <h3 className="text-heading-sm font-medium">Blitz chess time management</h3>
+              <p className="mt-3 text-body text-fg-muted">
+                Learn when to calculate deeply and when to choose a sound move quickly under a three-minute clock.
+              </p>
+              <ButtonLink href="/blog/the-3-minute-blitz-blueprint-tactics-time-management" variant="secondary" className="mt-6">
+                Read the blitz guide
+                <Icon name="arrow-right" size={16} />
+              </ButtonLink>
+            </Card>
+          </div>
+        </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>Your training partner</Eyebrow>
           <div className="mt-5 grid items-end gap-8 md:grid-cols-[1fr_.7fr]">
@@ -160,11 +200,11 @@ export default function AcademyPage() {
               <PlayButton
                 size="lg"
                 variant="onDark"
-                label="Start free practice"
+                label="Open Web3Chess"
               />
               <p className="text-caption text-fg-muted">
-                Practice builds skills. It does not guarantee a result in a
-                player match.
+                Choose A.I. practice in the Mini App. Practice builds skills;
+                it does not guarantee a result in a player match.
               </p>
             </div>
           </div>

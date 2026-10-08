@@ -9,14 +9,14 @@ import { MobileCta } from "@/components/MobileCta";
 import { Card } from "@/components/ui/Card";
 import { buttonClass } from "@/components/ui/Button";
 import { SITE } from "@/lib/config";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 import { Icon } from "@/icons";
 import { PageHero } from "@/components/PageHero";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata = pageMetadata(
-  "Chess Journal — Strategy, Training & Product Stories",
+  "Chess Strategy & Training Journal",
   "Explore chess opening ideas, tactical patterns, training advice, and the thinking behind Web3Chess in our chess journal.",
   "/blog",
 );
@@ -50,6 +50,15 @@ export default function BlogHubPage() {
         id="main"
         className="shell-wide space-y-12 py-6 md:space-y-16 md:py-10"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd(breadcrumbData([
+              { name: "Home", path: "" },
+              { name: "Chess Journal", path: "/blog" },
+            ])),
+          }}
+        />
         <PageHero
           eyebrow="The Web3Chess journal"
           title={

@@ -7,6 +7,7 @@
     "dev": "next dev",
     "build": "npm run content:check && next build",
     "content:check": "node scripts/check-content.mjs",
+    "seo:check": "node scripts/check-seo.mjs",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",

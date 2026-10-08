@@ -10,12 +10,11 @@ import { ChessSculpture } from "@/components/ChessSculpture";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
-import { pageMetadata, jsonLd } from "@/lib/seo";
-import { SITE } from "@/lib/config";
+import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "How to Play Chess in Telegram",
-  "Open Web3Chess, choose a time control and stake, and find your next opponent. A simple guide to matches, free practice, and results.",
+  "Play Chess in Telegram — How It Works",
+  "Open chess inside Telegram or in your browser, try free A.I. practice, and learn how invitations, time controls, and optional USDT matches work.",
   "/how-it-works",
 );
 const steps = [
@@ -48,6 +47,25 @@ const steps = [
     note: "Balance credit and withdrawal are separate",
   },
 ];
+
+const questions = [
+  {
+    question: "Can I play chess inside Telegram without another download?",
+    answer: "Yes. Open Web3Chess from its Telegram link and the board runs as a Mini App. You need Telegram, but there is no separate chess app to install.",
+  },
+  {
+    question: "Can I practise chess for free?",
+    answer: "Yes. The website puzzles and A.I. practice are free. Player matches currently use optional USDT stakes; read the match terms before joining one.",
+  },
+  {
+    question: "How do I play chess with a friend?",
+    answer: "Open the game lobby and choose Create Invite Link, then send the link to your friend in Telegram. Friend matches currently require a stake of at least 1 USDT, sufficient balances on both sides, and wager eligibility.",
+  },
+  {
+    question: "Can I play on a computer?",
+    answer: "Yes. The browser route opens a Telegram sign-in flow on desktop. You can also scan the Telegram QR code from a computer with your phone.",
+  },
+] as const;
 export default function HowItWorksPage() {
   return (
     <div>
@@ -59,24 +77,10 @@ export default function HowItWorksPage() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Home",
-                  item: SITE.url,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: "How it works",
-                  item: SITE.url + "/how-it-works",
-                },
-              ],
-            }),
+            __html: jsonLd(breadcrumbData([
+              { name: "Home", path: "" },
+              { name: "How it works", path: "/how-it-works" },
+            ])),
           }}
         />
         <PageHero
@@ -187,6 +191,27 @@ export default function HowItWorksPage() {
               </p>
             </Card>
           </div>
+        </section>
+        <section aria-labelledby="questions-heading">
+          <div className="section-index">
+            <span>03 / Before your first move</span>
+            <span>Clear answers</span>
+          </div>
+          <h2 id="questions-heading" className="editorial-title mb-8">
+            Play your way.
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {questions.map(({ question, answer }) => (
+              <Card key={question}>
+                <h3 className="text-heading-sm font-medium">{question}</h3>
+                <p className="mt-3 text-body text-fg-muted">{answer}</p>
+              </Card>
+            ))}
+          </div>
+          <ButtonLink href="/play" variant="secondary" className="mt-6">
+            Choose Telegram or browser
+            <Icon name="arrow-right" size={16} />
+          </ButtonLink>
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>Before you sit down</Eyebrow>
