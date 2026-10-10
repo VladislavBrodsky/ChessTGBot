@@ -70,7 +70,7 @@ export default function LoginPage() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
                 className="relative z-10 w-full max-w-[900px] mx-auto px-4"
             >
-                <div className="w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-300 bg-brand-surface border border-brand-border shadow-premium">
+                <div className="ui-backdrop-card w-full rounded-[28px] overflow-hidden flex flex-col md:flex-row transition-all duration-300 border border-brand-border shadow-premium">
                     {/* ── LEFT: Login ── */}
                     <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col items-center justify-center transition-all duration-500 border-b md:border-b-0 md:border-r border-brand-border">
                         <div className="flex flex-col items-center space-y-7 text-center w-full">
@@ -167,7 +167,7 @@ export default function LoginPage() {
 
                 {/* Footer note */}
                 <p className="text-center text-caption mt-5 normal-case tracking-normal font-mono font-medium transition-colors duration-500 text-brand-muted">
-                    Chess Mat Bot · Powered by Telegram
+                    Web3Chess · Powered by Telegram
                 </p>
             </motion.div>
         </div>

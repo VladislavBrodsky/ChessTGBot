@@ -154,31 +154,12 @@
   scrollbar-width: none !important;
 }
 
-/* Premium fade-edges effect for horizontal scroll selection lists */
-.fade-edges {
-  position: relative;
-}
-.fade-edges::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 48px;
-  pointer-events: none;
-  z-index: 10;
-  background: linear-gradient(to right, var(--color-brand-surface) 0%, transparent 100%);
-}
-.fade-edges::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 48px;
-  pointer-events: none;
-  z-index: 10;
-  background: linear-gradient(to left, var(--color-brand-surface) 0%, transparent 100%);
+/* Fade the ends of a horizontal chip scroller with a mask, so it works on any surface in every theme
+   (an overlay painted in the surface colour left light patches on tinted cards). */
+.fade-edges { position: relative; }
+.fade-edges > * {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
 }
 
 /* Custom Academy Grid Animations */

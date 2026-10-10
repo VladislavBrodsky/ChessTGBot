@@ -526,3 +526,7 @@
   background: var(--bg-elevated);
 }
 
+
+/* Board coordinates: react-chessboard paints them as absolutely positioned spans, which sit ABOVE its static piece
+   layer and collide with the pieces. Lift the piece layer so labels read as part of the square, not on top of a piece. */
+[data-square] > div { position: relative; z-index: 1; }

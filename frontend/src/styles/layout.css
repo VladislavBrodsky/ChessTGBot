@@ -334,4 +334,5 @@
 .fx-float--late { animation-duration: 9s; animation-delay: -3s; }
 .ui-backdrop[data-still] .fx-float { animation: none; }
 .ui-glow-action { box-shadow: 0 0 0 1px color-mix(in srgb, var(--action-bg) 30%, transparent), 0 12px 40px -6px color-mix(in srgb, var(--action-bg) 45%, transparent); }
-
+/* Entry-screen card: slightly translucent so the Backdrop grid and pieces read through on narrow screens. */
+.ui-backdrop-card { background: color-mix(in srgb, var(--bg-surface) 82%, transparent); }
