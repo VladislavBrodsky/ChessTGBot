@@ -77,7 +77,7 @@ export default function MysteryBoxDetailsSheet({
                 <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-brand-border-opacity-20" />
                 <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                        <p className="text-caption font-semibold normal-case tracking-normal" style={{ color: cfg.theme.accent }}>
+                        <p className="text-caption font-semibold normal-case tracking-normal" style={{ color: `color-mix(in srgb, ${cfg.theme.accent} 38%, var(--text-primary))` }}>
                             {cfg.metal} · {cfg.piece}
                         </p>
                         <h2 id={`box-details-title-${tier}`} className="mt-1 text-xl font-semibold text-brand-primary">

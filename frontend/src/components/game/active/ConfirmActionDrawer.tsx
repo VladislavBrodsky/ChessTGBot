@@ -45,7 +45,7 @@ export function ConfirmActionDrawer({
               <h2 className="text-xl font-semibold normal-case tracking-normal mb-1 text-brand-primary">
                 {confirmConfig.title}
               </h2>
-              <p className="text-sm font-bold text-brand-primary opacity-65 normal-case tracking-normal mt-2 mb-6">
+              <p className="text-sm font-bold text-brand-muted normal-case tracking-normal mt-2 mb-6">
                 {confirmConfig.message}
               </p>
             </div>
@@ -65,7 +65,7 @@ export function ConfirmActionDrawer({
               <motion.button type="button"
                 whileTap={{ scale: 0.98 }}
                 onClick={onClose}
-                className="ui-tap-target w-full bg-brand-bg-opacity-10 border border-brand-border-text-brand-muted py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-bold tracking-normal cursor-pointer shadow-sm"
+                className="ui-tap-target w-full bg-brand-bg-opacity-10 border border-brand-border text-brand-muted py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-bold tracking-normal cursor-pointer shadow-sm"
               >
                 <span>{confirmConfig.cancelText}</span>
               </motion.button>

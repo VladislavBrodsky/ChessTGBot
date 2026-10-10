@@ -43,7 +43,7 @@ export default function TierComparison() {
    className="grid grid-cols-6 p-4 items-center group hover:bg-purple-500/5 transition-colors"
    >
    <div className="col-span-4 flex items-center gap-3">
-   <div className="text-brand-primary opacity-25 group-hover:opacity-60 transition-colors">
+   <div className="text-brand-muted group-hover:text-brand-primary transition-colors">
    {row.icon}
    </div>
    <span className="text-caption font-bold text-brand-muted normal-case tracking-tight">

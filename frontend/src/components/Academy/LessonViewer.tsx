@@ -1,5 +1,6 @@
 'use client';
 
+import BoardA11y from '@/components/game/BoardA11y';
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronRight, FaChevronLeft, FaCheck } from "react-icons/fa";
@@ -114,7 +115,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                     <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-inner">
                       {/* Glass overlay for static feeling */}
                       <div className="absolute inset-0 z-10 pointer-events-auto bg-transparent" />
-                      <Chessboard
+                      <BoardA11y><Chessboard
                         options={{
                           id: `board-${currentStep.id}`,
                           position: currentStep.fen,
@@ -124,7 +125,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                           lightSquareStyle: { backgroundColor: '#cbd5e1' },
                           squareStyles: staticSquareStyles,
                         }}
-                      />
+                      /></BoardA11y>
                     </div>
                   </div>
                 )}
@@ -142,7 +143,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                 {!stepComplete && (
                   <button type="button"
                     onClick={markCompleteAndAdvance}
-                    className="ui-tap-target absolute bottom-4 right-4 px-4 py-2 bg-emerald-500 text-slate-950 font-bold normal-case tracking-normal rounded-lg text-sm hover:bg-emerald-400 transition-colors shadow-md"
+                    className="ui-tap-target absolute bottom-4 right-4 px-4 py-2 bg-brand-action text-brand-action-ink font-bold normal-case tracking-normal rounded-lg text-sm hover:brightness-110 transition-colors shadow-md"
                   >
                     Video Watched
                   </button>
@@ -191,7 +192,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
           className={`ui-tap-target
             flex items-center gap-2 px-6 py-3 rounded-full font-semibold normal-case tracking-normal text-sm transition-all
             ${isStepReady
-              ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] font-semibold"
+              ? "bg-brand-action text-brand-action-ink hover:brightness-110 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] font-semibold"
               : "bg-brand-void/50 text-brand-muted border border-brand-border-opacity-10 cursor-not-allowed"
             }
           `}

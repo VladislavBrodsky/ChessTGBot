@@ -5,6 +5,8 @@ import { apiFetch } from "@/lib/api";
 import { FaCheck, FaLock } from "react-icons/fa";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { useLocale, useTranslations } from 'next-intl';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -146,8 +148,8 @@ export default function ThemeShopPage() {
             key={theme.id}
             className={`relative p-4 rounded-2xl border flex items-center justify-between transition-all ${
               theme.owned 
-                ? 'glass-panel border-purple-500/30 bg-purple-500/5' 
-                : 'glass-panel border-brand-border-opacity-10 bg-brand-surface'
+                ? 'glass-panel ui-stat--premium' 
+                : 'glass-panel'
             }`}
           >
             <div className="flex-1">
@@ -158,28 +160,17 @@ export default function ThemeShopPage() {
             <div className="ml-4 flex-shrink-0">
               {theme.owned ? (
                 activeThemeCode === theme.code ? (
-                  <div className="flex items-center gap-1.5 text-emerald-400 font-semibold normal-case text-sm">
-                    <FaCheck /> {t('active')}
-                  </div>
+                  <Badge variant="emerald" icon={<FaCheck />}>{t('active')}</Badge>
                 ) : (
-                  <button type="button"
-                    onClick={() => handleEquip(theme.code)}
-                    className="ui-tap-target px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold normal-case text-sm transition-all cursor-pointer"
-                  >
+                  <Button variant="secondary" size="sm" onClick={() => handleEquip(theme.code)}>
                     {t('equip')}
-                  </button>
+                  </Button>
                 )
               ) : (
-                <button type="button"
-                  onClick={() => handleBuy(theme)}
-                  className={`ui-tap-target flex items-center gap-2 px-4 py-2 rounded-xl font-semibold normal-case text-sm transition-all ${
-                    userXp >= theme.price_xp 
-                      ? 'bg-purple-500 text-white hover:bg-purple-400' 
-                      : 'bg-brand-surface border border-brand-border-opacity-20 text-brand-muted cursor-not-allowed'
-                  }`}
-                >
-                  <FaLock /> {theme.price_xp} XP
-                </button>
+                <Button variant={userXp >= theme.price_xp ? 'premium' : 'secondary'} size="sm" leftIcon={<FaLock />}
+                  disabled={userXp < theme.price_xp} onClick={() => handleBuy(theme)}>
+                  {theme.price_xp.toLocaleString(locale)} XP
+                </Button>
               )}
             </div>
           </div>

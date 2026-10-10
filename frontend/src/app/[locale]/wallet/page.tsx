@@ -1,8 +1,8 @@
 'use client';
 
-import { PageHeader } from '@/components/ui/PageHeader';
+import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -28,9 +28,7 @@ interface Transaction {
 }
 
 export default function WalletPage() {
-  const t = useTranslations('Index');
   const tw = useTranslations('Wallet');
-  const locale = useLocale();
 
   // Balance & wallet state
   const { walletBalance: balance, walletAddress, syncBalance, balanceError, loadingBalance } = useUser();
@@ -99,7 +97,7 @@ export default function WalletPage() {
       <main className="w-full app-page flex flex-col items-center mx-auto ">
       
         {/* Header Back Link */}
-        <PageHeader title={tw('title')} backHref={`/${locale}/home`} backLabel={t('back')} />
+        <PageHeader title={tw('title')} description={tw('connected_status') && walletAddress ? tw('connected_status') : tw('link_wallet_hint')} actions={<PageUtilities />} />
 
         {/* HOLOGRAPHIC CYBER-CARD */}
         <section aria-labelledby="wallet-balance-heading" className="w-full">

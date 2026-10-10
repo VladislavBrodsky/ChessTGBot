@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
-import { FiAward, FiChevronRight, FiRadio } from 'react-icons/fi';
+import { FiChevronRight } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Drawer } from '@/components/ui/Drawer';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { SkeletonList } from '@/components/ui/Skeleton';
+import { PodiumSkeleton } from '@/components/ui/Skeleton';
 import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
 
@@ -45,38 +45,44 @@ export default function Leaderboard() {
     trackEvent('leaderboard_viewed', { tab: activeTab });
   }, [activeTab, trackEvent]);
 
+  // Podium rows use the shared leaderboard recipes from globals.css so every
+  // theme keeps the same gold / silver / bronze meaning.
   const getRankConfig = (rank: number) => {
     if (rank === 1) return {
-      icon: <FaCrown className="text-amber-400" size={14} />,
+      icon: <FaCrown className="text-brand-gold" size={14} aria-hidden="true" />,
       label: '1',
-      rowBg: 'bg-amber-500/10 border-amber-500/30',
-      barColor: 'bg-amber-400',
-      rankBg: 'bg-amber-400/20 text-amber-300',
+      rowBg: 'leaderboard-row leaderboard-row--leader',
+      barColor: 'bg-brand-gold',
+      rankBg: 'ui-icon-tile--gold',
     };
     if (rank === 2) return {
-      icon: <FaMedal className="text-slate-300" size={13} />,
+      icon: <FaMedal className="text-brand-primary" size={13} aria-hidden="true" />,
       label: '2',
-      rowBg: 'bg-slate-500/10 border-slate-400/30',
-      barColor: 'bg-slate-300',
-      rankBg: 'bg-slate-700/40 text-slate-200',
+      rowBg: 'leaderboard-row leaderboard-row--runner-up',
+      barColor: 'bg-brand-primary',
+      rankBg: '',
     };
     if (rank === 3) return {
-      icon: <FaMedal className="text-amber-600" size={13} />,
+      icon: <FaMedal className="text-brand-gold opacity-80" size={13} aria-hidden="true" />,
       label: '3',
-      rowBg: 'bg-amber-900/10 border-amber-700/30',
-      barColor: 'bg-amber-600',
-      rankBg: 'bg-amber-900/30 text-amber-400',
+      rowBg: 'leaderboard-row leaderboard-row--third',
+      barColor: 'bg-brand-gold opacity-70',
+      rankBg: '',
     };
     return {
       icon: null,
-      label: `#${rank}`,
-      rowBg: 'bg-brand-surface border-brand-border',
-      barColor: 'bg-brand-muted/40',
-      rankBg: 'text-brand-muted',
+      label: `${rank}`,
+      rowBg: 'leaderboard-row leaderboard-row--standard',
+      barColor: 'bg-brand-muted',
+      rankBg: '',
     };
   };
 
   const displayedPlayers = useMemo(() => players.slice(0, 5), [players]);
+  const hasPodium = displayedPlayers.length >= 3;
+  const podium = hasPodium ? [displayedPlayers[1], displayedPlayers[0], displayedPlayers[2]] : [];
+  const scoreOf = (p: LeaderboardItem) => (activeTab === 'arena' ? (p.elo || 0) : (p.xp || 0));
+  const unit = activeTab === 'arena' ? 'ELO' : 'XP';
   const metricLabel = activeTab === 'arena' ? 'Elo rating' : 'Academy XP';
   const leader = players[0];
   const leaderScore = leader ? (activeTab === 'arena' ? (leader.elo || 0) : (leader.xp || 0)) : 0;
@@ -98,11 +104,11 @@ export default function Leaderboard() {
     return (
       <li
         key={`${item.telegram_id}-${item.rank}`}
-        className={`flex items-center justify-between p-3 rounded-2xl border transition-all duration-200 ${cfg.rowBg}`}
+        className={`flex items-center justify-between gap-3 p-3 rounded-2xl transition-colors duration-200 ${cfg.rowBg}`}
       >
         {/* Left: Rank & Player */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl font-semibold text-sm ${cfg.rankBg}`}>
+          <div className={`ui-icon-tile h-8 w-8 rounded-xl text-caption font-semibold tabular-nums ${cfg.rankBg}`} role="img" aria-label={`Rank ${item.rank}`}>
             {cfg.icon || cfg.label}
           </div>
 
@@ -113,7 +119,7 @@ export default function Leaderboard() {
           />
 
           <div className="min-w-0">
-            <p className="text-sm font-bold text-brand-primary truncate">
+            <p className="text-sm font-semibold text-brand-primary truncate">
               {fullName}
             </p>
             <p className="text-caption text-brand-muted truncate">
@@ -127,10 +133,10 @@ export default function Leaderboard() {
         {/* Right: Score & Mini Progress */}
         <div className="flex flex-col items-end shrink-0 ml-3">
           <div className="text-right">
-            <span className={`text-sm font-semibold font-mono ${item.rank === 1 ? 'text-amber-400' : 'text-brand-primary'}`}>
+            <span className={`text-sm font-semibold tabular-nums ${item.rank === 1 ? 'text-brand-gold' : 'text-brand-primary'}`}>
               {score.toLocaleString()}
             </span>
-            <span className="text-caption font-bold text-brand-muted ml-1">
+            <span className="text-caption font-medium text-brand-muted ms-1">
               {activeTab === 'arena' ? 'ELO' : 'XP'}
             </span>
           </div>
@@ -151,74 +157,79 @@ export default function Leaderboard() {
   ];
 
   return (
-    <section aria-labelledby="leaderboard-heading" className="w-full space-y-4">
-      {/* Section Header */}
-      <div className="flex flex-col items-center text-center gap-1.5">
-        <div className="flex items-center justify-center gap-2">
-          <span className="w-7 h-7 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center">
-            <FaChessKnight size={13} />
-          </span>
-          <h2 id="leaderboard-heading" className="text-base font-semibold text-brand-primary tracking-tight normal-case leading-none">
-            {t('global_ranking')}
-          </h2>
-        </div>
-        <div className="flex items-center justify-center gap-2 text-caption font-bold normal-case tracking-normal text-brand-muted">
-          <span className="flex items-center gap-1 text-amber-400"><FiAward size={11} /> Season 1</span>
-          <span>•</span>
-          <span className="flex items-center gap-1 text-emerald-400"><FiRadio size={9} /> Live</span>
-        </div>
-      </div>
-
-      {/* Tab Switcher */}
+    <section aria-label={t('global_ranking')} className="w-full space-y-3">
+      {/* The page owns the section heading; this component only switches ladders. */}
       <SegmentedControl
         options={tabOptions}
         value={activeTab}
         onChange={setActiveTab}
         size="md"
+        aria-label={t('global_ranking')}
       />
 
       {/* Leaderboard Shell */}
-      <Card variant="solid" className="rounded-3xl overflow-hidden p-0 border-brand-border bg-brand-surface">
-        <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-brand-border bg-brand-elevated/40">
+      <Card variant="solid" className="leaderboard-shell rounded-3xl overflow-hidden p-0">
+        <div className="leaderboard-header flex items-center justify-between gap-3 px-5 py-3.5 border-b">
           <div className="min-w-0">
-            <p className="text-caption font-semibold normal-case tracking-normal text-amber-400">
+            <p className="text-sm font-semibold text-brand-primary">
               {activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}
             </p>
             <p className="text-caption text-brand-muted truncate">
               {metricLabel} · {activeTab === 'arena' ? 'Win games to climb' : 'Study daily to climb'}
             </p>
           </div>
-          <div className="shrink-0 text-right text-caption text-brand-muted font-mono">
-            {leaderGap > 0 && <span className="text-amber-400 font-bold">Leader +{leaderGap.toLocaleString()}</span>}
-          </div>
+          {leaderGap > 0 && (
+            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">Leader +{leaderGap.toLocaleString()}</span>
+          )}
         </div>
+
+        {!loading && hasPodium && (
+          <div className="podium" role="group" aria-label={t('global_ranking')}>
+            {podium.map((p) => {
+              const fullName = `${p.first_name} ${p.last_name || ''}`.trim();
+              const first = p.rank === 1;
+              const avatar = <Avatar src={p.photo_url ? getFullPhotoUrl(p.photo_url) : undefined} name={fullName} size={first ? 'xl' : 'lg'} />;
+              return (
+                <div key={`${p.telegram_id}-${p.rank}`} className="podium__slot">
+                  <div className="relative">
+                    {first && <FaCrown className="absolute -top-4 start-1/2 -translate-x-1/2 text-brand-gold drop-shadow-[0_2px_6px_rgba(245,196,81,0.6)]" size={18} aria-hidden="true" />}
+                    {first ? <span className="ui-avatar-ring">{avatar}</span> : avatar}
+                  </div>
+                  <span className="podium__name" title={fullName}>{p.first_name}</span>
+                  <span className="podium__score">{scoreOf(p).toLocaleString()} {unit}</span>
+                  <div className={`podium__step podium__step--${p.rank}`} aria-label={`Rank ${p.rank}`}>{p.rank}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <ol aria-label="Leaderboard standings" className="p-3 space-y-2 list-none m-0">
           {loading ? (
-            <SkeletonList count={5} />
+            <li className="list-none"><PodiumSkeleton label={t('global_ranking')} /></li>
           ) : displayedPlayers.length > 0 ? (
-            displayedPlayers.map((item, idx) => renderRow(item, idx))
+            (hasPodium ? displayedPlayers.slice(3) : displayedPlayers).map((item, idx) => renderRow(item, idx))
           ) : (
             <li className="py-8 px-4 text-center space-y-2 list-none">
-              <FaChessKnight className="mx-auto text-brand-muted" size={24} />
-              <p className="text-brand-primary font-bold text-sm normal-case tracking-normal">{t('no_data')}</p>
+              <span className="ui-icon-tile mx-auto h-12 w-12 rounded-2xl"><FaChessKnight size={20} aria-hidden="true" /></span>
+              <p className="text-brand-primary font-semibold text-sm">{t('no_data')}</p>
               <p className="text-brand-muted text-sm">Complete a game or lesson to enter the standings.</p>
             </li>
           )}
         </ol>
 
         {!loading && players.length > 5 && (
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-brand-border bg-brand-elevated/50">
-            <span className="text-caption font-bold text-brand-muted">
-              Showing 5 of {Math.min(players.length, 50)} contenders
+          <div className="leaderboard-header flex items-center justify-between gap-3 px-4 py-3 border-t">
+            <span className="text-caption font-medium text-brand-muted">
+              Showing 5 of {Math.min(players.length, 50)} players
             </span>
             <button type="button"
               onClick={() => setShowModal(true)}
-              className="ui-tap-target flex shrink-0 items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-sm font-bold text-amber-300 transition-colors cursor-pointer"
+              className="ui-tap-target flex shrink-0 items-center gap-1.5 px-3.5 rounded-xl border border-brand-border bg-brand-surface text-sm font-semibold text-brand-primary hover:bg-brand-elevated transition-colors cursor-pointer"
             >
-              <FaTrophy size={11} className="opacity-70" />
-              View all
-              <FiChevronRight size={13} />
+              <FaTrophy size={11} className="text-brand-gold" aria-hidden="true" />
+              {t('show_top_50')}
+              <FiChevronRight size={13} aria-hidden="true" />
             </button>
           </div>
         )}

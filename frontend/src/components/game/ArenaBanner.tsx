@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrophy, FaBolt } from 'react-icons/fa';
+import { Badge } from '@/components/ui/Badge';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
@@ -47,6 +49,9 @@ const fmtCountdown = (ms: number): string => {
 export default function ArenaBanner() {
   const t = useTranslations('Arena');
   const [arena, setArena] = useState<ArenaStatus | null>(null);
+  // Once the first request settles without usable data the banner disappears
+  // instead of showing a skeleton forever (a failed request is not "loading").
+  const [settled, setSettled] = useState(false);
   const [joined, setJoined] = useState(false);
   const [nowMs, setNowMs] = useState(Date.now());
   // Offset between client clock and server clock, so countdowns are honest
@@ -65,6 +70,8 @@ export default function ArenaBanner() {
       setJoined(data.in_pool);
     } catch {
       /* transient — next poll retries */
+    } finally {
+      setSettled(true);
     }
   }, []);
 
@@ -105,12 +112,13 @@ export default function ArenaBanner() {
   };
 
   if (!arena) {
+    if (settled) return null;
     return (
-      <div className="w-full min-h-[68px] mb-1 p-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface opacity-50 animate-pulse flex items-center gap-3">
-        <div className="w-11 h-11 shrink-0 rounded-xl bg-brand-elevated border border-brand-border-opacity-10" />
+      <div role="status" aria-label={t('title')} className="w-full min-h-[68px] mb-1 p-3 rounded-2xl border border-brand-border bg-brand-surface flex items-center gap-3">
+        <Skeleton variant="rectangular" width={44} height={44} className="shrink-0" />
         <div className="flex flex-col flex-1 gap-2">
-          <div className="w-24 h-3 bg-brand-elevated rounded" />
-          <div className="w-32 h-2.5 bg-brand-elevated rounded" />
+          <Skeleton width={96} height={12} />
+          <Skeleton width={128} height={10} />
         </div>
       </div>
     );
@@ -134,9 +142,9 @@ export default function ArenaBanner() {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center border ${isLive ? 'bg-purple-500 text-brand-void border-purple-500' : 'bg-brand-elevated text-purple-500 border-brand-border-opacity-10'}`}>
-            <FaTrophy size={16} />
-          </div>
+          <span className={`ui-icon-tile h-11 w-11 ${isLive ? 'bg-purple-600 text-white border-purple-500' : 'ui-icon-tile--premium'}`}>
+            <FaTrophy size={16} aria-hidden="true" />
+          </span>
           <div className="flex flex-col min-w-0 justify-center">
             <span className="text-[12px] font-semibold normal-case tracking-normal text-brand-primary truncate leading-tight">
               {t('title')}
@@ -169,14 +177,14 @@ export default function ArenaBanner() {
           joined ? (
             <button type="button"
               onClick={handleLeave}
-              className="ui-tap-target shrink-0 px-4 py-2.5 rounded-xl text-caption font-semibold normal-case tracking-normal border border-red-500/30 text-red-400 bg-red-500/10 active:scale-95 hover:bg-red-500/20 transition-all duration-200"
+              className="ui-tap-target shrink-0 min-h-[44px] px-4 rounded-xl text-caption font-semibold border border-brand-rose-opacity-20 text-brand-danger bg-brand-rose-opacity-10 active:scale-95 hover:bg-brand-rose-opacity-20 transition-all duration-200"
             >
               {t('leave')}
             </button>
           ) : (
             <button type="button"
               onClick={handleJoin}
-              className="ui-tap-target shrink-0 min-h-[44px] px-4 rounded-xl text-caption font-semibold normal-case tracking-normal bg-purple-500 text-brand-void hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
+              className="ui-tap-target shrink-0 min-h-[44px] px-4 rounded-xl text-caption font-semibold bg-purple-600 text-white hover:brightness-110 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
             >
               <FaBolt size={10} /> {t('join')}
             </button>
@@ -207,34 +215,34 @@ export default function ArenaBanner() {
           {arena.standings.slice(0, 3).map((row) => (
             <div key={row.user_id} className={`flex items-center justify-between text-caption font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-muted'}`}>
               <div className="flex items-center gap-2 truncate">
-                <span className="w-5 text-center text-[13px]">
-                  {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `${row.rank}.`}
+                <span className={`w-5 text-center tabular-nums ${row.rank === 1 ? 'text-brand-gold' : ''}`}>
+                  {row.rank}.
                 </span>
-                <span className="truncate">{row.name} {row.user_id === arena.me?.user_id && <span className="opacity-60 font-medium">({t('you')})</span>}</span>
+                <span className="truncate">{row.name} {row.user_id === arena.me?.user_id && <span className="font-medium">({t('you')})</span>}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="opacity-60 text-caption font-medium tracking-normal">
+                <span className="text-caption font-medium tracking-normal">
                   {row.wins}W {row.draws}D {row.losses}L
                 </span>
-                <span className="tabular-nums font-semibold bg-brand-surface/80 px-2 py-0.5 rounded-md text-caption shadow-sm">
+                <Badge className="tabular-nums">
                   {row.score} {t('pts')}
-                </span>
+                </Badge>
               </div>
             </div>
           ))}
           {arena.me && arena.me.rank > 3 && (
             <div className="flex items-center justify-between text-caption font-bold p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mt-0.5">
               <div className="flex items-center gap-2 truncate">
-                <span className="w-5 text-center opacity-70 text-caption">{arena.me.rank}.</span>
-                <span className="truncate">{arena.me.name} <span className="opacity-60 font-medium">({t('you')})</span></span>
+                <span className="w-5 text-center text-caption">{arena.me.rank}.</span>
+                <span className="truncate">{arena.me.name} <span className="font-medium">({t('you')})</span></span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="opacity-60 text-caption font-medium tracking-normal">
+                <span className="text-caption font-medium tracking-normal">
                   {arena.me.wins}W {arena.me.draws}D {arena.me.losses}L
                 </span>
-                <span className="tabular-nums font-semibold bg-brand-surface/80 px-2 py-0.5 rounded-md text-caption shadow-sm">
+                <Badge className="tabular-nums">
                   {arena.me.score} {t('pts')}
-                </span>
+                </Badge>
               </div>
             </div>
           )}

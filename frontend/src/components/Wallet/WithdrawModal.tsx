@@ -109,7 +109,7 @@ export default function WithdrawModal({
     <Drawer
       isOpen={true}
       onClose={onClose}
-      title={tw('withdraw_funds')}
+      title={tw('withdraw_title')}
       description={`Available Balance: $${(balance / 100).toFixed(2)} USDT`}
     >
       <div className="space-y-4">
@@ -117,7 +117,7 @@ export default function WithdrawModal({
         <div className="space-y-1.5 text-left">
           <div className="flex justify-between items-center text-caption font-semibold normal-case tracking-normal text-brand-muted">
             <span>{tw('withdraw_amount')}</span>
-            <span className="text-caption text-brand-muted/70">Min. $10.00</span>
+            <span className="text-caption text-brand-muted">Min. $10.00</span>
           </div>
           <div className="relative">
             <span className="absolute left-3.5 top-3.5 text-brand-muted text-sm font-bold font-mono">$</span>

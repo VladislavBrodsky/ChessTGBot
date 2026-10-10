@@ -28,6 +28,10 @@ jobs:
       - run: npm install
       - name: Translation integrity
         run: npm run check:messages
+      - name: Design tokens in sync
+        run: npm run tokens -- --check
+      - name: Design rules (ratchet)
+        run: npm run check:design
       - name: Build static export
         run: npm run build
         env:

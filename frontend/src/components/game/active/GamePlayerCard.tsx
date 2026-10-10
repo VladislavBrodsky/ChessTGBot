@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
 import ChessClockBadge from '@/components/game/ChessClockBadge';
 import { PlayerAvatar } from './PlayerAvatar';
 
@@ -34,33 +33,28 @@ export function GamePlayerCard({
 }: GamePlayerCardProps) {
   if (isMe) {
     return (
-      <Card
-        variant="glass"
-        className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
-          isTurn
-            ? 'border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-gradient-to-r from-emerald-500/[0.02] to-transparent opacity-100'
-            : 'border-brand-border-opacity-10'
-        }`}
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm overflow-hidden">
-            <PlayerAvatar
-              userId={userId}
-              fallbackText="YOU"
-              textClassName="text-sm font-semibold text-brand-void normal-case tracking-tighter"
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
+      <div className={`ui-list-row w-full min-h-[76px] ${isTurn ? 'ui-stat--accent' : ''}`} aria-current={isTurn ? 'true' : undefined}>
+        <div className="flex min-w-0 items-center gap-3.5">
+          <span className="ui-avatar-ring shrink-0">
+            <span className="flex h-11 w-11 items-center justify-center overflow-hidden bg-brand-elevated">
+              <PlayerAvatar
+                userId={userId}
+                fallbackText={username.slice(0, 2).toUpperCase()}
+                textClassName="text-sm font-bold text-brand-primary"
+              />
+            </span>
+          </span>
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-[15px] font-bold text-brand-primary">
               {username}
             </span>
             {isTurn ? (
-              <span className="text-caption font-semibold text-emerald-400 normal-case tracking-normal flex items-center gap-1.5 animate-pulse">
+              <span className="flex items-center gap-1.5 text-caption font-semibold text-brand-success">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-action animate-pulse" aria-hidden="true" />
                 {turnLabel}
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               </span>
             ) : (
-              <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
+              <span className="text-caption font-medium text-brand-muted tabular-nums">
                 {eloText}
               </span>
             )}
@@ -73,43 +67,32 @@ export function GamePlayerCard({
           onClockWarning={onClockWarning}
           isMe
         />
-      </Card>
+      </div>
     );
   }
 
   // Opponent card
   return (
-    <Card
-      variant="glass"
-      className={`w-full flex justify-between items-center px-4 py-4 transition-all duration-300 ${
-        isTurn
-          ? 'border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-gradient-to-r from-purple-500/[0.02] to-transparent opacity-100'
-          : 'border-brand-border-opacity-10 opacity-60'
-      }`}
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-11 h-11 rounded-xl bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
+    <div className={`ui-list-row w-full min-h-[76px] ${isTurn ? 'ui-stat--premium' : ''}`} aria-current={isTurn ? 'true' : undefined}>
+      <div className="flex min-w-0 items-center gap-3.5">
+        <span className="ui-icon-tile h-12 w-12 shrink-0 overflow-hidden rounded-2xl">
           <PlayerAvatar
             userId={userId}
             fallbackText="?"
             isBot={isBot}
           />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
+        </span>
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate text-[15px] font-bold text-brand-primary">
             {username}
           </span>
           {isTurn ? (
-            <span className="text-caption font-semibold text-purple-400 normal-case tracking-normal flex items-center gap-1 animate-pulse">
+            <span className="flex items-center gap-1.5 text-caption font-semibold" style={{ color: 'var(--badge-purple-ink)' }}>
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-500 animate-pulse" aria-hidden="true" />
               {turnLabel}
-              <span className="inline-flex gap-0.5 ml-0.5">
-                <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-0.5 h-0.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              </span>
             </span>
           ) : (
-            <span className="text-caption font-medium text-brand-muted normal-case tracking-normal">
+            <span className="text-caption font-medium text-brand-muted tabular-nums">
               {isBot ? botLabel : eloText}
             </span>
           )}
@@ -121,6 +104,6 @@ export function GamePlayerCard({
         isWhite={isWhite}
         onClockWarning={onClockWarning}
       />
-    </Card>
+    </div>
   );
 }

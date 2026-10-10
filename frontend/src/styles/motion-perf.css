@@ -1,0 +1,157 @@
+/* Reduced-motion and low-end-device (lite-fx) rules. These MUST stay late so they override animations. */
+/* 
+ * Hide duplicate HTML back buttons inside the page when the native 
+ * Telegram WebApp header Back Button is active and visible.
+ */
+.tg-back-button-active .html-back-button {
+  display: none !important;
+}
+
+/*
+ * Reduced-motion support. Users who enable "Reduce Motion" at the OS level
+ * (common on low-end devices and for motion sensitivity) get a near-static UI:
+ * the app's many infinite CSS animations (pulse/ping/spin) collapse to a single
+ * frame, and the large animated background blur blobs stop drifting. This cuts
+ * continuous GPU compositing on exactly the devices that struggle with it, with
+ * zero effect on users who haven't opted in. Framer-motion animations are
+ * handled separately by ReducedMotionProvider.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Freeze the drifting mesh-gradient background blobs. */
+  .premium-liquid-mesh-blob1,
+  .premium-liquid-mesh-blob2,
+  .premium-liquid-mesh-blob3 {
+    animation: none !important;
+    will-change: auto;
+  }
+
+  /* Freeze the spinning conic-gradient border on the premium card. */
+  .premium-liquid-border::before,
+  .premium-liquid-border::after {
+    animation: none !important;
+  }
+
+  /* Freeze the pulsing box-shadow on the premium card wrapper. */
+  .premium-liquid-border {
+    animation: none !important;
+  }
+
+  /* Freeze the shimmer sweep on loading skeletons / progress bars. */
+  .animate-shimmer {
+    animation: none !important;
+  }
+
+  /* Freeze the radar sonar sweep in matchmaking. */
+  .animate-radar-sweep {
+    animation: none !important;
+  }
+
+  /* Freeze the portal-pulse glow on locked academy cells. */
+  .animate-active-portal {
+    animation: none !important;
+  }
+
+  /* Freeze the liquid gradient button shift. */
+  .premium-liquid-button {
+    animation: none !important;
+    background-position: 0% 50% !important;
+  }
+}
+
+/*
+ * In-app reduced-motion preference. The pre-hydration script in layout.tsx
+ * stamps this attribute before paint, so Tailwind pulse/ping utilities and
+ * custom CSS animations do not flash briefly on page load. Framer Motion is
+ * switched to reducedMotion="always" by ReducedMotionProvider.
+ */
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob1,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob2,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob3,
+:root[data-reduce-motion="true"] .premium-liquid-border::before,
+:root[data-reduce-motion="true"] .premium-liquid-border::after,
+:root[data-reduce-motion="true"] .premium-liquid-border,
+:root[data-reduce-motion="true"] .animate-shimmer,
+:root[data-reduce-motion="true"] .animate-radar-sweep,
+:root[data-reduce-motion="true"] .animate-active-portal,
+:root[data-reduce-motion="true"] .premium-liquid-button {
+  animation: none !important;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob1,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob2,
+:root[data-reduce-motion="true"] .premium-liquid-mesh-blob3 {
+  will-change: auto;
+}
+
+:root[data-reduce-motion="true"] .premium-liquid-button {
+  background-position: 0% 50% !important;
+}
+
+/*
+ * Low-end device mode. Providers.tsx stamps `lite-fx` on <html> when the
+ * hardware looks weak (few cores / low RAM), applying the heaviest freezes
+ * from the reduced-motion block above WITHOUT requiring the user to find an
+ * OS accessibility setting. The giant blurred mesh blobs are hidden outright:
+ * a 100px+ blur repainted every frame is the single most expensive effect on
+ * exactly these devices, and it is purely decorative.
+ */
+:root.lite-fx *,
+:root.lite-fx *::before,
+:root.lite-fx *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+:root.lite-fx .premium-liquid-mesh-blob1,
+:root.lite-fx .premium-liquid-mesh-blob2,
+:root.lite-fx .premium-liquid-mesh-blob3 {
+  display: none !important;
+}
+
+:root.lite-fx .premium-liquid-border::before,
+:root.lite-fx .premium-liquid-border::after,
+:root.lite-fx .animate-shimmer,
+:root.lite-fx .animate-radar-sweep,
+:root.lite-fx .animate-active-portal,
+:root.lite-fx .premium-liquid-button {
+  animation: none !important;
+}
+
+/* Drop the purely decorative blurred glow pseudo-elements. A 42px blur is
+   re-rasterised whenever the card it sits behind scrolls or repaints, which is
+   the dominant per-frame cost on these cards and buys nothing but a soft halo. */
+:root.lite-fx .app-premium-surface::before,
+:root.lite-fx .app-premium-surface::after {
+  display: none !important;
+}
+
+/* backdrop-filter forces the compositor to re-sample everything painted behind
+   the element on every frame it moves. The bottom nav is fixed over a scrolling
+   page, so it re-samples continuously — the single worst offender for scroll
+   smoothness. The surfaces underneath are already opaque enough to read without
+   it. */
+:root.lite-fx .app-bottom-nav,
+:root.lite-fx .premium-neon-card,
+:root.lite-fx [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+

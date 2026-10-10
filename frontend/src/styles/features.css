@@ -1,0 +1,528 @@
+/* Feature-specific styling: tactics grid, premium liquid/neon cards, admin console, arena, leaderboard. */
+/* =====================================================
+   Tactics Grid Cells — theme-aware utility classes
+   Uses data-theme attribute (not Tailwind dark: prefix)
+   ===================================================== */
+
+/* --- Default (dark theme) --- */
+.tc-unlocked {
+  background: rgba(51, 65, 85, 0.55);   /* slate-700/55 */
+  border-color: rgba(71, 85, 105, 0.55); /* slate-600/55 */
+  color: rgb(203, 213, 225);             /* slate-300 */
+}
+.tc-unlocked:hover {
+  background: rgba(71, 85, 105, 0.75);
+  border-color: rgba(100, 116, 139, 0.75);
+}
+
+.tc-solved {
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.28), rgba(16, 185, 129, 0.12));
+  border-color: rgba(52, 211, 153, 0.55);
+  color: rgb(110, 231, 183);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.18);
+}
+.tc-solved:hover {
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.4), rgba(16, 185, 129, 0.2));
+  border-color: rgba(52, 211, 153, 0.8);
+}
+
+.tc-locked {
+  background: rgba(30, 41, 59, 0.75);   /* slate-800/75 */
+  border-color: rgba(245, 158, 11, 0.12);
+  color: rgba(245, 158, 11, 0.30);
+  cursor: not-allowed;
+}
+
+.tc-legend-unlocked {
+  background: rgba(51, 65, 85, 0.55);
+  border-color: rgba(71, 85, 105, 0.55);
+  color: rgb(203, 213, 225);
+}
+
+/* --- Light theme overrides --- */
+[data-theme='light'] .tc-unlocked {
+  background: rgba(226, 232, 240, 0.9);  /* slate-200/90 */
+  border-color: rgba(148, 163, 184, 0.7);/* slate-400/70 */
+  color: rgb(51, 65, 85);                /* slate-700 */
+}
+[data-theme='light'] .tc-unlocked:hover {
+  background: rgba(203, 213, 225, 1);
+  border-color: rgba(100, 116, 139, 0.9);
+}
+
+[data-theme='light'] .tc-solved {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.22), rgba(16, 185, 129, 0.08));
+  border-color: rgba(5, 150, 105, 0.6);
+  color: rgb(4, 120, 87);
+}
+[data-theme='light'] .tc-solved:hover {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.34), rgba(16, 185, 129, 0.14));
+  border-color: rgba(5, 150, 105, 0.85);
+}
+
+[data-theme='light'] .tc-locked {
+  background: rgba(241, 245, 249, 0.95); /* slate-100/95 */
+  border-color: rgba(252, 211, 77, 0.45);/* amber-300/45 */
+  color: rgba(217, 119, 6, 0.50);        /* amber-600/50 */
+}
+
+[data-theme='light'] .tc-legend-unlocked {
+  background: rgba(226, 232, 240, 0.9);
+  border-color: rgba(148, 163, 184, 0.7);
+  color: rgb(51, 65, 85);
+}
+
+/* Sonar Radar sweep animation */
+.bg-conic-radar {
+  background: conic-gradient(from 0deg, rgba(245, 158, 11, 0.3) 0%, rgba(245, 158, 11, 0.05) 30%, transparent 65%);
+}
+
+.animate-radar-sweep {
+  animation: spin 3.5s linear infinite;
+}
+
+/* Animated Premium Liquid Glowing Border */
+.premium-liquid-border {
+  position: relative;
+  border-radius: 20px;
+  background: var(--bg-primary); /* theme-aware: dark in dark mode, light in light mode */
+  padding: 2px; /* border thickness slightly increased for premium look */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-liquid-border:hover {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.premium-liquid-border::before {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 15%,
+    #a855f7 35%,
+    #ec4899 50%,
+    #a855f7 65%,
+    #6366f1 80%,
+    #a855f7 95%,
+    transparent 100%
+  );
+  animation: spin 3.5s linear infinite; /* Slightly faster sweep */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Add a second overlapping border overlay for a more liquid/neon depth */
+.premium-liquid-border::after {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 180deg,
+    transparent 15%,
+    #ec4899 35%,
+    #a855f7 50%,
+    #6366f1 65%,
+    #a855f7 80%,
+    transparent 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.premium-liquid-content {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-surface);
+  border-radius: 19px;
+  width: 100%;
+  height: 100%;
+}
+
+[data-theme='light'] .premium-liquid-border {
+  background: rgba(240, 235, 255, 0.9);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+}
+
+.premium-liquid-button {
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #ec4899 100%) !important;
+  background-size: 200% 200% !important;
+  color: #FFFFFF !important;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: none !important;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2) !important;
+}
+
+.premium-liquid-button:hover {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.75), 0 0 15px rgba(236, 72, 153, 0.4) !important;
+  transform: scale(1.03) translateY(-3px);
+}
+
+.premium-liquid-button:active {
+  transform: scale(0.97);
+}
+
+/* Animations for liquid gradients */
+@keyframes premium-pulse {
+  0% {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.65), 0 0 15px rgba(99, 102, 241, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+  }
+}
+
+@keyframes liquid-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.premium-liquid-mesh-blob2 {
+  position: absolute;
+  bottom: -20%;
+  right: -20%;
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(circle, rgba(180, 180, 190, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.premium-liquid-mesh-blob3 {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Premium Neon Glow Card border (staggered neon) */
+.premium-neon-card {
+  position: relative;
+  background: rgba(14, 8, 28, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.1), 0 0 15px 0 rgba(168, 85, 247, 0.15);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+}
+
+/* Light theme: neon card uses white surface with purple accents */
+[data-theme='light'] .premium-neon-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.08), 0 0 12px rgba(168, 85, 247, 0.1);
+}
+
+.premium-neon-text-glow {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+/* Light theme: tone down text glow so it's readable on white */
+[data-theme='light'] .premium-neon-text-glow {
+  text-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+.premium-neon-icon-glow {
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
+}
+
+/* Light theme: soften icon glow on white backgrounds */
+[data-theme='light'] .premium-neon-icon-glow {
+  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.5));
+}
+
+/* Admin command center: always dark for operational contrast across themes. */
+.admin-command-root {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(251, 191, 36, 0.06), transparent 26%),
+    radial-gradient(circle at 84% 16%, rgba(255, 255, 255, 0.035), transparent 24%),
+    radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    var(--admin-bg) !important;
+  background-size: auto, auto, 24px 24px, auto;
+  color: var(--admin-text) !important;
+}
+
+.admin-command-shell {
+  min-height: 100dvh;
+  background:
+    linear-gradient(180deg, rgba(3, 3, 3, 0.78), rgba(3, 3, 3, 0.98)),
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.06), transparent 32%);
+}
+
+.admin-tab {
+  border: 1px solid transparent;
+  color: var(--admin-muted);
+}
+
+.admin-tab:hover,
+.admin-tab:focus-visible {
+  border-color: var(--admin-border);
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--admin-text);
+}
+
+.admin-tab-active {
+  border-color: var(--admin-border-strong);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(255, 255, 255, 0.06));
+  color: var(--admin-text);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.admin-kpi-card,
+.admin-chart-card {
+  --admin-accent: var(--admin-accent-violet);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(var(--admin-accent) / 0.28);
+  background:
+    linear-gradient(145deg, rgb(var(--admin-accent) / 0.105), transparent 48%),
+    var(--admin-surface);
+  box-shadow: var(--admin-shadow), 0 0 24px rgb(var(--admin-accent) / 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.admin-kpi-card::before,
+.admin-chart-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 38%);
+  opacity: 0.7;
+}
+
+.admin-kpi-dot,
+.admin-chart-dot {
+  background: rgb(var(--admin-accent));
+  box-shadow: 0 0 10px rgb(var(--admin-accent) / 0.9), 0 0 18px rgb(var(--admin-accent) / 0.38);
+}
+
+.admin-kpi-icon {
+  border: 1px solid rgb(var(--admin-accent) / 0.32);
+  background: rgb(var(--admin-accent) / 0.12);
+  color: rgb(var(--admin-accent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 18px rgb(var(--admin-accent) / 0.12);
+}
+
+.admin-kpi-value {
+  color: var(--admin-text);
+  text-shadow: 0 0 14px rgb(var(--admin-accent) / 0.22);
+}
+
+.admin-kpi-label,
+.admin-chart-label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.admin-kpi-sub,
+.admin-chart-axis {
+  color: var(--admin-muted);
+}
+
+.admin-chart-total {
+  color: rgb(var(--admin-accent));
+  text-shadow: 0 0 12px rgb(var(--admin-accent) / 0.28);
+}
+
+.admin-chart-bar {
+  background: linear-gradient(180deg, rgb(var(--admin-accent) / 0.92), rgb(var(--admin-accent) / 0.38));
+}
+
+.admin-chart-bar-active {
+  background: rgb(var(--admin-accent));
+  box-shadow: 0 -6px 18px rgb(var(--admin-accent) / 0.36);
+}
+
+.admin-chart-tooltip {
+  border: 1px solid var(--admin-border);
+  background: rgba(3, 3, 3, 0.92);
+  color: var(--admin-text);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.admin-live-badge {
+  border: 1px solid rgb(var(--admin-accent-emerald) / 0.28);
+  background: rgb(var(--admin-accent-emerald) / 0.1);
+  color: rgb(var(--admin-accent-emerald));
+}
+
+/* Primary arena entry: emerald left-stripe signals the primary play action. */
+.play-chess-card-premium {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 140% at 0% 50%, color-mix(in srgb, var(--action-bg) 22%, transparent), transparent 62%),
+    linear-gradient(180deg, var(--bg-elevated), var(--bg-surface)) !important;
+  border: 1px solid color-mix(in srgb, var(--action-bg) 42%, var(--border-muted)) !important;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--glow-action), inset 0 1px 0 var(--border-highlight);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
+}
+
+/* Emerald left-stripe = primary action per brand rules. */
+.play-chess-card-premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(90deg, #10b981 0 3px, transparent 3px),
+    radial-gradient(circle at 14% 50%, rgba(16, 185, 129, 0.1), transparent 38%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.play-chess-card-piece {
+  color: #10b981;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-inner-glow);
+}
+
+.play-chess-card-arrow {
+  color: var(--bg-primary);
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+
+.play-chess-card-premium:hover {
+  border-color: color-mix(in srgb, var(--action-bg) 70%, transparent) !important;
+  box-shadow: var(--glow-action), 0 0 0 1px color-mix(in srgb, var(--action-bg) 25%, transparent) !important;
+}
+
+/* Arena funding and match setup use one calm premium action system. */
+.arena-wallet-rail,
+.arena-config-shell,
+.arena-event-banner {
+  background: var(--arena-panel-gradient) !important;
+}
+
+.arena-event-banner--live {
+  background: linear-gradient(135deg, var(--color-amber-opacity-10), var(--bg-surface) 58%, var(--bg-elevated)) !important;
+}
+
+.arena-wallet-rail {
+  border-color: var(--color-border-opacity-20) !important;
+  box-shadow: var(--shadow-premium);
+}
+
+.arena-wallet-balance {
+  border-color: var(--color-border-opacity-10);
+  background: linear-gradient(135deg, var(--color-bg-opacity-5), transparent);
+}
+
+.arena-topup-button,
+.arena-topup-launcher {
+  background: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-muted) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.arena-topup-button:hover,
+.arena-topup-launcher:hover {
+  filter: saturate(1.06) brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.arena-reward-badge {
+  background: var(--arena-selection-gradient) !important;
+  border-color: var(--text-gold) !important;
+  box-shadow: 0 0 0 1px var(--color-amber-opacity-10), var(--shadow-inner-glow);
+}
+
+.arena-option--wager-selected {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--action-bg) 26%, var(--bg-elevated)), color-mix(in srgb, var(--action-bg) 8%, var(--bg-elevated))) !important;
+  border-color: color-mix(in srgb, var(--action-bg) 75%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--action-bg) 30%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--action-bg) 55%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.arena-option--time-selected {
+  background: linear-gradient(180deg, color-mix(in srgb, #8b5cf6 26%, var(--bg-elevated)), color-mix(in srgb, #8b5cf6 8%, var(--bg-elevated))) !important;
+  border-color: color-mix(in srgb, #8b5cf6 70%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #8b5cf6 28%, transparent), 0 6px 18px -6px color-mix(in srgb, #8b5cf6 50%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.arena-win-summary {
+  background: linear-gradient(135deg, var(--color-bg-opacity-10), var(--color-bg-opacity-5)) !important;
+  border-color: var(--text-primary) !important;
+  box-shadow: 0 0 0 1px var(--color-border-opacity-10), var(--shadow-inner-glow);
+}
+
+.arena-option--wager-selected,
+.arena-option--time-selected {
+  color: var(--text-primary) !important;
+}
+
+.arena-topup-button:focus-visible,
+.arena-topup-launcher:focus-visible,
+.arena-option--wager-selected:focus-visible,
+.arena-option--time-selected:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+/* Leaderboard: solid token surfaces keep rank data legible in all themes. */
+.leaderboard-shell {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-muted) !important;
+  box-shadow: var(--shadow-premium) !important;
+}
+
+.leaderboard-header {
+  background: var(--bg-elevated);
+  border-color: var(--border-muted);
+}
+
+.leaderboard-row {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-muted);
+}
+
+.leaderboard-row--leader {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text-gold) 12%, var(--bg-surface)), var(--bg-surface));
+  border-color: color-mix(in srgb, var(--text-gold) 48%, var(--border-muted));
+}
+
+.leaderboard-row--runner-up {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text-primary) 7%, var(--bg-surface)), var(--bg-surface));
+}
+
+.leaderboard-row--third {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text-gold) 7%, var(--bg-surface)), var(--bg-surface));
+}
+
+.leaderboard-row--standard:hover {
+  background: var(--bg-elevated);
+}
+

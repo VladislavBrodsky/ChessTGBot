@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import BadgeShowcaseModal from "@/components/BadgeShowcaseModal";
 import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -98,11 +99,11 @@ export default function AchievementsPage() {
               }}
               className={`relative p-4 rounded-2xl border flex flex-col items-center text-center transition-all cursor-pointer select-none active:scale-[0.97] ${
                 ach.unlocked 
-                  ? 'glass-panel border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:border-emerald-500/50' 
-                  : 'glass-panel opacity-60 border-brand-border-opacity-10 bg-brand-surface grayscale hover:opacity-80'
+                  ? 'glass-panel ui-stat--accent' 
+                  : 'glass-panel'
               }`}
             >
-              <div className={`text-4xl mb-3 ${ach.unlocked ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'text-slate-500'}`}>
+              <div className={`text-4xl mb-3 ${ach.unlocked ? 'text-brand-success' : 'text-brand-muted'}`}>
                 {iconMap[ach.icon] || <FaTrophy />}
               </div>
               
@@ -110,14 +111,12 @@ export default function AchievementsPage() {
               <p className="text-caption text-brand-muted font-medium leading-tight mb-3 flex-1 text-pretty">{ach.description}</p>
               
               {ach.xp_reward > 0 && (
-                <div className="mt-auto inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                  <span className="text-caption font-semibold normal-case">+{ach.xp_reward} XP</span>
-                </div>
+                <Badge variant={ach.unlocked ? 'emerald' : 'secondary'} className="mt-auto">+{ach.xp_reward} XP</Badge>
               )}
               
               {!ach.unlocked && (
                 <div className="absolute top-2 right-2">
-                  <FaLock className="text-sm text-slate-500" />
+                  <FaLock className="text-sm text-brand-muted" aria-hidden="true" />
                 </div>
               )}
             </Card>

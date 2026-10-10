@@ -122,7 +122,7 @@ export default function TaskSuccessModal() {
               {/* Action Pulsing Button */}
               <button type="button"
                 onClick={handleClose}
-                className="ui-tap-target w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-black text-caption font-semibold normal-case tracking-normal shadow-[0_4px_16px_rgba(16,185,129,0.3)] transition-all active:scale-95 hover:brightness-105 cursor-pointer relative overflow-hidden"
+                className="ui-tap-target action-button w-full py-3.5 text-sm font-semibold transition-all active:scale-95 cursor-pointer relative overflow-hidden"
               >
                 AWESOME!
               </button>

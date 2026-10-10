@@ -36,13 +36,14 @@ describe('UI Primitives Layer', () => {
   describe('Skeleton & SkeletonList', () => {
     it('renders skeleton element with shimmer gradient classes', () => {
       const { container } = render(<Skeleton variant="rectangular" width={100} height={20} />);
-      expect(container.firstChild).toHaveClass('overflow-hidden');
-      expect(container.firstChild).toHaveClass('bg-brand-elevated/60');
+      expect(container.firstChild).toHaveClass('skeleton');
+      expect(container.firstChild).toHaveAttribute('aria-hidden', 'true');
     });
 
     it('renders correct count of skeleton list items', () => {
       const { container } = render(<SkeletonList count={4} />);
-      expect(container.querySelectorAll('.overflow-hidden').length).toBeGreaterThanOrEqual(4);
+      expect(container.querySelectorAll('.ui-list-row').length).toBe(4);
+      expect(container.querySelector('[role="status"]')).toHaveAttribute('aria-busy', 'true');
     });
   });
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/Badge';
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
@@ -47,27 +49,27 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
             </div>
 
             <div className="w-full h-full p-3 flex flex-col relative z-10">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                         <span
                             className="w-7 h-7 shrink-0 rounded-lg border flex items-center justify-center font-serif text-sm"
-                            style={{ color: accent, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
+                            style={{ color: `color-mix(in srgb, ${accent} 38%, var(--text-primary))`, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
                             aria-hidden="true"
                         >
                             {cfg.glyph}
                         </span>
                         <div className="min-w-0 text-left">
-                            <span className="block text-caption font-semibold normal-case tracking-normal truncate" style={{ color: accent }}>{cfg.metal}</span>
+                            <span className="block text-caption font-semibold normal-case tracking-normal truncate" style={{ color: `color-mix(in srgb, ${accent} 38%, var(--text-primary))` }}>{cfg.metal}</span>
                             <span className="block text-caption font-bold normal-case tracking-normal text-brand-muted truncate">{cfg.piece}</span>
                         </div>
                     </div>
                     {cfg.limited && (
-                        <span
-                            className="shrink-0 px-2 py-1 rounded-full text-caption font-semibold normal-case tracking-normal border"
-                            style={{ color: accent, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
+                        <Badge variant="secondary"
+
+                            style={{ color: `color-mix(in srgb, ${accent} 38%, var(--text-primary))`, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
                         >
                             {t('limited')}
-                        </span>
+                        </Badge>
                     )}
                 </div>
 
@@ -93,7 +95,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     type="button"
                     onClick={() => setShowDetails(true)}
                     aria-haspopup="dialog"
-                    className="ui-tap-target z-10 min-h-11 w-full mt-1 flex items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                    className="ui-tap-target z-10 min-h-11 w-full mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
                     <span>{t('whats_inside')}</span>
                     <FiChevronDown size={11} className="-rotate-90" />

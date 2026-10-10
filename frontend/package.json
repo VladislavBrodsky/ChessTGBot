@@ -14,13 +14,16 @@
     "test": "jest",
     "test:ci": "jest --ci",
     "check:messages": "node scripts/check-messages.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "tokens": "node scripts/build-tokens.mjs",
+    "check:design": "node scripts/check-design-rules.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@fontsource-variable/outfit": "^5.3.0",
     "@sentry/react": "^10.65.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@ton/core": "^0.63.1",

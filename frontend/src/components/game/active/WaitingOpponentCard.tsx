@@ -57,7 +57,7 @@ export function WaitingOpponentCard({
         </div>
 
         <div className="flex flex-col space-y-1.5 mb-6">
-          <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal animate-pulse">
+          <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal animate-pulse">
             {tWaitingOpponentTitle}
           </span>
           <span className="text-sm font-bold text-brand-primary normal-case tracking-normal">

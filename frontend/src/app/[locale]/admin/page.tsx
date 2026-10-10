@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge, BadgeRow, type BadgeVariant } from '@/components/ui/Badge';
+
 import { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -130,6 +132,14 @@ const STATUS_COLORS: Record<string, string> = {
   running: '#3b82f6',
   cancelled: '#6b7280',
 };
+
+function statusBadgeVariant(status: string): BadgeVariant {
+  if (status === 'completed') return 'emerald';
+  if (status === 'pending') return 'amber';
+  if (status === 'failed') return 'rose';
+  if (status === 'running') return 'cyan';
+  return 'secondary';
+}
 
 const ADMIN_ACCENTS = {
   violet: 'var(--admin-accent-violet)',
@@ -337,14 +347,12 @@ function DashboardTab({ stats }: { stats: Stats }) {
   return (
     <div className="w-full">
       {/* Greeting Banner */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h2 className="text-lg font-semibold text-white">{greeting}, Admin 👋</h2>
           <p className="admin-kpi-sub text-caption mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div className="admin-live-badge px-4 py-2 rounded-xl text-caption font-semibold normal-case tracking-normal">
-          ● Live
-        </div>
+        <Badge variant="emerald">Live</Badge>
       </div>
 
       {/* KPI Grid */}
@@ -479,11 +487,11 @@ function UsersTab() {
                   {cents(u.balance_cents)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-caption font-semibold border border-brand-primary/20">L{u.level}</span>
+                  <Badge>L{u.level}</Badge>
                 </td>
                 <td className="px-4 py-3">
                   {u.is_premium ? (
-                    <span className="bg-brand-primary/15 text-brand-primary rounded-lg px-2.5 py-1 text-caption font-semibold border border-brand-primary/20">⭐ {u.premium_tier || 'PRO'}</span>
+                    <Badge variant="purple">{u.premium_tier || 'PRO'}</Badge>
                   ) : (
                     <span className="text-brand-muted text-caption">Standard</span>
                   )}
@@ -581,17 +589,13 @@ function UsersTab() {
                   <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-3">Recent Transactions</p>
                   <div className="space-y-1">
                     {userDetail.transactions.slice(0, 8).map(tx => (
-                      <div key={tx.id} className="flex justify-between items-center py-2 px-3 rounded-lg bg-white/3 hover:bg-white/5 transition-colors">
-                        <div className="flex items-center gap-2.5">
-                          <span style={{
-                            background: `${TX_COLORS[tx.type] || '#6b7280'}15`,
-                            color: TX_COLORS[tx.type] || '#6b7280',
-                            borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
-                          }} className="rounded-lg px-2.5 py-1 text-caption font-bold border">
+                      <div key={tx.id} className="flex flex-wrap justify-between items-center gap-2 py-2 px-3 rounded-lg bg-white/3 hover:bg-white/5 transition-colors">
+                        <BadgeRow>
+                          <Badge>
                             {tx.type.replace('_', ' ')}
-                          </span>
+                          </Badge>
                           <span className="text-caption text-brand-muted">{formatDate(tx.created_at)}</span>
-                        </div>
+                        </BadgeRow>
                         <span className="text-sm font-bold" style={{ color: tx.amount_cents >= 0 ? '#22c55e' : '#f97316' }}>
                           {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
                         </span>
@@ -823,26 +827,18 @@ function TransactionsTab() {
                 <td className="px-4 py-2.5 text-brand-muted font-mono text-caption">{tx.id}</td>
                 <td className="px-4 py-2.5 font-mono text-caption text-brand-muted">{tx.user_id}</td>
                 <td className="px-4 py-2.5">
-                  <span style={{
-                    background: `${TX_COLORS[tx.type] || '#6b7280'}18`,
-                    color: TX_COLORS[tx.type] || '#6b7280',
-                    borderColor: `${TX_COLORS[tx.type] || '#6b7280'}30`,
-                  }} className="rounded-lg px-2.5 py-1 text-caption font-bold border">
+                  <Badge>
                     {tx.type.replace('_', ' ')}
-                  </span>
+                  </Badge>
                 </td>
                 <td className={`px-4 py-2.5 font-bold tabular-nums ${tx.amount_cents >= 0 ? 'text-green-400' : 'text-orange-400'}`}>
                   {tx.amount_cents >= 0 ? '+' : ''}{cents(tx.amount_cents)}
                 </td>
                 <td className="px-4 py-2.5 text-brand-muted tabular-nums">{tx.fee_cents > 0 ? cents(tx.fee_cents) : '—'}</td>
                 <td className="px-4 py-2.5">
-                  <span style={{
-                    background: `${STATUS_COLORS[tx.status] || '#6b7280'}18`,
-                    color: STATUS_COLORS[tx.status] || '#6b7280',
-                    borderColor: `${STATUS_COLORS[tx.status] || '#6b7280'}30`,
-                  }} className="rounded-lg px-2.5 py-1 text-caption font-semibold border">
+                  <Badge variant={statusBadgeVariant(tx.status)}>
                     {tx.status}
-                  </span>
+                  </Badge>
                 </td>
                 <td className="px-4 py-2.5 text-brand-muted font-mono text-caption max-w-[100px] truncate">
                   {tx.reference_id ? (
@@ -1081,18 +1077,13 @@ function BroadcastsTab() {
           animate={{ opacity: 1, y: 0 }}
           className="glass-panel p-5 mb-3"
         >
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <span style={{
-                background: `${STATUS_COLORS[b.status] || '#6b7280'}20`,
-                color: STATUS_COLORS[b.status] || '#6b7280',
-              }} className="rounded-md px-2 py-1 text-caption font-bold mr-2">
-                {b.status.toUpperCase()}
-              </span>
+          <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+            <BadgeRow>
+              <Badge variant={statusBadgeVariant(b.status)}>{b.status}</Badge>
               <span className="text-caption text-brand-muted">
                 #{b.id} · {b.audience} · {formatDate(b.created_at)}
               </span>
-            </div>
+            </BadgeRow>
             {(b.status === 'pending' || b.status === 'running') && (
               <button type="button"
                 onClick={() => cancelBroadcast(b.id)}
@@ -1141,9 +1132,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const c = cfg[status] ?? { color: '#6b7280', icon: <FaGear />, label: status };
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-semibold normal-case tracking-normal" style={{ color: c.color, background: `${c.color}18`, border: `1px solid ${c.color}40` }}>
-      {c.icon} {c.label}
-    </span>
+    <Badge variant={['online', 'all_systems_operational'].includes(status) ? 'emerald' : ['offline', 'degraded'].includes(status) ? 'rose' : ['partial', 'memory_fallback'].includes(status) ? 'amber' : 'secondary'} icon={c.icon}>{c.label}</Badge>
   );
 }
 

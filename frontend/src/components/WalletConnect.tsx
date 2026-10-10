@@ -94,7 +94,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                 {wallet ? (
                     <button type="button"
                         onClick={handleTopUpClick}
-                        className="ui-tap-target arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-caption font-semibold normal-case tracking-normal active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border-text-brand-muted shadow-sm"
+                        className="ui-tap-target arena-topup-button w-full min-h-[44px] px-3 rounded-xl text-caption font-semibold normal-case tracking-normal active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none bg-brand-surface border border-brand-border text-brand-muted shadow-sm"
                         title={`Connected: ${getShortAddress(wallet.account.address)}`}
                     >
                         <FaWallet size={10} className="shrink-0 text-emerald-500" />
@@ -127,7 +127,7 @@ export default function WalletConnect({ minimal = false, onTopUp }: WalletConnec
                             <FaWallet size={10} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45 truncate">
+                            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted truncate">
                                 {wallet ? tw('active') : tw('wallet')}
                             </span>
                             <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted truncate">

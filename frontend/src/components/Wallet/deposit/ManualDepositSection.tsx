@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Badge } from '@/components/ui/Badge';
 import { FaCopy, FaCheck } from 'react-icons/fa';
 
 export interface ManualDepositSectionProps {
@@ -73,11 +74,9 @@ export function ManualDepositSection({
 
       {/* ── Step 2: Copy memo comment ── */}
       <div className="flex flex-col space-y-1.5">
-        <p className="text-caption font-semibold text-brand-muted normal-case tracking-normal flex items-center gap-2">
+        <p className="text-caption font-semibold text-brand-muted flex flex-wrap items-center gap-2">
           <span>Step 2 — {commentMemoText}</span>
-          <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-caption font-semibold">
-            REQUIRED
-          </span>
+          <Badge variant="amber">Required</Badge>
         </p>
         <button type="button" aria-label="Copy required deposit memo"
           className="ui-tap-target group w-full p-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 text-brand-primary text-caption font-semibold font-mono flex justify-between items-center cursor-pointer hover:border-brand-primary/60 hover:bg-brand-primary/10 transition-all text-start"

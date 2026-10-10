@@ -647,11 +647,11 @@ export default function DepositModal({
           {chosenWager !== undefined && walletBalance !== undefined && (
             <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-sm font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">
               <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-left opacity-50">Wager Stake</div>
+                <div className="text-left text-brand-muted">Wager Stake</div>
                 <div className="text-right text-brand-primary font-semibold">${(chosenWager / 100).toFixed(2)} USDT</div>
               </div>
               <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-left opacity-50">Your Balance</div>
+                <div className="text-left text-brand-muted">Your Balance</div>
                 <div className="text-right text-brand-muted font-semibold">${(walletBalance / 100).toFixed(2)} USDT</div>
               </div>
               <div className="h-px bg-brand-border-opacity-5 my-0.5" />
@@ -745,7 +745,7 @@ export default function DepositModal({
                           </div>
                           <span>{c.name}</span>
                         </div>
-                        <span className="text-caption opacity-40">{c.symbol}</span>
+                        <span className="text-caption text-brand-muted">{c.symbol}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -776,7 +776,7 @@ export default function DepositModal({
                 <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Equivalent ({currency})</label>
                 <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-sm text-brand-primary font-semibold flex items-center space-x-1 shadow-inner h-[40px]">
                   <span className="truncate">{tokenAmount}</span>
-                  <span className="text-caption opacity-40 shrink-0">{currency}</span>
+                  <span className="text-caption text-brand-muted shrink-0">{currency}</span>
                 </div>
               </div>
             </div>
@@ -831,7 +831,7 @@ export default function DepositModal({
                   type="button"
                   onClick={handleGasGrant}
                   disabled={gasGrantBusy}
-                  className="ui-tap-target text-caption font-semibold text-brand-primary/45 hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer disabled:opacity-50"
+                  className="ui-tap-target text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {gasGrantBusy ? tw('gas_requesting') : tw('gas_link')}
                 </button>

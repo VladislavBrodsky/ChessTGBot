@@ -2,30 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCheck, FaGift, FaTrophy } from 'react-icons/fa';
+import { FaCheck, FaGift } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
 import { useUser } from '@/context/UserContext';
 import { triggerTaskSuccess } from '@/lib/telegram';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { SectionHeader } from '@/components/ui/PageHeader';
+import { SkeletonList } from '@/components/ui/Skeleton';
+import { Badge } from '@/components/ui/Badge';
 
-const TaskSkeleton = () => (
-    <div className="w-full flex flex-col space-y-3">
-        {[1, 2, 3].map((n) => (
-            <div key={n} className="relative overflow-hidden rounded-xl border border-brand-border-opacity-10 p-3 flex items-center justify-between bg-brand-surface animate-pulse">
-                <div className="flex items-center gap-3 w-2/3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-primary opacity-10 shrink-0" />
-                    <div className="flex flex-col space-y-1.5 w-full">
-                        <div className="h-2.5 bg-brand-primary opacity-10 rounded w-1/2" />
-                        <div className="h-1.5 bg-brand-primary opacity-5 rounded w-1/3" />
-                    </div>
-                </div>
-                <div className="w-16 h-1.5 bg-brand-primary opacity-5 rounded-full" />
-            </div>
-        ))}
-    </div>
-);
+const TaskSkeleton = () => <SkeletonList count={3} />;
 
 export default function DailyTasks() {
     const t = useTranslations('Gamification');
@@ -93,14 +81,9 @@ export default function DailyTasks() {
 
     return (
         <section aria-labelledby="daily-missions-title" className="w-full space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-                <FaTrophy className="text-brand-primary text-sm" />
-                <h3 id="daily-missions-title" className="text-caption font-semibold normal-case text-brand-muted tracking-normal">
-                    {t('daily_missions')}
-                </h3>
-            </div>
+            <SectionHeader id="daily-missions-title" title={t('daily_missions')} />
 
-            <motion.div layout className="space-y-3 w-full">
+            <div className="space-y-3 w-full">
                 <AnimatePresence mode="wait">
                     {loading ? (
                         <motion.div
@@ -121,83 +104,62 @@ export default function DailyTasks() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="text-center py-8 text-sm font-bold text-brand-muted normal-case tracking-normal"
+                            className="text-center py-8 text-sm font-medium text-brand-muted"
                         >
                             {t('no_missions')}
                         </motion.div>
                     ) : (
                         <ol role="list" className="space-y-3 list-none m-0 p-0 relative">
-                            {/* Connected vertical milestone track */}
-                            <div className="absolute left-[26px] top-4 bottom-4 w-0.5 bg-brand-border-opacity-10 pointer-events-none -z-0" />
-                            
-                            {tasks.map((task, index) => {
+
+                            {tasks.map((task) => {
                                 const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
                                 return (
-                                    <motion.li
+                                    <li
                                         key={task.id}
-                                        layout
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.04 }}
-                                        className={`
-                                            relative overflow-hidden rounded-2xl border p-3 flex items-center justify-between transition-all duration-300 list-item-contain z-10
-                                            ${status === 'completed'
-                                                ? 'bg-brand-void/50 border-brand-border-opacity-10 opacity-70'
-                                                : status === 'claimable'
-                                                ? 'bg-gradient-to-r from-brand-surface to-emerald-950/25 border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.18)]'
-                                                : 'bg-brand-surface/90 border-brand-border-opacity-10'}
-                                        `}
+                                        className={`ui-list-row list-item-contain ${status === 'claimable' ? 'ui-stat--accent' : ''}`}
                                     >
                                         <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
-                                            <div className={`
-                                                w-9 h-9 rounded-xl flex items-center justify-center text-sm transition-all duration-300 shrink-0
-                                                ${status === 'completed' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
-                                                : status === 'claimable' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.4)]'
-                                                : 'bg-brand-elevated text-brand-muted border border-brand-border-opacity-10'}
-                                            `}>
-                                                {status === 'completed' ? <FaCheck className="text-sm" /> : <FaGift className={status === 'claimable' ? 'animate-pulse text-sm' : 'text-sm'} />}
-                                            </div>
+                                            <span className={`ui-icon-tile ${status === 'pending' ? '' : 'ui-icon-tile--success'}`}>
+                                                {status === 'completed' ? <FaCheck className="text-sm" aria-hidden="true" /> : <FaGift className="text-sm" aria-hidden="true" />}
+                                            </span>
                                             <div className="min-w-0 flex-1">
-                                                <h4 className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-snug header-balanced truncate">
+                                                <h4 className={`text-sm font-semibold leading-snug truncate ${status === 'completed' ? 'text-brand-muted' : 'text-brand-primary'}`}>
                                                     {t(task.title_key)}
                                                 </h4>
-                                                <div className="flex items-center gap-2 text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
-                                                    <span className="text-amber-400">+{task.xp_reward} XP</span>
-                                                    <span>•</span>
+                                                <div className="flex items-center gap-2 text-caption font-medium text-brand-muted mt-0.5 tabular-nums">
+                                                    <span className="text-brand-gold">+{task.xp_reward} XP</span>
+                                                    <span aria-hidden="true">·</span>
                                                     <span>{task.progress} / {task.target_count}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {status === 'claimable' && (
-                                            <motion.button type="button"
-                                                whileHover={{ scale: 1.04 }}
-                                                whileTap={{ scale: 0.94 }}
+                                            <button type="button"
                                                 onClick={() => handleClaim(task.task_id)}
                                                 disabled={claimingId === task.task_id}
-                                                className="ui-tap-target px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.35)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] text-caption font-semibold normal-case tracking-normal cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all select-none"
+                                                className="ui-tap-target action-button px-4 text-sm font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                             >
-                                                {claimingId === task.task_id ? '...' : t('claim')}
-                                            </motion.button>
+                                                {claimingId === task.task_id ? '…' : t('claim')}
+                                            </button>
                                         )}
 
+                                        {status === 'completed' && <Badge variant="emerald">{t('claimed_status')}</Badge>}
                                         {status === 'pending' && (
-                                            <div className="w-16 h-1.5 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10 relative">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
-                                                    transition={{ duration: 0.8, ease: 'easeOut', delay: index * 0.04 + 0.1 }}
-                                                    className="h-full bg-brand-primary opacity-60 rounded-full absolute left-0 top-0"
+                                            <div className="w-16 h-1.5 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10 relative" role="progressbar" aria-label={t(task.title_key)} aria-valuemin={0} aria-valuemax={task.target_count} aria-valuenow={task.progress}>
+                                                <div
+                                                    style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
+                                                    className="h-full bg-brand-action rounded-full absolute left-0 top-0 transition-[width] duration-500"
                                                 />
                                             </div>
                                         )}
-                                    </motion.li>
+                                    </li>
                                 );
                             })}
                         </ol>
                     )}
                 </AnimatePresence>
-            </motion.div>
+            </div>
         </section>
     );
 }

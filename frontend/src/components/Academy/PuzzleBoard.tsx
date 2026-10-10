@@ -300,8 +300,8 @@ export default function PuzzleBoard({
           orientation={orientation}
           customSquareStyles={customSquareStyles}
           customArrows={finalArrows.length > 0 ? finalArrows : undefined}
-          customDarkSquareStyle={{ backgroundColor: '#18181b' }}
-          customLightSquareStyle={{ backgroundColor: '#52525b' }}
+          customDarkSquareStyle={{ backgroundColor: '#2e3a4e' }}
+          customLightSquareStyle={{ backgroundColor: '#cbd5e1' }}
         />
         {shake && (
           <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">

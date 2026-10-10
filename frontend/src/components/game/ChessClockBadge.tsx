@@ -69,20 +69,23 @@ export function ChessClockBadge({
 
   const isLowTime = timeLeft < 5;
   const isWarningTime = timeLeft < 15;
+  const running = !isGameOver && gameState?.turn === color;
 
   return (
     <div
-      className={`px-3.5 py-1.5 min-w-[75px] text-center rounded-xl border transition-all duration-300 ${
+      role="timer"
+      aria-label={`${color === 'w' ? 'White' : 'Black'} clock`}
+      className={`px-3.5 py-2 min-w-[84px] text-center rounded-2xl border transition-colors duration-300 ${
         isLowTime
-          ? 'bg-rose-500/20 border-rose-500/40 text-rose-500 animate-pulse'
+          ? 'border-[color-mix(in_srgb,#ef4444_55%,transparent)] bg-brand-rose-opacity-10 text-brand-danger animate-pulse'
           : isWarningTime
-          ? 'bg-amber-500/10 border-amber-500/30 text-amber-500'
-          : isMe
-          ? 'bg-brand-void/40 border-brand-border text-brand-primary'
-          : 'bg-brand-void/40 border-brand-border text-brand-muted opacity-85'
+          ? 'border-[color-mix(in_srgb,var(--text-gold)_45%,transparent)] bg-brand-amber-opacity-10 text-brand-gold'
+          : running
+          ? 'border-[color-mix(in_srgb,var(--action-bg)_50%,transparent)] bg-brand-emerald-opacity-10 text-brand-primary shadow-[0_0_18px_-4px_var(--action-bg)]'
+          : 'border-brand-border bg-brand-elevated text-brand-muted'
       }`}
     >
-      <span className="text-sm font-semibold tracking-tighter font-mono">
+      <span className="text-lg font-bold tracking-tight tabular-nums">
         {formatTime(timeLeft)}
       </span>
     </div>

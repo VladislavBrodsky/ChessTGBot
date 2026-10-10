@@ -1,0 +1,117 @@
+/* Document base: html/body, typography defaults, focus ring, iOS fixes, shared progress/piece rules. */
+html {
+  max-width: 100vw;
+  /* `hidden` creates an accidental vertical scroll container; clip does not. */
+  overflow-x: clip !important;
+  scrollbar-gutter: stable;
+  background-color: var(--bg-primary) !important;
+  overscroll-behavior-y: none;
+  min-height: 100dvh;
+  height: 100%;
+}
+
+body {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-primary) !important;
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  letter-spacing: -0.015em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip !important;
+  scrollbar-gutter: stable;
+  background-attachment: fixed;
+}
+
+/* 2026 Typography Standards: Anti-Orphan & Balanced Wrapping */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+  letter-spacing: -0.025em;
+}
+
+p, li, blockquote {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+
+
+/* Consistent, visible keyboard focus without changing pointer interactions. */
+:where(a, button, input, select, textarea, [role='button']):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text-primary) 78%, transparent);
+  outline-offset: 3px;
+}
+
+:where(a, button, [role='button']) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix iOS Safari border-radius clipping bug on overflow-hidden elements */
+.overflow-hidden {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+.app-premium-surface {
+  background: var(--premium-surface-gradient);
+  border-color: var(--premium-surface-border);
+  box-shadow: var(--shadow-premium);
+}
+
+.app-premium-surface::before,
+.app-premium-surface::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(42px);
+}
+
+.app-premium-surface::before {
+  top: -4rem;
+  right: -3rem;
+  width: 13rem;
+  height: 13rem;
+  background: var(--premium-orb-gold);
+}
+
+.app-premium-surface::after {
+  bottom: -4rem;
+  left: -3rem;
+  width: 11rem;
+  height: 11rem;
+  background: var(--premium-orb-silver);
+}
+
+.app-progress-track {
+  background: var(--progress-track-bg);
+  border-color: var(--border-muted);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.app-progress-fill--secured {
+  position: relative;
+  background: var(--progress-secured-fill);
+  box-shadow: 0 0 16px -2px rgba(245, 196, 81, 0.5);
+}
+.app-progress-fill--secured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 55%);
+  pointer-events: none;
+}
+
+/* High-Contrast Chess Piece Legibility & Depth */
+div[role="group"] svg,
+[data-testid="live-chessboard"] svg,
+div[class*="chessboard"] svg {
+  filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.6));
+}
+

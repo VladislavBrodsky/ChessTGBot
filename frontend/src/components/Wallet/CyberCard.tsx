@@ -18,10 +18,10 @@ interface CyberCardProps {
 export default function CyberCard({ balance, walletAddress, balanceError = false, loading = false, onRetry }: CyberCardProps) {
   const tw = useTranslations('Wallet');
   return (
-    <Card variant="solid" className="wallet-balance-card p-5 sm:p-6 space-y-6">
+    <Card variant="solid" className="ui-hero-card wallet-balance-card p-5 sm:p-6 space-y-6">
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-medium text-brand-muted">{tw('usdt_balance')}</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-brand-success"><FiCreditCard size={21} aria-hidden="true" /></span>
+        <span className="ui-icon-tile ui-icon-tile--success"><FiCreditCard size={21} aria-hidden="true" /></span>
       </div>
       {loading ? (
         <div role="status" aria-label={tw('usdt_balance')} className="space-y-2"><Skeleton width={160} height={40} /><Skeleton width={90} height={16} /></div>

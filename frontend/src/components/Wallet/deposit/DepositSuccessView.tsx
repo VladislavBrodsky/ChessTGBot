@@ -46,7 +46,7 @@ export function DepositSuccessView({
           </p>
         </div>
         <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
-          <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45">
+          <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
             Updated Balance
           </span>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">

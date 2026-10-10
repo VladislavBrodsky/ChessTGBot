@@ -1,5 +1,6 @@
 'use client';
 
+import BoardA11y from '@/components/game/BoardA11y';
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
 import React, { useState, useEffect, useMemo, type CSSProperties, type KeyboardEvent } from "react";
@@ -328,7 +329,7 @@ function ChessBoardComponent({
             {promotionMove && (
                 <div className="absolute inset-0 bg-brand-void/80 backdrop-blur-md z-30 flex items-center justify-center rounded-2xl p-6" style={{ touchAction: 'none' }}>
                     <div className="glass-panel p-6 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface max-w-[280px] w-full text-center space-y-5 shadow-premium">
-                        <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
+                        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
                             Pawn Promotion
                         </span>
                         
@@ -389,7 +390,7 @@ function ChessBoardComponent({
 
             <div className="relative rounded-2xl overflow-hidden border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1 shadow-[0_24px_48px_rgba(0,0,0,0.9)]">
                 <div className="rounded-xl overflow-hidden w-full h-full">
-                    <Chessboard
+                    <BoardA11y><Chessboard
                         options={{
                             id: "liveChessBoard",
                             position: fen === "start" ? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" : fen,
@@ -410,7 +411,7 @@ function ChessBoardComponent({
                             onSquareClick: handleSquareClick,
                             squareStyles: squareStyles
                         }}
-                    />
+                    /></BoardA11y>
                 </div>
             </div>
         </div>

@@ -96,7 +96,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
-                        <span className="text-caption font-semibold normal-case tracking-normal mt-3.5 opacity-40 animate-pulse text-brand-primary">
+                        <span className="text-caption font-semibold normal-case tracking-normal mt-3.5 animate-pulse text-brand-muted">
                             INITIALIZING ARENA...
                         </span>
                     </div>

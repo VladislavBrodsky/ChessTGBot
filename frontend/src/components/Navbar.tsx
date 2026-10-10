@@ -10,6 +10,7 @@ import { FaChessKnight } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { useDesktopNavigation } from '@/hooks/useDesktopNavigation';
 import { Button } from './ui/Button';
+import { useClaimableTasks } from '@/hooks/useClaimableTasks';
 
 const NAV_ITEMS = [
   { icon: FiHome, href: '/home', key: 'nav_home' },
@@ -26,6 +27,8 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
   const locale = useLocale();
   const t = useTranslations('Index');
   const desktop = useDesktopNavigation();
+  const tg = useTranslations('Gamification');
+  const claimable = useClaimableTasks(!hide);
   React.useEffect(() => {
     if (prefetchedLocales.has(locale)) return;
     const timer = window.setTimeout(() => {
@@ -60,10 +63,13 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
           const Icon = item.icon;
           return (
             <li key={href} className="min-w-0">
-              <Link href={href} aria-label={t(item.key)} aria-current={active ? 'page' : undefined}
+              <Link href={href} aria-label={claimable > 0 && item.href === '/profile' ? `${t(item.key)}: ${tg('claim')}` : t(item.key)} aria-current={active ? 'page' : undefined}
                 onClick={() => { if (!active) telegramHaptic('selection'); }}
                 className={`${desktop ? 'app-sidebar__link' : 'app-bottom-nav__link'} ${active ? 'is-active' : ''}`}>
-                <Icon size={21} aria-hidden="true" className="shrink-0" />
+                <span className="relative inline-flex">
+                  <Icon size={21} aria-hidden="true" className="shrink-0" />
+                  {claimable > 0 && item.href === '/profile' && <span className="ui-nav-dot" aria-hidden="true" />}
+                </span>
                 <span className={desktop ? 'text-sm font-medium' : 'text-nav-label font-medium leading-tight'}>{t(item.key)}</span>
               </Link>
             </li>

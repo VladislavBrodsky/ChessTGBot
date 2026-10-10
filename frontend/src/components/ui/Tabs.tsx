@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useId } from 'react';
+import { Badge } from './Badge';
 import { selectionKeyboard } from './selectionKeyboard';
 import { motion } from 'framer-motion';
 import { telegramHaptic } from '@/lib/telegram';
@@ -67,14 +68,7 @@ export function Tabs<T extends string = string>({
               {tab.icon && <span className="text-sm">{tab.icon}</span>}
               <span>{tab.label}</span>
               {tab.badge !== undefined && (
-                <span
-                  className={`
-                    px-1.5 py-0.5 rounded-full text-caption font-semibold leading-none
-                    ${isActive ? 'bg-brand-elevated text-brand-primary' : 'bg-brand-surface text-brand-muted border border-brand-border'}
-                  `}
-                >
-                  {tab.badge}
-                </span>
+                <Badge size="counter" variant={isActive ? 'primary' : 'secondary'}>{tab.badge}</Badge>
               )}
             </span>
           </button>

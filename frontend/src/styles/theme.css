@@ -1,0 +1,72 @@
+/* Tailwind bridge: maps semantic tokens to utilities (@theme) and the dark variant. */
+@theme inline {
+  --font-sans: "Outfit Variable", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+  --font-display: "Outfit Variable", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, Consolas, monospace;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.5;
+  --text-nav-label: 0.75rem;
+  --text-nav-label--line-height: 1.35;
+  --text-page-title: clamp(1.5rem, 3vw, 2rem);
+  --text-page-title--line-height: 1.15;
+  --text-page-title--letter-spacing: -0.035em;
+  --text-section-title: 1.25rem;
+  --text-section-title--line-height: 1.35;
+  --color-brand-action: var(--action-bg);
+  --color-brand-action-ink: var(--action-ink);
+  --color-brand-danger: var(--danger-ink);
+
+  --color-brand-void: var(--color-brand-void);
+  --color-brand-surface: var(--color-brand-surface);
+  --color-brand-elevated: var(--color-brand-elevated);
+  --color-brand-border: var(--color-brand-border);
+  --color-brand-text-gray: var(--color-brand-text-gray);
+  --color-brand-overlay: var(--color-brand-overlay);
+  
+  --color-brand-primary: var(--text-primary);
+  --color-brand-muted: var(--text-muted);
+  --color-brand-gold: var(--text-gold);
+  --color-brand-success: var(--brand-success);
+
+  --color-brand-border-opacity-5: var(--color-border-opacity-5);
+  --color-brand-border-opacity-10: var(--color-border-opacity-10);
+  --color-brand-border-opacity-20: var(--color-border-opacity-20);
+  --color-brand-bg-opacity-5: var(--color-bg-opacity-5);
+  --color-brand-bg-opacity-10: var(--color-bg-opacity-10);
+  --color-brand-bg-opacity-20: var(--color-bg-opacity-20);
+
+  --color-brand-rose-opacity-10: var(--color-rose-opacity-10);
+  --color-brand-rose-opacity-20: var(--color-rose-opacity-20);
+  --color-brand-emerald-opacity-10: var(--color-emerald-opacity-10);
+  --color-brand-emerald-opacity-20: var(--color-emerald-opacity-20);
+  --color-brand-cyan-opacity-10: var(--color-cyan-opacity-10);
+  --color-brand-amber-opacity-10: var(--color-amber-opacity-10);
+
+  --color-brand-border-opacity-15: var(--color-border-opacity-15);
+  --color-brand-border-opacity-30: var(--color-border-opacity-30);
+  --color-brand-purple-opacity-10: var(--color-purple-opacity-10);
+  --color-brand-purple-opacity-20: var(--color-purple-opacity-20);
+
+  --background-image-cyber-card: var(--cyber-card-bg);
+  --background-image-silver-gradient: var(--accent-silver);
+
+  --animate-fade-in: fade-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  --shadow-neon: var(--shadow-neon);
+  --shadow-premium: var(--shadow-premium);
+  --shadow-inner-glow: var(--shadow-inner-glow);
+}
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-theme='nebula'], [data-theme='nebula'] *));
+

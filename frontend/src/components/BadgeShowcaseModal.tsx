@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/Badge';
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaShieldAlt, FaStar, FaLock, FaShareAlt, FaCheck } from 'react-icons/fa';
@@ -101,12 +103,8 @@ export default function BadgeShowcaseModal({
               </div>
             </div>
 
-            {/* Floating Level / Tier Pill */}
-            <div className="absolute -bottom-2 px-3 py-0.5 rounded-full bg-brand-surface border border-amber-400/50 text-amber-400 font-semibold text-caption normal-case tracking-normal shadow-sm flex items-center gap-1">
-              <FaStar className="text-caption" />
-              <span>TIER {currentTier}</span>
-            </div>
           </div>
+          <div className="flex justify-center"><Badge variant="secondary" icon={<FaStar />}>TIER {currentTier}</Badge></div>
 
           {/* Badge Titles */}
           <div className="space-y-1 relative z-10">
@@ -132,7 +130,7 @@ export default function BadgeShowcaseModal({
                   className={`flex items-center justify-between p-2 rounded-xl border text-sm transition-all ${
                     t.isUnlocked
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                      : 'bg-brand-surface/40 border-brand-border-opacity-10 text-brand-muted opacity-60'
+                      : 'bg-brand-surface/40 border-brand-border-opacity-10 text-brand-muted'
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { SectionHeader } from "@/components/ui/PageHeader";
 
 interface Transaction {
   id: number;
@@ -70,13 +71,13 @@ function BalanceHistoryChart({ transactions, balance }: { transactions: Transact
   const areaD = `${pathD} L ${pts[pts.length - 1].x},${HEIGHT - PAD} L ${pts[0].x},${HEIGHT - PAD} Z`;
 
   return (
-    <div className="w-full rounded-2xl border border-brand-border bg-brand-surface overflow-hidden p-3.5 space-y-2 mt-1 mb-3">
+    <div className="ui-hero-card w-full rounded-2xl p-3.5 space-y-2">
       <div className="flex justify-between items-center px-1">
-        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
+        <span className="ui-eyebrow">
           {tw('balance_trend')}
         </span>
-        <span className="text-caption font-mono text-emerald-400 font-bold">
-          ${minAmt.toFixed(2)} - ${maxAmt.toFixed(2)}
+        <span className="text-caption font-semibold tabular-nums text-brand-success">
+          ${minAmt.toFixed(2)} – ${maxAmt.toFixed(2)}
         </span>
       </div>
 
@@ -119,12 +120,7 @@ export default function TransactionLedger({
   return (
     <section aria-labelledby="tx-history-heading" className="w-full space-y-3">
       {/* Ledger Header */}
-      <div className="flex items-center justify-between px-1">
-        <h2 id="tx-history-heading" className="text-section-title font-semibold text-brand-primary flex items-center gap-2">
-          <FaHistory className="text-brand-muted text-sm" />
-          {tw('ledger')}
-        </h2>
-      </div>
+      <SectionHeader id="tx-history-heading" title={tw('ledger')} />
 
       {/* Sparkline chart */}
       {!error && balance !== undefined && transactions && transactions.length > 0 && (
@@ -156,22 +152,22 @@ export default function TransactionLedger({
             return (
               <li 
                 key={tx.id}
-                className="w-full flex items-center justify-between p-3 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-border-opacity-20 transition-all list-item-contain"
+                className="ui-list-row list-item-contain"
               >
-                <div className="flex items-center space-x-3 min-w-0">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 border ${
-                    tx.type === 'game_against_ai' || tx.type === 'game_free_pvp'
-                      ? 'bg-brand-elevated border-brand-border text-brand-muted' :
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`ui-icon-tile ${
+                    tx.type === 'game_against_ai' || tx.type === 'game_free_pvp' || isZero
+                      ? '' :
                     isPositive
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' :
+                      ? 'ui-icon-tile--success' :
                     tx.type === 'deposit'
-                      ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' :
-                    'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                      ? 'ui-icon-tile--info' :
+                    'ui-icon-tile--danger'
                   }`}>
-                    {tx.type === 'game_against_ai' ? <FaRobot className="text-sm" /> :
-                     tx.type === 'game_free_pvp' ? <FaGamepad className="text-sm" /> :
-                     isPositive ? <FaArrowDown className="text-sm" /> : <FaArrowUp className="text-sm" />}
-                  </div>
+                    {tx.type === 'game_against_ai' ? <FaRobot className="text-sm" aria-hidden="true" /> :
+                     tx.type === 'game_free_pvp' ? <FaGamepad className="text-sm" aria-hidden="true" /> :
+                     isPositive ? <FaArrowDown className="text-sm" aria-hidden="true" /> : <FaArrowUp className="text-sm" aria-hidden="true" />}
+                  </span>
 
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-medium text-brand-primary">
@@ -192,10 +188,10 @@ export default function TransactionLedger({
                 </div>
 
                 <div className="flex flex-col items-end shrink-0 pl-2">
-                  <span className={`text-sm font-semibold font-mono ${
+                  <span className={`text-sm font-semibold tabular-nums ${
                     isZero ? 'text-brand-muted' :
-                    isPositive ? 'text-emerald-400' :
-                    'text-rose-400'
+                    isPositive ? 'text-brand-success' :
+                    'text-brand-danger'
                   }`}>
                     {isZero ? '$0.00' : `${isPositive ? '+' : '-'}${formattedAmt}`}
                   </span>

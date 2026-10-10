@@ -1,13 +1,15 @@
 'use client';
 
+import BoardA11y from '@/components/game/BoardA11y';
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
-import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
+import { PageHeader, PageUtilities, SectionHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
-import { FaChessRook, FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
@@ -18,7 +20,7 @@ import useSWR from 'swr';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { getXPProgress } from '@/lib/xpProgress';
 
@@ -327,33 +329,13 @@ export default function AcademyPage() {
           <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
 
           {stats && (
-            <div className="flex flex-col items-start gap-3">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`flex items-center justify-center gap-3 text-caption font-semibold normal-case tracking-normal py-2 px-4 rounded-xl shadow-md transition-all duration-300 w-full max-w-sm ${
-                  stats.is_premium
-                    ? 'bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                    : 'bg-brand-surface border border-brand-border-opacity-10 text-brand-muted'
-                }`}
-              >
-                <span>{stats.is_premium ? 'Premium' : 'Regular'}</span>
-                <div className="w-px h-2.5 bg-brand-border-opacity-10" />
-                <span>Level {stats.level}</span>
-                <div className="w-1 h-1 bg-current opacity-40 rounded-full" />
-                <span>{stats.xp} XP</span>
-              </motion.div>
-
-              {/* Badges & Streak Row */}
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-caption">
-                  <FaFire className="text-amber-500" /> {stats.study_streak || 0} Day Streak
-                </Badge>
-                <Badge variant="primary" className="gap-1.5 px-3 py-1.5 bg-brand-primary/10 border-brand-primary/20 text-caption">
-                  <FaTrophy className="text-amber-400" /> {getPlayerTitle(stats.level)}
-                </Badge>
-              </div>
-            </div>
+            <BadgeRow>
+              {stats.is_premium && <Badge variant="purple">Premium</Badge>}
+              <Badge variant="primary">Level {stats.level}</Badge>
+              <Badge variant="secondary">{stats.xp.toLocaleString()} XP</Badge>
+              <Badge variant="secondary" icon={<FaTrophy />}>{getPlayerTitle(stats.level)}</Badge>
+              <Badge variant="amber" icon={<FaFire />}>{stats.study_streak || 0} day streak</Badge>
+            </BadgeRow>
           )}
         </header>
 
@@ -380,8 +362,8 @@ export default function AcademyPage() {
             onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
             className="w-full text-center px-6 py-4 group"
           >
-            <p className="text-sm font-semibold text-brand-muted italic mb-1 transition-opacity">"{CHESS_QUOTES[quoteIdx].quote}"</p>
-            <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
+            <p className="text-sm font-medium text-brand-primary mb-1">“{CHESS_QUOTES[quoteIdx].quote}”</p>
+            <p className="text-caption font-medium text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
           </Card>
         </motion.div>
 
@@ -397,34 +379,25 @@ export default function AcademyPage() {
         >
           <Card 
             variant="glass" 
-            interactive
-            onClick={() => {
-              if (!puzzlesList.length) return;
-              if (nextPuzzle) {
-                handlePuzzleClick(nextPuzzle.id, nextPuzzle);
-              } else if (allSolved) {
-                handlePuzzleClick(1, puzzlesList[0]);
-              }
-            }}
-            className="p-6 relative overflow-hidden group shadow-premium border-brand-primary/20 rounded-3xl"
+            className="ui-hero-card p-6 relative overflow-hidden group rounded-3xl"
           >
           {/* Neon Backlight Blurs */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,var(--color-brand-primary)_0%,transparent_70%)] opacity-10 rounded-full -mr-16 -mt-16 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10">
-            <div className="flex justify-between items-center mb-4">
-              <Badge variant="secondary" className="gap-1.5 text-brand-primary bg-brand-void/60 border-brand-border-opacity-10 opacity-70">
-                <FaFire className="text-emerald-500 animate-pulse text-caption" /> {t('daily_challenge')}
+            <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+              <Badge variant="secondary" icon={<FaFire />}>
+                {t('daily_challenge')}
               </Badge>
               {!allSolved && (
-                <Badge variant="emerald" className="gap-1 shadow-[0_0_10px_rgba(16,185,129,0.15)] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                  <FaTrophy className="text-caption" /> +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
+                <Badge variant="emerald" icon={<FaTrophy />}>
+                  +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
                 </Badge>
               )}
             </div>
 
-            <h2 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-brand-primary via-brand-primary to-amber-300 bg-clip-text text-transparent normal-case mb-2">
+            <h2 className="text-2xl font-semibold tracking-tight text-brand-primary mb-2">
               {allSolved
                 ? t('all_levels_solved')
                 : nextPuzzle
@@ -443,10 +416,18 @@ export default function AcademyPage() {
 
             <Button
               variant="action"
-              className="w-full shadow-neon relative overflow-hidden"
+              size="lg"
+              className="w-full relative overflow-hidden"
               leftIcon={<FaPlay className="text-caption" />}
+              onClick={() => {
+                if (!puzzlesList.length) return;
+                if (nextPuzzle) {
+                  handlePuzzleClick(nextPuzzle.id, nextPuzzle);
+                } else if (allSolved) {
+                  handlePuzzleClick(1, puzzlesList[0]);
+                }
+              }}
             >
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-20),transparent)] -translate-x-full animate-shimmer" />
               <span className="relative z-10">
                 {allSolved ? t('review_level_1') : t('start_puzzle')}
               </span>
@@ -457,29 +438,22 @@ export default function AcademyPage() {
 
 
         {/* 100 Levels Tactics Grid */}
-        <div className="space-y-4">
-          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-            <FaChessRook className="text-brand-muted text-xl" />
-            <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('tactics_grid')}</h3>
-          </div>
-          <Card variant="solid" className="w-full shadow-premium relative overflow-hidden">
-            {/* Backlight Orbs */}
-            <div className="absolute top-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(168,85,247,1)_0%,transparent_70%)] opacity-10 rounded-full -ml-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-10 rounded-full -mr-20 -mb-20 pointer-events-none" />
-
+        <section className="space-y-3" aria-labelledby="tactics-grid-title">
+          <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
+          <Card variant="solid" className="ui-hero-card w-full relative overflow-hidden rounded-2xl">
             {/* Progress Header */}
-            <div className="flex flex-col p-4 border-b border-brand-border-opacity-10 relative z-10 bg-brand-void/20">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted flex items-center gap-1.5">
-                  <FaBrain className="text-brand-muted text-caption" /> {t('tactics_grid')}
+            <div className="flex flex-col p-4 border-b border-brand-border relative z-10">
+              <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
+                <span className="text-sm font-semibold text-brand-primary flex items-center gap-1.5">
+                  <FaBrain className="text-brand-muted text-caption" aria-hidden="true" /> {nextToSolveId ? `${t('level_prefix')} ${nextToSolveId}` : allSolved ? t('all_levels_solved') : t('unlocked')}
                 </span>
-                <span className="text-caption font-semibold text-emerald-500 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+                <Badge variant="emerald">
                   {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
-                </span>
+                </Badge>
               </div>
-              <div className="w-full h-2 bg-brand-primary/10 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('tactics_grid')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={completedPuzzles.length}>
                 <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
+                  className="h-full bg-brand-action rounded-full transition-all duration-700"
                   style={{ width: `${Math.max(completedPuzzles.length, 1)}%` }}
                 />
               </div>
@@ -538,30 +512,21 @@ export default function AcademyPage() {
             </div>
 
             {/* Legend */}
-            <div className="flex justify-between items-center text-caption font-semibold normal-case tracking-normal px-4 py-3 border-t border-brand-border-opacity-10 relative z-10 gap-2">
-              <span className="tc-legend-unlocked flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border">
-                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
-                {t('unlocked')}
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.7)]" />
-                {t('solved')}
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-400/30 text-purple-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.7)]" />
-                {t('premium')}
-              </span>
-            </div>
+            <BadgeRow className="px-4 py-3 border-t border-brand-border relative z-10">
+              <Badge variant="secondary">{t('unlocked')}</Badge>
+              <Badge variant="emerald">{t('solved')}</Badge>
+              <Badge variant="purple">{t('premium')}</Badge>
+            </BadgeRow>
           </Card>
-        </div>
+        </section>
 
         {/* Mastery Tracks Grid */}
-        <div className="space-y-6">
-          
-          <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-            <FaChessKnight className="text-brand-muted text-xl" />
-            <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('mastery_tracks')}</h3>
-          </div>
+        <section className="space-y-4" aria-labelledby="mastery-tracks-title">
+          <SectionHeader id="mastery-tracks-title" title={t('mastery_tracks')} />
+
+          {lessonsList.length === 0 && (
+            <EmptyState icon={<FaChessKnight size={22} aria-hidden="true" />} title={t('mastery_tracks')} description={t('master_the_game')} />
+          )}
 
           {/* Category-grouped lessons */}
           {(() => {
@@ -599,18 +564,17 @@ export default function AcademyPage() {
                   {/* Category header */}
                   <div className="flex items-center justify-between mb-3 px-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{cat.emoji}</span>
-                      <h4 className="text-sm font-semibold normal-case tracking-normal text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
+                      <h4 className="text-sm font-semibold text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-caption font-bold text-brand-muted">{completedInCat}/{catLessons.length}</span>
-                      {catProgress === 100 && <span className="text-caption font-semibold normal-case tracking-normal px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">✓ Done</span>}
+                      <span className="text-caption font-medium text-brand-muted tabular-nums">{completedInCat}/{catLessons.length}</span>
+                      {catProgress === 100 && <Badge variant="emerald">Done</Badge>}
                     </div>
                   </div>
                   {/* Category progress bar */}
-                  <div className="w-full h-1 bg-brand-primary/10 rounded-full overflow-hidden mb-2 mx-1">
+                  <div className="w-full h-1 bg-brand-elevated rounded-full overflow-hidden mb-2" role="progressbar" aria-label={cat.label.replace(cat.emoji + ' ', '')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={catProgress}>
                     <div 
-                      className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-gradient-to-r from-brand-primary/50 to-brand-primary/30'}`}
+                      className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-brand-action' : 'bg-brand-muted'}`}
                       style={{ width: `${catProgress}%` }}
                     />
                   </div>
@@ -620,7 +584,7 @@ export default function AcademyPage() {
                     <div className="flex justify-end mb-4 px-1">
                       <button type="button"
                         onClick={() => setShowCompletedCat(prev => ({...prev, [cat.id]: !prev[cat.id]}))}
-                        className="ui-tap-target text-caption font-bold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
+                        className="ui-tap-target text-caption font-semibold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
                       >
                         {isExpanded ? (
                           <><span>Hide Completed</span><FaChevronUp className="text-caption"/></>
@@ -659,46 +623,31 @@ export default function AcademyPage() {
               );
             });
           })()}
-        </div>
+        </section>
 
         {/* Next Milestone */}
         {stats && (
-          <div className="opacity-90 mt-8">
-            <div className="flex flex-col items-center justify-center gap-2 mb-4 px-1">
-              <FaTrophy className="text-brand-muted text-xl" />
-              <h3 className="text-section-title font-semibold text-brand-primary text-start">Next Milestone</h3>
-            </div>
-            
-            <Card variant="solid" className="w-full p-5 relative overflow-hidden">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,transparent_70%)] rounded-full -mr-10 -mt-10 pointer-events-none" />
-              
-              <div className="flex justify-between items-end mb-3 relative z-10">
-                <div>
-                  <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-1">Current Title</p>
+          <section className="space-y-3" aria-labelledby="next-milestone-title">
+            <SectionHeader id="next-milestone-title" title="Next milestone" />
+            <Card variant="solid" className="ui-hero-card w-full p-5 rounded-2xl">
+              <div className="flex justify-between items-end mb-3 gap-3">
+                <div className="min-w-0">
+                  <p className="ui-eyebrow mb-1">Current title</p>
                   <p className="text-sm font-semibold text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted mb-1">Next Level</p>
-                  <p className="text-sm font-semibold text-emerald-400">{`Level ${xpProgress!.displayedLevel + 1}`}</p>
+                <div className="text-end shrink-0">
+                  <p className="ui-eyebrow mb-1">Next level</p>
+                  <p className="text-sm font-semibold text-brand-success">{`${t('level_prefix')} ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
-              
-              <div className="w-full h-2 bg-brand-primary/10 rounded-full overflow-hidden relative z-10 mb-2">
-                <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
-                  style={{
-                    width: `${xpProgress!.progressPercentage}%`,
-                  }}
-                />
+              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden mb-3" role="progressbar" aria-label="Next milestone" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(xpProgress!.progressPercentage)}>
+                <div className="h-full bg-brand-action rounded-full transition-all duration-700" style={{ width: `${xpProgress!.progressPercentage}%` }} />
               </div>
-              
-              <div className="text-center relative z-10 mt-3">
-                <p className="text-caption font-bold text-brand-muted">
-                  You need <span className="text-emerald-400 font-semibold">{Math.max(0, xpProgress!.nextLevelXp - stats.xp)} XP</span> to reach Level {xpProgress!.displayedLevel + 1}. <br />Solve one more puzzle!
-                </p>
-              </div>
-              </Card>
-          </div>
+              <p className="text-caption font-medium text-brand-muted">
+                <span className="text-brand-primary font-semibold tabular-nums">{Math.max(0, xpProgress!.nextLevelXp - stats.xp).toLocaleString()} XP</span> to {t('level_prefix').toLowerCase()} {xpProgress!.displayedLevel + 1}. Solve one more puzzle.
+              </p>
+            </Card>
+          </section>
         )}
 
       </main>
@@ -729,19 +678,17 @@ export default function AcademyPage() {
         <div className="bottom-drawer-handle relative z-10" />
         
         <div className="flex flex-col items-center text-center mt-2 relative z-10">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-500 to-purple-400 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] mb-3 animate-bounce">
-            <span className="text-xl">👑</span>
-          </div>
-          <h2 className="text-xl font-semibold normal-case tracking-normal mb-1 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent drop-shadow">
+          <span className="ui-icon-tile ui-icon-tile--premium w-14 h-14 rounded-2xl mb-3"><FaTrophy size={22} aria-hidden="true" /></span>
+          <h2 className="text-xl font-semibold text-brand-primary mb-1">
             {t('unlock_grid')}
           </h2>
-          <p className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-6">
+          <p className="text-sm font-medium text-brand-muted mb-6">
             {t('level_premium_req')}
           </p>
         </div>
       
         <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-premium relative z-10">
-          <p className="text-center font-semibold text-purple-400 text-sm normal-case tracking-normal mb-1">{t('premium_perks')}</p>
+          <p className="text-center font-semibold text-sm mb-1" style={{ color: 'var(--badge-purple-ink)' }}>{t('premium_perks')}</p>
           <ul className="space-y-2.5 text-caption text-brand-muted">
             <li className="flex items-start gap-2.5">
               <span className="text-purple-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
@@ -778,7 +725,7 @@ export default function AcademyPage() {
             whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(168, 85, 247, 0.45)" }}
             whileTap={{ scale: 0.98 }}
             onClick={handleUpgradeWithBalance}
-            className="ui-tap-target w-full bg-purple-500 hover:bg-purple-600 text-white border border-purple-400/30 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden transition-colors"
+            className="ui-tap-target w-full bg-purple-600 hover:bg-purple-600 text-white border border-purple-400/30 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden transition-colors"
           >
             <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
             <span className="text-sm normal-case font-semibold tracking-normal relative z-10">{t('buy_premium')}</span>
@@ -789,7 +736,7 @@ export default function AcademyPage() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowPremiumPromo(false)}
-            className="ui-tap-target w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary/95 transition-all"
+            className="ui-tap-target w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary transition-all"
           >
             <span>{t('cancel')}</span>
           </motion.button>
@@ -838,8 +785,8 @@ export default function AcademyPage() {
 
             <div className="relative z-10 space-y-4 px-1">
               {/* Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
                   <span className="text-2xl">{band.emoji}</span>
                   <div>
                     <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
@@ -850,14 +797,12 @@ export default function AcademyPage() {
                     </h3>
                   </div>
                 </div>
-                <span className={`text-caption font-semibold px-3 py-1.5 rounded-full border ${isCompleted ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : isPlayable ? 'bg-brand-primary/10 border-brand-border-opacity-10 text-brand-muted' : 'bg-brand-void/50 border-brand-border-opacity-5 text-brand-muted'}`}>
-                  #{id} / 100
-                </span>
+                <Badge variant={isCompleted ? 'emerald' : 'secondary'}>#{id} / 100</Badge>
               </div>
 
               {/* Mini Board Preview */}
               <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-inner-glow border border-brand-border-opacity-10 pointer-events-none opacity-80">
-                <Chessboard options={{ position: band.fen, allowDragging: false, darkSquareStyle: { backgroundColor: '#2e3a4e' }, lightSquareStyle: { backgroundColor: '#cbd5e1' }, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} />
+                <BoardA11y><Chessboard options={{ position: band.fen, allowDragging: false, darkSquareStyle: { backgroundColor: '#2e3a4e' }, lightSquareStyle: { backgroundColor: '#cbd5e1' }, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} /></BoardA11y>
               </div>
 
               {/* Description */}
@@ -895,7 +840,7 @@ export default function AcademyPage() {
                   <motion.button type="button"
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
-                    className="ui-tap-target w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-semibold normal-case tracking-normal text-caption shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
+                    className="ui-tap-target w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-600 text-white font-semibold normal-case tracking-normal text-caption shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
                   >
                     👑 Unlock with Premium
                   </motion.button>

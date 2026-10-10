@@ -24,9 +24,9 @@ export function PageHeader({ title, description, eyebrow, actions, backHref, bac
         </Link>
       )}
       <div className="min-w-0 flex-1">
-        {eyebrow && <p className="mb-1 text-caption font-medium text-brand-muted">{eyebrow}</p>}
-        <h1 className="text-page-title font-semibold text-brand-primary">{title}</h1>
-        {description && <div className="mt-1.5 text-sm leading-relaxed text-brand-muted">{description}</div>}
+        {eyebrow && <p className="t-eyebrow mb-1 text-brand-muted">{eyebrow}</p>}
+        <h1 className="t-title-1 text-brand-primary">{title}</h1>
+        {description && <div className="t-body mt-1.5 text-brand-muted">{description}</div>}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
     </header>
@@ -36,7 +36,7 @@ export function PageHeader({ title, description, eyebrow, actions, backHref, bac
 export function SectionHeader({ title, id, action }: { title: ReactNode; id?: string; action?: ReactNode }) {
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-2">
-      <h2 id={id} className="text-section-title font-semibold text-brand-primary">{title}</h2>
+      <h2 id={id} className="ui-section-title t-title-2 text-brand-primary">{title}</h2>
       {action}
     </div>
   );
@@ -58,9 +58,9 @@ export function ActionLink({ href, children, icon, primary = false, className = 
   return (
     <Link href={href} onClick={() => telegramHaptic(primary ? 'medium' : 'selection')}
       className={`ui-action-link ${primary ? 'ui-action-link--primary' : ''} ${className}`}>
-      {icon && <span className="shrink-0 text-xl" aria-hidden="true">{icon}</span>}
+      {icon && <span className={primary ? 'ui-action-link__icon' : 'shrink-0 text-xl'} aria-hidden="true">{icon}</span>}
       <span className="min-w-0 flex-1">{children}</span>
-      <FiArrowRight size={18} className="shrink-0 rtl:rotate-180" aria-hidden="true" />
+      <span className={primary ? 'ui-action-link__arrow' : 'contents'} aria-hidden="true"><FiArrowRight size={primary ? 20 : 18} className="shrink-0 rtl:rotate-180" /></span>
     </Link>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/Badge';
+
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,13 +88,13 @@ export default function UnboxConfirmSheet({
                         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-brand-border-opacity-20" />
 
                         {/* Header Badge */}
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                            <span
-                                className="px-2.5 py-1 rounded-full text-caption font-semibold normal-case tracking-normal border"
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <Badge variant="secondary"
+
                                 style={{ color: accent, background: `rgba(${rgb},0.1)`, borderColor: `rgba(${rgb},0.3)` }}
                             >
                                 {cfg.metal} · {cfg.piece} {cfg.glyph}
-                            </span>
+                            </Badge>
                             <button
                                 type="button"
                                 aria-label={t('back')}

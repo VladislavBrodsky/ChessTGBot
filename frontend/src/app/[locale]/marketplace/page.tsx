@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
+import { PageHeader, PageUtilities, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useUser } from '@/context/UserContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Drawer } from '@/components/ui/Drawer';
@@ -271,54 +271,54 @@ export default function MarketplacePage() {
     };
 
     return (
-        <LayoutWrapper className="w-full px-3.5 md:px-6 pt-[max(0.75rem,var(--app-safe-top))]">
+        <LayoutWrapper className="w-full">
             <main className="app-page">
                     <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
                         <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
-                        <Card variant="solid" className="premium-liquid-content border-brand-border-opacity-20 p-4 sm:p-5 shadow-premium overflow-hidden relative">
-                            {/* Inner ambient light for XP card */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] rounded-full -mr-8 -mt-8 pointer-events-none" />
+                        <div className="ui-hero-card ui-hero-card--gold p-4 sm:p-5">
                             <div className="flex items-center justify-between gap-4 relative z-10">
-                                <div className="space-y-1 text-left">
-                                <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{t('xp_balance')}</span>
+                                <div className="space-y-1 text-start">
+                                <span className="ui-eyebrow">{t('xp_balance')}</span>
                                 {loadingStats ? (
                                     <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
                                 ) : (
                                     <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                        className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-amber-400 drop-shadow-sm">
-                                        {userXP.toLocaleString()} XP
+                                        className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-brand-primary">
+                                        {userXP.toLocaleString()} <span className="text-lg text-brand-gold">XP</span>
                                     </motion.span>
                                 )}
                                 </div>
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
-                                    <FaGem size={20} className="drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                                </div>
+                                <span className="ui-icon-tile ui-icon-tile--gold h-12 w-12 rounded-2xl">
+                                    <FaGem size={20} aria-hidden="true" />
+                                </span>
                             </div>
-                            {nextBox && !loadingStats && (
-                                <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
+                            {(loadingStats || nextBox) && (
+                                <div className="mt-4 flex min-h-[var(--size-control-sm)] items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
+                                    {loadingStats || !nextBox ? <Skeleton width="60%" textRole="body" /> : <>
                                     <p className="text-sm leading-5 text-brand-muted">
                                         <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
                                     </p>
-                                    <Link href={`/${locale}/academy`} className="shrink-0 text-caption font-semibold normal-case tracking-normal text-amber-400 hover:text-amber-300 transition-colors drop-shadow-[0_0_5px_rgba(245,158,11,0.3)]">
+                                    <Link href={`/${locale}/academy`} className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-sm font-semibold text-brand-success transition-colors hover:bg-brand-elevated">
                                         {ti('academy')}
                                     </Link>
+                                    </>}
                                 </div>
                             )}
-                        </Card>
+                        </div>
                     </section>
 
                     {/* Recently won */}
                     <AnimatePresence>
                         {recentWins.length > 0 && (
                             <motion.div key="recent-wins" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                                <h3 className="text-section-title font-semibold text-brand-primary text-start">{t('recently_won')}</h3>
-                                <div className="flex gap-2.5 overflow-x-auto pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                                <SectionHeader title={t('recently_won')} />
+                                <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1 px-1 scrollbar-none">
                                     {recentWins.map((w) => {
                                         const c = BOX_CONFIG[w.tier].theme;
                                         return (
-                                            <div key={w.at} className="premium-liquid-content shrink-0 px-3.5 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-sm transition-all hover:-translate-y-0.5"
+                                            <div key={w.at} className="shrink-0 px-3.5 py-2.5 rounded-xl border bg-brand-surface flex items-center gap-2.5"
                                                 style={{ borderColor: `rgba(${c.rgb},0.25)`, background: `rgba(${c.rgb},0.08)` }}>
                                                 <FiBox size={13} style={{ color: c.accent }} className="drop-shadow-md" />
                                                 <span className="text-caption font-semibold tracking-normal text-brand-primary whitespace-nowrap">{w.name}</span>
@@ -350,9 +350,7 @@ export default function MarketplacePage() {
 
                     {(activeTab === 'all' || activeTab === 'boxes') && (
                         <section className="w-full space-y-4" aria-labelledby="marketplace-vaults-title">
-                            <div className="text-center relative">
-                                <h2 id="marketplace-vaults-title" className="text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_boxes')}</h2>
-                            </div>
+                            <SectionHeader id="marketplace-vaults-title" title={t('section_boxes')} />
                             {/* Ultra-premium 2026: Enforce exactly 2 columns for a robust, chunky layout */}
                             <div className="grid w-full grid-cols-2 items-start gap-3 md:gap-4">
                                 {BOX_ORDER.map((tier) => (
@@ -370,7 +368,7 @@ export default function MarketplacePage() {
 
                     {(activeTab === 'all' || activeTab === 'premium') && (
                         <section className="w-full space-y-4 mt-2" aria-labelledby="marketplace-premium-title">
-                            <h2 id="marketplace-premium-title" className="text-center text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_premium')}</h2>
+                            <SectionHeader id="marketplace-premium-title" title={t('section_premium')} />
                             <div className="grid grid-cols-1 gap-3 w-full">
                                 {directPurchases.map((item) => {
                                     const affordable = userXP >= item.cost;
@@ -378,23 +376,23 @@ export default function MarketplacePage() {
                                         <Card
                                             key={item.id}
                                             variant="solid"
-                                            className={`premium-liquid-content p-5 transition-colors ${affordable ? 'border-brand-border-opacity-20 shadow-premium' : 'opacity-70 border-brand-border-opacity-5'}`}
+                                            className={`p-5 transition-colors ${affordable ? 'ui-stat--premium' : ''}`}
                                         >
-                                            <div className="flex items-start justify-between gap-4">
+                                            <div className="flex flex-wrap items-start justify-between gap-4">
                                                 <div className="min-w-0">
                                                 <h3 className="flex items-center gap-2 text-base font-semibold text-brand-primary">
-                                                    <FaCrown className="text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                                                    <FaCrown style={{ color: "var(--badge-purple-ink)" }} aria-hidden="true" />
                                                     {item.name}
                                                 </h3>
                                                 <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                                 </div>
-                                                <Badge variant="outline" className="shrink-0 border-purple-500/30 bg-purple-500/10 text-caption text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                                                <Badge variant="purple">
                                                     {item.cost.toLocaleString()} XP
                                                 </Badge>
                                             </div>
                                             <Button
-                                                variant={affordable ? 'primary' : 'secondary'}
-                                                className={affordable ? 'mt-4 w-full bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : 'mt-4 w-full'}
+                                                variant={affordable ? 'premium' : 'secondary'}
+                                                className="mt-4 w-full"
                                                 disabled={!affordable || loadingStats || Boolean(balanceError)}
                                                 onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
                                             >
@@ -409,21 +407,10 @@ export default function MarketplacePage() {
 
                     {(activeTab === 'all' || activeTab === 'themes') && (
                         <section className="w-full space-y-4 mt-2 pb-10" aria-labelledby="marketplace-themes-title">
-                            <h2 id="marketplace-themes-title" className="text-center text-sm font-semibold normal-case tracking-normal text-brand-primary drop-shadow-md">{t('section_themes')}</h2>
+                            <SectionHeader id="marketplace-themes-title" title={t('section_themes')} />
                             {loadingThemes ? (
                                 <div className="grid grid-cols-1 gap-3 w-full">
-                                    {[0, 1, 2].map((i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-brand-surface border border-brand-border">
-                                            <div className="flex items-center gap-4">
-                                                <Skeleton variant="rectangular" width={44} height={44} className="rounded-xl" />
-                                                <div className="space-y-2">
-                                                    <Skeleton variant="text" width={120} height={14} />
-                                                    <Skeleton variant="text" width={180} height={10} />
-                                                </div>
-                                            </div>
-                                            <Skeleton variant="rectangular" width={72} height={32} className="rounded-xl" />
-                                        </div>
-                                    ))}
+                                    <SkeletonList count={3} label={t('section_themes')} />
                                 </div>
                             ) : themes.length === 0 ? (
                                 <EmptyState
@@ -442,7 +429,7 @@ export default function MarketplacePage() {
                                             <Card
                                                 key={theme.id}
                                                 variant="solid"
-                                                className="premium-liquid-content flex items-center justify-between gap-3 p-4 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                                                className="flex items-center justify-between gap-3 p-4 transition-colors cursor-pointer group hover:border-brand-border-opacity-30"
                                                 onClick={() => {
                                                     telegramHaptic('light');
                                                     setPreviewTheme(theme);
@@ -454,10 +441,10 @@ export default function MarketplacePage() {
                                                         <div className="flex-1" style={{ background: swatch[1] }} />
                                                     </div>
                                                     <div className="space-y-1 min-w-0">
-                                                        <div className="flex items-center gap-2">
-                                                            <h3 className="truncate text-sm font-bold leading-none text-brand-primary group-hover:text-white transition-colors">{theme.name}</h3>
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <h3 className="truncate text-sm font-semibold leading-none text-brand-primary">{theme.name}</h3>
                                                             {theme.owned && (
-                                                                <Badge variant="secondary" className="border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0 text-caption font-semibold normal-case text-emerald-500 drop-shadow-sm">{t('owned')}</Badge>
+                                                                <Badge variant="emerald">{t('owned')}</Badge>
                                                             )}
                                                         </div>
                                                         <p className="text-caption text-brand-muted leading-tight line-clamp-1 font-medium">{theme.description || t('theme_default_desc')}</p>
@@ -470,7 +457,7 @@ export default function MarketplacePage() {
                                                             telegramHaptic('light');
                                                             setPreviewTheme(theme);
                                                         }}
-                                                        className="ui-tap-target p-2 rounded-xl bg-brand-elevated hover:bg-brand-border-opacity-20 text-brand-muted hover:text-brand-primary transition-colors text-sm cursor-pointer"
+                                                        className="ui-tap-target hidden sm:inline-flex items-center justify-center p-2 rounded-xl bg-brand-elevated hover:bg-brand-border-opacity-20 text-brand-muted hover:text-brand-primary transition-colors text-sm cursor-pointer"
                                                         title="Preview theme"
                                                         aria-label="Preview theme"
                                                     >
@@ -485,10 +472,10 @@ export default function MarketplacePage() {
                                                     ) : (
                                                         <Button
                                                             onClick={() => handleBuyTheme(theme.code, theme.name, theme.price_xp)}
-                                                            variant={affordable ? 'primary' : 'secondary'}
+                                                            variant={affordable ? 'premium' : 'secondary'}
                                                             size="sm"
                                                             disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                                            className={`shrink-0 text-caption font-semibold normal-case tracking-normal ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all' : ''}`}
+                                                            className="shrink-0"
                                                         >
                                                             {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
                                                         </Button>
@@ -517,11 +504,11 @@ export default function MarketplacePage() {
                         <div className="flex flex-col items-center space-y-4 pt-1 pb-6 w-full max-w-sm mx-auto">
                             <ThemeBoardPreview swatch={swatch} />
                             <div className="flex items-center gap-2">
-                                <Badge variant={previewTheme.owned ? 'secondary' : 'outline'} className={previewTheme.owned ? 'text-emerald-500 border-emerald-500/30' : 'text-amber-400 border-amber-500/30'}>
+                                <Badge variant={previewTheme.owned ? 'emerald' : 'secondary'}>
                                     {previewTheme.owned ? t('owned') : `${previewTheme.price_xp.toLocaleString()} XP`}
                                 </Badge>
                                 {isCurrent && (
-                                    <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400">
+                                    <Badge variant="emerald">
                                         {t('active')}
                                     </Badge>
                                 )}
@@ -535,7 +522,7 @@ export default function MarketplacePage() {
                                     ) : (
                                         <Button
                                             variant="primary"
-                                            className="w-full bg-emerald-500 text-brand-void hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                                            className="w-full"
                                             onClick={() => {
                                                 handleEquipTheme(previewTheme.code);
                                                 setPreviewTheme(null);
@@ -546,9 +533,9 @@ export default function MarketplacePage() {
                                     )
                                 ) : (
                                     <Button
-                                        variant={affordable ? 'primary' : 'secondary'}
+                                        variant={affordable ? 'premium' : 'secondary'}
                                         disabled={!affordable || loadingStats || Boolean(balanceError)}
-                                        className={`w-full ${affordable ? 'bg-purple-500 text-brand-void hover:bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.3)]' : ''}`}
+                                        className="w-full"
                                         onClick={() => {
                                             const targetTheme = previewTheme;
                                             setPreviewTheme(null);

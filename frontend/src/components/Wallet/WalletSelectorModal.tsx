@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/Badge';
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
@@ -168,7 +170,7 @@ export default function WalletSelectorModal({
         {/* Close */}
         <button aria-label="Close dialog" type="button"
           onClick={onClose}
-          className="ui-tap-target absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition-opacity text-brand-primary cursor-pointer"
+          className="ui-tap-target absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center text-brand-muted hover:text-brand-primary transition-opacity cursor-pointer"
         >
           <FaTimes size={12} />
         </button>
@@ -304,13 +306,13 @@ export default function WalletSelectorModal({
 
                   {/* Info */}
                   <div className="flex flex-col items-start flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
+                    <div className="flex flex-wrap items-center gap-2 mb-0.5">
                       <span className="text-[13px] font-semibold normal-case tracking-normal text-brand-primary">
                         {w.name}
                       </span>
                       {w.badge && (
-                        <span
-                          className="text-caption font-semibold normal-case tracking-normal px-1.5 py-0.5 rounded-full"
+                        <Badge variant="secondary"
+
                           style={{
                             background: `${w.color}20`,
                             color: w.color,
@@ -318,7 +320,7 @@ export default function WalletSelectorModal({
                           }}
                         >
                           {w.badge}
-                        </span>
+                        </Badge>
                       )}
                     </div>
                     <span className="text-caption font-bold opacity-35 text-brand-primary truncate w-full text-left">

@@ -1,5 +1,6 @@
 'use client';
 
+import BoardA11y from '@/components/game/BoardA11y';
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
@@ -11,6 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Badge, BadgeRow, type BadgeVariant } from "@/components/ui/Badge";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { 
@@ -35,15 +37,14 @@ function getClassificationLabel(cat: string, lang: string): string {
   return labels[cat]?.[lang === 'ru' ? 'ru' : 'en'] || cat;
 }
 
-function getClassificationColorClass(cat: string): string {
+function getClassificationVariant(cat: string): BadgeVariant {
   switch (cat) {
-    case 'book': return 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
-    case 'excellent': return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
-    case 'good': return 'bg-blue-500/10 border-blue-500/20 text-blue-400';
-    case 'inaccuracy': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400';
-    case 'mistake': return 'bg-orange-500/10 border-orange-500/20 text-orange-400';
-    case 'blunder': return 'bg-red-500/10 border-red-500/20 text-red-400';
-    default: return 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
+    case 'excellent': return 'emerald';
+    case 'good': return 'cyan';
+    case 'inaccuracy':
+    case 'mistake': return 'amber';
+    case 'blunder': return 'rose';
+    default: return 'secondary';
   }
 }
 
@@ -387,15 +388,15 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <motion.button type="button"
           whileTap={{ scale: 0.95 }}
           onClick={() => router.push(`/${locale}/profile`)}
-          className="ui-tap-target html-back-button text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center space-x-2 text-caption font-bold normal-case tracking-normal cursor-pointer bg-transparent border-0"
+          className="ui-tap-target html-back-button text-brand-muted hover:opacity-100 transition-opacity flex items-center space-x-2 text-caption font-bold normal-case tracking-normal cursor-pointer bg-transparent border-0"
         >
           <FaArrowLeft />
           <span>{tg('back')}</span>
         </motion.button>
         <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
-          <FaGamepad className="text-caption text-brand-primary opacity-45" />
+          <FaGamepad className="text-caption text-brand-muted" />
           <span className="text-caption font-bold tracking-normal text-brand-muted normal-case">
-            {gameData.game_type === 'computer' ? "A.I. Training" : "Duel Ledger"}
+            {gameData.game_type === 'computer' ? "Practice game" : "Rated game"}
           </span>
         </div>
       </div>
@@ -425,9 +426,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             </div>
           </div>
           {isBlackWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-caption font-semibold normal-case tracking-normal">
-              Winner
-            </span>
+            <Badge variant="emerald">Winner</Badge>
           )}
         </Card>
 
@@ -435,7 +434,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <div className="w-full relative z-20 flex justify-center px-1">
           <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
             <div className="rounded-xl overflow-hidden w-full h-full border border-brand-border-opacity-5 bg-[var(--color-brand-elevated)] p-1">
-              <Chessboard
+              <BoardA11y><Chessboard
                 options={{
                   position: fens[currentStep],
                   allowDragging: false,
@@ -464,7 +463,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                     return {};
                   })()
                 }}
-              />
+              /></BoardA11y>
             </div>
           </div>
         </div>
@@ -491,9 +490,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             </div>
           </div>
           {isWhiteWinner && (
-            <span className="px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-caption font-semibold normal-case tracking-normal">
-              Winner
-            </span>
+            <Badge variant="emerald">Winner</Badge>
           )}
         </Card>
 
@@ -559,17 +556,17 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* A.I. Analysis Panel */}
         {!analysis && !isAnalyzing && !analysisError && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3">
-            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
-              A.I. Engine Review
+            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
+              Engine review
             </span>
             <p className="text-caption text-brand-muted normal-case tracking-normal">
               Run engine analysis to evaluate move accuracy and discover blunders.
             </p>
             <button type="button"
               onClick={runAnalysis}
-              className="ui-tap-target w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white text-caption font-semibold normal-case tracking-normal cursor-pointer shadow-premium hover:opacity-90 transition-all border-0"
+              className="ui-tap-target w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-sm font-semibold cursor-pointer shadow-premium transition-colors border-0 flex items-center justify-center gap-2"
             >
-              ⚡ Run A.I. Game Analysis
+              Run engine analysis
             </button>
           </div>
         )}
@@ -580,12 +577,12 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         {isAnalyzing && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3 animate-pulse">
-            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
+            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
               Analyzing game moves...
             </span>
             <div className="w-full bg-brand-void rounded-full h-2 overflow-hidden border border-brand-border-opacity-5">
               <div 
-                className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 h-full transition-all duration-300"
+                className="bg-purple-500 h-full transition-all duration-300"
                 style={{ width: `${analysisProgress}%` }}
               />
             </div>
@@ -601,29 +598,29 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             {currentStep > 0 && (
               <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal">
+                  <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
                     Move Analysis
                   </span>
                   <span className="text-caption font-mono font-bold text-brand-primary">
                     Eval: {formatEval(analysis.evaluations[currentStep])}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-1 rounded-lg border text-caption font-semibold normal-case tracking-normal ${getClassificationColorClass(analysis.classifications[currentStep])}`}>
+                <BadgeRow>
+                  <Badge variant={getClassificationVariant(analysis.classifications[currentStep])}>
                     {getClassificationLabel(analysis.classifications[currentStep], locale)}
-                  </span>
+                  </Badge>
                   {(analysis.classifications[currentStep] === 'blunder' || analysis.classifications[currentStep] === 'mistake') && analysis.bestMoves[currentStep - 1] && (
                     <span className="text-caption font-bold text-amber-400 normal-case tracking-normal">
                       💡 Best was: {formatUci(analysis.bestMoves[currentStep - 1])}
                     </span>
                   )}
-                </div>
+                </BadgeRow>
               </div>
             )}
 
             {/* Accuracy Standings Summary */}
             <div className="space-y-3">
-              <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block">
+              <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
                 Move Accuracy Summary
               </span>
               <div className="grid grid-cols-2 gap-4">
@@ -689,7 +686,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-brand-border-opacity-10">
             <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-              Move Ledger
+              Moves
             </span>
             <div className="flex items-center gap-1.5 text-caption font-bold text-brand-muted">
               <FaRegClock />
@@ -748,8 +745,8 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         {/* Game termination banner */}
         <div className="w-full text-center px-4 py-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/40">
-          <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45 block mb-1">
-            Termination Detail
+          <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted block mb-1">
+            Result
           </span>
           <span className="text-sm font-bold text-brand-primary normal-case tracking-tight block">
             {gameData.result_type === 'timeout' 
@@ -758,7 +755,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                 ? "Concluded by Resignation" 
                 : gameData.result_type === 'draw' 
                   ? "Settled by Mutual Agreement (Draw)" 
-                  : "Resolved by Checkmate"}
+                  : "Checkmate"}
           </span>
         </div>
       </div>

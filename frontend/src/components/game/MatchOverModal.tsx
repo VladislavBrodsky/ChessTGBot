@@ -153,7 +153,7 @@ export default function MatchOverModal({
         {/* Metrics Grid */}
         <div className="w-full bg-brand-void/40 rounded-2xl p-4.5 border border-brand-border-opacity-10 space-y-3.5 shadow-inner-glow relative z-10">
           <div className="flex justify-between items-center">
-            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal">{tg('global_elo')}</span>
+            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tg('global_elo')}</span>
             <div className="flex items-center gap-1.5 font-mono">
               <span className="text-sm font-semibold text-brand-primary tracking-normal">{animatedElo} ELO</span>
               <span className={`text-caption font-semibold tracking-normal ${changeVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -165,7 +165,7 @@ export default function MatchOverModal({
           <div className="h-px w-full bg-brand-border-opacity-5" />
           
           <div className="flex justify-between items-center">
-            <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal">{tg('net_payout')}</span>
+            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tg('net_payout')}</span>
             <div className="flex flex-col items-end">
               <span className={`text-sm font-semibold tracking-normal font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-muted'}`}>
                 {netPayout > 0 ? `+$${animatedPayout.toFixed(2)}` : '$0.00'} USDT
@@ -182,7 +182,7 @@ export default function MatchOverModal({
             <>
               <div className="h-px w-full bg-brand-border-opacity-5" />
               <div className="flex justify-between items-center animate-fade-in">
-                <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal">
+                <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
                   {tg('xp_reward')}
                 </span>
                 <span className="text-sm font-semibold text-amber-400 tracking-normal font-mono flex items-center gap-1">
@@ -204,7 +204,7 @@ export default function MatchOverModal({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => { telegramHaptic('selection'); onShowRematchChoice(); }}
-              className="ui-tap-target w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-300"
+              className="ui-tap-target w-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-sm font-semibold cursor-pointer shadow-premium transition-colors duration-200"
             >
               <span>{tg('revenge_match')}</span>
             </motion.button>
@@ -215,7 +215,7 @@ export default function MatchOverModal({
               <motion.button type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="ui-tap-target w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-caption font-semibold normal-case tracking-normal cursor-pointer shadow-sm transition-all"
+                className="ui-tap-target w-full bg-brand-surface hover:bg-brand-elevated border border-brand-border py-3 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold cursor-pointer transition-colors"
               >
                 <FaRedo size={10} className="text-brand-muted" />
                 <span>{tg('to_lobby')}</span>
@@ -226,7 +226,7 @@ export default function MatchOverModal({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => { telegramHaptic('selection'); onShareGame(); }}
-              className="ui-tap-target w-full bg-brand-surface hover:bg-brand-bg-opacity-5 border border-brand-border-opacity-10 py-3 rounded-2xl flex items-center justify-center gap-2 text-caption font-semibold normal-case tracking-normal cursor-pointer shadow-sm transition-all"
+              className="ui-tap-target w-full bg-brand-surface hover:bg-brand-elevated border border-brand-border py-3 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold cursor-pointer transition-colors"
             >
               <FaShareAlt size={10} className="text-brand-muted" />
               <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>

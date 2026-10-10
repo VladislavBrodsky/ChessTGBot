@@ -729,7 +729,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   }
 
   return (
-    <LayoutWrapper className="pb-12">
+    <LayoutWrapper className="pb-[calc(112px+var(--app-safe-bottom))]">
       {/* Header / Nav */}
       <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
@@ -737,7 +737,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             <Link href={`/${locale}/home`}>
               <motion.button aria-label="Back" type="button"
                 whileTap={{ scale: 0.95 }}
-                className="ui-tap-target text-brand-primary opacity-45 hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
+                className="ui-tap-target text-brand-muted hover:opacity-100 transition-opacity flex items-center cursor-pointer p-2 -ml-2"
               >
                 <FaArrowLeft size={16} />
               </motion.button>
@@ -784,7 +784,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
                 ? 'border-amber-500/30 text-amber-400'
                 : 'border-brand-primary/20 text-brand-primary'
             }`}>
-              <span className="text-caption font-semibold normal-case tracking-normal block mb-1 opacity-60">
+              <span className="text-caption font-semibold normal-case tracking-normal block mb-1">
                 {gameNotice.type === 'error'
                   ? tg('notice_attention')
                   : gameNotice.type === 'warning'
@@ -859,7 +859,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
           {/* Board Container */}
           <div className="w-full relative z-20 flex justify-center px-1">
-            <div className="w-full p-2 rounded-3xl bg-brand-surface border border-brand-border-opacity-10 shadow-sm overflow-hidden aspect-square">
+            <div className={`board-frame w-full p-2 rounded-3xl overflow-hidden aspect-square ${isMyTurn ? 'board-frame--turn' : ''}`}>
               <ChessBoardComponent
                 fen={fen}
                 onMove={handleBoardMove}
@@ -882,7 +882,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             isMe
             userId={userId}
             username={(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
-            eloText={`MASTER • ELO ${(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}`}
+            eloText={`ELO ${(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}`}
             isTurn={isMyTurn}
             turnLabel={tg('your_turn')}
             isWhite={isWhite}
@@ -899,7 +899,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               className="ui-tap-target w-full action-button py-[18px] rounded-2xl normal-case flex items-center justify-center gap-3 cursor-pointer shadow-sm"
             >
               {copied ? <FaCheck /> : <FaCopy />}
-              <span>{copied ? "Sync Success" : "Establish Link"}</span>
+              <span>{copied ? "Invite link copied" : "Share invite link"}</span>
             </motion.button>
           )}
         </div>

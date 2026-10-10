@@ -250,7 +250,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
       )}
       
       <span className={`relative z-10 text-caption font-semibold normal-case tracking-normal mb-1 ${
-        isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted/70' : 'text-brand-muted'
+        isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted' : 'text-brand-muted'
       }`}>
         Day {day}
       </span>
@@ -261,7 +261,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         ) : isFuture && !isBig ? (
           <div className="flex flex-col items-center gap-0.5">
             <FaLock className="text-brand-muted text-sm" />
-            <span className="text-caption font-bold text-brand-muted/60">{reward} XP</span>
+            <span className="text-caption font-bold text-brand-muted">{reward} XP</span>
           </div>
         ) : isBig ? (
           <div className="flex flex-col items-center">

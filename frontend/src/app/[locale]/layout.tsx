@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/outfit";
 import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NavbarProvider } from "@/context/NavbarContext";

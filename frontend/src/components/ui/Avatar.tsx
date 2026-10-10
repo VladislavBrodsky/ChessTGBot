@@ -20,11 +20,11 @@ const sizeClasses = {
 };
 
 const dotSizeClasses = {
-  xs: 'w-1.5 h-1.5 bottom-0 right-0',
-  sm: 'w-2 h-2 bottom-0 right-0',
-  md: 'w-2.5 h-2.5 bottom-0.5 right-0.5',
-  lg: 'w-3 h-3 bottom-0.5 right-0.5',
-  xl: 'w-3.5 h-3.5 bottom-1 right-1',
+  xs: 'w-1.5 h-1.5 bottom-0 end-0',
+  sm: 'w-2 h-2 bottom-0 end-0',
+  md: 'w-2.5 h-2.5 bottom-0.5 end-0.5',
+  lg: 'w-3 h-3 bottom-0.5 end-0.5',
+  xl: 'w-3.5 h-3.5 bottom-1 end-1',
 };
 
 export function Avatar({
@@ -45,7 +45,8 @@ export function Avatar({
   const initials = getInitials(name);
 
   return (
-    <div className={`relative inline-flex shrink-0 ${className}`}>
+    <div className={`inline-flex max-w-full shrink-0 flex-col items-center gap-1.5 ${className}`}>
+      <div className="relative">
       <div
         className={`
           ${sizeClasses[size]}
@@ -73,9 +74,10 @@ export function Avatar({
           aria-label="Online"
         />
       )}
+      </div>
 
       {badge && (
-        <div className="absolute -top-1.5 -right-1.5 pointer-events-none">
+        <div className="max-w-full pointer-events-none">
           {badge}
         </div>
       )}

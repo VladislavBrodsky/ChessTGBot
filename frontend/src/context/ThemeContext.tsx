@@ -40,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
             try {
                 const tg = (window as any).Telegram.WebApp;
-                const color = theme === 'light' ? '#F3F4F6' : '#000000';
+                const color = theme === 'light' ? '#F3F6FA' : '#05070B';
                 tg.setHeaderColor(color);
                 tg.setBackgroundColor(color);
             } catch (err) {

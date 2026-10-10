@@ -106,7 +106,7 @@ export default function ThemeConfirmSheet({
                         <button type="button"
                             onClick={onConfirm}
                             disabled={loading || userXP < priceXP}
-                            className="ui-tap-target w-full py-4 rounded-2xl font-semibold normal-case tracking-normal text-sm bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                            className="ui-tap-target w-full py-4 rounded-2xl font-semibold normal-case tracking-normal text-sm bg-purple-600 hover:bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {loading ? (
                                 <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />

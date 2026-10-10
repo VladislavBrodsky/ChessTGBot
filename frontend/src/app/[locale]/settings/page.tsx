@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/Badge';
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PageHeader, PageUtilities } from '@/components/ui/PageHeader';
@@ -115,24 +117,20 @@ export default function SettingsPage() {
 
   {/* Standalone Glowing Premium Card */}
   <Link href={`/${locale}/membership`} className="w-full block">
-    <Card variant="premium" interactive className="p-3.5 sm:p-4 flex items-center justify-between border-brand-gold/30 hover:border-brand-gold/60">
-      <div className="flex items-center gap-3.5">
-        <div className="w-9 h-9 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center text-brand-gold text-sm shrink-0">
-          <FaGem />
-        </div>
-        <div className="flex flex-col text-left">
-          <span className="text-sm font-semibold text-brand-primary normal-case tracking-normal leading-none mb-1.5 flex items-center gap-2">
+    <Card variant="premium" interactive className="ui-hero-card ui-hero-card--premium p-4 flex items-center justify-between gap-3 rounded-2xl">
+      <div className="flex min-w-0 items-center gap-3.5">
+        <span className="ui-icon-tile ui-icon-tile--premium"><FaGem aria-hidden="true" /></span>
+        <div className="flex min-w-0 flex-col text-start">
+          <span className="text-sm font-semibold text-brand-primary leading-tight mb-1 flex flex-wrap items-center gap-2">
             {t('premium_membership')}
-            <span className="text-caption font-semibold px-2 py-0.5 rounded-full bg-brand-gold text-brand-void tracking-normal">PRO</span>
+            <Badge variant="purple" size="counter">{stats?.is_premium ? 'Active' : 'Pro'}</Badge>
           </span>
-          <span className="text-caption font-bold text-brand-gold normal-case tracking-normal leading-none opacity-80">
+          <span className="text-caption font-medium text-brand-muted leading-snug">
             {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
           </span>
         </div>
       </div>
-      <div className="w-7 h-7 rounded-full border border-brand-gold/25 bg-brand-gold/10 flex items-center justify-center shrink-0">
-        <FaArrowLeft className="rotate-180 text-caption text-brand-gold" />
-      </div>
+      <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
     </Card>
   </Link>
 
@@ -146,14 +144,14 @@ export default function SettingsPage() {
       {/* Theme row */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
+          <span className="ui-icon-tile">
             {theme === 'dark' ? <FaMoon /> : <FaSun />}
-          </div>
+          </span>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+            <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
               {t('luminance_mode')}
             </span>
-            <span className="text-caption font-bold text-brand-muted tracking-normal normal-case">
+            <span className="text-caption font-medium text-brand-muted">
               {theme === 'dark' ? t('deep_void') : t('solar_flare')}
             </span>
           </div>
@@ -168,14 +166,14 @@ export default function SettingsPage() {
       {/* Reduce motion row */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
+          <span className="ui-icon-tile">
             <FaUniversalAccess />
-          </div>
+          </span>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+            <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
               {t('reduce_motion')}
             </span>
-            <span className="text-caption font-bold text-brand-muted tracking-normal normal-case">
+            <span className="text-caption font-medium text-brand-muted">
               {reducedMotion ? t('reduce_motion_on') : t('reduce_motion_off')}
             </span>
           </div>
@@ -190,14 +188,14 @@ export default function SettingsPage() {
       {/* Sound effects row */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
+          <span className="ui-icon-tile">
             <FaVolumeUp />
-          </div>
+          </span>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+            <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
               {t('audio_protocol')}
             </span>
-            <span className="text-caption font-bold text-brand-muted tracking-normal normal-case">
+            <span className="text-caption font-medium text-brand-muted">
               {soundEnabled ? t('active_sync') : t('muted')}
             </span>
           </div>
@@ -221,14 +219,14 @@ export default function SettingsPage() {
       {/* Arena alerts row */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border">
+          <span className="ui-icon-tile">
             <FaTrophy />
-          </div>
+          </span>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+            <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
               {t('arena_alerts')}
             </span>
-            <span className="text-caption font-bold text-brand-muted tracking-normal normal-case">
+            <span className="text-caption font-medium text-brand-muted">
               {arenaAlerts ? t('arena_alerts_on') : t('arena_alerts_off')}
             </span>
           </div>
@@ -244,21 +242,19 @@ export default function SettingsPage() {
       <Link href={`/${locale}/wallet`} className="w-full block">
         <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+            <span className="ui-icon-tile">
               <FaWallet />
-            </div>
+            </span>
             <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1 flex items-center">
+              <span className="text-sm font-semibold text-brand-primary leading-tight mb-1 flex items-center">
                 {t('ton_wallet')}
               </span>
-              <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
+              <span className="text-caption font-medium text-brand-muted">
                 {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
               </span>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-            <FaArrowLeft className="rotate-180 text-caption text-brand-primary" />
-          </div>
+          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
         </div>
       </Link>
     </Card>
@@ -323,56 +319,48 @@ export default function SettingsPage() {
       <Link href={`/${locale}/marketplace`} className="w-full block">
         <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
-              <FaStore />
-            </div>
+            <span className="ui-icon-tile ui-icon-tile--gold"><FaStore aria-hidden="true" /></span>
             <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+              <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
                 Marketplace & Vaults
               </span>
-              <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
+              <span className="text-caption font-medium text-brand-muted">
                 XP Mystery Boxes & Custom Board Styles
               </span>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-            <FaArrowLeft className="rotate-180 text-caption text-brand-primary" />
-          </div>
+          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
         </div>
       </Link>
 
       <Link href={`/${locale}/academy`} className="w-full block">
         <div className="p-4 flex items-center justify-between hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
-              <FaGraduationCap />
-            </div>
+            <span className="ui-icon-tile ui-icon-tile--info"><FaGraduationCap aria-hidden="true" /></span>
             <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+              <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
                 Chess Academy
               </span>
-              <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
+              <span className="text-caption font-medium text-brand-muted">
                 Interactive Tactics & Opening Lessons
               </span>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 flex items-center justify-center opacity-40">
-            <FaArrowLeft className="rotate-180 text-caption text-brand-primary" />
-          </div>
+          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
         </div>
       </Link>
 
       {/* Diagnostics / State Re-sync */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10">
+          <span className="ui-icon-tile">
             <FaSyncAlt className={isResyncing ? "animate-spin text-emerald-400" : ""} />
-          </div>
+          </span>
           <div className="flex flex-col text-left">
-            <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-none mb-1">
+            <span className="text-sm font-semibold text-brand-primary leading-tight mb-1">
               Data & Wallet Sync
             </span>
-            <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
+            <span className="text-caption font-medium text-brand-muted">
               Force refresh balance & cached stats
             </span>
           </div>
@@ -391,35 +379,31 @@ export default function SettingsPage() {
 
     {/* Admin Command Center Card - Standalone if present */}
     {isAdmin && (
-      <Card variant="solid" interactive className="mt-3 border-brand-danger/20 animate-pulse-slow">
+      <Card variant="solid" interactive className="mt-3 border-brand-danger/20">
         <Link href={`/${locale}/admin`} className="flex items-center justify-between p-3.5 group">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-brand-danger/10 flex items-center justify-center text-brand-danger opacity-80 shadow-neon shrink-0">
-                <FaShieldAlt />
-              </div>
+              <span className="ui-icon-tile ui-icon-tile--danger"><FaShieldAlt aria-hidden="true" /></span>
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-semibold text-brand-primary tracking-tight leading-tight">{t('command_center')}</span>
-                <span className="text-caption font-semibold px-1.5 py-0.5 rounded-full bg-brand-danger text-brand-void tracking-normal">{t('admin')}</span>
+                <Badge variant="secondary">{t('admin')}</Badge>
               </div>
               <span className="text-caption font-bold text-brand-danger normal-case tracking-normal leading-none">
                 {t('manage_admin')}
               </span>
             </div>
           </div>
-          <div className="w-7 h-7 rounded-full border border-brand-border-opacity-10 bg-brand-elevated flex items-center justify-center">
-            <FaArrowLeft className="rotate-180 text-caption text-brand-primary" />
-          </div>
+          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
         </Link>
       </Card>
     )}
   </section>
  
   {/* versioning */}
-  <footer className="w-full mt-8 flex flex-col items-center opacity-20 select-none pointer-events-none text-center">
-  <span className="text-caption font-bold tracking-normal normal-case">{t('footer')}</span>
+  <footer className="w-full mt-4 flex flex-col items-center select-none pointer-events-none text-center">
+  <span className="text-caption font-medium text-brand-muted">{t('footer')}</span>
   </footer>
   </main>
   </LayoutWrapper>

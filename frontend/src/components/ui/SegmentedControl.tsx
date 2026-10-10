@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useId } from 'react';
+import { Badge } from './Badge';
 import { selectionKeyboard } from './selectionKeyboard';
 import { motion } from 'framer-motion';
 import { telegramHaptic } from '@/lib/telegram';
@@ -46,7 +47,7 @@ export function SegmentedControl<T extends string | number>({
     <div
       role="tablist"
       aria-label={ariaLabel}
-      className={`inline-flex w-full items-center justify-center rounded-2xl bg-brand-surface border border-brand-border ${sizeClasses[size]} ${className}`}
+      className={`flex w-full flex-wrap items-center justify-center rounded-2xl bg-brand-surface border border-brand-border ${sizeClasses[size]} ${className}`}
     >
       {options.map((option, index) => {
         const isSelected = option.value === value;
@@ -64,8 +65,8 @@ export function SegmentedControl<T extends string | number>({
                 onChange(option.value);
               }
             }}
-            className={`ui-tap-target relative flex flex-1 items-center justify-center gap-2 rounded-xl font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-brand-primary ${itemPaddingClasses[size]} ${
-              isSelected ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary/80'
+            className={`ui-tap-target relative flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-brand-primary ${itemPaddingClasses[size]} ${
+              isSelected ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary'
             }`}
           >
             {isSelected && (
@@ -76,13 +77,11 @@ export function SegmentedControl<T extends string | number>({
               />
             )}
 
-            <span className="relative z-10 flex items-center gap-1.5">
+            <span className="relative z-10 flex min-w-0 flex-wrap items-center justify-center gap-1.5">
               {option.icon && <span className="text-base">{option.icon}</span>}
               <span>{option.label}</span>
               {option.badge !== undefined && (
-                <span className="ml-1 rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-caption font-bold text-emerald-400">
-                  {option.badge}
-                </span>
+                <Badge size="counter" variant={isSelected ? "primary" : "secondary"}>{option.badge}</Badge>
               )}
             </span>
           </button>

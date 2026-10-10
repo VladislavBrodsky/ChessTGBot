@@ -1,8 +1,10 @@
+import { Badge } from '@/components/ui/Badge';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FiChevronRight } from 'react-icons/fi';
 import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt, FaFire, FaClock, FaChessPawn, FaTrophy, FaFlag, FaHandshake } from 'react-icons/fa';
 import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
@@ -505,10 +507,14 @@ export default function PlayLobby() {
         
         <PageHeader title={t('play')} description={`${tg('select_wager')} · ${tg('time_control')}`} />
 
-        <Button variant="secondary" size="lg" className="w-full justify-start" leftIcon={<FaRobot size={22} />}
-          onClick={() => setShowAiDifficulty(true)} disabled={isCreating}>
-          {tg('train_ai')}
-        </Button>
+        <button type="button" onClick={() => setShowAiDifficulty(true)} disabled={isCreating}
+          className="ui-list-row ui-list-row--interactive w-full cursor-pointer text-start disabled:opacity-50 disabled:cursor-not-allowed">
+          <span className="flex min-w-0 items-center gap-3.5">
+            <span className="ui-icon-tile ui-icon-tile--info"><FaRobot size={20} aria-hidden="true" /></span>
+            <span className="min-w-0 text-[15px] font-semibold text-brand-primary">{tg('train_ai')}</span>
+          </span>
+          <FiChevronRight size={20} className="shrink-0 text-brand-muted rtl:rotate-180" aria-hidden="true" />
+        </button>
 
         {/* Wallet actions come before the event: funding is the prerequisite to playing. */}
         <AnimatePresence mode="wait">
@@ -613,7 +619,7 @@ export default function PlayLobby() {
 
               {/* Stake & loading */}
               <div className="w-full p-3 rounded-2xl bg-brand-void border border-brand-border-opacity-10 text-center">
-                <span className="text-caption font-semibold text-brand-primary opacity-45 normal-case tracking-normal block mb-0.5">{tg('stakes_locked')}</span>
+                <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block mb-0.5">{tg('stakes_locked')}</span>
                 <span className="text-sm font-semibold text-emerald-400">
                   ${((matchFoundData?.bid_amount || 0) / 100).toFixed(2)} USDT
                 </span>
@@ -637,10 +643,7 @@ export default function PlayLobby() {
               <motion.div animate={{ opacity: [0.55, 1, 0.55] }} transition={{ duration: 2, repeat: Infinity }} className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
               
               {/* Search status is real; participant counts are unavailable. */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-500 animate-pulse text-caption font-semibold normal-case tracking-normal relative z-10">
-                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
-                <span>{tg('searching_matchmaker')}</span>
-              </div>
+              <Badge variant="emerald" className="relative z-10">{tg('searching_matchmaker')}</Badge>
 
               {/* Conic sonar radar widget */}
               <div className="relative w-40 h-40 flex items-center justify-center rounded-full border border-emerald-500/20 overflow-hidden bg-brand-void shadow-[inset_0_0_20px_rgba(16,185,129,0.16)]">
@@ -691,30 +694,21 @@ export default function PlayLobby() {
                       <FaBell />
                       Telegram alert enabled
                     </span>
-                    <span className="block mt-1 text-caption font-bold opacity-70">
+                    <span className="block mt-1 text-caption font-bold">
                       We will keep searching for up to 30 minutes. You can leave this screen.
                     </span>
                   </div>
                 ) : (
-                  <button type="button"
-                    onClick={enableMatchNotifications}
-                    disabled={notifyRequestPending}
-                    className="ui-tap-target w-full py-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50 text-cyan-500 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer disabled:cursor-wait"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <FaBell />
-                      {notifyRequestPending ? 'Enabling Telegram alert...' : 'Notify me when matched'}
-                    </span>
-                  </button>
+                  <Button variant="secondary" className="w-full" leftIcon={<FaBell />}
+                    onClick={enableMatchNotifications} isLoading={notifyRequestPending}>
+                    {notifyRequestPending ? 'Enabling Telegram alert…' : 'Notify me when matched'}
+                  </Button>
                 )
               )}
 
-              <button type="button"
-                onClick={cancelMatchmaking}
-                className="ui-tap-target w-full py-3 rounded-xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 hover:bg-brand-rose-opacity-20 text-rose-400 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer"
-              >
+              <Button variant="destructive" className="w-full" onClick={cancelMatchmaking}>
                 {tg('disconnect_search')}
-              </button>
+              </Button>
             </motion.div>
           ) : (
             /* Config / Lobby View */
@@ -759,7 +753,7 @@ export default function PlayLobby() {
                         className="ui-tap-target flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
                         <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-0.5 flex items-center gap-0.5">
-                          <FaWallet className="text-brand-primary/45 text-caption" /> {tg('stake')}
+                          <FaWallet className="text-brand-muted text-caption" /> {tg('stake')}
                         </span>
                         <span className="text-caption font-semibold text-brand-primary">${(chosenWager / 100).toFixed(2)} USDT</span>
                       </button>
@@ -789,7 +783,7 @@ export default function PlayLobby() {
                         className="ui-tap-target flex-1 flex flex-col items-center justify-center cursor-pointer bg-transparent border-0 p-0 text-center hover:opacity-80 active:scale-95 transition-all duration-150"
                       >
                         <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal mb-0.5 flex items-center gap-0.5">
-                          <FaClock className="text-brand-primary/45 text-caption" /> {tg('time')}
+                          <FaClock className="text-brand-muted text-caption" /> {tg('time')}
                         </span>
                         <span className="text-caption font-semibold text-emerald-500 normal-case">
                           {timeControl >= 60 ? `${timeControl / 60} MIN` : `${timeControl}s`}
@@ -809,7 +803,7 @@ export default function PlayLobby() {
                     className={`ui-tap-target w-full p-4 flex flex-col items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden transition-all duration-300 text-center ${
                       hasSufficient && !isCreating
                         ? 'play-chess-card-premium text-brand-primary'
-                        : 'arena-topup-launcher rounded-[20px] bg-gradient-to-br from-[#2a2a30] to-[#16161a] border border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
+                        : 'arena-topup-launcher rounded-[20px]'
                     } ${
                       chosenWager === 100000 && hasSufficient ? 'shadow-[0_0_25px_rgba(16,185,129,0.4)] ring-2 ring-emerald-400/30' : ''
                     }`}
@@ -819,7 +813,7 @@ export default function PlayLobby() {
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 z-10 ${
                         hasSufficient
                           ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
-                          : 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                          : 'bg-brand-bg-opacity-10 border border-brand-border-opacity-20'
                       }`}
                     >
                       <FaChessKnight className={`text-[20px] drop-shadow-lg ${hasSufficient ? 'text-emerald-500' : 'text-brand-primary'}`} />
@@ -858,36 +852,33 @@ export default function PlayLobby() {
                   whileTap={!isCreating ? { scale: 0.985 } : {}}
                   onClick={playVsFriend}
                   disabled={isCreating || loadingBalance}
-                  className="ui-tap-target relative overflow-hidden rounded-2xl p-4 flex items-center justify-between w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed bg-purple-500/5 border border-purple-500/40 hover:border-purple-500/60 transition-all group shadow-[0_0_15px_rgba(168,85,247,0.1)]"
+                  className="ui-tap-target ui-list-row ui-list-row--interactive ui-stat--premium w-full cursor-pointer text-start disabled:opacity-40 disabled:cursor-not-allowed group"
                 >
-                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" aria-hidden="true" />
-                  <div className="flex items-center gap-3.5">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-purple-500/10 border border-purple-500/20 text-purple-500 group-hover:text-purple-400 transition-colors"
-                    >
-                      <FaShareAlt className="text-base group-hover:scale-110 transition-transform" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-semibold leading-none text-purple-500 tracking-normal normal-case drop-shadow-md">
-                        PLAY WITH FRIEND
+                  <div className="flex min-w-0 items-center gap-3.5">
+                    <span className="ui-icon-tile ui-icon-tile--premium">
+                      <FaShareAlt className="text-base transition-transform group-hover:scale-110" aria-hidden="true" />
+                    </span>
+                    <span className="flex min-w-0 flex-col">
+                      <span className="text-sm font-semibold leading-tight text-brand-primary">
+                        {tg('play_friend')}
                       </span>
-                      <span className="text-caption font-semibold normal-case tracking-normal mt-1 opacity-80 text-purple-400">
-                        SHARE WAGER CHALLENGE LINK
+                      <span className="mt-1 text-caption font-medium text-brand-muted">
+                        {tg('create_friend_match')}
                       </span>
-                    </div>
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-purple-400/90 tracking-normal normal-case px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                  <Badge variant="purple" className="shrink-0 tabular-nums">
                     ${(chosenWager / 100).toFixed(2)}
-                  </span>
+                  </Badge>
                 </motion.button>
               </div>
 
               {/* Recent Activity Log */}
               {stats?.recent_games && stats.recent_games.length > 0 && (
                 <div className="w-full space-y-3 pt-2">
-                  <div className="flex items-center justify-center gap-2 px-1 w-full text-center">
-                    <FaChessPawn className="text-brand-muted text-caption" />
-                    <h3 className="text-caption font-semibold normal-case tracking-normal text-brand-primary opacity-45">{t('recent_activity')}</h3>
+                  <div className="flex items-center gap-2 px-1 w-full">
+                    <FaChessPawn className="text-brand-muted text-caption" aria-hidden="true" />
+                    <h3 className="text-section-title font-semibold text-brand-primary">{t('recent_activity')}</h3>
                   </div>
                   <div className="space-y-2.5">
                     {stats.recent_games.slice(0, 3).map((game: any, idx: number) => {
@@ -906,17 +897,11 @@ export default function PlayLobby() {
                           <div className="flex items-center gap-3.5 relative z-10">
                             {/* Outcome Icon Badge */}
                             {game.result === 'win' ? (
-                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500/20 to-teal-500/5 border border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaTrophy className="text-sm" />
-                              </div>
+                              <span className="ui-icon-tile ui-icon-tile--success"><FaTrophy className="text-sm" aria-hidden="true" /></span>
                             ) : game.result === 'loss' ? (
-                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-500/15 to-brand-void border border-red-500/20 text-red-400/80 shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaFlag className="text-sm" />
-                              </div>
+                              <span className="ui-icon-tile ui-icon-tile--danger"><FaFlag className="text-sm" aria-hidden="true" /></span>
                             ) : (
-                              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-surface to-brand-void border border-brand-border-opacity-15 text-brand-muted shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                <FaHandshake className="text-sm" />
-                              </div>
+                              <span className="ui-icon-tile"><FaHandshake className="text-sm" aria-hidden="true" /></span>
                             )}
 
                             <div className="flex flex-col justify-center">
@@ -926,7 +911,7 @@ export default function PlayLobby() {
                                 ) : (
                                   <FaChessKnight className="text-caption text-brand-muted shrink-0" />
                                 )}
-                                <span className="text-sm font-semibold text-brand-primary tracking-tight leading-none group-hover:text-white transition-colors duration-200">
+                                <span className="text-sm font-semibold text-brand-primary tracking-tight leading-none transition-colors duration-200">
                                   {t('vs')} {getOpponentName(game.opponent.name)}
                                 </span>
                               </div>
@@ -939,17 +924,17 @@ export default function PlayLobby() {
                           <div className="flex items-center gap-3.5 relative z-10">
                             {/* ELO Change Pill */}
                             {game.elo_change > 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] normal-case tracking-normal">
+                              <Badge variant="emerald">
                                 + {game.elo_change} ELO
-                              </div>
+                              </Badge>
                             ) : game.elo_change < 0 ? (
-                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-red-500/10 border border-red-500/20 text-red-400/90 normal-case tracking-normal">
+                              <Badge variant="rose">
                                 - {Math.abs(game.elo_change)} ELO
-                              </div>
+                              </Badge>
                             ) : (
-                              <div className="px-3 py-1.5 rounded-full text-caption font-semibold bg-brand-surface border border-brand-border-opacity-15 text-brand-muted normal-case tracking-normal">
+                              <Badge variant="secondary">
                                 0 ELO
-                              </div>
+                              </Badge>
                             )}
 
                             {/* Share Action */}

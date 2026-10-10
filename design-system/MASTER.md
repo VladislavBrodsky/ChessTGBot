@@ -6,21 +6,28 @@
 
 ---
 
-## 1. Core Visual Tokens & Semantic Roles
+## 1. Tokens & architecture
 
-| Role | Semantic CSS Variable / Utility | Intended Meaning & Usage |
+The full rulebook (foundations, semantics, composition, governance) is [`BRAND_DESIGN_SYSTEM.md`](../BRAND_DESIGN_SYSTEM.md). This file is the **implementation cookbook**: how to apply it in code.
+
+```text
+design-system/app/tokens.json  --npm run tokens-->  frontend/src/styles/tokens.css (GENERATED, never hand-edit)
+frontend/src/styles/{theme,tokens,themes,base,components,overlays,features,motion-perf,rtl,layout}.css  <- imported in that order by app/globals.css
+```
+
+| Need | Use | Never |
 |---|---|---|
-| **Void / Canvas** | `--bg-primary`, `bg-brand-void` (`#000000`) | Background surface; deep contrast floor (X "Lights Out"). |
-| **Surface** | `--bg-surface`, `bg-brand-surface` (`#0A0A0A`) | Standard cards, lists, grouped items. |
-| **Elevated Surface** | `--bg-elevated`, `bg-brand-elevated` (`#111111`) | Selected states, controls, sheets, active tabs. |
-| **Borders** | `--border-muted`, `border-brand-border` (`#1F1F1F`) | Subtle separation; 1px quiet outline. |
-| **Primary Text** | `--text-primary`, `text-brand-primary` (`#FFFFFF`) | High-emphasis headers, active labels, values. |
-| **Muted Text** | `--text-muted`, `text-brand-muted` (`#9A9FA8`) | Supporting labels, timestamps, metadata. |
-| **Emerald (Accent)** | `text-emerald-400`, `bg-emerald-500` | Primary actions (Play, Deposit), active states, wins. |
-| **Purple (Premium)** | `text-purple-400`, `bg-purple-500` | VIP, Marketplace mystery boxes, premium tiers. |
-| **Silver (Progression)**| `--accent-silver`, silver gradient | XP ranks, secured/locked items, neutral podium (2nd). |
-| **Amber / Gold** | `--text-gold`, `amber-500` | Alarms, warnings, time-critical countdowns only. |
-| **Rose (Danger)** | `rose-500`, `text-rose-400` | Resign match, destructive confirm, errors. |
+| Colour | `bg-brand-void/surface/elevated`, `text-brand-primary/muted`, `border-brand-border`, `var(--action-bg)`, `--grad-action`, `--grad-premium`, `--text-gold`, `--danger-ink` | raw hex, `slate-*`/`zinc-*`, `text-*/60` opacity text |
+| Type | role classes `t-display`, `t-title-1/2/3`, `t-body-lg`, `t-body`, `t-label`, `t-caption`, `t-eyebrow`, `t-numeric-xl/lg/''/sm` | `text-[11px]`, ad-hoc `tracking-[…]`, forced `uppercase` |
+| Space | `gap-inline 8`, `gap-stack 12`, `gap-card 16`, `gap-section 24`, `gap-page 32`; `--pad-sm/md/lg/xl` | stacked `mt-*` on siblings, same gap for inside vs between |
+| Size | `--size-control-sm 44`, `-md 48`, `-lg 56`, `--size-icon-*`, `--size-avatar-*`, `--size-tile-*`, `--size-row-min 64`, `--size-stat-min 96` | arbitrary `h-[37px]` |
+| Radius | `--radius-chip 8 / control 12 / tile 12 / row 16 / card 20 / hero 24 / sheet 28` | inner radius >= outer radius |
+| Z | `--z-nav 50 / overlay 100 / nested 110 / critical 120 / toast 140` | `z-[9999]` |
+| Motion | `--duration-fast 160ms`, `--ease-emphasized`, transform/opacity only | animating width/height/top, infinite loops |
+
+Tailwind 4 only reads `@theme` (see `styles/theme.css`); `tailwind.config.js` no longer exists. Declare new utilities there.
+
+**Colour values** (dark default / light): canvas `#05070B`/`#F3F6FA`, surface `#0B0E14`/`#FFFFFF`, elevated `#121620`/`#EEF2F7`, border `#1E2430`, text `#F5F7FA`/`#0F172A`, muted `#9AA3B2`/`#556275`, action `#34D399`/`#10B981`, gold `#F5C451`/`#B8860B`, danger `#FB7185`/`#BE123C`. Full table in the brand guide.
 
 ---
 
@@ -28,7 +35,7 @@
 
 **Global structure:** Five labelled mobile navigation destinations (Home, Play, Academy, Wallet, Profile) become a `232px` sidebar on desktop. Secondary routes live in contextual cards and Profile. The page shell uses `.app-page` with `960px` maximum width and `16/24/32px` logical gutters; focused flows use `720px`. Each screen has a `PageHeader`, a clear primary action, grouped sections, and real state from the API. See `BRAND_DESIGN_SYSTEM.md` for composition, type scale, and reference-image audit.
 
-**Typography:** Use the local platform sans and monospace stacks defined in `globals.css`. Remote font fetches are not part of the Mini App build or first paint.
+**Typography:** Use the local platform sans and monospace stacks defined in `styles/theme.css`. Remote font fetches are not part of the Mini App build or first paint.
 
 **Entry points:** `/[locale]/login` and shareable `/[locale]/qr` are public. The QR page uses the same Mini App surfaces and typography, accepts only a bounded referral code, and links to the configured official bot. Other application routes remain behind `AuthGuard`.
 
@@ -96,6 +103,44 @@ Every async screen and data-backed component must implement:
 
 ---
 
+## 4.1 Composition recipes (`frontend/src/styles/layout.css`)
+
+Pages compose recipes; they do not hand-roll cards.
+
+```tsx
+<main className="app-page">                       {/* 960px, gutters 16/24/32; add app-page--focused for 720px forms */}
+  <PageHeader title={t('title')} description={t('purpose')} />   {/* the only h1 */}
+
+  <section className="ui-hero-card p-5 md:p-6">   {/* ONE hero per page */}
+    <p className="ui-eyebrow">{t('rating')}</p>
+    <p className="t-numeric-xl tabular-nums">{rating}</p>
+  </section>
+
+  <SectionHeader title={t('stats')} />
+  <div className="grid grid-cols-2 gap-3">          {/* 2 cols >= 360; items min-w-0 and stretch */}
+    {stats ? <div className="ui-stat ui-stat--accent">
+        <span className="ui-stat__label">{t('wins')}</span>
+        <span className="ui-stat__value">{stats.wins}</span>
+        <span className="ui-stat__meta">{t('this_week')}</span>
+      </div>
+    : <StatTileSkeleton metaLines={1} />}            {/* geometry twin: same classes, same line heights */}
+  </div>
+
+  <ul className="space-y-2">
+    <li className="ui-list-row ui-list-row--interactive">
+      <span className="ui-icon-tile ui-icon-tile--gold size-[var(--size-tile-md)]">{icon}</span>
+      <div className="min-w-0 flex-1"><p className="t-title-3 truncate">{title}</p><p className="t-caption text-brand-muted">{meta}</p></div>
+    </li>
+  </ul>
+</main>
+```
+
+Recipe -> skeleton twin: `ui-stat` -> `StatTileSkeleton`; `ui-list-row` -> `SkeletonList`; profile W-D-L card -> `BreakdownSkeleton`; text -> `<Skeleton textRole="body|caption|title-2|numeric-lg" />`. Rules for skeletons: reserve the loaded geometry (including optional rows, via `min-h-[var(--size-control-sm)]`), keep stale data during refresh, `aria-hidden` + `aria-busy` on the region.
+
+Desktop (>= 1024px): a two-column split must balance; if the second column has nothing real to show, stay in one `.app-page--focused` column. Never leave tiles hugging the inline-start edge of a half-empty row.
+
+**Quality gates:** `npm run check:design` (ratchet), `npm run tokens -- --check`, `e2e/layout-shift.spec.ts` (CLS < 0.08), `e2e/ui-system.spec.ts` (every route renders). Details in the brand guide section 10.
+
 ## 5. UI Primitives Catalog (`frontend/src/components/ui/`)
 
 All new pages and feature refactors MUST reuse existing design system primitives:
@@ -103,6 +148,7 @@ All new pages and feature refactors MUST reuse existing design system primitives
 | Component | Path | Description & Props |
 |---|---|---|
 | **Avatar** | `Avatar.tsx` | Fallback initials, online indicator dot, rating badges (`size: xs/sm/md/lg/xl`). |
+| **Badge / BadgeRow** | `Badge.tsx` | In-flow semantic metadata; 26px default / 20px inline counters, wrapping labels and fixed icons. |
 | **Button** | `Button.tsx` | Primary, secondary, action, destructive, outline, ghost variants with haptics and loading states. |
 | **Card** | `Card.tsx` | `glass`, `solid`, `premium`, `cyber`, `x-panel` surface cards. |
 | **Drawer** | `Drawer.tsx` | Mobile swipe-to-dismiss bottom sheet with header, handle, and safe area padding. |
@@ -118,3 +164,15 @@ All new pages and feature refactors MUST reuse existing design system primitives
 | **Toast** | `Toast.tsx` | Global floating non-blocking pill toasts (`useToast().success/error/info`). |
 
 Keyboard patterns in shared controls use roving selection for Tabs/SegmentedControl and dialog focus management in Modal/Drawer. Respect reduced motion and Telegram haptics on state changes. Check `320px` reflow, desktop, light theme, and Arabic RTL before shipping a visual change.
+
+## Badge composition rules
+
+Use `frontend/src/components/ui/Badge.tsx` and `BadgeRow` for passive metadata across pages, cards, lists and controls. Themes change semantic colors, not placement or geometry.
+
+- Default badge: 12px/18px platform sans, weight 600, normal case/tracking, minimum 26px height, 3px/8px padding, 8px radius and one quiet border. Optional icon: fixed 14px, 6px icon/label gap. Labels wrap at the available width; never shrink text or icons to force a fit. Counter size: minimum 20px, 1px/6px padding, used only inside a control that retains its 44px hit target.
+- Badge text must meet 4.5:1 contrast on its actual surface in dark, light and Nebula themes. Light neutral ink uses `#475569`; amber uses `#92400E`. Do not inherit pale gold or reduced-opacity text for a status.
+- Variants: secondary for neutral metadata; primary/outline for emphasis; emerald for verified success; rose for errors/loss; amber for warnings; purple for premium; cyan for informational status. Use theme-safe ink colors. Do not fade claimed/completed status to illegibility or add glow/pulse to ordinary metadata.
+- Keep text badges in flow. Rows use `BadgeRow` or wrapping flex with an 8px gap; headings have a separate row or at least 8px separation beside a badge. At 320px or with long translated labels, wrap below the title or other metadata instead of overlaying it. Set title containers to `min-w-0`.
+- Text badges must not cover avatars, artwork, the board, prices or actions. Avatar online dots can stay anchored to the image; level/tier text appears in a reserved row below it. Avatar image bounds stay separate from text metadata.
+- Badges are not buttons: interactive filters stay in Tabs/SegmentedControl/Button with haptics, keyboard selection and a 44px target. Counters use the shared counter badge rather than independent padding/position rules. Badge icons are decorative when their label supplies the meaning.
+- Add metadata only when it explains real category, eligibility, progress, result or state; ordinary section labels stay plain. Preserve complete financial/age qualifications. The marketing website uses its own palette and `website/src/components/ui/Badge.tsx`; never import website tokens into the Mini App.

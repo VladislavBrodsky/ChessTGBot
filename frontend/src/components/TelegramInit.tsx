@@ -42,7 +42,7 @@ export default function TelegramInit() {
             // Sync header/background colors right away so there is no color flash while the
             // theme effect below settles (that effect may run before the SDK has loaded).
             try {
-                const color = themeRef.current === 'light' ? '#F3F4F6' : '#000000';
+                const color = themeRef.current === 'light' ? '#F3F6FA' : '#05070B';
                 tg.setHeaderColor?.(color);
                 tg.setBackgroundColor?.(color);
             } catch { /* noop */ }
@@ -98,7 +98,7 @@ export default function TelegramInit() {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
             const tg = (window as any).Telegram.WebApp;
             try {
-                const color = theme === 'light' ? '#F3F4F6' : '#000000';
+                const color = theme === 'light' ? '#F3F6FA' : '#05070B';
                 tg.setHeaderColor(color);
                 tg.setBackgroundColor(color);
             } catch (e) {
