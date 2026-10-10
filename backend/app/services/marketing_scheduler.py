@@ -21,19 +21,19 @@ _last_sent_date = None
 
 VIRAL_MESSAGES = {
     "en": [
-        "🔥 <b>Got 5 minutes?</b>\n\nJump into the Battle Arena for a rapid-fire match! Connect instantly with opponents, win USDT, and climb the ranks. ♟️⚡\n\nHit the button below to auto-match now!",
-        "🕒 <b>Fast 10-Minute Chess is LIVE!</b>\n\nDon't have time for a long game? Our auto-matching puts you straight into the action. Play fast, win big, and earn XP! 🏆💰\n\nJoin the Arena and find your opponent in seconds.",
-        "⚡ <b>Ready for a quick challenge?</b>\n\nThousands of players are waiting in the Battle Arena for 5 and 10 minute blitz games. Prove your skills and earn real crypto rewards! ♟️💸\n\nTap below to start auto-matching!"
+        "♟️ <b>The clock is part of the challenge.</b>\n\nChoose an available time control in the Arena and look for an opponent. Before your first move, check the match rules and stake.\n\nUSDT matches are 18+ where permitted. You can lose your stake.\n\nOpen the Arena to see the current options.",
+        "♟️ <b>One game. One decision to improve.</b>\n\nAfter your next match, find the move that changed the position. What did your opponent threaten? Take that question into your next game.\n\nArena USDT matches are 18+ where permitted. You can lose your stake.\n\nChoose a match only after reading its rules.",
+        "♟️ <b>Your next opponent has a plan.</b>\n\nCheck their threats before choosing yours. Explore the Arena's current time controls and matchmaking options; finding a match depends on available opponents.\n\nUSDT matches are 18+ where permitted. You can lose your stake.\n\nSee the current match options."
     ],
     "ru": [
-        "🔥 <b>Есть 5 минут?</b>\n\nЗаходи на Боевую Арену для быстрой игры! Моментальный автоподбор соперников, выигрывай USDT и поднимайся в рейтинге. ♟️⚡\n\nЖми кнопку ниже, чтобы начать!",
-        "🕒 <b>Быстрые шахматы по 10 минут ЖДУТ!</b>\n\nНет времени на долгую партию? Наш автоподбор мгновенно найдет тебе соперника. Играй быстро, побеждай и зарабатывай XP! 🏆💰\n\nЗаходи на Арену прямо сейчас.",
-        "⚡ <b>Готов к быстрому вызову?</b>\n\nИгроки уже ждут на Боевой Арене для блиц-партий по 5 и 10 минут. Покажи свой скилл и заработай реальную крипту! ♟️💸\n\nЖми ниже для автоподбора!"
+        "♟️ <b>Часы — часть игры.</b>\n\nВыбери доступный контроль времени на Арене и начни поиск соперника. Перед первым ходом проверь правила матча и размер ставки.\n\nМатчи в USDT доступны с 18 лет там, где это разрешено. Ставку можно потерять.\n\nОткрой Арену и посмотри текущие варианты.",
+        "♟️ <b>Одна партия. Одно решение для разбора.</b>\n\nПосле следующего матча найди ход, который изменил позицию. Чем угрожал соперник? Возьми этот вопрос в следующую партию.\n\nМатчи Арены в USDT доступны с 18 лет там, где это разрешено. Ставку можно потерять.\n\nПеред выбором матча прочитай его правила.",
+        "♟️ <b>У следующего соперника есть план.</b>\n\nПроверь его угрозы, прежде чем выбирать свой ход. Посмотри доступные контроли времени и варианты поиска на Арене; время ожидания зависит от наличия соперников.\n\nМатчи в USDT доступны с 18 лет там, где это разрешено. Ставку можно потерять.\n\nПосмотри текущие варианты матчей."
     ],
     "es": [
-        "🔥 <b>¿Tienes 5 minutos?</b>\n\n¡Únete a la Battle Arena para una partida rápida! Conecta instantáneamente con oponentes, gana USDT y sube de rango. ♟️⚡\n\n¡Presiona el botón abajo para buscar oponente ahora!",
-        "🕒 <b>¡El Ajedrez Rápido de 10 Minutos está EN VIVO!</b>\n\n¿No tienes tiempo para una partida larga? Nuestro emparejamiento automático te lleva directo a la acción. ¡Juega rápido, gana en grande y obtén XP! 🏆💰\n\nÚnete a la Arena y encuentra oponente en segundos.",
-        "⚡ <b>¿Listo para un desafío rápido?</b>\n\nMiles de jugadores te esperan en la Battle Arena para partidas blitz de 5 y 10 minutos. ¡Demuestra tus habilidades y gana recompensas cripto! ♟️💸\n\nToca abajo para empezar el emparejamiento automático."
+        "♟️ <b>El reloj también forma parte del reto.</b>\n\nElige un control de tiempo disponible en la Arena y busca un rival. Antes de mover, revisa las reglas y la apuesta del encuentro.\n\nLos encuentros con USDT son para mayores de 18 años donde estén permitidos. Puedes perder tu apuesta.\n\nAbre la Arena para ver las opciones actuales.",
+        "♟️ <b>Una partida. Una decisión para mejorar.</b>\n\nDespués de tu próximo encuentro, encuentra la jugada que cambió la posición. ¿Qué amenazaba tu rival? Lleva esa pregunta a la siguiente partida.\n\nLos encuentros de la Arena con USDT son para mayores de 18 años donde estén permitidos. Puedes perder tu apuesta.\n\nLee las reglas antes de elegir un encuentro.",
+        "♟️ <b>Tu próximo rival tiene un plan.</b>\n\nRevisa sus amenazas antes de elegir tu jugada. Explora los controles de tiempo y las opciones de búsqueda actuales de la Arena; encontrar un encuentro depende de los rivales disponibles.\n\nLos encuentros con USDT son para mayores de 18 años donde estén permitidos. Puedes perder tu apuesta.\n\nConsulta las opciones actuales."
     ]
 }
 
