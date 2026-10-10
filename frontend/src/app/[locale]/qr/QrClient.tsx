@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FaChessKnight, FaTelegramPlane } from 'react-icons/fa';
 import { Card } from '@/components/ui/Card';
+import { Backdrop } from '@/components/ui/Backdrop';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { telegramHaptic } from '@/lib/telegram';
 
@@ -18,8 +19,9 @@ export default function QrClient() {
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(inviteLink)}&color=000000&bgcolor=ffffff&qzone=2&format=png`;
 
   return (
-    <main className="flex min-h-[100dvh] items-center bg-brand-void px-4 pt-[calc(24px+var(--app-safe-top))] pb-[calc(24px+var(--app-safe-bottom))] text-brand-primary">
-      <div className="mx-auto w-full max-w-[420px] space-y-6">
+    <main className="relative flex min-h-[100dvh] items-center overflow-hidden bg-brand-void px-4 pt-[calc(24px+var(--app-safe-top))] pb-[calc(24px+var(--app-safe-bottom))] text-brand-primary">
+      <Backdrop />
+      <div className="relative z-10 mx-auto w-full max-w-[420px] space-y-6">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-brand-surface text-brand-action">
           <FaChessKnight size={26} aria-hidden="true" />
         </div>

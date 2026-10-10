@@ -190,6 +190,7 @@ Pages are composed from **semantic recipes**, not utility soup. Each recipe owns
 | `skeleton` | Shimmer block with role-based height | See §6 |
 | `ui-action-link--primary` | Emerald gradient, inner highlight, hover sheen | The page's single primary destination |
 | `ui-eyebrow` | Eyebrow role | Label above a value |
+| `Backdrop` (`components/ui/Backdrop.tsx`, `.ui-backdrop*`) | Masked grid, tilted checkerboard, two glows, four chess pieces | Entry surfaces only (login, invite/QR, auth splash). Tokens only, so it works in dark/light/nebula; two pieces float (transform), `still` freezes it; never behind app dashboards or the game board |
 
 Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`/`PageUtilities`, `Card`, `Button`, `Badge`/`BadgeRow`, `Tabs`/`SegmentedControl`, `Modal`/`Drawer`, `EmptyState`/`ErrorState`, `Skeleton*`, `Toast`, `Switch`, `Input`, `Avatar`, `ProgressRing`, `CountUp`, `Reveal`, `QuickTile`.
 

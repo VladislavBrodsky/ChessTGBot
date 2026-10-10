@@ -395,9 +395,9 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         </motion.button>
         <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
           <FaGamepad className="text-caption text-brand-muted" />
-          <span className="text-caption font-bold tracking-normal text-brand-muted normal-case">
+          <h1 className="text-caption font-bold tracking-normal text-brand-muted normal-case">
             {gameData.game_type === 'computer' ? "Practice game" : "Rated game"}
-          </span>
+          </h1>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/Badge';
+import { Backdrop } from '@/components/ui/Backdrop';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,8 +48,9 @@ export default function LoginPage() {
 
     if (!mounted || isRedirecting) {
         return (
-            <div className="fixed inset-0 flex items-center justify-center bg-brand-void">
-                <div className="flex flex-col items-center gap-4">
+            <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-brand-void">
+                <Backdrop still />
+                <div className="relative z-10 flex flex-col items-center gap-4">
                     <FaChessKnight className="text-emerald-500 animate-pulse drop-shadow-lg" size={48} />
                     <p className="text-caption font-semibold normal-case tracking-normal animate-pulse text-brand-muted">
                         Authenticating...
@@ -60,6 +62,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-brand-void transition-colors duration-500">
+            <Backdrop />
             {/* ── Main Card ── */}
             <motion.div
                 initial={{ opacity: 0, y: 24 }}
@@ -74,7 +77,7 @@ export default function LoginPage() {
 
                             {/* Logo mark */}
                             <div className="relative">
-                                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-brand-elevated border border-brand-border shadow-lg">
+                                <div className="ui-glow-action relative w-16 h-16 rounded-2xl flex items-center justify-center transition-colors duration-500 bg-brand-elevated border border-brand-border">
                                     <FaChessKnight size={30} className="text-brand-action" />
                                 </div>
                             </div>

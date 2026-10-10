@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
+import { Backdrop } from '@/components/ui/Backdrop';
 import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
 
 const VALID_LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
@@ -111,23 +112,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
     if (authState === 'checking' || authState === 'redirecting') {
         return (
-            <div
-                className="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-brand-void"
-                style={{ background: 'var(--color-void, #000)' }}
-            >
+            <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center overflow-hidden bg-brand-void">
+                <Backdrop still />
                 {/* Animated chess knight */}
-                <div className="relative flex items-center justify-center mb-6">
-                    <div className="absolute w-20 h-20 rounded-full bg-brand-primary/10 animate-ping" />
-                    <FaChessKnight
-                        className="text-brand-primary relative z-10 animate-pulse"
-                        size={48}
-                        style={{ color: 'var(--color-primary, #ffffff)' }}
-                    />
+                <div className="relative z-10 flex items-center justify-center mb-6">
+                    <div className="ui-glow-action absolute w-20 h-20 rounded-full animate-ping opacity-40" />
+                    <FaChessKnight className="text-brand-action relative z-10 animate-pulse" size={48} />
                 </div>
-                <p
-                    className="text-caption font-semibold normal-case tracking-normal animate-pulse"
-                    style={{ color: 'var(--color-primary, #ffffff)', opacity: 0.6 }}
-                >
+                <p className="relative z-10 text-caption font-semibold normal-case tracking-normal animate-pulse text-brand-muted">
                     Verifying Auth…
                 </p>
             </div>

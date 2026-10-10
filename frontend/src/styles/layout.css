@@ -304,3 +304,34 @@
 .ui-nav-dot { animation: fx-ring-pulse 1.8s ease-out infinite; }
 .ui-count-badge { position: absolute; inset-block-start: -6px; inset-inline-end: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--action-bg); color: var(--action-ink); border: 2px solid var(--bg-surface); }
 
+/* ── Backdrop: grid, board, glows and pieces behind entry screens (components/ui/Backdrop.tsx) ─────────── */
+.ui-backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; contain: paint; }
+.ui-backdrop__grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--text-primary) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text-primary) 10%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 72% 62% at 50% 46%, #000 18%, transparent 78%);
+  mask-image: radial-gradient(ellipse 72% 62% at 50% 46%, #000 18%, transparent 78%);
+}
+.ui-backdrop__board {
+  position: absolute; inset-block-end: -14%; inset-inline-end: -10%; width: min(52vw, 560px); aspect-ratio: 1; transform: rotate(-12deg);
+  background: conic-gradient(color-mix(in srgb, var(--text-primary) 6%, transparent) 25%, transparent 0 50%, color-mix(in srgb, var(--text-primary) 6%, transparent) 0 75%, transparent 0) 0 0 / 72px 72px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 25%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 25%, transparent 100%);
+}
+.ui-backdrop__glow { position: absolute; width: 64%; aspect-ratio: 1; border-radius: 999px; }
+.ui-backdrop__glow--a { inset-block-start: -28%; inset-inline-start: -22%; background: radial-gradient(circle, color-mix(in srgb, var(--text-primary) 11%, transparent) 0%, transparent 70%); }
+.ui-backdrop__glow--b { inset-block-end: -30%; inset-inline-end: -22%; background: radial-gradient(circle, color-mix(in srgb, var(--action-bg) 20%, transparent) 0%, transparent 70%); }
+.ui-backdrop__piece { position: absolute; color: color-mix(in srgb, var(--text-muted) 42%, transparent); }
+.ui-backdrop__piece--queen { inset-inline-start: 26%; inset-block-start: 8%; }
+.ui-backdrop__piece--bishop { inset-inline-end: 11%; inset-block-start: 19%; }
+.ui-backdrop__piece--knight { inset-inline-start: 7%; inset-block-end: 20%; }
+.ui-backdrop__piece--rook { inset-inline-end: 9%; inset-block-end: 26%; }
+@keyframes fx-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+.fx-float { animation: fx-float 7s ease-in-out infinite; }
+.fx-float--late { animation-duration: 9s; animation-delay: -3s; }
+.ui-backdrop[data-still] .fx-float { animation: none; }
+.ui-glow-action { box-shadow: 0 0 0 1px color-mix(in srgb, var(--action-bg) 30%, transparent), 0 12px 40px -6px color-mix(in srgb, var(--action-bg) 45%, transparent); }
+
