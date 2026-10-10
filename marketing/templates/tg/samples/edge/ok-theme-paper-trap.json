@@ -1,0 +1,29 @@
+{
+  "template": "trap",
+  "size": "portrait",
+  "tag": "Opening trap",
+  "headline": "Do not take\nthe *queen.*",
+  "subhead": "Black grabs it on d1. White mates in two.",
+  "start_fen": "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+  "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+  "moves": [
+    "Bc4",
+    "Bg4",
+    "Nc3",
+    "g6",
+    "Nxe5",
+    "Bxd1??"
+  ],
+  "move_number": 3,
+  "highlight": [
+    "d1",
+    "f7"
+  ],
+  "arrow": {
+    "from": "c4",
+    "to": "f7"
+  },
+  "cta_label": "Practice it free vs A.I.",
+  "theme": "paper",
+  "_expect": "ok"
+}

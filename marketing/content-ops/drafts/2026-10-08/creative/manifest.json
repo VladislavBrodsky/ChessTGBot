@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-10-08T14:57:46.583Z",
+  "status": "draft-for-review",
+  "creative": {
+    "id": "academy",
+    "number": "01",
+    "name": "Same board. Different moves.",
+    "purpose": "Daily education / save and practise",
+    "icon": "book-open-text",
+    "theme": "paper",
+    "art": "academy",
+    "tag": "The position check",
+    "headline": "SAME BOARD.\nNEW OPTIONS.",
+    "body": "The pieces are visible. The context may be missing.",
+    "cta": "Explore the Academy",
+    "note": "Check the turn, castling rights and last pawn move.",
+    "alternate": "CHECK THE BOARD.\nCHECK THE CONTEXT.",
+    "proof": [
+      "01  Whose turn?",
+      "02  Can they castle?",
+      "03  What moved last?"
+    ],
+    "caption": "A chess screenshot can omit information that changes the legal moves. Check the turn, castling rights and last pawn move before analysing the position. Read the lesson and explore the Academy.",
+    "destination": "https://web3chess.online/academy",
+    "measure": "Saves per reach; qualified lesson and Academy visits",
+    "sequence": [
+      "Ask what the board can hide.",
+      "Show a verified context comparison.",
+      "Explain the difference and invite practice."
+    ]
+  },
+  "outputs": [
+    {
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "png": "square.png",
+      "svg": "square.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "portrait",
+      "width": 1080,
+      "height": 1350,
+      "png": "portrait.png",
+      "svg": "portrait.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "story",
+      "width": 1080,
+      "height": 1920,
+      "png": "story.png",
+      "svg": "story.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "wide",
+      "width": 1920,
+      "height": 1080,
+      "png": "wide.png",
+      "svg": "wide.svg",
+      "layoutWarnings": []
+    }
+  ]
+}

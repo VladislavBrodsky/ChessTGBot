@@ -1,0 +1,30 @@
+name: Content ops checks
+
+# Manual only. This workflow tests the content pipeline and re-runs the QA gates on the queue.
+# It never publishes: live posting needs durable at-most-once queue state and the Telegram secrets
+# (W3_TG_BOT_TOKEN, W3_TG_CHANNEL), which belong on one trusted runner. See marketing/content-ops/OPERATIONS.md.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Queue day to check (YYYY-MM-DD, default today UTC)"
+        required: false
+  # schedule:
+  #   - cron: "15 5 * * *"   # enable only after the owner approves unattended runs
+
+jobs:
+  checks:
+    name: Pipeline tests and QA gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install chess
+      - name: Unit tests
+        run: python3 -m unittest discover -s marketing/content-ops -p 'test_*.py'
+      - name: Re-run QA gates on the queue
+        run: python3 marketing/content-ops/daily.py qa ${{ inputs.date && format('--date {0}', inputs.date) || '' }}
+      - name: Dry-run publish (no credentials are provided to this job)
+        run: python3 marketing/content-ops/daily.py publish --dry-run

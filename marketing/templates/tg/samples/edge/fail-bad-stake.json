@@ -1,0 +1,8 @@
+{
+  "template": "rules",
+  "headline": "A match",
+  "cta_label": "Read the rules",
+  "stake": 0.333,
+  "_expect": "fail",
+  "_match": "whole number of cents"
+}

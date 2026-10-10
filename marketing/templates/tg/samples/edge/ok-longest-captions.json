@@ -1,0 +1,11 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "tag": "Mate in one",
+  "headline": "White to play and *find mate* in one move",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "cta_label": "Practice this free versus A.I.",
+  "subhead": "A back-rank pattern worth knowing: three pawns hide the king and one rook ends the game.",
+  "footer": "Answer in the next post. No account needed to try it.",
+  "_expect": "ok"
+}

@@ -1,0 +1,11 @@
+{
+  "template": "culture",
+  "size": "portrait",
+  "tag": "Chess life",
+  "headline": "Every blitz game, ever.",
+  "panels": [
+    { "label": "Me:", "text": "Plans a 15-move attack", "piece": "K" },
+    { "label": "The clock:", "text": "0:07 left", "piece": "P" }
+  ],
+  "cta_label": "Play a blitz game"
+}

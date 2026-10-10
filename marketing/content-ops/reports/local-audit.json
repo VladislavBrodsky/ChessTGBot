@@ -1,0 +1,541 @@
+{
+  "checkedAt": "2026-10-08T04:24:28.085Z",
+  "base": "http://127.0.0.1:8817",
+  "method": {
+    "browser": "Chromium",
+    "viewport": "390×844",
+    "cpuSlowdown": 4,
+    "network": "1.6 Mbps down / 0.75 Mbps up / 150 ms latency",
+    "cache": "disabled; fresh context per sample",
+    "runs": 1,
+    "scope": "Synthetic navigation lab, not Lighthouse or field Core Web Vitals. INP needs real interactions and is not reported."
+  },
+  "discovery": {
+    "/robots.txt": {
+      "status": 200,
+      "body": "User-Agent: *\nAllow: /\n\nSitemap: https://web3chess.online/sitemap.xml\n"
+    },
+    "/sitemap.xml": {
+      "status": 200,
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n<url>\n<loc>https://web3chess.online</loc>\n<changefreq>weekly</changefreq>\n<priority>1</priority>\n</url>\n<url>\n<loc>https://web3chess.online/how-it-works</loc>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/wagers</loc>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/academy</loc>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog</loc>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/play</loc>\n<changefreq>monthly</changefreq>\n<priority>0.8</priority>\n</url>\n<url>\n<loc>https://web3chess.online/fair-play</loc>\n<changefreq>monthly</changefreq>\n<priority>0.8</priority>\n</url>\n<url>\n<loc>https://web3chess.online/terms</loc>\n<changefreq>yearly</changefreq>\n<priority>0.5</priority>\n</url>\n<url>\n<loc>https://web3chess.online/privacy</loc>\n<changefreq>yearly</changefreq>\n<priority>0.5</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/fair-play-in-web3-chess</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/the-3-minute-blitz-blueprint-tactics-time-management</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/bankroll-management-for-competitive-chess-wagers</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/stafford-and-englund-gambits-speed-chess-weapons</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/elo-xp-progression-guide</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/why-telegram-mini-apps-for-chess</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/opening-mastery-tactics</loc>\n<lastmod>2026-10-07T00:00:00.000Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n</urlset>\n"
+    }
+  },
+  "pages": [
+    {
+      "path": "/",
+      "seo": {
+        "url": "http://127.0.0.1:8817/",
+        "title": "Chess in Telegram — Play, Train & Compete · Web3Chess",
+        "description": "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
+        "canonical": "https://web3chess.online/",
+        "robots": "index, follow",
+        "h1": [
+          "Skill is theonly edge"
+        ],
+        "ogImage": "https://web3chess.online/opengraph-image?8af16a50ae0003a9",
+        "jsonLd": [
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://web3chess.online/#organization",
+                "name": "Web3Chess",
+                "url": "https://web3chess.online",
+                "logo": "https://web3chess.online/icon.svg",
+                "sameAs": [
+                  "https://t.me/chess_hub",
+                  "https://t.me/chesshub_chat"
+                ]
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://web3chess.online/#website",
+                "name": "Web3Chess",
+                "url": "https://web3chess.online",
+                "description": "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
+                "inLanguage": "en",
+                "publisher": {
+                  "@id": "https://web3chess.online/#organization"
+                }
+              },
+              {
+                "@type": "VideoGame",
+                "name": "Web3Chess",
+                "url": "https://web3chess.online",
+                "genre": "Chess",
+                "gamePlatform": "Telegram",
+                "description": "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
+                "publisher": {
+                  "@id": "https://web3chess.online/#organization"
+                }
+              },
+              {
+                "@type": "FAQPage",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "Can I play chess for free on Web3Chess?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "A.I. practice and tactical puzzles are free. Matches against other players use USDT stakes starting at 1 USDT. You can explore the Academy and practise before deciding whether to play a wager match."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How does a wager match work and who gets the pot?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Both players commit equal stakes from their platform balances. In a decided match, 95% of the combined pot is credited to the winner’s balance, with 3% allocated to the platform and 2% to the referral pool. Draw handling follows the match rules. You can lose your stake. Wager matches are 18+."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How do I deposit funds to play?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Open Wallet in the Mini App and follow the current deposit instructions. Platform deposits use USDT on TON with your unique reference comment. Check the token, network, reference, and any displayed fee before sending. Buying or swapping assets into your personal wallet does not automatically credit your Web3Chess balance."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How fast are withdrawals processed?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "A match result first credits your platform balance. To move funds to your wallet, request a withdrawal and follow the confirmation instructions in the bot chat. Some requests require additional review. Processing and network conditions affect timing; a completed transfer can be checked on Tonviewer."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How does Web3Chess approach fair play?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "The server validates legal moves and maintains the game state and clocks. Players must make their own moves without outside assistance. Legal-move validation alone cannot prove that a player is unassisted; contact support about suspicious play and read the Fair Play page for the current rules."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What are the age and legal requirements to play?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Wager matches are for players aged 18 and older and are subject to local availability and rules. Check the terms and in-app eligibility requirements before playing for a stake. Free A.I. practice is available without committing a stake."
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "horizontalOverflow": false,
+        "images": [
+          {
+            "src": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-sculpture.webp&w=384&q=75",
+            "alt": "An ivory knight, charcoal rook, and mint pawn on a sculpted chessboard",
+            "width": "1000",
+            "height": "1000",
+            "loaded": true
+          }
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/794-a3c6349e754e6fcd.js",
+            "type": "script",
+            "bytes": 65603,
+            "durationMs": 2200
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/4bd1b696-92152b0f5947070d.js",
+            "type": "script",
+            "bytes": 63299,
+            "durationMs": 2192
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/cd87a8f174d93ac6-s.p.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 909
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/c1b02c1a57568c67-s.p.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 872
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/6961d055d00ff7ec-s.p.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 542
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-sculpture.webp&w=384&q=75",
+            "type": "link",
+            "bytes": 15444,
+            "durationMs": 1577
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/437e5f23c97e320c-s.p.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 519
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/5fb5c05ff73c0616-s.p.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 528
+          },
+          {
+            "url": "http://127.0.0.1:8817/?_rsc=8nTjltbQWvg6NcbE",
+            "type": "fetch",
+            "bytes": 11995,
+            "durationMs": 217
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/db96af6b531dc71f-s.woff2",
+            "type": "css",
+            "bytes": 10120,
+            "durationMs": 769
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/98e207f02528a563-s.woff2",
+            "type": "css",
+            "bytes": 10060,
+            "durationMs": 780
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/d3ebbfd689654d3a-s.woff2",
+            "type": "css",
+            "bytes": 10052,
+            "durationMs": 773
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 1812,
+          "cls": 0,
+          "mainThreadBlockingMs": 71,
+          "ttfbMs": 51.69999998807907,
+          "domContentLoadedMs": 839.9000000059605,
+          "fcpMs": 1004,
+          "transferBytes": 382692,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 1812,
+        "cls": 0,
+        "ttfbMs": 51.7,
+        "fcpMs": 1004,
+        "transferBytes": 382692,
+        "mainThreadBlockingMs": 71
+      }
+    },
+    {
+      "path": "/blog",
+      "seo": {
+        "url": "http://127.0.0.1:8817/blog",
+        "title": "Chess Journal — Strategy, Training & Product Stories · Web3Chess",
+        "description": "Explore chess opening ideas, tactical patterns, training advice, and the thinking behind Web3Chess in our chess journal.",
+        "canonical": "https://web3chess.online/blog",
+        "robots": "index, follow",
+        "h1": [
+          "Moves worthreading."
+        ],
+        "ogImage": "https://web3chess.online/blog/opengraph-image?43a314587c83238b",
+        "jsonLd": [],
+        "horizontalOverflow": false,
+        "images": [
+          {
+            "src": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-academy.webp&w=384&q=75",
+            "alt": "A sculpted open chess book supporting a mint pawn and an ivory knight",
+            "width": "1000",
+            "height": "1000",
+            "loaded": true
+          },
+          {
+            "src": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-fair-play.webp&w=640&q=75",
+            "alt": "",
+            "width": "1000",
+            "height": "1000",
+            "loaded": true
+          }
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/794-a3c6349e754e6fcd.js",
+            "type": "script",
+            "bytes": 65603,
+            "durationMs": 2008
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/4bd1b696-92152b0f5947070d.js",
+            "type": "script",
+            "bytes": 63299,
+            "durationMs": 1963
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/cd87a8f174d93ac6-s.p.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 1259
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-fair-play.webp&w=640&q=75",
+            "type": "img",
+            "bytes": 32960,
+            "durationMs": 1330
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/c1b02c1a57568c67-s.p.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 1160
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/38170ce7-8753b177e266b6ca.js",
+            "type": "script",
+            "bytes": 21667,
+            "durationMs": 303
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/6961d055d00ff7ec-s.p.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 531
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/437e5f23c97e320c-s.p.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 516
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/5fb5c05ff73c0616-s.p.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 524
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/image?url=%2Fillustrations%2Fchess-academy.webp&w=384&q=75",
+            "type": "link",
+            "bytes": 14080,
+            "durationMs": 1034
+          },
+          {
+            "url": "http://127.0.0.1:8817/?_rsc=vtmPbIC4DZK5EuSK",
+            "type": "fetch",
+            "bytes": 11995,
+            "durationMs": 273
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/db96af6b531dc71f-s.woff2",
+            "type": "css",
+            "bytes": 10120,
+            "durationMs": 562
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 1216,
+          "cls": 0.000004157502164060867,
+          "mainThreadBlockingMs": 28,
+          "ttfbMs": 7.600000008940697,
+          "domContentLoadedMs": 773.5,
+          "fcpMs": 900,
+          "transferBytes": 432882,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 1216,
+        "cls": 0,
+        "ttfbMs": 7.6,
+        "fcpMs": 900,
+        "transferBytes": 432882,
+        "mainThreadBlockingMs": 28
+      }
+    },
+    {
+      "path": "/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+      "seo": {
+        "url": "http://127.0.0.1:8817/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+        "title": "Chess in Telegram: understand skill, stakes and settlement · Web3Chess",
+        "description": "Understand what makes Web3Chess a chess game, which activities are free, and how USDT match settlement differs from a wallet payout.",
+        "canonical": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+        "robots": "index, follow",
+        "h1": [
+          "Chess in Telegram: understand skill, stakes and settlement"
+        ],
+        "ogImage": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess/opengraph-image?76a660bbf1b20dc4",
+        "jsonLd": [
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "BlogPosting",
+                "@id": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess#article",
+                "headline": "Chess in Telegram: understand skill, stakes and settlement",
+                "description": "Understand what makes Web3Chess a chess game, which activities are free, and how USDT match settlement differs from a wallet payout.",
+                "articleSection": "Product",
+                "inLanguage": "en-US",
+                "author": {
+                  "@type": "Organization",
+                  "name": "Web3Chess Editorial",
+                  "url": "https://web3chess.online"
+                },
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "Web3Chess",
+                  "url": "https://web3chess.online",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://web3chess.online/icon.svg"
+                  }
+                },
+                "citation": [
+                  "https://web3chess.online/academy"
+                ],
+                "datePublished": "2026-09-25T00:00:00.000Z",
+                "dateModified": "2026-10-07T00:00:00.000Z",
+                "image": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess/opengraph-image",
+                "mainEntityOfPage": {
+                  "@type": "WebPage",
+                  "@id": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess"
+                }
+              },
+              {
+                "@type": "BreadcrumbList",
+                "@id": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess#breadcrumb",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://web3chess.online"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Blog",
+                    "item": "https://web3chess.online/blog"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "Chess in Telegram: understand skill, stakes and settlement",
+                    "item": "https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "horizontalOverflow": false,
+        "images": [],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/794-a3c6349e754e6fcd.js",
+            "type": "script",
+            "bytes": 65603,
+            "durationMs": 1903
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/4bd1b696-92152b0f5947070d.js",
+            "type": "script",
+            "bytes": 63299,
+            "durationMs": 1886
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/cd87a8f174d93ac6-s.p.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 1257
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/c1b02c1a57568c67-s.p.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 1100
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/chunks/38170ce7-8753b177e266b6ca.js",
+            "type": "script",
+            "bytes": 21667,
+            "durationMs": 1715
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/6961d055d00ff7ec-s.p.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 529
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/437e5f23c97e320c-s.p.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 508
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/5fb5c05ff73c0616-s.p.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 523
+          },
+          {
+            "url": "http://127.0.0.1:8817/?_rsc=D_wFTijODZfbG9ks",
+            "type": "fetch",
+            "bytes": 11995,
+            "durationMs": 263
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/db96af6b531dc71f-s.woff2",
+            "type": "css",
+            "bytes": 10120,
+            "durationMs": 540
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/d3ebbfd689654d3a-s.woff2",
+            "type": "css",
+            "bytes": 10052,
+            "durationMs": 593
+          },
+          {
+            "url": "http://127.0.0.1:8817/_next/static/media/3352fdb488e19d84-s.p.woff2",
+            "type": "link",
+            "bytes": 9328,
+            "durationMs": 397
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 912,
+          "cls": 0,
+          "mainThreadBlockingMs": 45,
+          "ttfbMs": 8.400000005960464,
+          "domContentLoadedMs": 773.9000000059605,
+          "fcpMs": 912,
+          "transferBytes": 385325,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 912,
+        "cls": 0,
+        "ttfbMs": 8.4,
+        "fcpMs": 912,
+        "transferBytes": 385325,
+        "mainThreadBlockingMs": 45
+      }
+    }
+  ]
+}

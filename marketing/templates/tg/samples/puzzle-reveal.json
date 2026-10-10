@@ -1,0 +1,16 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "reveal": true,
+  "tag": "Answer",
+  "headline": "{Ra8#}.\n*Nowhere to run.*",
+  "subhead": "The king's own pawns block every escape square.",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "moves": [
+    "Ra8#"
+  ],
+  "highlight": [
+    "a8"
+  ],
+  "cta_label": "More puzzles in the Academy"
+}

@@ -1,0 +1,16 @@
+{
+  "template": "tip",
+  "size": "portrait",
+  "tag": "Quick tip",
+  "headline": "Three checks before *every* move",
+  "subhead": "A 5-second routine that saves games.",
+  "steps": [
+    "What is my opponent threatening?",
+    "Which checks, captures and threats do I have?",
+    "Does my move leave a piece hanging?"
+  ],
+  "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+  "cta_label": "Practice free vs A.I.",
+  "theme": "paper",
+  "_expect": "ok"
+}

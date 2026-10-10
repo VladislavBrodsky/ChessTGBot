@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "mode": {
+    "telegram": "review",
+    "site": "review"
+  },
+  "note": "review = a human runs `daily.py approve <id>` after reading the draft and its rendered image (the default until the team trusts the gates); auto = publish whatever passes QA. Telegram needs W3_TG_BOT_TOKEN + W3_TG_CHANNEL; without them every publish is a dry run. Telegram slots and rotation follow reports/competitor-audit-2026-10-10.md section 6 (a four-week hypothesis, not a measured optimum).",
+  "telegram": {
+    "channel_env": "W3_TG_CHANNEL",
+    "token_env": "W3_TG_BOT_TOKEN",
+    "slots_utc": [
+      "07:30",
+      "11:00",
+      "14:30",
+      "17:30",
+      "20:30"
+    ],
+    "rotation": {
+      "mon": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Product"
+      ],
+      "tue": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Chess Culture"
+      ],
+      "wed": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Match Rules"
+      ],
+      "thu": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Product"
+      ],
+      "fri": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Chess Culture"
+      ],
+      "sat": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Tactics"
+      ],
+      "sun": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Chess News"
+      ]
+    },
+    "creative_defaults": {
+      "Tactics": {
+        "template": "puzzle",
+        "format": "puzzle"
+      },
+      "Openings": {
+        "template": "trap",
+        "format": "trap"
+      },
+      "Academy": {
+        "template": "tip",
+        "format": "lesson"
+      },
+      "Chess News": {
+        "template": "news",
+        "format": "news"
+      },
+      "Chess Culture": {
+        "template": "culture",
+        "format": "culture"
+      },
+      "Product": {
+        "template": "product",
+        "format": "product"
+      },
+      "Match Rules": {
+        "template": "rules",
+        "format": "rules"
+      }
+    },
+    "min_gap_hours": 3
+  },
+  "site": {
+    "slots_utc": [
+      "05:00",
+      "08:00",
+      "11:00",
+      "14:00",
+      "17:00"
+    ],
+    "rotation": {
+      "mon": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Chess Culture"
+      ],
+      "tue": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Match Rules"
+      ],
+      "wed": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Product"
+      ],
+      "thu": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Chess Culture"
+      ],
+      "fri": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Match Rules"
+      ],
+      "sat": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Product"
+      ],
+      "sun": [
+        "Tactics",
+        "Openings",
+        "Academy",
+        "Chess News",
+        "Chess Culture"
+      ]
+    },
+    "cover_template": "cover"
+  }
+}

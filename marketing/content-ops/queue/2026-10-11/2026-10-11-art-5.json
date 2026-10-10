@@ -1,0 +1,269 @@
+{
+  "id": "2026-10-11-art-5",
+  "kind": "article",
+  "date": "2026-10-11",
+  "slot": 5,
+  "category": "Chess Culture",
+  "scheduled_at": "2026-10-11T17:00:00Z",
+  "status": "draft",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-10T19:15:06Z"
+  },
+  "brief": {
+    "slot": {
+      "id": "2026-10-11-art-5",
+      "kind": "article",
+      "date": "2026-10-11",
+      "slot": 5,
+      "category": "Chess Culture",
+      "scheduled_at": "2026-10-11T17:00:00Z"
+    },
+    "tov": "Voice: a chess-literate friend with a point of view. Short opening line, concrete board detail,\nconfident explanation, restrained wit. Show the move or mechanism behind the headline.\nRules: no hype, no income or profit claims, no fake urgency, no invented numbers, testimonials or quotes.\nAt most 3 emoji, none as bullets. One idea, one CTA. Never copy a source's wording, structure or images;\nrebuild the idea from our own position and explanation. Wager mentions always carry the adult disclosure\nand are never paired with youth content. Name the move (SAN) and the square; give the reader something to try.",
+    "idea": null,
+    "competitor_patterns": {
+      "hook_templates": [
+        {
+          "id": "H7",
+          "pattern": "Culture caption",
+          "template": "Evaluation: +3.0. Me, one move later: where did my queen go?",
+          "pillar": "Chess Culture",
+          "note": "Own art only; no player named for the joke."
+        },
+        {
+          "id": "H8",
+          "pattern": "This day in chess",
+          "template": "On this day in {year}, {event}. The final position:",
+          "pillar": "Chess Culture / News",
+          "note": "Fact-check dates; no promotion next to tributes."
+        }
+      ],
+      "ranked_formats": [
+        {
+          "rank": 2,
+          "format": "Short culture caption or image-only meme",
+          "adaptation": "Chess Culture, slot 4. One restrained joke about a real chess feeling, on our own licensed art (violet rook, outlined CHESS wordmark). Never reuse a community meme image.",
+          "guardrail": "Competitor images are not visible in the preview, so the visual hook is unmeasured. Humour must not mock real players or young players."
+        },
+        {
+          "rank": 4,
+          "format": "\"This day in chess\" history, birthdays and tributes",
+          "adaptation": "Chess Culture or News, slot 4 about twice a week. A dated fact plus the decisive position from that game. Our own copy.",
+          "guardrail": "Tributes after a death are not engagement material: use a plain, factual tone and no promotion beside them."
+        },
+        {
+          "rank": 7,
+          "format": "Audience prompt or UGC call",
+          "adaptation": "Chess Culture, slot 5 on Tue and Fri. \"Send us the best move you ever played\" style, only if we really will feature entries.",
+          "guardrail": "Do not promise a feature we will not deliver; get permission before showing anyone's game or name."
+        }
+      ],
+      "avoid": [
+        "Weekly \"what to do this week\" agenda posts",
+        "Medal lists and results tables as an engagement driver",
+        "Long text (over 600 characters) as default",
+        "Burst posting of four or more posts inside a day on one topic",
+        "\"Earn\" and prize-pool headlines"
+      ],
+      "source_report": "competitor-audit-2026-10-10.json"
+    },
+    "creative_default": {
+      "template": "cover"
+    },
+    "ctas": {
+      "play": {
+        "label": "Play a free game",
+        "url": "https://t.me/chess_matbot/Web3Chess",
+        "wager": false
+      },
+      "arena": {
+        "label": "Open the Arena",
+        "url": "https://t.me/chess_matbot/Web3Chess?startapp=arena",
+        "wager": true
+      },
+      "academy": {
+        "label": "Open the Academy",
+        "url": "https://web3chess.online/academy",
+        "wager": false
+      },
+      "puzzle": {
+        "label": "Try today's puzzle",
+        "url": "https://web3chess.online/?puzzle=back-rank#challenge",
+        "wager": false
+      },
+      "rules": {
+        "label": "Read the match rules",
+        "url": "https://web3chess.online/wagers",
+        "wager": true
+      },
+      "journal": {
+        "label": "Read the full story",
+        "url": "https://web3chess.online/blog",
+        "wager": false
+      },
+      "channel": {
+        "label": "Join the channel",
+        "url": "https://t.me/chess_hub",
+        "wager": false
+      },
+      "chat": {
+        "label": "Join the chat",
+        "url": "https://t.me/chesshub_chat",
+        "wager": false
+      }
+    },
+    "wager_disclosure": "USDT matches are for adults (18+) where permitted. You can lose your stake.",
+    "output": {
+      "slug": "kebab-case, unique",
+      "title": "<=100 chars",
+      "subtitle": "",
+      "excerpt": "",
+      "metaDescription": "<=160 chars",
+      "category": "one of ['Tactics', 'Openings', 'Academy', 'Chess News', 'Chess Culture', 'Product', 'Match Rules']",
+      "readingTime": "e.g. '5 min read'",
+      "author": "{name, role, avatar, kind:'Organization'}",
+      "takeaways": "3-5 bullets",
+      "content": "blocks: paragraph|heading|subheading|quote|callout|list|chess_position{fen,moves?,initialFen?,caption}",
+      "sources": "[{title,url(https)}]",
+      "relatedSlugs": "existing slugs",
+      "cta": "{label, href:'/academy'|'/wagers'|'/play'|'/blog'}"
+    }
+  },
+  "article": {
+    "slug": "why-we-hang-pieces-the-one-move-blunder",
+    "title": "Why We Hang Pieces: The One-Move Blunder, Explained Kindly",
+    "subtitle": "Three minutes of brilliant thinking, one second of autopilot, and a queen on the wrong square.",
+    "excerpt": "Why smart players hang pieces in one move: tunnel vision, a stale mental board, relief and the clock. A warm, funny look at the blunder with a recovery routine.",
+    "metaDescription": "Why smart players hang pieces in one move: tunnel vision, a stale mental board, relief and the clock. A warm, funny look at the blunder, with a recovery routine.",
+    "category": "Chess Culture",
+    "author": {
+      "name": "Web3Chess Editorial",
+      "role": "Chess and product editorial",
+      "avatar": "",
+      "kind": "Organization"
+    },
+    "publishedAt": "2026-10-11",
+    "readingTime": "4 min read",
+    "takeaways": [
+      "Hanging a piece says something about attention, not intelligence.",
+      "We analyse our own idea so hard that we forget to analyse their reply.",
+      "The board in your head can be a move or two out of date.",
+      "Name the slip in one specific sentence; specific beats 'I blundered'.",
+      "A position after a blunder still has moves, and your opponent can slip too."
+    ],
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "You studied the position for three minutes. You found a plan, and a pretty one. You played the move, pressed the clock, and then noticed that your queen had been standing on a square the enemy bishop could reach since the move before. Welcome. Every player who has ever lived has been here, and the pieces were hung by someone who knew perfectly well how the pieces move."
+      },
+      {
+        "type": "heading",
+        "text": "Exhibit A"
+      },
+      {
+        "type": "paragraph",
+        "text": "The quickest possible checkmate has a name: Fool's mate. It takes four plies in total, two moves by each side, and it is not a joke about intelligence. It is a joke about attention. White pushed two pawns and never glanced at the diagonal leading to its king."
+      },
+      {
+        "type": "chess_position",
+        "fen": "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+        "moves": [
+          "f3",
+          "e5",
+          "g4",
+          "Qh4#"
+        ],
+        "caption": "Fool's mate: 1.f3 e5 2.g4 Qh4#. Two pawn moves opened the diagonal, and Black's queen did the rest."
+      },
+      {
+        "type": "paragraph",
+        "text": "Nobody plays g4 here because they cannot see the queen. They play it because they are busy having an idea, and ideas are loud. That is the first clue about why this keeps happening to all of us."
+      },
+      {
+        "type": "heading",
+        "text": "Why the brain does this"
+      },
+      {
+        "type": "paragraph",
+        "text": "Tunnel vision. You are analysing your idea, not their reply. For three minutes the only pieces in your head were the ones that were going to do something wonderful. Their bishop was not invited to the thought."
+      },
+      {
+        "type": "paragraph",
+        "text": "A stale board. A piece was defended two moves ago, so in your head it still is. The brain files the position under seen-it and goes for a snack while your hand carries on."
+      },
+      {
+        "type": "paragraph",
+        "text": "Relief. After a long, hard decision, the mind relaxes. The next move, which looks obvious, gets the least attention of the whole game. It is common to hang a piece right after finding a great move."
+      },
+      {
+        "type": "paragraph",
+        "text": "Autopilot. Some moves feel so familiar that the brain approves them without looking: the capture that always works, the retreat you have played a hundred times. Today the capture does not work, and the brain has already pressed the button."
+      },
+      {
+        "type": "paragraph",
+        "text": "The clock. Time pressure turns patience into hand speed. When the numbers shrink, we stop looking and start hoping, and hope is not a piece."
+      },
+      {
+        "type": "paragraph",
+        "text": "Then comes the cruellest part. Players swear that the refutation appears the instant the piece leaves their fingers. There is no magic in it. Committing to the move switches off the hoping, and for the first time that turn you actually look at the board."
+      },
+      {
+        "type": "heading",
+        "text": "The evaluation swing, in plain words"
+      },
+      {
+        "type": "paragraph",
+        "text": "If you review games with an engine, you know the sight: a calm line hovering near equal, then one move that sends the bar crashing to one side, as if somebody dropped a piano on the board. That swing is why a single blunder feels out of all proportion. Chess concentrates the damage into a handful of moves, while the quiet moves around them look nearly identical. A game can be level for thirty moves and decided in one. That is not a flaw in you, and it is not a character defect. It is how the game is built."
+      },
+      {
+        "type": "heading",
+        "text": "How to hang fewer pieces, and how to recover"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Name it in one specific sentence after the game. \"I moved the rook without checking whether the bishop could take it\" teaches more than \"I blundered\".",
+          "Take a last look before you release a piece. Check the square it lands on, and ask what that piece used to guard.",
+          "Play on. A position after a blunder still contains moves, opponents slip too, and defending a bad position is excellent training.",
+          "Keep a blunder log of one line per game. Patterns appear quickly, and you will probably discover a favourite."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "One more thing: do not follow a blunder with a second one. After a piece goes, the mind keeps replaying the moment, and the next move gets even less attention than the last. Give the position in front of you your full look, as though the game had just started. It has a different position now, and it needs a different move."
+      },
+      {
+        "type": "heading",
+        "text": "Your turn"
+      },
+      {
+        "type": "paragraph",
+        "text": "Everyone has a favourite one-move disaster, and the best ones are the ones where you were completely sure. What is the funniest piece you ever left hanging? Tell a friend you play with. Chances are they will top it, and you will both feel better."
+      },
+      {
+        "type": "callout",
+        "text": "A blunder is a data point about attention, not a verdict about talent."
+      }
+    ],
+    "relatedSlugs": [
+      "the-3-minute-blitz-blueprint-tactics-time-management",
+      "opening-mastery-tactics"
+    ],
+    "sources": [
+      {
+        "title": "Fool's mate, the quickest checkmate (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Fool%27s_mate"
+      },
+      {
+        "title": "Chess annotation symbols, the meaning of ?? (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Chess_annotation_symbols"
+      }
+    ],
+    "cta": {
+      "label": "Play a free game",
+      "href": "/play"
+    }
+  },
+  "updated_at": "2026-10-10T19:15:06Z"
+}

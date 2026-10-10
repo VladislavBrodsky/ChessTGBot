@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "tag": "Mate in 1",
+  "headline": "This headline is far too long for a poster because it keeps going and going well past any sensible limit for a puzzle post that people glance at on a phone",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "cta_label": "Drop your answer",
+  "_expect": "fail",
+  "_match": "headline does not fit"
+}

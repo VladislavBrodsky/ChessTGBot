@@ -1,0 +1,9 @@
+{
+  "template": "rules",
+  "theme": "mint",
+  "headline": "A 25 USDT match, *start to finish*",
+  "subhead": "The winner's share includes their own stake.",
+  "stake": 25,
+  "cta_label": "Read the match rules",
+  "_expect": "ok"
+}

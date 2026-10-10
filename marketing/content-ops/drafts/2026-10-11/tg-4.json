@@ -1,0 +1,31 @@
+{
+  "format": "culture",
+  "hook": "Evaluation: +3.0. Me, one move later: where did my queen go?",
+  "cta": "play",
+  "text": "<b>Evaluation: +3.0. Me, one move later: where did my queen go?</b>\nEvery player has one of these games. Tell us in the replies which piece you hang most often. No judging; the knight is ahead.",
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Chess Culture",
+    "headline": "Every game\nhas *one* move.",
+    "panels": [
+      {
+        "label": "The engine",
+        "text": "Evaluation: +3.0",
+        "piece": "Q"
+      },
+      {
+        "label": "Me, one move later",
+        "text": "Where did my queen go?",
+        "piece": "bN"
+      }
+    ],
+    "cta_label": "Play a free game"
+  },
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ]
+}

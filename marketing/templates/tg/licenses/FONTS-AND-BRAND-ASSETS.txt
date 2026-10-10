@@ -1,0 +1,23 @@
+Fonts, logo and artwork used by the Telegram template engine
+============================================================
+
+Nothing is copied into this folder; render.mjs reads the files below at render time and embeds
+them in the page as data: URIs (no network access).
+
+Fonts (SIL Open Font License 1.1)
+  website/public/fonts/barlow-condensed-bold.woff2   Barlow Condensed Bold (display headlines)
+      licence: website/public/fonts/OFL-barlow-condensed.txt
+  website/public/fonts/onest-variable.woff2          Onest variable, weights 400-700 (all other text)
+      licence: website/public/fonts/OFL-onest.txt
+  Keep the OFL texts with any redistributed copy of the fonts. Rendered PNGs are not font software.
+
+Logo lockups (Web3Chess brand, our own)
+  website/public/brand/w3chess-logo.svg          black tile + mint knight, Ink wordmark (paper / mint themes)
+  website/public/brand/w3chess-logo-inverse.svg  mint tile + black knight, white wordmark (ink theme)
+  See website/public/brand/README.md. The older violet rook / "CHESS" lockup and the crown are retired.
+
+3D sculpture (own artwork, generated for the website)
+  website/public/illustrations/chess-sculpture.webp   (product + cover templates)
+  Provenance and prompt: design-system/website/ARTWORK.md
+
+Chess pieces: see PIECES.txt in this folder.

@@ -1,0 +1,25 @@
+{
+  "format": "lesson",
+  "hook": "Before you move: what is your opponent threatening?",
+  "cta": "academy",
+  "text": "<b>Before you move: what is your opponent threatening?</b>\nThe most expensive blunders are not missed brilliancies. They are moves played without looking at the reply. Run the same three checks every time:\n1. What did their last move change?\n2. What is now attacked, theirs and mine?\n3. Does my move still work after their best answer?\nThree questions, about ten seconds. Practise the habit with guided lessons in the Academy.",
+  "creative": {
+    "template": "tip",
+    "size": "portrait",
+    "tag": "Academy",
+    "headline": "Before you move,\n*check the threat.*",
+    "subhead": "Three questions. Ten seconds.",
+    "steps": [
+      "What did their last move change?",
+      "What is attacked now, theirs and mine?",
+      "Does my move survive their best reply?"
+    ],
+    "cta_label": "Train it in the Academy"
+  },
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ]
+}

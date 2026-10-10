@@ -1,0 +1,9 @@
+{
+  "template": "rules",
+  "size": "portrait",
+  "tag": "How it works",
+  "headline": "A 10 USDT match, *start to finish*",
+  "subhead": "The winner's share includes their own stake.",
+  "stake": 10,
+  "cta_label": "Read the match rules"
+}

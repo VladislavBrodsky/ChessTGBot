@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "tag": "Mate in 1",
+  "headline": "White to play.\n*Mate in one.*",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "cta_label": "Practice this exact pattern for free versus our A.I. opponent in Telegram right now",
+  "_expect": "fail",
+  "_match": "cta"
+}

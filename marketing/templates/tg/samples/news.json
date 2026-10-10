@@ -1,0 +1,10 @@
+{
+  "template": "news",
+  "size": "portrait",
+  "tag": "Chess news",
+  "headline": "The Candidates decide who *challenges* the champion",
+  "subhead": "Eight players, a double round-robin and a single ticket to the title match. Here is why every draw counts in this format.",
+  "source": "FIDE",
+  "_note": "Layout sample. Format description only; replace with a reviewed news take and the real outlet before publishing.",
+  "cta_label": "Join the chess chat"
+}

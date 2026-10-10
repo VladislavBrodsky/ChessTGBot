@@ -1,0 +1,154 @@
+{
+  "id": "2026-10-11-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "slot": 2,
+  "category": "Chess News",
+  "scheduled_at": "2026-10-11T11:00:00Z",
+  "status": "draft",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-10T19:15:07Z"
+  },
+  "brief": {
+    "slot": {
+      "id": "2026-10-11-tg-2",
+      "kind": "telegram",
+      "date": "2026-10-11",
+      "slot": 2,
+      "category": "Chess News",
+      "scheduled_at": "2026-10-11T11:00:00Z"
+    },
+    "tov": "Voice: a chess-literate friend with a point of view. Short opening line, concrete board detail,\nconfident explanation, restrained wit. Show the move or mechanism behind the headline.\nRules: no hype, no income or profit claims, no fake urgency, no invented numbers, testimonials or quotes.\nAt most 3 emoji, none as bullets. One idea, one CTA. Never copy a source's wording, structure or images;\nrebuild the idea from our own position and explanation. Wager mentions always carry the adult disclosure\nand are never paired with youth content. Name the move (SAN) and the square; give the reader something to try.",
+    "idea": null,
+    "competitor_patterns": {
+      "hook_templates": [
+        {
+          "id": "H2",
+          "pattern": "Number-first",
+          "template": "{number} {unit}. That is how long {player} thought about one move. The position:",
+          "pillar": "Chess News",
+          "note": "Verify the number against the broadcast or the primary report."
+        },
+        {
+          "id": "H3",
+          "pattern": "Record plus lesson",
+          "template": "{player} is the first to {verified record}. The idea behind it fits on one board.",
+          "pillar": "Chess News",
+          "note": "Cite the source in the first reply."
+        }
+      ],
+      "ranked_formats": [
+        {
+          "rank": 3,
+          "format": "Record or first-ever claim with a number up front",
+          "adaptation": "Chess News, slot 2. A verified record, then one original lesson from the position that produced it. The number leads the first line.",
+          "guardrail": "Verify against a primary source before posting; never state a record you cannot cite."
+        },
+        {
+          "rank": 4,
+          "format": "\"This day in chess\" history, birthdays and tributes",
+          "adaptation": "Chess Culture or News, slot 4 about twice a week. A dated fact plus the decisive position from that game. Our own copy.",
+          "guardrail": "Tributes after a death are not engagement material: use a plain, factual tone and no promotion beside them."
+        },
+        {
+          "rank": 6,
+          "format": "Short attributed quote card",
+          "adaptation": "Chess News, slot 2. A short public quote (under about 15 words), exact and attributed, then our chess explanation of the position it refers to.",
+          "guardrail": "Quote accurately and briefly; no invented quotes; link the primary source."
+        }
+      ],
+      "avoid": [
+        "Weekly \"what to do this week\" agenda posts",
+        "Medal lists and results tables as an engagement driver",
+        "Long text (over 600 characters) as default",
+        "Burst posting of four or more posts inside a day on one topic",
+        "\"Earn\" and prize-pool headlines"
+      ],
+      "source_report": "competitor-audit-2026-10-10.json"
+    },
+    "creative_default": {
+      "template": "news",
+      "format": "news"
+    },
+    "ctas": {
+      "play": {
+        "label": "Play a free game",
+        "url": "https://t.me/chess_matbot/Web3Chess",
+        "wager": false
+      },
+      "arena": {
+        "label": "Open the Arena",
+        "url": "https://t.me/chess_matbot/Web3Chess?startapp=arena",
+        "wager": true
+      },
+      "academy": {
+        "label": "Open the Academy",
+        "url": "https://web3chess.online/academy",
+        "wager": false
+      },
+      "puzzle": {
+        "label": "Try today's puzzle",
+        "url": "https://web3chess.online/?puzzle=back-rank#challenge",
+        "wager": false
+      },
+      "rules": {
+        "label": "Read the match rules",
+        "url": "https://web3chess.online/wagers",
+        "wager": true
+      },
+      "journal": {
+        "label": "Read the full story",
+        "url": "https://web3chess.online/blog",
+        "wager": false
+      },
+      "channel": {
+        "label": "Join the channel",
+        "url": "https://t.me/chess_hub",
+        "wager": false
+      },
+      "chat": {
+        "label": "Join the chat",
+        "url": "https://t.me/chesshub_chat",
+        "wager": false
+      }
+    },
+    "wager_disclosure": "USDT matches are for adults (18+) where permitted. You can lose your stake.",
+    "output": {
+      "hook": "first line, <=110 chars, no hype",
+      "text": "Telegram HTML (<b>,<i>,<a>,<code>,<blockquote>), <=1000 chars incl. one clear action; no markdown",
+      "cta": "one of ['academy', 'arena', 'channel', 'chat', 'journal', 'play', 'puzzle', 'rules']",
+      "extra_buttons": "optional, at most one more CTA id",
+      "creative": "image spec for marketing/templates/tg (templates puzzle|trap|poll|news|culture|tip|rules|product|cover): {template, size?, tag?, headline (use *accent*, \\n), subhead?, fen (legal), moves?, options?, steps?, panels?, source? (news), footer?, cta_label (required), theme?}; fen must equal chess.fen",
+      "chess": "{fen, solution:[SAN], claim:'mate_in_1'|'mate_in_2'|null} when a position is shown",
+      "sources": "[{kind:'competitor'|'primary'|'own', url, excerpt?}] — keep competitor excerpts short; they feed the originality gate"
+    }
+  },
+  "format": "news",
+  "hook": "2.5–1.5 in the final round gave Uzbekistan the Chess Olympiad on home soil",
+  "cta": "journal",
+  "text": "<b>2.5–1.5 in the final round gave Uzbekistan the Chess Olympiad on home soil.</b>\nThe win over Ukraine in Samarkand is Uzbekistan's second Olympiad title after Chennai 2022. India took silver after a 2–2 draw with Hungary, and Germany took bronze by beating the Netherlands 2.5–1.5.\nWhy the scoreline matters: a team match has four boards. One win and three draws is enough to take the match, so teams guard three boards and press on the fourth.\nSource: FIDE.",
+  "creative": {
+    "template": "news",
+    "size": "portrait",
+    "tag": "Chess News",
+    "headline": "Uzbekistan\n*take gold*\non home soil",
+    "subhead": "Final round: 2.5–1.5 against Ukraine in Samarkand. The second Olympiad title after Chennai 2022.",
+    "source": "FIDE",
+    "cta_label": "Read more on the blog"
+  },
+  "sources": [
+    {
+      "kind": "primary",
+      "url": "https://www.fide.com/?p=50321"
+    }
+  ],
+  "updated_at": "2026-10-10T19:15:08Z",
+  "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "status": "draft-for-review",
+  "language": "en",
+  "market": "global chess audience hypothesis",
+  "created_at": "2026-10-08T04:21:13.362241+00:00",
+  "claims": [
+    {
+      "claim": "Lichess announced Board Editor image import",
+      "source_url": "https://lichess.org/feed#2026-10-07-20:30",
+      "source_publication_date": "2026-10-07",
+      "event_date": "2026-10-07",
+      "verified": "Read the primary dated update; no Web3Chess feature claim"
+    },
+    {
+      "claim": "FEN records six position fields",
+      "source_url": "https://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm#c16.1",
+      "source_publication_date": "1994",
+      "event_date": null,
+      "verified": "Read section 16.1 and its field definitions"
+    },
+    {
+      "claim": "Original castling and en passant examples change legal moves when context changes",
+      "source_url": "https://jhlywa.github.io/chess.js/",
+      "source_publication_date": null,
+      "event_date": null,
+      "verified": "Local chess.js 1.4.0 legal-move comparison; no engine evaluation or best-move claim"
+    }
+  ],
+  "keyword": {
+    "primary": "chess screenshot to FEN",
+    "intent": "understand missing position information",
+    "search_volume": null,
+    "difficulty": null,
+    "priority_basis": "Directly answer the screenshot-to-FEN task with an original four-step workflow and legal-move exercises; no search volume or difficulty data available."
+  },
+  "review": {
+    "factual": "Lichess 7 October update, Board Editor controls and PGN FEN fields rechecked against primary pages; six special-move assertions and side-to-move comparison replayed with local chess.js 1.4.0.",
+    "editorial": "Revised existing draft for search intent, added a screenshot-to-FEN workflow, kept original constructed positions and clearly attributed the Lichess feature.",
+    "human_approval": null,
+    "seo": "Unique draft slug checked against existing articles; title includes the search task, description is 132 characters, and article adds the answer near the start. Search Console volume and field performance remain unavailable."
+  },
+  "distribution": {
+    "blog": "draft-for-review",
+    "social": "draft-for-review",
+    "templates": "academy; four native aspect ratios regenerated and visually inspected",
+    "competitor_engagement": null
+  },
+  "verified_at": "2026-10-08T14:58:00.412374+00:00",
+  "position_checks": [
+    {
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "include": [
+        "O-O",
+        "O-O-O"
+      ],
+      "verified": true
+    },
+    {
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w - - 0 1",
+      "exclude": [
+        "O-O",
+        "O-O-O"
+      ],
+      "verified": true
+    },
+    {
+      "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+      "include": [
+        "exd6"
+      ],
+      "verified": true
+    },
+    {
+      "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - - 0 2",
+      "exclude": [
+        "exd6"
+      ],
+      "verified": true
+    }
+  ],
+  "collection_review": {
+    "collector_report": "marketing/content-ops/reports/latest-research.json",
+    "fetched_at": "2026-10-08T14:55:52.694570+00:00",
+    "result": "All three configured feeds reported robots unavailable or access disallowed in the local network; cached candidates are discovery leads only.",
+    "manual_primary_verification": "The dated Lichess update was opened directly on lichess.org/feed. The Board Editor was checked for the From image control and FEN field.",
+    "selection_reason": "The image-import update has a timely, useful lesson for adult and general chess readers; higher-scored cached youth championship and administrative items did not match today’s practical query."
+  },
+  "checks": {
+    "article_schema": "passed",
+    "website_typecheck": "passed",
+    "content_ops_tests": "7 passed",
+    "chess_positions": "6 special-move assertions and side-to-move comparison passed",
+    "creative": "4 PNG and 4 SVG native layouts exported without layout warnings",
+    "publication": "not published"
+  },
+  "cmo_brief": {
+    "audience": "General chess learners who share diagrams or screenshots for analysis",
+    "reader_problem": "The picture may omit move rights that change legal options",
+    "original_value": "A practical four-step screenshot-to-FEN check plus three constructed legal-move examples",
+    "primary_action": "Practise the position-check habit in the Academy; use the article URL only after publication",
+    "primary_measure": "Saves per reach on comparable educational posts",
+    "secondary_measure": "Qualified Academy visits and, after publication, article visits",
+    "review_window": "72 hours and seven days after any approved post",
+    "stop_rule": "If the hook earns reach without saves or qualified visits, revise the example and destination before increasing distribution; no performance baseline is available yet."
+  },
+  "analytics": {
+    "channel_exports": "not supplied",
+    "search_console": "not supplied",
+    "field_core_web_vitals": "not supplied",
+    "claim": "No observed virality or conversion lift is claimed."
+  }
+}

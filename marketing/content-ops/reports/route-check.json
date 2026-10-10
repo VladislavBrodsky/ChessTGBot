@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-10-08T04:28:12.608Z",
+  "base": "http://127.0.0.1:8817",
+  "results": [
+    {
+      "slug": "bankroll-management-for-competitive-chess-wagers",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "elo-xp-progression-guide",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "fair-play-in-web3-chess",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "opening-mastery-tactics",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "stafford-and-englund-gambits-speed-chess-weapons",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "the-3-minute-blitz-blueprint-tactics-time-management",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "the-death-of-tap-to-earn-skill-based-web3-chess",
+      "articleStatus": 200,
+      "imageStatus": 200
+    },
+    {
+      "slug": "why-telegram-mini-apps-for-chess",
+      "articleStatus": 200,
+      "imageStatus": 200
+    }
+  ]
+}

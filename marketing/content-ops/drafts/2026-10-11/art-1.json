@@ -1,0 +1,157 @@
+{
+  "slug": "smothered-mate-king-boxed-in-by-its-own-pieces",
+  "title": "Smothered Mate: When a King Is Boxed In by Its Own Pieces",
+  "subtitle": "A knight check cannot be blocked. Add a king with no free square and the game is over.",
+  "excerpt": "Learn the smothered mate with two verified positions: how a corner king gets boxed in by its own rook and pawns, and how a queen sacrifice builds the box.",
+  "metaDescription": "Learn the smothered mate with two verified positions. See how a king boxed in by its own pieces falls to a knight check, and how a sacrifice builds the trap.",
+  "category": "Tactics",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-11",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "List every check first. Here, the knight has exactly one, and it is mate.",
+    "A king in the corner has three neighbouring squares. If its own pieces fill them, a knight check ends the game.",
+    "A knight check cannot be blocked, which is why this pattern is so hard to defend once it appears.",
+    "A forcing sacrifice can drag an enemy piece into the last empty square next to the king.",
+    "Check your own corner king too: give it luft before a rook and pawns box it in."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Most kings are chased into trouble. A few build the trouble themselves. In the position below, Black has a rook and two pawns against a lone knight, and White to move still ends the game at once. Give it a minute before you read on."
+    },
+    {
+      "type": "chess_position",
+      "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+      "caption": "White to move. Black's king on h8 is surrounded by its own rook on g8 and pawns on g7 and h7. Find the only checking move."
+    },
+    {
+      "type": "heading",
+      "text": "Checks first, then the only check"
+    },
+    {
+      "type": "paragraph",
+      "text": "In any forcing position, list the checks before anything else. White's knight on g5 has exactly one checking move: Nf7+. Captures such as Nxh7 look greedy and fail to Kxh7, which leaves White a piece down for nothing. Quiet knight moves hand Black a free turn to untangle. The check is the one move that asks a question Black has to answer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Now ask how Black could answer it. A king in check has three options: capture the checking piece, block the line, or step away. After Nf7+, none of them exists."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Capture: the king on h8 is two files from f7, so it cannot take the knight. The rook on g8 moves along its rank and file, and f7 sits on a diagonal from it. The pawns on g7 and h7 capture towards f6 and h6, never f7.",
+        "Block: a knight jumps over everything in between, so there is no line to block.",
+        "Step away: the king's only neighbouring squares are g8, g7 and h7, and Black's own rook and pawns occupy every one of them."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "That is checkmate, written 1.Nf7#. The final position is below."
+    },
+    {
+      "type": "chess_position",
+      "fen": "6rk/5Npp/8/8/8/8/8/6K1 b - - 1 1",
+      "moves": [
+        "Nf7#"
+      ],
+      "caption": "After 1.Nf7#. The king has no square, the knight cannot be captured and cannot be blocked.",
+      "initialFen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1"
+    },
+    {
+      "type": "heading",
+      "text": "The pattern: a king boxed in by its own pieces"
+    },
+    {
+      "type": "paragraph",
+      "text": "A king in the corner has only three neighbouring squares. When friendly pieces fill all three, the king has no flight square, and the attacker needs just one check that cannot be captured or blocked. Knights are ideal for the job because they jump the wall. The mate has a name that explains itself: smothered, because the king is smothered by its own army."
+    },
+    {
+      "type": "paragraph",
+      "text": "You can scan for it with three quick questions."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Is the enemy king on the edge, ideally in a corner, with three or fewer neighbouring squares?",
+        "Are those squares occupied by its own rook, queen or pawns?",
+        "Can a knight reach a checking square where it cannot be captured?"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The scan works in reverse as well. If your own king sits in the corner with a rook beside it and pawns in front, you have built the same box. One pawn move that gives the king a flight square, usually called luft, can turn a deadly pattern into an ordinary position. It costs a tempo and saves games."
+    },
+    {
+      "type": "heading",
+      "text": "A second board: build the box with a sacrifice"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes the box has one missing wall, and you can force your opponent to fill it. Look at the next position. Black's king on h8 has pawns on g7 and h7, but g8 is empty and the rook stands on f8. White has a queen on b3 and knights on e7 and g5."
+    },
+    {
+      "type": "chess_position",
+      "fen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1",
+      "caption": "White to move and mate in two. The knight on e7 guards g8, and the queen on b3 aims along the diagonal at the same square."
+    },
+    {
+      "type": "paragraph",
+      "text": "The idea is 1.Qg8+. The queen lands next to the king, and Black has exactly one legal reply, 1...Rxg8. The king cannot capture the queen because the knight on e7 protects it, and every other square is blocked. That capture finishes the box: Black's rook now stands on g8, exactly where White wanted it. Then 2.Nf7# is the same smothered mate as before."
+    },
+    {
+      "type": "chess_position",
+      "fen": "6rk/4NNpp/8/8/8/8/8/6K1 b - - 1 2",
+      "moves": [
+        "Qg8+",
+        "Rxg8",
+        "Nf7#"
+      ],
+      "caption": "After 1.Qg8+ Rxg8 2.Nf7#. Black's own rook supplied the last wall.",
+      "initialFen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1"
+    },
+    {
+      "type": "paragraph",
+      "text": "Notice how White thought. White did not search for a square to check from. White looked for a way to make Black's own piece occupy the last empty neighbour of the king. A queen sacrifice is cheap when the reply is forced and the follow-up is mate. This is a simplified relative of the combination known as Philidor's legacy, where the queen is also given up to drag a rook beside the king before a knight delivers mate."
+    },
+    {
+      "type": "heading",
+      "text": "Practise it"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Set up the first position on a board and play 1.Nf7# until the picture is automatic.",
+        "In your next few games, pause before each knight move and count the enemy king's free neighbouring squares.",
+        "Check your own corner king the same way before you place a rook beside it. If it has no free neighbour, give it luft."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "Smothered mate in one sentence: if a king's neighbours are all its own pieces, a knight check ends the game."
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "the-3-minute-blitz-blueprint-tactics-time-management"
+  ],
+  "sources": [
+    {
+      "title": "Smothered mate, definition and Philidor's legacy (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Smothered_mate"
+    },
+    {
+      "title": "Back-rank checkmate and luft (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Back-rank_checkmate"
+    }
+  ],
+  "cta": {
+    "label": "Practise tactics in the Academy",
+    "href": "/academy"
+  }
+}

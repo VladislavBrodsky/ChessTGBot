@@ -1,0 +1,242 @@
+{
+  "fetched_at": "2026-10-08T14:55:52.694570+00:00",
+  "sources": [
+    {
+      "id": "fide",
+      "error": "Robots unavailable or access disallowed; use manual research"
+    },
+    {
+      "id": "lichess",
+      "error": "Robots unavailable or access disallowed; use manual research"
+    },
+    {
+      "id": "chesscom",
+      "error": "Robots unavailable or access disallowed; use manual research"
+    }
+  ],
+  "candidates": [
+    {
+      "event_date": null,
+      "published_at": "2026-10-05T23:07:41+00:00",
+      "source": "fide",
+      "summary": "The International Chess Federation (FIDE) and the Egyptian Chess Federation are pleased to invite all the member federations to the 2026 FIDE World U7-U17 Rapid and Blitz Championships. The event will take place in Cairo, Egypt, from December 8 (arrival) to December 15 (departure), 2026. The participants will compete across six age categories: Under 7, Under 9, Under 11, Under 13, Under 15, and Un",
+      "title": "FIDE World U7-U17 Rapid and Blitz Championships 2026 Egypt: Registration continues",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-world-u7-u17-rapid-and-blitz-championships-2026-egypt-registration-continues/",
+      "opportunity_score": 51.3
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-02T21:26:39+00:00",
+      "source": "fide",
+      "summary": "The curtain fell on the World Schools Team Championship Europe 2026. After four days of intense competition, brilliant sacrifices, and unparalleled teamwork, the young chess champions were crowned in Tsaghkadzor, Armenia. Gymnasium No. 50 of Minsk (Belarus) established their dominance from the opening round. Starting with back-to-back 4\u20130 clean sweeps, they held a firm grasp on the number-one spot",
+      "title": "From Tsaghkadzor to Grand Final: European Schools Chess Champions crowned amidst cultural celebration",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/from-tsaghkadzor-to-grand-final-european-schools-chess-champions-crowned-amidst-cultural-celebration/",
+      "opportunity_score": 48.3
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-07T11:06:27+00:00",
+      "source": "fide",
+      "summary": "President of the Republic of Kazakhstan Kassym-Jomart Tokayev received newly elected FIDE President Timur Turlov and congratulated him on his election to lead the International Chess Federation. During the meeting, the sides discussed the development of chess in Kazakhstan, the country\u2019s growing role in the international chess community, and further cooperation between FIDE and the Kazakhstan Ches",
+      "title": "President of Kazakhstan Kassym-Jomart Tokayev receives FIDE President Timur Turlov",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/president-of-kazakhstan-kassym-jomart-tokayev-receives-fide-president-timur-turlov/",
+      "opportunity_score": 45.8
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-06T11:40:56+00:00",
+      "source": "fide",
+      "summary": "FIDE, the German Chess Federation (DSB) and LandesSchachverband Sachsen-Anhalt e. V. invite all FIDE member federations and eligible teams to participate in the World Senior Team Chess Championships taking place in Magdeburg, Germany from March 31 (arrival) to April 11 (departure) 2027. The Championships are open to all players, regardless of rating or title, who reach the required age during the ",
+      "title": "FIDE World Senior Team Championships 2027: Registration opens",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-world-senior-team-championships-2027-registration-opens/",
+      "opportunity_score": 44.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-06T20:53:06+00:00",
+      "source": "chesscom",
+      "summary": "A day after becoming the first 3500-rated Chess.com Blitz player in site history, GM Hikaru Nakamura upped his record to 3503 while streaming Titled Tuesday live from Sithonia, Greece, on October 6. Unfortunately for Nakamura, he did not ultimatel...",
+      "title": "Nakamura Sets New Chess.com Rating Record As Artemiev Pulls Off Last-Second Win",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/artemiev-wins-titled-tuesday-october-6-2026",
+      "opportunity_score": 44.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-05T14:33:59+00:00",
+      "source": "fide",
+      "summary": "Following the election of the new FIDE leadership, we are entering a new chapter of our work \u2013 building on what has been achieved, continuing the projects that have proven successful, and developing new initiatives that can make FIDE and chess even more effective, innovative, and impactful. FIDE Commissions and Committees play a vital role in this process. Their expertise, commitment, and connecti",
+      "title": "FIDE Announces Open Call for Commission Nominations",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-announces-open-call-for-commission-nominations/",
+      "opportunity_score": 44.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-05T03:23:59.630000+00:00",
+      "source": "lichess",
+      "summary": "",
+      "title": "Lichess Game of the Month: August '26",
+      "trust": "primary",
+      "updated_at": "2026-10-05T03:23:59.630000+00:00",
+      "url": "https://lichess.org/@/Lichess/blog/lichess-game-of-the-month-august-26/ekVdAfDN",
+      "opportunity_score": 43.5
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-03T11:43:37.642000+00:00",
+      "source": "lichess",
+      "summary": "",
+      "title": "Retrospective: 2025 Toronto Lichess Meetup",
+      "trust": "primary",
+      "updated_at": "2026-10-03T11:43:37.642000+00:00",
+      "url": "https://lichess.org/@/Lichess/blog/retrospective-2025-toronto-lichess-meetup/3ReyIZOk",
+      "opportunity_score": 41.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-04T04:30:00+00:00",
+      "source": "chesscom",
+      "summary": "In a week when GM Hikaru Nakamura pushed Chess.com's blitz record to new heights, it is fitting that he also broke the record for the most Bullet Brawl victories in a single year, albeit with three months to spare. A dominant run in the second hal...",
+      "title": "Nakamura Breaks Calendar Record With 4th Consecutive Victory",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/hikaru-nakamura-wins-bullet-brawl-oct-3-2026",
+      "opportunity_score": 41.6
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-02T13:26:42+00:00",
+      "source": "fide",
+      "summary": "Members of the Small Nations Chess Association (SNACA) convened in Samarkand, Uzbekistan, for the Association\u2019s General Assembly, where they agreed to revitalize SNACA\u2019s operations, approved new statutes, and elected a new Board to serve a two-year term. SNACA now includes 35 member federations from four continents, reflecting the growing international community of chess federations represented wi",
+      "title": "Small Nations Chess Association restarts activities and elects new Board",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/small-nations-chess-association-restarts-activities-and-elects-new-board/",
+      "opportunity_score": 40.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-01T21:32:13+00:00",
+      "source": "fide",
+      "summary": "Alongside the 2026 World Schools Chess Championship \u2013 Europe, the International Scientific Conference \u201cTheory and Practice of Chess Education\u201d officially commenced in Tsaghkadzor, Armenia, running from October 1\u20132, 2026. Serving as a cornerstone event during this pivotal year for chess education, the conference brought together experts to discuss cutting-edge tools and methodologies. The primary o",
+      "title": "\u201cTheory and Practice of Chess Education\u201d conference begins in Tsaghkadzor",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/theory-and-practice-of-chess-education-conference-begins-in-tsaghkadzor/",
+      "opportunity_score": 40.3
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-01T20:43:15+00:00",
+      "source": "fide",
+      "summary": "The third day of the European Continental Stage of the FIDE ISCF World Schools Team Championship 2026 elevated the competitive intensity to new heights in Tsaghkadzor, Armenia. With the tournament crossing into its critical second half, Rounds 5 and 6 delivered a captivating blend of strategic competition on the top boards and heartfelt camaraderie off them. As the top players continued their unst",
+      "title": "WSTC Europe Day 3: Competitions, tactical masterclasses and high-altitude adventures in Tsaghkadzor",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/wstc-europe-day-3-competitions-tactical-masterclasses-and-high-altitude-adventures-in-tsaghkadzor/",
+      "opportunity_score": 40.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-01T19:56:02+00:00",
+      "source": "fide",
+      "summary": "The World Championship race restarts this Friday, and the door is still wide open. Hamburg / Weissenhaus, October 1, 2026 \u2013 The race to the 2027 FIDE Freestyle Chess World Championship is back on. Freestyle Friday, the weekly online tournament on Chess.com, returns this Friday, October 2, streamed live on the Freestyle Chess YouTube channel, Chess.com and DAZN, with a direct ticket to Weissenhaus ",
+      "title": "Road to Weissenhaus 2027: Freestyle Friday is back",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/road-to-weissenhaus-2027-freestyle-friday-is-back/",
+      "opportunity_score": 40.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-01T15:56:00+00:00",
+      "source": "chesscom",
+      "summary": "GMs Nodirbek Abdusattorov and Yagiz Kaan Erdogmus are the stars on an October FIDE rating list dominated by the 46th Chess Olympiad in Samarkand. Abdusattorov climbed two spots to world number-five after picking up 18 rating points and individual ...",
+      "title": "Olympiad Stars Abdusattorov, Erdogmus Climb On October FIDE Rating List",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/october-2026-fide-rating-list",
+      "opportunity_score": 39.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-07T15:00:00+00:00",
+      "source": "chesscom",
+      "summary": "Europe is about to meet the world's biggest chess creator in person again. IM Levy Rozman, better known as GothamChess, is returning to the old continent for his second tour from October 25 to November 10. Fans in six cities can get tickets to see...",
+      "title": "GothamChess European Tour Kicks Off On October 25 With Special Guests And Activities",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/gotham-chess-european-tour-guests-activities-2026",
+      "opportunity_score": 38.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-03T15:21:01+00:00",
+      "source": "chesscom",
+      "summary": "GM Awonder Liang blanked his opposition with 3-0 victories in all the matches to convincingly win the 2026 Seirawan Chess Championship, an event he won in 2024 too. It was a brisk evening for the 23-year-old American GM, who was hardly in any trou...",
+      "title": "Awonder Liang Invincible At Seirawan Chess, The Complex Variant",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-seirawan-chess-championship-liang-wins",
+      "opportunity_score": 34.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-02T15:00:00+00:00",
+      "source": "chesscom",
+      "summary": "Freestyle Friday returns to Chess.com this Friday, October 2, resuming the race for places in the 2027 FIDE Freestyle Chess World Championships. Ten weekly tournaments remain before December's knockout finals, which will award one qualification sp...",
+      "title": "Freestyle Friday Returns With World Championship Spots On The Line",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/freestyle-friday-returns-october-2-with-world-championship-spots-on-the-line",
+      "opportunity_score": 33.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-01T15:40:00+00:00",
+      "source": "chesscom",
+      "summary": "A man from Melbourne has been charged over an alleged stalking campaign against Australian chess streamer and content creator WCM Hannah Sayce, which reportedly included making false drug allegations and led to her detention in Qatar. Shumsheer S...",
+      "title": "Man Charged With Stalking Hannah Sayce, Accused Of Making False Drug Report",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/man-charged-with-stalking-hannah-sayce-false-drug-reports",
+      "opportunity_score": 32.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-03T01:51:34+00:00",
+      "source": "chesscom",
+      "summary": "GM Parham Maghsoodloo scored in the top four in three different 3 0 Thursday Tournaments on October 1. His nine points in the first tournament weren't quite enough to win, as he took second on tiebreaks behind IM Quoc Hy Nguyen. Maghsoodloo domina...",
+      "title": "Hy Nguyen, Maghsoodloo, Grischuk Take 3 0 Thursday Titles",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/hy-nguyen-maghsoodloo-grischuk-3-0-thursday-10-1-2026",
+      "opportunity_score": 26.5
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-03T01:23:25+00:00",
+      "source": "chesscom",
+      "summary": "GM Matthias Bluebaum won the return tournament of Freestyle Friday on October 2 with nine points, taking the tournament outright ahead of GMs Oleksandr Bortnyk, Pranav Venkatesh, and SL Narayanan on 8.5/11. Pranav clinched an appearance in next ye...",
+      "title": "Bluebaum Takes First Freestyle Friday Of New Season",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/bluebaum-wins-freestyle-friday-october-2-2026",
+      "opportunity_score": 26.4
+    }
+  ],
+  "limitations": [
+    "Opportunity scores are heuristics, not measured virality. Social views and search volume are unavailable unless supplied."
+  ]
+}

@@ -1,0 +1,3 @@
+state/
+reports/*.raw.json
+__pycache__/

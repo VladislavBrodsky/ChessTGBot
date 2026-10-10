@@ -1,0 +1,19 @@
+{
+  "template": "culture",
+  "size": "square",
+  "tag": "Chess Culture",
+  "headline": "Every game\nhas *one* move.",
+  "panels": [
+    {
+      "label": "The engine",
+      "text": "Evaluation: +3.0",
+      "piece": "Q"
+    },
+    {
+      "label": "Me, one move later",
+      "text": "Where did my queen go?",
+      "piece": "bN"
+    }
+  ],
+  "cta_label": "Play a free game"
+}

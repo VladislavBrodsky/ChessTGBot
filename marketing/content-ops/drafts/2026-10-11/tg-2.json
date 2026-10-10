@@ -1,0 +1,21 @@
+{
+  "format": "news",
+  "hook": "2.5–1.5 in the final round gave Uzbekistan the Chess Olympiad on home soil",
+  "cta": "journal",
+  "text": "<b>2.5–1.5 in the final round gave Uzbekistan the Chess Olympiad on home soil.</b>\nThe win over Ukraine in Samarkand is Uzbekistan's second Olympiad title after Chennai 2022. India took silver after a 2–2 draw with Hungary, and Germany took bronze by beating the Netherlands 2.5–1.5.\nWhy the scoreline matters: a team match has four boards. One win and three draws is enough to take the match, so teams guard three boards and press on the fourth.\nSource: FIDE.",
+  "creative": {
+    "template": "news",
+    "size": "portrait",
+    "tag": "Chess News",
+    "headline": "Uzbekistan\n*take gold*\non home soil",
+    "subhead": "Final round: 2.5–1.5 against Ukraine in Samarkand. The second Olympiad title after Chennai 2022.",
+    "source": "FIDE",
+    "cta_label": "Read more on the blog"
+  },
+  "sources": [
+    {
+      "kind": "primary",
+      "url": "https://www.fide.com/?p=50321"
+    }
+  ]
+}

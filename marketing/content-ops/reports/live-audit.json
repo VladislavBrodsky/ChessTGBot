@@ -1,0 +1,576 @@
+{
+  "checkedAt": "2026-10-08T04:13:06.968Z",
+  "base": "https://web3chess.online",
+  "method": {
+    "browser": "Chromium",
+    "viewport": "390×844",
+    "cpuSlowdown": 4,
+    "network": "1.6 Mbps down / 0.75 Mbps up / 150 ms latency",
+    "cache": "disabled; fresh context per sample",
+    "runs": 3,
+    "scope": "Synthetic navigation lab, not Lighthouse or field Core Web Vitals. INP needs real interactions and is not reported."
+  },
+  "discovery": {
+    "/robots.txt": {
+      "status": 200,
+      "body": "User-Agent: *\nAllow: /\n\nSitemap: https://web3chess.online/sitemap.xml\n"
+    },
+    "/sitemap.xml": {
+      "status": 200,
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n<url>\n<loc>https://web3chess.online</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>1</priority>\n</url>\n<url>\n<loc>https://web3chess.online/how-it-works</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/wagers</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/academy</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>0.9</priority>\n</url>\n<url>\n<loc>https://web3chess.online/play</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.8</priority>\n</url>\n<url>\n<loc>https://web3chess.online/fair-play</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.8</priority>\n</url>\n<url>\n<loc>https://web3chess.online/terms</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>yearly</changefreq>\n<priority>0.5</priority>\n</url>\n<url>\n<loc>https://web3chess.online/privacy</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>yearly</changefreq>\n<priority>0.5</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/fair-play-in-web3-chess</loc>\n<lastmod>2026-10-06T16:40:41.826Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/elo-xp-progression-guide</loc>\n<lastmod>2026-10-06T16:40:41.826Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/why-telegram-mini-apps-for-chess</loc>\n<lastmod>2026-10-06T16:40:41.826Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/opening-mastery-tactics</loc>\n<lastmod>2026-10-06T16:40:41.826Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/the-death-of-tap-to-earn-skill-based-web3-chess</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/the-3-minute-blitz-blueprint-tactics-time-management</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/bankroll-management-for-competitive-chess-wagers</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://web3chess.online/blog/stafford-and-englund-gambits-speed-chess-weapons</loc>\n<lastmod>2026-10-06T16:40:41.827Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n</urlset>\n"
+    }
+  },
+  "pages": [
+    {
+      "path": "/",
+      "seo": {
+        "url": "https://web3chess.online/",
+        "title": "Web3Chess — Competitive Real-Time Chess on Telegram",
+        "description": "Real-time chess inside Telegram. Play rated games for free, or stake USDT against players at your level.",
+        "robots": "index, follow",
+        "h1": [
+          "Skill is theonly edge"
+        ],
+        "ogImage": "https://web3chess.online/opengraph-image?fd97409133bd61c2",
+        "jsonLd": [
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebSite",
+                "@id": "https://web3chess.online/#website",
+                "url": "https://web3chess.online",
+                "name": "Web3Chess",
+                "description": "Real-time chess inside Telegram. Play rated games for free, or stake USDT against players at your level.",
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "Web3Chess",
+                  "url": "https://web3chess.online",
+                  "logo": "https://web3chess.online/icon.svg"
+                }
+              },
+              {
+                "@type": "SoftwareApplication",
+                "@id": "https://web3chess.online/#app",
+                "name": "Web3Chess",
+                "applicationCategory": "GameApplication",
+                "operatingSystem": "Telegram (iOS, Android, macOS, Windows, Linux, Web)",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD"
+                },
+                "description": "Competitive real-time chess inside Telegram. Free practice vs Stockfish 17, and USDT wager matches with 95% winner payouts."
+              },
+              {
+                "@type": "FAQPage",
+                "@id": "https://web3chess.online/#faq",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "Can I play chess for free on Web3Chess?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes! Practising against our A.I. engine across all skill levels and solving daily puzzles is 100% free and unlimited. Matches against other human players are real-money wager games with a 1 USDT minimum stake."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How does a wager match work and who gets the pot?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Both players deposit identical stakes from their in-app platform balance into escrow. The winner receives 95% of the total pot. 3% covers platform infrastructure and anti-cheat servers, and 2% funds affiliate referral commissions."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How do I deposit funds to play?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Inside the Telegram Mini App, open the Wallet tab. You can deposit USDT via Telegram's native @CryptoBot invoice, or send TON directly from your personal wallet to the master deposit address with your unique reference comment."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How fast are withdrawals processed?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "You can request a withdrawal to your TON wallet at any time. Standard payouts are processed quickly after automated security verification. High-value withdrawals receive secondary review to prevent fraud. Every completed transfer is verifiable on Tonviewer."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How do you prevent opponents from using chess engines to cheat?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "All moves are executed server-side with zero client-side authority. Our backend runs real-time Stockfish 17 evaluation, centipawn loss (ACPL) heuristics, and move-timing analysis. Matches showing superhuman engine correlation are flagged and frozen for grandmaster review."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What are the age and legal requirements to play?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "A.I. practice and tactical puzzles are open to all ages globally. Real-money wager matches are restricted to players aged 18 and older. Players must ensure that real-money skill gaming is permissible under their local jurisdiction before wagering."
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "horizontalOverflow": false,
+        "images": [],
+        "resources": [
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2u-kj4_30sl4_.js",
+            "type": "script",
+            "bytes": 71625,
+            "durationMs": 4889
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2k0q58tqx5fsy.js",
+            "type": "script",
+            "bytes": 45099,
+            "durationMs": 3449
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/8800dfc60902df36-s.p.2sla2yow9-9p_.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 3728
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/ef79401ea952b7f0-s.p.0t4d9turf_6_x.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 4184
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/15u9u9veiylot.js",
+            "type": "script",
+            "bytes": 21901,
+            "durationMs": 4805
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/0dgoaiadq_q--.js",
+            "type": "script",
+            "bytes": 15974,
+            "durationMs": 244
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/16d91c780434f2ce-s.p.0y1w0k24nk0rl.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 2431
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/3bz6ecaqdwxx_.js",
+            "type": "script",
+            "bytes": 15456,
+            "durationMs": 2384
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/1a7s6vl14dc0t.js",
+            "type": "script",
+            "bytes": 15306,
+            "durationMs": 334
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/d9b5d46d9a89ffe6-s.p.0xxdg0o7uh536.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 2408
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/303804218d80822e-s.p.3lj349bs9hfu1.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 1687
+          },
+          {
+            "url": "https://web3chess.online/?_rsc=8nTjltbQWvg6NcbE",
+            "type": "fetch",
+            "bytes": 14505,
+            "durationMs": 418
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 5008,
+          "cls": 0,
+          "mainThreadBlockingMs": 63,
+          "ttfbMs": 695.6999999880791,
+          "domContentLoadedMs": 5027.4000000059605,
+          "fcpMs": 5008,
+          "transferBytes": 471779,
+          "errors": []
+        },
+        {
+          "run": 2,
+          "status": 200,
+          "lcpMs": 1560,
+          "cls": 0,
+          "mainThreadBlockingMs": 129,
+          "ttfbMs": 104.5,
+          "domContentLoadedMs": 1377.0999999940395,
+          "fcpMs": 1560,
+          "transferBytes": 471762,
+          "errors": []
+        },
+        {
+          "run": 3,
+          "status": 200,
+          "lcpMs": 1740,
+          "cls": 0,
+          "mainThreadBlockingMs": 54,
+          "ttfbMs": 86.79999999701977,
+          "domContentLoadedMs": 1731.7000000029802,
+          "fcpMs": 1740,
+          "transferBytes": 471764,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 1740,
+        "cls": 0,
+        "ttfbMs": 104.5,
+        "fcpMs": 1740,
+        "transferBytes": 471764,
+        "mainThreadBlockingMs": 63
+      }
+    },
+    {
+      "path": "/blog",
+      "seo": {
+        "url": "https://web3chess.online/blog",
+        "title": "Blog & Chronicles · Web3Chess",
+        "description": "Explore in-depth articles on chess strategy, game theory, Telegram Mini App architecture, and fair play protocols.",
+        "robots": "index, follow",
+        "h1": [
+          "Thoughts on skill, code & protocol strategy"
+        ],
+        "jsonLd": [],
+        "horizontalOverflow": false,
+        "images": [],
+        "resources": [
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2u-kj4_30sl4_.js",
+            "type": "script",
+            "bytes": 71625,
+            "durationMs": 1813
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2k0q58tqx5fsy.js",
+            "type": "script",
+            "bytes": 45099,
+            "durationMs": 1894
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/8800dfc60902df36-s.p.2sla2yow9-9p_.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 1446
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/ef79401ea952b7f0-s.p.0t4d9turf_6_x.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 1423
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/15u9u9veiylot.js",
+            "type": "script",
+            "bytes": 21901,
+            "durationMs": 346
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/16d91c780434f2ce-s.p.0y1w0k24nk0rl.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 1184
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/3bz6ecaqdwxx_.js",
+            "type": "script",
+            "bytes": 15456,
+            "durationMs": 1258
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/d9b5d46d9a89ffe6-s.p.0xxdg0o7uh536.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 1169
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/303804218d80822e-s.p.3lj349bs9hfu1.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 973
+          },
+          {
+            "url": "https://web3chess.online/?_rsc=vtmPbIC4DZK5EuSK",
+            "type": "fetch",
+            "bytes": 14505,
+            "durationMs": 283
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2bq9lnriuormz.js",
+            "type": "script",
+            "bytes": 12702,
+            "durationMs": 289
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/0qy539fxku0ar.css",
+            "type": "link",
+            "bytes": 11218,
+            "durationMs": 1063
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 1548,
+          "cls": 0,
+          "mainThreadBlockingMs": 24,
+          "ttfbMs": 78.3999999910593,
+          "domContentLoadedMs": 1382.2999999970198,
+          "fcpMs": 1548,
+          "transferBytes": 412810,
+          "errors": []
+        },
+        {
+          "run": 2,
+          "status": 200,
+          "lcpMs": 1032,
+          "cls": 0.00037493864084739035,
+          "mainThreadBlockingMs": 40,
+          "ttfbMs": 101.80000001192093,
+          "domContentLoadedMs": 890.4000000059605,
+          "fcpMs": 1032,
+          "transferBytes": 412821,
+          "errors": []
+        },
+        {
+          "run": 3,
+          "status": 200,
+          "lcpMs": 1452,
+          "cls": 0,
+          "mainThreadBlockingMs": 30,
+          "ttfbMs": 83.70000000298023,
+          "domContentLoadedMs": 1313.3999999910593,
+          "fcpMs": 1452,
+          "transferBytes": 412797,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 1452,
+        "cls": 0,
+        "ttfbMs": 83.7,
+        "fcpMs": 1452,
+        "transferBytes": 412810,
+        "mainThreadBlockingMs": 30
+      }
+    },
+    {
+      "path": "/blog/fair-play-in-web3-chess",
+      "seo": {
+        "url": "https://web3chess.online/blog/fair-play-in-web3-chess",
+        "title": "How Web3Chess Solves Fair Play and Latency in Real-Time Wager Matches · Web3Chess Chronicles · Web3Chess",
+        "description": "When real money is on the line, chess integrity is paramount. Here is a technical breakdown of how we prevent engine cheating, eliminate network lag advantages, and guarantee fair settlement.",
+        "canonical": "https://web3chess.online/blog/fair-play-in-web3-chess",
+        "robots": "index, follow",
+        "h1": [
+          "How Web3Chess Solves Fair Play and Latency in Real-Time Wager Matches"
+        ],
+        "ogImage": "https://web3chess.online/blog/fair-play-in-web3-chess/opengraph-image?598218022d8d473b",
+        "jsonLd": [
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "BlogPosting",
+                "@id": "https://web3chess.online/blog/fair-play-in-web3-chess#article",
+                "headline": "How Web3Chess Solves Fair Play and Latency in Real-Time Wager Matches",
+                "description": "When real money is on the line, chess integrity is paramount. Here is a technical breakdown of how we prevent engine cheating, eliminate network lag advantages, and guarantee fair settlement.",
+                "articleSection": "Web3 & Tech",
+                "inLanguage": "en-US",
+                "author": {
+                  "@type": "Person",
+                  "name": "Alex V.",
+                  "jobTitle": "Core Protocol & Backend Lead"
+                },
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "Web3Chess",
+                  "url": "https://web3chess.online",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://web3chess.online/icon.svg"
+                  }
+                },
+                "datePublished": "September 24, 2026",
+                "mainEntityOfPage": {
+                  "@type": "WebPage",
+                  "@id": "https://web3chess.online/blog/fair-play-in-web3-chess"
+                }
+              },
+              {
+                "@type": "BreadcrumbList",
+                "@id": "https://web3chess.online/blog/fair-play-in-web3-chess#breadcrumb",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://web3chess.online"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Blog",
+                    "item": "https://web3chess.online/blog"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "How Web3Chess Solves Fair Play and Latency in Real-Time Wager Matches",
+                    "item": "https://web3chess.online/blog/fair-play-in-web3-chess"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "horizontalOverflow": false,
+        "images": [],
+        "resources": [
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2u-kj4_30sl4_.js",
+            "type": "script",
+            "bytes": 71625,
+            "durationMs": 2011
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2k0q58tqx5fsy.js",
+            "type": "script",
+            "bytes": 45099,
+            "durationMs": 1898
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/8800dfc60902df36-s.p.2sla2yow9-9p_.woff2",
+            "type": "link",
+            "bytes": 33808,
+            "durationMs": 1774
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/ef79401ea952b7f0-s.p.0t4d9turf_6_x.woff2",
+            "type": "link",
+            "bytes": 28428,
+            "durationMs": 1690
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/15u9u9veiylot.js",
+            "type": "script",
+            "bytes": 21901,
+            "durationMs": 1569
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/16d91c780434f2ce-s.p.0y1w0k24nk0rl.woff2",
+            "type": "link",
+            "bytes": 15828,
+            "durationMs": 1220
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/3bz6ecaqdwxx_.js",
+            "type": "script",
+            "bytes": 15456,
+            "durationMs": 1418
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/d9b5d46d9a89ffe6-s.p.0xxdg0o7uh536.woff2",
+            "type": "link",
+            "bytes": 14888,
+            "durationMs": 1249
+          },
+          {
+            "url": "https://web3chess.online/_next/static/media/303804218d80822e-s.p.3lj349bs9hfu1.woff2",
+            "type": "link",
+            "bytes": 14844,
+            "durationMs": 1300
+          },
+          {
+            "url": "https://web3chess.online/?_rsc=LP0HFqGZEtfJiKPo",
+            "type": "fetch",
+            "bytes": 14505,
+            "durationMs": 267
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/2bq9lnriuormz.js",
+            "type": "script",
+            "bytes": 12702,
+            "durationMs": 228
+          },
+          {
+            "url": "https://web3chess.online/_next/static/chunks/0qy539fxku0ar.css",
+            "type": "link",
+            "bytes": 11218,
+            "durationMs": 1082
+          }
+        ]
+      },
+      "samples": [
+        {
+          "run": 1,
+          "status": 200,
+          "lcpMs": 1540,
+          "cls": 0,
+          "mainThreadBlockingMs": 87,
+          "ttfbMs": 82.70000000298023,
+          "domContentLoadedMs": 1462.3999999910593,
+          "fcpMs": 1540,
+          "transferBytes": 415109,
+          "errors": []
+        },
+        {
+          "run": 2,
+          "status": 200,
+          "lcpMs": 1520,
+          "cls": 0,
+          "mainThreadBlockingMs": 59,
+          "ttfbMs": 128.90000000596046,
+          "domContentLoadedMs": 1368.1000000089407,
+          "fcpMs": 1520,
+          "transferBytes": 415078,
+          "errors": []
+        },
+        {
+          "run": 3,
+          "status": 200,
+          "lcpMs": 4996,
+          "cls": 0,
+          "mainThreadBlockingMs": 36,
+          "ttfbMs": 861.1000000089407,
+          "domContentLoadedMs": 4948.600000008941,
+          "fcpMs": 4996,
+          "transferBytes": 415097,
+          "errors": []
+        }
+      ],
+      "median": {
+        "lcpMs": 1540,
+        "cls": 0,
+        "ttfbMs": 128.9,
+        "fcpMs": 1540,
+        "transferBytes": 415097,
+        "mainThreadBlockingMs": 59
+      }
+    }
+  ]
+}

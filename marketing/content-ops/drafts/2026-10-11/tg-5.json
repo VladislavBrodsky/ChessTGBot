@@ -1,0 +1,21 @@
+{
+  "format": "news",
+  "hook": "9 days of club chess start on 16 October in Budva, Montenegro",
+  "cta": "journal",
+  "text": "<b>9 days of club chess start on 16 October in Budva, Montenegro.</b>\nThe European Club Cup runs 16–24 October. A tip for following any team event: watch the match score, not only board one. The side that collects more points across all boards wins, and the quiet board often decides it.\nWe will break down the key positions on the blog as they appear.",
+  "creative": {
+    "template": "news",
+    "size": "portrait",
+    "tag": "Chess News",
+    "headline": "European Club Cup\n*16–24 October*",
+    "subhead": "Budva, Montenegro. Watch the match score across all boards, not only board one.",
+    "source": "ChessBase calendar",
+    "cta_label": "Follow along on the blog"
+  },
+  "sources": [
+    {
+      "kind": "primary",
+      "url": "https://en.chessbase.com/post/chess-calendar-2026"
+    }
+  ]
+}

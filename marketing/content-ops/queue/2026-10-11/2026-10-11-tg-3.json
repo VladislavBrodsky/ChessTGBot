@@ -1,0 +1,132 @@
+{
+  "id": "2026-10-11-tg-3",
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "slot": 3,
+  "category": "Academy",
+  "scheduled_at": "2026-10-11T14:30:00Z",
+  "status": "draft",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-10T19:15:08Z"
+  },
+  "brief": {
+    "slot": {
+      "id": "2026-10-11-tg-3",
+      "kind": "telegram",
+      "date": "2026-10-11",
+      "slot": 3,
+      "category": "Academy",
+      "scheduled_at": "2026-10-11T14:30:00Z"
+    },
+    "tov": "Voice: a chess-literate friend with a point of view. Short opening line, concrete board detail,\nconfident explanation, restrained wit. Show the move or mechanism behind the headline.\nRules: no hype, no income or profit claims, no fake urgency, no invented numbers, testimonials or quotes.\nAt most 3 emoji, none as bullets. One idea, one CTA. Never copy a source's wording, structure or images;\nrebuild the idea from our own position and explanation. Wager mentions always carry the adult disclosure\nand are never paired with youth content. Name the move (SAN) and the square; give the reader something to try.",
+    "idea": null,
+    "competitor_patterns": {
+      "hook_templates": [
+        {
+          "id": "H4",
+          "pattern": "Threat check",
+          "template": "Before you move: what is {Black/White} threatening?",
+          "pillar": "Academy",
+          "note": "Matches the existing STRATEGY test pair."
+        }
+      ],
+      "ranked_formats": [],
+      "avoid": [
+        "Weekly \"what to do this week\" agenda posts",
+        "Medal lists and results tables as an engagement driver",
+        "Long text (over 600 characters) as default",
+        "Burst posting of four or more posts inside a day on one topic",
+        "\"Earn\" and prize-pool headlines"
+      ],
+      "source_report": "competitor-audit-2026-10-10.json"
+    },
+    "creative_default": {
+      "template": "tip",
+      "format": "lesson"
+    },
+    "ctas": {
+      "play": {
+        "label": "Play a free game",
+        "url": "https://t.me/chess_matbot/Web3Chess",
+        "wager": false
+      },
+      "arena": {
+        "label": "Open the Arena",
+        "url": "https://t.me/chess_matbot/Web3Chess?startapp=arena",
+        "wager": true
+      },
+      "academy": {
+        "label": "Open the Academy",
+        "url": "https://web3chess.online/academy",
+        "wager": false
+      },
+      "puzzle": {
+        "label": "Try today's puzzle",
+        "url": "https://web3chess.online/?puzzle=back-rank#challenge",
+        "wager": false
+      },
+      "rules": {
+        "label": "Read the match rules",
+        "url": "https://web3chess.online/wagers",
+        "wager": true
+      },
+      "journal": {
+        "label": "Read the full story",
+        "url": "https://web3chess.online/blog",
+        "wager": false
+      },
+      "channel": {
+        "label": "Join the channel",
+        "url": "https://t.me/chess_hub",
+        "wager": false
+      },
+      "chat": {
+        "label": "Join the chat",
+        "url": "https://t.me/chesshub_chat",
+        "wager": false
+      }
+    },
+    "wager_disclosure": "USDT matches are for adults (18+) where permitted. You can lose your stake.",
+    "output": {
+      "hook": "first line, <=110 chars, no hype",
+      "text": "Telegram HTML (<b>,<i>,<a>,<code>,<blockquote>), <=1000 chars incl. one clear action; no markdown",
+      "cta": "one of ['academy', 'arena', 'channel', 'chat', 'journal', 'play', 'puzzle', 'rules']",
+      "extra_buttons": "optional, at most one more CTA id",
+      "creative": "image spec for marketing/templates/tg (templates puzzle|trap|poll|news|culture|tip|rules|product|cover): {template, size?, tag?, headline (use *accent*, \\n), subhead?, fen (legal), moves?, options?, steps?, panels?, source? (news), footer?, cta_label (required), theme?}; fen must equal chess.fen",
+      "chess": "{fen, solution:[SAN], claim:'mate_in_1'|'mate_in_2'|null} when a position is shown",
+      "sources": "[{kind:'competitor'|'primary'|'own', url, excerpt?}] — keep competitor excerpts short; they feed the originality gate"
+    }
+  },
+  "format": "lesson",
+  "hook": "Before you move: what is your opponent threatening?",
+  "cta": "academy",
+  "text": "<b>Before you move: what is your opponent threatening?</b>\nThe most expensive blunders are not missed brilliancies. They are moves played without looking at the reply. Run the same three checks every time:\n1. What did their last move change?\n2. What is now attacked, theirs and mine?\n3. Does my move still work after their best answer?\nThree questions, about ten seconds. Practise the habit with guided lessons in the Academy.",
+  "creative": {
+    "template": "tip",
+    "size": "portrait",
+    "tag": "Academy",
+    "headline": "Before you move,\n*check the threat.*",
+    "subhead": "Three questions. Ten seconds.",
+    "steps": [
+      "What did their last move change?",
+      "What is attacked now, theirs and mine?",
+      "Does my move survive their best reply?"
+    ],
+    "cta_label": "Train it in the Academy"
+  },
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "updated_at": "2026-10-10T19:15:08Z",
+  "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

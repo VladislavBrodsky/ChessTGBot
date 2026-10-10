@@ -1,0 +1,282 @@
+{
+  "id": "2026-10-11-art-3",
+  "kind": "article",
+  "date": "2026-10-11",
+  "slot": 3,
+  "category": "Academy",
+  "scheduled_at": "2026-10-11T11:00:00Z",
+  "status": "draft",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-10T19:15:06Z"
+  },
+  "brief": {
+    "slot": {
+      "id": "2026-10-11-art-3",
+      "kind": "article",
+      "date": "2026-10-11",
+      "slot": 3,
+      "category": "Academy",
+      "scheduled_at": "2026-10-11T11:00:00Z"
+    },
+    "tov": "Voice: a chess-literate friend with a point of view. Short opening line, concrete board detail,\nconfident explanation, restrained wit. Show the move or mechanism behind the headline.\nRules: no hype, no income or profit claims, no fake urgency, no invented numbers, testimonials or quotes.\nAt most 3 emoji, none as bullets. One idea, one CTA. Never copy a source's wording, structure or images;\nrebuild the idea from our own position and explanation. Wager mentions always carry the adult disclosure\nand are never paired with youth content. Name the move (SAN) and the square; give the reader something to try.",
+    "idea": null,
+    "competitor_patterns": {
+      "hook_templates": [
+        {
+          "id": "H4",
+          "pattern": "Threat check",
+          "template": "Before you move: what is {Black/White} threatening?",
+          "pillar": "Academy",
+          "note": "Matches the existing STRATEGY test pair."
+        }
+      ],
+      "ranked_formats": [],
+      "avoid": [
+        "Weekly \"what to do this week\" agenda posts",
+        "Medal lists and results tables as an engagement driver",
+        "Long text (over 600 characters) as default",
+        "Burst posting of four or more posts inside a day on one topic",
+        "\"Earn\" and prize-pool headlines"
+      ],
+      "source_report": "competitor-audit-2026-10-10.json"
+    },
+    "creative_default": {
+      "template": "cover"
+    },
+    "ctas": {
+      "play": {
+        "label": "Play a free game",
+        "url": "https://t.me/chess_matbot/Web3Chess",
+        "wager": false
+      },
+      "arena": {
+        "label": "Open the Arena",
+        "url": "https://t.me/chess_matbot/Web3Chess?startapp=arena",
+        "wager": true
+      },
+      "academy": {
+        "label": "Open the Academy",
+        "url": "https://web3chess.online/academy",
+        "wager": false
+      },
+      "puzzle": {
+        "label": "Try today's puzzle",
+        "url": "https://web3chess.online/?puzzle=back-rank#challenge",
+        "wager": false
+      },
+      "rules": {
+        "label": "Read the match rules",
+        "url": "https://web3chess.online/wagers",
+        "wager": true
+      },
+      "journal": {
+        "label": "Read the full story",
+        "url": "https://web3chess.online/blog",
+        "wager": false
+      },
+      "channel": {
+        "label": "Join the channel",
+        "url": "https://t.me/chess_hub",
+        "wager": false
+      },
+      "chat": {
+        "label": "Join the chat",
+        "url": "https://t.me/chesshub_chat",
+        "wager": false
+      }
+    },
+    "wager_disclosure": "USDT matches are for adults (18+) where permitted. You can lose your stake.",
+    "output": {
+      "slug": "kebab-case, unique",
+      "title": "<=100 chars",
+      "subtitle": "",
+      "excerpt": "",
+      "metaDescription": "<=160 chars",
+      "category": "one of ['Tactics', 'Openings', 'Academy', 'Chess News', 'Chess Culture', 'Product', 'Match Rules']",
+      "readingTime": "e.g. '5 min read'",
+      "author": "{name, role, avatar, kind:'Organization'}",
+      "takeaways": "3-5 bullets",
+      "content": "blocks: paragraph|heading|subheading|quote|callout|list|chess_position{fen,moves?,initialFen?,caption}",
+      "sources": "[{title,url(https)}]",
+      "relatedSlugs": "existing slugs",
+      "cta": "{label, href:'/academy'|'/wagers'|'/play'|'/blog'}"
+    }
+  },
+  "article": {
+    "slug": "before-you-move-three-question-threat-check",
+    "title": "Before You Move: The Three-Question Threat Check",
+    "subtitle": "A routine short enough for a blitz clock, with two worked positions.",
+    "excerpt": "A three-question routine to run before every move: what changed, what is loose, and what your move allows. Two verified worked examples show it catching a mate.",
+    "metaDescription": "A three-question routine to run before every move: what changed, what is loose, and what your move allows. Two verified worked examples included.",
+    "category": "Academy",
+    "author": {
+      "name": "Web3Chess Editorial",
+      "role": "Chess and product editorial",
+      "avatar": "",
+      "kind": "Organization"
+    },
+    "publishedAt": "2026-10-11",
+    "readingTime": "4 min read",
+    "takeaways": [
+      "Ask what their last move changed before you think about your plan.",
+      "List your loose pieces: undefended, defended once, or sitting beside a cramped king.",
+      "Imagine your move played, then list their checks and captures before you play it.",
+      "A move that attacks is not the same as a move that defends.",
+      "Skip the routine on forced recaptures; run it on every move that feels fine."
+    ],
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Many games are not lost to a brilliant combination. They are lost on the move where we carried out our own plan and forgot to look at theirs. The cure is not deeper calculation. It is a short routine you run before you touch a piece, small enough to survive a blitz clock."
+      },
+      {
+        "type": "heading",
+        "text": "The three questions"
+      },
+      {
+        "type": "list",
+        "items": [
+          "What did their last move change? Look at the piece that just moved, the line it opened and the squares it now attacks.",
+          "What of mine is loose? Find pieces that are undefended or defended only once, and check your king's neighbouring squares.",
+          "After my move, what checks and captures does my opponent get? Imagine the move played, then list every check, every capture and every threat in reply."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Question one looks at what has just happened. Question two looks at the board you own. Question three tests the move you are about to make. On an ordinary position they take a few seconds. When you are making a forced recapture, skip them. On any move that merely feels fine, run them."
+      },
+      {
+        "type": "paragraph",
+        "text": "The order matters. If you start with your own move, you will fall in love with it before you have looked at anything else, and every later question becomes a search for reasons to keep it. Starting with their move forces you to look at the board as it is, not as you hope it is."
+      },
+      {
+        "type": "heading",
+        "text": "Worked example one: the queen on h5"
+      },
+      {
+        "type": "paragraph",
+        "text": "Take a well-known opening position. After 1.e4 e5 2.Bc4 Nc6 3.Qh5, it is Black's turn."
+      },
+      {
+        "type": "chess_position",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+        "moves": [
+          "e4",
+          "e5",
+          "Bc4",
+          "Nc6",
+          "Qh5"
+        ],
+        "caption": "After 3.Qh5. Black to move. What has White's last move changed?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Question one: White's queen travelled from d1 to h5. From there it attacks the pawn on e5 and the pawn on f7. Question two: the pawn on e5 is guarded by the knight on c6, but f7 is guarded only by the king, and White's bishop on c4 aims at it as well. So there is a real threat: Qxf7#."
+      },
+      {
+        "type": "paragraph",
+        "text": "Now test a natural reply with question three. 3...Nf6 attacks the queen, which feels like an answer. Yet after 3...Nf6 White has a capture that is also checkmate."
+      },
+      {
+        "type": "chess_position",
+        "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+        "moves": [
+          "e4",
+          "e5",
+          "Bc4",
+          "Nc6",
+          "Qh5",
+          "Nf6",
+          "Qxf7#"
+        ],
+        "caption": "After 3...Nf6?? 4.Qxf7#. The knight attacked the queen and defended nothing."
+      },
+      {
+        "type": "paragraph",
+        "text": "The knight move attacked something; it did not defend anything. The routine exposes the difference. A move that answers a threat must remove it or defend the target. Black's usual answers include 3...Qe7, which guards f7 directly, or 3...g6, which attacks the queen with a pawn and forces it to leave h5. After either move, White has no mate in one."
+      },
+      {
+        "type": "heading",
+        "text": "Worked example two: the free pawn on d2"
+      },
+      {
+        "type": "paragraph",
+        "text": "Now a position where the danger sits inside your own move. Black to play, and a pawn on d2 looks ready to be collected."
+      },
+      {
+        "type": "chess_position",
+        "fen": "3r2k1/5ppp/8/8/8/8/3P1PPP/R5K1 b - - 0 1",
+        "caption": "Black to move. 1...Rxd2 wins a pawn. Run question three before you play it."
+      },
+      {
+        "type": "paragraph",
+        "text": "Question one: White's rook stands on a1, with an open file straight to a8. Question two: Black's king has no luft, because the pawns on f7, g7 and h7 seal it in, and the rook on d8 is the only piece guarding the back rank. Question three: after 1...Rxd2, what checks does White have? The rook has left the eighth rank, so 2.Ra8+ comes with force. Black can only interpose 2...Rd8, and then 3.Rxd8# is mate."
+      },
+      {
+        "type": "chess_position",
+        "fen": "3R2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 0 3",
+        "moves": [
+          "Rxd2",
+          "Ra8+",
+          "Rd8",
+          "Rxd8#"
+        ],
+        "caption": "After 1...Rxd2 2.Ra8+ Rd8 3.Rxd8#. The pawn was bait for the only defender.",
+        "initialFen": "3r2k1/5ppp/8/8/8/8/3P1PPP/R5K1 b - - 0 1"
+      },
+      {
+        "type": "paragraph",
+        "text": "Black wins a pawn for a moment and loses the game. The pawn on d2 was not free; it was the price of the only defender. A calmer move such as 1...h6 gives the king room to breathe, and the pawn on d2 can wait for another turn."
+      },
+      {
+        "type": "heading",
+        "text": "Make it a habit"
+      },
+      {
+        "type": "paragraph",
+        "text": "The usual objection is that this slows you down. It does, by a few seconds, on moves that deserve a few seconds. The time you spend on the routine is small next to the time you lose when a game ends on move twelve."
+      },
+      {
+        "type": "paragraph",
+        "text": "Run the questions in the same order every time: their move, my loose pieces, my move's consequences. On a short clock, compress them to a glance: the piece that just moved, your king, the square you are about to move to."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Pick three positions from your last game where you hesitated.",
+          "For each one, write the three answers in a single line.",
+          "Find the move where, with hindsight, one of the answers would have changed your decision."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "After a week of writing them down, you will start hearing the questions before you move, and the writing becomes optional."
+      },
+      {
+        "type": "callout",
+        "text": "Question three is the one that stops the unforced blunder: imagine your move played, then list their checks and captures before you play it."
+      }
+    ],
+    "relatedSlugs": [
+      "the-3-minute-blitz-blueprint-tactics-time-management",
+      "opening-mastery-tactics"
+    ],
+    "sources": [
+      {
+        "title": "Scholar's mate, the pattern behind the h5 example (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Scholar%27s_mate"
+      },
+      {
+        "title": "Back-rank checkmate and luft (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Back-rank_checkmate"
+      }
+    ],
+    "cta": {
+      "label": "Open the Academy",
+      "href": "/academy"
+    }
+  },
+  "updated_at": "2026-10-10T19:15:06Z"
+}

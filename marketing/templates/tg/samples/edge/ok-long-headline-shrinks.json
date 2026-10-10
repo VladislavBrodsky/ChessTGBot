@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "tag": "Mate in 1",
+  "headline": "Black to move and find the only *idea* that keeps the position alive",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "cta_label": "Drop your answer",
+  "_expect": "ok",
+  "_note": "Long but realistic: the engine shrinks it within the 2-line limit."
+}

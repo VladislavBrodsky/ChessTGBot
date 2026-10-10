@@ -1,0 +1,138 @@
+{
+  "slug": "chess-diagram-screenshot-fen-missing-information",
+  "title": "Chess Screenshot to FEN: What the Image Cannot Tell You",
+  "subtitle": "A screenshot shows the pieces. A usable FEN also needs the turn, castling rights and move context.",
+  "excerpt": "Turn a chess screenshot into a usable FEN: check the imported pieces, side to move, castling rights and en passant before analysing.",
+  "metaDescription": "Turn a chess screenshot into a usable FEN. Check the imported pieces, side to move, castling rights and en passant before analysing.",
+  "category": "Chess News",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-08",
+  "readingTime": "3 min read",
+  "takeaways": [
+    "Confirm whose turn it is before choosing a move.",
+    "A king and rook on their starting squares do not prove castling rights.",
+    "An en passant capture needs the right preceding move.",
+    "Check the full position before sharing an analysis."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "A chess screenshot shows the pieces, not the whole position. To turn one into a usable FEN, import the image into a board editor, check every piece, then confirm whose turn it is and which special moves remain legal. Those details can change the answer even when the board looks identical."
+    },
+    {
+      "type": "paragraph",
+      "text": "On 7 October, Lichess announced image import for its Board Editor. That useful shortcut raises a separate chess question: once the pieces are placed, what information must a player confirm? This is a Lichess feature, not a Web3Chess feature."
+    },
+    {
+      "type": "heading",
+      "text": "Turn a screenshot into a usable FEN"
+    },
+    {
+      "type": "paragraph",
+      "text": "Lichess Board Editor now offers a “From image” import. It can place pieces from a picture, but the original game record remains the authority for move context. Use this short check before copying the FEN:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Import the picture into the Board Editor. Check its orientation and every recognised piece against the source image.",
+        "Confirm the side to move and castling rights from the original game or puzzle; do not infer them from piece placement.",
+        "Check whether the immediately preceding pawn move created an en passant target. Set the move counters from the record when available.",
+        "Copy the completed FEN and compare the legal moves with the source game. Keep the PGN or game link for the history FEN cannot store."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Start with the player who moves next"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine a board with White's king on e1 and pawn on e4, and Black's king on e8 and pawn on e5. Neither pawn can advance into the occupied square ahead. White and Black have different king moves available, and the player to move determines whose decision you are analysing. A cropped image without a turn label leaves that question unanswered."
+    },
+    {
+      "type": "chess_position",
+      "fen": "4k3/8/8/4p3/4P3/8/8/4K3 w - - 0 1",
+      "caption": "A constructed practice position: White to move. Keep the same pieces and change the active colour to compare Black's options."
+    },
+    {
+      "type": "heading",
+      "text": "Do not infer castling rights from the picture"
+    },
+    {
+      "type": "paragraph",
+      "text": "A king or rook can leave its starting square and return. The board then looks familiar, but the lost castling right does not return with the piece. Position history matters."
+    },
+    {
+      "type": "paragraph",
+      "text": "In the example below, the stored rights allow White to castle either way: the paths are clear and the relevant squares are not attacked. Change the rights field to a dash, leaving every piece untouched, and those castling moves disappear. An image of the pieces cannot distinguish those two records."
+    },
+    {
+      "type": "chess_position",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "caption": "Constructed castling exercise. Compare this record with the identical placement using no castling rights."
+    },
+    {
+      "type": "heading",
+      "text": "Check the last pawn move"
+    },
+    {
+      "type": "paragraph",
+      "text": "En passant is another place where the previous move changes the options. In this exercise, Black has just advanced a pawn from d7 to d5, beside White's pawn on e5. White may capture en passant on d6 now. If the pawn reached d5 earlier and that immediate chance has passed, the same piece placement does not permit the capture."
+    },
+    {
+      "type": "chess_position",
+      "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+      "caption": "White can play exd6 en passant in this constructed record. Compare the legal moves after replacing d6 with a dash."
+    },
+    {
+      "type": "heading",
+      "text": "Read the record beyond the pieces"
+    },
+    {
+      "type": "paragraph",
+      "text": "Forsyth–Edwards Notation, or FEN, stores six fields: piece placement, active colour, castling availability, en passant target, halfmove clock and fullmove number. The final counters record move context; a FEN alone does not provide the full game history. If you are reviewing a real game, retain its move record too."
+    },
+    {
+      "type": "heading",
+      "text": "Try a two minute verification drill"
+    },
+    {
+      "type": "paragraph",
+      "text": "Choose one of the exercises above. Copy the position into a trusted analysis tool, change only the relevant field, and compare the legal moves. Write one sentence explaining why a move appeared or vanished. This teaches a useful habit: validate the question before calculating the answer."
+    },
+    {
+      "type": "callout",
+      "text": "Before sharing a chess screenshot, add whose turn it is and preserve the game link or complete position record. Better context makes the next player's analysis more useful."
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "the-3-minute-blitz-blueprint-tactics-time-management"
+  ],
+  "sources": [
+    {
+      "title": "Lichess dated update about Board Editor image import",
+      "url": "https://lichess.org/feed#2026-10-07-20:30"
+    },
+    {
+      "title": "Lichess Board Editor with From image import",
+      "url": "https://lichess.org/editor"
+    },
+    {
+      "title": "Portable Game Notation specification, FEN fields",
+      "url": "https://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm#c16.1"
+    },
+    {
+      "title": "chess.js position and legal-move documentation",
+      "url": "https://jhlywa.github.io/chess.js/"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

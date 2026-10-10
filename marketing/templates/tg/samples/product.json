@@ -1,0 +1,10 @@
+{
+  "template": "product",
+  "size": "portrait",
+  "tag": "Play",
+  "headline": "Play chess in *Telegram.*",
+  "subhead": "Practice free vs A.I. or play a USDT match.",
+  "steps": ["Open Web3Chess in Telegram", "Pick practice or a match", "Play in the Mini App"],
+  "footer": "USDT matches: 18+ where permitted. You can lose your stake.",
+  "cta_label": "Start playing"
+}

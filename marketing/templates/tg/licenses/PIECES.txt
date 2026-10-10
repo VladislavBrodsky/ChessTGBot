@@ -1,0 +1,44 @@
+Chess piece artwork (pieces.json)
+=================================
+
+What it is
+----------
+pieces.json holds the 12 piece SVGs that react-chessboard 5.10.0 ships as
+`defaultPieces` (wP wN wB wR wQ wK bP bN bB bR bQ bK). The Web3Chess game does
+not pass a custom `pieces` prop to <Chessboard> (frontend/src/components/game/
+ChessBoard.tsx), so these are exactly the pieces players see in the Mini App.
+build-pieces.mjs renders each component with react-dom/server; nothing is
+redrawn or altered (viewBox 0 0 45 45, 1.5px outlines, original path data).
+
+What the package says
+---------------------
+react-chessboard (frontend/node_modules/react-chessboard/LICENSE) is
+MIT-licensed, "Copyright (c) 2022 Ryan Gregory". That MIT grant covers the
+package's code. The package does not name the author or licence of the piece
+artwork separately (no attribution comment in dist/ or the README).
+
+Provenance of the artwork (identified by us, not stated by the package)
+-----------------------------------------------------------------------
+The path data (45x45 viewBox, Inkscape-style ids such as "path6570" left in the
+knight/king shapes) is the widely used "cburnett" set by Colin M.L. Burnett,
+published on Wikimedia Commons (File:Chess_klt45.svg and siblings) and bundled
+by many open-source chess projects. Commons lists that set under the
+GNU Free Documentation License, the GNU GPL and BSD-style terms, and later
+Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0). We have not
+independently verified the licence text embedded in the npm tarball.
+
+Our reading and what we do
+--------------------------
+* Use is as PNG renders inside marketing images (a "collective" use of the
+  pieces as artwork, not a modification of the SVG files).
+* Safest attribution to keep with any published image set / repository:
+  "Chess pieces by Colin M.L. Burnett (Cburnett), via Wikimedia Commons /
+  react-chessboard, CC BY-SA 3.0 or BSD/GPL/GFDL as offered by the author."
+  The string does not need to appear on every post image; it is recorded here
+  and in the README of this folder.
+* If legal review prefers zero ambiguity, replace pieces.json with a set whose
+  licence is unambiguous (CC0 / in-house art), keeping the same keys and the
+  45x45 viewBox; nothing else in the engine depends on the artwork.
+
+Status: ATTRIBUTION RECORDED, LEGAL SIGN-OFF RECOMMENDED before publishing the
+pieces.json file itself outside this repository.

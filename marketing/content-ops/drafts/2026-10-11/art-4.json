@@ -1,0 +1,124 @@
+{
+  "slug": "reading-team-chess-scores-olympiad-and-club-cup",
+  "title": "Reading Team Chess Scores: What 2.5-1.5 Really Tells You",
+  "subtitle": "How to read a team scoreline, and how to follow a team event round by round.",
+  "excerpt": "How to read team chess scorelines such as 2.5-1.5, using the 46th Chess Olympiad Open finish as the example, and how to follow the European Club Cup in Budva.",
+  "metaDescription": "How to read team chess scorelines such as 2.5-1.5 using the 46th Olympiad Open finish, plus a simple way to follow the European Club Cup in Budva.",
+  "category": "Chess News",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-11",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "A team scoreline such as 2.5-1.5 is the sum of separate game results.",
+    "The same match score can come from several different sets of board results.",
+    "Standings and tiebreaks are set by each event's own regulations, so read them before round one.",
+    "In team events, a draw on your board can be the right result for the match.",
+    "The European Club Cup is listed for 16 to 24 October 2026 in Budva, Montenegro."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Team results look odd to anyone used to single games. A scoreline such as 2.5–1.5 hides separate games, and the team that wins the match may have lost a board along the way. This guide shows how to read those numbers and how to follow a team event without drowning in them, using the finish of the 46th Chess Olympiad as the example."
+    },
+    {
+      "type": "heading",
+      "text": "What happened in the Open section"
+    },
+    {
+      "type": "paragraph",
+      "text": "FIDE's report on the Open section, dated 27 September 2026, says Uzbekistan won gold in Samarkand by beating Ukraine 2.5–1.5 in the final round. India took silver after a 2–2 draw with Hungary. Germany took bronze with a 2.5–1.5 win over the Netherlands. Those are the only results used here; for the full picture, read FIDE's own page."
+    },
+    {
+      "type": "paragraph",
+      "text": "Two of those three results are 2.5–1.5, a single half point between the sides, and one is an even 2–2. That is how narrow team margins can be: one draw on one board turns a 2.5–1.5 into a 2–2, or the other way round. India's silver came after a drawn match, which is a useful reminder that the result of a single match is only one piece of an event."
+    },
+    {
+      "type": "heading",
+      "text": "How to read a scoreline"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every match score in that report adds up to four, which fits four games per team match. A game is worth one point for a win and half a point for a draw, so a match score is just the sum of four game results. The same total can be reached in several ways:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "2.5–1.5 can be one win and three draws for the winning side, or two wins, a draw and a loss.",
+        "2–2 can be four draws, one win and one loss with two draws, or two wins and two losses.",
+        "The scoreline alone does not say which boards decided the match. The four board results do."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "What a scoreline cannot tell you is how a team ranks in the standings. FIDE's report presents match results as game scores and does not explain how match points or tiebreaks are used for the final order, so we are not going to guess. For any event, the organiser's official regulations are the authority on ranking. Read them once before the first round."
+    },
+    {
+      "type": "heading",
+      "text": "Why team chess feels different on the board"
+    },
+    {
+      "type": "paragraph",
+      "text": "On a team board, your result and your team's result can pull in different directions. A player with a balanced position may accept a draw that a solo player would keep pushing for, because the team only needs a half point from that board. Another player may keep a risky position alive because the match is level and a draw would not be enough."
+    },
+    {
+      "type": "paragraph",
+      "text": "When you watch a game live, check the other boards before you judge a decision. A move that looks timid in isolation can be exactly right once you know what the other three games are doing."
+    },
+    {
+      "type": "heading",
+      "text": "How to follow a team event"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Follow a board, not just a team. Tracking the same board number across rounds gives you a story to carry.",
+        "Read the match score first, then the games. Open the round pairings, find your team and read the four results in order.",
+        "Ask who needs what. When a match is level after three boards, the last game decides it; ask what each side needs from it.",
+        "Use the official page for live boards, pairings and standings, and confirm the schedule and rules there."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Next on the calendar: the European Club Cup"
+    },
+    {
+      "type": "paragraph",
+      "text": "ChessBase's 2026 chess calendar lists the European Club Cup from 16 to 24 October in Budva, Montenegro. It is a club competition, so the same reading skills apply: check that event's own rules for how matches and ranking work before you follow a round. Calendars can change, so confirm dates with the organisers."
+    },
+    {
+      "type": "heading",
+      "text": "Try it"
+    },
+    {
+      "type": "paragraph",
+      "text": "Take any recent team match you followed. Write down the four board results, add them up and compare the sum with the published match score. Then write one line on which board decided the match and what the other side needed from it. It takes two minutes and makes every future scoreline readable at a glance."
+    },
+    {
+      "type": "callout",
+      "text": "A team score is four separate games added together. Read the boards, then the total."
+    }
+  ],
+  "relatedSlugs": [
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "elo-xp-progression-guide"
+  ],
+  "sources": [
+    {
+      "title": "FIDE: Uzbekistan's dream finish: Olympiad gold in Samarkand (27 September 2026)",
+      "url": "https://www.fide.com/?p=50321"
+    },
+    {
+      "title": "ChessBase: Chess calendar 2026",
+      "url": "https://en.chessbase.com/post/chess-calendar-2026"
+    }
+  ],
+  "cta": {
+    "label": "Sharpen your play in the Academy",
+    "href": "/academy"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "template": "trap",
+  "headline": "Avoid this",
+  "cta_label": "Practice",
+  "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "moves": [
+    "e4",
+    "e5"
+  ],
+  "_expect": "fail",
+  "_match": "do not lead to the given fen"
+}

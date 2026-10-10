@@ -1,0 +1,200 @@
+{
+  "slug": "blackburne-shilling-gambit-how-white-avoids-the-trap",
+  "title": "Blackburne Shilling Gambit: How White Avoids the Trap",
+  "subtitle": "A free pawn on move four, a queen move that does two jobs, and a king with no air.",
+  "excerpt": "The Blackburne Shilling Gambit from the defender's chair: why 4.Nxe5 walks into a mate on f3, what the trap looks like, and the calm reply that avoids it.",
+  "metaDescription": "The Blackburne Shilling Gambit from White's side: why 4.Nxe5 Qg5 walks into mate on f3, how the trap works, and the simple reply that sidesteps it.",
+  "category": "Openings",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-11",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "The trap starts with 3...Nd4 and a pawn on e5 that looks free.",
+    "4...Qg5 hits the knight on e5 and the pawn on g2 at the same time.",
+    "In the trap line, White's own pieces box the king in and Black mates with ...Nf3.",
+    "4.Nxd4 declines the bait and removes the attacker that makes the trap work.",
+    "Before you grab a pawn, ask what the capture leaves undefended and what check you give back."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Your opponent plays 3...Nd4 and leaves a pawn on e5 hanging. It looks like a gift, and that is the whole point. The line has a name, the Blackburne Shilling Gambit, and this article is written for the player on the receiving end: White, who needs to know why the free pawn costs more than it is worth, and what to play instead."
+    },
+    {
+      "type": "chess_position",
+      "fen": "r1bqkbnr/pppp1ppp/8/4p3/2BnP3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nd4"
+      ],
+      "caption": "After 1.e4 e5 2.Nf3 Nc6 3.Bc4 Nd4. White to move. Black has moved the same knight twice and offered the pawn on e5."
+    },
+    {
+      "type": "heading",
+      "text": "What Black's last move actually does"
+    },
+    {
+      "type": "paragraph",
+      "text": "Start with question one: what did the last move change? The knight on d4 now attacks your knight on f3, and Black has developed nothing else: no bishop, no second knight, no castling. Nothing decisive is threatened. Black is hoping that you will reach for the pawn on e5 before you ask why it is available."
+    },
+    {
+      "type": "heading",
+      "text": "The bait: 4.Nxe5"
+    },
+    {
+      "type": "paragraph",
+      "text": "The natural capture is 4.Nxe5. It wins a pawn, and it carries a threat of its own: 5.Nxf7 would fork the queen on d8 and the rook on h8. For a moment your plan looks like it is working."
+    },
+    {
+      "type": "paragraph",
+      "text": "Black answers 4...Qg5. One queen move does two jobs. It attacks the knight you just moved to e5, and it attacks the pawn on g2, which has no defender now that the bishop has left f1."
+    },
+    {
+      "type": "chess_position",
+      "fen": "r1b1kbnr/pppp1ppp/8/4N1q1/2BnP3/8/PPPP1PPP/RNBQK2R w KQkq - 1 5",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nd4",
+        "Nxe5",
+        "Qg5"
+      ],
+      "caption": "After 4.Nxe5 Qg5. The knight on e5 and the pawn on g2 are both under attack, and White to move wants to be greedy again."
+    },
+    {
+      "type": "heading",
+      "text": "The second temptation: 5.Nxf7"
+    },
+    {
+      "type": "paragraph",
+      "text": "Now White has a second chance to grab something. 5.Nxf7 attacks the queen on g5 and the rook on h8 at once, so surely something has to give. Black ignores the fork with 5...Qxg2, attacking the rook on h1, and White's king has quietly lost its cover."
+    },
+    {
+      "type": "paragraph",
+      "text": "The rest is short. 6.Rf1 saves the rook. 6...Qxe4+ gives check along the e-file. 7.Be2 blocks it, and 7...Nf3# ends the game. The knight that went to d4 on move three returns with checkmate."
+    },
+    {
+      "type": "chess_position",
+      "fen": "r1b1kbnr/pppp1Npp/8/8/4q3/5n2/PPPPBP1P/RNBQKR2 w Qkq - 2 8",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nd4",
+        "Nxe5",
+        "Qg5",
+        "Nxf7",
+        "Qxg2",
+        "Rf1",
+        "Qxe4+",
+        "Be2",
+        "Nf3#"
+      ],
+      "caption": "After 7...Nf3#. White has collected two pawns and lost the game."
+    },
+    {
+      "type": "heading",
+      "text": "Why it is mate: your own pieces build the cage"
+    },
+    {
+      "type": "paragraph",
+      "text": "Look at the white king on e1 in that diagram. The queen on d1, the pawns on d2 and f2, the bishop on e2 and the rook on f1 occupy all five neighbouring squares. The knight on f3 gives check, the king cannot capture it, and the only piece that could take it, the bishop on e2, is pinned to the king by the queen on e4. White did not lose to a brilliant attack. White boxed its own king in while collecting pawns."
+    },
+    {
+      "type": "heading",
+      "text": "What the defender plays instead"
+    },
+    {
+      "type": "paragraph",
+      "text": "Decline the bait. 4.Nxd4 exd4 trades off the knight that made the trap work, and White simply keeps developing. A common follow-up is 5.c3, challenging the pawn on d4. Sources on the opening describe 3...Nd4 as a dubious move, so Black does not get a good game by force if you refuse the pawn. The trap only functions if you accept it."
+    },
+    {
+      "type": "chess_position",
+      "fen": "r1bqkbnr/pppp1ppp/8/8/2BpP3/2P5/PP1P1PPP/RNBQK2R b KQkq - 0 5",
+      "moves": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bc4",
+        "Nd4",
+        "Nxd4",
+        "exd4",
+        "c3"
+      ],
+      "caption": "After 4.Nxd4 exd4 5.c3. White challenges the pawn on d4 and has nothing hanging."
+    },
+    {
+      "type": "heading",
+      "text": "The habit that beats every trap"
+    },
+    {
+      "type": "paragraph",
+      "text": "You will not memorise every trap, but you can ask the same three questions before you take a pawn:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "What does my capture leave undefended? Here, the knight left f3 and the bishop was no longer on f1, so g2 was loose.",
+        "What check or capture do I give back? Here, the queen move came with threats on two things at once.",
+        "Where will my king be in three moves? Here, still on e1, hemmed in by its own army."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "That is also why the trap rewards patience. White has no deadline on move four. The pawn on e5 will still be there after you have developed, castled and looked around, and if it has gone, you lost nothing worth having."
+    },
+    {
+      "type": "paragraph",
+      "text": "If the answers worry you, decline and keep developing. A pawn that arrives with three unanswered questions is usually bait."
+    },
+    {
+      "type": "heading",
+      "text": "Practise it"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Set up the position after 3...Nd4 and play 4.Nxd4 against a friend or an engine. Notice how ordinary the game feels.",
+        "Replay the trap line once from the Black side, so that you recognise the geometry: the queen on g5, the knight returning to f3.",
+        "Next time any opponent offers you a free pawn in the first ten moves, pause and run the three questions above."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "The Blackburne Shilling Gambit in one line: 4.Nxe5? Qg5 sets the trap, and 4.Nxd4 is the calm answer."
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "stafford-and-englund-gambits-speed-chess-weapons"
+  ],
+  "sources": [
+    {
+      "title": "Blackburne Shilling Gambit, move order and trap line (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Blackburne_Shilling_Gambit"
+    },
+    {
+      "title": "Smothered mate, for the boxed-in king pattern (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Smothered_mate"
+    }
+  ],
+  "cta": {
+    "label": "Train your threat radar in the Academy",
+    "href": "/academy"
+  }
+}
