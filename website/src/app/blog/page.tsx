@@ -1,5 +1,5 @@
 import { Eyebrow } from "@/components/ui/Badge";
-import { BLOG_POSTS } from "@/content/blog";
+import { getPublishedPosts } from "@/content/blog";
 import { BlogCard } from "@/components/BlogCard";
 import { BlogFeed } from "@/components/BlogFeed";
 import { Nav } from "@/components/Nav";
@@ -20,7 +20,10 @@ export const metadata = pageMetadata(
   "Explore chess opening ideas, tactical patterns, training advice, and the thinking behind Web3Chess in our chess journal.",
   "/blog",
 );
+export const revalidate = 600;
+
 export default function BlogHubPage() {
+  const BLOG_POSTS = getPublishedPosts();
   const featured = BLOG_POSTS.find((p) => p.featured) || BLOG_POSTS[0];
   const summaries = BLOG_POSTS.map(
     ({

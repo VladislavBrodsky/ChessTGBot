@@ -23,6 +23,7 @@ for(const p of posts){
   if(!p.author?.name||!p.author?.role||!['Person','Organization'].includes(p.author.kind))fail('provide an accountable author kind and name');
   for(const field of ['publishedAt','updatedAt'])if(p[field]&&(!/^\d{4}-\d{2}-\d{2}$/.test(p[field])||Number.isNaN(Date.parse(p[field]))||new Date(p[field]).toISOString().slice(0,10)!==p[field]))fail(`invalid ${field}`);
   if(p.updatedAt&&p.updatedAt<p.publishedAt)fail('updated date precedes publication');
+  if(p.publishAt&&(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(p.publishAt)||Number.isNaN(Date.parse(p.publishAt))||p.publishAt.slice(0,10)!==p.publishedAt))fail('publishAt must be a UTC instant on the publishedAt date');
   if(!p.takeaways?.length||!p.content?.length)fail('missing takeaways or article body');
   if(!p.sources?.length)fail('add sources or product references');
   for(const source of p.sources||[])if(!source.title||!/^https:\/\//.test(source.url))fail('invalid source');

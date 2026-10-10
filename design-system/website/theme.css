@@ -9,7 +9,7 @@
  *   @import "../../../design-system/website/theme.css";
  *
  * Fonts come from next/font in website/src/app/layout.tsx, which sets
- * --nf-sans, --nf-condensed and --nf-mono on <html>. They are deliberately NOT
+ * --nf-sans and --nf-condensed on <html>. They are deliberately NOT
  * named --font-*: a theme variable that references a variable of its own name
  * is a cycle, and the browser then drops the whole font-family declaration.
  *
@@ -32,9 +32,9 @@
   --color-graphite: #2f2f2f;
   --color-mint: #d1ffca;          /* tags, links, active marks */
   --color-voltage: #fff100;       /* small brand and state accents only */
-  --color-brand-tile: #211330;    /* contained logo only */
-  --color-brand-symbol: #d6b6ff; /* lilac rook on the dark tile and footer */
-  --color-brand-ink: #654599;     /* violet rook on light backgrounds */
+  --color-brand-tile: #000000;    /* contained logo only */
+  --color-brand-symbol: #d1ffca; /* mint knight on the dark tile */
+  --color-brand-ink: #000000;     /* knight silhouette */
 
   /* Semantic aliases kept so existing pages resolve */
   --color-ink: #000000;
@@ -105,7 +105,7 @@
 
   --text-lead: 1.25rem;
   --text-lead--line-height: 1.4;
-  --text-title: 1.125rem;
+  --text-title: 1.25rem;
   --text-title--line-height: 1.25;
   --text-title--font-weight: 500;
   --text-body: 1rem;
@@ -125,16 +125,24 @@
   --text-button--line-height: 1.2;
   --text-button--font-weight: 600;
 
+  --text-section: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+
   /* Radii: each belongs to a role (Dayos: 8 / 32 / 48 / 64) */
   --radius-control: 8px;    /* buttons, inputs */
+  --radius-board: 4px;      /* square board corners preserve edge pieces */
   --radius-media: 16px;     /* nested tiles, thumbnails */
-  --radius-card: 32px;      /* cards */
-  --radius-card-compact: 24px; /* cards on small phones */
+  --radius-card: 24px;      /* cards */
+  --radius-card-compact: 20px; /* cards on small phones */
   --radius-panel: 32px;     /* panels, FAQ shell */
   --radius-frame: 40px;
-  --radius-nav: 48px;       /* nav pill */
-  --radius-block: 64px;     /* large black blocks */
+  --radius-nav: 12px;       /* nav pill */
+  --radius-block: 32px;     /* large black blocks */
   --radius-pill: 9999px;    /* tags, chips */
+
+  /* Shared control sizes; all touch targets are at least 44px. */
+  --control-sm: 44px;
+  --control-md: 48px;
+  --control-lg: 56px;
 
   /* Containers and rhythm */
   --spacing-gutter: clamp(1.25rem, 0.6rem + 2.65vw, 3rem);
@@ -186,7 +194,7 @@
   /* Display face. Barlow Condensed is the free stand-in for SuisseIntlCond;
      scripts it lacks (Cyrillic, CJK, …) fall through to the sans stack. */
   --font-condensed: var(--nf-condensed), "Barlow Condensed", "Arial Narrow", var(--nf-sans), ui-sans-serif, sans-serif;
-  --font-mono: var(--nf-mono), "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-canvas: var(--surface-canvas);
   --color-surface: var(--surface-card);

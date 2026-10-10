@@ -54,7 +54,7 @@ export default function TermsPage() {
         {/* Content Card */}
         <Card className="legal-copy space-y-8 text-body text-fg-muted">
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               1. ELIGIBILITY &amp; AGE REQUIREMENTS
             </h2>
             <p>
@@ -66,7 +66,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               2. FAIR PLAY
             </h2>
             <p>
@@ -80,7 +80,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               3. WAGERS &amp; SETTLEMENT RULES
             </h2>
             <p>
@@ -96,7 +96,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               4. PLATFORM BALANCE &amp; WITHDRAWALS
             </h2>
             <p>
@@ -110,7 +110,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               5. RESPONSIBLE GAMING SAFEGUARDS
             </h2>
             <p>

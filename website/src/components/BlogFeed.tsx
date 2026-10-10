@@ -4,6 +4,8 @@ import { useState } from "react";
 import { BlogCard, type BlogSummary } from "./BlogCard";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
+import { Input } from "./ui/Input";
+import { Select } from "./ui/Select";
 import { Icon } from "@/icons";
 import { BLOG_CATEGORIES } from "@/content/blog-taxonomy";
 
@@ -20,33 +22,41 @@ export function BlogFeed({ posts }: { posts: BlogSummary[] }) {
   );
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-5">
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filter stories by category"
-        >
+      <div className="blog-toolbar">
+        <label className="blog-category-select block text-caption font-semibold">
+          Topic
+          <Select value={category} onChange={(event) => setCategory(event.target.value)} className="mt-2">
+            {categories.map(item => <option key={item}>{item}</option>)}
+          </Select>
+        </label>
+        <fieldset className="blog-category-buttons min-w-0">
+          <legend className="mb-2 text-caption font-semibold">Topic</legend>
+          <div className="flex flex-wrap gap-2">
           {categories.map((item) => (
             <Button
               key={item}
               variant={category === item ? "primary" : "secondary"}
               aria-pressed={category === item}
               onClick={() => setCategory(item)}
-              className="px-3! text-caption!"
+              size="sm"
             >
               {item}
             </Button>
           ))}
-        </div>
-        <label className="block w-full text-caption font-semibold sm:w-auto">
+          </div>
+        </fieldset>
+        <label className="block min-w-0 text-caption font-semibold">
           Search the journal
-          <input
+          <span className="relative mt-2 block">
+          <Icon name="magnifying-glass" size={18} className="pointer-events-none absolute start-3.5 top-4 text-fg-muted" />
+          <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             type="search"
             placeholder="Openings, tactics, Telegram…"
-            className="mt-2 block min-h-12 w-full rounded-control border border-line bg-surface px-4 text-body sm:w-72"
+            className="ps-11"
           />
+          </span>
         </label>
       </div>
       <p className="mb-4 text-caption text-fg-muted" role="status">

@@ -136,6 +136,6 @@ export const home = {
       },
     ],
     legal:
-      "18+. Wager matches carry risk; you can lose your stake. A.I. practice and daily puzzles are free.",
+      "18+. Wager matches carry risk; you can lose your stake. A.I. practice and puzzles are free.",
   },
 } as const;

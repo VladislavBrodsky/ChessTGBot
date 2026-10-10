@@ -55,7 +55,7 @@ export default function PrivacyPage() {
         {/* Content Card */}
         <Card className="legal-copy space-y-8 text-body text-fg-muted">
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               1. TELEGRAM DATA &amp; AUTHENTICATION
             </h2>
             <p>
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               2. WALLET ADDRESSES &amp; TRANSACTION RECORDS
             </h2>
             <p>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               3. GAME DATA &amp; ABUSE PREVENTION
             </h2>
             <p>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="poster text-heading-md text-fg">
+            <h2 className="text-fg">
               4. STORAGE &amp; THIRD-PARTY TRACKING
             </h2>
             <p>

@@ -71,17 +71,6 @@ export async function socialImage({
                   height: BRAND_LETTERING.wordmark.height,
                 }}
               />
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 400,
-                  color: color.slate,
-                  marginTop: 6,
-                  letterSpacing: .42,
-                }}
-              >
-                {BRAND.tagline}
-              </span>
             </div>
           </div>
           <span

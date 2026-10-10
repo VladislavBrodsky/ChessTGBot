@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@/icons";
 import { Button, buttonClass } from "./ui/Button";
+import { Input } from "./ui/Input";
 
 export function ShareButtons({
   title,
@@ -46,7 +47,7 @@ export function ShareButtons({
   }
   return (
     <div className="border-t border-line pt-4">
-      <p className="mb-3 font-mono text-overline uppercase">
+      <p className="mb-3 text-caption font-medium text-fg-muted">
         {compact ? "Make it a friendly rivalry" : "Share this story"}
       </p>
       <div className="flex flex-wrap gap-2">
@@ -54,7 +55,7 @@ export function ShareButtons({
           href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className={buttonClass("secondary", "px-3! text-caption!")}
+          className={buttonClass("secondary", "", "sm")}
         >
           <Icon name="paper-plane-tilt" size={16} />
           {compact ? "Challenge a friend" : "Telegram"}
@@ -62,7 +63,7 @@ export function ShareButtons({
         <Button
           variant="secondary"
           onClick={copy}
-          className="px-3! text-caption!"
+          size="sm"
         >
           <Icon name="copy" size={16} />
           Copy link
@@ -72,7 +73,7 @@ export function ShareButtons({
             href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonClass("secondary", "px-3! text-caption!")}
+            className={buttonClass("secondary", "", "sm")}
           >
             Share on X
           </a>
@@ -86,11 +87,11 @@ export function ShareButtons({
       {showLink && (
         <label className="mt-3 block text-caption">
           Challenge link
-          <input
+          <Input
             readOnly
             value={url}
             onFocus={(e) => e.target.select()}
-            className="mt-1 min-h-11 w-full rounded-control border border-line-strong bg-surface px-3 text-body"
+            className="mt-1"
           />
         </label>
       )}

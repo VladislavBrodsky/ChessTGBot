@@ -6,6 +6,7 @@ import { useState } from "react";
 import { TIME_CONTROLS } from "@/lib/config";
 import { Card } from "./ui/Card";
 import { Icon } from "@/icons";
+import { SegmentedControl } from "./ui/SegmentedControl";
 
 export function MatchPreview() {
   const [time, setTime] = useState<(typeof TIME_CONTROLS)[number]>("3+2");
@@ -25,7 +26,7 @@ export function MatchPreview() {
     <Card className="match-preview" data-interactive-workspace>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Eyebrow>Choose your tempo</Eyebrow>
-        <span className="font-mono text-caption text-fg-muted">
+        <span className="text-caption text-fg-muted">
           Interactive preview
         </span>
       </div>
@@ -45,23 +46,7 @@ export function MatchPreview() {
           <Icon name="clock" size={32} />
         </span>
       </div>
-      <div
-        className="grid grid-cols-4 gap-2"
-        role="group"
-        aria-label="Preview a time control"
-      >
-        {TIME_CONTROLS.map((control) => (
-          <button
-            type="button"
-            aria-pressed={time === control}
-            key={control}
-            onClick={() => setTime(control)}
-            className={`min-h-12 rounded-control font-mono text-body font-semibold transition-colors ${time === control ? "bg-inverse text-fg-inverse" : "bg-inset hover:bg-chip"}`}
-          >
-            {control}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl label="Preview a time control" options={TIME_CONTROLS} value={time} onChange={setTime} />
       <p
         className="my-4 min-h-12 text-body-sm text-fg-muted"
         aria-live="polite"

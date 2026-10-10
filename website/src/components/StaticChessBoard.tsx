@@ -1,4 +1,5 @@
 import { board } from "../../../design-system/website/tokens";
+import { BoardFrame } from "./BoardFrame";
 
 /** Lightweight, deterministic board for the initial loading and error states. */
 export function StaticChessBoard({ fen, label }: { fen: string; label: string }) {
@@ -6,7 +7,9 @@ export function StaticChessBoard({ fen, label }: { fen: string; label: string })
     Array.from(rank).flatMap((piece) => /[1-8]/.test(piece) ? Array(Number(piece)).fill("") : [piece]),
   );
   return (
-    <div className="static-board" role="img" aria-label={label}>
+    <div role="img" aria-label={label}>
+    <BoardFrame notation>
+    <div className="static-board">
       {squares.map((piece, i) => {
         const file = i % 8;
         const rank = Math.floor(i / 8);
@@ -20,11 +23,11 @@ export function StaticChessBoard({ fen, label }: { fen: string; label: string })
                 <path d="M13 37h22l3 5H10Z" />
               </svg>
             )}
-            {file === 0 && <span className="static-board-notation start-1 top-0.5" style={{ color: dark ? board.coordinateOnDark : board.coordinateOnLight }}>{8 - rank}</span>}
-            {rank === 7 && <span className="static-board-notation end-1 bottom-0.5" style={{ color: dark ? board.coordinateOnDark : board.coordinateOnLight }}>{"abcdefgh"[file]}</span>}
           </div>
         );
       })}
+    </div>
+    </BoardFrame>
     </div>
   );
 }

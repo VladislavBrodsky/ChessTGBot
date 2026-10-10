@@ -13,9 +13,8 @@ import { Footer } from "@/components/Footer";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
-import { KingMark } from "@/components/icons";
 import { home } from "@/content/home";
-import { BLOG_POSTS } from "@/content/blog";
+import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
@@ -35,6 +34,9 @@ const facts = [
     label: "Winner’s share",
   },
 ];
+
+// Re-render regularly so newly scheduled articles reach the home page on time.
+export const revalidate = 600;
 
 export default function HomePage() {
   const structuredData = {
@@ -84,18 +86,17 @@ export default function HomePage() {
       />
       <Nav />
       <main id="main" className="home-main">
-        <section className="shell-wide hero-section">
+        <section className="shell-wide hero-section" aria-labelledby="home-title">
           <div className="hero-copy">
             <div className="hero-intro">
               <Badge tone="accent" icon="telegram-logo">Chess. Now in Telegram.</Badge>
-              <h1 className="poster hero-title">
+              <h1 id="home-title" className="poster hero-title">
                 Skill is the
                 <br />
                 <span className="hero-emphasis">only edge</span>
               </h1>
               <p className="hero-lead max-w-[38ch] text-fg-muted">
-                Your favorite game. A whole new arena. Train for free, find your
-                next rival, and put your chess skills to the test.
+                Train for free. Find your next rival. Make your next move inside Telegram.
               </p>
             </div>
             <div className="hero-details">
@@ -123,7 +124,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="challenge" className="shell-wide home-section">
+        <section id="challenge" className="shell-wide home-section" aria-labelledby="challenge-title">
           <div className="section-index">
             <span>01 / Your move, right now</span>
             <span>Three free positions</span>
@@ -161,18 +162,15 @@ export default function HomePage() {
           </Card>
         </section>
 
-        <section id="play" className="shell-wide home-section">
+        <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
           <div className="section-index">
             <span>02 / From chat to checkmate</span>
             <span>Built around your day</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
-              <span className="eyebrow">Your next match</span>
-              <h2 className="editorial-title">
-                Less waiting.
-                <br />
-                More playing.
+              <h2 id="play-heading" className="editorial-title">
+                Less waiting. More playing.
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Pick a pace. Choose a stake. Keep chatting while we find your
@@ -187,14 +185,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="shell-wide home-section">
+        <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel">
             <div className="section-index">
               <span>03 / The game comes first</span>
               <Icon name="strategy" size={20} />
             </div>
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
-              <h2 className="poster text-heading-xl">
+              <h2 id="fair-heading" className="poster text-heading-xl">
                 You can’t buy
                 <br />a better bishop.
               </h2>
@@ -235,18 +233,15 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="academy" className="shell-wide home-section">
+        <section id="academy" className="shell-wide home-section" aria-labelledby="academy-heading">
           <div className="section-index">
             <span>04 / Build your board vision</span>
             <span>Practice is always free</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
-              <span className="eyebrow">The Academy</span>
-              <h2 className="editorial-title">
-                Make your next
-                <br />
-                move a better one.
+              <h2 id="academy-heading" className="editorial-title">
+                Make your next move a better one.
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Learn opening principles. Spot the fork. Find the endgame plan.
@@ -258,38 +253,33 @@ export default function HomePage() {
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
             </div>
-            <div className="grid gap-3">
+            <Card>
+              <ol className="academy-track-list">
               {home.academy.tracks.map((track, index) => (
-                <Card
-                  key={track.name}
-                  className="flex items-center gap-4 p-5! sm:p-6!"
-                >
+                <li key={track.name}>
                   <span className="font-mono text-caption text-fg-muted">
                     0{index + 1}
                   </span>
-                  <h3 className="flex-1 text-title">{track.name}</h3>
-                  <span className="hidden font-mono text-overline text-fg-muted sm:block">
+                  <h3 className="text-title">{track.name}</h3>
+                  <span className="text-caption text-fg-muted">
                     {track.level}
                   </span>
-                  <Icon name="book-open-text" size={20} />
-                </Card>
+                </li>
               ))}
-            </div>
+              </ol>
+            </Card>
           </div>
         </section>
 
-        <section id="wagers" className="shell-wide home-section">
+        <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
             <span>05 / Know the numbers</span>
             <span>18+ wager matches</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
-              <span className="eyebrow">Equal stakes. Clear math.</span>
-              <h2 className="editorial-title">
-                No mystery
-                <br />
-                in the match pot.
+              <h2 id="wagers-heading" className="editorial-title">
+                No mystery in the match pot.
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Both players contribute the same stake. A decided match credits{" "}
@@ -316,60 +306,40 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="blog" className="shell-wide home-section">
+        <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
             <span>06 / The chess journal</span>
             <span>Read. Think. Repeat.</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
-            <h2 className="editorial-title">
-              A little knowledge.
-              <br />A better position.
+            <h2 id="journal-heading" className="editorial-title">
+              A little knowledge. A better position.
             </h2>
             <ButtonLink href="/blog" variant="secondary">
               All stories
               <Icon name="arrow-up-right" size={18} />
             </ButtonLink>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {BLOG_POSTS.slice(0, 3).map((post) => (
+          <div className="home-story-grid grid gap-4">
+            {getPublishedPosts().slice(0, 3).map((post) => (
               <BlogCard key={post.slug} post={post} />
             ))}
           </div>
         </section>
 
-        <section id="philosophy" className="shell-wide home-section">
-          <Card className="grid items-center gap-8 md:grid-cols-[1fr_.45fr]">
-            <div className="space-y-4">
-              <span className="eyebrow">Know when to call it a game</span>
-              <h2 className="editorial-title">
-                A good player knows
-                <br />
-                when to take a break.
-              </h2>
-              <p className="max-w-[58ch] text-body text-fg-muted">
-                Enjoy the competition. Set limits before you play, never chase
-                losses, and come back with a clear head. A.I. practice is always
-                there when you want a game without a stake.
-              </p>
-            </div>
-            <div
-              className="flex h-44 items-center justify-center"
-              aria-hidden="true"
-            >
-              <KingMark className="topple h-36 w-auto text-fg" />
-            </div>
-          </Card>
-        </section>
+        <aside id="philosophy" className="shell-wide home-section" aria-labelledby="break-heading">
+          <div className="responsible-note">
+            <h2 id="break-heading">A good player knows when to take a break.</h2>
+            <p>Set limits before you play, never chase losses, and return with a clear head. Free A.I. practice is always there for a game without a stake.</p>
+          </div>
+        </aside>
 
-        <section id="faq" className="shell-wide home-section">
+        <section id="faq" className="shell-wide home-section" aria-labelledby="faq-heading">
           <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
             <div className="space-y-4">
               <span className="eyebrow">Before your first move</span>
-              <h2 className="editorial-title">
-                Good questions.
-                <br />
-                Clear answers.
+              <h2 id="faq-heading" className="editorial-title">
+                Good questions. Clear answers.
               </h2>
               <p className="text-body text-fg-muted">
                 The essentials on practice, stakes, deposits, and fair play.

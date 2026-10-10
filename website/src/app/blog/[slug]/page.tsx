@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  BLOG_POSTS,
+  getPublishedPosts,
   getBlogPostBySlug,
   getRelatedBlogPosts,
 } from "@/content/blog";
@@ -24,8 +24,12 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Articles scheduled for later are rendered on demand once they go live.
+export const revalidate = 600;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({
+  return getPublishedPosts().map((post) => ({
     slug: post.slug,
   }));
 }

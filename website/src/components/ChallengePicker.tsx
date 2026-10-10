@@ -1,4 +1,6 @@
 import { CHALLENGES } from "@/content/challenges";
+import { Icon } from "@/icons";
+import { Select } from "./ui/Select";
 
 /** The initial preview and interactive challenge use the same selector geometry. */
 export function ChallengePicker({
@@ -13,9 +15,9 @@ export function ChallengePicker({
   disabled?: boolean;
 }) {
   return (
-    <fieldset className="min-w-0">
+    <fieldset className="challenge-position-picker min-w-0">
       <legend className="mb-2 text-caption font-semibold">Choose a position</legend>
-      <select
+      <Select
         aria-label="Choose a position"
         className="challenge-select"
         value={index}
@@ -27,7 +29,7 @@ export function ChallengePicker({
             0{i + 1} · {puzzle.name}{solvedIds.includes(puzzle.id) ? " · Solved" : ""}
           </option>
         ))}
-      </select>
+      </Select>
       <div className="challenge-picker">
         {CHALLENGES.map((puzzle, i) => (
           <button
@@ -39,7 +41,7 @@ export function ChallengePicker({
             className="challenge-option"
           >
             <span className="challenge-option-number" aria-hidden="true">0{i + 1}</span>
-            <span>{puzzle.name}{solvedIds.includes(puzzle.id) && <span className="ms-1" aria-label="Solved">✓</span>}</span>
+            <span className="flex items-center gap-1">{puzzle.name}{solvedIds.includes(puzzle.id) && <span aria-label="Solved"><Icon name="check" size={16} /></span>}</span>
           </button>
         ))}
       </div>

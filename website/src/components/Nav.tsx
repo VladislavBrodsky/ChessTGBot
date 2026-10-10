@@ -18,12 +18,13 @@ export function Nav() {
     const heroActions = document.querySelector<HTMLElement>(
       ".hero-actions, .page-hero-details",
     );
+    const desktop = window.matchMedia("(min-width: 1024px)");
     const update = () =>
-      setStuck(
+      setStuck(desktop.matches && (
         heroActions
           ? heroActions.getBoundingClientRect().bottom <= 0
-          : window.scrollY > 480,
-      );
+          : window.scrollY > 480
+      ));
     const schedule = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(update);
@@ -51,21 +52,28 @@ export function Nav() {
     };
   }, [open]);
   const links = (mobile = false) =>
-    home.nav.map((item) => (
-      <Link
-        key={item.href}
-        href={item.href}
-        aria-current={path === item.href ? "page" : undefined}
-        onClick={() => setOpen(false)}
-        className={`${mobile ? "flex min-h-14 items-center rounded-media px-5 text-title" : "inline-flex min-h-11 items-center rounded-pill px-3.5 text-button"} transition-colors ${path === item.href ? "bg-surface font-semibold" : "hover:bg-surface"}`}
-      >
-        {item.label}
-        {mobile && <Icon name="arrow-up-right" size={18} className="ms-auto" />}
-      </Link>
-    ));
+    home.nav.map((item) => {
+      const current = path === item.href || path.startsWith(item.href + "/");
+      const className = `${mobile ? "flex min-h-14 items-center rounded-media px-5 text-title" : "site-nav-link"} ${current ? "site-nav-current" : ""}`;
+      const content = <>{item.label}{mobile && <Icon name="arrow-up-right" size={18} className="ms-auto" />}</>;
+      if (path === "/" && item.href === "/#faq") {
+        return <a key={item.href} href="#faq" className={className} onClick={() => setOpen(false)}>{content}</a>;
+      }
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          aria-current={current ? "page" : undefined}
+          onClick={() => setOpen(false)}
+          className={className}
+        >
+          {content}
+        </Link>
+      );
+    });
   return (
     <>
-      <header className="shell-wide flex h-20 items-center justify-between gap-3 sm:h-24">
+      <header className="site-header shell-wide flex min-h-20 items-center justify-between gap-3">
         <Link
           href="/"
           aria-label="Web3Chess home"
@@ -75,7 +83,7 @@ export function Nav() {
         </Link>
         <nav
           aria-label="Main"
-          className="hidden items-center gap-1 rounded-nav border border-line bg-inset p-1 lg:flex"
+          className="hidden items-center gap-0.5 lg:flex"
         >
           {links()}
         </nav>
@@ -100,7 +108,7 @@ export function Nav() {
       >
         <nav
           aria-label="Sticky"
-          className="flex items-center gap-1 rounded-nav border border-line bg-canvas p-1.5 ps-5"
+          className="site-sticky-nav flex items-center gap-1 rounded-nav border border-line bg-surface p-1.5 ps-4"
         >
           <Link
             href="/"
@@ -110,7 +118,7 @@ export function Nav() {
             <Logo />
           </Link>
           {links()}
-          <PlayButton size="sm" className="ms-2 rounded-pill!" />
+          <PlayButton size="sm" className="ms-2" />
         </nav>
       </div>
       <dialog

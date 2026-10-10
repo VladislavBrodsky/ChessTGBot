@@ -6,6 +6,7 @@ import { FogBoard } from "./FogBoard";
 import { ChallengeIntro } from "./ChallengeIntro";
 import { ChallengePicker } from "./ChallengePicker";
 import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 import { PlayButton } from "./PlayButton";
 import { ShareButtons } from "./ShareButtons";
 import { CHALLENGES } from "@/content/challenges";
@@ -30,6 +31,7 @@ export function ChessChallenge() {
   const [selected, setSelected] = useState<string | null>(null);
   const [moveText, setMoveText] = useState("");
   const [hint, setHint] = useState(false);
+  const [moveError, setMoveError] = useState(false);
   const [feedback, setFeedback] = useState(
     "White to move. Find checkmate in one.",
   );
@@ -41,6 +43,7 @@ export function ChessChallenge() {
     setSelected(null);
     setMoveText("");
     setHint(false);
+    setMoveError(false);
     setFeedback("White to move. Find checkmate in one.");
   }
   function tryMove(move: string | { from: string; to: string }) {
@@ -49,16 +52,19 @@ export function ChessChallenge() {
       const game = new Chess(puzzle.fen);
       game.move(move);
       if (!game.isCheckmate()) {
+        setMoveError(true);
         setFeedback("Legal move, but not checkmate. Try another move.");
         return false;
       }
       setPosition(game.fen());
+      setMoveError(false);
       setOutcome("solved");
       setSolvedIds((current) => current.includes(puzzle.id) ? current : [...current, puzzle.id]);
       setSelected(null);
       setFeedback("You found checkmate. Nicely calculated.");
       return true;
     } catch {
+      setMoveError(true);
       setFeedback(
         "That move isn’t legal here. Use standard notation, such as a piece letter and destination square.",
       );
@@ -70,6 +76,7 @@ export function ChessChallenge() {
     game.move(puzzle.answer);
     setPosition(game.fen());
     setOutcome("revealed");
+    setMoveError(false);
     setSelected(null);
     setFeedback("Solution shown: " + puzzle.answer);
   }
@@ -80,6 +87,7 @@ export function ChessChallenge() {
         solved={outcome === "solved"}
         explanation={outcome === "playing" ? undefined : puzzle.explanation}
       />
+      <ChallengePicker index={index} solvedIds={solvedIds} onSelect={reset} />
       <div className="challenge-board">
         <div className="mx-auto min-w-0 w-full max-w-100">
           <div className="challenge-board-heading">
@@ -119,10 +127,10 @@ export function ChessChallenge() {
                   : {}
             }
           />
-          <p className="mt-3 text-caption text-center text-fg-muted">
+          <p className="challenge-board-note mt-3 text-caption text-center text-fg-muted">
             {outcome === "playing"
-              ? "Drag, tap, or type your move below."
-              : "Checkmate on the board. Try the next position."}
+              ? "Drag a piece, tap two squares, or type a move."
+              : "Checkmate. Ready for the next position?"}
           </p>
         </div>
       </div>
@@ -134,14 +142,13 @@ export function ChessChallenge() {
           </p>
           <div className="mt-2 flex gap-2" aria-hidden="true">
             {CHALLENGES.map((item) => (
-              <span key={item.id} className={`h-1 flex-1 rounded-pill ${solvedIds.includes(item.id) ? "bg-fg" : "bg-line-strong"}`} />
+              <span key={item.id} className={`h-1 flex-1 rounded-pill ${solvedIds.includes(item.id) ? "bg-fg-win" : "bg-line"}`} />
             ))}
           </div>
           {solvedIds.length === CHALLENGES.length && (
             <p className="mt-3 text-body-sm font-semibold" role="status">Three for three. Invite a friend to try the same boards.</p>
           )}
         </div>
-        <ChallengePicker index={index} solvedIds={solvedIds} onSelect={reset} />
         {outcome === "playing" && (
           <form
             onSubmit={(event) => {
@@ -157,21 +164,24 @@ export function ChessChallenge() {
               Your move in chess notation
             </label>
             <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-              <input
+              <Input
                 id="challenge-move"
                 name="move"
                 value={moveText}
-                onChange={(e) => setMoveText(e.target.value)}
+                onChange={(e) => { setMoveText(e.target.value); setMoveError(false); }}
                 placeholder="e.g. Ra8"
                 autoComplete="off"
                 autoCapitalize="off"
                 autoCorrect="off"
+                enterKeyHint="go"
                 spellCheck={false}
                 aria-describedby="challenge-feedback"
-                className="min-h-12 min-w-0 flex-1 rounded-control border border-line-strong bg-surface px-3 font-mono text-body"
+                aria-invalid={moveError}
+                className="font-mono"
               />
               <Button
                 type="submit"
+                disabled={!moveText.trim()}
                 className="w-full sm:w-auto"
               >
                 Play move
@@ -185,6 +195,7 @@ export function ChessChallenge() {
           role="status"
           className="challenge-feedback text-body-sm font-medium"
           data-outcome={outcome}
+          data-error={moveError}
         >
           {feedback}
         </p>
@@ -207,15 +218,15 @@ export function ChessChallenge() {
             </>
           ) : (
             <>
-              <Button variant="secondary" onClick={() => reset()}>
+              <Button variant="soft" onClick={() => reset()}>
                 <Icon name="arrow-counter-clockwise" size={16} />
                 Try again
               </Button>
-              <Button variant="secondary" onClick={() => reset((index + 1) % CHALLENGES.length)}>
+              <Button onClick={() => reset((index + 1) % CHALLENGES.length)}>
                 Next position
                 <Icon name="arrow-right" size={16} />
               </Button>
-              <PlayButton />
+              <PlayButton variant="ghost" />
             </>
           )}
         </div>

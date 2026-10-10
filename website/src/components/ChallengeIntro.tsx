@@ -7,11 +7,7 @@ export function ChallengeIntro({
 }) {
   return (
     <div className="challenge-intro">
-      <span className="inline-flex items-center gap-2 font-mono text-overline uppercase text-fg-muted">
-        <span className="size-2 rounded-full bg-voltage" aria-hidden="true" />
-        The one-move challenge
-      </span>
-      <h2 className="editorial-title">
+      <h2 id="challenge-title" className="editorial-title">
         {solved ? (
           <>
             That’s your

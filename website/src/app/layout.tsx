@@ -1,26 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Onest, Barlow_Condensed, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SITE } from "@/lib/config";
 import "./globals.css";
 
-const onest = Onest({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+const onest = localFont({
+  src: "../../public/fonts/onest-variable.woff2",
+  weight: "400 700",
   variable: "--nf-sans",
   display: "swap",
 });
-const condensed = Barlow_Condensed({
-  subsets: ["latin", "latin-ext"],
-  weight: ["600", "700"],
+const condensed = localFont({
+  src: "../../public/fonts/barlow-condensed-bold.woff2",
+  weight: "700",
   variable: "--nf-condensed",
   display: "swap",
-});
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
-  variable: "--nf-mono",
-  display: "swap",
-  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -59,7 +52,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={`${onest.variable} ${condensed.variable} ${plexMono.variable}`}
+      className={`${onest.variable} ${condensed.variable}`}
     >
       <body>
         <a

@@ -15,11 +15,11 @@ export function PageHero({
   visual: ReactNode;
 }) {
   return (
-    <section className="page-hero">
+    <section className="page-hero" aria-labelledby="page-title">
       <div className="page-hero-copy min-w-0 flex-col items-start gap-5">
         <div className="hero-intro">
           <Badge tone="accent">{eyebrow}</Badge>
-          <h1 className="poster page-title">{title}</h1>
+          <h1 id="page-title" className="poster page-title">{title}</h1>
           <p className="hero-lead max-w-[42ch] text-fg-muted">{lead}</p>
         </div>
         <div className="hero-details page-hero-details">

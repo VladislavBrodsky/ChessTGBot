@@ -2,28 +2,32 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
 export const buttonStyles = {
-  primary: "bg-inverse text-fg-inverse hover:opacity-85",
-  secondary: "border border-line-strong text-fg hover:bg-surface",
-  soft: "bg-inset text-fg hover:bg-surface",
-  ghost: "text-fg hover:bg-inset",
+  primary: "site-button-primary",
+  secondary: "site-button-secondary",
+  soft: "site-button-soft",
+  ghost: "site-button-ghost",
 } as const;
+
+export const buttonSizes = { sm: "site-button-sm", md: "site-button-md", lg: "site-button-lg" } as const;
 
 export function buttonClass(
   variant: keyof typeof buttonStyles = "primary",
   className = "",
+  size: keyof typeof buttonSizes = "md",
 ) {
-  return `inline-flex min-h-12 items-center justify-center gap-2.5 rounded-control px-5 text-button font-semibold transition-[background-color,opacity,transform] duration-150 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-45 ${buttonStyles[variant]} ${className}`;
+  return `site-button ${buttonSizes[size]} ${buttonStyles[variant]} ${className}`;
 }
 
 type ButtonProps = ComponentProps<"button"> & {
   variant?: keyof typeof buttonStyles;
+  size?: keyof typeof buttonSizes;
 };
 
-export function Button({ variant, className = "", ...props }: ButtonProps) {
+export function Button({ variant, size, className = "", ...props }: ButtonProps) {
   return (
     <button
       type="button"
-      className={buttonClass(variant, className)}
+      className={buttonClass(variant, className, size)}
       {...props}
     />
   );
@@ -33,22 +37,24 @@ export function ButtonLink({
   href,
   children,
   variant,
+  size,
   className = "",
 }: {
   href: string;
   children: ReactNode;
   variant?: keyof typeof buttonStyles;
   className?: string;
+  size?: keyof typeof buttonSizes;
 }) {
   if (href.startsWith("#")) {
     return (
-      <a href={href} className={buttonClass(variant, className)}>
+      <a href={href} className={buttonClass(variant, className, size)}>
         {children}
       </a>
     );
   }
   return (
-    <Link href={href} className={buttonClass(variant, className)}>
+    <Link href={href} className={buttonClass(variant, className, size)}>
       {children}
     </Link>
   );

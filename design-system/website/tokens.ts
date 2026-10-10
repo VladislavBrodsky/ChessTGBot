@@ -16,9 +16,9 @@ export const color = {
   graphite: '#2f2f2f',
   mintChip: '#d1ffca',
   voltageYellow: '#fff100',
-  brandTile: '#211330',
-  brandSymbol: '#d6b6ff',
-  brandInk: '#654599',
+  brandTile: '#000000',
+  brandSymbol: '#d1ffca',
+  brandInk: '#000000',
 
   // Semantic aliases
   ink: '#000000',
@@ -67,7 +67,7 @@ export const board = {
   check: 'radial-gradient(circle, rgba(225, 29, 72, 0.6) 0%, rgba(225, 29, 72, 0) 70%)',
   pieceWhite: { fill: '#ffffff', stroke: '#000000' },
   pieceBlack: { fill: '#000000', stroke: '#2f2f2f' },
-  frameRadiusPx: 32,
+  frameRadiusPx: 4,
 } as const;
 
 type Bezier = [number, number, number, number];
@@ -101,6 +101,8 @@ export const container = { prose: 640, content: 928, main: 1024, wide: 1200 } as
 
 /** Shipped semantic type roles; mirrors theme.css and tokens.json. */
 export const typography = {
+  section: { fontSize: "clamp(2rem, 1.5rem + 1.5vw, 2.75rem)", fontWeight: 500, lineHeight: 1.15 },
+  title: { fontSize: 20, fontWeight: 500, lineHeight: 1.25 },
   body: { fontSize: 16, lineHeight: 1.5 },
   bodySmall: { fontSize: 16, lineHeight: 1.45 },
   caption: { fontSize: 14, lineHeight: 1.45 },
@@ -127,3 +129,7 @@ export const tittleFallbackLocales: readonly Locale[] = ['ru', 'zh', 'hi', 'ar',
 
 /** Sticky nav pill appears after this much scroll (hero height on desktop is ~560px). */
 export const stickyNavThresholdPx = 480;
+
+/** Website component geometry, mirrored in theme.css and tokens.json. */
+export const controls = { sm: 44, md: 48, lg: 56 } as const;
+export const radius = { control: 8, board: 4, media: 16, card: 24, cardCompact: 20, block: 32, nav: 12 } as const;

@@ -96,7 +96,7 @@ export default function FairPlayPage() {
           </p>
         </section>
         <section className="grid gap-4 md:grid-cols-2">
-          <Card>
+          <Card className="flex flex-col items-start">
             <Eyebrow>Match results</Eyebrow>
             <h2 className="mt-5 text-heading-sm font-medium">
               Understand the outcome
@@ -106,15 +106,17 @@ export default function FairPlayPage() {
               result. Wager settlement is recorded in your platform balance. A
               withdrawal to your wallet is a separate request.
             </p>
-            <ButtonLink href="/wagers" variant="secondary" className="mt-6">
+            <div className="mt-auto w-full pt-6">
+            <ButtonLink href="/wagers" variant="secondary" size="lg">
               Read settlement &amp; withdrawals
               <Icon name="arrow-right" size={16} />
             </ButtonLink>
-            <p className="mt-4 text-caption text-fg-muted">
+            <p className="mt-4 min-h-10 text-caption text-fg-muted">
               Wager matches involve real money. You can lose your stake. 18+.
             </p>
+            </div>
           </Card>
-          <Card>
+          <Card className="flex flex-col items-start">
             <Eyebrow>Your next game</Eyebrow>
             <h2 className="mt-5 text-heading-sm font-medium">
               Play with a clear head
@@ -124,7 +126,10 @@ export default function FairPlayPage() {
               experiment or learn without a stake, choose A.I. practice or the
               Academy.
             </p>
-            <PlayButton size="lg" className="mt-6" />
+            <div className="mt-auto w-full pt-6">
+              <PlayButton size="lg" />
+              <p className="mt-4 min-h-10 text-caption text-fg-muted">No stake for A.I. practice. Choose it in the Mini App.</p>
+            </div>
           </Card>
         </section>
       </main>

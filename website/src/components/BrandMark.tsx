@@ -4,23 +4,25 @@ type BrandMarkProps = {
   className?: string;
   style?: React.CSSProperties;
   src?: string;
+  inverse?: boolean;
 };
 
-/** Pre-sized artwork avoids an image-optimization request for the tiny brand mark. */
+/** A tiny native vector stays sharp at every display size. */
 export function BrandMark({
   className,
   style,
-  src = BRAND.symbolAsset,
+  inverse = false,
+  src = inverse ? BRAND.inverseSymbolAsset : BRAND.symbolAsset,
 }: BrandMarkProps) {
   return (
-    // This same primitive accepts an embedded PNG for ImageResponse.
+    // Also accepts the generated PNG for ImageResponse.
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       className={className}
       style={style}
-      width={128}
-      height={128}
+      width={64}
+      height={64}
       alt=""
       aria-hidden="true"
     />

@@ -4,6 +4,7 @@ import { Eyebrow } from "@/components/ui/Badge";
 
 import { useState } from "react";
 import { SETTLEMENT, WAGER_TIERS, winnerReceives } from "@/lib/config";
+import { SegmentedControl } from "./ui/SegmentedControl";
 const fmt = (n: number) => `${n.toFixed(2)} USDT`;
 
 export function WagerDemo() {
@@ -22,24 +23,8 @@ export function WagerDemo() {
       <p className="text-body-sm text-fg-muted">
         Select an example stake for each player.
       </p>
-      <div
-        className="grid grid-cols-4 gap-2"
-        role="group"
-        aria-label="Example stake amount"
-      >
-        {WAGER_TIERS.map((tier) => (
-          <button
-            key={tier}
-            type="button"
-            aria-pressed={tier === stake}
-            onClick={() => setStake(tier)}
-            className={`min-h-12 rounded-control font-mono text-body font-semibold transition-colors ${tier === stake ? "bg-inverse text-fg-inverse" : "bg-inset hover:bg-chip"}`}
-          >
-            {tier}
-            <span className="block text-overline font-normal">USDT</span>
-          </button>
-        ))}
-      </div>
+      <SegmentedControl label="Example stake amount" options={WAGER_TIERS} value={stake} onChange={setStake}
+        renderLabel={(tier) => <span>{tier}<span className="block text-caption font-normal">USDT</span></span>} />
       <dl className="grid gap-3 border-t border-line pt-4 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
         <div className="flex justify-between gap-4">
           <dt className="text-fg-muted">Combined pot</dt>

@@ -84,9 +84,7 @@ export default function AcademyPage() {
           <div>
             <span className="eyebrow">A plan you understand</span>
             <h2 id="opening-heading" className="editorial-title mt-5">
-              Make the first
-              <br />
-              moves make sense.
+              Make the first moves make sense.
             </h2>
             <p className="mt-5 max-w-[42ch] section-lead text-fg-muted">
               Start with the Italian Game: control the center, develop your
@@ -120,9 +118,7 @@ export default function AcademyPage() {
             <span>Four mastery tracks</span>
           </div>
           <h2 id="tracks-heading" className="editorial-title mb-6">
-            From the first move
-            <br />
-            to the final square.
+            From the first move to the final square.
           </h2>
           <InfoGrid ordered items={home.academy.tracks.map((track, i) => ({
             title: track.name, body: descriptions[i], note: track.level,

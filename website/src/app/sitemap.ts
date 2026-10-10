@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/config";
-import { BLOG_POSTS } from "@/content/blog";
+import { getPublishedPosts } from "@/content/blog";
+
+// Scheduled articles join the sitemap as soon as they go live.
+export const revalidate = 600;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = BLOG_POSTS.map((post) => ({
+  const posts = getPublishedPosts().map((post) => ({
     url: `${SITE.url}/blog/${post.slug}`,
     lastModified: new Date(post.updatedAt ?? post.publishedAt),
 

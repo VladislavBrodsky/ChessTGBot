@@ -15,7 +15,7 @@ export function ChessSculpture({
           src={`/illustrations/${art.file}.webp`}
           width={1000}
           height={1000}
-          sizes="(max-width: 639px) 56vw, (max-width: 767px) 320px, (max-width: 1279px) 44vw, 528px"
+          sizes="(max-width: 639px) 52vw, (max-width: 767px) 280px, (max-width: 1279px) 40vw, 448px"
           alt={art.alt}
           className="chess-sculpture relative z-10 h-auto w-full"
           loading="eager"

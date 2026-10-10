@@ -38,7 +38,7 @@ export async function Footer() {
                         {isExternal ? (
                           <a
                             href={l.href}
-                            className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
+                            className="link inline-flex min-h-11 min-w-11 items-center text-body text-fg-muted hover:text-fg"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -47,7 +47,7 @@ export async function Footer() {
                         ) : (
                           <Link
                             href={l.href}
-                            className="link inline-flex min-h-11 items-center text-body text-fg-muted hover:text-fg"
+                            className="link inline-flex min-h-11 min-w-11 items-center text-body text-fg-muted hover:text-fg"
                           >
                             {l.label}
                           </Link>
