@@ -13,8 +13,8 @@ import { ToastProvider } from "@/context/ToastContext";
 
 
 export const metadata: Metadata = {
-    title: "Chess Game",
-    description: "Real-time Multiplayer Chess on Telegram",
+    title: { default: "Web3Chess", template: "%s · Web3Chess" },
+    description: "Chess in Telegram: play real-time games, train with puzzles and follow your daily goals.",
 };
 
 export const viewport = {

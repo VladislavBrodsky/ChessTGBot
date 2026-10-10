@@ -75,7 +75,7 @@ export function FogBoard({
     <div
       ref={container}
       className="fog-board"
-      role="img"
+      role="group"
       aria-label={label}
     >
       <BoardFrame notation={showNotation}>

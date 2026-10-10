@@ -38,6 +38,7 @@ export default function TelegramLoginWidget({
     }
 
     let isMounted = true;
+    let frameObserver: MutationObserver | undefined;
     let receivedMessage = false;
     setIsLoading(true);
     setLoadFailed(false);
@@ -94,6 +95,12 @@ export default function TelegramLoginWidget({
 
       containerRef.current.appendChild(script);
 
+      // Telegram's widget injects an untitled iframe; give it an accessible name (WCAG 4.1.2 / axe frame-title).
+      const nameFrames = () => containerRef.current?.querySelectorAll('iframe:not([title])').forEach(frame => frame.setAttribute('title', 'Log in with Telegram'));
+      frameObserver = new MutationObserver(nameFrames);
+      frameObserver.observe(containerRef.current, { childList: true, subtree: true });
+      nameFrames();
+
       // Timeout: If Telegram's iframe hasn't sent a verified handshake within 2.5s,
       // it was blocked by browser shields (e.g. Brave), third-party cookie restrictions, or invalid domain.
       const timeoutId = setTimeout(() => {
@@ -107,6 +114,7 @@ export default function TelegramLoginWidget({
         isMounted = false;
         window.removeEventListener('message', handleMessage);
         clearTimeout(timeoutId);
+        frameObserver?.disconnect();
       };
     }
   }, [botName, buttonSize, cornerRadius, requestAccess, usePic, onAuthCallback, redirectUrl, retryCount]);
