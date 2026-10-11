@@ -58,9 +58,9 @@ export default function LessonCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-semibold tracking-tight text-brand-primary normal-case leading-tight mb-1.5 header-balanced">
+        <h4 className="text-sm font-semibold tracking-tight text-brand-primary normal-case leading-tight mb-1.5 header-balanced">
           {title}
-        </h3>
+        </h4>
 
         {/* Description */}
         <p className="text-caption text-brand-muted font-medium leading-relaxed line-clamp-2 flex-1 mb-3 text-pretty">

@@ -1,25 +1,29 @@
 'use client';
 
-import { Badge, BadgeRow } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import Link from 'next/link';
-import { FiSettings, FiCreditCard, FiChevronRight } from 'react-icons/fi';
+import { FiSettings } from 'react-icons/fi';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { useLocale, useTranslations } from 'next-intl';
 import { getFullPhotoUrl } from "@/lib/api";
-import { useState } from "react";
-import { FaChessKing, FaChessPawn, FaFire } from "react-icons/fa";
+import { FaFire } from "react-icons/fa";
 import XPProgressBar from "@/components/XPProgressBar";
 import DailyTasks from "@/components/DailyTasks";
 import ReferralDashboard from "@/components/ReferralDashboard";
-import { SkeletonList, StatTileSkeleton, BreakdownSkeleton } from "@/components/ui/Skeleton";
+import { Skeleton, SkeletonList, StatTileSkeleton, BreakdownSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useUser } from "@/context/UserContext";
+import { FiUser } from 'react-icons/fi';
+import { GameHistoryList } from '@/components/game/GameHistoryList';
+import { Avatar } from '@/components/ui/Avatar';
+import { Card } from '@/components/ui/Card';
 
 // SVG Elo history chart component
 function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], currentElo: number }) {
+  const t = useTranslations('Index');
   const WIDTH = 300;
   const HEIGHT = 80;
   const PAD = 8;
@@ -29,10 +33,10 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
     const midY = PAD + (HEIGHT - PAD * 2) / 2;
     return (
       <div className="relative">
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" style={{ height: HEIGHT }} aria-hidden="true">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" preserveAspectRatio="none" style={{ height: HEIGHT }} aria-hidden="true">
           <path d={`M ${PAD},${midY} L ${WIDTH - PAD},${midY}`} stroke="var(--text-muted)" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.4" fill="none" />
         </svg>
-        <p className="absolute inset-0 flex items-center justify-center text-caption font-medium text-brand-muted">No rating history yet</p>
+        <p className="absolute inset-0 flex items-center justify-center text-caption font-medium text-brand-muted">{t('no_rating_history')}</p>
       </div>
     );
   }
@@ -63,7 +67,7 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
   const strokeColor = isPositiveTrend ? "var(--color-brand-success)" : "var(--color-brand-danger)"; // Emerald if up, Rose if down
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full drop-shadow-sm" style={{ height: HEIGHT }}>
+    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" preserveAspectRatio="none" style={{ height: HEIGHT }} role="img" aria-label={`${t('rating_trend')}: ${history[0]} → ${currentElo}`}>
       <defs>
         <linearGradient id="eloChartGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={strokeColor} stopOpacity="0.35" />
@@ -71,9 +75,9 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
         </linearGradient>
       </defs>
       <path d={areaD} fill="url(#eloChartGrad)" />
-      <path d={pathD} stroke={strokeColor} strokeWidth="2" fill="none" strokeLinejoin="round" />
+      <path d={pathD} stroke={strokeColor} strokeWidth="2" vectorEffect="non-scaling-stroke" fill="none" strokeLinejoin="round" />
       {pts.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="3" fill={strokeColor} className="drop-shadow-md" />
+        <path key={i} d={`M ${p.x},${p.y} L ${p.x},${p.y}`} stroke={strokeColor} strokeWidth="6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       ))}
     </svg>
   );
@@ -100,7 +104,6 @@ export default function ProfilePage() {
  const labels = localizedLabels[locale] || localizedLabels['en'];
 
  const { stats, statsError, syncStats } = useUser();
- const [photoError, setPhotoError] = useState(false);
   const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
 
   if (statsError && !stats) {
@@ -126,73 +129,29 @@ export default function ProfilePage() {
     }
   })();
 
-  // Determine active profile border
-  let borderOuterClass = "absolute inset-0 rounded-full border border-brand-border-opacity-20 scale-110 pointer-events-none";
-  let borderInnerClass = "w-24 h-24 rounded-full bg-brand-elevated border-2 border-brand-border flex items-center justify-center relative overflow-hidden shadow-premium";
-  
-  if (unlockedItems.includes("border_platinum")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-purple-500/50 scale-110 shadow-[0_0_32px_rgba(168,85,247,0.4)] pointer-events-none";
-    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-purple-500/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.3)]";
-  } else if (unlockedItems.includes("border_gold")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-amber-400/50 scale-110 shadow-[0_0_32px_rgba(251,191,36,0.4)] pointer-events-none";
-    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-amber-400/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(251,191,36,0.3)]";
-  } else if (unlockedItems.includes("border_silver")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-brand-primary/40 scale-110 shadow-[0_0_24px_rgba(203,213,225,0.3)] pointer-events-none";
-    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-brand-primary/70 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(203,213,225,0.2)]";
-  } else if (unlockedItems.includes("border_bronze")) {
-    borderOuterClass = "absolute inset-0 rounded-full border border-orange-700/50 scale-110 shadow-[0_0_24px_rgba(194,65,12,0.4)] pointer-events-none";
-    borderInnerClass = "w-24 h-24 rounded-full bg-brand-surface border-[3px] border-orange-700/80 flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_rgba(194,65,12,0.2)]";
-  }
-
+  const displayName = stats ? `${stats.first_name} ${stats.last_name || ''}`.trim() : tgUser?.first_name || t('combatant');
   return (
     <LayoutWrapper className="w-full" hideHeaderControls>
       <main className="w-full app-page flex flex-col items-center mx-auto ">
 
-  <PageHeader title={t('nav_profile')} actions={<>
-    <Link href={`/${locale}/wallet`} aria-label={t('nav_wallet')} className="ui-icon-button"><FiCreditCard size={20} /></Link>
+  <PageHeader title={t('nav_profile')} icon={<FiUser />} actions={
     <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button"><FiSettings size={20} /></Link>
-  </>} />
-  {/* Profile Header */}
-  <header className="ui-hero-card w-full flex flex-col items-center p-6 text-center">
-  <div className="mb-3 flex flex-col items-center gap-3">
-   <div className="relative">
-   {/* Outer rotating/pulsing ring */}
-   <div className={borderOuterClass} aria-hidden="true" />
-   <div className={borderInnerClass}>
-  {(stats?.photo_url || tgUser?.photo_url) && !photoError ? (
-  // eslint-disable-next-line @next/next/no-img-element -- remote avatar; static export runs with images.unoptimized so next/image adds no benefit
-  <img
-    src={getFullPhotoUrl(stats?.photo_url || tgUser?.photo_url)}
-    alt="Profile" 
-    className="w-full h-full object-cover" 
-    onError={() => setPhotoError(true)}
-  />
-  ) : (
-  <FaChessKing className="text-4xl text-brand-muted drop-shadow-md" />
-  )}
-  </div>
-   <span className="ui-level-chip absolute -bottom-1 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 h-6 min-w-6 text-sm" aria-label={`${t('level')} ${stats?.level ?? 1}`}>{stats?.level ?? 1}</span>
-   </div>
-  </div>
-  <h2 className="text-xl sm:text-2xl font-semibold text-brand-primary tracking-tight mb-2 header-balanced">
-  {stats ? `${stats.first_name} ${stats.last_name || ""}`.trim() : (tgUser ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim() : t('combatant'))}
-  </h2>
-  <BadgeRow className="justify-center mb-4">
-    <Badge variant="primary">{t('level')} {stats?.level ?? '—'}</Badge>
-    {stats && Number.isFinite(stats.elo) && <Badge variant="secondary">{stats.elo} {t('elo')}</Badge>}
-    {stats && stats.study_streak > 0 && (
-      <Badge variant="amber" icon={<FaFire />}>{stats.study_streak} {t('day_streak')}</Badge>
-    )}
-  </BadgeRow>
-  <div className="w-full max-w-[280px]">
-  <XPProgressBar xp={stats?.xp || 0} level={stats?.level || 1} levelLabel={t('level')} />
-  </div>
-  </header>
+  } />
+  <Card variant="solid" className="ui-hero-card w-full p-4 space-y-4">
+    <div className="flex items-center gap-4">
+      {stats ? <Avatar className={`profile-avatar ${unlockedItems.includes('border_platinum') ? 'profile-avatar--platinum' : unlockedItems.includes('border_gold') ? 'profile-avatar--gold' : unlockedItems.includes('border_silver') ? 'profile-avatar--silver' : unlockedItems.includes('border_bronze') ? 'profile-avatar--bronze' : ''}`} size="xl" src={getFullPhotoUrl(stats.photo_url)} name={displayName} /> : <Skeleton variant="circular" width={64} height={64} className="shrink-0" />}
+      <div className="min-w-0 flex-1 space-y-2">
+        <h2 className="t-title-2 text-brand-primary break-words">{displayName}</h2>
+        {stats && stats.study_streak > 0 && <Badge variant="amber" icon={<FaFire />}>{stats.study_streak} {t('day_streak')}</Badge>}
+      </div>
+    </div>
+    {stats ? <XPProgressBar xp={stats.xp} level={stats.level} levelLabel={t('level')} /> : <div aria-busy="true" className="space-y-2"><Skeleton textRole="label" width="60%" /><Skeleton variant="rectangular" height={12} className="rounded-full" /></div>}
+  </Card>
 
   {/* Stats Grid */}
-  <section aria-labelledby="profile-stats-heading" className="w-full space-y-3">
-    <h2 id="profile-stats-heading" className="sr-only">Player Statistics</h2>
-    <div className="w-full grid grid-cols-2 gap-3">
+  <section aria-labelledby="profile-stats-heading" className="w-full space-y-2">
+    <h2 id="profile-stats-heading" className="sr-only">{t('player_statistics')}</h2>
+    <div className="w-full grid grid-cols-2 gap-2">
     {/* ELO & Rank Card */}
     {!stats ? (
       <StatTileSkeleton metaLines={2} />
@@ -222,19 +181,19 @@ export default function ProfilePage() {
   {!stats ? (
     <BreakdownSkeleton />
   ) : (
-    <div className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-3.5 shadow-sm">
+    <div className="w-full p-3 rounded-2xl border border-brand-border bg-brand-surface space-y-2.5 shadow-sm">
       <div className="flex justify-between items-center px-0.5">
         <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{labels.breakdown}</span>
-        <span className="text-caption font-semibold text-brand-success normal-case tracking-normal">{stats.win_rate?.toFixed(1) || 0}% WR</span>
+        <span className="text-caption font-semibold text-brand-success">{stats.win_rate?.toFixed(1) || 0}% {t('win_rate')}</span>
       </div>
 
       {/* Segmented Progress Bar */}
       <div className="w-full h-2.5 rounded-full overflow-hidden flex bg-brand-elevated border border-brand-border-opacity-10">
         {stats.games_played > 0 ? (
           <>
-            <div className="h-full bg-brand-success transition-all duration-700" style={{ width: `${stats.win_rate}%` }} title={`Wins: ${stats.win_rate}%`} />
-            <div className="h-full bg-brand-muted transition-all duration-700" style={{ width: `${stats.draw_rate}%` }} title={`Draws: ${stats.draw_rate}%`} />
-            <div className="h-full bg-brand-danger transition-all duration-700" style={{ width: `${stats.loss_rate}%` }} title={`Losses: ${stats.loss_rate}%`} />
+            <div className="h-full bg-brand-success" style={{ width: `${stats.win_rate}%` }} title={`${t('wins')}: ${stats.win_rate}%`} />
+            <div className="h-full bg-brand-muted" style={{ width: `${stats.draw_rate}%` }} title={`${t('draws')}: ${stats.draw_rate}%`} />
+            <div className="h-full bg-brand-danger" style={{ width: `${stats.loss_rate}%` }} title={`${t('losses')}: ${stats.loss_rate}%`} />
           </>
         ) : (
           <div className="h-full bg-brand-elevated w-full" />
@@ -265,10 +224,10 @@ export default function ProfilePage() {
 
   {/* ELO History Chart */}
   {stats && Number.isFinite(stats.elo) && (
-    <section aria-labelledby="elo-history-heading" className="w-full p-4 rounded-2xl border border-brand-border bg-brand-surface space-y-2">
-      <div className="flex justify-between items-center px-1 mb-2">
-        <h2 id="elo-history-heading" className="text-sm font-semibold text-brand-primary">Rating trend</h2>
-        <span className="text-caption font-medium text-brand-muted">Last 10 games</span>
+    <section aria-labelledby="elo-history-heading" className="w-full p-3 rounded-2xl border border-brand-border bg-brand-surface space-y-1">
+      <div className="flex justify-between items-center px-1">
+        <h2 id="elo-history-heading" className="t-title-3 text-brand-primary">{t('rating_trend')}</h2>
+        <span className="text-caption font-medium text-brand-muted">{t('recent_games_count', { count: Math.min(stats.recent_games?.length ?? 0, 10) })}</span>
       </div>
       <EloHistoryChart recentGames={stats.recent_games} currentElo={Number.isFinite(stats.elo) ? stats.elo : 0} />
     </section>
@@ -280,9 +239,9 @@ export default function ProfilePage() {
 
  {/* Inventory & Boosters */}
  {stats && (stats.xp_multiplier > 1.0 || unlockedItems.length > 0) && (
-   <section aria-labelledby="inventory-heading" className="w-full space-y-4">
+   <section aria-labelledby="inventory-heading" className="w-full space-y-2">
      <SectionHeader id="inventory-heading" title="Inventory & boosters" />
-     <div className="grid grid-cols-2 gap-3">
+     <div className="grid grid-cols-2 gap-2">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
          <div className="ui-stat ui-stat--premium">
@@ -306,53 +265,13 @@ export default function ProfilePage() {
  )}
 
  {/* Recent Games History */}
- <section aria-labelledby="recent-activity-heading" className="w-full space-y-3">
+ <section aria-labelledby="recent-activity-heading" className="w-full space-y-2">
    <SectionHeader id="recent-activity-heading" title={t('recent_activity')} />
    
    {!stats ? (
       <SkeletonList count={3} />
    ) : stats.recent_games && stats.recent_games.length > 0 ? (
-     <ol role="list" className="flex flex-col gap-3 list-none m-0 p-0">
-       {stats.recent_games.map((game: any) => {
-         const isWin = game.result === 'win';
-         const isLoss = game.result === 'loss';
-         const tileClass = isWin ? 'ui-icon-tile ui-icon-tile--success' : isLoss ? 'ui-icon-tile ui-icon-tile--danger' : 'ui-icon-tile';
-
-         return (
-           <li key={game.game_id} className="list-item-contain">
-             <Link
-               href={`/${locale}/game/review?gameId=${encodeURIComponent(game.game_id)}`}
-               aria-label={`${t('recent_activity')}: ${game.opponent?.name || t('ai_engine')}, ${game.result}`}
-               className="ui-list-row ui-list-row--interactive focus-visible:outline-2 focus-visible:outline-brand-action"
-             >
-             <div className="flex items-center gap-3 min-w-0 flex-1">
-               <span className={tileClass}><FaChessPawn aria-hidden="true" /></span>
-               <div className="flex flex-col min-w-0 flex-1">
-                 <span className="text-sm font-semibold text-brand-primary truncate">
-                   {t('vs')} {game.opponent?.name || t('ai_engine')}
-                 </span>
-                 <span className="text-caption font-medium text-brand-muted truncate">
-                   {t('opponent_elo')}: {game.opponent?.elo ?? '—'}
-                 </span>
-               </div>
-             </div>
-
-             <div className="flex items-center gap-3 shrink-0">
-               <div className="flex flex-col items-end gap-1">
-                 <Badge variant={isWin ? 'emerald' : isLoss ? 'rose' : 'secondary'}>{isWin ? 'Win' : isLoss ? 'Loss' : 'Draw'}</Badge>
-                 <span className={`text-caption font-semibold tabular-nums ${
-                    game.elo_change > 0 ? 'text-brand-success' : game.elo_change < 0 ? 'text-brand-danger' : 'text-brand-muted'
-                  }`}>
-                    {game.elo_change >= 0 ? `+${game.elo_change}` : game.elo_change} {t('elo')}
-                  </span>
-               </div>
-               <FiChevronRight size={18} className="text-brand-muted rtl:rotate-180" aria-hidden="true" />
-             </div>
-             </Link>
-           </li>
-         );
-       })}
-     </ol>
+     <GameHistoryList games={stats.recent_games} />
     ) : (
       <EmptyState
         title={t('no_games_logged')}

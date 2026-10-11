@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-11",
+  "status": "Local review complete; not deployed",
+  "preview": "http://localhost:3124/en/profile",
+  "scope": "Mini App frontend UI, navigation, cached loading states and API-facing interactions",
+  "fixes": [
+    {
+      "area": "Shared layout",
+      "changes": "Quiet headers, Obsidian foundation colours, reserved badge/counter space, base typography that allows truncation and wrapping."
+    },
+    {
+      "area": "Navigation and loading",
+      "changes": "Stable auth/provider shell, cached tasks/themes/history, geometry-matched skeletons, browser Back controls retained outside Telegram."
+    },
+    {
+      "area": "Wallet and Play",
+      "changes": "Lazy closeable shared drawers, no matchmaking triggered by opening or completing a deposit, single wallet-address save per account/address, ordered transaction ledger."
+    },
+    {
+      "area": "Profile and history",
+      "changes": "One level/XP block, shared linked game history, readable full-width rating chart with constant-size markers, real game count label."
+    },
+    {
+      "area": "Academy and puzzles",
+      "changes": "Restored theme/achievement destinations, immediate lesson steps, confirmed completion totals, validated puzzle positions, honest empty/error states."
+    },
+    {
+      "area": "Public pages",
+      "changes": "Safe-area login shell, one Telegram app action, retryable widget fallback, responsive referral QR image."
+    },
+    {
+      "area": "Telegram host",
+      "changes": "Single deduplicated colour-sync owner; capability checks for colour, close, swipe and haptic methods."
+    }
+  ],
+  "automated_checks": {
+    "jest": {
+      "passed": 107,
+      "suites": 24
+    },
+    "typescript": "Passed as part of both builds",
+    "standalone_build": "Passed",
+    "static_export": "Passed; 213 pages; synced to backend/static_frontend",
+    "static_output_comparison": "frontend/out and backend/static_frontend match exactly",
+    "lint": "Passed",
+    "translation_parity": "Passed in 10 locales",
+    "token_freshness": "Passed",
+    "design_ratchet": "Passed; existing baseline exceptions remain",
+    "diff_whitespace": "Passed"
+  },
+  "visual_review": {
+    "pages": [
+      "Home",
+      "Play",
+      "Wallet",
+      "Profile",
+      "Academy",
+      "Challenges",
+      "Marketplace",
+      "Settings",
+      "Membership",
+      "Board themes",
+      "Achievements",
+      "Lesson",
+      "Puzzle",
+      "Match review",
+      "Login",
+      "Referral QR"
+    ],
+    "viewports": [
+      {
+        "width": 320,
+        "height": 740
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1280,
+        "height": 900
+      }
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "ar"
+    ],
+    "method": "Manual browser DOM and screenshot inspection; combinations sampled, not a complete cross-product suite"
+  },
+  "limitations": [
+    "Local browser preview uses mock API and sample identity; no live deposits, withdrawals, paid actions or broadcasts were executed.",
+    "Production backend, actual Telegram iOS/Android behavior and field performance metrics were not verified.",
+    "Browser e2e/axe suites were not run in this turn; route checks were performed through the browser tool.",
+    "Admin-only screens were not exercised because the preview account does not have administrator access."
+  ],
+  "references": [
+    "https://core.telegram.org/bots/webapps"
+  ],
+  "proofs": [
+    "profile-desktop.jpg",
+    "profile-390.jpg",
+    "wallet-320.jpg",
+    "play-320.jpg",
+    "profile-ar-light-320.jpg",
+    "lesson-320.jpg",
+    "referral-qr-320.jpg",
+    "login-320.jpg"
+  ]
+}

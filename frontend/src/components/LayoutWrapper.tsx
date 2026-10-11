@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 
 const Onboarding = dynamic(() => import('./Onboarding'), { ssr: false });
 const NotificationModal = dynamic(() => import('./NotificationModal'), { ssr: false });
-import AnimatedBackground from './AnimatedBackground';
 import { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useDesktopNavigation } from '@/hooks/useDesktopNavigation';
@@ -32,7 +31,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     const isDesktopBrowser = useDesktopNavigation();
     const pathname = usePathname();
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
-    const { activeGameId, isCheckingActiveGame, urlGameId } = useActiveGame();
+    const { activeGameId, urlGameId } = useActiveGame();
     
     useTelegramBackButton(activeGameId, urlGameId);
 
@@ -49,8 +48,6 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     }, []);
 
     const cleanPathname = (pathname || '').split('?')[0].replace(/\/$/, '');
-    const isCorePage = cleanPathname.endsWith('/game') || cleanPathname.endsWith('/home') || cleanPathname === '' || cleanPathname === `/${locale}`;
-
     const isMainNavbarPage = 
         cleanPathname.endsWith('/home') || 
         cleanPathname.endsWith('/settings') || 
@@ -66,10 +63,8 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     );
 
     return (
-        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-clip ${bgClass} text-brand-primary font-sans selection:bg-brand-primary selection:text-brand-void`}>
-            {!pathname.includes('/admin') && <AnimatedBackground />}
-
-            {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && !isCheckingActiveGame && (
+        <div className={`app-shell relative min-h-[100dvh] w-full overflow-x-clip ${bgClass} text-brand-primary font-sans`}>
+            {isMainNavbarPage && pathname.endsWith('/home') && !hideHeaderControls && !showOnboarding && (
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
                     <Button
                         variant="ghost"
@@ -93,16 +88,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                     ? 'app-content--desktop'
                     : 'app-content--mobile'
             } ${className}`}>
-                {isCorePage && isCheckingActiveGame && pathname.endsWith('/game') ? (
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                        <div className="w-8 h-8 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
-                        <span className="text-caption font-semibold normal-case tracking-normal mt-3.5 animate-pulse text-brand-muted">
-                            INITIALIZING ARENA...
-                        </span>
-                    </div>
-                ) : (
-                    children
-                )}
+                {children}
             </div>
 
             <Navbar hide={shouldHideNavbar} />

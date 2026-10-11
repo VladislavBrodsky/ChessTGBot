@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { telegramHaptic } from '@/lib/telegram';
+import { Badge } from './Badge';
 
 type Tone = 'success' | 'gold' | 'premium' | 'info' | 'neutral';
 
@@ -12,9 +13,9 @@ export function QuickTile({ href, icon, label, caption, tone = 'neutral', badge 
 }) {
   return (
     <Link href={href} onClick={() => telegramHaptic('selection')} className={`ui-quick-tile ${className}`}>
-      <span className="relative">
+      <span className="flex w-full items-start justify-between gap-2">
         <span className={`ui-icon-tile ${tone === 'neutral' ? '' : `ui-icon-tile--${tone}`}`} aria-hidden="true">{icon}</span>
-        {badge > 0 && <span className="ui-count-badge">{badge > 9 ? '9+' : badge}</span>}
+        {badge > 0 && <Badge variant="emerald" size="counter">{badge > 9 ? '9+' : badge}</Badge>}
       </span>
       <span className="min-w-0">
         <span className="ui-quick-tile__label block">{label}</span>

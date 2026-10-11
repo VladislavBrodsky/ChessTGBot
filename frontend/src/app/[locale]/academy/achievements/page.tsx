@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { apiFetch } from "@/lib/api";
+import { useState } from "react";
+import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
 import { FaTrophy, FaStar, FaShieldAlt, FaBook, FaFire, FaCoins, FaLock } from "react-icons/fa";
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useLocale, useTranslations } from 'next-intl';
@@ -36,59 +37,21 @@ export default function AchievementsPage() {
   const locale = useLocale();
   const t = useTranslations('Academy');
   const ti = useTranslations('Index');
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, error: loadError, isLoading: loading, mutate: loadAchievements } = useSWRFetch<Achievement[]>('/api/v1/gamification/achievements', { revalidateOnFocus: false });
+  const achievements = Array.isArray(data) ? data : [];
   const [selectedBadge, setSelectedBadge] = useState<Achievement | null>(null);
-  const [loadError, setLoadError] = useState(false);
-
-  const loadAchievements = useCallback(async () => {
-    setLoading(true);
-    setLoadError(false);
-    try {
-      const res = await apiFetch('/api/v1/gamification/achievements');
-      if (!res.ok) throw new Error('Achievements unavailable');
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error('Invalid achievements');
-      setAchievements(data);
-    } catch (error) {
-      console.error('Could not load achievements', error);
-      setLoadError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadAchievements();
-  }, [loadAchievements]);
-
-  if (loading) {
-    return (
-      <LayoutWrapper className="">
-        <div className="w-full app-page mx-auto " role="status" aria-label="Loading achievements">
-          <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
-          <div className="mx-auto h-3 w-28 rounded-full bg-brand-bg-opacity-5" />
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }, (_, index) => (
-              <div key={index} className="h-48 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />
-            ))}
-          </div>
-        </div>
-      </LayoutWrapper>
-    );
-  }
-
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
     <LayoutWrapper className="">
       <div className="w-full app-page mx-auto relative z-10 flex flex-col">
-        <PageHeader title={t('achievements')} description={`${t('unlocked')}: ${unlockedCount} / ${achievements.length}`} backHref={`/${locale}/academy`} />
+        <PageHeader icon={<FaTrophy />} tone="gold" title={t('achievements')} description={loading ? undefined : `${t('unlocked')}: ${unlockedCount} / ${achievements.length}`}  backHref={`/${locale}/academy`} />
 
-        {loadError && <ErrorState title={ti('load_failed')} onRetry={loadAchievements} retryLabel={ti('retry')} />}
-        {!loadError && achievements.length === 0 && <EmptyState title={t('achievements')} />}
+        {loading && <div className="grid grid-cols-2 md:grid-cols-3 gap-4" aria-busy="true">{[0, 1].map(i => <Card key={i} variant="solid" className="p-4 min-h-48 flex flex-col items-center gap-3"><Skeleton variant="rectangular" width={40} height={40} /><SkeletonText lines={2} className="w-full" /><Skeleton textRole="caption" width={64} /></Card>)}</div>}
+        {loadError && !data && <ErrorState title={ti('load_failed')} onRetry={() => { void loadAchievements(); }} retryLabel={ti('retry')} />}
+        {!loading && !loadError && achievements.length === 0 && <EmptyState title={t('achievements')} />}
 
-        {!loadError && achievements.length > 0 && <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {achievements.length > 0 && <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {achievements.map((ach) => (
             <Card
               key={ach.id}
@@ -107,7 +70,7 @@ export default function AchievementsPage() {
                 {iconMap[ach.icon] || <FaTrophy />}
               </div>
               
-              <h3 className="text-sm font-semibold text-brand-primary normal-case mb-1 header-balanced">{ach.title}</h3>
+              <h2 className="text-sm font-semibold text-brand-primary normal-case mb-1 header-balanced">{ach.title}</h2>
               <p className="text-caption text-brand-muted font-medium leading-tight mb-3 flex-1 text-pretty">{ach.description}</p>
               
               {ach.xp_reward > 0 && (

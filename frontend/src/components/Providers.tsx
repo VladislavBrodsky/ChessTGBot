@@ -1,8 +1,6 @@
 'use client';
 
 import { ReactNode, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { usePathname } from 'next/navigation';
 import { SWRConfig } from 'swr';
 import CustomAlertModal from './CustomAlertModal';
 import TaskSuccessModal from './TaskSuccessModal';
@@ -11,21 +9,7 @@ import TelemetryReporter from './TelemetryReporter';
 import { ReducedMotionProvider } from '@/context/ReducedMotionContext';
 import AuthGuard from './AuthGuard';
 
-// Lazy-load the TON Connect provider so its JS chunk (the TON SDK) and its
-// network cost (wallets-v2.json + ~35 wallet icon PNGs from config.ton.org) are
-// only paid on routes that actually render wallet UI. ssr:false because the
-// provider is client-only.
-const TonConnectProvider = dynamic(() => import('./TonConnectProvider'), { ssr: false });
-
-// Route segments that render a TON Connect consumer:
-//  - /game      -> PlayLobby (WalletConnect, LobbyDepositDrawer)
-//  - /wallet    -> DepositModal, WalletSelectorModal
-//  - /membership-> DepositModal
-const TON_ROUTE_PATTERN = /\/(game|wallet|membership)(\/|$)/;
-
 export default function Providers({ children }: { children: ReactNode }) {
-    const pathname = usePathname();
-    const needsTonConnect = TON_ROUTE_PATTERN.test(pathname || '');
 
     // Low-end device detection: weak hardware and mobile Telegram hosts get the same
     // effect freezes as "reduce motion" (see :root.lite-fx in globals.css) without the
@@ -53,9 +37,9 @@ export default function Providers({ children }: { children: ReactNode }) {
         } catch { /* detection is best-effort */ }
     }, []);
 
-    const pageContent = <AuthGuard>{needsTonConnect ? (
-        <TonConnectProvider>{children}</TonConnectProvider>
-    ) : children}</AuthGuard>;
+    // Wallet dialogs own their provider. Loading the TON SDK must never block
+    // the route shell or remount AuthGuard when moving between destinations.
+    const pageContent = <AuthGuard>{children}</AuthGuard>;
 
     return (
         <SWRConfig value={{

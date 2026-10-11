@@ -90,6 +90,9 @@ For balance-funded play, upgrades, and deposits, disable the action or offer a r
 5. **No Full-Screen Spinners on Background Refresh**: Retain current content during background SWR revalidation; reserve full skeletons only for initial data fetching.
 6. **No Infinite GPU Blurs**: Prohibit continuous 80px CSS blur animations on idle screens.
 7. **No Invented Data**: Do not populate empty cards with fake tasks, stats, balances, activity, participant counts, or prize claims. Treat unavailable data separately from zero.
+8. **Stable Route Shell**: Load TON providers only inside lazy wallet dialogs (`WalletDialogs`), with a closeable skeleton. Do not remount authenticated pages when navigating. Deposits refresh the balance; they never automatically enter a match.
+9. **Quiet Dashboard Headers**: `PageHeader` has no decorative grid or glow. Reserve side control space only when controls exist. Profile shows level/XP once and rating in its statistics group.
+10. **Visible Browser Back Links**: Hide HTML back links only inside a Telegram host with nonempty init data and a native back button; SDK presence alone does not prove a native control exists.
 
 ---
 
@@ -138,6 +141,14 @@ Pages compose recipes; they do not hand-roll cards.
 ```
 
 Recipe -> skeleton twin: `ui-stat` -> `StatTileSkeleton`; `ui-list-row` -> `SkeletonList`; profile W-D-L card -> `BreakdownSkeleton`; text -> `<Skeleton textRole="body|caption|title-2|numeric-lg" />`. Rules for skeletons: reserve the loaded geometry (including optional rows, via `min-h-[var(--size-control-sm)]`), keep stale data during refresh, `aria-hidden` + `aria-busy` on the region.
+
+Task lists share `useTasks` for deduplicated requests, optimistic claims and rollback. Play/Profile history uses `GameHistoryList` with real review links and separate labelled share controls. Avatars recover from broken images with initials. Transaction history displays dated, ordered ledger entries; it must not infer a balance chart from incomplete transactions.
+
+Typography defaults use `@layer base` so truncation and wrapping utilities work. QuickTile counters occupy a reserved row beside the icon. Lessons/reviews retain page headings during loading/errors, and lesson success never guesses an XP award from total XP.
+
+Puzzle detail validates the returned position before mounting a board, uses the cached request and matching skeleton, and displays only server-confirmed account totals after completion. Login and referral QR frames use responsive intrinsic images and shared cards with the same top/bottom safe-area rules; an unavailable login widget offers a retry without guessing the cause.
+
+The default dark foundation uses `#000000` canvas, `#0A0A0A` surfaces and 1px `#1F1F1F` borders. `TelegramInit` is the single owner of host colour updates: it checks API capabilities, deduplicates unchanged colours and uses the legacy header keyword on hosts before 6.9. `ThemeContext` owns only browser theme tokens.
 
 Desktop (>= 1024px): a two-column split must balance; if the second column has nothing real to show, stay in one `.app-page--focused` column. Never leave tiles hugging the inline-start edge of a half-empty row.
 

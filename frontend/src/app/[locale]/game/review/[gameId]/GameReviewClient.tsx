@@ -1,23 +1,21 @@
 'use client';
 
 import BoardA11y from '@/components/game/BoardA11y';
-import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
 import { Chess } from "chess.js";
-import { motion } from "framer-motion";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge, BadgeRow, type BadgeVariant } from "@/components/ui/Badge";
 import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { 
-  FaArrowLeft, FaChevronLeft, FaChevronRight, FaPlay, FaPause, 
-  FaFastBackward, FaFastForward, FaRegClock, FaGamepad, FaRobot, FaUser 
+  FaChevronLeft, FaChevronRight, FaPlay, FaPause,
+  FaFastBackward, FaFastForward, FaRegClock, FaRobot, FaUser
 } from "react-icons/fa";
 
 function formatUci(uci: string): string {
@@ -105,12 +103,12 @@ interface GameReviewClientProps {
 }
 
 export default function GameReviewClient({ gameId }: GameReviewClientProps) {
-  const router = useRouter();
   const locale = useLocale();
   const tg = useTranslations('Game');
   const ti = useTranslations('Index');
 
   const [loading, setLoading] = useState(true);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [gameData, setGameData] = useState<GameHistoryDetails | null>(null);
 
@@ -260,6 +258,8 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
     if (!gameId) return;
 
     const fetchGameHistory = async () => {
+      setLoading(true);
+      setError(null);
       try {
         setLoading(true);
         const res = await apiFetch(`/api/v1/game/history/${gameId}`);
@@ -300,7 +300,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
     };
 
     fetchGameHistory();
-  }, [gameId]);
+  }, [gameId, retryAttempt]);
 
   // Handle autoplay
   useEffect(() => {
@@ -327,43 +327,17 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
     };
   }, [isPlaying, fens]);
 
-  if (loading) {
-    return (
-      <LayoutWrapper className="justify-center items-center ">
-        <div className="w-full max-w-sm md:max-w-md flex flex-col items-center space-y-4 py-8">
-          <div className="flex items-center justify-between w-full">
-            <Skeleton variant="rectangular" width={36} height={36} className="rounded-xl" />
-            <Skeleton variant="text" width={140} height={18} />
-            <Skeleton variant="rectangular" width={36} height={36} className="rounded-xl" />
-          </div>
-          <Skeleton variant="rectangular" width="100%" height={320} className="rounded-2xl" />
-          <div className="w-full space-y-2">
-            <Skeleton variant="rectangular" width="100%" height={48} className="rounded-xl" />
-            <Skeleton variant="rectangular" width="100%" height={48} className="rounded-xl" />
-          </div>
-        </div>
-      </LayoutWrapper>
-    );
-  }
-
-  if (error || !gameData) {
-    return (
-      <LayoutWrapper className="justify-center items-center ">
-        <ErrorState
-          title="Match Review Unavailable"
-          message={error || "Unable to locate match history or reconstructed moves."}
-          action={
-            <Button
-              variant="action"
-              size="md"
-              onClick={() => router.push(`/${locale}/profile`)}
-            >
-              Return to Profile
-            </Button>
-          }
-        />
-      </LayoutWrapper>
-    );
+  if (loading || error || !gameData) {
+    return <LayoutWrapper>
+      <main className="app-page app-page--focused space-y-4">
+        <PageHeader title={tg('review_title')} backHref={`/${locale}/profile`} />
+        {loading ? <div aria-busy="true" className="space-y-4">
+          <Skeleton variant="rectangular" height={64} className="rounded-card" />
+          <Skeleton variant="rectangular" className="aspect-square w-full rounded-card" />
+          <Skeleton variant="rectangular" height={48} className="rounded-control" />
+        </div> : <ErrorState title={ti('load_failed')} message={ti('no_games_logged')} retryLabel={ti('retry')} onRetry={() => setRetryAttempt(value => value + 1)} />}
+      </main>
+    </LayoutWrapper>;
   }
 
   // Helper values
@@ -383,22 +357,8 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
   return (
     <LayoutWrapper className="pb-12 justify-start ">
-      {/* Header / Nav */}
-      <div className="w-full app-page flex justify-between items-center mb-4 relative z-10 px-2 mx-auto">
-        <motion.button type="button"
-          whileTap={{ scale: 0.95 }}
-          onClick={() => router.push(`/${locale}/profile`)}
-          className="ui-tap-target html-back-button text-brand-muted hover:opacity-100 transition-opacity flex items-center space-x-2 text-caption font-bold normal-case tracking-normal cursor-pointer bg-transparent border-0"
-        >
-          <FaArrowLeft />
-          <span>{tg('back')}</span>
-        </motion.button>
-        <div className="flex items-center gap-2 bg-brand-surface px-4 py-1 rounded-full border border-brand-border-opacity-10">
-          <FaGamepad className="text-caption text-brand-muted" />
-          <h1 className="text-caption font-bold tracking-normal text-brand-muted normal-case">
-            {gameData.game_type === 'computer' ? "Practice game" : "Rated game"}
-          </h1>
-        </div>
+      <div className="app-page">
+        <PageHeader title={tg('review_title')} backHref={`/${locale}/profile`} />
       </div>
 
       {/* Main Review Body */}
@@ -550,7 +510,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
         {/* Step Indicator */}
         <div className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-          Move {Math.floor((currentStep + 1) / 2)} / {Math.floor(sanMoves.length / 2)} ({currentStep} / {sanMoves.length} half-moves)
+          {tg('review_move_count', { current: Math.ceil(currentStep / 2), total: Math.ceil(sanMoves.length / 2) })}
         </div>
 
         {/* A.I. Analysis Panel */}

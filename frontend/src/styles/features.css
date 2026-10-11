@@ -458,9 +458,8 @@
 }
 
 .arena-reward-badge {
-  background: var(--arena-selection-gradient) !important;
-  border-color: var(--text-gold) !important;
-  box-shadow: 0 0 0 1px var(--color-amber-opacity-10), var(--shadow-inner-glow);
+  background: color-mix(in srgb, var(--text-gold) 8%, var(--bg-elevated)) !important;
+  border-color: color-mix(in srgb, var(--text-gold) 32%, var(--border-muted)) !important;
 }
 
 .arena-option--wager-selected {

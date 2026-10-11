@@ -10,6 +10,12 @@ export function useTelegramBackButton(activeGameId: string | null, urlGameId: st
     useEffect(() => {
         if (typeof window === 'undefined' || !window.Telegram?.WebApp) return;
         const tg = window.Telegram.WebApp;
+        // The SDK also exists in ordinary browsers, where show() has no native
+        // host UI. Keep the visible HTML back link in that environment.
+        if (!tg.initData) {
+            document.documentElement.classList.remove('tg-back-button-active');
+            return;
+        }
         if (!tg.BackButton) return;
 
         const cleanPath = (pathname || '').split('?')[0].replace(/\/$/, '');

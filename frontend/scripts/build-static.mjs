@@ -1,11 +1,8 @@
 // Builds the Next.js static export and syncs it into backend/static_frontend.
 //
-// backend/static_frontend is the frontend that PRODUCTION actually serves
-// (see backend/app/main.py). If you change anything under frontend/src and
-// don't re-run this script, your fix will exist in source but never ship —
-// that's exactly how the "missing bottom navbar on iOS Telegram" bug happened:
-// five navbar fixes were committed to frontend/src while the deployed static
-// build was still the one from an earlier commit.
+// The Railway frontend service builds frontend/ directly. This committed
+// export serves the optional monolith container and must stay in sync with
+// source changes for the static-export-fresh CI guard (see AGENTS.md).
 //
 // Usage (from frontend/):  npm run build:static
 import { spawnSync } from 'node:child_process';

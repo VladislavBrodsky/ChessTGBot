@@ -1,197 +1,83 @@
 'use client';
 
-import { useRouter } from "next/navigation";
-import LayoutWrapper from "@/components/LayoutWrapper";
-import LessonViewer from "@/components/Academy/LessonViewer";
-import { FaArrowLeft, FaTelegramPlane, FaCheck } from "react-icons/fa";
-import { FaChessKnight } from "react-icons/fa6";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
-import { apiFetch } from "@/lib/api";
-import { useNavbarHide } from "@/context/NavbarContext";
-import Confetti from "react-confetti";
-import { mapBackendLessonStep } from "@/lib/lessonSteps";
-import { useTelemetry } from "@/hooks/useTelemetry";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { FaCheck, FaTelegramPlane } from 'react-icons/fa';
+import LayoutWrapper from '@/components/LayoutWrapper';
+import LessonViewer from '@/components/Academy/LessonViewer';
+import { ActionLink, PageHeader } from '@/components/ui/PageHeader';
+import { Card } from '@/components/ui/Card';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
+import { useNavbarHide } from '@/context/NavbarContext';
+import { useToast } from '@/context/ToastContext';
+import { useUser } from '@/context/UserContext';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { useTelemetry } from '@/hooks/useTelemetry';
+import { apiFetch } from '@/lib/api';
+import { mapBackendLessonStep } from '@/lib/lessonSteps';
+import { telegramHaptic } from '@/lib/telegram';
 
-interface LessonClientProps {
- lessonId: string;
-}
-
-export default function LessonClient({ lessonId }: LessonClientProps) {
-  const router = useRouter();
-  const [completed, setCompleted] = useState(false);
-  const [earnedXP, setEarnedXP] = useState<number | null>(null);
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+export default function LessonClient({ lessonId }: { lessonId: string }) {
   const locale = useLocale();
-
-  const [lessonData, setLessonData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
+  const t = useTranslations('Academy');
+  const ti = useTranslations('Index');
+  const toast = useToast();
+  const { stats, syncStats } = useUser();
+  const { data, error, isLoading, mutate } = useSWRFetch(`/api/v1/content/lessons/${lessonId}?locale=${locale}`, { revalidateOnFocus: false });
+  const steps = useMemo(() => Array.isArray(data?.steps) ? data.steps.map((step: Parameters<typeof mapBackendLessonStep>[0]) => mapBackendLessonStep(step, data.title)) : [], [data]);
+  const [completed, setCompleted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const { hideNavbar, showNavbar } = useNavbarHide();
   const { trackEvent } = useTelemetry();
 
+  useEffect(() => { hideNavbar(); return showNavbar; }, [hideNavbar, showNavbar]);
+  useEffect(() => { setCompleted(false); }, [lessonId]);
   useEffect(() => {
-    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    hideNavbar();
-    return () => {
-      showNavbar();
-    };
-  }, [hideNavbar, showNavbar]);
-
-  useEffect(() => {
-    apiFetch(`/api/v1/content/lessons/${lessonId}?locale=${locale}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Lesson not found");
-        return res.json();
-      })
-      .then(data => {
-        const steps = data.steps.map((step: any) => mapBackendLessonStep(step, data.title));
-        setLessonData({ ...data, steps });
-        setLoading(false);
-        trackEvent('academy_lesson_started', { lesson_id: lessonId });
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-    // trackEvent (from useTelemetry) is intentionally omitted: this fetch must
-    // run only when the lesson/locale changes, not when telemetry identity does.
+    if (data) trackEvent('academy_lesson_started', { lesson_id: lessonId });
+    // Telemetry identity updates must not restart this lesson.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonId, locale]);
+  }, [data, lessonId]);
 
   const handleComplete = async () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
     try {
       const res = await apiFetch('/api/v1/gamification/academy/complete-task', {
-        method: 'POST',
-        body: JSON.stringify({
-          task_type: 'lesson',
-          item_id: lessonId
-        })
+        method: 'POST', body: JSON.stringify({ task_type: 'lesson', item_id: lessonId }),
       });
-      
-      if (res.ok) {
-        await res.json();
-        setEarnedXP(lessonData?.xp_reward || 50);
-        setCompleted(true);
-        trackEvent('academy_lesson_completed', { lesson_id: lessonId, xp_reward: lessonData?.xp_reward || 50 });
-      } else {
-        console.error('Failed to complete lesson');
-        alert("Failed to submit lesson progress to the server. Please try again.");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Network error: failed to submit lesson progress.");
+      if (!res.ok) throw new Error('Lesson completion unavailable');
+      await res.json();
+      // The completion endpoint returns total XP, not the reward granted. A
+      // repeated lesson can award zero XP; never display a guessed +50 reward.
+      setCompleted(true);
+      void syncStats();
+      telegramHaptic('success');
+      trackEvent('academy_lesson_completed', { lesson_id: lessonId });
+    } catch {
+      toast.error(ti('action_failed'));
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <LayoutWrapper className="w-full">
-        <div className="flex h-[calc(100vh-var(--app-safe-top)-var(--app-safe-bottom))] items-center justify-center flex-col gap-4">
-          <FaChessKnight className="text-brand-primary animate-pulse drop-shadow-lg" size={48} />
-          <p className="text-caption font-semibold normal-case tracking-normal animate-pulse text-brand-muted">
-            INITIALIZING LESSON...
-          </p>
-        </div>
-      </LayoutWrapper>
-    );
-  }
-
-  if (!lessonData) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-brand-bg flex-col gap-4 px-6 text-center">
-        <h2 className="text-xl font-semibold text-brand-primary normal-case tracking-normal">Signal Lost</h2>
-        <p className="text-sm font-bold text-brand-muted normal-case tracking-normal mb-4">Lesson coordinates not found.</p>
-        <button type="button"
-          onClick={() => router.push(`/${locale}/academy`)} 
-          className="ui-tap-target px-6 py-3 border border-brand-primary/20 bg-brand-surface shadow-premium hover:bg-brand-primary/5 transition-colors rounded-2xl text-sm font-semibold normal-case tracking-normal text-brand-primary"
-        >
-          Return to Academy
-        </button>
-      </div>
-    );
-  }
-
-  if (completed) {
-   return (
-   <LayoutWrapper className="relative w-full">
-   <div className="w-full h-full min-h-[70vh] flex flex-col items-center justify-center text-center app-page mx-auto z-10">
-  <motion.div
-  initial={{ scale: 0.9, opacity: 0, y: 20 }}
-  animate={{ scale: 1, opacity: 1, y: 0 }}
-  className="w-full relative overflow-hidden group"
-  >
-  <div className="glass-panel p-6 md:p-10 rounded-[32px] border border-brand-border-opacity-10 bg-brand-surface shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10 overflow-hidden">
-    <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
-    <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.3)_0%,transparent_70%)] opacity-70 rounded-full -mr-20 -mt-20 pointer-events-none transition-all group-hover:opacity-100" />
-    
-    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)] mb-6 rotate-12 group-hover:rotate-0 transition-all duration-500">
-      <FaCheck className="text-4xl text-white drop-shadow-md" />
-    </div>
-
-    <h1 className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 mb-2 normal-case tracking-tight">LESSON COMPLETE!</h1>
-    <p className="text-caption font-semibold text-emerald-400/80 mb-8 normal-case tracking-normal">You have mastered {lessonData.title}</p>
-  
-      <div className="flex justify-center mb-10">
-        <div className="flex flex-col items-center justify-center w-full max-w-[200px] p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden">
-          <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
-          <div className="absolute top-0 left-0 w-32 h-32 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full -ml-16 -mt-16 pointer-events-none" />
-          
-          <span className="text-emerald-500 font-semibold text-4xl drop-shadow-[0_2px_10px_rgba(16,185,129,0.3)] relative z-10">+{earnedXP}</span>
-          <span className="text-caption text-emerald-500/80 font-semibold normal-case tracking-normal mt-2 relative z-10">Chess XP</span>
-        </div>
-      </div>
-  
-    <div className="flex flex-col md:flex-row gap-4 justify-center w-full">
-      <Link href={`/${locale}/academy`} className="flex-1 w-full">
-        <button type="button" className="ui-tap-target w-full px-4 py-4 bg-brand-void/50 border border-brand-border-opacity-10 hover:bg-brand-void/80 text-brand-primary font-semibold normal-case tracking-normal rounded-2xl cursor-pointer transition-all text-sm">
-          Back
-        </button>
-      </Link>
-      <a href={`https://t.me/share/url?url=https://t.me/Web3ChessBot/app&text=${encodeURIComponent(`I just mastered the "${lessonData.title}" lesson on Web3Chess Academy! ♟️🔥`)}`} target="_blank" rel="noopener noreferrer" className="flex-[2] w-full">
-        <button type="button" className="ui-tap-target w-full px-4 py-4 glass-panel bg-[#2AABEE]/10 border border-[#2AABEE]/30 hover:bg-[#2AABEE]/20 hover:border-[#2AABEE]/50 text-[#2AABEE] font-semibold normal-case tracking-normal rounded-2xl cursor-pointer shadow-[0_0_20px_rgba(42,171,238,0.15)] transition-all text-sm flex items-center justify-center gap-3">
-          <FaTelegramPlane className="text-lg drop-shadow-md" /> Share Progress
-        </button>
-      </a>
-    </div>
-  </div>
-  </motion.div>
-  </div>
-  <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} gravity={0.2} colors={['#10B981', '#F59E0B', '#3B82F6', '#FFFFFF']} style={{ zIndex: 0 }} />
-  </LayoutWrapper>
-  );
-  }
-
-  return (
-    <LayoutWrapper className="w-full pb-[max(1rem,var(--app-safe-bottom))]">
-      <div className="w-full app-page mx-auto h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-4 pt-2">
-          <Link aria-label="Back"
-            href={`/${locale}/academy`} 
-            className="html-back-button p-2.5 glass-panel rounded-xl text-brand-muted hover:text-brand-primary hover:bg-brand-surface/80 transition-all cursor-pointer border border-brand-border-opacity-10 shrink-0"
-          >
-            <FaArrowLeft size={14} />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-base md:text-lg font-semibold tracking-tight text-brand-primary normal-case truncate leading-snug">
-              {lessonData.title}
-            </h1>
-            {lessonData.track && (
-              <p className="text-caption text-emerald-400 font-bold normal-case tracking-normal truncate">
-                {lessonData.track}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <LessonViewer
-          steps={lessonData.steps}
-          onComplete={handleComplete}
-        />
-      </div>
-    </LayoutWrapper>
-  );
+  const unavailable = !isLoading && (!data || steps.length === 0);
+  return <LayoutWrapper>
+    <main className="app-page app-page--focused space-y-6">
+      <PageHeader title={completed ? t('lesson_complete') : data?.title || t('lesson')} description={!completed ? data?.track : data?.title} backHref={`/${locale}/academy`} />
+      {isLoading && !data ? <div aria-busy="true" className="space-y-4">
+        <Skeleton variant="rectangular" height={6} />
+        <Card variant="solid" className="p-5 min-h-64"><SkeletonText lines={5} /></Card>
+        <Skeleton variant="rectangular" height={48} />
+      </div> : error && !data || unavailable ? <ErrorState title={ti('load_failed')} message={ti('retry')} onRetry={() => { void mutate(); }} retryLabel={ti('retry')} />
+      : completed ? <Card variant="solid" className="flex flex-col items-center gap-5 p-6 text-center">
+        <span className="ui-icon-tile ui-icon-tile--success" aria-hidden="true"><FaCheck /></span>
+        <ActionLink primary href={`/${locale}/academy`}>{ti('academy')}</ActionLink>
+        <a className="ui-action-link w-full" href={`https://t.me/share/url?url=${encodeURIComponent(`https://t.me/${stats?.bot_username || 'chess_matbot'}`)}&text=${encodeURIComponent(`${t('lesson_complete')}: ${data.title}`)}`} target="_blank" rel="noopener noreferrer"><FaTelegramPlane aria-hidden="true" />{t('share_progress')}</a>
+      </Card> : <LessonViewer key={`${locale}:${lessonId}`} steps={steps} onComplete={handleComplete} submitting={submitting} />}
+    </main>
+  </LayoutWrapper>;
 }

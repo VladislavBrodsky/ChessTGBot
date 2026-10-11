@@ -1,25 +1,28 @@
 'use client';
 
+import TonConnectProvider from '@/components/TonConnectProvider';
+
 import { Badge } from '@/components/ui/Badge';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { FaTimes, FaCheck, FaCopy } from "react-icons/fa";
+import { FaCheck, FaCopy } from "react-icons/fa";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { apiFetch } from "@/lib/api";
 import { copyToClipboard } from "@/lib/clipboard";
-import { createPortal } from "react-dom";
-import { useNavbarHideWhileMounted } from "@/context/NavbarContext";
+import { Drawer } from "@/components/ui/Drawer";
+import { useUser } from "@/context/UserContext";
+import { useToast } from "@/context/ToastContext";
+import { useTranslations } from "next-intl";
 
-interface WalletSelectorModalProps {
+export interface WalletSelectorModalProps {
   onClose: () => void;
   onConnected?: () => void;
   tw: any;
 }
 
 /**
- * TON Connect compatible wallets — all transact in GRAM (the TON native coin).
- * Ordered: Gram Wallet first (GRAM native), then Telegram Wallet, Tonkeeper, MyTonWallet.
+ * TON Connect compatible wallets. Platform deposits settle in USDT on TON.
  */
 const WALLETS = [
   {
@@ -61,7 +64,7 @@ const WALLETS = [
   },
 ];
 
-export default function WalletSelectorModal({
+function WalletSelectorModalContent({
   onClose,
   onConnected,
   tw,
@@ -70,37 +73,33 @@ export default function WalletSelectorModal({
   const wallet = useTonWallet();
   const [connecting, setConnecting] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [canClose, setCanClose] = useState(false);
-  useNavbarHideWhileMounted();
+  const { stats } = useUser();
+  const toast = useToast();
+  const ti = useTranslations('Index');
+  const feedback = useRef({ onConnected, toast, ti });
+  useEffect(() => { feedback.current = { onConnected, toast, ti }; }, [onConnected, toast, ti]);
+  const address = wallet?.account.address;
+  const telegramId = Number(stats?.telegram_id);
 
-  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
+  // Saving a wallet is attributed to the API-confirmed account. Callback
+  // changes after balance refresh must not start another save/request loop.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // When wallet connects — sync with backend and close
-  useEffect(() => {
-    if (wallet) {
-      let telegramId: number | null = null;
-      if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
-        telegramId = (window as any).Telegram.WebApp.initDataUnsafe?.user?.id;
+    if (!address || !Number.isSafeInteger(telegramId) || telegramId <= 0) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await apiFetch('/api/v1/users/wallet', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: telegramId, wallet_address: address }),
+        });
+        if (!res.ok) throw new Error('Wallet account sync unavailable');
+        if (!cancelled) { setConnecting(null); feedback.current.onConnected?.(); }
+      } catch {
+        if (!cancelled) feedback.current.toast.error(feedback.current.ti('action_failed'));
       }
-      if (!telegramId) telegramId = 123456789; // dev fallback
-      apiFetch("/api/v1/users/wallet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          telegram_id: telegramId,
-          wallet_address: wallet.account.address,
-        }),
-      }).catch(() => {});
-      setConnecting(null);
-      if (onConnected) onConnected();
-    }
-  }, [wallet, onConnected]);
+    })();
+    return () => { cancelled = true; };
+  }, [address, telegramId]);
 
   const handleSelectWallet = async (appName: string) => {
     setConnecting(appName);
@@ -136,60 +135,9 @@ export default function WalletSelectorModal({
     }
   };
 
-  const content = (
-    <div className="bottom-drawer-backdrop z-[100]">
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => { if (canClose) onClose(); }}
-        className="absolute inset-0 bg-black/80"
-        style={{ touchAction: "none" }}
-      />
-
-      {/* Sheet */}
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 32, stiffness: 380 }}
-        className="bottom-drawer-sheet relative z-10 overflow-hidden"
-      >
-        {/* Ambient glow — GRAM green */}
-        <div
-          className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-36 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse, rgba(0,196,154,0.18) 0%, transparent 70%)",
-          }}
-        />
-
-        <div className="bottom-drawer-handle" />
-
-        {/* Close */}
-        <button aria-label="Close dialog" type="button"
-          onClick={onClose}
-          className="ui-tap-target absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center text-brand-muted hover:text-brand-primary transition-opacity cursor-pointer"
-        >
-          <FaTimes size={12} />
-        </button>
-
-        <div className="px-5 pb-8 space-y-5 relative z-10">
-          {/* Header */}
-          <div className="text-center pt-1">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <span
-                className="text-caption font-semibold normal-case tracking-normal text-brand-muted"
-              >
-                Web3 · TON Connect
-              </span>
-            </div>
-            <h3 className="text-[15px] font-semibold normal-case tracking-tight text-brand-primary">
-              {wallet ? "Wallet Connected" : tw("connect_title")}
-            </h3>
-          </div>
-
+  return (
+    <Drawer isOpen onClose={onClose} title={wallet ? tw('connected_status') : tw('connect_title')} description="TON Connect">
+      <div className="space-y-5">
           {/* ── CONNECTED STATE ── */}
           {wallet ? (
             <div className="space-y-3">
@@ -205,7 +153,7 @@ export default function WalletSelectorModal({
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="relative shrink-0">
+                  <div className="shrink-0">
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center"
                       style={{
@@ -215,17 +163,11 @@ export default function WalletSelectorModal({
                     >
                       <FaCheck size={15} style={{ color: "#00C49A" }} />
                     </div>
-                    <motion.div
-                      animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
-                      style={{ background: "#00C49A" }}
-                    />
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-0">
                     <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-                      Connected · GRAM Network
+                      Connected · TON
                     </span>
                     <span className="text-[13px] font-semibold font-mono truncate text-brand-primary">
                       {getShortAddress(wallet.account.address)}
@@ -388,15 +330,16 @@ export default function WalletSelectorModal({
                   />
                 </svg>
                 <span className="text-caption font-bold normal-case tracking-normal opacity-25 text-brand-primary">
-                  Powered by TON Connect · GRAM Blockchain
+                  Powered by TON Connect
                 </span>
               </div>
             </div>
           )}
-        </div>
-      </motion.div>
-    </div>
+      </div>
+    </Drawer>
   );
+}
 
-  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
+export default function WalletSelectorModal(props: WalletSelectorModalProps) {
+  return <TonConnectProvider><WalletSelectorModalContent {...props} /></TonConnectProvider>;
 }

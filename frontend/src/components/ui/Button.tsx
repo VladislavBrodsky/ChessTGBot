@@ -33,11 +33,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   
   const baseClasses = 'ui-button inline-flex min-w-11 items-center justify-center gap-2 font-[650] leading-snug transition-colors duration-150 select-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
   
-  // Mobile-friendly sizes (ensuring at least 44px height for touch targets on md/lg)
+  // Mobile-friendly sizes (every size keeps a 44px minimum touch height)
   const sizeClasses = {
     sm: 'text-sm px-3 py-2 min-h-11 rounded-xl',
-    md: 'text-sm px-4 py-3 min-h-12 rounded-xl',
-    lg: 'text-base px-6 py-3.5 min-h-14 rounded-2xl',
+    md: 'text-sm px-4 py-2.5 min-h-11 rounded-xl',
+    lg: 'text-base px-5 py-3 min-h-12 rounded-2xl',
   };
 
   const variantClasses: Record<ButtonVariant, string> = {

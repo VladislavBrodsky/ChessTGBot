@@ -2,7 +2,7 @@
 
 **Status:** Authoritative guide for the Telegram Mini App (`frontend/`)
 **Identity:** Obsidian Chess — a premium, chess-first arena
-**Last reviewed:** 2026-10-10
+**Last reviewed:** 2026-10-11
 **Applies to:** every page, sheet, card, state, animation and visual asset in the Mini App. The marketing website (`website/`) has its own palette and components and never imports Mini App tokens.
 
 Use this guide while designing, building and reviewing. It is a rulebook, not a mood board: every rule here is either enforced by a test/script (marked **⚙ enforced**) or is a review checklist item.
@@ -56,12 +56,12 @@ Colour tokens are per-theme in `themes.css`. Components use semantic names only.
 
 | Role | Token / utility | Dark (default) | Light | Use |
 | --- | --- | --- | --- | --- |
-| Canvas | `--bg-primary` · `bg-brand-void` | `#05070B` | `#F3F6FA` | Page background |
-| Surface | `--bg-surface` · `bg-brand-surface` | `#0B0E14` | `#FFFFFF` | Cards, rows, tiles |
-| Elevated | `--bg-elevated` · `bg-brand-elevated` | `#121620` | `#EEF2F7` | Controls, selected, sheets |
-| Raised | `--bg-raised` | `#1A1F2B` | — | Icon-tile gradient top, pressed |
-| Border | `--border-muted` · `border-brand-border` | `#1E2430` | 8% slate | The only separator (1px) |
-| Control border | `--control-border` | `#323A4A` | `#7C8798` | Inputs, switches (3:1 non-text contrast) |
+| Canvas | `--bg-primary` · `bg-brand-void` | `#000000` | `#F3F6FA` | Page background |
+| Surface | `--bg-surface` · `bg-brand-surface` | `#0A0A0A` | `#FFFFFF` | Cards, rows, tiles |
+| Elevated | `--bg-elevated` · `bg-brand-elevated` | `#121212` | `#EEF2F7` | Controls, selected, sheets |
+| Raised | `--bg-raised` | `#1A1A1A` | — | Icon-tile gradient top, pressed |
+| Border | `--border-muted` · `border-brand-border` | `#1F1F1F` | 8% slate | The only separator (1px) |
+| Control border | `--control-border` | `#626262` | `#7C8798` | Inputs, switches (3:1 non-text contrast) |
 | Text primary | `--text-primary` · `text-brand-primary` | `#F5F7FA` | `#0F172A` | Titles, values |
 | Text muted | `--text-muted` · `text-brand-muted` | `#9AA3B2` | `#556275` | Labels, metadata (≥4.5:1 on every surface) |
 | Action (emerald) | `--action-bg`, `--grad-action`, `--action-ink` | `#34D399` | `#10B981` | The primary next action, wins, verified |
@@ -217,6 +217,11 @@ Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`/`P
 
 Order: **title → live account/game state → one next action → progress → supporting/editorial**. Nothing critical hides behind decorative graphics.
 
+- Dashboard `PageHeader` backgrounds stay quiet: no grid, glow or animated backdrop behind headings. Side space is reserved only when a leading control or utility action exists; simple headers use the full available width at 320px.
+- Document typography defaults belong in `@layer base` so `truncate`, `nowrap` and line-clamp utilities remain effective. Quick-tile counters use a reserved row beside the icon, never over its bounds.
+- Profile identity uses one avatar/name group and one level/XP progress block. Rating belongs in the statistics group; do not repeat the same level or rating as extra hero badges. `Avatar` falls back to initials when an image fails to load.
+- Play and Profile share `GameHistoryList`: the row opens the review, and sharing is a separate labelled action. Results include a written outcome as well as colour.
+
 ### 4.2 Grid & width
 
 - `.app-page`: max **960px**, gutters 16 (mobile) / 24 (tablet) / 32 (desktop). `.app-page--focused`: **720px** for forms, reading, sheets-as-pages.
@@ -249,6 +254,7 @@ Primary and frequent controls are reachable in the lower 60% of the screen. Dest
 - Fixed bottom elements use `var(--app-safe-bottom)`; fixed top use `var(--app-safe-top)`. It is a `max()` of Telegram content/safe insets and `env(safe-area-inset-bottom)` — **never a `var()` fallback chain** (Telegram defines the content inset as `0px` in iOS fullscreen and short-circuits the chain). **⚙ enforced** (`hardcoded-bottom-inset`).
 - `viewport-fit=cover` is mandatory (`[locale]/layout.tsx`).
 - The bottom navbar is **never** conditionally hidden on main dashboard pages. **⚙ enforced** (`navbar-hide-has-selector`). Overlays cover it with z ≥ 100.
+- Hide an HTML back link only when an authenticated Telegram host provides the native back button. The SDK's presence in an ordinary browser is not enough; retain visible browser navigation there.
 - HTML is served `no-cache, must-revalidate`; hashed `/_next/static/*` is `immutable`.
 
 ### 4.8 RTL
@@ -307,6 +313,10 @@ Rules
 - Use the real container classes with skeleton children rather than a parallel layout.
 - Skeletons are `aria-hidden`; the region sets `aria-busy`.
 - Preserve stale successful content during refresh; do not flash a skeleton over data you already have.
+- Shared task consumers use one SWR cache entry (`useTasks`), including optimistic claims and rollback. Swap initial skeletons directly for loaded content; do not fade out a skeleton before mounting its replacement.
+- The route shell must render independently of the TON SDK. `WalletDialogs` loads wallet providers inside closeable dialogs, with a matching loading surface. Opening Top Up or completing a deposit never starts matchmaking automatically; the user must press the match action.
+- Transaction history is a ledger, not a reconstructed balance series: the API omits some balance-affecting entries and is paginated. A balance chart requires complete, ordered snapshots from the backend.
+- Lessons and game reviews keep their real page heading during loading/error states. Lesson completion reports confirmed progress; the completion endpoint returns total XP and cannot support a guessed reward amount.
 - Do not use `content-visibility:auto` on above-the-fold regions (causes blank-block artifacts in full-page screenshots and paint pop-in).
 - **⚙ enforced:** `e2e/layout-shift.spec.ts` asserts CLS < **0.08** loading→loaded on home, profile, wallet, challenges, marketplace.
 
@@ -338,6 +348,8 @@ Empty: icon tile, one-line reason, **one** action that resolves it. Error: plain
 ---
 
 ## 9. Accessibility & performance budgets
+
+Puzzle positions must be validated before board rendering. Completion UI shows verified totals or explicit server-provided rewards, never a guessed XP/ELO grant. Public login and referral QR pages reserve intrinsic image geometry, fit within 320px, and include both application safe-area insets. Login fallback copy reports unavailability without claiming a browser blocker was detected.
 
 | Area | Requirement |
 | --- | --- |

@@ -2,7 +2,8 @@
 
 import BoardA11y from '@/components/game/BoardA11y';
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 import { FaChevronRight, FaChevronLeft, FaCheck } from "react-icons/fa";
 import PuzzleBoard from "@/components/Academy/PuzzleBoard";
 import dynamic from "next/dynamic";
@@ -30,9 +31,11 @@ export interface LessonStep {
 interface LessonViewerProps {
  steps: LessonStep[];
  onComplete: () => void;
+ submitting?: boolean;
 }
 
-export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
+export default function LessonViewer({ steps, onComplete, submitting = false }: LessonViewerProps) {
+ const t = useTranslations('Academy');
  const [currentStepIndex, setCurrentStepIndex] = useState(0);
  const [stepComplete, setStepComplete] = useState(false);
 
@@ -77,35 +80,22 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
   return (
     <div className="flex flex-col flex-1 h-full w-full justify-between pb-4">
       {/* Progress Bar */}
-      <div className="w-full h-1.5 bg-brand-void/50 rounded-full mb-4 overflow-hidden border border-brand-border-opacity-10">
-        <motion.div
-          className="h-full bg-gradient-to-r from-emerald-500 to-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.5)] rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
-          transition={{ duration: 0.3 }}
-        />
+      <div role="progressbar" aria-label={t('step_count', { current: currentStepIndex + 1, total: steps.length })} aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={currentStepIndex + 1} className="w-full h-1.5 bg-brand-elevated rounded-full mb-4 overflow-hidden">
+        <div className="h-full bg-brand-action rounded-full" style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }} />
       </div>
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden my-auto py-2">
-        <AnimatePresence mode="wait">
-          <motion.div
+          <div
             key={currentStep.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
             className="w-full max-w-4xl px-2"
           >
             {isTextOrStatic && (
               <div className={`w-full mx-auto flex flex-col ${currentStep.fen ? 'md:flex-row items-center' : ''} gap-5 md:gap-8`}>
-                <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-[140px] relative overflow-hidden group">
+                <div className="flex-1 p-5 md:p-8 rounded-[24px] border border-brand-border-opacity-10 bg-brand-surface shadow-premium flex flex-col justify-center min-h-64 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-brand-void/10 pointer-events-none" />
-                  {/* Decorative subtle background glow */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full -mr-20 -mt-20 pointer-events-none transition-all group-hover:opacity-100 opacity-70" />
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-[radial-gradient(circle,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full -ml-20 -mb-20 pointer-events-none" />
                   
-                  <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed text-[14px]">
+                  <div className="relative z-10 prose prose-brand max-w-none text-brand-primary leading-relaxed t-body">
                     <div dangerouslySetInnerHTML={{ __html: safeStepContent }} />
                   </div>
                 </div>
@@ -145,7 +135,7 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                     onClick={markCompleteAndAdvance}
                     className="ui-tap-target absolute bottom-4 right-4 px-4 py-2 bg-brand-action text-brand-action-ink font-bold normal-case tracking-normal rounded-lg text-sm hover:brightness-110 transition-colors shadow-md"
                   >
-                    Video Watched
+                    {t('video_watched')}
                   </button>
                 )}
               </div>
@@ -168,27 +158,26 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
                 />
               </div>
             )}
-          </motion.div>
-        </AnimatePresence>
+          </div>
       </div>
 
       {/* Navigation Controls */}
       <div className="flex justify-between items-center mt-4 w-full gap-2 pt-2 border-t border-brand-border-opacity-10">
-        <button aria-label="Previous lesson step" type="button"
+        <Button variant="ghost" aria-label={t('previous_step')} type="button"
           onClick={handlePrev}
-          disabled={currentStepIndex === 0}
+          disabled={currentStepIndex === 0 || submitting}
           className={`ui-tap-target p-3 rounded-full border border-brand-border-opacity-10 text-brand-muted transition-colors ${currentStepIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-brand-surface hover:text-brand-primary cursor-pointer'}`}
         >
-          <FaChevronLeft size={12} />
-        </button>
+          <FaChevronLeft size={12} className="rtl:rotate-180" />
+        </Button>
 
         <div className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-          Step {currentStepIndex + 1} of {steps.length}
+          {t('step_count', { current: currentStepIndex + 1, total: steps.length })}
         </div>
 
-        <button type="button"
+        <Button variant="action" type="button" isLoading={submitting}
           onClick={handleNext}
-          disabled={!isStepReady}
+          disabled={!isStepReady || submitting}
           className={`ui-tap-target
             flex items-center gap-2 px-6 py-3 rounded-full font-semibold normal-case tracking-normal text-sm transition-all
             ${isStepReady
@@ -197,9 +186,9 @@ export default function LessonViewer({ steps, onComplete }: LessonViewerProps) {
             }
           `}
         >
-          {isLastStep ? 'Complete' : 'Next'}
-          {isLastStep ? <FaCheck size={10} /> : <FaChevronRight size={10} />}
-        </button>
+          {isLastStep ? t('complete_lesson') : t('next_step')}
+          {isLastStep ? <FaCheck size={10} /> : <FaChevronRight size={10} className="rtl:rotate-180" />}
+        </Button>
       </div>
     </div>
   );

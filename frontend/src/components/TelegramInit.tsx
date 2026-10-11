@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function TelegramInit() {
@@ -8,6 +8,19 @@ export default function TelegramInit() {
     // Read the latest theme from inside the SDK-init effect without re-running it.
     const themeRef = useRef(theme);
     themeRef.current = theme;
+    const syncedColors = useRef<{ host: any; color: string } | null>(null);
+    const syncHostColors = useCallback((tg: any, selectedTheme: string) => {
+        if (!tg.isVersionAtLeast?.('6.1')) return;
+        const color = selectedTheme === 'light' ? '#F3F6FA' : '#000000';
+        if (syncedColors.current?.host === tg && syncedColors.current?.color === color) return;
+        try {
+            // Custom header colours were added in 6.9; older hosts accept the
+            // theme keyword. Keep SDK calls in this single owner.
+            tg.setHeaderColor?.(tg.isVersionAtLeast('6.9') ? color : 'bg_color');
+            tg.setBackgroundColor?.(color);
+            syncedColors.current = { host: tg, color };
+        } catch { /* host theme sync is best-effort */ }
+    }, []);
 
     // Initialize the Telegram WebApp as soon as its SDK is available.
     //
@@ -41,11 +54,7 @@ export default function TelegramInit() {
 
             // Sync header/background colors right away so there is no color flash while the
             // theme effect below settles (that effect may run before the SDK has loaded).
-            try {
-                const color = themeRef.current === 'light' ? '#F3F6FA' : '#05070B';
-                tg.setHeaderColor?.(color);
-                tg.setBackgroundColor?.(color);
-            } catch { /* noop */ }
+            syncHostColors(tg, themeRef.current);
 
             // Request fullscreen mode if supported (Telegram Bot API 8.0+).
             try {
@@ -60,14 +69,14 @@ export default function TelegramInit() {
             // the embedded page too, which prevents normal mouse-wheel scrolling.
             const isMobileTelegram = tg.platform === 'ios' || tg.platform === 'android';
             try {
-                if (isMobileTelegram) tg.disableVerticalSwipes?.();
+                if (isMobileTelegram && tg.isVersionAtLeast?.('7.7')) tg.disableVerticalSwipes?.();
             } catch (e) {
                 console.warn('Failed to disable vertical swipes', e);
             }
 
             // Enable closing confirmation to prevent accidental exits (good for games).
             try {
-                tg.enableClosingConfirmation();
+                if (tg.isVersionAtLeast?.('6.2')) tg.enableClosingConfirmation?.();
             } catch (e) {
                 console.warn('Failed to enable closing confirmation', e);
             }
@@ -91,21 +100,15 @@ export default function TelegramInit() {
             cancelled = true;
             clearInterval(interval);
         };
-    }, []);
+    }, [syncHostColors]);
 
     // Keep Telegram header/background colors in sync with later theme changes.
     useEffect(() => {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
             const tg = (window as any).Telegram.WebApp;
-            try {
-                const color = theme === 'light' ? '#F3F6FA' : '#05070B';
-                tg.setHeaderColor(color);
-                tg.setBackgroundColor(color);
-            } catch (e) {
-                console.warn('Failed to set Telegram theme colors', e);
-            }
+            syncHostColors(tg, theme);
         }
-    }, [theme]);
+    }, [theme, syncHostColors]);
 
     return null;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/Card';
 import { useTranslations } from 'next-intl';
 import { FaGraduationCap, FaFire, FaStar, FaBookOpen } from 'react-icons/fa';
 
@@ -14,15 +14,13 @@ interface AcademyProgressCardProps {
 
 export default function AcademyProgressCard({ completedCount, totalCount, totalXp, streak }: AcademyProgressCardProps) {
   const t = useTranslations('Academy');
+  const ti = useTranslations('Index');
   // Clamp to avoid impossible numbers (e.g., 4/2 if API is stale)
   const safeCompleted = Math.min(completedCount, totalCount);
   const percentage = totalCount > 0 ? Math.round((safeCompleted / totalCount) * 100) : 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+    <Card variant="solid"
       className="ui-hero-card w-full p-5"
     >
 
@@ -49,7 +47,7 @@ export default function AcademyProgressCard({ completedCount, totalCount, totalX
             <span className="ui-stat__value text-base">{safeCompleted}<span className="text-caption font-medium text-brand-muted">/{totalCount}</span></span>
           </div>
 
-          {/* XP Earned */}
+          {/* Verified account XP */}
           <div className="ui-stat ui-stat--gold items-center p-3 text-center">
             <FaStar className="text-brand-gold text-sm mb-1" aria-hidden="true" />
             <span className="ui-stat__label">XP</span>
@@ -59,7 +57,7 @@ export default function AcademyProgressCard({ completedCount, totalCount, totalX
           {/* Streak */}
           <div className="ui-stat ui-stat--accent items-center p-3 text-center">
             <FaFire className="text-brand-success text-sm mb-1" aria-hidden="true" />
-            <span className="ui-stat__label">Streak</span>
+            <span className="ui-stat__label">{ti('day_streak')}</span>
             <span className="ui-stat__value text-base">{streak}</span>
           </div>
         </div>
@@ -75,15 +73,13 @@ export default function AcademyProgressCard({ completedCount, totalCount, totalX
             </span>
           </div>
           <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('course_completion')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}>
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${percentage}%` }}
-              transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+            <div
+              style={{ width: `${percentage}%` }}
               className="h-full rounded-full bg-brand-action"
             />
           </div>
         </div>
       </div>
-    </motion.div>
+    </Card>
   );
 }

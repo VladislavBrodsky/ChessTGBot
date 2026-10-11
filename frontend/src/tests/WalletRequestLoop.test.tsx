@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { SWRConfig } from 'swr';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import WalletPage from '@/app/[locale]/wallet/page';
 import { apiFetch } from '@/lib/api';
@@ -10,8 +11,10 @@ jest.mock('next-intl', () => ({
   useLocale: () => 'en',
 }));
 jest.mock('framer-motion', () => ({
+  useDragControls: () => ({ start: jest.fn() }),
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: {
+    div: ({ children, role }: { children: React.ReactNode; role?: string }) => <div role={role}>{children}</div>,
     button: ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => (
       <button onClick={onClick}>{children}</button>
     ),
@@ -42,6 +45,8 @@ jest.mock('@/components/Wallet/WalletSelectorModal', () => ({
   __esModule: true,
   default: () => null,
 }));
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>{children}</SWRConfig>;
 
 const mockApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 const mockUseUser = useUser as jest.MockedFunction<typeof useUser>;
@@ -74,7 +79,7 @@ describe('wallet request lifecycle', () => {
       statsError: false,
     }) as ReturnType<typeof useUser>);
 
-    const { rerender } = render(<WalletPage />);
+    const { rerender } = render(<WalletPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
       expect(mockApiFetch).toHaveBeenCalledTimes(1);
@@ -106,11 +111,11 @@ describe('wallet request lifecycle', () => {
       statsError: false,
     } as ReturnType<typeof useUser>);
 
-    render(<WalletPage />);
+    render(<WalletPage />, { wrapper: Wrapper });
     await waitFor(() => expect(mockApiFetch).toHaveBeenCalledTimes(1));
 
     fireEvent.click(screen.getByText('deposit'));
-    fireEvent.click(screen.getByRole('button', { name: 'complete-deposit' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'complete-deposit' }));
 
     await waitFor(() => {
       expect(syncBalance).toHaveBeenCalledTimes(1);

@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface TelegramLoginWidgetProps {
   botName: string;
@@ -23,6 +26,8 @@ export default function TelegramLoginWidget({
   redirectUrl,
   className = ''
 }: TelegramLoginWidgetProps) {
+  const t = useTranslations('Login');
+  const ti = useTranslations('Index');
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -101,8 +106,8 @@ export default function TelegramLoginWidget({
       frameObserver.observe(containerRef.current, { childList: true, subtree: true });
       nameFrames();
 
-      // Timeout: If Telegram's iframe hasn't sent a verified handshake within 2.5s,
-      // it was blocked by browser shields (e.g. Brave), third-party cookie restrictions, or invalid domain.
+      // A missing handshake has several possible causes. Offer a retry without
+      // claiming to have detected the user's browser or blocker settings.
       const timeoutId = setTimeout(() => {
         if (isMounted && !receivedMessage) {
           setLoadFailed(true);
@@ -120,14 +125,10 @@ export default function TelegramLoginWidget({
   }, [botName, buttonSize, cornerRadius, requestAccess, usePic, onAuthCallback, redirectUrl, retryCount]);
 
   return (
-    <div className={`relative flex flex-col items-center justify-center min-h-[48px] w-full ${className}`}>
+    <div className={`relative flex flex-col items-center justify-center min-h-28 w-full ${className}`}>
       {isLoading && !loadFailed && !isVerified && (
-        <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-brand-surface border border-brand-border text-brand-muted text-sm font-semibold animate-pulse shadow-sm">
-          <svg className="w-4 h-4 animate-spin text-emerald-500" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          <span>Connecting Telegram...</span>
+        <div role="status" className="w-full space-y-2 text-center">
+          <Skeleton height={48} /><p className="text-caption text-brand-muted">{t('connecting')}</p>
         </div>
       )}
 
@@ -137,36 +138,21 @@ export default function TelegramLoginWidget({
         className={isVerified && !loadFailed ? 'flex justify-center w-full' : 'hidden'}
       />
 
-      {/* Resilient fallback CTA when iframe is blocked by Brave Shields or adblockers */}
+      {/* Retry an unavailable widget; the page already provides the Telegram app link */}
       {loadFailed && (
         <div className="flex flex-col items-center gap-2.5 w-full">
-          <a
-            href={`https://t.me/${botName}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-brand-action text-brand-action-ink hover:brightness-105 text-sm font-semibold normal-case tracking-normal transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
-          >
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z" />
-            </svg>
-            <span>Log in via Telegram</span>
-          </a>
-          <div className="flex items-center gap-2">
-            <span className="text-caption text-brand-muted text-center font-mono">
-              Brave Shields or ad-blocker detected
-            </span>
-            <button
-              type="button"
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-caption text-brand-muted text-center">{t('widget_unavailable')}</span>
+            <Button variant="ghost" size="sm"
               onClick={() => {
                 setIsLoading(true);
                 setLoadFailed(false);
                 setIsVerified(false);
                 setRetryCount(c => c + 1);
               }}
-              className="ui-tap-target text-caption text-emerald-500 hover:underline font-mono"
             >
-              Retry
-            </button>
+              {ti('retry')}
+            </Button>
           </div>
         </div>
       )}

@@ -12,10 +12,16 @@
    * disappeared in the iOS Telegram app while web/desktop looked fine.
    * Every fixed bottom element and bottom page padding should use this.
    */
-  --app-safe-top: max(
-    var(--tg-content-safe-area-inset-top, 0px),
-    var(--tg-safe-area-inset-top, 0px),
-    env(safe-area-inset-top, 0px)
+  /*
+   * TOP is different from the bottom: the two Telegram insets STACK. In fullscreen, safe-area-inset-top is the device
+   * notch / Dynamic Island and content-safe-area-inset-top is Telegram's own header (close, menu) which sits BELOW it,
+   * so content must clear both. max() would only clear the larger one and tuck titles under Telegram's buttons on
+   * iPhone. The device inset still uses max(tg, env) because Telegram and the browser report the same notch (never add
+   * those two together). Outside fullscreen all of them are 0 and the page starts below Telegram's header as before.
+   */
+  --app-safe-top: calc(
+    max(var(--tg-safe-area-inset-top, 0px), env(safe-area-inset-top, 0px))
+    + var(--tg-content-safe-area-inset-top, 0px)
   );
 
   --app-safe-bottom: max(
@@ -28,12 +34,12 @@
   --font-geist-sans: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Stealth Obsidian Palette (Dark Theme Default) */
-  --bg-primary: #05070B;
-  --bg-surface: #0B0E14;
-  --bg-elevated: #121620;
-  --bg-raised: #1A1F2B;
-  --border-muted: #1E2430;
+  /* Lights Out Obsidian Palette (Dark Theme Default) */
+  --bg-primary: #000000;
+  --bg-surface: #0A0A0A;
+  --bg-elevated: #121212;
+  --bg-raised: #1A1A1A;
+  --border-muted: #1F1F1F;
   --border-hover: rgba(255, 255, 255, 0.16);
   --border-highlight: rgba(255, 255, 255, 0.07);
   --text-primary: #F5F7FA;
@@ -43,16 +49,16 @@
   --action-bg: #34D399;
   --action-ink: #052E22;
   --danger-ink: #FB7185;
-  --control-border: #323A4A;
+  --control-border: #626262;
   --page-width: 960px;
   --page-gutter: 16px;
-  --nav-height: 68px;
+  --nav-height: 62px;
   --sidebar-width: 232px;
 
-  --color-brand-void: #05070B;
-  --color-brand-surface: #0B0E14;
-  --color-brand-elevated: #121620;
-  --color-brand-border: #1E2430;
+  --color-brand-void: #000000;
+  --color-brand-surface: #0A0A0A;
+  --color-brand-elevated: #121212;
+  --color-brand-border: #1F1F1F;
   --color-brand-text-gray: #9AA3B2;
   --color-brand-overlay: rgba(2, 4, 8, 0.78);
   --color-nav-surface: var(--bg-surface);

@@ -611,7 +611,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   const shareGame = () => {
     const link = typeof window !== 'undefined' ? window.location.href : "";
-    const shareText = `I played a chess match on FinChess! ♟️⚡️`;
+    const shareText = `I played a chess match on Web3Chess! ♟️⚡️`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`;
 
     if (window.Telegram?.WebApp) {

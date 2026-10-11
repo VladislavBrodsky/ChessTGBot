@@ -17,6 +17,9 @@ export function hasE2ETestIdentity(): boolean {
   const localHosts = new Set(['localhost', '127.0.0.1', '::1']);
   if (!localHosts.has(window.location.hostname)) return false;
 
+  // `npm run dev:mock` sets NEXT_PUBLIC_E2E_AUTO_AUTH so any local browser gets the test identity; Playwright sets the window flag.
+  if (process.env.NEXT_PUBLIC_E2E_AUTO_AUTH === 'true') return true;
+
   return (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ === true;
 }
 

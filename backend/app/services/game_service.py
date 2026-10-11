@@ -100,6 +100,13 @@ def get_concise_game_id(game_id: str) -> str:
             return f"M-{parts[-1]}"
     return game_id
 
+def refundable_stake(state) -> int:
+    """Cents to refund on an aborted game. Zero for bot games, which are never staked, whatever the stored value says."""
+    if getattr(state, "black_player_id", None) == -1:
+        return 0
+    return max(0, int(getattr(state, "bid_amount", 0) or 0))
+
+
 class GameService:
     _active_timeout_tasks: Dict[str, asyncio.Task] = {}
     _active_abort_tasks: Dict[str, asyncio.Task] = {}
@@ -717,8 +724,8 @@ class GameService:
             if state.result_type == 'aborted':
                 print(f"[GameService] Processing aborted game refund for {game_id}")
                 
-                # Refund wager amount
-                bid_amount = getattr(state, "bid_amount", 0)
+                # Refund wager amount. A bot game (black_id == -1) never debited a stake, so it never refunds one.
+                bid_amount = refundable_stake(state)
                 if bid_amount > 0:
                     if white_user:
                         white_user.balance += bid_amount

@@ -114,8 +114,8 @@ export default function ArenaBanner() {
   if (!arena) {
     if (settled) return null;
     return (
-      <div role="status" aria-label={t('title')} className="w-full min-h-[68px] mb-1 p-3 rounded-2xl border border-brand-border bg-brand-surface flex items-center gap-3">
-        <Skeleton variant="rectangular" width={44} height={44} className="shrink-0" />
+      <div role="status" aria-label={t('title')} className="w-full min-h-[56px] p-2.5 rounded-2xl border border-brand-border bg-brand-surface flex items-center gap-3">
+        <Skeleton variant="rectangular" width={36} height={36} className="shrink-0" />
         <div className="flex flex-col flex-1 gap-2">
           <Skeleton width={96} height={12} />
           <Skeleton width={128} height={10} />
@@ -134,7 +134,7 @@ export default function ArenaBanner() {
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`arena-event-banner ${isLive ? 'arena-event-banner--live' : ''} w-full mb-1 p-3 rounded-2xl border relative overflow-hidden transition-colors duration-200 ${
+      className={`arena-event-banner ${isLive ? 'arena-event-banner--live' : ''} w-full p-2.5 rounded-2xl border relative overflow-hidden transition-colors duration-200 ${
         isLive
           ? 'border-purple-500/30 bg-purple-500/10 shadow-premium'
           : 'border-brand-border-opacity-10 bg-brand-surface'
@@ -142,7 +142,7 @@ export default function ArenaBanner() {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <span className={`ui-icon-tile h-11 w-11 ${isLive ? 'bg-purple-600 text-white border-purple-500' : 'ui-icon-tile--premium'}`}>
+          <span className={`ui-icon-tile ${isLive ? 'bg-purple-600 text-white border-purple-500' : 'ui-icon-tile--premium'}`}>
             <FaTrophy size={16} aria-hidden="true" />
           </span>
           <div className="flex flex-col min-w-0 justify-center">
@@ -167,9 +167,9 @@ export default function ArenaBanner() {
         </div>
 
         {!isLive && arena.status === 'scheduled' && (
-          <div className="arena-reward-badge shrink-0 rounded-xl border px-2.5 py-2 text-right">
-            <span className="block text-caption font-semibold normal-case tracking-normal text-purple-500">XP</span>
-            <span className="block mt-0.5 text-caption font-semibold tabular-nums text-brand-primary">{prizes}</span>
+          <div className="arena-reward-badge shrink-0 rounded-lg border px-2 py-1 text-end">
+            <span className="block text-caption font-semibold normal-case tracking-normal leading-tight text-purple-500">XP</span>
+            <span className="block text-caption font-semibold leading-tight tabular-nums text-brand-primary">{prizes}</span>
           </div>
         )}
 
@@ -196,7 +196,7 @@ export default function ArenaBanner() {
         {isLive && joined && (
           <motion.div
             initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 10 }}
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
             className="overflow-hidden"
           >
@@ -211,7 +211,7 @@ export default function ArenaBanner() {
       </AnimatePresence>
 
       {isLive && arena.standings.length > 0 && (
-        <div className="mt-4 flex flex-col gap-1.5">
+        <div className="mt-3 flex flex-col gap-1.5">
           {arena.standings.slice(0, 3).map((row) => (
             <div key={row.user_id} className={`flex items-center justify-between text-caption font-bold p-2.5 rounded-xl ${row.user_id === arena.me?.user_id ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400' : 'bg-brand-surface/50 border border-brand-primary/5 text-brand-muted'}`}>
               <div className="flex items-center gap-2 truncate">

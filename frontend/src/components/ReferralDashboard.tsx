@@ -33,7 +33,7 @@ function EarningsChart({ data, label }: { data: EarningPoint[]; label: string })
   const peak = Math.max(0.01, ...amounts);
   const points = amounts.map((amount, index) => `${8 + index * 284 / 29},${80 - amount / peak * 64}`).join(' ');
   return (
-    <svg viewBox="0 0 300 88" role="img" aria-label={label} className="h-24 w-full text-brand-action">
+    <svg viewBox="0 0 300 88" role="img" aria-label={label} className="h-16 w-full text-brand-action">
       <polyline points={points} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
     </svg>
   );
@@ -70,7 +70,7 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
   };
 
   return (
-    <section aria-labelledby="referrals-heading" className="w-full space-y-4">
+    <section aria-labelledby="referrals-heading" className="w-full space-y-3">
       <SectionHeader id="referrals-heading" title={t('dashboard_title')} />
 
       {!referralStats && (error || !isLoading) ? (
@@ -78,36 +78,37 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
       ) : !referralStats && isLoading ? (
         <SkeletonList count={3} />
       ) : referralStats ? <>
-        <div className="grid grid-cols-2 gap-3">
-          <Card variant="solid" className="p-4">
-            <FaUsers className="mb-3 text-brand-muted" size={18} aria-hidden="true" />
-            <p className="text-2xl font-semibold tabular-nums">{referralStats.total_referrals.toLocaleString(locale)}</p>
-            <p className="mt-1 text-caption text-brand-muted">{t('total_label')}</p>
-          </Card>
-          <Card variant="solid" className="p-4">
-            <FaUsers className="mb-3 text-brand-action" size={18} aria-hidden="true" />
-            <p className="text-2xl font-semibold tabular-nums">{referralStats.active_referrals.toLocaleString(locale)}</p>
-            <p className="mt-1 text-caption text-brand-muted">{t('active_label')}</p>
-          </Card>
-          <Card variant="solid" className="col-span-2 p-4">
-            <p className="text-2xl font-semibold tabular-nums">{referralStats.total_earnings_usdt.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</p>
-            <p className="mt-1 text-caption text-brand-muted">{t('earnings_label')}</p>
-          </Card>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="ui-stat">
+            <FaUsers className="text-brand-muted" size={14} aria-hidden="true" />
+            <p className="ui-stat__value">{referralStats.total_referrals.toLocaleString(locale)}</p>
+            <p className="ui-stat__meta">{t('total_label')}</p>
+          </div>
+          <div className="ui-stat ui-stat--accent">
+            <FaUsers className="text-brand-action" size={14} aria-hidden="true" />
+            <p className="ui-stat__value">{referralStats.active_referrals.toLocaleString(locale)}</p>
+            <p className="ui-stat__meta">{t('active_label')}</p>
+          </div>
+          <div className="ui-stat">
+            <FaChartLine className="text-brand-muted" size={14} aria-hidden="true" />
+            <p className="ui-stat__value whitespace-nowrap">{referralStats.total_earnings_usdt.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className="ui-stat__meta">{t('earnings_label')} · USDT</p>
+          </div>
         </div>
         {Array.isArray(referralStats.earnings_chart) && referralStats.earnings_chart.length > 0 && (
-          <Card variant="solid" className="p-4">
-            <div className="mb-2 flex items-center gap-2 text-caption font-medium text-brand-muted"><FaChartLine aria-hidden="true" />{t('chart_label')}</div>
+          <Card variant="solid" className="p-3">
+            <div className="mb-1 flex items-center gap-2 text-caption font-medium text-brand-muted"><FaChartLine aria-hidden="true" />{t('chart_label')}</div>
             <EarningsChart data={referralStats.earnings_chart} label={t('chart_label')} />
           </Card>
         )}
       </> : null}
 
-      {validCode ? <Card variant="solid" className="space-y-4 p-4">
-        <div>
-          <h3 className="text-base font-semibold">{t('your_link')}</h3>
-          <p className="mt-1 break-all text-caption text-brand-muted">{inviteLink}</p>
+      {validCode ? <Card variant="solid" className="space-y-3 p-3">
+        <div className="min-w-0">
+          <h3 className="t-title-3">{t('your_link')}</h3>
+          <p className="selectable mt-0.5 truncate text-caption text-brand-muted" dir="ltr">{inviteLink}</p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <Button variant="secondary" onClick={copyInvite} leftIcon={<FaCopy />} className="w-full">{copied ? t('copied') : t('copy')}</Button>
           <Button variant="secondary" onClick={shareInvite} leftIcon={<FaShareAlt />} className="w-full">{t('share_invite')}</Button>
         </div>

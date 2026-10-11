@@ -33,20 +33,11 @@ function getInitialTheme(): Theme {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
-    // Apply theme changes to the document element and Telegram WebApp
+    // Apply browser tokens here. TelegramInit owns host capability checks and
+    // colour sync, including the case where the SDK arrives after hydration.
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
 
-        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-            try {
-                const tg = (window as any).Telegram.WebApp;
-                const color = theme === 'light' ? '#F3F6FA' : '#05070B';
-                tg.setHeaderColor(color);
-                tg.setBackgroundColor(color);
-            } catch (err) {
-                console.warn('Failed to sync Telegram WebApp theme colors', err);
-            }
-        }
     }, [theme]);
 
     // Listen for system preference changes

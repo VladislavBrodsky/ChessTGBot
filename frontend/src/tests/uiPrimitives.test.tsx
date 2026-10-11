@@ -144,6 +144,13 @@ describe('UI Primitives Layer', () => {
   });
 
   describe('Avatar, Switch, & Tabs', () => {
+    it('recovers from a broken image and retries when the image source changes', () => {
+      const view = render(<Avatar name="Magnus Carlsen" src="/broken.jpg" />);
+      fireEvent.error(screen.getByRole('img', { name: 'Magnus Carlsen' }));
+      expect(screen.getByText('MC')).toBeInTheDocument();
+      view.rerender(<Avatar name="Magnus Carlsen" src="/replacement.jpg" />);
+      expect(screen.getByRole('img', { name: 'Magnus Carlsen' })).toHaveAttribute('src', '/replacement.jpg');
+    });
     it('renders Avatar with fallback initials and online badge', () => {
       render(<Avatar name="Magnus Carlsen" isOnline={true} />);
       expect(screen.getByText('MC')).toBeInTheDocument();

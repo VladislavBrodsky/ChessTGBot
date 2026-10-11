@@ -50,12 +50,19 @@ function createE2ETestSocket(): ReturnType<typeof io> {
             else handlers.get(event)?.delete(handler);
             return testSocket;
         },
-        emit(event: string, payload?: { room?: string; game_id?: string; uci?: string }) {
+        emit(event: string, payload?: { room?: string; game_id?: string; uci?: string; bid_amount?: number; time_control?: number }) {
             if (event === "join_room" && payload?.room === E2E_GAME_ID) {
                 queueMicrotask(() => emitToClient("game_state", gameState(E2E_START_FEN, "w")));
             }
             if (event === "make_move" && payload?.uci === "e2e4") {
                 setTimeout(() => emitToClient("game_state", gameState(E2E_AFTER_AI_REPLY_FEN, "w")), 30);
+            }
+            if (event === "join_matchmaking") {
+                const queued = payload;
+                queueMicrotask(() => emitToClient("matchmaking_status", { status: "searching", bid_amount: queued?.bid_amount ?? 0, time_control: queued?.time_control ?? 600, duration_waited: 0 }));
+            }
+            if (event === "leave_matchmaking") {
+                queueMicrotask(() => emitToClient("matchmaking_status", { status: "idle" }));
             }
             if (event === "resign") {
                 queueMicrotask(() => emitToClient("game_state", gameState(E2E_AFTER_AI_REPLY_FEN, "w", true)));

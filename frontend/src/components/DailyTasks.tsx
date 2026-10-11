@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { useTasks } from '@/hooks/useTasks';
+import { useToast } from '@/context/ToastContext';
 import { FaCheck, FaGift } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
@@ -12,6 +13,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { SectionHeader } from '@/components/ui/PageHeader';
 import { SkeletonList } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 
 const TaskSkeleton = () => <SkeletonList count={3} />;
 
@@ -19,34 +21,15 @@ export default function DailyTasks() {
     const t = useTranslations('Gamification');
     const ti = useTranslations('Index');
     const { syncStats } = useUser();
-    const [tasks, setTasks] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { tasks: allTasks, error: loadError, loading, refresh: fetchTasks, setTasks } = useTasks();
+    const tasks = allTasks.filter(task => task.title_key.startsWith('daily_'));
     const [claimingId, setClaimingId] = useState<number | null>(null);
-    const [loadError, setLoadError] = useState(false);
-
-    const fetchTasks = async () => {
-        setLoadError(false);
-        try {
-            const res = await apiFetch("/api/v1/gamification/tasks");
-            if (!res.ok) throw new Error('Task feed unavailable');
-            const data = await res.json();
-            if (!Array.isArray(data)) throw new Error('Invalid task feed');
-            setTasks(data.filter(task => typeof task.title_key === 'string' && task.title_key.startsWith('daily_')));
-        } catch (err) {
-            console.error("Failed to fetch daily tasks:", err);
-            setLoadError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    const toast = useToast();
 
     const handleClaim = async (taskDefId: number) => {
-        if (claimingId) return;
+        if (claimingId !== null) return;
         const task = tasks.find(t => t.task_id === taskDefId);
+        const previousTasks = allTasks;
         setClaimingId(taskDefId);
         try {
             // Optimistic update
@@ -69,11 +52,13 @@ export default function DailyTasks() {
                 }
             } else {
                 // Rollback if failed
-                fetchTasks();
+                setTasks(previousTasks);
+                toast.error(ti('action_failed'));
             }
         } catch (err) {
             console.error("Failed to claim task reward:", err);
-            fetchTasks();
+            setTasks(previousTasks);
+            toast.error(ti('action_failed'));
         } finally {
             setClaimingId(null);
         }
@@ -84,30 +69,12 @@ export default function DailyTasks() {
             <SectionHeader id="daily-missions-title" title={t('daily_missions')} />
 
             <div className="space-y-3 w-full">
-                <AnimatePresence mode="wait">
-                    {loading ? (
-                        <motion.div
-                            key="skeleton"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <TaskSkeleton />
-                        </motion.div>
+                {loading ? (
+                    <TaskSkeleton />
                     ) : loadError && tasks.length === 0 ? (
                         <ErrorState key="error" title={ti('load_failed')} onRetry={fetchTasks} retryLabel={ti('retry')} />
                     ) : tasks.length === 0 ? (
-                        <motion.div
-                            key="empty"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="text-center py-8 text-sm font-medium text-brand-muted"
-                        >
-                            {t('no_missions')}
-                        </motion.div>
+                        <p className="text-center py-4 t-body text-brand-muted">{t('no_missions')}</p>
                     ) : (
                         <ol role="list" className="space-y-3 list-none m-0 p-0 relative">
 
@@ -116,40 +83,40 @@ export default function DailyTasks() {
                                 return (
                                     <li
                                         key={task.id}
-                                        className={`ui-list-row list-item-contain ${status === 'claimable' ? 'ui-stat--accent' : ''}`}
+                                        className={`ui-list-row ${status === 'claimable' ? 'ui-stat--accent' : ''}`}
                                     >
-                                        <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1 pe-2">
                                             <span className={`ui-icon-tile ${status === 'pending' ? '' : 'ui-icon-tile--success'}`}>
                                                 {status === 'completed' ? <FaCheck className="text-sm" aria-hidden="true" /> : <FaGift className="text-sm" aria-hidden="true" />}
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <h4 className={`text-sm font-semibold leading-snug truncate ${status === 'completed' ? 'text-brand-muted' : 'text-brand-primary'}`}>
+                                                <h3 className={`text-sm font-semibold leading-snug break-words ${status === 'completed' ? 'text-brand-muted' : 'text-brand-primary'}`}>
                                                     {t(task.title_key)}
-                                                </h4>
+                                                </h3>
                                                 <div className="flex items-center gap-2 text-caption font-medium text-brand-muted mt-0.5 tabular-nums">
                                                     <span className="text-brand-gold">+{task.xp_reward} XP</span>
                                                     <span aria-hidden="true">·</span>
-                                                    <span>{task.progress} / {task.target_count}</span>
+                                                    <span dir="ltr">{task.progress} / {task.target_count}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {status === 'claimable' && (
-                                            <button type="button"
+                                            <Button variant="action" size="sm"
                                                 onClick={() => handleClaim(task.task_id)}
-                                                disabled={claimingId === task.task_id}
+                                                disabled={claimingId !== null} isLoading={claimingId === task.task_id}
                                                 className="ui-tap-target action-button px-4 text-sm font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                             >
-                                                {claimingId === task.task_id ? '…' : t('claim')}
-                                            </button>
+                                                {t('claim')}
+                                            </Button>
                                         )}
 
                                         {status === 'completed' && <Badge variant="emerald">{t('claimed_status')}</Badge>}
                                         {status === 'pending' && (
                                             <div className="w-16 h-1.5 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10 relative" role="progressbar" aria-label={t(task.title_key)} aria-valuemin={0} aria-valuemax={task.target_count} aria-valuenow={task.progress}>
                                                 <div
-                                                    style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
-                                                    className="h-full bg-brand-action rounded-full absolute left-0 top-0 transition-[width] duration-500"
+                                                    style={{ width: `${Math.min(100, (task.progress / Math.max(task.target_count, 1)) * 100)}%` }}
+                                                    className="h-full bg-brand-action rounded-full absolute start-0 top-0"
                                                 />
                                             </div>
                                         )}
@@ -158,7 +125,7 @@ export default function DailyTasks() {
                             })}
                         </ol>
                     )}
-                </AnimatePresence>
+
             </div>
         </section>
     );

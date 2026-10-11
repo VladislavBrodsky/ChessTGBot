@@ -1,12 +1,14 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { PageHeader, PageUtilities, SectionHeader } from '@/components/ui/PageHeader';
+import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { FaTrophy, FaFire, FaCheckCircle, FaStar } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import XPProgressBar from "@/components/XPProgressBar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useTasks } from '@/hooks/useTasks';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, triggerTaskSuccess } from "@/lib/telegram";
@@ -18,6 +20,7 @@ import { Badge } from '@/components/ui/Badge';
 import { SkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
+import { FiTarget } from 'react-icons/fi';
 
 export default function ChallengesPage() {
   const t = useTranslations('Gamification');
@@ -26,23 +29,9 @@ export default function ChallengesPage() {
   // Use global context — no stub defaults, no duplicate fetch
   const { stats, syncStats } = useUser();
 
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { tasks, setTasks, loading, error: tasksError, refresh: refreshTasks } = useTasks();
   const [claimingId, setClaimingId] = useState<number | null>(null);
   const [showArchive, setShowArchive] = useState<boolean>(false);
-
-  useEffect(() => {
-    // Only fetch tasks (page-specific) — user stats come from context
-    apiFetch("/api/v1/gamification/tasks")
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setTasks(data);
-        }
-      })
-      .catch(err => console.error("Failed to fetch user tasks:", err))
-      .finally(() => setLoading(false));
-  }, []);
 
   const handleClaim = async (taskDefId: number) => {
     if (claimingId) return;
@@ -53,6 +42,11 @@ export default function ChallengesPage() {
     // Optimistic instant state transition
     setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, claimed: true } : t));
 
+    try {
+      const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
+        method: "POST"
+      });
+      if (res.ok) {
     if (task) {
       let title = task.title_key;
       try {
@@ -61,11 +55,6 @@ export default function ChallengesPage() {
       triggerTaskSuccess(title, task.xp_reward);
     }
 
-    try {
-      const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/claim`, {
-        method: "POST"
-      });
-      if (res.ok) {
         syncStats();
       } else {
         // Rollback on non-200
@@ -182,9 +171,9 @@ export default function ChallengesPage() {
 
   return (
     <LayoutWrapper className="w-full ">
-      <main className="w-full app-page flex flex-col items-start mx-auto ">
+      <main className="w-full app-page flex flex-col items-center mx-auto ">
 
-        <PageHeader title={ti('daily_tasks')} actions={<PageUtilities />} />
+        <PageHeader title={ti('daily_tasks')} icon={<FiTarget />} />
 
         {/* Level Progress */}
         <section aria-labelledby="level-heading" className="w-full">
@@ -194,27 +183,21 @@ export default function ChallengesPage() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="ui-hero-card ui-hero-card--gold w-full"
           >
-            <div className="relative z-10 p-5 flex flex-col items-start text-start">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-border bg-brand-elevated text-xl font-semibold tabular-nums">{userLevel}</div>
-              <h2 id="level-heading" className="text-lg font-semibold tracking-tight mb-0.5 text-brand-primary header-balanced">
-                {t('grandmaster_rising')}
-              </h2>
-              <p className="text-caption font-medium text-brand-muted mb-3">
-                {t('next_level', { xp: nextLevelXp })}
-              </p>
-   
-              {/* XP Bar — premium with shimmer */}
+            <div className="relative z-10 flex flex-col gap-3 p-4 text-start">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-lg font-semibold tabular-nums">{userLevel}</div>
+                <div className="min-w-0 flex-1">
+                  <h2 id="level-heading" className="t-title-3 text-brand-primary header-balanced">{t('grandmaster_rising')}</h2>
+                  <p className="text-caption font-medium text-brand-muted">{t('next_level', { xp: nextLevelXp })}</p>
+                </div>
+                <Badge variant="secondary" className="shrink-0">{`${Math.round(progressPercentage)}%`}</Badge>
+              </div>
               <XPProgressBar
                 xp={userXp}
                 level={stats?.level ?? 1}
                 levelLabel={t.has('level') ? t('level') : 'Level'}
-                className="w-full mb-3"
+                className="w-full"
               />
-   
-              {/* XP percentage pill */}
-              <Badge variant="secondary">
-                {`${Math.round(progressPercentage)}% to next level`}
-              </Badge>
             </div>
           </motion.div>
         </section>
@@ -222,19 +205,19 @@ export default function ChallengesPage() {
         {/* Stats Row — Ultra Premium */}
         <section aria-labelledby="stats-heading" className="w-full">
           <h2 id="stats-heading" className="sr-only">Player Lifetime Combat Stats</h2>
-          <div className="w-full grid grid-cols-2 gap-3">
+          <div className="w-full grid grid-cols-2 gap-2">
             <div className="ui-stat flex-row items-center gap-3">
               <span className="ui-icon-tile ui-icon-tile--gold"><FaFire className="text-base" aria-hidden="true" /></span>
               <div className="flex min-w-0 flex-col">
-                <span className="ui-stat__value text-xl">{stats ? (stats.games_played ?? 0) : '—'}</span>
-                <span className="ui-stat__label">{t('battles')}</span>
+                <span className="ui-stat__value">{stats ? (stats.games_played ?? 0) : '—'}</span>
+                <span className="ui-stat__label truncate">{t('battles')}</span>
               </div>
             </div>
             <div className="ui-stat ui-stat--accent flex-row items-center gap-3">
               <span className="ui-icon-tile ui-icon-tile--success"><FaTrophy className="text-base" aria-hidden="true" /></span>
               <div className="flex min-w-0 flex-col">
-                <span className="ui-stat__value text-xl">{stats && Number.isFinite(stats.elo) ? stats.elo : '—'}</span>
-                <span className="ui-stat__label">{t('elo_rating')}</span>
+                <span className="ui-stat__value">{stats && Number.isFinite(stats.elo) ? stats.elo : '—'}</span>
+                <span className="ui-stat__label truncate">{t('elo_rating')}</span>
               </div>
             </div>
           </div>
@@ -243,9 +226,11 @@ export default function ChallengesPage() {
         {/* Tasks Section */}
         <section aria-labelledby="tasks-heading" className="w-full">
           <SectionHeader id="tasks-heading" title={t('daily_operations')} />
-          <div className="mt-3 space-y-3 w-full">
+          <div className="mt-2 space-y-2 w-full">
             {loading ? (
               <SkeletonList count={3} />
+            ) : tasksError && tasks.length === 0 ? (
+              <ErrorState title={ti('load_failed')} onRetry={() => { void refreshTasks(); }} retryLabel={ti('retry')} />
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
               <EmptyState
                 icon={<FaTrophy className="h-6 w-6 text-brand-muted" />}
@@ -267,50 +252,36 @@ export default function ChallengesPage() {
                 
                 return 0;
               }).map((task) => (
-                <motion.div
+                <Card
                   key={task.id}
-                  whileHover={{ scale: 1.01 }}
-                  className="w-full"
+                  variant="solid"
+                  className={`w-full p-3 transition-colors ${task.completed && !task.claimed ? 'ui-stat--accent' : ''}`}
                 >
-                  <Card 
-                    variant="solid" 
-                    className={`p-4 transition-colors ${task.completed && !task.claimed ? 'ui-stat--accent' : ''}`}
-                  >
-                    <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <span className={`ui-icon-tile ${task.completed ? 'ui-icon-tile--success' : ''}`}>
-                        {task.completed ? <FaCheckCircle aria-hidden="true" /> : <FaStar aria-hidden="true" />}
-                      </span>
-                      <div className="flex flex-col min-w-0">
-                        <h4 className="text-sm font-bold text-brand-primary mb-0.5 normal-case tracking-normal">
-                          {t(task.title_key)}
-                        </h4>
-                        <p className="text-caption text-brand-muted mb-1 leading-snug max-w-[180px]">
-                          {t(`${task.title_key}_desc`)}
+                  <div className="flex items-center gap-3">
+                    <span className={`ui-icon-tile ${task.completed ? 'ui-icon-tile--success' : ''}`}>
+                      {task.completed ? <FaCheckCircle aria-hidden="true" /> : <FaStar aria-hidden="true" />}
+                    </span>
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <h3 className="text-sm font-bold text-brand-primary normal-case tracking-normal">{t(task.title_key)}</h3>
+                      <p className="text-caption text-brand-muted leading-snug">{t(`${task.title_key}_desc`)}</p>
+                      {t.has(`${task.title_key}_inst`) && !task.completed && (
+                        <p className="flex items-start gap-1.5 text-caption font-medium leading-snug text-brand-primary">
+                          <FiInfo size={12} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
+                          <span>{t(`${task.title_key}_inst`)}</span>
                         </p>
-                        {t.has(`${task.title_key}_inst`) && (
-                          <p className="flex items-start gap-1.5 text-caption text-brand-primary font-medium mb-2 leading-snug max-w-[220px]">
-                            <FiInfo size={12} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
-                            <span>{t(`${task.title_key}_inst`)}</span>
-                          </p>
-                        )}
-                        <div className="flex items-center gap-2">
-                          <div className="h-1 w-16 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10">
-                            <div
-                              className={`h-full transition-all duration-700 rounded-full ${
-                                task.progress >= task.target_count
-                                  ? 'bg-gradient-to-r from-emerald-400 to-teal-400'
-                                  : 'bg-gradient-to-r from-brand-primary/60 to-brand-primary/40'
-                              }`}
-                              style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
-                            />
-                          </div>
-                          <span className={`text-caption font-bold normal-case tracking-normal ${
-                            task.progress >= task.target_count
-                              ? 'text-emerald-500'
-                              : 'text-brand-muted'
-                          }`}>{task.progress}/{task.target_count}</span>
+                      )}
+                      <div className="mt-1 flex items-center gap-2">
+                        <div className="h-1 w-full max-w-24 overflow-hidden rounded-full border border-brand-border-opacity-10 bg-brand-elevated">
+                          <div
+                            className={`h-full rounded-full transition-all duration-700 ${
+                              task.progress >= task.target_count
+                                ? 'bg-gradient-to-r from-emerald-400 to-teal-400'
+                                : 'bg-gradient-to-r from-brand-primary/60 to-brand-primary/40'
+                            }`}
+                            style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
+                          />
                         </div>
+                        <span className={`text-caption font-bold normal-case tracking-normal tabular-nums ${task.progress >= task.target_count ? 'text-emerald-500' : 'text-brand-muted'}`}>{task.progress}/{task.target_count}</span>
                       </div>
                     </div>
 
@@ -320,46 +291,46 @@ export default function ChallengesPage() {
                         size="sm"
                         disabled={claimingId === task.task_id}
                         onClick={() => handleClaim(task.task_id)}
-                        className="shadow-[0_0_18px_var(--color-emerald-opacity-20)]"
+                        className="shrink-0 whitespace-nowrap px-3"
                       >
                         {claimingId === task.task_id ? '...' : t('claim_xp_btn')}
                       </Button>
                     ) : task.claimed ? (
-                      <Badge variant="secondary">{t('claimed_status')}</Badge>
+                      <Badge variant="secondary" className="shrink-0">{t('claimed_status')}</Badge>
                     ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
                       <Button
                         variant="action"
                         size="sm"
+                        className="shrink-0 whitespace-nowrap px-3"
                         onClick={() => handleVerify(task.task_id, task.title_key)}
                       >
                         {t('verify_btn')}
                       </Button>
                     ) : task.title_key.startsWith("ach_refer_") ? (
-                      <div className="flex flex-col items-end gap-1.5">
-                        <span className="text-sm font-semibold text-brand-primary">{task.xp_reward} XP</span>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="px-3 py-1 h-auto text-caption border-brand-primary/20 text-brand-primary hover:bg-brand-primary hover:text-brand-void"
+                      <div className="flex shrink-0 flex-col items-end gap-1">
+                        <span className="text-sm font-semibold tabular-nums text-brand-primary">{task.xp_reward} XP</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="whitespace-nowrap px-3 text-caption"
                           onClick={() => {
                             const inviteLink = `https://t.me/${stats?.bot_username}?start=ref_${stats?.referral_code}`;
-                            const text = encodeURIComponent(`🏆 Join me on FinChess! Play chess, earn real USDT rewards. ♟️`);
+                            const text = encodeURIComponent('♟️ Play chess with me on Web3Chess. 18+ — USDT matches carry risk.');
                             const url = encodeURIComponent(inviteLink);
                             window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                           }}
                         >
-                           {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
-                         </Button>
+                          {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
+                        </Button>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-end">
-                        <span className="text-sm font-semibold text-brand-primary">{task.xp_reward} XP</span>
-                        <span className="text-caption text-brand-muted font-bold normal-case tracking-normal">{t('reward')}</span>
+                      <div className="flex shrink-0 flex-col items-end">
+                        <span className="text-sm font-semibold tabular-nums text-brand-primary">{task.xp_reward} XP</span>
+                        <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('reward')}</span>
                       </div>
                     )}
                   </div>
-                  </Card>
-                </motion.div>
+                </Card>
               ))
             )}
           </div>
@@ -367,7 +338,7 @@ export default function ChallengesPage() {
 
         {/* Archive Section */}
         {!loading && tasks.some(t => t.claimed) && (
-          <section aria-labelledby="archive-heading" className="w-full mb-12">
+          <section aria-labelledby="archive-heading" className="w-full">
             <h2 id="archive-heading" className="sr-only">Archived Completed Operations</h2>
             <button type="button"
               onClick={() => setShowArchive(!showArchive)}
@@ -382,17 +353,17 @@ export default function ChallengesPage() {
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
-                className="mt-3 space-y-3 overflow-hidden"
+                className="mt-2 space-y-2 overflow-hidden"
               >
                 {tasks.filter(t => t.claimed).map(task => (
-                  <Card key={task.id} variant="solid" className="p-4">
+                  <Card key={task.id} variant="solid" className="p-3">
                     <div className="flex justify-between items-center gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="ui-icon-tile ui-icon-tile--success"><FaCheckCircle aria-hidden="true" /></span>
                         <div className="min-w-0">
-                          <h4 className="text-sm font-semibold text-brand-muted mb-0.5">
+                          <h3 className="text-sm font-semibold text-brand-muted mb-0.5">
                             {t(task.title_key)}
-                          </h4>
+                          </h3>
                           <p className="text-caption text-brand-muted mb-1 leading-snug">
                             {t(`${task.title_key}_desc`)}
                           </p>

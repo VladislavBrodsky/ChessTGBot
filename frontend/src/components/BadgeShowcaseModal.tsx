@@ -51,7 +51,7 @@ export default function BadgeShowcaseModal({
 
   const handleShare = () => {
     telegramHaptic('heavy');
-    const text = encodeURIComponent(`🛡️ I unlocked the "${badge.title}" achievement on FinChess! Can you beat my score? ♟️⚡`);
+    const text = encodeURIComponent(`🛡️ I unlocked the "${badge.title}" achievement on Web3Chess! Can you beat my score? ♟️⚡`);
     window.open(`https://t.me/share/url?text=${text}`, '_blank');
   };
 

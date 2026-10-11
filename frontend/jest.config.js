@@ -12,6 +12,9 @@ const customJestConfig = {
     // Browser E2E specs run separately via Playwright (`npm run test:e2e`).
     // Keep Jest from collecting them as jsdom unit tests.
     testPathIgnorePatterns: ['<rootDir>/e2e/'],
+    // The standalone build copies package.json and source files. Keep generated
+    // exports out of Jest's module map so a production build cannot shadow tests.
+    modulePathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/out/'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
     },

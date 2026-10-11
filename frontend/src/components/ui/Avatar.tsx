@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface AvatarProps {
   src?: string | null;
@@ -35,8 +35,9 @@ export function Avatar({
   badge,
   className = '',
 }: AvatarProps) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const getInitials = (n?: string | null) => {
-    if (!n) return '?';
+    if (!n?.trim()) return '?';
     const parts = n.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -53,13 +54,16 @@ export function Avatar({
           rounded-2xl bg-brand-elevated border border-brand-border flex items-center justify-center font-bold text-brand-primary overflow-hidden shadow-sm select-none
         `}
       >
-        {src ? (
+        {src && src !== failedSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt={name || 'Avatar'}
             className="w-full h-full object-cover"
             loading="lazy"
+            width={64}
+            height={64}
+            onError={() => setFailedSrc(src)}
           />
         ) : (
           <span>{initials}</span>

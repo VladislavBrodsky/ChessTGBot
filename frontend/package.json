@@ -16,7 +16,8 @@
     "check:messages": "node scripts/check-messages.mjs",
     "test:e2e": "playwright test",
     "tokens": "node scripts/build-tokens.mjs",
-    "check:design": "node scripts/check-design-rules.mjs"
+    "check:design": "node scripts/check-design-rules.mjs",
+    "dev:mock": "node scripts/dev-mock.mjs"
   },
   "keywords": [],
   "author": "",

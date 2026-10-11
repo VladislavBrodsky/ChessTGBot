@@ -13,6 +13,8 @@ const nextConfig = {
     // that caused the "Play Game" TonConnect crash. Dev-only aid; ship output is
     // unchanged.
     reactStrictMode: true,
+    // The dev badge otherwise covers Home's touch target on small phones.
+    devIndicators: false,
     transpilePackages: ['react-chessboard'],
     ...(isStaticExport ? { output: 'export' } : { output: 'standalone' }),
     images: {
@@ -75,12 +77,14 @@ const nextConfig = {
                         { key: 'Expires', value: '0' },
                     ],
                 },
-                {
+                // Hashed production assets are immutable. In `next dev` the chunk names are NOT hashed, so an immutable
+                // header makes the browser keep stale code across edits; only send it for production builds.
+                ...(process.env.NODE_ENV === 'production' ? [{
                     source: '/_next/static/:path*',
                     headers: [
                         { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
                     ],
-                },
+                }] : []),
             ];
         },
     } : {}),

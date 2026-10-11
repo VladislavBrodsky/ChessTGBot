@@ -26,11 +26,11 @@ export default function QrClient() {
           <FaChessKnight size={26} aria-hidden="true" />
         </div>
         <PageHeader title={t('invite_title')} description={t('invite_description')} />
-        <Card variant="solid" className="p-6 text-center">
+        <Card variant="solid" className="p-4 sm:p-6 text-center">
           {validCode ? <>
-            <div className="mx-auto w-fit rounded-2xl bg-white p-3">
+            <div className="mx-auto w-full max-w-[244px] rounded-2xl bg-white p-3">
               {/* eslint-disable-next-line @next/next/no-img-element -- external QR generation service */}
-              <img src={qrSrc} alt={t('invite_qr_alt')} width={220} height={220} className="block h-[220px] w-[220px]" />
+              <img src={qrSrc} alt={t('invite_qr_alt')} width={220} height={220} className="block h-auto w-full aspect-square" />
             </div>
             <p className="mt-4 text-sm font-medium text-brand-muted">@{bot}</p>
             <a href={inviteLink} target="_blank" rel="noopener noreferrer" onClick={() => telegramHaptic('selection')}

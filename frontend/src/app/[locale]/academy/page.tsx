@@ -3,13 +3,14 @@
 import BoardA11y from '@/components/game/BoardA11y';
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
-import { PageHeader, PageUtilities, SectionHeader } from '@/components/ui/PageHeader';
+import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import LayoutWrapper from "@/components/LayoutWrapper";
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
-import { FaChessKnight, FaBrain, FaLock, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChessKnight, FaBrain, FaLock, FaBolt, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
@@ -22,7 +23,10 @@ import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
 import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { QuickTile } from '@/components/ui/QuickTile';
+import { FiLayers } from 'react-icons/fi';
 import { getXPProgress } from '@/lib/xpProgress';
+import { FaGraduationCap } from 'react-icons/fa';
 
 // These libraries are only needed after a user opens a puzzle preview or
 // earns a reward. Keeping them out of the Academy entry bundle makes normal
@@ -64,6 +68,8 @@ interface AcademyLesson {
 export default function AcademyPage() {
   const locale = useLocale();
   const t = useTranslations('Academy');
+  const ti = useTranslations('Index');
+  const tm = useTranslations('Marketplace');
   const router = useRouter();
   const { stats, syncStats: mutateStats } = useUser();
 
@@ -72,8 +78,8 @@ export default function AcademyPage() {
     return res.json();
   });
 
-  const { data: dynamicLessons } = useSWR("/api/v1/content/lessons", fetcher);
-  const { data: academyState, mutate: mutateAcademyState } = useSWR("/api/v1/gamification/academy/state", fetcher);
+  const { data: dynamicLessons, error: lessonsError, mutate: mutateLessons } = useSWR("/api/v1/content/lessons", fetcher);
+  const { data: academyState, error: academyError, mutate: mutateAcademyState } = useSWR("/api/v1/gamification/academy/state", fetcher);
   
   const unlockedLessons = academyState?.unlocked_lessons;
   const completedLessons = academyState?.completed_lessons;
@@ -81,7 +87,8 @@ export default function AcademyPage() {
   const mutateUnlocked = mutateAcademyState;
   const mutatePuzzles = mutateAcademyState;
 
-  const loading = !stats || !dynamicLessons || !academyState;
+  const academyLoadFailed = (!dynamicLessons && lessonsError) || (!academyState && academyError);
+  const loading = !stats || (!dynamicLessons && !lessonsError) || (!academyState && !academyError);
 
   const puzzlesList = (puzzles || []) as AcademyPuzzle[];
   const lessonsList = (dynamicLessons || []) as AcademyLesson[];
@@ -247,6 +254,22 @@ export default function AcademyPage() {
     }
   };
 
+  if (academyLoadFailed) {
+    return (
+      <LayoutWrapper className="w-full">
+        <main className="app-page w-full mx-auto">
+          <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
+          <ErrorState
+            title={t('load_error')}
+            message={t('load_error_description')}
+            retryLabel={ti('retry')}
+            onRetry={() => { void mutateLessons(); void mutateAcademyState(); }}
+          />
+        </main>
+      </LayoutWrapper>
+    );
+  }
+
   if (loading) {
     return (
       <LayoutWrapper className="w-full ">
@@ -325,16 +348,14 @@ export default function AcademyPage() {
       <main className="w-full app-page mx-auto ">
 
         {/* Header */}
-        <header className="flex flex-col items-start w-full gap-3">
-          <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
+        <header className="flex flex-col items-center w-full gap-2">
+          <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
 
           {stats && (
-            <BadgeRow>
+            <BadgeRow className="justify-center">
               {stats.is_premium && <Badge variant="purple">Premium</Badge>}
-              <Badge variant="primary">Level {stats.level}</Badge>
-              <Badge variant="secondary">{stats.xp.toLocaleString()} XP</Badge>
+              <Badge variant="primary">{ti('level')} {stats.level}</Badge>
               <Badge variant="secondary" icon={<FaTrophy />}>{getPlayerTitle(stats.level)}</Badge>
-              <Badge variant="amber" icon={<FaFire />}>{stats.study_streak || 0} day streak</Badge>
             </BadgeRow>
           )}
         </header>
@@ -344,7 +365,7 @@ export default function AcademyPage() {
           <AcademyProgressCard 
             completedCount={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length}
             totalCount={lessonsList.length}
-            totalXp={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length * 50}
+            totalXp={stats?.xp ?? 0}
             streak={stats?.study_streak || 0}
           />
         )}
@@ -360,7 +381,7 @@ export default function AcademyPage() {
             interactive
             aria-label="Next chess quote"
             onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
-            className="w-full text-center px-6 py-4 group"
+            className="w-full text-center px-4 py-3 group"
           >
             <p className="text-sm font-medium text-brand-primary mb-1">“{CHESS_QUOTES[quoteIdx].quote}”</p>
             <p className="text-caption font-medium text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
@@ -371,46 +392,56 @@ export default function AcademyPage() {
         <DailyHintCard />
 
         {/* Daily Challenge Section */}
-        <motion.div
+        {puzzlesList.length === 0 ? (
+          <section className="w-full space-y-3" aria-labelledby="daily-challenge-empty-title">
+            <SectionHeader id="daily-challenge-empty-title" title={t('daily_challenge')} />
+            <EmptyState
+              icon={<FaChessKnight size={22} aria-hidden="true" />}
+              title={t('puzzles_empty_title')}
+              description={t('puzzles_empty_description')}
+              actionLabel={ti('retry')}
+              onAction={() => { void mutateAcademyState(); }}
+            />
+          </section>
+        ) : <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ y: -4, scale: 1.01 }}
           className="w-full"
         >
           <Card 
             variant="glass" 
-            className="ui-hero-card p-6 relative overflow-hidden group rounded-3xl"
+            className="ui-hero-card p-4 relative overflow-hidden group"
           >
           {/* Neon Backlight Blurs */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,var(--color-brand-primary)_0%,transparent_70%)] opacity-10 rounded-full -mr-16 -mt-16 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10">
-            <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+            <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
               <Badge variant="secondary" icon={<FaFire />}>
                 {t('daily_challenge')}
               </Badge>
-              {!allSolved && (
+              {!allSolved && nextPuzzle && (
                 <Badge variant="emerald" icon={<FaTrophy />}>
-                  +{nextPuzzle ? nextPuzzle.xp_reward : 50} XP
+                  +{nextPuzzle.xp_reward} XP
                 </Badge>
               )}
             </div>
 
-            <h2 className="text-2xl font-semibold tracking-tight text-brand-primary mb-2">
+            <h2 className="t-title-2 text-brand-primary mb-1">
               {allSolved
                 ? t('all_levels_solved')
                 : nextPuzzle
                   ? `${t('level_prefix')} ${nextPuzzle.id}: ${nextPuzzle.title.replace(/\s*[—\-]\s*Level\s*\d+/i, '')}`
-                  : t('mate_in_2')
+                  : t('all_levels_solved')
               }
             </h2>
-            <p className="text-sm text-brand-muted font-medium mb-6 leading-relaxed">
+            <p className="text-sm text-brand-muted font-medium mb-4 leading-snug">
               {allSolved
                 ? t('all_levels_congrats')
                 : nextPuzzle
                   ? nextPuzzle.description
-                  : t('puzzle_desc')
+                  : t('all_levels_congrats')
               }
             </p>
 
@@ -434,41 +465,40 @@ export default function AcademyPage() {
             </Button>
           </div>
           </Card>
-        </motion.div>
+        </motion.div>}
 
 
         {/* 100 Levels Tactics Grid */}
-        <section className="space-y-3" aria-labelledby="tactics-grid-title">
+        {puzzlesList.length > 0 && <section className="space-y-2" aria-labelledby="tactics-grid-title">
           <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
           <Card variant="solid" className="ui-hero-card w-full relative overflow-hidden rounded-2xl">
             {/* Progress Header */}
-            <div className="flex flex-col p-4 border-b border-brand-border relative z-10">
+            <div className="flex flex-col px-3 py-2.5 border-b border-brand-border relative z-10">
               <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
                 <span className="text-sm font-semibold text-brand-primary flex items-center gap-1.5">
                   <FaBrain className="text-brand-muted text-caption" aria-hidden="true" /> {nextToSolveId ? `${t('level_prefix')} ${nextToSolveId}` : allSolved ? t('all_levels_solved') : t('unlocked')}
                 </span>
                 <Badge variant="emerald">
-                  {completedPuzzles.length} / 100 ({Math.round(completedPuzzles.length)}%)
+                  {completedPuzzles.length} / {puzzlesList.length} ({Math.round((completedPuzzles.length / puzzlesList.length) * 100)}%)
                 </Badge>
               </div>
-              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('tactics_grid')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={completedPuzzles.length}>
+              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('tactics_grid')} aria-valuemin={0} aria-valuemax={puzzlesList.length} aria-valuenow={completedPuzzles.length}>
                 <div 
                   className="h-full bg-brand-action rounded-full transition-all duration-700"
-                  style={{ width: `${Math.max(completedPuzzles.length, 1)}%` }}
+                  style={{ width: `${(completedPuzzles.length / puzzlesList.length) * 100}%` }}
                 />
               </div>
             </div>
 
             {/* Grid */}
-            <div className="p-3.5 relative z-10">
-              <div className="grid grid-cols-10 gap-1.5 w-full">
-                {Array.from({ length: 100 }, (_, i) => {
-                  const id = i + 1;
-                  const puzzleInfo = puzzlesList.find(p => p.id === id);
+            <div className="p-3 relative z-10">
+              <div className="tactics-grid">
+                {puzzlesList.map(puzzleInfo => {
+                  const id = puzzleInfo.id;
                   const isCompleted = completedPuzzles.includes(id);
-                  const isSequentialLocked = puzzleInfo ? puzzleInfo.is_sequential_locked : (id > 1);
-                  const isPremiumLocked = puzzleInfo ? puzzleInfo.is_premium_locked : (id > 30);
-                  const isXpLocked = puzzleInfo ? puzzleInfo.is_xp_locked : (id >= 11 && id <= 29);
+                  const isSequentialLocked = puzzleInfo.is_sequential_locked;
+                  const isPremiumLocked = puzzleInfo.is_premium_locked;
+                  const isXpLocked = puzzleInfo.is_xp_locked;
                   const isActive = id === nextToSolveId;
 
                   let bgClass = "";
@@ -476,16 +506,16 @@ export default function AcademyPage() {
 
                   if (isCompleted) {
                     bgClass = "tc-solved font-bold hover:scale-105";
-                    statusMark = <FaCheckCircle className="absolute top-0.5 right-0.5 text-[5px] text-emerald-500" />;
+                    statusMark = <FaCheckCircle className="absolute top-1 right-1 text-[9px] text-emerald-500" aria-hidden="true" />;
                   } else if (isSequentialLocked) {
                     bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-muted cursor-not-allowed";
-                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-brand-muted" />;
+                    statusMark = <FaLock className="absolute bottom-1 right-1 text-[8px] text-brand-muted" aria-hidden="true" />;
                   } else if (isPremiumLocked) {
                     bgClass = "tc-locked hover-shake";
-                    statusMark = <FaLock className="absolute bottom-0.5 right-0.5 text-[5px] text-purple-500/60" />;
+                    statusMark = <FaLock className="absolute bottom-1 right-1 text-[8px] text-purple-500/70" aria-hidden="true" />;
                   } else if (isXpLocked) {
                     bgClass = "bg-brand-void/50 border-emerald-500/30 text-emerald-500 hover:scale-105 hover:bg-brand-void/75 hover:border-emerald-500/50 shadow-[0_0_8px_rgba(16,185,129,0.05)]";
-                    statusMark = <div className="absolute bottom-0.5 right-0.5 text-[5.5px] font-bold text-emerald-500/70">XP</div>;
+                    statusMark = <FaBolt className="absolute bottom-1 right-1 text-[8px] text-emerald-500/80" aria-hidden="true" />;
                   } else if (isActive) {
                     bgClass = [
                       "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
@@ -501,7 +531,8 @@ export default function AcademyPage() {
                     <button type="button"
                       key={id}
                       onClick={() => setSelectedLevel({ id, info: puzzleInfo })}
-                      className={`ui-tap-target relative aspect-square rounded-xl border flex items-center justify-center text-caption transition-all duration-200 cursor-pointer ${bgClass}`}
+                      className={`tactics-cell relative rounded-xl border flex items-center justify-center text-caption transition-all duration-200 cursor-pointer ${bgClass}`}
+                      aria-label={`${t('level_prefix')} ${id}`}
                     >
                       <span>{id}</span>
                       {statusMark}
@@ -512,13 +543,13 @@ export default function AcademyPage() {
             </div>
 
             {/* Legend */}
-            <BadgeRow className="px-4 py-3 border-t border-brand-border relative z-10">
+            <BadgeRow className="px-3 py-2.5 border-t border-brand-border relative z-10">
               <Badge variant="secondary">{t('unlocked')}</Badge>
               <Badge variant="emerald">{t('solved')}</Badge>
               <Badge variant="purple">{t('premium')}</Badge>
             </BadgeRow>
           </Card>
-        </section>
+        </section>}
 
         {/* Mastery Tracks Grid */}
         <section className="space-y-4" aria-labelledby="mastery-tracks-title">
@@ -564,7 +595,7 @@ export default function AcademyPage() {
                   {/* Category header */}
                   <div className="flex items-center justify-between mb-3 px-1">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-semibold text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h4>
+                      <h3 className="text-sm font-semibold text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-caption font-medium text-brand-muted tabular-nums">{completedInCat}/{catLessons.length}</span>
@@ -625,11 +656,16 @@ export default function AcademyPage() {
           })()}
         </section>
 
+        <nav className="grid grid-cols-2 gap-3" aria-label={t('title')}>
+          <QuickTile href={`/${locale}/academy/achievements`} icon={<FaTrophy />} tone="gold" label={t('achievements')} />
+          <QuickTile href={`/${locale}/academy/themes`} icon={<FiLayers />} tone="info" label={tm('section_themes')} />
+        </nav>
+
         {/* Next Milestone */}
         {stats && (
           <section className="space-y-3" aria-labelledby="next-milestone-title">
             <SectionHeader id="next-milestone-title" title="Next milestone" />
-            <Card variant="solid" className="ui-hero-card w-full p-5 rounded-2xl">
+            <Card variant="solid" className="w-full p-5 rounded-2xl">
               <div className="flex justify-between items-end mb-3 gap-3">
                 <div className="min-w-0">
                   <p className="ui-eyebrow mb-1">Current title</p>
@@ -644,7 +680,7 @@ export default function AcademyPage() {
                 <div className="h-full bg-brand-action rounded-full transition-all duration-700" style={{ width: `${xpProgress!.progressPercentage}%` }} />
               </div>
               <p className="text-caption font-medium text-brand-muted">
-                <span className="text-brand-primary font-semibold tabular-nums">{Math.max(0, xpProgress!.nextLevelXp - stats.xp).toLocaleString()} XP</span> to {t('level_prefix').toLowerCase()} {xpProgress!.displayedLevel + 1}. Solve one more puzzle.
+                <span className="text-brand-primary font-semibold tabular-nums">{Math.max(0, xpProgress!.nextLevelXp - stats.xp).toLocaleString()} XP</span> to {t('level_prefix').toLowerCase()} {xpProgress!.displayedLevel + 1}. {t('keep_practising')}
               </p>
             </Card>
           </section>

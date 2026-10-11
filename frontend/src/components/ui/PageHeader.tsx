@@ -2,33 +2,44 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { FiArrowLeft, FiArrowRight, FiCreditCard, FiUser } from 'react-icons/fi';
-import { useLocale, useTranslations } from 'next-intl';
+import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
 import { telegramHaptic } from '@/lib/telegram';
 
-/** One heading and one clear orientation point on every destination. */
-export function PageHeader({ title, description, eyebrow, actions, backHref, backLabel }: {
+export type HeroTone = 'success' | 'gold' | 'info' | 'premium' | 'danger';
+
+/** One centered heading and one clear orientation point on every destination, with an optional icon medallion. */
+export function PageHeader({ title, description, eyebrow, actions, backHref, backLabel, icon, tone, align = 'center' }: {
   title: ReactNode;
   description?: ReactNode;
   eyebrow?: ReactNode;
   actions?: ReactNode;
   backHref?: string;
   backLabel?: string;
+  icon?: ReactNode;
+  tone?: HeroTone;
+  /** `start` left-aligns the title block (greetings); everything else is centred. */
+  align?: 'center' | 'start';
 }) {
   const t = useTranslations('Index');
   return (
-    <header className="page-header">
-      {backHref && (
-        <Link href={backHref} aria-label={backLabel || t('back')} className="html-back-button ui-icon-button" onClick={() => telegramHaptic('selection')}>
-          <FiArrowLeft size={20} className="rtl:rotate-180" aria-hidden="true" />
-        </Link>
-      )}
-      <div className="min-w-0 flex-1">
-        {eyebrow && <p className="t-eyebrow mb-1 text-brand-muted">{eyebrow}</p>}
-        <h1 className="t-title-1 text-brand-primary">{title}</h1>
-        {description && <div className="t-body mt-1.5 text-brand-muted">{description}</div>}
+    <header className="page-header" data-tone={tone} data-align={align === 'start' ? 'start' : undefined} data-has-lead={backHref ? true : undefined} data-has-actions={actions ? true : undefined}>
+      <div className="page-header__lead">
+        {backHref && (
+          <Link href={backHref} aria-label={backLabel || t('back')} className="html-back-button ui-icon-button" onClick={() => telegramHaptic('selection')}>
+            <FiArrowLeft size={20} className="rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        )}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      <div className="page-header__main">
+        {eyebrow && <p className="page-header__eyebrow t-eyebrow text-brand-muted">{eyebrow}</p>}
+        <h1 className="page-header__title t-title-1 text-brand-primary">
+          {icon && <span className="page-header__icon" aria-hidden="true">{icon}</span>}
+          <span>{title}</span>
+        </h1>
+        {description && <div className="page-header__desc">{description}</div>}
+      </div>
+      <div className="page-header__actions">{actions}</div>
     </header>
   );
 }
@@ -40,15 +51,6 @@ export function SectionHeader({ title, id, action }: { title: ReactNode; id?: st
       {action}
     </div>
   );
-}
-
-export function PageUtilities() {
-  const locale = useLocale();
-  const t = useTranslations('Index');
-  return <>
-    <Link href={`/${locale}/wallet`} aria-label={t('nav_wallet')} className="ui-icon-button" onClick={() => telegramHaptic('selection')}><FiCreditCard size={20} aria-hidden="true" /></Link>
-    <Link href={`/${locale}/profile`} aria-label={t('nav_profile')} className="ui-icon-button" onClick={() => telegramHaptic('selection')}><FiUser size={20} aria-hidden="true" /></Link>
-  </>;
 }
 
 /** Navigation is a link; mutations remain Button actions. */

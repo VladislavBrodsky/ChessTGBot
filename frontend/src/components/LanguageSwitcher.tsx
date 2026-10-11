@@ -54,9 +54,9 @@ export default function LanguageSwitcher() {
     };
 
     return <>
-      <Button variant="secondary" className="w-full justify-between p-4 text-start" disabled={isPending} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => setIsOpen(true)}>
+      <Button variant="ghost" className="w-full justify-between gap-3 px-0 py-0 text-start text-brand-primary hover:bg-transparent" disabled={isPending} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => setIsOpen(true)}>
         <FiGlobe size={20} aria-hidden="true" className="shrink-0 text-brand-muted" />
-        <span className="flex-1"><span className="block text-caption text-brand-muted">{t('select')}</span><span className="mt-1 block">{currentLang.name}</span></span>
+        <span className="flex-1"><span className="block text-caption text-brand-muted">{t('select')}</span><span className="block text-sm font-semibold">{currentLang.name}</span></span>
         <FiChevronRight size={18} aria-hidden="true" className="rtl:rotate-180" />
       </Button>
       <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t('select')}>

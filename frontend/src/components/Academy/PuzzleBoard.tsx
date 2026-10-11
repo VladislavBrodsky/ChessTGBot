@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaLightbulb, FaUndo, FaFlag } from "react-icons/fa";
 import { sanitizeRichContent } from "@/lib/sanitizeRichContent";
 import { useTelemetry } from "@/hooks/useTelemetry";
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 
 const ChessBoardComponent = dynamic(() => import('@/components/game/ChessBoard'), { ssr: false });
 
@@ -37,6 +39,7 @@ export default function PuzzleBoard({
   arrows,
   highlightSquares
 }: PuzzleBoardProps) {
+  const t = useTranslations('Academy');
   const [game, setGame] = useState(new Chess(initialFen, { skipValidation: true }));
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
@@ -306,7 +309,7 @@ export default function PuzzleBoard({
         {shake && (
           <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
             <div className="bg-red-500 text-white font-semibold normal-case text-sm px-4 py-2 rounded-xl shadow-lg border border-red-400">
-              Illegal Move!
+              {t('illegal_move')}
             </div>
           </div>
         )}
@@ -314,10 +317,10 @@ export default function PuzzleBoard({
 
       <div className="flex flex-col items-center">
         <div className="flex gap-4">
-          <button aria-label="Reset puzzle" type="button" onClick={reset} className="ui-tap-target p-4 rounded-xl bg-brand-primary/5 hover:bg-brand-primary/10 text-brand-primary transition-all">
+          <Button variant="secondary" aria-label={t('reset_puzzle')} onClick={reset}>
             <FaUndo />
-          </button>
-          <button aria-label="Show hint" type="button"
+          </Button>
+          <Button variant="secondary" aria-label={t('show_hint')}
             onClick={handleHint} 
             disabled={!hintsEnabled || status !== 'playing'}
             className={`ui-tap-target p-4 rounded-xl transition-all ${
@@ -325,25 +328,25 @@ export default function PuzzleBoard({
                 ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] cursor-pointer' 
                 : 'bg-brand-primary/5 text-brand-muted cursor-not-allowed'
             }`}
-            title="Hint"
+            title={t('show_hint')}
           >
             <FaLightbulb />
-          </button>
+          </Button>
           
           {solution && solution.length > 0 && (
-            <button aria-label="Show solution" type="button"
+            <Button variant="secondary" aria-label={t('show_solution')}
               onClick={handleGiveUp} 
               disabled={status !== 'playing'}
               className="ui-tap-target p-4 rounded-xl transition-all bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 cursor-pointer shadow-[0_0_15px_rgba(243,24,24,0.1)]"
-              title="Give Up / Show Solution"
+              title={t('show_solution')}
             >
               <FaFlag />
-            </button>
+            </Button>
           )}
         </div>
         {hintsEnabled && !showHintText && status === 'playing' && (
           <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-2">
-            Hints available (Levels 1-10)
+            {t('hints_available')}
           </span>
         )}
       </div>
@@ -357,7 +360,7 @@ export default function PuzzleBoard({
             className="w-full text-center px-4 -mt-2"
           >
             <div className="text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 inline-block">
-              <span className="font-bold normal-case tracking-normal block mb-1">Coach Hint:</span>
+              <span className="font-bold normal-case tracking-normal block mb-1">{t('coach_hint')}</span>
               {dynamicHintText}
             </div>
           </motion.div>
@@ -372,15 +375,15 @@ export default function PuzzleBoard({
         >
           <div className="flex items-center gap-2 bg-green-500/10 text-green-400 px-4 py-1.5 rounded-full border border-green-500/20">
             <FaFlag className="text-sm" />
-            <h3 className="text-sm font-semibold normal-case tracking-normal">SOLVED</h3>
+            <p className="text-sm font-semibold normal-case tracking-normal">{t('solved')}</p>
           </div>
           {dynamicSuccessExplanation ? (
             <div className="text-sm font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
-              <span className="text-caption font-semibold normal-case text-green-400 mb-2 block tracking-normal">Grandmaster Explanation:</span>
+              <span className="text-caption font-semibold normal-case text-green-400 mb-2 block tracking-normal">{t('explanation')}</span>
               <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>
           ) : (
-            <p className="text-sm text-green-400/60 font-bold normal-case tracking-normal">+50 Chess XP</p>
+            <p className="text-sm text-brand-muted">{t('spotted_pattern')}</p>
           )}
         </motion.div>
       )}

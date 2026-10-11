@@ -18,6 +18,31 @@ class CreateGameResponse(BaseModel):
     game_id: str
     invite_link: str
 
+ALLOWED_GAME_TYPES = {"online", "computer"}
+MIN_TIME_CONTROL_SECONDS = 60
+MAX_TIME_CONTROL_SECONDS = 3600
+MIN_WAGER_CENTS = 100
+
+
+def normalise_create_request(game_type: str, time_control: int, wager: int) -> tuple[bool, int, int]:
+    """Validate a create-game request and return (is_bot_game, time_control, stake_cents).
+
+    A bot game never carries a stake: the stored value is forced to 0, so no later path (abort refund, settlement)
+    can ever pay out money that was never debited. Player games need a real stake of at least $1.00, and every game
+    needs a bounded clock so a rigged huge time control cannot defeat timeout-based forfeits.
+    """
+    if game_type not in ALLOWED_GAME_TYPES:
+        raise HTTPException(status_code=400, detail="Unknown game type.")
+    if not MIN_TIME_CONTROL_SECONDS <= time_control <= MAX_TIME_CONTROL_SECONDS:
+        raise HTTPException(status_code=400, detail="Invalid time control.")
+    is_bot_game = game_type == "computer"
+    if is_bot_game:
+        return True, time_control, 0
+    if wager < MIN_WAGER_CENTS:
+        raise HTTPException(status_code=400, detail="Minimum wager is $1.00 (100 cents).")
+    return False, time_control, wager
+
+
 @router.post("/create", response_model=CreateGameResponse, dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def create_game(
     type: str = "online",
@@ -30,12 +55,8 @@ async def create_game(
     game_id = str(uuid.uuid4())[:8] # Short ID
     service = GameService()
     
-    is_bot_game = (type == "computer")
+    is_bot_game, time_control, wager = normalise_create_request(type, time_control, wager)
 
-    # Enforce minimum wager of $1.00 (100 cents) for all player games
-    if not is_bot_game and wager < 100:
-        raise HTTPException(status_code=400, detail="Minimum wager is $1.00 (100 cents).")
-    
     # Verify and deduct balance if wager > 0 and type is online
     if not is_bot_game and wager > 0:
         from sqlalchemy import text
@@ -194,6 +215,17 @@ async def get_game_history(
             pass
 
     return response_data
+
+
+@router.get("/lobby-stats", dependencies=[Depends(rate_limit(limit=30, window=60))])
+async def get_lobby_stats(
+    db: AsyncSession = Depends(get_read_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Measured lobby activity (players waiting, human games in the last 24 h). Never padded; zero is a valid answer."""
+    from app.services.lobby_stats import lobby_stats_service
+
+    return await lobby_stats_service.get(db, current_user.telegram_id)
 
 
 @router.get("/active")

@@ -1,9 +1,11 @@
 'use client';
 
+import TonConnectProvider from '@/components/TonConnectProvider';
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
+import { FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -15,6 +17,7 @@ import { useUser } from "@/context/UserContext";
 import { useTranslations } from 'next-intl';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Drawer } from '@/components/ui/Drawer';
 
 import {
   DepositSuccessView,
@@ -22,7 +25,7 @@ import {
   ManualDepositSection,
 } from './deposit';
 
-interface DepositModalProps {
+export interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
   walletAddress?: string;
@@ -40,7 +43,7 @@ const currenciesList = [
   { symbol: 'USDT', name: 'Tether USDT', decimals: 6, master: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', color: '#26A17B' },
 ];
 
-export default function DepositModal({
+function DepositModalContent({
   onClose,
   onSuccess,
   walletAddress,
@@ -62,7 +65,7 @@ export default function DepositModal({
   
   const [depositAmount, setDepositAmount] = useState<string>(() => {
     if (chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance) {
-      return ((chosenWager - walletBalance) / 100).toFixed(2);
+      return (Math.ceil((chosenWager - walletBalance) / 0.95) / 100).toFixed(2);
     }
     return "10";
   });
@@ -86,7 +89,6 @@ export default function DepositModal({
   const [memoConfirmed, setMemoConfirmed] = useState<boolean>(false);
   const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
   const [manualTxHash, setManualTxHash] = useState<string>("");
-  const [canClose, setCanClose] = useState<boolean>(false);
 
   const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
@@ -132,14 +134,6 @@ export default function DepositModal({
     }
     onClose();
   };
-
-  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Load prices and master wallet address on mount
   useEffect(() => {
@@ -608,56 +602,23 @@ export default function DepositModal({
     );
   }
 
-  return createPortal(
-    <div className="bottom-drawer-backdrop z-[100]">
-       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => { if (!processing && canClose) closeDeposit(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.4)]" style={{ touchAction: 'none' }}
-      />
-
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-10 pb-[calc(32px+var(--app-safe-bottom))] sm:pb-[calc(16px+var(--app-safe-bottom))]"
-      >
-        <div className="bottom-drawer-handle" />
-        <button aria-label="Close dialog" type="button"
-          onClick={closeDeposit}
-          disabled={processing}
-          className="ui-tap-target absolute top-4 right-4 text-brand-muted hover:text-brand-primary cursor-pointer"
-        >
-          <FaTimes />
-        </button>
-
+  return (
+    <Drawer isOpen title={tw('deposit_invoice')} onClose={() => { if (!processing) closeDeposit(); }} maxHeight="max-h-[90dvh]">
         <div className="space-y-4">
-          <div className="flex flex-col">
-            <h3 className="text-base font-semibold normal-case tracking-normal text-brand-primary leading-tight">{tw('deposit_invoice')}</h3>
-            {chosenWager !== undefined && walletBalance !== undefined && (
-              <p className="text-caption font-bold text-brand-muted normal-case tracking-normal mt-0.5">
-                Quick Top Up & Play
-              </p>
-            )}
-          </div>
-
-          {chosenWager !== undefined && walletBalance !== undefined && (
+          {chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance && (
             <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-sm font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">
               <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-left text-brand-muted">Wager Stake</div>
-                <div className="text-right text-brand-primary font-semibold">${(chosenWager / 100).toFixed(2)} USDT</div>
+                <div className="text-start text-brand-muted">{tw('wager_stake')}</div>
+                <div className="text-end text-brand-primary font-semibold">${(chosenWager / 100).toFixed(2)} USDT</div>
               </div>
               <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-left text-brand-muted">Your Balance</div>
-                <div className="text-right text-brand-muted font-semibold">${(walletBalance / 100).toFixed(2)} USDT</div>
+                <div className="text-start text-brand-muted">{tw('your_balance')}</div>
+                <div className="text-end text-brand-muted font-semibold">${(walletBalance / 100).toFixed(2)} USDT</div>
               </div>
               <div className="h-px bg-brand-border-opacity-5 my-0.5" />
               <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal font-semibold">
-                <div className="text-left text-brand-muted">Deficit Needed</div>
-                <div className="text-right text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
+                <div className="text-start text-brand-muted">{tw('deficit_needed')}</div>
+                <div className="text-end text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
               </div>
             </div>
           )}
@@ -926,8 +887,10 @@ export default function DepositModal({
             )}
           </div>
         </div>
-      </motion.div>
-    </div>,
-    document.body
+    </Drawer>
   );
+}
+
+export default function DepositModal(props: DepositModalProps) {
+  return <TonConnectProvider><DepositModalContent {...props} /></TonConnectProvider>;
 }

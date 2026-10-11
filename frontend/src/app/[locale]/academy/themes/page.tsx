@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { useUser } from '@/context/UserContext';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import { apiFetch } from "@/lib/api";
 import { FaCheck, FaLock } from "react-icons/fa";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
@@ -24,47 +27,22 @@ interface Theme {
 }
 
 import ThemeConfirmSheet from "@/components/Academy/ThemeConfirmSheet";
+import { FiLayers } from 'react-icons/fi';
 
 export default function ThemeShopPage() {
   const locale = useLocale();
   const t = useTranslations('Marketplace');
   const ti = useTranslations('Index');
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userXp, setUserXp] = useState(0);
+  const { data, error: loadError, isLoading: loading, mutate: refreshThemes } = useSWRFetch<Theme[]>('/api/v1/gamification/themes', { revalidateOnFocus: false });
+  const themes = Array.isArray(data) ? data : [];
+  const { stats, syncStats } = useUser();
+  const userXp = stats?.xp ?? 0;
   const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
   const [confirmingTheme, setConfirmingTheme] = useState<Theme | null>(null);
   const [purchasing, setPurchasing] = useState(false);
-  const [loadError, setLoadError] = useState(false);
-
-  const loadThemes = useCallback(async () => {
-    setLoading(true);
-    setLoadError(false);
-    try {
-      const [themesRes, userRes] = await Promise.all([
-        apiFetch('/api/v1/gamification/themes'),
-        apiFetch('/api/v1/users/sync', { method: 'POST' }),
-      ]);
-      if (!themesRes.ok || !userRes.ok) throw new Error('Theme data unavailable');
-      const [themesData, userData] = await Promise.all([themesRes.json(), userRes.json()]);
-      if (!Array.isArray(themesData) || !Number.isFinite(userData?.xp)) throw new Error('Invalid theme data');
-      setThemes(themesData);
-      setUserXp(userData.xp);
-    } catch (error) {
-      console.error('Could not load themes', error);
-      setLoadError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setActiveThemeCode(localStorage.getItem('board_theme') || 'default');
-    }
-    
-    void loadThemes();
-  }, [loadThemes]);
+    try { setActiveThemeCode(localStorage.getItem('board_theme') || 'default'); } catch { /* restricted storage */ }
+  }, []);
 
   const handleEquip = (themeCode: string) => {
     telegramHaptic('light');
@@ -96,8 +74,7 @@ export default function ThemeShopPage() {
       
       if (res.ok) {
         telegramHaptic('success');
-        setThemes(themes.map(t => t.code === theme.code ? { ...t, owned: true } : t));
-        setUserXp(prev => prev - theme.price_xp);
+        await Promise.allSettled([refreshThemes(), syncStats()]);
         setConfirmingTheme(null);
         if (typeof window !== 'undefined' && 'Audio' in window) {
           new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio blocked', e));
@@ -116,31 +93,15 @@ export default function ThemeShopPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <LayoutWrapper className="">
-        <div className="w-full app-page mx-auto " role="status" aria-label={t('section_themes')}>
-          <div className="mx-auto h-9 w-44 rounded-xl bg-brand-bg-opacity-10" />
-          <div className="mx-auto h-3 w-32 rounded-full bg-brand-bg-opacity-5" />
-          <div className="mx-auto h-9 w-36 rounded-full bg-brand-bg-opacity-10" />
-          <div className="space-y-4">
-            {Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="h-28 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface" />
-            ))}
-          </div>
-        </div>
-      </LayoutWrapper>
-    );
-  }
-
   return (
     <LayoutWrapper className="">
     <div className="w-full app-page mx-auto relative z-10 flex flex-col">
-      <PageHeader title={t('section_themes')} description={t('theme_default_desc')} backHref={`/${locale}/academy`} />
-      <div className="flex items-center gap-2 text-sm"><span className="text-brand-muted">{t('xp_balance')}</span><span className="font-semibold tabular-nums">{userXp.toLocaleString(locale)} XP</span></div>
+      <PageHeader icon={<FiLayers />} tone="premium" title={t('section_themes')} description={t('theme_default_desc')} backHref={`/${locale}/academy`} />
+      <div className="flex items-center gap-2 text-sm"><span className="text-brand-muted">{t('xp_balance')}</span><span className="font-semibold tabular-nums">{stats ? userXp.toLocaleString(locale) : '—'} XP</span></div>
 
-      {loadError && <ErrorState title={ti('load_failed')} onRetry={loadThemes} retryLabel={ti('retry')} />}
-      {!loadError && themes.length === 0 && <EmptyState title={t('section_themes')} description={t('theme_default_desc')} />}
+      {loading && <SkeletonList count={2} />}
+      {loadError && !data && <ErrorState title={ti('load_failed')} onRetry={() => { void refreshThemes(); }} retryLabel={ti('retry')} />}
+      {!loading && !loadError && themes.length === 0 && <EmptyState title={t('section_themes')} description={t('theme_default_desc')} />}
 
       <div className="space-y-4">
         {themes.map((theme) => (
@@ -153,11 +114,11 @@ export default function ThemeShopPage() {
             }`}
           >
             <div className="flex-1">
-              <h3 className="text-base font-semibold text-brand-primary normal-case mb-1">{theme.name}</h3>
+              <h2 className="text-base font-semibold text-brand-primary normal-case mb-1">{theme.name}</h2>
               <p className="text-sm text-brand-muted font-medium leading-tight">{theme.description}</p>
             </div>
             
-            <div className="ml-4 flex-shrink-0">
+            <div className="ms-3 shrink-0">
               {theme.owned ? (
                 activeThemeCode === theme.code ? (
                   <Badge variant="emerald" icon={<FaCheck />}>{t('active')}</Badge>

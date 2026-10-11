@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { ActionLink } from '@/components/ui/PageHeader';
+import { ActionLink, PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import GameReviewClient from './[gameId]/GameReviewClient';
 
@@ -13,16 +13,20 @@ function ReviewFromQuery() {
   const params = useSearchParams();
   const locale = useLocale();
   const t = useTranslations('Index');
+  const tg = useTranslations('Game');
   const gameId = params.get('gameId');
 
   if (!gameId || !/^[A-Za-z0-9_-]{1,128}$/.test(gameId)) {
     return (
       <LayoutWrapper>
+        <main className="app-page app-page--focused space-y-4">
+        <PageHeader title={tg('review_title')} backHref={`/${locale}/profile`} />
         <ErrorState
           title={t('load_failed')}
           message={t('no_games_logged')}
           action={<ActionLink href={`/${locale}/profile`}>{t('nav_profile')}</ActionLink>}
         />
+        </main>
       </LayoutWrapper>
     );
   }

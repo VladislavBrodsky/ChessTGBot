@@ -15,7 +15,7 @@ import { apiFetch } from "@/lib/api";
 import { useLocale, useTranslations } from 'next-intl';
 import { telegramAlert, telegramHaptic } from "@/lib/telegram";
 import { useUser } from "@/context/UserContext";
-import DepositModal from "@/components/Wallet/DepositModal";
+import { DepositDialog as DepositModal } from '@/components/Wallet/WalletDialogs';
 import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
 
 const stripEmojis = (str: string): string => {
@@ -64,6 +64,7 @@ const IconCrown = () => (
 );
 
 import VIPConfirmSheet from "@/components/Membership/VIPConfirmSheet";
+import { FaCrown } from 'react-icons/fa';
 
 export default function MembershipPage() {
   const locale = useLocale();
@@ -298,7 +299,7 @@ export default function MembershipPage() {
       <main className="app-page app-page--focused">
 
         {/* Hero with Gold Accents */}
-        <PageHeader title={stripEmojis(tm('title'))} description={tm('subtitle')} backHref={`/${locale}/settings`} />
+        <PageHeader icon={<FaCrown />} tone="premium" title={stripEmojis(tm('title'))} description={tm('subtitle')} backHref={`/${locale}/settings`} />
 
         {/* ── Active membership badge ──────────────────────────── */}
         {stats?.is_premium && stats.premium_expires_at && (

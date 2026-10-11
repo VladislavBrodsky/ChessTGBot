@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageHeader, PageUtilities, SectionHeader } from '@/components/ui/PageHeader';
+import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useUser } from '@/context/UserContext';
 import { useTranslations, useLocale } from 'next-intl';
@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { Drawer } from '@/components/ui/Drawer';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
@@ -22,6 +24,7 @@ import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
 import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 import { BOX_CONFIG, BOX_ORDER, type BoxTier } from '@/components/Marketplace/boxConfig';
+import { FiShoppingBag } from 'react-icons/fi';
 
 interface BoardTheme {
     id: number;
@@ -103,8 +106,8 @@ export default function MarketplacePage() {
     const nextBox = nextTier ? BOX_CONFIG[nextTier] : null;
     const xpToNextBox = nextBox ? nextBox.costXP - userXP : 0;
 
-    const [themes, setThemes] = useState<BoardTheme[]>([]);
-    const [loadingThemes, setLoadingThemes] = useState(true);
+    const { data: themesData, error: themesError, isLoading: loadingThemes, mutate: fetchThemes } = useSWRFetch<BoardTheme[]>('/api/v1/gamification/themes', { revalidateOnFocus: false });
+    const themes = Array.isArray(themesData) ? themesData : [];
     const [activeThemeCode, setActiveThemeCode] = useState<string>('default');
 
     const [selectedTier, setSelectedTier] = useState<BoxTier | null>(null);
@@ -117,18 +120,6 @@ export default function MarketplacePage() {
     const [activeTab, setActiveTab] = useState<MarketplaceTab>('all');
     const [previewTheme, setPreviewTheme] = useState<BoardTheme | null>(null);
 
-    const fetchThemes = async () => {
-        try {
-            setLoadingThemes(true);
-            const res = await apiFetch('/api/v1/gamification/themes');
-            if (res.ok) setThemes(await res.json());
-        } catch (err) {
-            console.error('Failed to fetch themes', err);
-        } finally {
-            setLoadingThemes(false);
-        }
-    };
-
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setActiveThemeCode(localStorage.getItem('board_theme') || 'default');
@@ -136,7 +127,6 @@ export default function MarketplacePage() {
                 setRecentWins(JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'));
             } catch { /* ignore */ }
         }
-        fetchThemes();
     }, []);
 
     const pushRecentWin = (win: WonPrize) => {
@@ -273,7 +263,7 @@ export default function MarketplacePage() {
     return (
         <LayoutWrapper className="w-full">
             <main className="app-page">
-                    <PageHeader title={t('title')} description={t('subtitle')} actions={<PageUtilities />} />
+                    <PageHeader title={t('title')} description={t('subtitle')} icon={<FiShoppingBag />} tone="gold" />
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
                         <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
@@ -412,13 +402,14 @@ export default function MarketplacePage() {
                                 <div className="grid grid-cols-1 gap-3 w-full">
                                     <SkeletonList count={3} label={t('section_themes')} />
                                 </div>
+                            ) : themesError && !themesData ? (
+                                <ErrorState title={ti('load_failed')} message={ti('retry')} onRetry={() => { void fetchThemes(); }} retryLabel={ti('retry')} />
                             ) : themes.length === 0 ? (
                                 <EmptyState
                                     icon={<FaChessBoard className="w-8 h-8 text-amber-500" />}
-                                    title="No Board Themes Available"
-                                    description="Check back soon for exclusive limited-edition board drops."
-                                    actionLabel="Refresh"
-                                    onAction={fetchThemes}
+                                    title={t('section_themes')}
+                                    actionLabel={ti('retry')}
+                                    onAction={() => { void fetchThemes(); }}
                                 />
                             ) : (
                                 <div className="grid grid-cols-1 gap-3 w-full">
