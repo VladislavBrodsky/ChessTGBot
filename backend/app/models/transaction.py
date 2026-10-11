@@ -1,26 +1,27 @@
-from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey, Index, text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Integer, String, BigInteger, DateTime, ForeignKey, Index, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 from datetime import datetime, timezone
 
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(BigInteger, ForeignKey("users.telegram_id"), index=True)
-    type = Column(String)  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake', 'referral_commission'
-    amount = Column(Integer)  # In cents (e.g., 100 = $1.00)
-    fee = Column(Integer, default=0)  # Any fee charged for this transaction
-    status = Column(String, default="completed")  # 'pending', 'completed', 'failed'
-    reference_id = Column(String, nullable=True)  # Game ID or Web3 Transaction Hash
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+    # Explicit nullability preserves the existing schema when adding Mapped types.
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id"), index=True, nullable=True)
+    type: Mapped[str] = mapped_column(String, nullable=True)  # 'deposit', 'withdrawal', 'game_wager', 'game_win', 'deposit_fee', 'game_rake', 'referral_commission'
+    amount: Mapped[int] = mapped_column(Integer, nullable=True)  # In cents (e.g., 100 = $1.00)
+    fee: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # Any fee charged for this transaction
+    status: Mapped[str] = mapped_column(String, default="completed", nullable=True)  # 'pending', 'completed', 'failed'
+    reference_id: Mapped[str | None] = mapped_column(String, nullable=True)  # Game ID or Web3 Transaction Hash
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=True)
     # Manual withdrawal review decisions are financial audit events.  Keep the
     # reviewer and decision time in dedicated columns rather than overloading
     # reference_id, which is reserved for a destination or blockchain hash.
-    approved_by_admin_id = Column(BigInteger, nullable=True)
-    approved_at = Column(DateTime, nullable=True)
-    rejected_by_admin_id = Column(BigInteger, nullable=True)
-    rejected_at = Column(DateTime, nullable=True)
+    approved_by_admin_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    rejected_by_admin_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    rejected_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     # Relationship to user
     user = relationship("User", back_populates="transactions")

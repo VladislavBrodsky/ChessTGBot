@@ -39,7 +39,6 @@ frontend/out/
 chess.db*
 
 # Local Tooling Configs
-pyrefly.toml
 pyrightconfig.json
 *.tsbuildinfo
 

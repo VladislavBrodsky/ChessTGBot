@@ -1,0 +1,7 @@
+# Pyrefly configuration for ChessTGBot
+# See: https://pyrefly.org/en/docs/configuration/
+
+# The runtime imports `app.*` from backend/, not from the repository root.
+project-includes = ["backend"]
+search-path = ["backend"]
+python-interpreter-path = ".venv/bin/python"

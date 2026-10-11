@@ -964,6 +964,11 @@ class GameService:
                     raise hist_err
                 return
 
+            # Both human players are loaded; use their non-optional account IDs
+            # for payouts and ledger records rather than the optional state IDs.
+            white_id = white_user.telegram_id
+            black_id = black_user.telegram_id
+
             # Determine Result
             score_white = 0.5
             if state.winner == 'w':

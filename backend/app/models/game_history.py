@@ -1,41 +1,43 @@
-from sqlalchemy import Column, Integer, String, BigInteger, DateTime
+from sqlalchemy import Integer, String, BigInteger, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 from app.core.database import Base
 from datetime import datetime, timezone
 
 class GameHistory(Base):
     __tablename__ = "game_history"
 
-    id = Column(Integer, primary_key=True, index=True)
-    game_id = Column(String, unique=True, index=True)
+    # Explicit nullability preserves the existing schema when adding Mapped types.
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    game_id: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
     
     # Players
-    white_player_id = Column(BigInteger, index=True)
-    black_player_id = Column(BigInteger, index=True)
+    white_player_id: Mapped[int] = mapped_column(BigInteger, index=True, nullable=True)
+    black_player_id: Mapped[int] = mapped_column(BigInteger, index=True, nullable=True)
     
     # Result
-    winner = Column(String, nullable=True)  # 'w', 'b', or None for draw
-    result_type = Column(String, nullable=True)  # 'checkmate', 'resignation', 'timeout', 'draw'
+    winner: Mapped[str | None] = mapped_column(String, nullable=True)  # 'w', 'b', or None for draw
+    result_type: Mapped[str | None] = mapped_column(String, nullable=True)  # 'checkmate', 'resignation', 'timeout', 'draw'
     
     # ELO Changes
-    white_elo_before = Column(Integer)
-    white_elo_after = Column(Integer)
-    black_elo_before = Column(Integer)
-    black_elo_after = Column(Integer)
+    white_elo_before: Mapped[int] = mapped_column(Integer, nullable=True)
+    white_elo_after: Mapped[int] = mapped_column(Integer, nullable=True)
+    black_elo_before: Mapped[int] = mapped_column(Integer, nullable=True)
+    black_elo_after: Mapped[int] = mapped_column(Integer, nullable=True)
     
     # Game Details
-    total_moves = Column(Integer, default=0)
-    duration_seconds = Column(Integer, nullable=True)  # Game duration
-    final_fen = Column(String, nullable=True)  # Final board position
+    total_moves: Mapped[int] = mapped_column(Integer, default=0, nullable=True)
+    duration_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)  # Game duration
+    final_fen: Mapped[str | None] = mapped_column(String, nullable=True)  # Final board position
     
     # Metadata
-    game_type = Column(String, default='online')  # 'online', 'computer'
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
-    ended_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+    game_type: Mapped[str] = mapped_column(String, default='online', nullable=True)  # 'online', 'computer'
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=True)
+    ended_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=True)
     
     # Web3 Betting
-    bid_amount = Column(Integer, default=0)  # In cents (smallest unit)
-    platform_rake = Column(Integer, default=0)  # In cents (3% of pool)
-    payout_amount = Column(Integer, default=0)  # In cents (97% of pool)
-    moves_json = Column(String, nullable=True)  # JSON representation of all moves
-    difficulty = Column(String, nullable=True)
+    bid_amount: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # In cents (smallest unit)
+    platform_rake: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # In cents (3% of pool)
+    payout_amount: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # In cents (97% of pool)
+    moves_json: Mapped[str | None] = mapped_column(String, nullable=True)  # JSON representation of all moves
+    difficulty: Mapped[str | None] = mapped_column(String, nullable=True)
 
