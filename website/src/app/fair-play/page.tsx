@@ -1,4 +1,5 @@
-import { Eyebrow } from "@/components/ui/Badge";
+import { Eyebrow, Badge } from "@/components/ui/Badge";
+import { BorderBeam } from "@/components/magicui/border-beam";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
@@ -6,7 +7,6 @@ import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { PageHero } from "@/components/PageHero";
 import { ChessSculpture } from "@/components/ChessSculpture";
-import { InfoGrid } from "@/components/InfoGrid";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
@@ -17,28 +17,6 @@ export const metadata = pageMetadata(
   "Learn how Web3Chess validates moves, handles match clocks, and expects players to compete without outside assistance.",
   "/fair-play",
 );
-const pillars = [
-  {
-    icon: "cpu" as const,
-    title: "The server keeps the board",
-    body: "The backend validates moves against the position and maintains the authoritative game state. Your device displays the game; it does not decide which moves are legal.",
-  },
-  {
-    icon: "clock" as const,
-    title: "The clock is part of the game",
-    body: "Play within your selected time control. Reconnect promptly if you lose connection: leaving the app is not a guarantee that your clock pauses.",
-  },
-  {
-    icon: "users-three" as const,
-    title: "Matchmaking considers your rating",
-    body: "Your rating, selected time control, and stake help determine the matchmaking pool. Ratings are a guide to pairing, not a guarantee of equal strength.",
-  },
-  {
-    icon: "shield-check" as const,
-    title: "Your moves must be your own",
-    body: "Do not use chess engines, outside analysis, or another person to choose moves during a player match. Free A.I. practice is a separate training mode.",
-  },
-];
 export default function FairPlayPage() {
   return (
     <div>
@@ -72,10 +50,106 @@ export default function FairPlayPage() {
           <h2 id="rules-heading" className="editorial-title mb-6">
             Same board. Same rules
           </h2>
-          <InfoGrid items={pillars.map((pillar) => ({
-            title: pillar.title, body: pillar.body,
-            marker: <Icon name={pillar.icon} size={20} />,
-          }))} />
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Pillar 1: 2 cols */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
+              <BorderBeam size={280} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="accent" icon="cpu">
+                    Authoritative Backend
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Stockfish 16 verification
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  The server keeps the board
+                </h3>
+                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
+                  The backend validates every move against the position and maintains the authoritative game state. Your device renders the board; it cannot force an illegal position or modify the game clock.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                <span>Deterministic server validation · Anti-tamper state</span>
+              </div>
+            </Card>
+
+            {/* Pillar 2: 1 col */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="neutral" icon="clock">
+                    Clock Integrity
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Monotonic sync
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  The clock is part of the game
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Play strictly within your selected time control. Server-side timestamps prevent client-side clock tampering, and disconnecting does not artificially pause your match clock.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-blue-500" />
+                <span>Authoritative timers</span>
+              </div>
+            </Card>
+
+            {/* Pillar 3: 1 col */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="neutral" icon="users-three">
+                    Skill Match
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Fair ELO pairing
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Rating-based matchmaking
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Matchmaking pools players by dynamic rating brackets, selected time control, and stake tier so you are paired against opponents of comparable strength.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-amber-500" />
+                <span>Dynamic ELO bracket pool</span>
+              </div>
+            </Card>
+
+            {/* Pillar 4: 2 cols */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
+              <BorderBeam size={280} duration={14} colorFrom="#10b981" colorTo="#f59e0b" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="accent" icon="shield-check">
+                    Zero Engine Tolerance
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Neural &amp; timing analysis
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Your moves must be your own
+                </h3>
+                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
+                  Chess engines, bots, and outside assistance are prohibited in real matches. Heuristic models inspect move entropy, decision timing distributions, and engine correlation to maintain competitive purity.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                <span>Real-time heuristic auditing · Protected prize pools</span>
+              </div>
+            </Card>
+          </div>
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>A clear distinction</Eyebrow>

@@ -73,3 +73,68 @@ def test_wrong_bot_token_rejected():
     with pytest.raises(HTTPException) as exc:
         security.validate_init_data(data)
     assert exc.value.status_code == 403
+
+
+def _build_widget_auth(auth_date: int, user_id: int = 716720099, first_name: str = "Victor Tusberg", token: str = TEST_TOKEN, encode_with_plus: bool = False) -> str:
+    """Construct a correctly-signed Telegram Login Widget auth string."""
+    fields = {
+        "auth_date": str(auth_date),
+        "first_name": first_name,
+        "id": str(user_id),
+        "username": "grandmaestro",
+    }
+    data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(fields.items()))
+    secret_key = hashlib.sha256(token.encode()).digest()
+    signature = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    if encode_with_plus:
+        parts = [f"{k}={v.replace(' ', '+')}" for k, v in fields.items()] + [f"hash={signature}"]
+    else:
+        parts = [f"{k}={quote(v, safe='')}" for k, v in fields.items()] + [f"hash={signature}"]
+    return "&".join(parts)
+
+
+def test_widget_auth_accepted():
+    data = security.validate_init_data(_build_widget_auth(int(time.time()), first_name="Victor"))
+    assert data["id"] == 716720099
+    assert data["first_name"] == "Victor"
+
+
+def test_widget_auth_with_spaces_in_name_accepted():
+    data = security.validate_init_data(_build_widget_auth(int(time.time()), first_name="Victor Tusberg"))
+    assert data["id"] == 716720099
+    assert data["first_name"] == "Victor Tusberg"
+
+
+def test_widget_auth_with_url_encoded_plus_accepted():
+    data = security.validate_init_data(_build_widget_auth(int(time.time()), first_name="Victor Tusberg", encode_with_plus=True))
+    assert data["id"] == 716720099
+    assert data["first_name"] == "Victor Tusberg"
+
+
+def test_widget_auth_with_extra_query_params_accepted():
+    auth = _build_widget_auth(int(time.time()), first_name="Victor Tusberg")
+    auth_with_extra = auth + "&utm_source=telegram&ref=home"
+    data = security.validate_init_data(auth_with_extra)
+    assert data["id"] == 716720099
+
+
+def test_widget_auth_tampered_rejected():
+    good = _build_widget_auth(int(time.time()))
+    tampered = good[:-1] + ("0" if good[-1] != "0" else "1")
+    with pytest.raises(HTTPException) as exc:
+        security.validate_init_data(tampered)
+    assert exc.value.status_code == 403
+
+
+def test_widget_auth_stale_rejected():
+    stale = _build_widget_auth(int(time.time()) - 2 * 24 * 3600)
+    with pytest.raises(HTTPException) as exc:
+        security.validate_init_data(stale)
+    assert exc.value.status_code == 401
+
+
+def test_widget_auth_wrong_token_rejected():
+    data = _build_widget_auth(int(time.time()), token="999:ATTACKER_TOKEN")
+    with pytest.raises(HTTPException) as exc:
+        security.validate_init_data(data)
+    assert exc.value.status_code == 403

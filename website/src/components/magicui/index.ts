@@ -7,3 +7,6 @@ export * from "./border-beam";
 export * from "./ripple-button";
 export * from "./pulsating-button";
 export * from "./orbiting-circles";
+export * from "./animated-list";
+export * from "./bento-grid";
+export * from "./dock";

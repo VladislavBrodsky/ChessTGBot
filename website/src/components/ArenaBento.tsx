@@ -3,9 +3,66 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/icons";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import { IconCloud } from "@/components/magicui/icon-cloud";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
+import { AnimatedList } from "@/components/magicui/animated-list";
+
+const liveFeed = [
+  {
+    id: "live-1",
+    player: "@CryptoMorphy",
+    action: "Won 3+2 Blitz match",
+    payout: "+$47.50 USDT",
+    time: "1m ago",
+    badge: "Blitz 3+2",
+    icon: "lightning" as const,
+  },
+  {
+    id: "live-2",
+    player: "@Magnus_TON",
+    action: "Won 5+3 Rapid match",
+    payout: "+$95.00 USDT",
+    time: "3m ago",
+    badge: "Rapid 5+3",
+    icon: "trophy" as const,
+  },
+  {
+    id: "live-3",
+    player: "@ton_tactician",
+    action: "Unboxed King’s Vault",
+    payout: "+50 TON",
+    time: "5m ago",
+    badge: "Jackpot Drop",
+    icon: "gift" as const,
+  },
+  {
+    id: "live-4",
+    player: "@pawn_storm",
+    action: "Won 1+0 Bullet match",
+    payout: "+$19.00 USDT",
+    time: "7m ago",
+    badge: "Bullet 1+0",
+    icon: "lightning" as const,
+  },
+  {
+    id: "live-5",
+    player: "@gm_vlad",
+    action: "Confirmed withdrawal",
+    payout: "$150.00 USDT",
+    time: "11m ago",
+    badge: "Telegram Bot",
+    icon: "arrow-up-right" as const,
+  },
+  {
+    id: "live-6",
+    player: "@queen_gambit",
+    action: "Climbed to 2410 ELO",
+    payout: "Grandmaster Tier",
+    time: "14m ago",
+    badge: "Season 1",
+    icon: "shield-check" as const,
+  },
+];
 
 export function ArenaBento() {
   return (
@@ -232,45 +289,60 @@ export function ArenaBento() {
         </Link>
       </Card>
 
-      {/* ── BENTO 6: Interactive 3D Ecosystem Tag Cloud ── */}
-      <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group items-center text-center">
-        <div className="w-full text-left">
+      {/* ── BENTO 6: Live Arena Activity & Instant Payouts with AnimatedList ── */}
+      <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
+        <BorderBeam size={240} duration={12} colorFrom="#10b981" colorTo="#3b82f6" />
+        <div className="relative z-10">
           <div className="flex items-center justify-between gap-2 mb-3">
-            <Badge tone="accent" icon="cpu">
-              Cutting-Edge Stack
+            <Badge tone="accent" icon="lightning">
+              Live Arena Activity
             </Badge>
-            <span className="font-mono text-caption text-fg-muted">60 FPS 3D</span>
+            <span className="flex items-center gap-1.5 font-mono text-caption text-emerald-600 font-semibold">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              Real-time
+            </span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-2 text-left">
-            Built for speed, security, and low latency
+          <h3 className="text-heading-sm font-medium tracking-tight mb-1.5">
+            Real players. Instant on-chain payouts
           </h3>
-          <p className="text-body-sm text-fg-muted mb-2 text-left">
-            Powered by TON, Telegram Mini App SDK, and Stockfish 16 engine for authoritative legal move validation.
+          <p className="text-body-sm text-fg-muted mb-3">
+            Live matches finishing, pots settled, and mystery chests unboxed around the clock.
           </p>
         </div>
 
-        {/* Interactive 3D Sphere */}
-        <div className="py-2 flex justify-center items-center w-full">
-          <IconCloud
-            size={190}
-            slugs={[
-              "telegram",
-              "ethereum",
-              "react",
-              "nextdotjs",
-              "typescript",
-              "tailwindcss",
-              "docker",
-              "python",
-              "fastapi",
-              "github",
-            ]}
-          />
+        {/* Live Event Stream via AnimatedList */}
+        <div className="relative my-1 w-full overflow-hidden">
+          <AnimatedList delay={2400} maxItems={3}>
+            {liveFeed.map((item) => (
+              <figure
+                key={item.id}
+                className="relative mx-auto w-full overflow-hidden rounded-xl border border-line bg-inset p-2.5 transition-all duration-200 hover:border-fg-muted/40 shadow-2xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-600">
+                    <Icon name={item.icon} size={15} />
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between text-caption gap-2">
+                      <span className="font-semibold text-fg-default truncate text-[13px]">{item.player}</span>
+                      <span className="font-mono text-[11px] text-fg-muted shrink-0">{item.time}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[12px] gap-2 mt-0.5">
+                      <span className="text-fg-muted truncate">{item.action}</span>
+                      <span className="font-bold text-emerald-600 shrink-0 font-mono text-[13px]">{item.payout}</span>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+            ))}
+          </AnimatedList>
+          {/* Bottom gradient fade for infinite stream illusion */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-surface to-transparent" />
         </div>
 
-        <div className="w-full pt-2 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono">
-          <span>Drag to spin 3D sphere</span>
-          <span className="text-emerald-600 font-semibold">Live WebGL &middot; 3D</span>
+        <div className="relative z-10 w-full pt-2.5 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono">
+          <span>95% winner pot</span>
+          <span className="text-emerald-600 font-semibold">Decided instantly</span>
         </div>
       </Card>
     </div>

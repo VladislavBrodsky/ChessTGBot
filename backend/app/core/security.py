@@ -5,7 +5,7 @@ import json
 import logging
 import time
 from collections.abc import Mapping
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote, unquote_plus, urlsplit
 from fastapi import HTTPException
 from app.core.config import get_settings
 
@@ -143,7 +143,7 @@ def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_
         for part in init_data.split('&'):
             if '=' in part:
                 key, value = part.split('=', 1)
-                data_dict[key] = unquote(value)
+                data_dict[key] = unquote_plus(value)
         
         if 'hash' not in data_dict:
             raise HTTPException(status_code=401, detail="Missing hash in initData")
@@ -152,22 +152,62 @@ def validate_init_data(init_data: str, max_age_seconds: int = INIT_DATA_MAX_AGE_
 
         # Determine payload type
         is_tma = 'query_id' in data_dict or 'user' in data_dict
-
-        # Prepare payload for HMAC
-        # Keys must be sorted alphabetically
-        data_check_string = '\n'.join(f'{k}={v}' for k, v in sorted(data_dict.items()))
+        bot_token = settings.TELEGRAM_BOT_TOKEN.strip().strip('"').strip("'")
 
         if is_tma:
             # TMA Auth Signature
-            secret_key = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+            data_check_string = '\n'.join(f'{k}={v}' for k, v in sorted(data_dict.items()))
+            secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
         else:
             # Web Widget Auth Signature
-            secret_key = hashlib.sha256(settings.TELEGRAM_BOT_TOKEN.encode()).digest()
+            # Telegram Login Widget only includes present/non-empty fields in data-check-string
+            data_check_string = '\n'.join(
+                f'{k}={v}' for k, v in sorted(data_dict.items())
+                if v is not None and v != ''
+            )
+            secret_key = hashlib.sha256(bot_token.encode()).digest()
 
         calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
         if not hmac.compare_digest(calculated_hash, received_hash):
-            raise HTTPException(status_code=403, detail="Invalid initData signature")
+            # Fallback candidates for signature verification:
+            # 1. Unquote without plus replacement (in case client sent unquote)
+            # 2. Filtering to standard widget fields only (in case client/proxy appended extra query params)
+            candidates = []
+            raw_unquote_dict = {}
+            for part in init_data.split('&'):
+                if '=' in part:
+                    k, v = part.split('=', 1)
+                    if k != 'hash':
+                        raw_unquote_dict[k] = unquote(v)
+
+            if is_tma:
+                candidates.append(('\n'.join(f'{k}={v}' for k, v in sorted(raw_unquote_dict.items())), raw_unquote_dict))
+            else:
+                candidates.append((
+                    '\n'.join(f'{k}={v}' for k, v in sorted(raw_unquote_dict.items()) if v is not None and v != ''),
+                    raw_unquote_dict
+                ))
+                widget_fields = {'auth_date', 'first_name', 'id', 'last_name', 'photo_url', 'username'}
+                candidates.append((
+                    '\n'.join(f'{k}={v}' for k, v in sorted(data_dict.items()) if k in widget_fields and v is not None and v != ''),
+                    data_dict
+                ))
+                candidates.append((
+                    '\n'.join(f'{k}={v}' for k, v in sorted(raw_unquote_dict.items()) if k in widget_fields and v is not None and v != ''),
+                    raw_unquote_dict
+                ))
+
+            matched = False
+            for cand_str, cand_dict in candidates:
+                cand_hash = hmac.new(secret_key, cand_str.encode(), hashlib.sha256).hexdigest()
+                if hmac.compare_digest(cand_hash, received_hash):
+                    data_dict = cand_dict
+                    matched = True
+                    break
+
+            if not matched:
+                raise HTTPException(status_code=403, detail="Invalid initData signature")
 
         # Reject stale payloads (replay protection). auth_date is a signed unix
         # timestamp; it is inside the HMAC so it cannot be forged, only replayed.
@@ -227,7 +267,7 @@ def parse_init_data_unverified(init_data: str) -> dict:
         for part in init_data.split('&'):
             if '=' in part:
                 key, value = part.split('=', 1)
-                data_dict[key] = unquote(value)
+                data_dict[key] = unquote_plus(value)
         
         is_tma = 'query_id' in data_dict or 'user' in data_dict
         

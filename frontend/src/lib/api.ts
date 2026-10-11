@@ -138,6 +138,7 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
   // out valid users during the cold-start window.
   if (res.status === 401 && initData) {
     if (typeof window !== "undefined") {
+      console.warn(`[apiFetch] 401 Unauthorized for ${cleanPath}. Clearing session and redirecting to login.`);
       try { localStorage.removeItem('telegram_web_auth'); } catch { /* storage blocked */ }
       const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/);
       const locale = localeMatch ? localeMatch[1] : 'en';

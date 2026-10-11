@@ -28,12 +28,18 @@ export default function LoginPage() {
     if (isTMA || hasWebAuth) { setIsRedirecting(true); router.replace(`/${locale}/home`); }
   }, [router, locale]);
   const handleTelegramAuth = useCallback((user: Record<string, unknown>) => {
-    const params = new URLSearchParams();
-    Object.keys(user).forEach(key => params.append(key, String(user[key])));
-    try { localStorage.setItem('telegram_web_auth', params.toString()); } catch { /* storage blocked */ }
+    const parts: string[] = [];
+    Object.keys(user).forEach((key) => {
+      const val = user[key];
+      if (val !== undefined && val !== null && val !== '') {
+        parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`);
+      }
+    });
+    const authString = parts.join('&');
+    try { localStorage.setItem('telegram_web_auth', authString); } catch { /* storage blocked */ }
     setIsRedirecting(true);
-    router.replace(`/${locale}/home`);
-  }, [router, locale]);
+    window.location.replace(`/${locale}/home`);
+  }, [locale]);
   const bot = (process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').trim().replace(/^@+/, '');
 
   return <main className="flex min-h-[100dvh] items-center bg-brand-void px-4 pt-[calc(24px+var(--app-safe-top))] pb-[calc(24px+var(--app-safe-bottom))] text-brand-primary">
