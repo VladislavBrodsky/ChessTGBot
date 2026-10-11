@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/icons";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+import { IconCloud } from "@/components/magicui/icon-cloud";
 
 export function ArenaBento() {
   return (
@@ -25,7 +27,7 @@ export function ArenaBento() {
           </p>
         </div>
 
-        {/* Live Match Settlement Visualization */}
+        {/* Live Match Settlement Visualization with NumberTicker */}
         <div className="relative z-10 rounded-2xl border border-line bg-inset p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3 mb-3 text-caption text-fg-muted">
             <span className="flex items-center gap-1.5 font-semibold text-fg-default">
@@ -37,17 +39,23 @@ export function ArenaBento() {
           <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
             <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line">
               <span className="text-overline uppercase text-fg-muted block mb-1">Player Stake</span>
-              <span className="poster text-heading-sm">$25.00</span>
+              <span className="poster text-heading-sm">
+                <NumberTicker value={25} prefix="$" decimalPlaces={2} />
+              </span>
               <span className="text-caption text-fg-muted block">Equal stake</span>
             </div>
             <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line">
               <span className="text-overline uppercase text-fg-muted block mb-1">Combined Pot</span>
-              <span className="poster text-heading-sm">$50.00</span>
+              <span className="poster text-heading-sm">
+                <NumberTicker value={50} prefix="$" decimalPlaces={2} />
+              </span>
               <span className="text-caption text-fg-muted block">Locked in pot</span>
             </div>
             <div className="p-2 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-950">
               <span className="text-overline uppercase font-bold text-emerald-700 block mb-1">Winner Payout</span>
-              <span className="poster text-heading-sm text-emerald-600">+$47.50</span>
+              <span className="poster text-heading-sm text-emerald-600">
+                <NumberTicker value={47.5} prefix="+$" decimalPlaces={2} />
+              </span>
               <span className="text-caption font-semibold text-emerald-700 block">95% instant payout</span>
             </div>
           </div>
@@ -71,14 +79,16 @@ export function ArenaBento() {
           </p>
         </div>
 
-        {/* Vault Tier Badges */}
+        {/* Vault Tier Badges with NumberTicker */}
         <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
           <div className="flex items-center justify-between font-medium">
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-amber-400" />
               King’s Dominion Chest
             </span>
-            <span className="font-bold text-fg-default">1,000 TON Jackpot</span>
+            <span className="font-bold text-fg-default">
+              <NumberTicker value={1000} suffix=" TON" /> Jackpot
+            </span>
           </div>
           <div className="flex items-center justify-between font-medium">
             <span className="flex items-center gap-1.5">
@@ -118,15 +128,21 @@ export function ArenaBento() {
         <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption font-mono">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-fg-default">#1 GM_Morphy · 2480 ELO</span>
-            <span className="font-bold text-emerald-600">+$2,450 USDT</span>
+            <span className="font-bold text-emerald-600">
+              <NumberTicker value={2450} prefix="+$" suffix=" USDT" />
+            </span>
           </div>
           <div className="flex items-center justify-between text-fg-muted">
             <span>#2 Magnus_99 · 2415 ELO</span>
-            <span className="font-semibold text-fg-default">+$1,890 USDT</span>
+            <span className="font-semibold text-fg-default">
+              <NumberTicker value={1890} prefix="+$" suffix=" USDT" />
+            </span>
           </div>
           <div className="flex items-center justify-between text-fg-muted">
             <span>#3 PawnStorm · 2380 ELO</span>
-            <span className="font-semibold text-fg-default">+$1,240 USDT</span>
+            <span className="font-semibold text-fg-default">
+              <NumberTicker value={1240} prefix="+$" suffix=" USDT" />
+            </span>
           </div>
         </div>
       </Card>
@@ -153,7 +169,9 @@ export function ArenaBento() {
             <span className="font-semibold text-fg-default block">6 Referral Levels</span>
             <span className="text-fg-muted text-[13px]">Down to your 6th recruit tier</span>
           </div>
-          <span className="poster text-stat text-emerald-600">2%</span>
+          <span className="poster text-stat text-emerald-600">
+            <NumberTicker value={2} suffix="%" />
+          </span>
         </div>
       </Card>
 
@@ -164,7 +182,9 @@ export function ArenaBento() {
             <Badge tone="neutral" icon="graduation-cap">
               Tactics Academy
             </Badge>
-            <span className="font-mono text-caption text-fg-muted">100 Levels Free</span>
+            <span className="font-mono text-caption text-fg-muted">
+              <NumberTicker value={100} /> Levels Free
+            </span>
           </div>
           <h3 className="text-heading-sm font-medium tracking-tight mb-2">
             100 tactical levels and Stockfish AI
@@ -181,6 +201,48 @@ export function ArenaBento() {
           <span>Explore Academy tracks</span>
           <Icon name="arrow-right" size={16} />
         </Link>
+      </Card>
+
+      {/* ── BENTO 6: Interactive 3D Ecosystem Tag Cloud ── */}
+      <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group items-center text-center">
+        <div className="w-full text-left">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <Badge tone="accent" icon="cpu">
+              Cutting-Edge Stack
+            </Badge>
+            <span className="font-mono text-caption text-fg-muted">60 FPS 3D</span>
+          </div>
+          <h3 className="text-heading-sm font-medium tracking-tight mb-2 text-left">
+            Built for speed, security, and low latency
+          </h3>
+          <p className="text-body-sm text-fg-muted mb-2 text-left">
+            Powered by TON, Telegram Mini App SDK, and Stockfish 16 engine for authoritative legal move validation.
+          </p>
+        </div>
+
+        {/* Interactive 3D Sphere */}
+        <div className="py-2 flex justify-center items-center w-full">
+          <IconCloud
+            size={190}
+            slugs={[
+              "telegram",
+              "ethereum",
+              "react",
+              "nextdotjs",
+              "typescript",
+              "tailwindcss",
+              "docker",
+              "python",
+              "fastapi",
+              "github",
+            ]}
+          />
+        </div>
+
+        <div className="w-full pt-2 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono">
+          <span>Drag to spin 3D sphere</span>
+          <span className="text-emerald-600 font-semibold">Live WebGL &middot; 3D</span>
+        </div>
       </Card>
     </div>
   );

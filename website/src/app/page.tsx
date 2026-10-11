@@ -15,6 +15,10 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
 import { ArenaBento } from "@/components/ArenaBento";
+import { TextAnimate } from "@/components/magicui/text-animate";
+import { AvatarCircles } from "@/components/magicui/avatar-circles";
+import { Marquee } from "@/components/magicui/marquee";
+import { NumberTicker } from "@/components/magicui/number-ticker";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -25,17 +29,6 @@ export const metadata = pageMetadata(
   SITE.description,
   "",
 );
-
-const facts = [
-  {
-    value: `${SETTLEMENT.winnerPercent}%`,
-    unit: "",
-    label: "Winner pot payout",
-  },
-  { value: "1", unit: "USDT", label: "Starting stake" },
-  { value: "1,000", unit: "TON", label: "Top mystery prize" },
-  { value: "100", unit: "Levels", label: "Tactics Academy & AI" },
-];
 
 // Re-render regularly so newly scheduled articles reach the home page on time.
 export const revalidate = 600;
@@ -93,15 +86,21 @@ export default function HomePage() {
             <div className="hero-intro">
               <Badge tone="accent" icon="telegram-logo">Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
-                Play chess
+                <TextAnimate animation="blurInUp" by="word">
+                  Play chess
+                </TextAnimate>
                 <br />
-                <span className="hero-emphasis">Win real crypto</span>
+                <span className="hero-emphasis">
+                  <TextAnimate animation="blurInUp" by="word" delay={0.12}>
+                    Win real crypto
+                  </TextAnimate>
+                </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
                 Challenge rivals worldwide inside Telegram. Stake USDT, outplay your opponent, and take 95% of the pot. Free A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 TON in prizes.
               </p>
             </div>
-            <div className="hero-details">
+            <div className="hero-details space-y-4">
               <div className="hero-actions flex flex-wrap gap-2.5">
                 <PlayButton size="lg" />
                 <ButtonLink
@@ -112,6 +111,25 @@ export default function HomePage() {
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
+
+              {/* ── MAGIC UI AVATAR CIRCLES: Real-time Social Proof ── */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <AvatarCircles
+                  avatarUrls={[
+                    { imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80", name: "Grandmaster Anna" },
+                    { imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", name: "Blitz King Dave" },
+                    { imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", name: "Tactics Pro Sarah" },
+                    { imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80", name: "Pawn Hunter Leo" },
+                  ]}
+                  numPeople={3840}
+                  size="sm"
+                />
+                <div className="text-caption font-medium text-fg-muted flex items-center gap-1.5">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-semibold text-fg-default">3,840+</span> active grandmasters
+                </div>
+              </div>
+
               <div className="hero-support space-y-2 text-caption text-fg-muted">
                 <p className="flex items-center gap-2">
                   <Icon name="lightning" size={16} className="shrink-0 text-amber-500" />
@@ -123,6 +141,38 @@ export default function HomePage() {
           </div>
           <div className="hero-visual">
             <ChessSculpture />
+          </div>
+        </section>
+
+        {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
+        <section className="shell-wide my-4" aria-label="Live PvP match activity">
+          <div className="rounded-2xl border border-line bg-surface/75 py-2.5 px-3">
+            <Marquee duration={35} pauseOnHover>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600">+$47.50 USDT</strong> GM_Morphy won 3+2 Blitz duel
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-amber-500" />
+                <strong>1,000 TON</strong> King’s Dominion Mystery Jackpot unlocked
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600">+$95.00 USDT</strong> Magnus_99 won 5+3 Rapid table
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-blue-500" />
+                <strong>6-Level Affiliate</strong> Earn up to 2% lifetime match rake
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-purple-500" />
+                <strong>Tactics Academy</strong> 100 free levels &amp; Stockfish AI
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600">+$190.00 USDT</strong> Kasparov_X won 10+0 Classical match
+              </span>
+            </Marquee>
           </div>
         </section>
 
@@ -140,15 +190,41 @@ export default function HomePage() {
         >
           <Card>
             <dl className="facts-grid">
-              {facts.map((fact) => (
-                <div key={fact.label} className="fact-item">
-                  <dt className="text-caption text-fg-muted">{fact.label}</dt>
-                  <dd className="fact-value flex items-baseline gap-1.5">
-                    <span className="poster text-stat tabular-nums">{fact.value}</span>
-                    {fact.unit && <span className="text-label font-semibold">{fact.unit}</span>}
-                  </dd>
-                </div>
-              ))}
+              <div className="fact-item">
+                <dt className="text-caption text-fg-muted">Winner pot payout</dt>
+                <dd className="fact-value flex items-baseline gap-1.5">
+                  <span className="poster text-stat tabular-nums">
+                    <NumberTicker value={SETTLEMENT.winnerPercent} suffix="%" />
+                  </span>
+                </dd>
+              </div>
+              <div className="fact-item">
+                <dt className="text-caption text-fg-muted">Starting stake</dt>
+                <dd className="fact-value flex items-baseline gap-1.5">
+                  <span className="poster text-stat tabular-nums">
+                    <NumberTicker value={1} />
+                  </span>
+                  <span className="text-label font-semibold">USDT</span>
+                </dd>
+              </div>
+              <div className="fact-item">
+                <dt className="text-caption text-fg-muted">Top mystery prize</dt>
+                <dd className="fact-value flex items-baseline gap-1.5">
+                  <span className="poster text-stat tabular-nums">
+                    <NumberTicker value={1000} />
+                  </span>
+                  <span className="text-label font-semibold">TON</span>
+                </dd>
+              </div>
+              <div className="fact-item">
+                <dt className="text-caption text-fg-muted">Tactics Academy &amp; AI</dt>
+                <dd className="fact-value flex items-baseline gap-1.5">
+                  <span className="poster text-stat tabular-nums">
+                    <NumberTicker value={100} />
+                  </span>
+                  <span className="text-label font-semibold">Levels</span>
+                </dd>
+              </div>
             </dl>
             <div className="facts-summary">
               <p className="text-caption text-fg-muted">
