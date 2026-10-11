@@ -18,6 +18,7 @@ import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { IconCloud } from "@/components/magicui/icon-cloud";
+import { AnimatedList } from "@/components/magicui/animated-list";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -608,58 +609,139 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Compact Viral Pot Tier Matrix */}
-              <div className="rounded-2xl border border-line bg-inset p-5 sm:p-6 space-y-3.5">
-                <div className="flex items-center justify-between border-b border-line pb-3">
-                  <span className="text-caption font-semibold text-fg-default">
-                    Popular Stakes &amp; Payouts
-                  </span>
+              {/* Dynamic Viral Wager & Prize Matrix powered by AnimatedList */}
+              <div className="relative rounded-2xl border border-line bg-inset p-5 sm:p-6 overflow-hidden space-y-3.5">
+                <BorderBeam size={280} duration={12} colorFrom="#10b981" colorTo="#3b82f6" />
+                <div className="relative z-10 flex items-center justify-between border-b border-line pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-caption font-semibold text-fg-default">
+                      Popular Stakes &amp; Payouts
+                    </span>
+                    <span className="flex items-center gap-1 font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Live Pools
+                    </span>
+                  </div>
                   <span className="font-mono text-caption text-emerald-600 font-medium">
                     +90% Net ROI on win
                   </span>
                 </div>
 
-                <div className="grid gap-2 text-caption">
-                  {[
-                    { tier: "Micro Duel", stake: 1, win: 1.90, net: "+$0.90", hot: false },
-                    { tier: "Blitz Favorite", stake: 5, win: 9.50, net: "+$4.50", hot: true },
-                    { tier: "High Roller", stake: 25, win: 47.50, net: "+$22.50", hot: false },
-                    { tier: "Grandmaster Table", stake: 100, win: 190.00, net: "+$90.00", hot: false },
-                  ].map((item) => (
-                    <div
-                      key={item.tier}
-                      className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
-                        item.hot
-                          ? "bg-surface border-emerald-500/40 shadow-xs"
-                          : "bg-surface/60 border-line"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-fg-default">
-                          ${item.stake} USDT
-                        </span>
-                        <span className="text-fg-muted text-[13px]">
-                          ({item.tier})
-                        </span>
-                        {item.hot && (
-                          <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                            Popular
+                {/* AnimatedList stream of diverse stakes & prizes */}
+                <div className="relative z-10 w-full overflow-hidden">
+                  <AnimatedList delay={2200} maxItems={4}>
+                    {[
+                      {
+                        tier: "Micro Duel",
+                        pace: "Bullet 1+0",
+                        stake: 1,
+                        win: 1.90,
+                        net: "+$0.90",
+                        tag: "1-Min Duel",
+                        tagColor: "bg-surface border-line text-fg-muted",
+                        icon: "lightning" as const,
+                      },
+                      {
+                        tier: "Blitz Favorite",
+                        pace: "Blitz 3+2",
+                        stake: 5,
+                        win: 9.50,
+                        net: "+$4.50",
+                        tag: "Most Popular 🔥",
+                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        icon: "trophy" as const,
+                      },
+                      {
+                        tier: "Arena Contender",
+                        pace: "Blitz 5+0",
+                        stake: 10,
+                        win: 19.00,
+                        net: "+$9.00",
+                        tag: "Active Pool ⚡",
+                        tagColor: "bg-blue-500/15 border-blue-500/30 text-blue-700",
+                        icon: "sword" as const,
+                      },
+                      {
+                        tier: "High Roller",
+                        pace: "Rapid 10+0",
+                        stake: 25,
+                        win: 47.50,
+                        net: "+$22.50",
+                        tag: "Trending 🚀",
+                        tagColor: "bg-amber-500/15 border-amber-500/30 text-amber-700",
+                        icon: "crown-simple" as const,
+                      },
+                      {
+                        tier: "Championship Pot",
+                        pace: "Blitz 3+2",
+                        stake: 50,
+                        win: 95.00,
+                        net: "+$45.00",
+                        tag: "+90% Net ROI",
+                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        icon: "trophy" as const,
+                      },
+                      {
+                        tier: "Grandmaster Table",
+                        pace: "Rapid 15+10",
+                        stake: 100,
+                        win: 190.00,
+                        net: "+$90.00",
+                        tag: "VIP Table 👑",
+                        tagColor: "bg-purple-500/15 border-purple-500/30 text-purple-700",
+                        icon: "crown-simple" as const,
+                      },
+                      {
+                        tier: "Whales Arena",
+                        pace: "Blitz 5+3",
+                        stake: 250,
+                        win: 475.00,
+                        net: "+$225.00",
+                        tag: "Whales Club 💎",
+                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        icon: "coins" as const,
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.tier}
+                        className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface/90 transition-all duration-200 hover:scale-[101%] hover:border-fg-muted/40 shadow-2xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-inset border border-line text-fg-default">
+                            <Icon name={item.icon} size={15} />
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-semibold text-fg-default text-[13px]">
+                                ${item.stake} USDT
+                              </span>
+                              <span className="text-fg-muted text-[12px]">
+                                ({item.tier})
+                              </span>
+                              <span className={`rounded-full border px-1.5 py-0.2 text-[10px] font-semibold ${item.tagColor}`}>
+                                {item.tag}
+                              </span>
+                            </div>
+                            <span className="font-mono text-[11px] text-fg-muted">
+                              Pace: {item.pace}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0 ps-2">
+                          <span className="font-mono font-bold text-emerald-600 block text-[13px]">
+                            ${item.win.toFixed(2)} USDT
                           </span>
-                        )}
+                          <span className="text-[11px] font-mono text-fg-muted">
+                            Net: {item.net}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-emerald-600 block">
-                          ${item.win.toFixed(2)} USDT
-                        </span>
-                        <span className="text-[12px] font-mono text-fg-muted">
-                          Net: {item.net}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </AnimatedList>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
+                <div className="relative z-10 flex items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
                   <span>Fee split: 3% platform · 2% affiliate</span>
                   <Link href="/wagers" className="text-fg-link hover:underline inline-flex items-center gap-1 font-sans font-semibold">
                     Full math breakdown
