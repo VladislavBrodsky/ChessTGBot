@@ -20,12 +20,7 @@ function getInitialTheme(): Theme {
         try {
             const saved = localStorage.getItem('theme');
             if (saved === 'light' || saved === 'dark') return saved;
-        } catch { /* storage blocked — fall through to system preference */ }
-
-        // Fallback to system preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            return 'light';
-        }
+        } catch { /* storage blocked — fall through to default */ }
     }
     return 'dark';
 }
@@ -39,31 +34,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         document.documentElement.setAttribute('data-theme', theme);
 
     }, [theme]);
-
-    // Listen for system preference changes
-    useEffect(() => {
-        if (typeof window === 'undefined' || !window.matchMedia) return;
-
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-        
-        const handleChange = (e: MediaQueryListEvent) => {
-            // Only update theme if the user hasn't explicitly set a preference in localStorage
-            let hasExplicit = false;
-            try { hasExplicit = !!localStorage.getItem('theme'); } catch { /* storage blocked */ }
-            if (!hasExplicit) {
-                setThemeState(e.matches ? 'light' : 'dark');
-            }
-        };
-
-        // Modern browsers support addEventListener, fallback to addListener for older clients
-        if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', handleChange);
-            return () => mediaQuery.removeEventListener('change', handleChange);
-        } else {
-            mediaQuery.addListener(handleChange);
-            return () => mediaQuery.removeListener(handleChange);
-        }
-    }, []);
 
     const setTheme = (newTheme: Theme) => {
         setThemeState(newTheme);

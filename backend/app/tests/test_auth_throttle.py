@@ -178,6 +178,9 @@ async def test_missing_init_data_header_is_not_counted_as_a_failure(monkeypatch)
             await deps.get_current_user(request=request, x_telegram_init_data=None, db=None)
         # Still the honest "you sent no credential" answer, never a throttle 429.
         assert excinfo.value.status_code == 401
+        with pytest.raises(HTTPException) as excinfo_tg:
+            await deps.get_current_telegram_id(request=request, x_telegram_init_data=None)
+        assert excinfo_tg.value.status_code == 401
 
     # The client behind those requests is still free to authenticate.
     assert await deps.auth_ip_is_blocked(ip_hash) is False

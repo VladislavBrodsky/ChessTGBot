@@ -213,7 +213,6 @@ async def get_current_telegram_id(
         settings = get_settings()
         if settings.TESTING or settings.ENV == "development":
             return 123456789
-        await register_auth_failure(ip_hash)
         raise HTTPException(
             status_code=401,
             detail="X-Telegram-Init-Data header missing"

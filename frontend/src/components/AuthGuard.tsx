@@ -31,8 +31,11 @@ const SDK_WAIT_MS = 2500;
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const tc = useTranslations('Common');
     const pathname = usePathname();
+    const isPublicRoute = Boolean(pathname && /\/(login|qr)(?:\/|$)/.test(pathname));
     // 'checking' → still verifying | 'authed' → show children | 'redirecting' → blocking
-    const [authState, setAuthState] = useState<'checking' | 'authed' | 'redirecting'>('checking');
+    const [authState, setAuthState] = useState<'checking' | 'authed' | 'redirecting'>(
+        () => isPublicRoute ? 'authed' : 'checking'
+    );
     const redirected = useRef(false);
 
     useEffect(() => {
@@ -41,7 +44,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         const w = window as any;
 
         // Login and shareable referral QR pages are public entry points.
-        if (/\/(login|qr)(?:\/|$)/.test(pathname || '')) {
+        if (isPublicRoute) {
             setAuthState('authed');
             if (w.Telegram?.WebApp?.initData) {
                 w.Telegram.WebApp.ready();
@@ -112,7 +115,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         };
     }, [pathname]);
 
-    if (authState === 'checking' || authState === 'redirecting') {
+    if (!isPublicRoute && (authState === 'checking' || authState === 'redirecting')) {
         return (
             <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center overflow-hidden bg-brand-void">
                 <Backdrop still />

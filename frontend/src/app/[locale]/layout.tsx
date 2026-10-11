@@ -54,7 +54,7 @@ export default async function LocaleLayout({
     const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
 
     return (
-        <html lang={locale} dir={dir} suppressHydrationWarning>
+        <html lang={locale} dir={dir} data-theme="dark" suppressHydrationWarning>
             <head>
                 {/* Preconnect to the backend to eliminate TCP handshake latency on the first
                     avatar load. Production (www.web3chess.online) calls api.web3chess.online. */}
@@ -77,9 +77,7 @@ export default async function LocaleLayout({
                                 } catch (e) {}
                                 try {
                                     var savedTheme = localStorage.getItem('theme');
-                                    if (savedTheme === 'light' || savedTheme === 'dark') {
-                                        document.documentElement.setAttribute('data-theme', savedTheme);
-                                    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                                    if (savedTheme === 'light') {
                                         document.documentElement.setAttribute('data-theme', 'light');
                                     } else {
                                         document.documentElement.setAttribute('data-theme', 'dark');
