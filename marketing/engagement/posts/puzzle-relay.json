@@ -1,0 +1,36 @@
+{
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "category": "Tactics",
+  "format": "puzzle",
+  "cta": "academy",
+  "status": "draft",
+  "sources": [],
+  "id": "2026-10-11-growth-puzzle-relay",
+  "hook": "One rook. One move. Pass it on.",
+  "text": "<b>One rook. One move. Pass it on.</b> ♟️\n\nWhite to move. Mate in one. Find the move before you open the spoiler.\n\nThen forward this position to a chess friend and compare how you spotted the back-rank pattern. No sign-up is needed to solve the card.\n\nAnswer: <tg-spoiler>Ra8#. The rook controls the eighth rank; Black’s own pawns block the escape squares.</tg-spoiler>\n\nFor your next challenge, explore the Academy in Web3Chess.",
+  "creative": {
+    "template": "puzzle",
+    "size": "portrait",
+    "theme": "ink",
+    "tag": "Pass the position",
+    "headline": "ONE ROOK.\n*ONE MOVE.*",
+    "subhead": "White to move. Mate in one.",
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "highlight": [],
+    "cta_label": "Explore the Academy",
+    "footer": "Solve first. Then challenge a friend."
+  },
+  "chess": {
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "image": "marketing/engagement/assets/puzzle-relay-portrait.png",
+  "render": {
+    "ok": true,
+    "template": "puzzle"
+  }
+}

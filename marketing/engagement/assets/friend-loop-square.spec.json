@@ -1,0 +1,21 @@
+{
+  "template": "culture",
+  "size": "square",
+  "theme": "paper",
+  "tag": "Pass the next move",
+  "headline": "TWO FRIENDS.\n*BETTER IDEAS.*",
+  "panels": [
+    {
+      "label": "Your focus",
+      "text": "Check the next recapture.",
+      "piece": "N"
+    },
+    {
+      "label": "Their focus",
+      "text": "Spot an undefended piece.",
+      "piece": "R"
+    }
+  ],
+  "cta_label": "Invite from Profile",
+  "footer": "Share your personal link. Compare your practice."
+}

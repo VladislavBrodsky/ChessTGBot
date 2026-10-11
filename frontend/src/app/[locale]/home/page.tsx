@@ -23,6 +23,7 @@ import XPProgressBar from '@/components/XPProgressBar';
 import DailyCheckinModal from '@/components/DailyCheckinModal';
 import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
+import EngagementQuest from '@/components/EngagementQuest';
 import { telegramHaptic } from '@/lib/telegram';
 
 // Telegram's `start_param` persists for the whole webview session, so the
@@ -137,6 +138,7 @@ export default function Home() {
           </div>
         </div>
         <div className="min-w-0 space-y-6">
+          <EngagementQuest />
           <div className="reveal-in" style={{ '--reveal-i': 4 } as React.CSSProperties}><DailyGoalsBento /></div>
           <section aria-labelledby="home-leaderboard" className="reveal-in w-full space-y-3" style={{ '--reveal-i': 5 } as React.CSSProperties}><SectionHeader id="home-leaderboard" title={t('leaderboard')} /><Leaderboard /></section>
         </div>

@@ -1,0 +1,15 @@
+{
+  "template": "product",
+  "size": "square",
+  "theme": "ink",
+  "tag": "Back to the board",
+  "headline": "ONE GAME.\n*A GOOD RETURN.*",
+  "subhead": "Your next move can start a new habit.",
+  "steps": [
+    "Open Play",
+    "Choose free AI practice",
+    "Find an undefended piece"
+  ],
+  "cta_label": "Make your next move",
+  "footer": "Free AI practice · No deposit required"
+}

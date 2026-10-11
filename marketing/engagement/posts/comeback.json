@@ -1,0 +1,32 @@
+{
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "category": "Product",
+  "format": "product",
+  "cta": "play",
+  "status": "draft",
+  "sources": [],
+  "id": "2026-10-11-growth-comeback",
+  "hook": "Your board is still here.",
+  "text": "<b>Your board is still here.</b> ♟️\n\nYou do not need a winning streak to get back into chess. Start with one free AI game.\n\nToday’s focus: before each move, find one undefended piece — yours or your opponent’s. Notice how often that changes your decision.\n\nChoose AI practice in Play. After the game, check your progress in Challenges. One useful game is a good return.",
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "theme": "ink",
+    "tag": "Back to the board",
+    "headline": "ONE GAME.\n*A GOOD RETURN.*",
+    "subhead": "Your next move can start a new habit.",
+    "steps": [
+      "Open Play",
+      "Choose free AI practice",
+      "Find an undefended piece"
+    ],
+    "cta_label": "Make your next move",
+    "footer": "Free AI practice · No deposit required"
+  },
+  "image": "marketing/engagement/assets/comeback-square.png",
+  "render": {
+    "ok": true,
+    "template": "product"
+  }
+}

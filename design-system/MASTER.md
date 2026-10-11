@@ -59,6 +59,8 @@ Tailwind 4 only reads `@theme` (see `styles/theme.css`); `tailwind.config.js` no
 
 Keep the primary action within the first viewport, secondary routes reachable without guessing, and transactional confirmations explicit. A loading or failed request must not be presented as a value of zero. Refreshing data should preserve the last confirmed value until a new response succeeds.
 
+Home may include `EngagementQuest` as a secondary Card below the main Play action. Its server-recorded progress, pre-enrollment odds/rules Modal, optimistic rollback and confirmed reward reveal use shared primitives. The quest’s play action opens `/[locale]/game?practice=1` to select free AI difficulty directly. A disabled campaign stays hidden; existing enrolled players keep their claim rights when enrollment pauses.
+
 For balance-funded play, upgrades, and deposits, disable the action or offer a retry while the balance or account identity is unverified. A deposit memo must use the account ID returned by the authenticated API; never manufacture a fallback ID or display a transfer destination before that identity is available.
 
 1. **Safe Area Insets**:

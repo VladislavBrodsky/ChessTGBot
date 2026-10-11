@@ -720,5 +720,35 @@
     "region_europe_africa": "Europa & Afrika",
     "region_mena_sasia": "Naher Osten & Südasien",
     "region_apac": "Ostasien & Pazifik"
+  },
+  "Engagement": {
+    "title": "Epische Mystery Box",
+    "subtitle": "Deine ersten drei Partien",
+    "description": "Spiele 3 kostenlose KI-Partien und schalte eine kostenlose Box frei. Jede Box enthält eine virtuelle Belohnung.",
+    "join": "Quest starten",
+    "claim": "Kostenlose Box öffnen",
+    "claimed": "Belohnung erhalten",
+    "play": "Kostenlos gegen KI spielen",
+    "odds": "Belohnungen, Chancen und Regeln",
+    "progress": "{count} von {total} Partien",
+    "remaining": "Noch {count} gültige Partien",
+    "qualification": "Erst teilnehmen, dann 3 KI-Partien mit mindestens 10 Zügen je Seite beenden.",
+    "rules": "Nimm teil und beende 3 kostenlose KI-Partien mit jeweils mindestens 20 Halbzügen (10 je Seite). Siege, Niederlagen und Remis zählen. Frühere, bezahlte oder abgebrochene Partien zählen nicht. Eine Box pro Konto. Keine Frist.",
+    "virtual_only": "Nur virtuelle Belohnungen in der App. Kein Geldwert, TON oder Telegram-Geschenke. Keine Einzahlung und kein Kauf nötig.",
+    "duplicate": "Goldrahmen schon vorhanden? Du erhältst 250 XP. Ein stärkerer aktiver Boost bleibt erhalten und wird um 24 Stunden verlängert.",
+    "revealed": "Deine Belohnung ist bereit",
+    "close": "Schließen",
+    "loading": "Lädt…",
+    "refreshing": "Fortschritt wird aktualisiert…",
+    "load_error": "Quest nicht verfügbar",
+    "action_error": "Aktion fehlgeschlagen",
+    "retry_message": "Versuche es erneut. Dein bestätigter Fortschritt ist gespeichert.",
+    "retry": "Erneut versuchen",
+    "rewards": {
+      "xp_250": "250 XP",
+      "boost_24h": "1,5× XP-Boost · 24 Stunden",
+      "border_gold": "Goldener Profilrahmen",
+      "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden"
+    }
   }
 }

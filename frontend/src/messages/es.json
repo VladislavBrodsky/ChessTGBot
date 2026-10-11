@@ -720,5 +720,35 @@
     "region_europe_africa": "Europa y África",
     "region_mena_sasia": "Oriente Medio y Asia del Sur",
     "region_apac": "Asia Oriental y Pacífico"
+  },
+  "Engagement": {
+    "title": "Caja misteriosa épica",
+    "subtitle": "Tus primeras tres partidas",
+    "description": "Juega 3 partidas gratis contra la IA y desbloquea una caja gratis. Cada caja contiene un premio virtual.",
+    "join": "Unirme al reto",
+    "claim": "Abrir mi caja gratis",
+    "claimed": "Premio obtenido",
+    "play": "Jugar gratis contra la IA",
+    "odds": "Premios, probabilidades y reglas",
+    "progress": "{count} de {total} partidas",
+    "remaining": "Partidas restantes: {count}",
+    "qualification": "Únete primero. Completa 3 partidas de IA con al menos 10 jugadas por bando.",
+    "rules": "Únete y termina 3 partidas gratis contra la IA, cada una con al menos 20 medias jugadas (10 por bando). Cuentan victorias, derrotas y tablas. No cuentan partidas anteriores, de pago ni canceladas. Una caja por cuenta. Sin fecha límite.",
+    "virtual_only": "Solo premios virtuales de la app. Sin valor en efectivo, TON ni regalos de Telegram. No necesitas depositar ni comprar.",
+    "duplicate": "Si ya tienes el marco dorado, recibes 250 XP. Un multiplicador activo superior se conserva y se amplía 24 horas.",
+    "revealed": "Tu premio está listo",
+    "close": "Cerrar",
+    "loading": "Cargando…",
+    "refreshing": "Actualizando progreso…",
+    "load_error": "Reto no disponible",
+    "action_error": "No se pudo completar la acción",
+    "retry_message": "Inténtalo de nuevo. Tu progreso confirmado está guardado.",
+    "retry": "Reintentar",
+    "rewards": {
+      "xp_250": "250 XP",
+      "boost_24h": "Multiplicador 1,5× · 24 horas",
+      "border_gold": "Marco dorado de perfil",
+      "gold_duplicate": "250 XP · marco repetido"
+    }
   }
 }

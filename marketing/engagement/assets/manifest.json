@@ -1,0 +1,39 @@
+{
+  "images": [
+    {
+      "file": "marketing/engagement/assets/comeback-square.png",
+      "qa": "passed",
+      "size": "square"
+    },
+    {
+      "file": "marketing/engagement/assets/epic-launch-portrait.png",
+      "qa": "passed",
+      "size": "portrait"
+    },
+    {
+      "file": "marketing/engagement/assets/epic-launch-square.png",
+      "qa": "passed",
+      "size": "square"
+    },
+    {
+      "file": "marketing/engagement/assets/epic-launch-wide.png",
+      "qa": "passed",
+      "size": "wide"
+    },
+    {
+      "file": "marketing/engagement/assets/friend-loop-square.png",
+      "qa": "passed",
+      "size": "square"
+    },
+    {
+      "file": "marketing/engagement/assets/practice-lead-magnet-portrait.png",
+      "qa": "passed",
+      "size": "portrait"
+    },
+    {
+      "file": "marketing/engagement/assets/puzzle-relay-portrait.png",
+      "qa": "passed",
+      "size": "portrait"
+    }
+  ]
+}

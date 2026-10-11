@@ -1,0 +1,32 @@
+{
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "category": "Product",
+  "format": "product",
+  "cta": "play",
+  "status": "draft",
+  "sources": [],
+  "id": "2026-10-11-growth-practice-lead-magnet",
+  "hook": "Three games. Three better habits.",
+  "text": "<b>Three games. Three better habits.</b> ♟️\n\nGive your next chess break a purpose.\n\nGame 1: before you move, name your opponent’s threat.\nGame 2: after each capture, check what can be taken back.\nGame 3: before trading pieces, compare king safety.\n\nTry this in free AI practice inside Web3Chess. Then open Challenges to see the tasks you completed and claim any earned XP. You can explore XP rewards and Mystery Boxes in the Marketplace; check each box’s cost and rewards in the app.\n\nSave this training card, or pass it to a friend for their next chess break. Tap below to open the app, then choose free AI practice in Play.",
+  "creative": {
+    "template": "tip",
+    "size": "portrait",
+    "theme": "paper",
+    "tag": "Your practice card",
+    "headline": "3 GAMES.\n*3 BETTER HABITS.*",
+    "subhead": "A simple plan for your next chess break.",
+    "steps": [
+      "Name your opponent’s threat.",
+      "Check the next recapture.",
+      "Compare king safety before a trade."
+    ],
+    "cta_label": "Try free AI practice",
+    "footer": "Save this card. Use one habit per game."
+  },
+  "image": "marketing/engagement/assets/practice-lead-magnet-portrait.png",
+  "render": {
+    "ok": true,
+    "template": "tip"
+  }
+}

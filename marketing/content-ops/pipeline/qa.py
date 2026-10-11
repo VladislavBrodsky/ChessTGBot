@@ -115,6 +115,8 @@ def check_telegram(post: dict, corpus: list[str] | None = None) -> dict:
     ctas = [post.get("cta")] + list(post.get("extra_buttons", []))
     ctas = [c for c in ctas if c]
     if not ctas: issues.append("a CTA is required")
+    if post.get("creative", {}).get("template") == "reward" and not post.get("requires_campaign"):
+        issues.append("reward ads require a verified live campaign identifier")
     if len(ctas) > 2: issues.append("at most two buttons")
     for c in ctas:
         if c not in brand.CTAS: issues.append(f"unknown CTA id {c}")

@@ -720,5 +720,35 @@
     "region_europe_africa": "Europe et Afrique",
     "region_mena_sasia": "Moyen-Orient et Asie du Sud",
     "region_apac": "Asie de l'Est et Pacifique"
+  },
+  "Engagement": {
+    "title": "Boîte mystère épique",
+    "subtitle": "Vos trois premières parties",
+    "description": "Jouez 3 parties gratuites contre l’IA et débloquez une boîte gratuite. Un cadeau virtuel dans chaque boîte.",
+    "join": "Rejoindre le défi",
+    "claim": "Ouvrir ma boîte gratuite",
+    "claimed": "Récompense obtenue",
+    "play": "Jouer gratuitement contre l’IA",
+    "odds": "Récompenses, chances et règles",
+    "progress": "{count} sur {total} parties",
+    "remaining": "Parties admissibles restantes : {count}",
+    "qualification": "Inscrivez-vous puis terminez 3 parties IA avec au moins 10 coups par camp.",
+    "rules": "Inscrivez-vous puis terminez 3 parties gratuites contre l’IA, avec au moins 20 demi-coups chacune (10 par camp). Victoires, défaites et nulles comptent. Parties antérieures, payantes ou annulées exclues. Une boîte par compte. Sans date limite.",
+    "virtual_only": "Récompenses virtuelles uniquement. Aucune valeur monétaire, aucun TON ni cadeau Telegram. Aucun dépôt ni achat requis.",
+    "duplicate": "Cadre doré déjà obtenu ? Recevez 250 XP. Un bonus actif plus fort est conservé et prolongé de 24 heures.",
+    "revealed": "Votre récompense est prête",
+    "close": "Fermer",
+    "loading": "Chargement…",
+    "refreshing": "Actualisation…",
+    "load_error": "Défi indisponible",
+    "action_error": "Action impossible",
+    "retry_message": "Réessayez. Votre progression confirmée est enregistrée.",
+    "retry": "Réessayer",
+    "rewards": {
+      "xp_250": "250 XP",
+      "boost_24h": "Bonus XP 1,5× · 24 heures",
+      "border_gold": "Cadre de profil doré",
+      "gold_duplicate": "250 XP · cadre déjà obtenu"
+    }
   }
 }

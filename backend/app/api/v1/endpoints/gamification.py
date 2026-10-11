@@ -10,6 +10,31 @@ from datetime import datetime, timezone, timedelta
 
 router = APIRouter()
 
+
+@router.get("/engagement/catalog")
+async def engagement_catalog():
+    """Public launch contract; lets channel tooling verify the live offer."""
+    from app.services.engagement_campaign import catalog
+    return catalog()
+
+
+@router.get("/engagement/status")
+async def engagement_status(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    from app.services.engagement_campaign import status
+    return await status(db, current_user)
+
+
+@router.post("/engagement/{action}", dependencies=[Depends(rate_limit(12, 60))])
+async def engagement_action(action: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    from app.services.engagement_campaign import CampaignError, enroll, claim
+    if action not in {"join", "claim"}:
+        raise HTTPException(status_code=404, detail="Unknown campaign action")
+    try:
+        return await (enroll if action == "join" else claim)(db, current_user)
+    except CampaignError as exc:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail=str(exc)) from None
+
 class UserTaskResponse(BaseModel):
     id: int
     task_id: int

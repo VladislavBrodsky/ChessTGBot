@@ -1,0 +1,16 @@
+{
+  "template": "reward",
+  "size": "portrait",
+  "theme": "ink",
+  "tag": "Free quest",
+  "headline": "PLAY 3.\n*UNLOCK EPIC.*",
+  "subhead": "Free AI games. One earned Mystery Box.",
+  "steps": [
+    "Join the quest",
+    "Finish 3 games",
+    "Open your box"
+  ],
+  "reward_note": "250 XP · 60%    |    XP boost · 30%    |    Gold profile border · 10%",
+  "cta_label": "Start your first three",
+  "footer": "One box per account · Virtual rewards · Rules in caption"
+}

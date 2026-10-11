@@ -12,9 +12,9 @@ from pathlib import Path
 from . import brand, queue
 
 ENGINE = queue.ROOT / "marketing" / "templates" / "tg"
-TEMPLATES = {"puzzle", "trap", "poll", "news", "culture", "tip", "rules", "product", "cover"}
+TEMPLATES = {"puzzle", "trap", "poll", "news", "culture", "tip", "rules", "product", "cover", "reward"}
 FEN_TEMPLATES = {"puzzle", "poll"}  # the position is the point of these templates
-SPEC_TEXT_FIELDS = ("headline", "subhead", "tag", "cta_label", "footer", "source")
+SPEC_TEXT_FIELDS = ("headline", "subhead", "tag", "cta_label", "footer", "source", "reward_note")
 
 def _text(spec: dict) -> str:
     parts = [str(spec.get(k, "")) for k in SPEC_TEXT_FIELDS]

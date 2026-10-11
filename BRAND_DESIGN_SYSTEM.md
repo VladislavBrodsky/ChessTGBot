@@ -321,6 +321,7 @@ Empty: icon tile, one-line reason, **one** action that resolves it. Error: plain
 - **Overlays**: a sheet for choices and confirmations on mobile (`Drawer`), a centred `Modal` for blocking decisions. Only one overlay layer at a time except `nested` (z 110) dialogs inside gameplay. Focus enters on open and returns to the trigger.
 - **Money flows**: amount, fee, destination and status are always visible before confirm; reuse the exact numbers from the API; the confirm button repeats the amount. Wager UI states “You can lose your stake”, 18+, and is never shown to youth content.
 - **Progression/gamification**: reward chips use `ui-icon-tile--gold/success`; streaks and tasks come from verified events; claim is optimistic with rollback; celebration respects reduced motion.
+  Earned promotional boxes show eligibility, exact odds, duplicate handling and virtual-only terms before enrollment. Progress comes from server-recorded qualifying games; reveal only a confirmed reward. The First Three quest is once per account, has no deadline, and opens free AI practice directly. Pausing new enrollment must preserve existing claim rights; channel ads require the live campaign contract to match their copy.
 - **Game screen**: board + clocks dominate; controls sit beneath/beside, never over the board; clock ticks are isolated in `ChessClockBadge` (4Hz) so the board never re-renders; `BoardA11y` names pieces for assistive tech.
 - **Lists**: `ui-list-row`, 8-12px gap, virtualise beyond ~60 rows, no per-row blur.
 

@@ -69,6 +69,8 @@ def publish(post: dict, dry_run: bool | None = None) -> dict:
         raise RuntimeError("creative image missing: run `daily.py render` (never falling back to a text-only post)")
     if not live:
         return {"dry_run": True, "would_send": "photo" if image else "message", "chars": len(post["text"]), "buttons": markup}
+    from .engagement import assert_live_offer
+    assert_live_offer(post)
     return {"dry_run": False, "message_id": _deliver(token, channel, post["text"], image, markup)}
 
 def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:

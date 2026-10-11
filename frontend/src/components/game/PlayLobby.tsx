@@ -104,6 +104,7 @@ export default function PlayLobby() {
       }
       
       const params = new URLSearchParams(window.location.search);
+      if (params.get('practice') === '1') setShowAiDifficulty(true);
       if (params.get('status') === 'success' && params.get('session_id')) {
         setShowDepositDrawer(true);
       }

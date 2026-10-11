@@ -1,0 +1,116 @@
+'use client';
+
+import { useState } from 'react';
+import useSWR from 'swr';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { FiGift } from 'react-icons/fi';
+import { apiFetch } from '@/lib/api';
+import { telegramHaptic } from '@/lib/telegram';
+import { useUser } from '@/context/UserContext';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Modal } from '@/components/ui/Modal';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Skeleton } from '@/components/ui/Skeleton';
+
+interface Quest {
+  enabled: boolean;
+  accepting_enrollments: boolean;
+  enrolled: boolean;
+  progress: number;
+  target: number;
+  state: 'available' | 'active' | 'claimable' | 'claimed';
+  reward_key: string | null;
+  rewards: { key: string; probability_percent: number }[];
+}
+const PATH = '/api/v1/gamification/engagement';
+async function readQuest(): Promise<Quest> {
+  const response = await apiFetch(`${PATH}/status`, { cache: 'no-store' });
+  // Allows the frontend to roll out before the backend exposes this route.
+  if (response.status === 404) return { enabled: false } as Quest;
+  if (!response.ok) throw new Error('Quest unavailable');
+  const quest = await response.json();
+  if (quest?.enabled === false) return { enabled: false } as Quest;
+  if (quest?.enabled !== true || !Array.isArray(quest.rewards) || !Number.isInteger(quest.target) || quest.target < 1 || !Number.isFinite(quest.progress)) {
+    throw new Error('Quest unavailable');
+  }
+  return quest;
+}
+
+export default function EngagementQuest() {
+  const t = useTranslations('Engagement');
+  const locale = useLocale();
+  const router = useRouter();
+  const { stats, syncStats } = useUser();
+  const { data, error, isValidating, mutate } = useSWR(stats ? PATH : null, readQuest, { errorRetryCount: 1 });
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [details, setDetails] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
+  async function act(action: 'join' | 'claim') {
+    if (!data || busy) return;
+    setBusy(true);
+    setFailed(false);
+    try {
+      await mutate(async () => {
+        const response = await apiFetch(`${PATH}/${action}`, { method: 'POST' });
+        if (!response.ok) throw new Error('Quest action unavailable');
+        return response.json();
+      }, {
+        optimisticData: { ...data, enrolled: true, state: action === 'claim' ? 'claimed' : 'active', reward_key: null },
+        rollbackOnError: true,
+        revalidate: false,
+      });
+      telegramHaptic('success');
+      if (action === 'claim') {
+        setRevealed(true);
+        void syncStats();
+      }
+    } catch {
+      setFailed(true);
+      telegramHaptic('error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!stats || data?.enabled === false) return null;
+  if (!data && error) return <ErrorState title={t('load_error')} message={t('retry_message')} onRetry={() => void mutate()} retryLabel={t('retry')} />;
+  if (!data) return <Card variant="solid" className="p-4 space-y-3" aria-busy="true" aria-label={t('loading')}>
+    <Skeleton textRole="title-3" width="65%" /><Skeleton textRole="body" /><Skeleton textRole="body" />
+    <Skeleton textRole="caption" /><Skeleton variant="rectangular" className="h-control-md w-full" />
+    <Skeleton textRole="caption" width="70%" />
+  </Card>;
+
+  const label = data.state === 'available' ? t('join') : data.state === 'claimable' ? t('claim') : data.state === 'claimed' ? t('claimed') : t('play');
+  const rewardLabel = (key: string) => t(`rewards.${key}`);
+  return <>
+    <Card variant="solid" className="p-4 space-y-3" aria-labelledby="engagement-title" aria-busy={busy}>
+      <div className="flex items-center gap-3">
+        <span className="ui-icon-tile ui-icon-tile--premium"><FiGift size={20} aria-hidden="true" /></span>
+        <div className="min-w-0"><h2 id="engagement-title" className="t-title-3">{t('title')}</h2><p className="t-caption text-brand-muted">{t('subtitle')}</p></div>
+      </div>
+      <p className="t-body text-brand-muted">{t('description')}</p>
+      <div className="flex items-center gap-3" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
+        <div className="grid flex-1 grid-cols-3 gap-2" aria-hidden="true">{Array.from({ length: data.target }, (_, i) => <span key={i} className={`h-2 rounded-pill ${i < data.progress ? 'bg-brand-action' : 'bg-brand-elevated'}`} />)}</div>
+        <span className="t-numeric-sm tabular-nums">{data.progress}/{data.target}</span>
+      </div>
+      <p className="t-caption text-brand-muted" aria-live="polite">{busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}</p>
+      <Button variant="secondary" className="w-full" disabled={data.state === 'claimed'} isLoading={busy} onClick={() => data.state === 'available' ? void act('join') : data.state === 'claimable' ? void act('claim') : router.push(`/${locale}/game?practice=1`)}>{label}</Button>
+      <Button variant="ghost" size="sm" className="w-full" onClick={() => setDetails(true)}>{t('odds')}</Button>
+      {isValidating && !busy && <p className="t-caption text-brand-muted" role="status">{t('refreshing')}</p>}
+      {failed && <ErrorState title={t('action_error')} message={t('retry_message')} onRetry={() => void mutate()} retryLabel={t('retry')} />}
+    </Card>
+    <Modal isOpen={details || revealed} onClose={() => { setDetails(false); setRevealed(false); }} title={revealed ? t('revealed') : t('title')} description={t('virtual_only')}>
+      <div className="space-y-4">
+        {revealed && data.reward_key && <p className="t-title-2" role="status">{rewardLabel(data.reward_key)}</p>}
+        <p className="t-body text-brand-muted">{t('rules')}</p>
+        <ul className="space-y-2">{data.rewards.map(reward => <li key={reward.key} className="ui-list-row flex items-center justify-between gap-3"><span className="t-body">{rewardLabel(reward.key)}</span><span className="t-numeric-sm tabular-nums">{reward.probability_percent}%</span></li>)}</ul>
+        <p className="t-caption text-brand-muted">{t('duplicate')}</p>
+        <Button variant="secondary" className="w-full" onClick={() => { setDetails(false); setRevealed(false); }}>{t('close')}</Button>
+      </div>
+    </Modal>
+  </>;
+}

@@ -1,0 +1,12 @@
+{
+  "template": "puzzle",
+  "size": "portrait",
+  "theme": "ink",
+  "tag": "Pass the position",
+  "headline": "ONE ROOK.\n*ONE MOVE.*",
+  "subhead": "White to move. Mate in one.",
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "highlight": [],
+  "cta_label": "Explore the Academy",
+  "footer": "Solve first. Then challenge a friend."
+}

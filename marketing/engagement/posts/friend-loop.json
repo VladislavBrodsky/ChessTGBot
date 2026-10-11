@@ -1,0 +1,38 @@
+{
+  "kind": "telegram",
+  "date": "2026-10-11",
+  "category": "Product",
+  "format": "product",
+  "cta": "play",
+  "status": "draft",
+  "sources": [],
+  "id": "2026-10-11-growth-friend-loop",
+  "hook": "Your friend may see a different move.",
+  "text": "<b>Your friend may see a different move.</b> ♟️\n\nUse your personal invite link in Profile to bring a chess friend into Web3Chess. Ask them to try free AI practice.\n\nGive each other one focus: watch the back rank, spot hanging pieces, or check every recapture. After a game, compare which habit helped most.\n\nA good invite gives someone a reason to play. Open the app, copy your link from Profile, and choose one friend.",
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "theme": "paper",
+    "tag": "Pass the next move",
+    "headline": "TWO FRIENDS.\n*BETTER IDEAS.*",
+    "panels": [
+      {
+        "label": "Your focus",
+        "text": "Check the next recapture.",
+        "piece": "N"
+      },
+      {
+        "label": "Their focus",
+        "text": "Spot an undefended piece.",
+        "piece": "R"
+      }
+    ],
+    "cta_label": "Invite from Profile",
+    "footer": "Share your personal link. Compare your practice."
+  },
+  "image": "marketing/engagement/assets/friend-loop-square.png",
+  "render": {
+    "ok": true,
+    "template": "culture"
+  }
+}

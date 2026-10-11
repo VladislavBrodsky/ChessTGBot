@@ -1,0 +1,15 @@
+{
+  "template": "tip",
+  "size": "portrait",
+  "theme": "paper",
+  "tag": "Your practice card",
+  "headline": "3 GAMES.\n*3 BETTER HABITS.*",
+  "subhead": "A simple plan for your next chess break.",
+  "steps": [
+    "Name your opponent’s threat.",
+    "Check the next recapture.",
+    "Compare king safety before a trade."
+  ],
+  "cta_label": "Try free AI practice",
+  "footer": "Save this card. Use one habit per game."
+}
