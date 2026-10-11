@@ -1,0 +1,89 @@
+{
+  "commit": "d3ed357ae3bd062126771c5add6cadb20b6a64c8",
+  "verified_at": "2026-10-11T17:03:20.234333+00:00",
+  "app_url": "https://app.web3chess.online/en/login",
+  "api_health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "version": "1.7.3"
+    }
+  },
+  "login_console_errors": [],
+  "github": [
+    {
+      "checks": [
+        {
+          "name": "Frontend browser E2E",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524434195"
+        },
+        {
+          "name": "Static export is up to date",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524057258"
+        },
+        {
+          "name": "Dependency audit",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524056909"
+        },
+        {
+          "name": "Frontend (build + test)",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524056572"
+        },
+        {
+          "name": "Backend (import + pytest)",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524056565"
+        },
+        {
+          "name": "Website (build + typecheck + lint)",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414/job/114524056430"
+        }
+      ]
+    },
+    {
+      "state": "success",
+      "statuses": [
+        {
+          "context": "TGChessBot - ChessTGBot - Website",
+          "state": "success",
+          "description": "Success - web3chess.online",
+          "target_url": "https://railway.com/project/1e9228e3-875d-4aaf-ac12-bf32e1887bbf/service/1271db11-e310-40c9-991c-7a257bacce5c?id=e1f9e727-bc62-4fad-a035-d8fdc6b16b2d&environmentId=c7331ff5-fe30-416c-8c8a-2b01b2820b9a"
+        },
+        {
+          "context": "TGChessBot - ChessTGBot - Backend",
+          "state": "success",
+          "description": "Success - api.web3chess.online",
+          "target_url": "https://railway.com/project/1e9228e3-875d-4aaf-ac12-bf32e1887bbf/service/ee21ff9a-e7c3-4707-99fb-0171b589dde8?id=ee21424c-1ca8-41ec-9fce-d202bca693d1&environmentId=c7331ff5-fe30-416c-8c8a-2b01b2820b9a"
+        },
+        {
+          "context": "TGChessBot - ChessTGBot - Frontend",
+          "state": "success",
+          "description": "Success - app.web3chess.online",
+          "target_url": "https://railway.com/project/1e9228e3-875d-4aaf-ac12-bf32e1887bbf/service/21a2e8e8-d18d-4bcf-acfb-4aabcd3ccd8c?id=dea7f71a-42d2-48b8-92a2-127410c68902&environmentId=c7331ff5-fe30-416c-8c8a-2b01b2820b9a"
+        }
+      ]
+    },
+    {
+      "workflows": [
+        {
+          "id": 38157728414,
+          "name": "CI",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "html_url": "https://github.com/VladislavBrodsky/ChessTGBot/actions/runs/38157728414"
+        }
+      ]
+    }
+  ]
+}

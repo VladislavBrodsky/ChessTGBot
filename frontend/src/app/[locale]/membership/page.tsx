@@ -70,6 +70,7 @@ export default function MembershipPage() {
   const locale = useLocale();
   const tm = useTranslations('Membership');
   const tw = useTranslations('Wallet');
+  const tc = useTranslations('Common');
 
   useNavbarHideWhileMounted();
 
@@ -312,7 +313,7 @@ export default function MembershipPage() {
             <div className="flex flex-col">
               <span className="text-caption font-semibold normal-case tracking-normal text-emerald-500">{tm('active_membership')}</span>
               <span className="text-sm font-bold text-brand-primary">
-                Expires {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+                {tc('expires')} {new Date(stats.premium_expires_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
             </div>
           </motion.div>
@@ -332,7 +333,7 @@ export default function MembershipPage() {
           >
             <BadgeRow>
               <span className="text-caption font-semibold text-brand-muted">{tm('monthly')}</span>
-              {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && <Badge>Current plan</Badge>}
+              {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && <Badge>{tc('current_plan')}</Badge>}
             </BadgeRow>
             <div>
               <div className="flex items-end leading-none">
@@ -356,13 +357,13 @@ export default function MembershipPage() {
             <BadgeRow>
               <span className="text-caption font-semibold text-brand-primary">{tm('annual')}</span>
               {stats?.is_premium && stats.premium_billing_period === 'annual'
-                ? <Badge>Current plan</Badge>
+                ? <Badge>{tc('current_plan')}</Badge>
                 : <Badge variant="purple">{tm('discount')}</Badge>}
             </BadgeRow>
             <div>
               <div className="flex items-end leading-none">
                 <span className="text-2xl font-semibold tracking-tighter text-brand-primary">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-sm font-semibold text-brand-muted mb-0.5">/mo</span>
+                <span className="text-sm font-semibold text-brand-muted mb-0.5">{tm('per_month')}</span>
               </div>
               <span className="text-caption font-medium block mt-1 text-brand-muted">
                 {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
@@ -373,7 +374,7 @@ export default function MembershipPage() {
 
         {/* ── Features list with Gold Accents ──────────────────── */}
         <section aria-labelledby="vip-perks-heading" className="w-full">
-          <h2 id="vip-perks-heading" className="sr-only">VIP Privileges and Benefits</h2>
+          <h2 id="vip-perks-heading" className="sr-only">{tm('perks_heading')}</h2>
           <ul role="list" className="w-full flex flex-col space-y-2.5 list-none m-0 p-0">
             {FEATURES.map((f, i) => (
               <li
@@ -406,46 +407,46 @@ export default function MembershipPage() {
                   onClick={stats.has_stripe_subscription ? handleUpgradeStripe : handleUpgradeBalance}
                   isLoading={submitting}
                   disabled={!stats.has_stripe_subscription && loadingBalance}>
-                  {submitting ? tm('processing') : !stats.has_stripe_subscription && balanceError ? tw('balance_unavailable') : !stats.has_stripe_subscription && loadingBalance ? `${tw('usdt_balance')}…` : `Upgrade to annual · ${tm('discount')}`}
+                  {submitting ? tm('processing') : !stats.has_stripe_subscription && balanceError ? tw('balance_unavailable') : !stats.has_stripe_subscription && loadingBalance ? `${tw('usdt_balance')}…` : tm('annual_upgrade', { discount: tm('discount') })}
                 </Button>
 
                 {stats.has_stripe_subscription && (
                   <Button variant="ghost" className="w-full" onClick={handleUpgradeBalance} disabled={submitting || loadingBalance}>
-                    {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : 'Upgrade using internal balance'}
+                    {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : tm('upgrade_balance')}
                   </Button>
                 )}
               </>
             ) : (stats.premium_billing_period || 'monthly') === 'annual' && billingPeriod === 'monthly' ? (
               <div className="ui-stat ui-stat--premium items-center text-center">
                 <span className="text-sm font-semibold text-brand-primary">
-                  You're on the best plan
+                  {tm('annual_active')}
                 </span>
                 <span className="ui-stat__meta">
-                  Your annual subscription is active and gives you the maximum discount.
+                  {tm('annual_active_description')}
                 </span>
               </div>
             ) : stats?.has_stripe_subscription ? (
               <Button variant="secondary" size="lg" className="w-full" onClick={handleManageSubscription} isLoading={submitting}>
-                {submitting ? tm('processing') : "Manage subscription"}
+                {submitting ? tm('processing') : tm('manage_subscription')}
               </Button>
             ) : (
               <div className="ui-stat ui-stat--premium items-center text-center">
                 <span className="text-sm font-semibold text-brand-primary">
-                  Active via in-app balance
+                  {tm('balance_active')}
                 </span>
                 <span className="ui-stat__meta">
-                  Your Premium was activated using your internal wallet balance. To cancel or change your plan, it will expire automatically on the date shown above.
+                  {tm('balance_active_description')}
                 </span>
               </div>
             )
           ) : (
             <>
               <Button variant="premium" size="lg" className="w-full" onClick={handleSubscribeStripe} isLoading={submitting}>
-                {submitting ? tm('processing') : "Subscribe with card"}
+                {submitting ? tm('processing') : tm('subscribe_card')}
               </Button>
 
               <Button variant="secondary" className="w-full" onClick={handleSubscribeBalance} disabled={submitting || loadingBalance}>
-                {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : 'Pay with internal balance'}
+                {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : tm('pay_balance')}
               </Button>
             </>
           )}
@@ -481,7 +482,7 @@ export default function MembershipPage() {
               {tm('xp_upgrade_desc')}
             </p>
             <p className="text-caption font-semibold text-brand-primary tabular-nums">
-              {tm('xp_upgrade_cost', { xp: stats.xp.toLocaleString() })}
+              {tm('xp_upgrade_cost', { xp: stats.xp.toLocaleString(locale) })}
             </p>
             <Button variant="outline" className="w-full" onClick={handleXpUpgrade}>
               {tm('xp_upgrade_btn')}
@@ -584,7 +585,6 @@ export default function MembershipPage() {
             onClose={() => setShowDepositModal(false)}
             onSuccess={async () => { await syncBalance(); syncStats(); setShowDepositModal(false); }}
             walletAddress={walletAddress}
-            tw={tw}
             chosenWager={cost}
             walletBalance={walletBalance}
           />
@@ -597,7 +597,7 @@ export default function MembershipPage() {
         title={tm('xp_upgrade_title')}
         description="Unlock 30 days of Premium benefits using your accumulated XP."
         costText="5,000 XP"
-        balanceText={`${(stats?.xp || 0).toLocaleString()} XP`}
+        balanceText={`${(stats?.xp || 0).toLocaleString(locale)} XP`}
         loading={submitting}
         onConfirm={handleConfirmXpUpgrade}
         onCancel={() => setConfirmingXpUpgrade(false)}

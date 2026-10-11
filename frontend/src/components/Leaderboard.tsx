@@ -5,7 +5,7 @@ import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 're
 import { FiChevronRight } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Drawer } from '@/components/ui/Drawer';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
@@ -28,6 +28,8 @@ interface LeaderboardItem {
 
 export default function Leaderboard() {
   const t = useTranslations('Index');
+  const tc = useTranslations('Common');
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
   const { data: arenaData, isLoading: loadingArena } = useSWRFetch('/api/v1/users/leaderboard');
   const { data: academyData, isLoading: loadingAcademy } = useSWRFetch('/api/v1/users/leaderboard/academy');
@@ -108,7 +110,7 @@ export default function Leaderboard() {
       >
         {/* Left: Rank & Player */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`ui-icon-tile h-8 w-8 rounded-xl text-caption font-semibold tabular-nums ${cfg.rankBg}`} role="img" aria-label={`Rank ${item.rank}`}>
+          <div className={`ui-icon-tile h-8 w-8 rounded-xl text-caption font-semibold tabular-nums ${cfg.rankBg}`} role="img" aria-label={t('ladder_rank', { rank: item.rank })}>
             {cfg.icon || cfg.label}
           </div>
 
@@ -124,8 +126,8 @@ export default function Leaderboard() {
             </p>
             <p className="text-caption text-brand-muted truncate">
               {activeTab === 'arena'
-                ? `${item.games_played || 0} games · ${item.win_rate || 0}% win`
-                : `${item.study_streak || 0} day streak`}
+                ? t('ladder_stats', { games: item.games_played || 0, rate: item.win_rate || 0 })
+                : t('ladder_streak', { days: item.study_streak || 0 })}
             </p>
           </div>
         </div>
@@ -134,7 +136,7 @@ export default function Leaderboard() {
         <div className="flex flex-col items-end shrink-0 ml-3">
           <div className="text-right">
             <span className={`text-sm font-semibold tabular-nums ${item.rank === 1 ? 'text-brand-gold' : 'text-brand-primary'}`}>
-              {score.toLocaleString()}
+              {score.toLocaleString(locale)}
             </span>
             <span className="text-caption font-medium text-brand-muted ms-1">
               {activeTab === 'arena' ? 'ELO' : 'XP'}
@@ -152,8 +154,8 @@ export default function Leaderboard() {
   };
 
   const tabOptions = [
-    { value: 'arena' as const, label: 'Arena', icon: <FaGamepad size={12} /> },
-    { value: 'academy' as const, label: 'Scholars', icon: <FaBook size={12} /> },
+    { value: 'arena' as const, label: t('ladder_arena_tab'), icon: <FaGamepad size={12} /> },
+    { value: 'academy' as const, label: t('nav_learn'), icon: <FaBook size={12} /> },
   ];
 
   return (
@@ -172,14 +174,14 @@ export default function Leaderboard() {
         <div className="leaderboard-header flex items-center justify-between gap-3 px-5 py-3.5 border-b">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-brand-primary">
-              {activeTab === 'arena' ? 'Arena ladder' : 'Scholar ladder'}
+              {activeTab === 'arena' ? t('ladder_arena') : t('ladder_academy')}
             </p>
             <p className="text-caption text-brand-muted truncate">
-              {metricLabel} · {activeTab === 'arena' ? 'Win games to climb' : 'Study daily to climb'}
+              {metricLabel} · {activeTab === 'arena' ? t('ladder_arena_hint') : t('ladder_academy_hint')}
             </p>
           </div>
           {leaderGap > 0 && (
-            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">Leader +{leaderGap.toLocaleString()}</span>
+            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">{t('leader_gap', { gap: leaderGap.toLocaleString(locale) })}</span>
           )}
         </div>
 
@@ -196,15 +198,15 @@ export default function Leaderboard() {
                     {first ? <span className="ui-avatar-ring">{avatar}</span> : avatar}
                   </div>
                   <span className="podium__name" title={fullName}>{p.first_name}</span>
-                  <span className="podium__score">{scoreOf(p).toLocaleString()} {unit}</span>
-                  <div className={`podium__step podium__step--${p.rank}`} aria-label={`Rank ${p.rank}`}>{p.rank}</div>
+                  <span className="podium__score">{scoreOf(p).toLocaleString(locale)} {unit}</span>
+                  <div className={`podium__step podium__step--${p.rank}`} aria-label={t('ladder_rank', { rank: p.rank })}>{p.rank}</div>
                 </div>
               );
             })}
           </div>
         )}
 
-        <ol aria-label="Leaderboard standings" className="p-3 space-y-2 list-none m-0">
+        <ol aria-label={tc('standings')} className="p-3 space-y-2 list-none m-0">
           {loading ? (
             <li className="list-none"><PodiumSkeleton label={t('global_ranking')} /></li>
           ) : displayedPlayers.length > 0 ? (
@@ -213,7 +215,7 @@ export default function Leaderboard() {
             <li className="py-8 px-4 text-center space-y-2 list-none">
               <span className="ui-icon-tile mx-auto h-12 w-12 rounded-2xl"><FaChessKnight size={20} aria-hidden="true" /></span>
               <p className="text-brand-primary font-semibold text-sm">{t('no_data')}</p>
-              <p className="text-brand-muted text-sm">Complete a game or lesson to enter the standings.</p>
+              <p className="text-brand-muted text-sm">{t('ladder_empty')}</p>
             </li>
           )}
         </ol>
@@ -221,7 +223,7 @@ export default function Leaderboard() {
         {!loading && players.length > 5 && (
           <div className="leaderboard-header flex items-center justify-between gap-3 px-4 py-3 border-t">
             <span className="text-caption font-medium text-brand-muted">
-              Showing 5 of {Math.min(players.length, 50)} players
+              {t('ladder_showing', { shown: 5, total: Math.min(players.length, 50) })}
             </span>
             <button type="button"
               onClick={() => setShowModal(true)}
@@ -240,7 +242,7 @@ export default function Leaderboard() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title={t('global_ranking')}
-        description={`${t('global_node_sync')} · ${players.length} players`}
+        description={t('ladder_players', { count: players.length })}
       >
         <div className="space-y-3">
           <SegmentedControl
@@ -249,7 +251,7 @@ export default function Leaderboard() {
             onChange={setActiveTab}
             size="sm"
           />
-          <ol aria-label="All standings" className="space-y-2 max-h-[60vh] overflow-y-auto pr-1 list-none m-0">
+          <ol aria-label={tc('all_standings')} className="space-y-2 max-h-[60vh] overflow-y-auto pr-1 list-none m-0">
             {players.map((item, idx) => renderRow(item, idx, true))}
           </ol>
         </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
 import { FaTrophy, FaCoins } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
+import { useTranslations } from 'next-intl';
 import { useNavbar } from '@/context/NavbarContext';
 import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
 
@@ -14,6 +15,8 @@ interface SuccessState {
 }
 
 export default function TaskSuccessModal() {
+  const t = useTranslations('Gamification');
+  const tc = useTranslations('Common');
   const [success, setSuccess] = useState<SuccessState | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const { pushHide, popHide } = useNavbar();
@@ -100,7 +103,7 @@ export default function TaskSuccessModal() {
               {/* Title Header */}
               <div className="space-y-1">
                 <h2 id="task-success-title" className="text-caption font-semibold normal-case tracking-normal bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 bg-clip-text text-transparent">
-                  Mission Completed
+                  {t('task_completed')}
                 </h2>
                 <h3 className="text-sm font-semibold text-brand-primary normal-case tracking-normal px-2 mt-1 line-clamp-2">
                   {success.title}
@@ -110,7 +113,7 @@ export default function TaskSuccessModal() {
               {/* Big Reward Glow Box */}
               <div className="w-full py-4 px-3 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/10 flex flex-col items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.1),transparent_70%)]" />
-                <span className="text-caption font-semibold text-emerald-500/60 normal-case tracking-normal block mb-1 z-10">Reward Received</span>
+                <span className="text-caption font-semibold text-emerald-500/60 normal-case tracking-normal block mb-1 z-10">{t('reward_received')}</span>
                 <div className="flex items-center gap-1.5 z-10">
                   <FaCoins className="text-emerald-400 text-base" />
                   <span className="text-2xl font-semibold text-brand-primary tracking-tight leading-none">
@@ -124,7 +127,7 @@ export default function TaskSuccessModal() {
                 onClick={handleClose}
                 className="ui-tap-target action-button w-full py-3.5 text-sm font-semibold transition-all active:scale-95 cursor-pointer relative overflow-hidden"
               >
-                AWESOME!
+                {tc('continue')}
               </button>
             </motion.div>
           </motion.div>

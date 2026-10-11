@@ -98,6 +98,7 @@ type MarketplaceTab = 'all' | 'boxes' | 'premium' | 'themes';
 export default function MarketplacePage() {
     const t = useTranslations('Marketplace');
     const ti = useTranslations('Index');
+  const tc = useTranslations('Common');
     const locale = useLocale();
 
     const { stats, loadingStats, balanceError, syncStats } = useUser();
@@ -206,7 +207,7 @@ export default function MarketplacePage() {
             telegramAlert(t('insufficient_xp'));
             return;
         }
-        telegramConfirm(t('confirm_purchase', { name, amount: cost.toLocaleString() }), async (ok) => {
+        telegramConfirm(t('confirm_purchase', { name, amount: cost.toLocaleString(locale) }), async (ok) => {
             if (!ok) return;
             try {
                 const res = await apiFetch('/api/v1/marketplace/purchase', {
@@ -236,7 +237,7 @@ export default function MarketplacePage() {
             telegramAlert(t('insufficient_xp'));
             return;
         }
-        telegramConfirm(t('confirm_purchase', { name, amount: costXP.toLocaleString() }), async (ok) => {
+        telegramConfirm(t('confirm_purchase', { name, amount: costXP.toLocaleString(locale) }), async (ok) => {
             if (!ok) return;
             try {
                 const res = await apiFetch('/api/v1/gamification/themes/buy', {
@@ -266,7 +267,7 @@ export default function MarketplacePage() {
                     <PageHeader title={t('title')} description={t('subtitle')} icon={<FiShoppingBag />} tone="gold" />
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
-                        <h2 id="xp-balance-heading" className="sr-only">Your XP Balance</h2>
+                        <h2 id="xp-balance-heading" className="sr-only">{t('xp_balance_label')}</h2>
                         <div className="ui-hero-card ui-hero-card--gold p-4 sm:p-5">
                             <div className="flex items-center justify-between gap-4 relative z-10">
                                 <div className="space-y-1 text-start">
@@ -276,7 +277,7 @@ export default function MarketplacePage() {
                                 ) : (
                                     <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
                                         className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-brand-primary">
-                                        {userXP.toLocaleString()} <span className="text-lg text-brand-gold">XP</span>
+                                        {userXP.toLocaleString(locale)} <span className="text-lg text-brand-gold">XP</span>
                                     </motion.span>
                                 )}
                                 </div>
@@ -288,7 +289,7 @@ export default function MarketplacePage() {
                                 <div className="mt-4 flex min-h-[var(--size-control-sm)] items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
                                     {loadingStats || !nextBox ? <Skeleton width="60%" textRole="body" /> : <>
                                     <p className="text-sm leading-5 text-brand-muted">
-                                        <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString() })}
+                                        <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString(locale) })}
                                     </p>
                                     <Link href={`/${locale}/academy`} className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-sm font-semibold text-brand-success transition-colors hover:bg-brand-elevated">
                                         {ti('academy')}
@@ -321,7 +322,7 @@ export default function MarketplacePage() {
                     </AnimatePresence>
 
                     {/* Category Tabs / Filter */}
-                    <nav aria-label="Marketplace categories" className="w-full pt-1">
+                    <nav aria-label={tc('marketplace_categories')} className="w-full pt-1">
                         <SegmentedControl
                             options={[
                                 { value: 'all', label: 'All' },
@@ -377,7 +378,7 @@ export default function MarketplacePage() {
                                                 <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                                 </div>
                                                 <Badge variant="purple">
-                                                    {item.cost.toLocaleString()} XP
+                                                    {item.cost.toLocaleString(locale)} XP
                                                 </Badge>
                                             </div>
                                             <Button
@@ -386,7 +387,7 @@ export default function MarketplacePage() {
                                                 disabled={!affordable || loadingStats || Boolean(balanceError)}
                                                 onClick={() => handleDirectPurchase(item.id, item.name, item.cost)}
                                             >
-                                                {affordable ? `${item.cost.toLocaleString()} XP` : t('need_more_xp', { amount: (item.cost - userXP).toLocaleString() })}
+                                                {affordable ? `${item.cost.toLocaleString(locale)} XP` : t('need_more_xp', { amount: (item.cost - userXP).toLocaleString(locale) })}
                                             </Button>
                                         </Card>
                                     );
@@ -450,7 +451,7 @@ export default function MarketplacePage() {
                                                         }}
                                                         className="ui-tap-target hidden sm:inline-flex items-center justify-center p-2 rounded-xl bg-brand-elevated hover:bg-brand-border-opacity-20 text-brand-muted hover:text-brand-primary transition-colors text-sm cursor-pointer"
                                                         title="Preview theme"
-                                                        aria-label="Preview theme"
+                                                        aria-label={tc('preview_theme')}
                                                     >
                                                         <FaEye />
                                                     </button>
@@ -468,7 +469,7 @@ export default function MarketplacePage() {
                                                             disabled={!affordable || loadingStats || Boolean(balanceError)}
                                                             className="shrink-0"
                                                         >
-                                                            {affordable ? `${theme.price_xp.toLocaleString()} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString() })}
+                                                            {affordable ? `${theme.price_xp.toLocaleString(locale)} XP` : t('need_more_xp', { amount: (theme.price_xp - userXP).toLocaleString(locale) })}
                                                         </Button>
                                                     )}
                                                 </div>
@@ -496,7 +497,7 @@ export default function MarketplacePage() {
                             <ThemeBoardPreview swatch={swatch} />
                             <div className="flex items-center gap-2">
                                 <Badge variant={previewTheme.owned ? 'emerald' : 'secondary'}>
-                                    {previewTheme.owned ? t('owned') : `${previewTheme.price_xp.toLocaleString()} XP`}
+                                    {previewTheme.owned ? t('owned') : `${previewTheme.price_xp.toLocaleString(locale)} XP`}
                                 </Badge>
                                 {isCurrent && (
                                     <Badge variant="emerald">
@@ -533,7 +534,7 @@ export default function MarketplacePage() {
                                             handleBuyTheme(targetTheme.code, targetTheme.name, targetTheme.price_xp);
                                         }}
                                     >
-                                        {affordable ? `Unlock Theme (${previewTheme.price_xp.toLocaleString()} XP)` : t('need_more_xp', { amount: (previewTheme.price_xp - userXP).toLocaleString() })}
+                                        {affordable ? t('confirm_unlock', { cost: previewTheme.price_xp.toLocaleString(locale) }) : t('need_more_xp', { amount: (previewTheme.price_xp - userXP).toLocaleString(locale) })}
                                     </Button>
                                 )}
                             </div>

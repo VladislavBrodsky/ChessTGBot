@@ -22,6 +22,15 @@ COPY . .
 ENV STATIC_EXPORT=false
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Railway build variables must be declared in the stage that runs next build.
+# Only public client settings and the backend URL are forwarded; no credentials.
+ARG BACKEND_URL=https://api.web3chess.online
+ARG NEXT_PUBLIC_API_URL=https://api.web3chess.online
+ARG NEXT_PUBLIC_BOT_USERNAME=chess_matbot
+ARG NEXT_PUBLIC_SENTRY_DSN
+ARG NEXT_PUBLIC_E2E_TEST_MODE=false
+ARG NEXT_PUBLIC_E2E_AUTO_AUTH=false
+
 RUN npm run build
 
 # ─── Stage 3: Minimal production image ──────────────────────────────────────

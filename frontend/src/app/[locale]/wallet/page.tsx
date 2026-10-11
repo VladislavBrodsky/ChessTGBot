@@ -115,7 +115,6 @@ export default function WalletPage() {
               onSuccess={refreshWalletData}
               walletAddress={walletAddress}
               walletBalance={balance}
-              tw={tw}
             />
           )}
           {activeModal === 'withdraw' && (
@@ -124,7 +123,6 @@ export default function WalletPage() {
               onSuccess={refreshWalletData}
               balance={balance}
               initialWithdrawAddress={walletAddress}
-              tw={tw}
             />
           )}
           {activeModal === 'connect' && (

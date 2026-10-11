@@ -195,7 +195,7 @@ export default function ChallengesPage() {
               <XPProgressBar
                 xp={userXp}
                 level={stats?.level ?? 1}
-                levelLabel={t.has('level') ? t('level') : 'Level'}
+                levelLabel={ti('level')}
                 className="w-full"
               />
             </div>
@@ -204,7 +204,7 @@ export default function ChallengesPage() {
 
         {/* Stats Row — Ultra Premium */}
         <section aria-labelledby="stats-heading" className="w-full">
-          <h2 id="stats-heading" className="sr-only">Player Lifetime Combat Stats</h2>
+          <h2 id="stats-heading" className="sr-only">{t('lifetime_stats')}</h2>
           <div className="w-full grid grid-cols-2 gap-2">
             <div className="ui-stat flex-row items-center gap-3">
               <span className="ui-icon-tile ui-icon-tile--gold"><FaFire className="text-base" aria-hidden="true" /></span>
@@ -235,7 +235,7 @@ export default function ChallengesPage() {
               <EmptyState
                 icon={<FaTrophy className="h-6 w-6 text-brand-muted" />}
                 title={t('no_active_missions')}
-                description="Check back tomorrow for new daily tasks and missions."
+                description={t('new_tasks_tomorrow')}
               />
             ) : (
               [...tasks.filter(t => !t.claimed)].sort((a, b) => {
@@ -339,7 +339,7 @@ export default function ChallengesPage() {
         {/* Archive Section */}
         {!loading && tasks.some(t => t.claimed) && (
           <section aria-labelledby="archive-heading" className="w-full">
-            <h2 id="archive-heading" className="sr-only">Archived Completed Operations</h2>
+            <h2 id="archive-heading" className="sr-only">{t('completed_archive')}</h2>
             <button type="button"
               onClick={() => setShowArchive(!showArchive)}
               aria-expanded={showArchive}
@@ -379,7 +379,7 @@ export default function ChallengesPage() {
         )}
         {/* Referral Dashboard */}
         <section aria-labelledby="referral-heading" className="w-full">
-          <h2 id="referral-heading" className="sr-only">Referral & Squad Dashboard</h2>
+          <h2 id="referral-heading" className="sr-only">{t('referral_dashboard')}</h2>
           <ReferralDashboard referralCode={stats?.referral_code} botUsername={stats?.bot_username} />
         </section>
 

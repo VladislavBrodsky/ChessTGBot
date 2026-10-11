@@ -7,6 +7,23 @@ from app.core.security import is_allowed_cors_origin
 from httpx import AsyncClient
 
 
+@pytest.fixture(autouse=True)
+def explicit_cors_test_policy(monkeypatch):
+    """Exercise a known allowlist independently of the developer's .env file."""
+    monkeypatch.setattr(
+        get_settings(),
+        "CORS_ALLOWED_ORIGINS",
+        ",".join([
+            "https://web.telegram.org",
+            "https://telegram.org",
+            "https://app.web3chess.online",
+            "https://web3chess.online",
+            "https://chesstgbot-frontend-production.up.railway.app",
+            "https://chesstgbot-backend-production.up.railway.app",
+        ]),
+    )
+
+
 def test_is_allowed_cors_origin_uses_exact_known_origins():
     assert is_allowed_cors_origin("https://web.telegram.org") is True
     assert is_allowed_cors_origin("https://telegram.org") is True

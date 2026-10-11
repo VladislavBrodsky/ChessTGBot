@@ -6,7 +6,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/backend && SECRET_KEY=devsecret WEBHOOK_SECRET=devhook ENVIRONMENT=development ENV=development DATABASE_URL='postgresql+asyncpg://dimitri@localhost/chess_db' REDIS_URL= TELEGRAM_BOT_TOKEN=123456789:test_token ./venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000"
+        "cd /Users/grandmaestro/Developer/ChessTGBot/backend && SECRET_KEY=devsecret WEBHOOK_SECRET=devhook ENVIRONMENT=development ENV=development DATABASE_URL='postgresql+asyncpg://dimitri@localhost/chess_db' REDIS_URL= TELEGRAM_BOT_TOKEN=123456789:test_token ./venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000"
       ],
       "port": 8000
     },
@@ -15,7 +15,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/dimitri/Documents/Projects/ChessTGBot-main/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
+        "cd /Users/grandmaestro/Developer/ChessTGBot/frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 npm run dev"
       ],
       "port": 3000
     },
@@ -32,6 +32,24 @@
         "3101"
       ],
       "port": 3101
+    },
+    {
+      "name": "frontend-dev-mock",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/grandmaestro/Developer/ChessTGBot/frontend && node scripts/dev-mock.mjs"
+      ],
+      "port": 3124
+    },
+    {
+      "name": "frontend-old",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /private/tmp/claude-501/-Users-grandmaestro-Developer-ChessTGBot/a2678854-6b45-4f32-b1c0-b3c2d081b134/scratchpad/old/frontend && NEXT_PUBLIC_E2E_TEST_MODE=true NEXT_PUBLIC_E2E_AUTO_AUTH=true BACKEND_URL=http://127.0.0.1:8124 npx next dev --webpack -p 3125"
+      ],
+      "port": 3125
     }
   ]
 }

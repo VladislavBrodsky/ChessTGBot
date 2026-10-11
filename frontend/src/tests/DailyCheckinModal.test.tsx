@@ -99,3 +99,11 @@ describe('DailyCheckinModal', () => {
     expect(screen.queryByText(/daily reward/i)).toBeNull();
   });
 });
+
+jest.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const messages = require('../messages/en.json');
+    return (key: string, values: Record<string, unknown> = {}) => messages[namespace][key].replace(/\{(\w+)\}/g, (_match: string, name: string) => String(values[name] ?? name));
+  },
+}));

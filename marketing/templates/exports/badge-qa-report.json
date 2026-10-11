@@ -1,0 +1,3004 @@
+{
+  "generated": "2026-10-08T05:20:37.391Z",
+  "websitePages": [
+    {
+      "route": "/",
+      "badges": 5,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/how-it-works",
+      "badges": 4,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/wagers",
+      "badges": 2,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/academy",
+      "badges": 2,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/blog",
+      "badges": 11,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/fair-play",
+      "badges": 2,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/terms",
+      "badges": 1,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/privacy",
+      "badges": 1,
+      "documentWidth": 320,
+      "failures": [],
+      "width": 320
+    },
+    {
+      "route": "/",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/how-it-works",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/wagers",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/academy",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog",
+      "badges": 11,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/fair-play",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/terms",
+      "badges": 1,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/privacy",
+      "badges": 1,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/how-it-works",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/wagers",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/academy",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog",
+      "badges": 11,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/fair-play",
+      "badges": 2,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/terms",
+      "badges": 1,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/privacy",
+      "badges": 1,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    }
+  ],
+  "articlePages": [
+    {
+      "route": "/blog/fair-play-in-web3-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-3-minute-blitz-blueprint-tactics-time-management",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/bankroll-management-for-competitive-chess-wagers",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/stafford-and-englund-gambits-speed-chess-weapons",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/elo-xp-progression-guide",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/why-telegram-mini-apps-for-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/opening-mastery-tactics",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 320,
+      "viewport": 320,
+      "violations": []
+    },
+    {
+      "route": "/blog/fair-play-in-web3-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-3-minute-blitz-blueprint-tactics-time-management",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/bankroll-management-for-competitive-chess-wagers",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/stafford-and-englund-gambits-speed-chess-weapons",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/elo-xp-progression-guide",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/why-telegram-mini-apps-for-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/opening-mastery-tactics",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 390,
+      "viewport": 390,
+      "violations": []
+    },
+    {
+      "route": "/blog/fair-play-in-web3-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-death-of-tap-to-earn-skill-based-web3-chess",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/the-3-minute-blitz-blueprint-tactics-time-management",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/bankroll-management-for-competitive-chess-wagers",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/stafford-and-englund-gambits-speed-chess-weapons",
+      "badges": 5,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/elo-xp-progression-guide",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/why-telegram-mini-apps-for-chess",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    },
+    {
+      "route": "/blog/opening-mastery-tactics",
+      "badges": 4,
+      "collisions": [],
+      "documentWidth": 1280,
+      "viewport": 1280,
+      "violations": []
+    }
+  ],
+  "gameFixtures": [
+    {
+      "actions": [
+        44,
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "documentWidth": 316,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "Professional member",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        }
+      ],
+      "online": [
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        }
+      ],
+      "viewport": 320
+    },
+    {
+      "actions": [
+        44,
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "documentWidth": 386,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "Professional member",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        }
+      ],
+      "online": [
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        }
+      ],
+      "viewport": 390
+    },
+    {
+      "actions": [
+        44,
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "documentWidth": 1276,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 113, 133)",
+          "label": "Failed",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(17, 17, 17)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(10, 10, 10)",
+          "theme": "dark"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "Professional member",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "Current",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "Level 24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(15, 23, 42)",
+          "label": "18+",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(4, 120, 87)",
+          "label": "Completed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(146, 64, 14)",
+          "label": "Pending",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(190, 18, 60)",
+          "label": "Failed",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.08)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(14, 116, 144)",
+          "label": "Progress",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "PRO",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(126, 34, 206)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "0",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "24",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(241, 245, 249)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(71, 85, 105)",
+          "label": "1200",
+          "surface": "rgb(255, 255, 255)",
+          "theme": "light"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "Professional member",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "ltr",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "المستوى ٢٤",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "Current",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "Level 24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(255, 255, 255)",
+          "label": "18+",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(16, 185, 129, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(52, 211, 153)",
+          "label": "Completed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(245, 158, 11, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(251, 191, 36)",
+          "label": "Pending",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(239, 68, 68, 0.1)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(253, 164, 175)",
+          "label": "Failed",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgba(6, 182, 212, 0.15)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(103, 232, 249)",
+          "label": "Progress",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "PRO",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "اكتمل الدرس مع تسمية حالة طويلة لاختبار التفاف النص بشكل صحيح",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(192, 132, 252)",
+          "label": "عضوية احترافية",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "0",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "24",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        },
+        {
+          "background": "rgb(21, 0, 53)",
+          "direction": "rtl",
+          "fontSize": "12px",
+          "foreground": "rgb(154, 159, 168)",
+          "label": "1200",
+          "surface": "rgb(11, 0, 31)",
+          "theme": "nebula"
+        }
+      ],
+      "online": [
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        },
+        {
+          "correctSide": true,
+          "rtl": false
+        },
+        {
+          "correctSide": true,
+          "rtl": true
+        }
+      ],
+      "viewport": 1280
+    }
+  ],
+  "websiteFixtures": [
+    {
+      "documentWidth": 320,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)"
+        }
+      ],
+      "viewport": 320
+    },
+    {
+      "documentWidth": 390,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)"
+        }
+      ],
+      "viewport": 390
+    },
+    {
+      "documentWidth": 1280,
+      "errors": [],
+      "metrics": [
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(229, 229, 229)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "Tactics",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(209, 255, 202)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "Practice in Telegram",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(0, 0, 0)",
+          "label": "18+ wager matches",
+          "surface": "rgb(255, 255, 255)"
+        },
+        {
+          "background": "rgb(243, 243, 243)",
+          "font": "Onest, \"Onest Fallback\", Onest, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans SC\", \"Noto Sans JP\", \"Noto Sans Devanagari\", \"Noto Sans Arabic\", sans-serif",
+          "fontSize": "14px",
+          "foreground": "rgb(68, 68, 68)",
+          "label": "A completed lesson with a deliberately long translated status label",
+          "surface": "rgb(255, 255, 255)"
+        }
+      ],
+      "viewport": 1280
+    }
+  ],
+  "collisionMethod": "Normal-flow badges against headings, actions and metadata; fixed scrolling interface layers are excluded.",
+  "scope": "Live local public pages; actual shared game components rendered in isolated fixtures. Authenticated account states were not opened.",
+  "contrast": {
+    "minimum": 4.98,
+    "failures": []
+  },
+  "summary": {
+    "publicPageCases": 48,
+    "gameThemeDirectionCases": 18,
+    "websiteSurfaceCases": 6,
+    "geometryFailures": 0,
+    "contrastFailures": 0
+  }
+}

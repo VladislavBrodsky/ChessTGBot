@@ -680,7 +680,6 @@ export default function PlayLobby() {
               walletBalance={walletBalance}
               onClose={() => setShowDepositDrawer(false)}
               onSuccess={refreshAfterDeposit}
-              tw={tw}
             />
           )}
         </AnimatePresence>

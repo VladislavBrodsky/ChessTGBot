@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { motion } from 'framer-motion';
 import Confetti from 'react-confetti';
@@ -19,6 +20,8 @@ export function DepositSuccessView({
   walletBalance,
   onClose,
 }: DepositSuccessViewProps) {
+  const tw = useTranslations('Wallet');
+  const tc = useTranslations('Common');
   return (
     <div className="bottom-drawer-backdrop z-[100] flex items-center justify-center p-4">
       {showConfetti && (
@@ -39,7 +42,7 @@ export function DepositSuccessView({
         </div>
         <div className="space-y-1">
           <h2 className="text-lg font-semibold text-emerald-500 normal-case tracking-normal animate-pulse-slow">
-            Top-Up Successful!
+            {tw('deposit_complete')}
           </h2>
           <p className="text-sm text-brand-muted font-bold normal-case tracking-normal">
             {successMessage}
@@ -47,7 +50,7 @@ export function DepositSuccessView({
         </div>
         <div className="p-3 bg-brand-surface/40 border border-brand-border-opacity-5 rounded-2xl">
           <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-            Updated Balance
+            {tw('updated_balance')}
           </span>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">
             {typeof walletBalance === 'number' && Number.isFinite(walletBalance) ? `$${(walletBalance / 100).toFixed(2)}` : '—'} USDT
@@ -57,7 +60,7 @@ export function DepositSuccessView({
           onClick={onClose}
           className="ui-tap-target w-full py-3 rounded-xl bg-emerald-500 text-brand-void text-sm font-semibold normal-case tracking-normal shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer"
         >
-          Acknowledge & Close
+          {tc('close')}
         </button>
       </motion.div>
     </div>

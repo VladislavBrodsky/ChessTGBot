@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Web3Chess — Campaign Studio</title>
+  <link rel="stylesheet" href="studio.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="lockup"><img id="brand-symbol" alt="CHESS · Play-to-Earn" width="143" height="48"><div><span>Campaign studio</span></div></div>
+    <a class="toplink" href="playbook.html">Campaign playbook <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="workspace">
+    <aside class="library" aria-label="Template library">
+      <div class="rail-heading"><span class="eyebrow">THE COLLECTION</span><span class="scroll-cue">Swipe for more →</span><span class="count">07</span></div>
+      <h1>One brand.<br>Every move.</h1>
+      <p class="intro">Seven campaign families.<br>Four native compositions each.</p>
+      <div id="templates" class="template-list"></div>
+      <div class="library-note"><span class="dot"></span><p>Built from your brand assets.<br>Designed to be made your own.</p></div>
+    </aside>
+    <section class="stage" aria-label="Template preview">
+      <div class="stage-heading"><div><span class="eyebrow" id="campaign-purpose"></span><h2 id="campaign-name"></h2></div><div class="format-tabs" id="formats" role="group" aria-label="Canvas format"></div></div>
+      <div class="placement-bar" id="placement-control" hidden><label for="placement">9:16 placement</label><select id="placement"><option value="story">Story</option><option value="reels">Reels / short video</option></select></div>
+      <div class="preview-well"><div class="preview-wrap" id="preview-wrap"><canvas id="preview" role="img"></canvas><div id="safe-overlay" class="safe-overlay" hidden><span>PROTECTED CONTENT</span></div><span id="reserved-top" class="reserved-label" hidden>Platform header</span><span id="reserved-bottom" class="reserved-label" hidden>Platform controls / captions</span></div></div>
+      <div class="stage-footer"><span id="dimensions"></span><label class="guide-toggle"><input id="guides" type="checkbox" checked> Show safe zones</label></div>
+      <p id="safe-description" class="safe-description"></p>
+      <div id="warnings" class="warning" role="alert" hidden></div>
+      <p id="render-status" class="render-status" role="status" aria-live="polite">Loading your brand assets…</p>
+    </section>
+    <aside class="editor" aria-label="Edit campaign content">
+      <div class="rail-heading"><span class="eyebrow">MAKE IT YOURS</span><button id="reset" class="text-button" type="button">Reset</button></div>
+      <label for="headline">The hook <span>Keep it punchy.</span></label>
+      <textarea id="headline" rows="3" maxlength="75"></textarea>
+      <button id="alternate" class="alternate" type="button">Try the alternate hook <span aria-hidden="true">↗</span></button>
+      <label for="body">The supporting line</label><textarea id="body" rows="2" maxlength="125"></textarea>
+      <div class="field-row"><div><label for="tag">The label</label><input id="tag" maxlength="32"></div></div>
+      <label for="cta">The next action</label><input id="cta" maxlength="32">
+      <label for="theme">The canvas</label><select id="theme"><option value="canvas">Warm gray</option><option value="paper">Paper white</option><option value="ink">Ink statement</option></select>
+      <label id="reveal-control" class="reveal-control" hidden><input id="reveal" type="checkbox"> Show the puzzle answer card<br>(uses verified solution copy)</label>
+      <div class="export-actions"><button id="png" class="primary" type="button">Download PNG <span aria-hidden="true">↗</span></button><button id="svg" class="secondary" type="button">Download editable SVG</button></div>
+      <button id="save" class="text-button save-button" type="button">Save campaign settings</button>
+      <label class="text-button import-button">Load saved settings<input id="import" type="file" accept=".json,application/json" hidden></label>
+      <details class="caption-panel"><summary>Caption & campaign details</summary><p id="caption"></p><button id="copy-caption" class="secondary" type="button">Copy caption</button><label for="destination">Destination link</label><input id="destination" readonly><p class="metric"><strong>Measure</strong><span id="metric"></span></p></details>
+      <p class="export-note">PNG is the final upload file. SVG keeps text and groups editable; font support varies by editor. Copy changes save in this browser.</p>
+    </aside>
+  </main>
+  <script src="assets.js"></script><script src="campaigns.js"></script><script src="renderer.js"></script><script src="studio.js"></script>
+</body>
+</html>

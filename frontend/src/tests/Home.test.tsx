@@ -77,9 +77,11 @@ jest.mock('@/lib/api', () => ({
 jest.mock('@/components/Leaderboard', () => () => <div data-testid="leaderboard">Leaderboard Mock</div>);
 jest.mock('@/components/XPProgressBar', () => () => <div data-testid="xp-progress-bar">XPProgressBar Mock</div>);
 jest.mock('@/components/LayoutWrapper', () => ({ children }: any) => <div>{children}</div>);
-// Mocked because it fetches its claim status on mount, which otherwise
+// Mocked because they fetch remote state on mount, which otherwise
 // resolves outside act() after synchronous tests finish rendering.
 jest.mock('@/components/DailyCheckinModal', () => () => null);
+jest.mock('@/components/game/ArenaBanner', () => () => null);
+jest.mock('@/components/EngagementQuest', () => () => null);
 
 // Mock Framer Motion to avoid animation issues in tests
 jest.mock('framer-motion', () => ({

@@ -124,6 +124,9 @@ docker-compose up -d
 ```
 
 ### 2. Launch FastAPI Backend
+
+For a fresh checkout, copy `backend/.env.example` to `backend/.env` if the file does not exist. Generate two independent values for `SECRET_KEY` and `WEBHOOK_SECRET` using the command in the example. The file is for local development; Railway production uses the service variables described below.
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -141,6 +144,23 @@ npm run dev
 ```
 
 Visit `http://localhost:3000` to play locally.
+
+### Production environment variables
+
+Each Railway service has its own variables. The references below document every application setting consumed by the current source, including optional controls and legacy aliases. They contain source defaults and blank credential fields; they are not exports of the live services.
+
+| Process | Variable reference | Values to obtain from the owning account |
+| --- | --- | --- |
+| Backend API (`api.web3chess.online`) | [`backend/.env.production.example`](backend/.env.production.example) | Postgres/Redis references, chess bot token, admin IDs, signing/webhook secrets, verified wallet/provider configuration and existing money policy |
+| Mini App (`app.web3chess.online`) | [`frontend/.env.production.example`](frontend/.env.production.example) | Optional public Sentry DSN; API URL and bot username are provided |
+| Website (`web3chess.online`) | [`website/.env.production.example`](website/.env.production.example) | Optional Google site verification; domain and Telegram links are provided |
+| Marketing publisher (`@chess_hub`) | [`marketing/.env.production.example`](marketing/.env.production.example) | Dedicated marketing bot token; channel is provided |
+
+Compare these references against the existing service variables before adding missing entries. Preserve live credentials, wallet addresses, limits and feature flags. Use Railway references to the actual Postgres and Redis service names for `DATABASE_URL` and `REDIS_URL`; private connection strings are not usable from a local machine. Railway injects `PORT` and deployment metadata automatically. [Railway variable documentation](https://docs.railway.com/variables).
+
+The Mini App and website public variables are fixed during `next build`. Their Dockerfiles declare the required build arguments, as [Railway requires for Docker builds](https://docs.railway.com/builds/dockerfiles). Rebuild after changing these values. Keep private tokens and wallet secrets in the backend or publishing process. The production example files are not automatically loaded by the backend and do not change Railway variables.
+
+The `NEXT_PUBLIC_TRANSAK_*` and `NEXT_PUBLIC_SELF_CUSTODY_BRIDGE_ENABLED` entries in the current local frontend file are unused by the current source and are not production requirements. `OPENAI_API_KEY` is used only by manual academy generation scripts; `ANTHROPIC_API_KEY` is optional for the separate marketing writer.
 
 ---
 

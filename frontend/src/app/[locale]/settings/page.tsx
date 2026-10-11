@@ -316,10 +316,10 @@ export default function SettingsPage() {
             <span className="ui-icon-tile ui-icon-tile--gold"><FaStore aria-hidden="true" /></span>
             <div className="flex min-w-0 flex-col text-start">
               <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-                Marketplace & Vaults
+                {t('marketplace_link')}
               </span>
               <span className="text-caption font-medium text-brand-muted">
-                XP Mystery Boxes & Custom Board Styles
+                {t('marketplace_description')}
               </span>
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function SettingsPage() {
                 Chess Academy
               </span>
               <span className="text-caption font-medium text-brand-muted">
-                Interactive Tactics & Opening Lessons
+                {t('academy_description')}
               </span>
             </div>
           </div>
@@ -352,10 +352,10 @@ export default function SettingsPage() {
           </span>
           <div className="flex min-w-0 flex-col text-start">
             <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              Data & Wallet Sync
+              {t('data_sync')}
             </span>
             <span className="text-caption font-medium text-brand-muted">
-              Force refresh balance & cached stats
+              {t('data_sync_description')}
             </span>
           </div>
         </div>

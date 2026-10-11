@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, PanInfo, useDragControls } from 'framer-motion';
@@ -29,6 +30,7 @@ export function Drawer({
   maxHeight = 'max-h-[85dvh]',
   showHandle = true,
 }: DrawerProps) {
+  const tc = useTranslations('Common');
   const dragControls = useDragControls();
   const [mounted, setMounted] = useState(false);
   const { pushHide, popHide } = useNavbar();
@@ -82,7 +84,7 @@ export function Drawer({
             ref={dialogRef}
             tabIndex={-1}
             aria-labelledby={title ? titleId : undefined}
-            aria-label={title ? undefined : "Dialog"}
+            aria-label={title ? undefined : tc('dialog')}
             aria-describedby={description ? descriptionId : undefined}
             drag="y"
             dragControls={dragControls}
@@ -115,7 +117,7 @@ export function Drawer({
                   </p>
                 )}
                 </div>
-                <Button variant="ghost" className="h-11 w-11 shrink-0 p-0" aria-label="Close dialog" onClick={onClose}>
+                <Button variant="ghost" className="h-11 w-11 shrink-0 p-0" aria-label={tc('close_dialog')} onClick={onClose}>
                   <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 6 12 12M6 18 18 6" strokeWidth="2" strokeLinecap="round" /></svg>
                 </Button>
               </div>

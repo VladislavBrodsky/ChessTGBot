@@ -1,0 +1,2294 @@
+{
+  "version": 2,
+  "layouts": 40,
+  "layoutWarnings": 0,
+  "consoleErrors": [],
+  "svgCheck": {
+    "fonts": [
+      {
+        "family": "W3 Display",
+        "status": "loaded"
+      },
+      {
+        "family": "W3 Body",
+        "status": "loaded"
+      }
+    ],
+    "xmlErrors": 0,
+    "meanChannelDifference": 0.4623168724279835,
+    "changedPixelFraction": 0.004609739368998628
+  },
+  "studio": {
+    "generated": "2026-10-08T05:39:24.221377+00:00",
+    "collectionFamilies": 7,
+    "responsive": [
+      {
+        "viewport": 320,
+        "documentWidth": 320,
+        "format": "9:16 Reels",
+        "exportsEnabled": true,
+        "guideAlignmentError": 0,
+        "status": "Ready to export."
+      },
+      {
+        "viewport": 390,
+        "documentWidth": 390,
+        "format": "9:16 Story",
+        "exportsEnabled": true,
+        "guideAlignmentError": 0.005208333333371229,
+        "status": "Ready to export."
+      },
+      {
+        "viewport": 1280,
+        "documentWidth": 1280,
+        "format": "9:16 Story",
+        "exportsEnabled": true,
+        "guideAlignmentError": 0.0052083333333143855,
+        "status": "Ready to export."
+      }
+    ],
+    "invalidCopy": {
+      "status": "Fix the layout warnings to export.",
+      "pngEnabled": false,
+      "svgEnabled": false
+    },
+    "copyRestored": true,
+    "screenshots": [
+      "studio-mobile.jpg",
+      "studio-desktop.jpg"
+    ]
+  },
+  "badges": {
+    "publicPageCases": 48,
+    "gameThemeDirectionCases": 18,
+    "websiteSurfaceCases": 6,
+    "geometryFailures": 0,
+    "contrastFailures": 0
+  },
+  "matrix": [
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "rival",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "academy",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "tempo",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "stakes",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "square",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "portrait",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "culture",
+      "format": "wide",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "square",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "portrait",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 32
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "puzzle",
+      "format": "wide",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 34
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "opening",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "rival",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "academy",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "tempo",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "stakes",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "culture",
+      "format": "story",
+      "placement": "reels",
+      "reveal": false,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "canvas",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "paper",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": false,
+      "warnings": [],
+      "smallestBody": 30
+    },
+    {
+      "id": "puzzle",
+      "format": "story",
+      "placement": "reels",
+      "reveal": true,
+      "theme": "ink",
+      "alternate": true,
+      "warnings": [],
+      "smallestBody": 30
+    }
+  ],
+  "regressions": {
+    "longBadgeMovesBelowLogo": true,
+    "badgeTypeNeverShrinks": true,
+    "unsafeProofBlocked": true,
+    "unsafeArtworkBlocked": true,
+    "unsafeLogoBlocked": true,
+    "unsafeIconBlocked": true,
+    "unsafeTermsBlocked": true,
+    "headlineBodyCollisionBlocked": true,
+    "overlongHookBlocked": true,
+    "overlongBodyBlocked": true,
+    "overlongActionBlocked": true,
+    "overlongTermsBlocked": true,
+    "emptyHookBlocked": true,
+    "legacyYellowMigratesToPaper": true
+  }
+}

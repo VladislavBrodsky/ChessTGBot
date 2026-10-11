@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import BoardA11y from '@/components/game/BoardA11y';
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then((mod) => mod.Chessboard), { ssr: false });
@@ -58,6 +59,7 @@ function ChessBoardComponent({
     customDarkSquareStyle = { backgroundColor: '#2e3a4e' },
     customLightSquareStyle = { backgroundColor: '#cbd5e1' },
 }: ChessBoardProps) {
+    const t = useTranslations('Game');
     const [windowDimension, setWindowDimension] = useState({ width: 0, height: 0 });
     const [boardTheme, setBoardTheme] = useState<string>('default');
 
@@ -318,7 +320,7 @@ function ChessBoardComponent({
             className="w-full aspect-square relative z-10 transition-all duration-700 mx-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary"
             role="group"
             tabIndex={0}
-            aria-label="Chessboard. Type a source square and destination square, for example e2e4, to make a move. Press Escape to clear the current entry."
+            aria-label={t('board_label')}
             onKeyDown={handleKeyboardMove}
         >
             {showConfetti && <div className="fixed inset-0 pointer-events-none z-50">
@@ -341,7 +343,7 @@ function ChessBoardComponent({
                                 className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♛</span>
-                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Queen</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('piece_queen')}</span>
                             </motion.button>
                             
                             <motion.button type="button"
@@ -351,7 +353,7 @@ function ChessBoardComponent({
                                 className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♞</span>
-                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Knight</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('piece_knight')}</span>
                             </motion.button>
                             
                             <motion.button type="button"
@@ -361,7 +363,7 @@ function ChessBoardComponent({
                                 className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♜</span>
-                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Rook</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('piece_rook')}</span>
                             </motion.button>
                             
                             <motion.button type="button"
@@ -371,7 +373,7 @@ function ChessBoardComponent({
                                 className="ui-tap-target py-4 glass-button rounded-xl flex flex-col items-center gap-1.5 cursor-pointer"
                             >
                                 <span className="text-2xl text-brand-primary">♝</span>
-                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">Bishop</span>
+                                <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('piece_bishop')}</span>
                             </motion.button>
                         </div>
                         

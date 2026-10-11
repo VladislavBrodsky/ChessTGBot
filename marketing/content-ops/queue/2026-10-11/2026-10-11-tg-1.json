@@ -5,11 +5,12 @@
   "slot": 1,
   "category": "Tactics",
   "scheduled_at": "2026-10-11T07:30:00Z",
-  "status": "draft",
+  "status": "approved",
   "qa": {
     "passed": true,
     "issues": [],
-    "checked_at": "2026-10-10T19:15:06Z"
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-11T17:59:04Z"
   },
   "brief": {
     "slot": {
@@ -131,9 +132,9 @@
     }
   },
   "format": "puzzle",
-  "hook": "White to move. One of these mates; two do not.",
+  "hook": "White to move. One knight move ends the game on the spot.",
   "cta": "play",
-  "text": "<b>White to move. One of these mates; two do not.</b>\nBlack's king is boxed in by its own rook and pawns. Pick the knight move and answer with a reaction:\n❤ Nf7   🔥 Nxh7   👏 Ne6\nThe answer, and the idea behind it, lands in a reply to this post at 14:30 UTC.",
+  "text": "<b>White to move. One knight move ends the game on the spot.</b>\n\nBlack's king on h8 is boxed in by its own rook on g8 and pawns on g7 and h7.\n\nPick the winning move and react below:\n❤ Nf7#   🔥 Nxh7   👏 Ne6\n\nA knight check cannot be blocked. Answer reveal lands in replies at 14:30 UTC.",
   "chess": {
     "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
     "solution": [
@@ -144,21 +145,20 @@
   "creative": {
     "template": "puzzle",
     "size": "portrait",
-    "tag": "Mate in 1",
-    "headline": "White to play.\n*One knight move.*",
-    "subhead": "Boxed in by its own pieces.",
+    "tag": "Mate In 1",
+    "headline": "White to play.\n*One decisive move.*",
+    "subhead": "Can you spot the tactical finish?",
     "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
-    "highlight": [],
-    "footer": "Answer as a reply at 14:30 UTC.",
-    "cta_label": "Drop your answer"
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
   },
   "sources": [
     {
       "kind": "own",
-      "url": "https://web3chess.online"
+      "url": "https://aumera.top"
     }
   ],
-  "updated_at": "2026-10-10T19:15:07Z",
+  "updated_at": "2026-10-11T17:59:04Z",
   "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-1.png",
   "render": {
     "ok": true,
@@ -167,7 +167,7 @@
   },
   "reveal": {
     "after_hours": 7,
-    "text": "<b>Solved: Nf7#.</b>\nThe king on h8 has no flight square: g8 holds its own rook, g7 and h7 hold its own pawns. A knight check cannot be blocked, and nothing on the board can capture the knight on f7.\nNxh7 fails to Kxh7, and Ne6 gives nothing at all. When the king is boxed in, look for the check that cannot be answered.",
+    "text": "<b>Solved: Nf7#.</b>\n\nThe king on h8 has no flight square: g8 holds its own rook, g7 and h7 hold its own pawns.\nA knight check cannot be blocked, and nothing on the board can capture on f7.\n\nNxh7 fails to Kxh7, and Ne6 allows Black to untangle. The smothered mate is the ultimate lesson in luft.",
     "creative": {
       "template": "puzzle",
       "size": "portrait",
@@ -176,11 +176,11 @@
         "Nf7#"
       ],
       "tag": "Solved",
-      "headline": "Smothered.\n*Nf7 is mate.*",
-      "subhead": "The king's own pieces closed the door.",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
       "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
-      "cta_label": "Try a free game"
-    },
-    "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-1.reveal.png"
-  }
+      "cta_label": "Play Next Puzzle"
+    }
+  },
+  "approved_by": "cmo_orchestrator"
 }

@@ -1,0 +1,97 @@
+{
+  "status": "draft-for-review",
+  "date": "2026-10-11",
+  "language": "en",
+  "canonical_draft": "art-3.json",
+  "article_package_copy": "article.json",
+  "queue_id": "2026-10-11-art-3",
+  "selected_angle": "Review one consequential blitz decision in five minutes, then carry a specific threat-check cue into the next game.",
+  "cmo_brief": {
+    "audience": "Chess players who want a small, repeatable lesson after a blitz loss",
+    "problem": "A full game can feel too large to analyse, especially after a quick loss",
+    "promise": "One verified board example and a five-minute review routine",
+    "primary_action": "Open the Academy for further practice",
+    "metric": "Saves per reach and qualified Academy visits, if available",
+    "experiment": "Compare hook A with hook B in the same channel and format after 72 hours and seven days; stop or revise if the sample is too small or audience intent differs"
+  },
+  "research": {
+    "collector_report": "../../reports/research-2026-10-11.json",
+    "collected_at_utc": "2026-10-11T15:00:00.118003+00:00",
+    "fresh_candidates": 0,
+    "collector_limit": "FIDE, Lichess and Chess.com feeds each returned 'Robots unavailable or access disallowed; use manual research'. No feed item was promoted to a news claim.",
+    "selection": "Used the Oct 11 Academy evergreen in CALENDAR.md and substantively revised the already drafted Academy article; did not create a sixth article.",
+    "duplicate_check": "No published article or earlier daily draft with the selected review-game slug or this exact five-minute workflow was found locally."
+  },
+  "sources": [
+    {
+      "claim": "Checkmate requires an attacked king with no legal move; SAN is the prescribed algebraic system in FIDE competitions.",
+      "url": "https://handbook.fide.com/chapter/e012023",
+      "publisher": "FIDE",
+      "source_publication_or_effective_date": "2023-01-01",
+      "event_date": null,
+      "verified_on": "2026-10-11",
+      "verification": "Read the full primary FIDE Laws of Chess page, including Articles 1 and 3 and Appendix C."
+    },
+    {
+      "claim": "Lichess describes a post-game flow where a player tries a better move before seeing the suggested answer; cited as context, not as a current Web3Chess feature.",
+      "url": "https://lichess.org/@/lichess/blog/learn-from-your-mistakes/WFvLpiQA",
+      "publisher": "Lichess",
+      "source_publication_or_effective_date": "2016-12-22",
+      "event_date": null,
+      "verified_on": "2026-10-11",
+      "verification": "Read the full primary Lichess article. The five-minute routine and constructed boards in our article are original."
+    },
+    {
+      "claim": "The two constructed positions and all printed SAN moves are legal; the stated final moves are checkmate.",
+      "url": null,
+      "publisher": "Original Web3Chess editorial analysis",
+      "source_publication_or_effective_date": "2026-10-11",
+      "event_date": null,
+      "verified_on": "2026-10-11",
+      "verification": "Locally replayed both lines with python-chess. After 3.Qh5, 3...Nf6 allows Qxf7#; 3...Qe7 and 3...g6 do not. After 1...Rxd2 2.Ra8+, Rd8 is the sole legal reply, and 3.Rxd8# is mate. Checked final FENs against article blocks."
+    }
+  ],
+  "keyword_review": {
+    "primary": "how to review a blitz game",
+    "secondary": ["review one losing move", "chess threat check"],
+    "intent": "Practical post-game improvement routine",
+    "volume": null,
+    "difficulty": null,
+    "rationale": "Scheduled evergreen query from CALENDAR.md; title, excerpt, opening answer and H2 now align with the task."
+  },
+  "product_review": {
+    "academy_destination": "https://web3chess.online/academy",
+    "destination_check": "The Academy route exists in the local website and the destination is in the pipeline CTA registry. The public URL could not be fetched through web research in this run, so live availability remains unverified.",
+    "claim_scope": "Invites practice in the Academy; does not claim a built-in five-minute review tool, cash earnings or a free friend-invite flow.",
+    "publication_approval": null
+  },
+  "ordered_review": {
+    "chess_editor": "Both SAN lines, resulting FENs, defensive alternatives and the sole 2...Rd8 reply replayed locally with python-chess; no engine score or best-move label used.",
+    "smm": "Selected a one-idea Academy hook, native Telegram/X/Instagram copy, and a complete three-frame Story reveal; X copy is 260 characters.",
+    "seo": "Draft article has a unique local slug, task-led title, concise metadata, answer in the introduction, internal Academy CTA and two primary sources. The website content checker passed in --draft mode. No search-volume, ranking or live page-speed claim is made.",
+    "analytics": "No supplied reach, clicks, attributed game starts or Search Console query data; retain the hook test as a hypothesis.",
+    "accountability": "Web3Chess Editorial is the named organizational author in the article schema; a human editorial approval is still required before publication."
+  },
+  "checks": {
+    "content_schema": "passed: website content:check --draft; 9 articles verified",
+    "content_ops_tests": "59 passed",
+    "queue_article": "draft, zero QA issues",
+    "queue_telegram": "draft, zero QA issues",
+    "creative": "4 PNG and 4 editable SVG exports; 1 proof sheet; all renderer layout-warning arrays empty; inspected preview and queue Telegram image",
+    "publication": "not published"
+  },
+  "distribution": {
+    "article": "draft-for-review",
+    "telegram": "draft-for-review",
+    "x_instagram_story": "copy-only drafts for review",
+    "creative": "four native aspect-ratio PNG/SVG layouts exported for review",
+    "publishing": "none"
+  },
+  "analytics": {
+    "search_console_queries": null,
+    "social_reach": null,
+    "attributed_first_games": null,
+    "field_core_web_vitals": null,
+    "interpretation": "No channel or search performance claim is made without supplied metrics."
+  }
+}

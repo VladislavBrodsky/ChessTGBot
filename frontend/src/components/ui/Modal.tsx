@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +30,7 @@ export function Modal({
   maxWidth = 'md',
   showCloseButton = true,
 }: ModalProps) {
+  const tc = useTranslations('Common');
   const [mounted, setMounted] = useState(false);
   const { pushHide, popHide } = useNavbar();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,7 @@ export function Modal({
             ref={dialogRef}
             tabIndex={-1}
             aria-labelledby={title ? titleId : undefined}
-            aria-label={title ? undefined : "Dialog"}
+            aria-label={title ? undefined : tc('dialog')}
             aria-describedby={description ? descriptionId : undefined}
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -116,7 +118,7 @@ export function Modal({
                       telegramHaptic('light');
                       onClose();
                     }}
-                    aria-label="Close modal"
+                    aria-label={tc('close_dialog')}
                     className="h-11 w-11 shrink-0 p-0"
                     enableHaptic={false}
                   >

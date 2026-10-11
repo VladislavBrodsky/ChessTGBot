@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
@@ -28,6 +29,7 @@ const SDK_WAIT_MS = 2500;
  * This prevents ANY flash of protected content for unauthenticated users.
  */
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
+    const tc = useTranslations('Common');
     const pathname = usePathname();
     // 'checking' → still verifying | 'authed' → show children | 'redirecting' → blocking
     const [authState, setAuthState] = useState<'checking' | 'authed' | 'redirecting'>('checking');
@@ -120,7 +122,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                     <FaChessKnight className="text-brand-action relative z-10 animate-pulse" size={48} />
                 </div>
                 <p className="relative z-10 text-caption font-semibold normal-case tracking-normal animate-pulse text-brand-muted">
-                    Verifying Auth…
+                    {tc('verifying_auth')}
                 </p>
             </div>
         );

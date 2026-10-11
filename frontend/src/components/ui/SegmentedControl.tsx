@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useId } from 'react';
 import { Badge } from './Badge';
 import { selectionKeyboard } from './selectionKeyboard';
@@ -27,9 +28,10 @@ export function SegmentedControl<T extends string | number>({
   value,
   onChange,
   className = '',
-  'aria-label': ariaLabel = 'View options',
+  'aria-label': ariaLabel,
   size = 'md',
 }: SegmentedControlProps<T>) {
+  const tc = useTranslations('Common');
   const sizeClasses = {
     sm: 'p-0.5 text-sm',
     md: 'p-1 text-sm',
@@ -46,7 +48,7 @@ export function SegmentedControl<T extends string | number>({
   return (
     <div
       role="tablist"
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? tc('view_options')}
       className={`flex w-full flex-wrap items-center justify-center rounded-2xl bg-brand-surface border border-brand-border ${sizeClasses[size]} ${className}`}
     >
       {options.map((option, index) => {

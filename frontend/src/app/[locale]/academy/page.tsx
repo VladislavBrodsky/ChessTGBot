@@ -38,11 +38,11 @@ const Chessboard = dynamic(
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 const CHESS_QUOTES = [
-  { quote: "Every chess master was once a beginner.", author: "Irving Chernev" },
-  { quote: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
-  { quote: "Tactics flow from a superior position.", author: "Bobby Fischer" },
-  { quote: "When you see a good move, look for a better one.", author: "Emanuel Lasker" },
-  { quote: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" },
+  { key: 'quote_0', author: 'Irving Chernev' },
+  { key: 'quote_1', author: 'Blaise Pascal' },
+  { key: 'quote_2', author: 'Bobby Fischer' },
+  { key: 'quote_3', author: 'Emanuel Lasker' },
+  { key: 'quote_4', author: 'Bobby Fischer' },
 ] as const;
 
 interface AcademyPuzzle {
@@ -70,6 +70,7 @@ export default function AcademyPage() {
   const t = useTranslations('Academy');
   const ti = useTranslations('Index');
   const tm = useTranslations('Marketplace');
+  const tc = useTranslations('Common');
   const router = useRouter();
   const { stats, syncStats: mutateStats } = useUser();
 
@@ -117,23 +118,23 @@ export default function AcademyPage() {
 
   // Descriptions grouped by difficulty band for all 100 tactical levels
   const LEVEL_THEMES = [
-    { range: [1, 5],   theme: 'Basic Tactics',      emoji: '🎯', fen: '8/2k5/8/8/3Q4/8/6K1/8 w - - 0 1', desc: 'Simple forks, captures, and one-move patterns. Perfect for building tactical instincts from the ground up.' },
-    { range: [6, 10],  theme: 'Pawn Power',          emoji: '♟️', fen: '8/p7/1p6/8/8/1P6/P7/8 w - - 0 1', desc: 'Master pawn structure, passed pawns, and promotion tactics. Hint support available on these levels.' },
-    { range: [11, 15], theme: 'Pins & Skewers',      emoji: '⚔️', fen: '8/2k5/8/2r5/2B5/2Q5/6K1/8 w - - 0 1', desc: 'Exploit pinned pieces and use skewers to win material on open diagonals and files.' },
-    { range: [16, 20], theme: 'Fork Mastery',        emoji: '🔱', fen: '8/2k5/8/4N3/8/2q5/6K1/8 w - - 0 1', desc: 'Attack two pieces simultaneously with knights, bishops, and queens to gain decisive material.' },
-    { range: [21, 25], theme: 'Discovered Attacks',  emoji: '💣', fen: '8/2k5/8/2b5/8/2R5/2B5/6K1 w - - 0 1', desc: 'Unleash hidden firepower by moving a piece to expose a devastating attack from behind.' },
-    { range: [26, 30], theme: 'Defensive Tactics',   emoji: '🛡️', fen: '8/2k5/3q4/8/8/3N4/6K1/8 w - - 0 1', desc: 'Learn to defend accurately — counter-attacks, interpositions, and fortress construction.' },
-    { range: [31, 40], theme: 'Rook Endgames',       emoji: '🏰', fen: '8/2k5/8/3R4/3P4/8/8/6K1 w - - 0 1', desc: 'Convert rook-and-pawn endgames with technique: Lucena, Philidor, and active rook play.' },
-    { range: [41, 50], theme: 'Queen Tactics',       emoji: '👑', fen: '8/2k5/3q4/8/8/3Q4/6K1/8 w - - 0 1', desc: 'Harness the queen power — back-rank threats, queen sacrifices, and perpetual checks.' },
-    { range: [51, 60], theme: 'Combinations',        emoji: '🌀', fen: 'r1bq1rk1/ppp2ppp/2n5/3pP3/3Pn3/2b2N2/PP2BPPP/R1BQ1RK1 w - - 0 1', desc: 'Multi-move combinations involving sacrifices, deflections, and piece coordination.' },
-    { range: [61, 70], theme: 'Positional Chess',    emoji: '🎲', fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', desc: 'Outpost control, piece activity, and prophylaxis at an intermediate-advanced level.' },
-    { range: [71, 80], theme: 'Time Pressure',       emoji: '⚡', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Rapid-fire puzzles designed to improve calculation speed and tactical vision under pressure.' },
-    { range: [81, 90], theme: 'Complex Sacrifices',  emoji: '🧩', fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', desc: 'Find the hidden move — deep sacrifices that flip the position decisively in your favour.' },
-    { range: [91, 100], theme: 'Grandmaster Level',  emoji: '🏆', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Elite-level puzzles used by titled players. Pure calculation and long-range precision required.' },
+    { range: [1, 5],   theme: t('band_0_title'),      emoji: '🎯', fen: '8/2k5/8/8/3Q4/8/6K1/8 w - - 0 1', desc: t('band_0_description') },
+    { range: [6, 10],  theme: t('band_1_title'),          emoji: '♟️', fen: '8/p7/1p6/8/8/1P6/P7/8 w - - 0 1', desc: t('band_1_description') },
+    { range: [11, 15], theme: t('band_2_title'),      emoji: '⚔️', fen: '8/2k5/8/2r5/2B5/2Q5/6K1/8 w - - 0 1', desc: t('band_2_description') },
+    { range: [16, 20], theme: t('band_3_title'),        emoji: '🔱', fen: '8/2k5/8/4N3/8/2q5/6K1/8 w - - 0 1', desc: t('band_3_description') },
+    { range: [21, 25], theme: t('band_4_title'),  emoji: '💣', fen: '8/2k5/8/2b5/8/2R5/2B5/6K1 w - - 0 1', desc: t('band_4_description') },
+    { range: [26, 30], theme: t('band_5_title'),   emoji: '🛡️', fen: '8/2k5/3q4/8/8/3N4/6K1/8 w - - 0 1', desc: t('band_5_description') },
+    { range: [31, 40], theme: t('band_6_title'),       emoji: '🏰', fen: '8/2k5/8/3R4/3P4/8/8/6K1 w - - 0 1', desc: t('band_6_description') },
+    { range: [41, 50], theme: t('band_7_title'),       emoji: '👑', fen: '8/2k5/3q4/8/8/3Q4/6K1/8 w - - 0 1', desc: t('band_7_description') },
+    { range: [51, 60], theme: t('band_8_title'),        emoji: '🌀', fen: 'r1bq1rk1/ppp2ppp/2n5/3pP3/3Pn3/2b2N2/PP2BPPP/R1BQ1RK1 w - - 0 1', desc: t('band_8_description') },
+    { range: [61, 70], theme: t('band_9_title'),    emoji: '🎲', fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', desc: t('band_9_description') },
+    { range: [71, 80], theme: t('band_10_title'),       emoji: '⚡', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: t('band_10_description') },
+    { range: [81, 90], theme: t('band_11_title'),  emoji: '🧩', fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', desc: t('band_11_description') },
+    { range: [91, 100], theme: t('band_12_title'),  emoji: '🏆', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: t('band_12_description') },
   ];
   const getLevelInfo = (id: number) => {
     const band = LEVEL_THEMES.find(b => id >= b.range[0] && id <= b.range[1]);
-    return band || { theme: `Level ${id}`, emoji: '♟️', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: 'Solve this tactical puzzle to progress.', range: [id, id] };
+    return band || { theme: `${t('level_prefix')} ${id}`, emoji: '♟️', fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', desc: t('puzzle_description'), range: [id, id] };
   };
   const nextPuzzle = puzzlesList.find((p) => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
@@ -146,13 +147,13 @@ export default function AcademyPage() {
   }, []);
 
   const getPlayerTitle = (level: number) => {
-    if (level < 5) return 'Novice';
-    if (level < 15) return 'Club Player';
-    if (level < 30) return 'Expert';
-    if (level < 50) return 'Candidate Master';
-    if (level < 70) return 'FIDE Master';
-    if (level < 90) return 'International Master';
-    return 'Grandmaster';
+    if (level < 5) return t('title_novice');
+    if (level < 15) return t('title_club');
+    if (level < 30) return t('title_expert');
+    if (level < 50) return t('title_candidate');
+    if (level < 70) return t('title_master');
+    if (level < 90) return t('title_elite');
+    return t('title_grandmaster');
   };
 
   const xpProgress = stats ? getXPProgress(stats.xp, stats.level) : null;
@@ -161,7 +162,7 @@ export default function AcademyPage() {
     if (!pInfo) return;
 
     if (pInfo.is_sequential_locked) {
-      telegramAlert(`You must solve Level ${id - 1} before you can access Level ${id}.`);
+      telegramAlert(t('complete_previous', { level: id - 1 }));
       return;
     }
 
@@ -174,11 +175,11 @@ export default function AcademyPage() {
       const currentXp = stats?.xp || 0;
       const cost = pInfo.xp_cost;
       if (currentXp < cost) {
-        telegramAlert(`Unlocking Level ${id} requires ${cost} XP. You only have ${currentXp} XP.`);
+        telegramAlert(t('not_enough_xp', { level: id, cost, xp: currentXp }));
         return;
       }
 
-      telegramConfirm(`Unlock Level ${id} by spending ${cost} XP? (You have ${currentXp} XP)`, async (confirmed) => {
+      telegramConfirm(t('confirm_unlock', { level: id, cost, xp: currentXp }), async (confirmed) => {
         if (!confirmed) return;
         try {
           const res = await apiFetch(`/api/v1/gamification/academy/puzzles/${id}/unlock`, {
@@ -192,11 +193,11 @@ export default function AcademyPage() {
               mutateUnlocked();
               mutatePuzzles();
             } else {
-            telegramAlert(data.detail || "Failed to unlock level");
+            telegramAlert(t('unlock_failed'));
           }
         } catch (e) {
           console.error(e);
-          telegramAlert("Unlock failed");
+          telegramAlert(t('unlock_failed'));
         }
       });
       return;
@@ -222,12 +223,12 @@ export default function AcademyPage() {
         mutateStats();
         mutatePuzzles();
       } else {
-        const err = await res.json();
-        telegramAlert(err.detail || "Failed to upgrade");
+        const _err = await res.json().catch(() => ({}));
+        telegramAlert(t('upgrade_failed'));
       }
     } catch (e) {
       console.error(e);
-      telegramAlert("Error upgrading with XP");
+      telegramAlert(t('upgrade_failed'));
     }
   };
 
@@ -245,12 +246,12 @@ export default function AcademyPage() {
         mutateStats();
         mutatePuzzles();
       } else {
-        const err = await res.json();
-        telegramAlert(err.detail || "Failed to subscribe");
+        const _err = await res.json().catch(() => ({}));
+        telegramAlert(t('upgrade_failed'));
       }
     } catch (e) {
       console.error(e);
-      telegramAlert("Error upgrading with Balance");
+      telegramAlert(t('upgrade_failed'));
     }
   };
 
@@ -353,7 +354,7 @@ export default function AcademyPage() {
 
           {stats && (
             <BadgeRow className="justify-center">
-              {stats.is_premium && <Badge variant="purple">Premium</Badge>}
+              {stats.is_premium && <Badge variant="purple">{t('premium')}</Badge>}
               <Badge variant="primary">{ti('level')} {stats.level}</Badge>
               <Badge variant="secondary" icon={<FaTrophy />}>{getPlayerTitle(stats.level)}</Badge>
             </BadgeRow>
@@ -379,11 +380,11 @@ export default function AcademyPage() {
           <Card 
             variant="solid" 
             interactive
-            aria-label="Next chess quote"
+            aria-label={t('next_quote')}
             onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
             className="w-full text-center px-4 py-3 group"
           >
-            <p className="text-sm font-medium text-brand-primary mb-1">“{CHESS_QUOTES[quoteIdx].quote}”</p>
+            <p className="text-sm font-medium text-brand-primary mb-1">“{t(CHESS_QUOTES[quoteIdx].key)}”</p>
             <p className="text-caption font-medium text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
           </Card>
         </motion.div>
@@ -562,14 +563,14 @@ export default function AcademyPage() {
           {/* Category-grouped lessons */}
           {(() => {
             const LESSON_CATEGORIES = [
-              { id: 'fundamentals', label: '♟️ Fundamentals', emoji: '♟️', slugs: ['piece-values','the-chessboard-coordinates','the-mighty-pawns','the-noble-knights','the-swift-bishops','the-heavy-rooks','the-all-powerful-queen','the-king-check','checkmate-the-goal','castling','en-passant','pawn-promotion','stalemate-and-draws'] },
-              { id: 'openings', label: '🏁 Opening Principles', emoji: '🏁', slugs: ['the-3-opening-principles','e4-vs-d4-the-philosophy','the-italian-game','the-ruy-lopez-spanish','the-sicilian-defense','the-french-defense','the-caro-kann','the-queens-gambit','the-slav-defense','the-kings-indian-defense','the-nimzo-indian','the-english-opening','gambits-kings-gambit','gambits-evans-gambit','punishing-early-queen-moves','the-london-system','pawn-storms','greek-gift-sacrifice','development-imbalances','the-center-fork-trick','transpositions'] },
-              { id: 'tactics', label: '⚔️ Tactics & Combinations', emoji: '⚔️', slugs: ['forks','hanging-pieces','counting-defenders','scholars-mate','pins-absolute-relative','skewers','discovered-attacks','discovered-checks','double-checks','removing-the-defender','deflection','decoy-sacrifices','clearance-sacrifices','interference','x-ray-attacks','windmills','trapped-pieces','zwischenzug'] },
-              { id: 'mating_patterns', label: '👑 Mating Patterns', emoji: '👑', slugs: ['basic-mates-2-rooks','basic-mates-king-queen','basic-mates-king-rook','back-rank-mates','smothered-mates','anastasias-mate','arabian-mate','fools-mate-quick-traps'] },
-              { id: 'strategy', label: '🧠 Strategy & Positional Play', emoji: '🧠', slugs: ['good-vs-bad-bishops','outposts','the-bishop-pair','open-files-and-rooks','the-7th-rank','doubled-pawns','isolated-pawns-iqp','backward-pawns','passed-pawns','pawn-chains','space-advantage','prophylaxis','improving-the-worst-piece','the-center-classical','the-center-hypermodern','weak-color-complexes','minority-attacks','blockades'] },
-              { id: 'endgames', label: '🏆 Endgames', emoji: '🏆', slugs: ['centralizing-the-king','the-rule-of-the-square','key-squares-opposition','triangulation','zugzwang','philidor-position','lucena-position','vancura-position','bishop-vs-knight-endgames','opposite-colored-bishops','queen-vs-pawn-on-7th','pawn-breakthroughs'] },
-              { id: 'classics', label: '📖 Classic Games', emoji: '📖', slugs: ['the-immortal-game','the-evergreen-game','morphys-opera-house-game','the-game-of-the-century','kasparovs-immortal','carlsens-endgame-squeeze'] },
-              { id: 'mindset', label: '🧘 Chess Mindset', emoji: '🧘', slugs: ['psychological-chess','time-management','the-masters-mindset'] },
+              { id: 'fundamentals', label: t('category_fundamentals'), emoji: '♟️', slugs: ['piece-values','the-chessboard-coordinates','the-mighty-pawns','the-noble-knights','the-swift-bishops','the-heavy-rooks','the-all-powerful-queen','the-king-check','checkmate-the-goal','castling','en-passant','pawn-promotion','stalemate-and-draws'] },
+              { id: 'openings', label: t('category_openings'), emoji: '🏁', slugs: ['the-3-opening-principles','e4-vs-d4-the-philosophy','the-italian-game','the-ruy-lopez-spanish','the-sicilian-defense','the-french-defense','the-caro-kann','the-queens-gambit','the-slav-defense','the-kings-indian-defense','the-nimzo-indian','the-english-opening','gambits-kings-gambit','gambits-evans-gambit','punishing-early-queen-moves','the-london-system','pawn-storms','greek-gift-sacrifice','development-imbalances','the-center-fork-trick','transpositions'] },
+              { id: 'tactics', label: t('category_tactics'), emoji: '⚔️', slugs: ['forks','hanging-pieces','counting-defenders','scholars-mate','pins-absolute-relative','skewers','discovered-attacks','discovered-checks','double-checks','removing-the-defender','deflection','decoy-sacrifices','clearance-sacrifices','interference','x-ray-attacks','windmills','trapped-pieces','zwischenzug'] },
+              { id: 'mating_patterns', label: t('category_mating_patterns'), emoji: '👑', slugs: ['basic-mates-2-rooks','basic-mates-king-queen','basic-mates-king-rook','back-rank-mates','smothered-mates','anastasias-mate','arabian-mate','fools-mate-quick-traps'] },
+              { id: 'strategy', label: t('category_strategy'), emoji: '🧠', slugs: ['good-vs-bad-bishops','outposts','the-bishop-pair','open-files-and-rooks','the-7th-rank','doubled-pawns','isolated-pawns-iqp','backward-pawns','passed-pawns','pawn-chains','space-advantage','prophylaxis','improving-the-worst-piece','the-center-classical','the-center-hypermodern','weak-color-complexes','minority-attacks','blockades'] },
+              { id: 'endgames', label: t('category_endgames'), emoji: '🏆', slugs: ['centralizing-the-king','the-rule-of-the-square','key-squares-opposition','triangulation','zugzwang','philidor-position','lucena-position','vancura-position','bishop-vs-knight-endgames','opposite-colored-bishops','queen-vs-pawn-on-7th','pawn-breakthroughs'] },
+              { id: 'classics', label: t('category_classics'), emoji: '📖', slugs: ['the-immortal-game','the-evergreen-game','morphys-opera-house-game','the-game-of-the-century','kasparovs-immortal','carlsens-endgame-squeeze'] },
+              { id: 'mindset', label: t('category_mindset'), emoji: '🧘', slugs: ['psychological-chess','time-management','the-masters-mindset'] },
             ];
 
             // Build slug -> lesson map
@@ -595,15 +596,15 @@ export default function AcademyPage() {
                   {/* Category header */}
                   <div className="flex items-center justify-between mb-3 px-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-brand-primary">{cat.label.replace(cat.emoji + ' ', '')}</h3>
+                      <h3 className="text-sm font-semibold text-brand-primary">{cat.label}</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-caption font-medium text-brand-muted tabular-nums">{completedInCat}/{catLessons.length}</span>
-                      {catProgress === 100 && <Badge variant="emerald">Done</Badge>}
+                      {catProgress === 100 && <Badge variant="emerald">{tc('completed')}</Badge>}
                     </div>
                   </div>
                   {/* Category progress bar */}
-                  <div className="w-full h-1 bg-brand-elevated rounded-full overflow-hidden mb-2" role="progressbar" aria-label={cat.label.replace(cat.emoji + ' ', '')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={catProgress}>
+                  <div className="w-full h-1 bg-brand-elevated rounded-full overflow-hidden mb-2" role="progressbar" aria-label={cat.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={catProgress}>
                     <div 
                       className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-brand-action' : 'bg-brand-muted'}`}
                       style={{ width: `${catProgress}%` }}
@@ -618,9 +619,9 @@ export default function AcademyPage() {
                         className="ui-tap-target text-caption font-semibold text-brand-muted hover:text-brand-primary transition-colors flex items-center gap-1"
                       >
                         {isExpanded ? (
-                          <><span>Hide Completed</span><FaChevronUp className="text-caption"/></>
+                          <><span>{t('hide_completed')}</span><FaChevronUp className="text-caption"/></>
                         ) : (
-                          <><span>Show Completed ({completedInCat})</span><FaChevronDown className="text-caption"/></>
+                          <><span>{t('show_completed', { count: completedInCat })}</span><FaChevronDown className="text-caption"/></>
                         )}
                       </button>
                     </div>
@@ -664,23 +665,23 @@ export default function AcademyPage() {
         {/* Next Milestone */}
         {stats && (
           <section className="space-y-3" aria-labelledby="next-milestone-title">
-            <SectionHeader id="next-milestone-title" title="Next milestone" />
+            <SectionHeader id="next-milestone-title" title={t('next_milestone')} />
             <Card variant="solid" className="w-full p-5 rounded-2xl">
               <div className="flex justify-between items-end mb-3 gap-3">
                 <div className="min-w-0">
-                  <p className="ui-eyebrow mb-1">Current title</p>
+                  <p className="ui-eyebrow mb-1">{t('current_title')}</p>
                   <p className="text-sm font-semibold text-brand-primary">{getPlayerTitle(xpProgress!.displayedLevel)}</p>
                 </div>
                 <div className="text-end shrink-0">
-                  <p className="ui-eyebrow mb-1">Next level</p>
+                  <p className="ui-eyebrow mb-1">{t('next_level')}</p>
                   <p className="text-sm font-semibold text-brand-success">{`${t('level_prefix')} ${xpProgress!.displayedLevel + 1}`}</p>
                 </div>
               </div>
-              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden mb-3" role="progressbar" aria-label="Next milestone" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(xpProgress!.progressPercentage)}>
+              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden mb-3" role="progressbar" aria-label={t('next_milestone')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(xpProgress!.progressPercentage)}>
                 <div className="h-full bg-brand-action rounded-full transition-all duration-700" style={{ width: `${xpProgress!.progressPercentage}%` }} />
               </div>
               <p className="text-caption font-medium text-brand-muted">
-                <span className="text-brand-primary font-semibold tabular-nums">{Math.max(0, xpProgress!.nextLevelXp - stats.xp).toLocaleString()} XP</span> to {t('level_prefix').toLowerCase()} {xpProgress!.displayedLevel + 1}. {t('keep_practising')}
+                {t('xp_to_level', { xp: Math.max(0, xpProgress!.nextLevelXp - stats.xp).toLocaleString(locale), level: xpProgress!.displayedLevel + 1 })} {t('keep_practising')}
               </p>
             </Card>
           </section>
@@ -826,10 +827,10 @@ export default function AcademyPage() {
                   <span className="text-2xl">{band.emoji}</span>
                   <div>
                     <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-                      {isCompleted ? '✅ Solved' : isPremLocked ? '👑 Premium Required' : isXpLocked ? '🔒 XP Required' : isSeqLocked ? '🔒 Sequential Lock' : '▶ Available'}
+                      {isCompleted ? t('solved') : isPremLocked ? t('premium_required') : isXpLocked ? t('xp_required') : isSeqLocked ? t('sequential_lock') : t('available')}
                     </p>
                     <h3 className="text-lg font-semibold tracking-tight text-brand-primary normal-case leading-none">
-                      Level {id} — {band.theme}
+                      {t('level_theme', { level: id, theme: band.theme })}
                     </h3>
                   </div>
                 </div>
@@ -851,8 +852,8 @@ export default function AcademyPage() {
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
                   <span className="text-emerald-400 text-lg">💡</span>
                   <div>
-                    <p className="text-caption font-semibold normal-case tracking-normal text-emerald-400">Hint Available</p>
-                    <p className="text-caption text-emerald-400/70 font-medium">Use the hint button inside the puzzle to reveal the best next move.</p>
+                    <p className="text-caption font-semibold normal-case tracking-normal text-emerald-400">{t('hint_available')}</p>
+                    <p className="text-caption text-emerald-400/70 font-medium">{t('hint_description')}</p>
                   </div>
                 </div>
               )}
@@ -860,7 +861,7 @@ export default function AcademyPage() {
               {/* XP reward */}
               {info?.xp_reward && (
                 <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <span className="text-caption font-semibold normal-case tracking-normal text-emerald-400/70">Reward for solving</span>
+                  <span className="text-caption font-semibold normal-case tracking-normal text-emerald-400/70">{t('solve_reward')}</span>
                   <span className="text-sm font-semibold text-emerald-400">+{info.xp_reward} XP</span>
                 </div>
               )}
@@ -869,7 +870,7 @@ export default function AcademyPage() {
               <div className="space-y-2 pt-1">
                 {isSeqLocked && (
                   <div className="w-full py-3 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-center text-caption font-semibold normal-case tracking-normal text-brand-muted">
-                    🔒 Complete Level {id - 1} first
+                    🔒 {t('complete_previous', { level: id - 1 })}
                   </div>
                 )}
                 {isPremLocked && !isSeqLocked && (
@@ -878,7 +879,7 @@ export default function AcademyPage() {
                     onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
                     className="ui-tap-target w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-600 text-white font-semibold normal-case tracking-normal text-caption shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
                   >
-                    👑 Unlock with Premium
+                    👑 {t('unlock_with_premium')}
                   </motion.button>
                 )}
                 {isXpLocked && !isSeqLocked && !isPremLocked && (
@@ -887,7 +888,7 @@ export default function AcademyPage() {
                     onClick={() => { setSelectedLevel(null); handlePuzzleClick(id, info); }}
                     className="ui-tap-target w-full py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-semibold normal-case tracking-normal text-caption"
                   >
-                    🔓 Spend {info?.xp_cost ?? '—'} XP to Unlock
+                    🔓 {t('spend_unlock', { cost: info?.xp_cost ?? '—' })}
                   </motion.button>
                 )}
                 {isPlayable && (
@@ -900,7 +901,7 @@ export default function AcademyPage() {
                     <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-10),transparent)] -translate-x-full animate-shimmer" />
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <FaPlay className="text-caption" />
-                      {isCompleted ? 'Replay Level' : 'Start Level'}
+                      {isCompleted ? t('replay_level') : t('start_level')}
                     </span>
                   </motion.button>
                 )}

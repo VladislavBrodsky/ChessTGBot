@@ -26,6 +26,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('Index');
+  const tc = useTranslations('Common');
   const desktop = useDesktopNavigation();
   const tg = useTranslations('Gamification');
   const claimable = useClaimableTasks(!hide);
@@ -45,7 +46,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
   ] : NAV_ITEMS;
 
   return (
-    <motion.nav data-app-navbar aria-label="Primary navigation" aria-hidden={hide || undefined} inert={hide || undefined}
+    <motion.nav data-app-navbar aria-label={tc('primary_navigation')} aria-hidden={hide || undefined} inert={hide || undefined}
       initial={false} animate={{ opacity: hide ? 0 : 1, y: hide && !desktop ? 112 : 0 }}
       transition={{ duration: 0.15 }}
       style={{ pointerEvents: hide ? 'none' : 'auto', ...(!desktop ? { bottom: 'calc(12px + var(--app-safe-bottom))' } : {}) }}

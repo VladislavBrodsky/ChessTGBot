@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 /**
@@ -44,8 +45,9 @@ export function SkeletonText({ lines = 3, textRole = 'body', className = '' }: {
 }
 
 /** Wrapper that announces loading once and hides the placeholder shapes from assistive tech. */
-function Busy({ label = 'Loading', className = '', children }: { label?: string; className?: string; children: React.ReactNode }) {
-  return <div role="status" aria-busy="true" aria-label={label} className={className}>{children}</div>;
+function Busy({ label, className = '', children }: { label?: string; className?: string; children: React.ReactNode }) {
+  const tc = useTranslations('Common');
+  return <div role="status" aria-busy="true" aria-label={label ?? tc('loading')} className={className}>{children}</div>;
 }
 
 /** Mirrors `.ui-list-row`: 40px tile, title + meta lines, trailing control. */
@@ -163,7 +165,7 @@ export function PodiumSkeleton({ label }: { label?: string }) {
 }
 
 /** Page-level placeholder: header + the first sections, using the same page shell. */
-export function PageSkeleton({ rows = 3, label = 'Loading' }: { rows?: number; label?: string }) {
+export function PageSkeleton({ rows = 3, label }: { rows?: number; label?: string }) {
   return (
     <Busy label={label} className="app-page">
       <div className="page-header" aria-hidden="true"><div className="flex-1 space-y-2"><Skeleton textRole="eyebrow" width={96} /><Skeleton textRole="title-1" width="60%" /></div></div>

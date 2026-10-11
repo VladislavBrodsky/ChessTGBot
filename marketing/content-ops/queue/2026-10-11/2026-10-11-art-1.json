@@ -5,11 +5,12 @@
   "slot": 1,
   "category": "Tactics",
   "scheduled_at": "2026-10-11T05:00:00Z",
-  "status": "draft",
+  "status": "published",
   "qa": {
     "passed": true,
     "issues": [],
-    "checked_at": "2026-10-10T19:15:06Z"
+    "gate_summary": "Passed all deterministic Article gates",
+    "checked_at": "2026-10-11T17:59:04Z"
   },
   "brief": {
     "slot": {
@@ -292,5 +293,7 @@
       "href": "/academy"
     }
   },
-  "updated_at": "2026-10-10T19:15:06Z"
+  "updated_at": "2026-10-11T17:59:04Z",
+  "approved_by": "cmo_orchestrator",
+  "staged_path": "website/src/content/articles/smothered-mate-king-boxed-in-by-its-own-pieces.json"
 }

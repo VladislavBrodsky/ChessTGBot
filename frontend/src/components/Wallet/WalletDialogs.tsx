@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { lazy, Suspense } from 'react';
 import { Drawer } from '@/components/ui/Drawer';
 import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
@@ -20,7 +21,8 @@ function WalletDialogSkeleton({ title, onClose }: { title: string; onClose: () =
 }
 
 export function DepositDialog(props: DepositModalProps) {
-  return <Suspense fallback={<WalletDialogSkeleton title={props.tw('deposit')} onClose={props.onClose} />}><Deposit {...props} /></Suspense>;
+  const tw = useTranslations('Wallet');
+  return <Suspense fallback={<WalletDialogSkeleton title={tw('deposit')} onClose={props.onClose} />}><Deposit {...props} /></Suspense>;
 }
 
 export function WalletSelectorDialog(props: WalletSelectorModalProps) {

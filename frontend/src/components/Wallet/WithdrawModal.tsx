@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { Input } from '@/components/ui/Input';
 import React, { useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { Drawer } from "@/components/ui/Drawer";
@@ -11,7 +13,6 @@ interface WithdrawModalProps {
   onSuccess: () => void;
   balance: number;
   initialWithdrawAddress: string;
-  tw: any;
 }
 
 export default function WithdrawModal({
@@ -19,8 +20,8 @@ export default function WithdrawModal({
   onSuccess,
   balance,
   initialWithdrawAddress,
-  tw,
 }: WithdrawModalProps) {
+  const tw = useTranslations('Wallet');
   const [withdrawAmount, setWithdrawAmount] = useState<string>("10");
   const [withdrawAddress, setWithdrawAddress] = useState<string>(initialWithdrawAddress);
   const [processing, setProcessing] = useState<boolean>(false);
@@ -35,7 +36,7 @@ export default function WithdrawModal({
     const amt = parseFloat(withdrawAmount);
     if (isNaN(amt) || amt < 10) {
       telegramHaptic('warning');
-      setErrorMessage("Minimum withdrawal amount is $10.00 USDT");
+      setErrorMessage(tw('withdraw_minimum', { amount: '$10.00' }));
       return;
     }
 
@@ -82,7 +83,7 @@ export default function WithdrawModal({
             setPendingConfirmation(false);
           }, 8000);
         } else {
-          setSuccessMessage(tw('withdraw_success_sim', { amount: `$${amt.toFixed(2)}` }));
+          setSuccessMessage(tw('withdraw_submitted', { amount: `$${amt.toFixed(2)}` }));
           onSuccess();
           setTimeout(() => {
             onClose();
@@ -90,13 +91,13 @@ export default function WithdrawModal({
           }, 3000);
         }
       } else {
-        const errData = await res.json();
+        const _errData = await res.json().catch(() => ({}));
         telegramHaptic('error');
-        setErrorMessage(errData.detail || tw('withdraw_failed'));
+        setErrorMessage(tw('withdraw_failed'));
       }
-    } catch (err: any) {
+    } catch (_err) {
       telegramHaptic('error');
-      setErrorMessage(err.message || tw('withdraw_failed'));
+      setErrorMessage(tw('withdraw_network_error'));
     } finally {
       setProcessing(false);
     }
@@ -110,55 +111,28 @@ export default function WithdrawModal({
       isOpen={true}
       onClose={onClose}
       title={tw('withdraw_title')}
-      description={`Available Balance: $${(balance / 100).toFixed(2)} USDT`}
+      description={<>{tw('available_balance')}: <bdi>${(balance / 100).toFixed(2)} USDT</bdi></>}
     >
       <div className="space-y-4">
-        {/* Input Amount */}
-        <div className="space-y-1.5 text-left">
-          <div className="flex justify-between items-center text-caption font-semibold normal-case tracking-normal text-brand-muted">
-            <span>{tw('withdraw_amount')}</span>
-            <span className="text-caption text-brand-muted">Min. $10.00</span>
-          </div>
-          <div className="relative">
-            <span className="absolute left-3.5 top-3.5 text-brand-muted text-sm font-bold font-mono">$</span>
-            <input
-              type="number"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              className="w-full bg-brand-elevated border border-brand-border rounded-xl py-3 pl-8 pr-4 text-base text-brand-primary font-bold focus:outline-none focus:border-emerald-500/60 transition-all shadow-inner"
-              placeholder={tw('amount_placeholder')}
-              min="10"
-            />
-          </div>
-        </div>
-
-        {/* Input Target Wallet */}
-        <div className="space-y-1.5 text-left">
-          <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
-            {tw('target_address')}
-          </label>
-          <input
-            type="text"
-            value={withdrawAddress}
-            onChange={(e) => setWithdrawAddress(e.target.value)}
-            className="w-full bg-brand-elevated border border-brand-border rounded-xl py-3 px-3.5 text-sm text-brand-primary font-mono tracking-normal focus:outline-none focus:border-emerald-500/50 transition-all truncate shadow-inner"
-            placeholder={tw('target_placeholder')}
-          />
-        </div>
+        <Input type="number" label={tw('withdraw_amount')} value={withdrawAmount}
+          onChange={(event) => setWithdrawAmount(event.target.value)} min="10" step="0.01" dir="ltr"
+          helperText={tw('withdraw_minimum', { amount: '$10.00' })} placeholder={tw('amount_placeholder')} />
+        <Input type="text" label={tw('target_address')} value={withdrawAddress} dir="ltr"
+          onChange={(event) => setWithdrawAddress(event.target.value)} placeholder={tw('target_placeholder')} />
 
         {/* Fee Breakdown Display */}
         {!isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
           <div className="p-3.5 rounded-xl bg-brand-elevated border border-brand-border space-y-1.5 text-sm font-medium text-brand-muted">
             <div className="flex justify-between">
-              <span>Requested Amount:</span>
+              <span>{tw('requested_amount')}</span>
               <span className="font-mono font-bold text-brand-primary">${parseFloat(withdrawAmount).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-rose-400">
-              <span>Network Fee:</span>
+              <span>{tw('withdraw_fee')}</span>
               <span className="font-mono font-bold">-$0.20</span>
             </div>
             <div className="flex justify-between border-t border-brand-border pt-2 mt-1 font-bold text-brand-primary">
-              <span>You Will Receive:</span>
+              <span>{tw('you_receive')}</span>
               <span className="font-mono text-emerald-400">
                 ${Math.max(0, parseFloat(withdrawAmount) - 0.20).toFixed(2)}
               </span>
@@ -167,7 +141,7 @@ export default function WithdrawModal({
         )}
 
         {/* Safety Checklist */}
-        <div className="space-y-2 pt-1 text-left">
+        <div className="space-y-2 pt-1 text-start">
           <label className="flex items-center space-x-2 text-caption font-medium text-brand-muted cursor-pointer">
             <input 
               type="checkbox" 
@@ -197,9 +171,9 @@ export default function WithdrawModal({
 
         {pendingConfirmation && (
           <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1.5 shadow-sm">
-            <div className="text-emerald-400 text-sm font-semibold normal-case tracking-normal">Confirmation Sent</div>
+            <div className="text-emerald-400 text-sm font-semibold normal-case tracking-normal">{tw('confirmation_sent')}</div>
             <p className="text-caption text-brand-muted leading-relaxed">
-              Check your Telegram chat with the bot. Tap <strong>Confirm</strong> to release the payout.
+              {tw('confirm_in_bot')}
             </p>
           </div>
         )}

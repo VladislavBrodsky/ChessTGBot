@@ -156,6 +156,8 @@ Desktop (>= 1024px): a two-column split must balance; if the second column has n
 
 ## 5. UI Primitives Catalog (`frontend/src/components/ui/`)
 
+Shared primitives resolve their default accessible names and loading/error copy from `Common` in the active next-intl provider. Pass translated custom labels when a feature needs a more specific name. Never use a raw message key as visible UI, and allow translated control labels to wrap at 320px.
+
 All new pages and feature refactors MUST reuse existing design system primitives:
 
 | Component | Path | Description & Props |

@@ -28,6 +28,7 @@ interface LayoutWrapperProps {
 export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
     const locale = useLocale();
     const t = useTranslations('Index');
+  const tc = useTranslations('Common');
     const isDesktopBrowser = useDesktopNavigation();
     const pathname = usePathname();
     const { isHidden: isNavbarHiddenByContext } = useNavbar();
@@ -68,7 +69,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 <div className="absolute top-[calc(23.5px+var(--app-safe-top))] right-4 md:right-[calc(50%-272px)] lg:right-[calc(50%-368px)] z-50 flex items-center gap-2">
                     <Button
                         variant="ghost"
-                        aria-label="Notifications"
+                        aria-label={tc('notifications')}
                         onClick={() => setShowNotifications(true)}
                         className="relative w-11 h-11 p-0 flex items-center justify-center rounded-xl bg-brand-surface border border-brand-border-opacity-10 shadow-lg text-brand-muted hover:text-brand-primary transition-colors active:scale-95 cursor-pointer"
                     >

@@ -1,0 +1,21 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const here = dirname(fileURLToPath(import.meta.url));
+const path = resolve(here,'exports/badge-qa-report.json');
+const qa = JSON.parse(await readFile(path,'utf8'));
+const rgba = value => { const v=value.match(/[\d.]+/g).map(Number);return [v[0],v[1],v[2],v[3]??1]; };
+const luminance = value => value.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+const composite = (front,back) => front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
+const results = [...qa.gameFixtures,...qa.websiteFixtures].flatMap(test=>test.metrics.map(m=>{
+  const background=composite(rgba(m.background),rgba(m.surface));
+  const foreground=composite(rgba(m.foreground),background);
+  const a=luminance(foreground),b=luminance(background);
+  return {label:m.label,theme:m.theme||'website',direction:m.direction||'ltr',contrast:Math.round((Math.max(a,b)+.05)/(Math.min(a,b)+.05)*100)/100};
+}));
+qa.contrast = {minimum:Math.min(...results.map(m=>m.contrast)),failures:results.filter(m=>m.contrast<4.5)};
+const failures = [...qa.websitePages,...qa.articlePages,...qa.gameFixtures,...qa.websiteFixtures].filter(test=>test.documentWidth>test.viewport+1||(test.errors||[]).length||(test.collisions||[]).length||(test.violations||[]).length);
+qa.summary = {publicPageCases:qa.websitePages.length+qa.articlePages.length,gameThemeDirectionCases:qa.gameFixtures.length*6,websiteSurfaceCases:qa.websiteFixtures.length*2,geometryFailures:failures.length,contrastFailures:qa.contrast.failures.length};
+await writeFile(path,JSON.stringify(qa,null,2)+'\n');
+if(failures.length||qa.contrast.failures.length)throw Error(JSON.stringify({geometry:failures,contrast:qa.contrast}));
+console.log(JSON.stringify({...qa.summary,minimumContrast:qa.contrast.minimum}));

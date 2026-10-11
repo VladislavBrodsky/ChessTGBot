@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiCheckCircle, FiAlertCircle, FiInfo, FiX } from 'react-icons/fi';
@@ -19,6 +20,7 @@ interface ToastProps {
 }
 
 export function Toast({ toast, onDismiss }: ToastProps) {
+  const tc = useTranslations('Common');
   const isSuccess = toast.type === 'success';
   const isError = toast.type === 'error';
 
@@ -58,7 +60,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       <button
         type="button"
         onClick={() => onDismiss(toast.id)}
-        aria-label="Dismiss toast"
+        aria-label={tc('dismiss_toast')}
         className="ui-tap-target p-1 rounded-lg text-brand-muted hover:text-brand-primary hover:bg-white/[0.06] transition-colors cursor-pointer"
       >
         <FiX className="h-3.5 w-3.5" />

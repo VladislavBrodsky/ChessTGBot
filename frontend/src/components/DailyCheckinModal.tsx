@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import Confetti from "react-confetti";
 import { FaCheckCircle, FaLock, FaGift, FaTimes } from "react-icons/fa";
+import { useTranslations } from 'next-intl';
 import { useNavbar } from '@/context/NavbarContext';
 import { useUser } from '@/context/UserContext';
 import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
@@ -18,6 +19,8 @@ interface DailyStatus {
 }
 
 export default function DailyCheckinModal() {
+  const t = useTranslations('Gamification');
+  const tc = useTranslations('Common');
   const [status, setStatus] = useState<DailyStatus | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -97,8 +100,8 @@ export default function DailyCheckinModal() {
         } : null);
 
       } else {
-        const err = await res.json();
-        telegramAlert(err.detail || "Failed to claim reward");
+        const _err = await res.json().catch(() => ({}));
+        telegramAlert(tc('error_description'));
         telegramHaptic('error');
       }
     } catch (e) {
@@ -142,7 +145,7 @@ export default function DailyCheckinModal() {
               type="button"
               onClick={closeModal}
               disabled={claiming}
-              aria-label="Close"
+              aria-label={tc('close')}
               className="ui-tap-target absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-brand-surface/60 text-brand-muted hover:text-brand-primary hover:bg-brand-elevated border border-brand-border/40 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               <FaTimes className="text-sm" />
@@ -156,10 +159,10 @@ export default function DailyCheckinModal() {
               </div>
 
               <h2 id="daily-reward-title" className="mb-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-primary">
-                Daily Reward
+                {t('daily_reward')}
               </h2>
               <p id="daily-reward-subtitle" className="mb-6 max-w-[260px] text-sm font-bold normal-case tracking-normal text-brand-muted">
-                Return every day to unlock massive rewards!
+                {t('daily_reward_description')}
               </p>
 
               {/* Day Rewards Grids */}
@@ -204,12 +207,12 @@ export default function DailyCheckinModal() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span>Claiming...</span>
+                      <span>{tc('claiming')}</span>
                     </>
                   ) : status.can_claim_today ? (
-                    "Claim Reward"
+                    t('claim_reward')
                   ) : (
-                    "Come back tomorrow"
+                    t('return_tomorrow')
                   )}
                 </span>
               </motion.button>
@@ -220,7 +223,7 @@ export default function DailyCheckinModal() {
                   onClick={closeModal}
                   className="ui-tap-target mt-3 min-h-[44px] px-4 text-sm font-bold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
-                  Skip for now
+                  {t('skip_now')}
                 </button>
               )}
             </div>
@@ -232,6 +235,7 @@ export default function DailyCheckinModal() {
 }
 
 function RewardDay({ day, reward, status, isBig = false }: { day: number, reward: number, status: 'past' | 'current' | 'future', isBig?: boolean }) {
+  const t = useTranslations('Gamification');
   const isPast = status === 'past';
   const isCurrent = status === 'current';
   const isFuture = status === 'future';
@@ -252,7 +256,7 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
       <span className={`relative z-10 text-caption font-semibold normal-case tracking-normal mb-1 ${
         isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted' : 'text-brand-muted'
       }`}>
-        Day {day}
+        {t('reward_day', { day })}
       </span>
       
       <div className="relative z-10 flex h-8 w-full flex-col items-center justify-center">

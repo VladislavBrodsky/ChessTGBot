@@ -1,5 +1,13 @@
 # Marketing website validation — 2026-10-07
 
+## Text-only website branding — 2026-10-11
+
+- Applied the owner's latest direction: black CHESS with Play-to-Earn below, without an accompanying chess-piece icon. Header, sticky navigation, phone menu, play handoff, footer, and sharing previews use the same outlined Barlow Condensed 700 / Onest 400 lettering. The inverse footer uses white text.
+- Regenerated the portable SVG lockups, favicon, touch icon, and avatar exports. Metadata icons use the C initial from the same lettering. Updated the website design guide and matching brand tokens.
+- Checked 320px phone, 1024px sticky navigation, and 1440px desktop layouts: no horizontal overflow, no icon inside the lockup, and consistent 86.5 × 45px dimensions. Checked the phone menu branding. Visually inspected the phone header, inverse footer, desktop header, and generated 1200 × 630px sharing preview. Browser error logs were empty.
+- Brand export generation, ESLint, content validation, production TypeScript checks, whitespace checks, and the production build pass. All 39 page/image routes generated. Changes are local; no production push or Mini App edit was performed.
+- Proof: `website/docs/ui-audit/wordmark-desktop-2026-10-11.jpg` and `wordmark-mobile-2026-10-11.jpg`.
+
 ## Verified build
 
 - Website type checking, ESLint, and production build pass. All 37 static page/image routes generate successfully, including the Apple touch icon.

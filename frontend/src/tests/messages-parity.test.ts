@@ -8,6 +8,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { execFileSync } from 'child_process';
 
 const MESSAGES_DIR = path.join(__dirname, '..', 'messages');
 
@@ -26,17 +27,6 @@ function flatten(obj: Messages, prefix = ''): Map<string, string> {
   return out;
 }
 
-function placeholders(message: string): string[] {
-  // ICU argument names: {name}, {count, plural, ...} — capture the identifier.
-  const names = new Set<string>();
-  let match: RegExpExecArray | null;
-  const re = /\{\s*([a-zA-Z0-9_]+)/g;
-  while ((match = re.exec(message)) !== null) {
-    names.add(match[1]);
-  }
-  return Array.from(names).sort();
-}
-
 const localeFiles = fs
   .readdirSync(MESSAGES_DIR)
   .filter((f) => f.endsWith('.json'))
@@ -49,6 +39,10 @@ const enKeys = load('en.json');
 const otherLocales = localeFiles.filter((f) => f !== 'en.json');
 
 describe('locale message parity', () => {
+  test('all catalogs parse as ICU and translator calls resolve in their own namespace', () => {
+    const output = execFileSync(process.execPath, [path.join(__dirname, '../../scripts/check-messages.mjs'), '--json'], { encoding: 'utf8' });
+    expect(JSON.parse(output).errors).toEqual([]);
+  });
   test('messages directory contains en.json and at least one other locale', () => {
     expect(localeFiles).toContain('en.json');
     expect(otherLocales.length).toBeGreaterThan(0);
@@ -67,18 +61,6 @@ describe('locale message parity', () => {
       expect(extra).toEqual([]);
     });
 
-    test('every shared message uses the same ICU placeholders as en.json', () => {
-      const mismatched: string[] = [];
-      enKeys.forEach((enValue, key) => {
-        const value = keys.get(key);
-        if (value === undefined) return; // reported by the missing-keys test
-        const expected = placeholders(enValue).join(',');
-        const actual = placeholders(value).join(',');
-        if (expected !== actual) {
-          mismatched.push(`${key}: en has [${expected}], ${file} has [${actual}]`);
-        }
-      });
-      expect(mismatched).toEqual([]);
-    });
+
   });
 });

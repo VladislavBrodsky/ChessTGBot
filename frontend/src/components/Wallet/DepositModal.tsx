@@ -25,11 +25,12 @@ import {
   ManualDepositSection,
 } from './deposit';
 
+class DepositFeedbackError extends Error {}
+
 export interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
   walletAddress?: string;
-  tw: any;
   chosenWager?: number;
   walletBalance?: number;
 }
@@ -47,11 +48,12 @@ function DepositModalContent({
   onClose,
   onSuccess,
   walletAddress,
-  tw,
   chosenWager,
   walletBalance,
 }: DepositModalProps) {
   useNavbarHideWhileMounted();
+  const tw = useTranslations('Wallet');
+  const tc = useTranslations('Common');
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const ti = useTranslations('Index');
@@ -210,7 +212,7 @@ function DepositModalContent({
     }
 
     if (!wallet) {
-      setErrorMessage("Please connect your Web3 wallet first.");
+      setErrorMessage(tw('connect_title'));
       return;
     }
 
@@ -221,7 +223,7 @@ function DepositModalContent({
 
     try {
       const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
-      if (!selectedCurrencyObj) throw new Error("Invalid currency selection");
+      if (!selectedCurrencyObj) throw new DepositFeedbackError(tw('invalid_amount'));
 
       const price = prices[currency] || 1.0;
       const chargedAmt = amt;
@@ -230,7 +232,7 @@ function DepositModalContent({
       const amountUnits = BigInt(Math.round(tokensNeeded * Math.pow(10, decimals)));
 
       if (amountUnits <= BigInt(0)) {
-        throw new Error("Amount is too small to process.");
+        throw new DepositFeedbackError(tw('invalid_amount'));
       }
 
       let targetAddress = masterWallet;
@@ -256,11 +258,11 @@ function DepositModalContent({
           const usdtUnits = balData?.usdt_units ?? 0;
           const usdtBalance = usdtUnits / 1e6;
           if (usdtBalance < tokensNeeded) {
-            throw new Error(`Insufficient USDT balance in your wallet. You have ${usdtBalance.toFixed(2)} USDT, but ${tokensNeeded.toFixed(2)} USDT is required for this deposit. Please add USDT or swap TON to USDT.`);
+            throw new DepositFeedbackError(tw('token_balance_low', { balance: usdtBalance.toFixed(2), required: tokensNeeded.toFixed(2) }));
           }
         }
         } catch (balErr: any) {
-          if (balErr.message && balErr.message.includes("Insufficient USDT")) {
+          if (balErr instanceof DepositFeedbackError) {
             throw balErr;
           }
           // proceed if onchain balance lookup fails transiently
@@ -298,7 +300,7 @@ function DepositModalContent({
         }
 
         if (!targetAddress) {
-          throw new Error("Failed to resolve USDT Jetton Wallet address. Please try again or use the manual direct transfer option below.");
+          throw new DepositFeedbackError(tw('address_lookup_failed'));
         }
 
         // Construct standard Jetton transfer payload
@@ -338,7 +340,7 @@ function DepositModalContent({
       const cell = Cell.fromBase64(result.boc);
       const messageHash = cell.hash().toString('hex');
 
-      setSuccessMessage("Transaction signed. Verifying on the blockchain...");
+      setSuccessMessage(tw('verifying_transaction'));
       telegramHaptic('medium');
 
       // Verify on backend
@@ -355,10 +357,7 @@ function DepositModalContent({
       if (verifyRes.ok) {
         const data = await verifyRes.json();
         trackDepositCompleted('onchain_wallet', data.credited_amount);
-        setSuccessMessage(tw('deposit_success_sim', {
-          amount: `$${amt.toFixed(2)}`,
-          credited: `$${(data.credited_amount / 100).toFixed(2)}`
-        }));
+        setSuccessMessage(tw('deposit_credited', { amount: `$${(data.credited_amount / 100).toFixed(2)}` }));
         onSuccess();
         telegramHaptic('success');
         setTimeout(() => {
@@ -366,19 +365,19 @@ function DepositModalContent({
           setSuccessMessage("");
         }, 3000);
       } else {
-        const errData = await verifyRes.json().catch(() => ({}));
+        const _errData = await verifyRes.json().catch(() => ({}));
         
         if (verifyRes.status === 404) {
           // TonAPI might be lagging behind the blockchain.
           // Show a reassuring pending message.
           setErrorMessage("");
-          setSuccessMessage("Transaction is still pending on the blockchain. If you approved it in your wallet, it will be credited automatically within a couple of minutes.");
+          setSuccessMessage(tw('pending_transaction'));
           telegramHaptic('success');
           setTimeout(() => { closeDeposit(); setSuccessMessage(""); }, 6000);
         } else {
           // A real validation error from the backend
           setSuccessMessage("");
-          setErrorMessage(errData.detail || "Transaction verification failed.");
+          setErrorMessage(tw('verification_failed'));
           telegramHaptic('error');
         }
       }
@@ -386,9 +385,10 @@ function DepositModalContent({
     } catch (err: any) {
       console.error(err);
       setSuccessMessage("");
-      let msg = err.message || "Transaction cancelled or failed.";
-      if (msg.toLowerCase().includes("enough funds") || msg.toLowerCase().includes("insufficient funds")) {
-        msg = "Insufficient Gas: To complete this deposit, your wallet needs a tiny amount of native TON to pay blockchain network gas fees. Alternatively, use the 'Pay Manually' option below.";
+      let msg = err instanceof DepositFeedbackError ? err.message : tw('deposit_not_confirmed');
+      const providerMessage = String(err.message || '').toLowerCase();
+      if (providerMessage.includes('enough funds') || providerMessage.includes('insufficient funds')) {
+        msg = tw('gas_fee_needed');
       }
       setErrorMessage(msg);
       telegramHaptic('error');
@@ -413,7 +413,7 @@ function DepositModalContent({
     setErrorMessage("");
     setSuccessMessage("");
     try {
-      setSuccessMessage("Verifying transaction on the blockchain...");
+      setSuccessMessage(tw('verifying_transaction'));
       telegramHaptic('medium');
 
       const verifyRes = await apiFetch("/api/v1/wallet/deposit/verify", {
@@ -429,7 +429,7 @@ function DepositModalContent({
       if (verifyRes.ok) {
         const data = await verifyRes.json();
         trackDepositCompleted('manual_transfer', data.credited_amount);
-        setSuccessMessage(`Top-Up Confirmed! +$${(data.credited_amount / 100).toFixed(2)} USDT credited.`);
+        setSuccessMessage(tw('deposit_credited', { amount: `$${(data.credited_amount / 100).toFixed(2)}` }));
         onSuccess();
         telegramHaptic('success');
         setManualTxHash("");
@@ -438,14 +438,14 @@ function DepositModalContent({
           setSuccessMessage("");
         }, 3000);
       } else {
-        const errData = await verifyRes.json();
+        const _errData = await verifyRes.json().catch(() => ({}));
         setSuccessMessage("");
-        setErrorMessage(errData.detail || "Transaction verification failed. Please check your transaction.");
+        setErrorMessage(tw('verification_failed'));
       }
     } catch (err: any) {
       console.error(err);
       setSuccessMessage("");
-      setErrorMessage(err.message || "Verification failed. Please check connection.");
+      setErrorMessage(tw('verification_failed'));
       telegramHaptic('error');
     } finally {
       setProcessing(false);
@@ -471,7 +471,7 @@ function DepositModalContent({
         if (data.status === "completed") {
           trackDepositCompleted('stripe', data.credited_amount);
           setVerificationSuccess(true);
-          setSuccessMessage(`Top-Up of $${(data.credited_amount / 100).toFixed(2)} completed!`);
+          setSuccessMessage(tw('deposit_credited', { amount: `$${(data.credited_amount / 100).toFixed(2)}` }));
           setShowConfetti(true);
           telegramHaptic('success');
           onSuccess(); // updates user balance on parent
@@ -492,7 +492,7 @@ function DepositModalContent({
               if (retryData.status === "completed") {
                 trackDepositCompleted('stripe', retryData.credited_amount);
                 setVerificationSuccess(true);
-                setSuccessMessage(`Top-Up of $${(retryData.credited_amount / 100).toFixed(2)} completed!`);
+                setSuccessMessage(tw('deposit_credited', { amount: `$${(retryData.credited_amount / 100).toFixed(2)}` }));
                 setShowConfetti(true);
                 telegramHaptic('success');
                 onSuccess();
@@ -507,19 +507,19 @@ function DepositModalContent({
             }
           }
           if (!verified) {
-            setErrorMessage("Payment verification is taking longer than expected. Balance will update shortly.");
+            setErrorMessage(tw('pending_transaction'));
           }
         }
       } else {
-        setErrorMessage("Could not verify session with server.");
+        setErrorMessage(tw('verification_failed'));
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMessage("Verification error.");
+      setErrorMessage(tw('verification_failed'));
     } finally {
       setProcessing(false);
     }
-  }, [onSuccess]);
+  }, [onSuccess, tw]);
 
   // Check URL parameters for Stripe checkout redirections on mount
   useEffect(() => {
@@ -537,7 +537,7 @@ function DepositModalContent({
   const handleCardTopUp = async () => {
     const amt = parseFloat(depositAmount);
     if (isNaN(amt) || amt < 1.0) {
-      setErrorMessage("Minimum deposit amount is $1.00 USD");
+      setErrorMessage(tw('minimum_card', { amount: '$1.00' }));
       return;
     }
     trackDepositInitiated('stripe', amt);
@@ -553,8 +553,8 @@ function DepositModalContent({
         body: JSON.stringify({ amount: amt, redirect_path: currentPath })
       });
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.detail || "Failed to create checkout session.");
+        const _errData = await res.json().catch(() => ({}));
+        throw new Error(tw('deposit_not_confirmed'));
       }
       const data = await res.json();
       funnelStateRef.current = 'submitted';
@@ -572,7 +572,7 @@ function DepositModalContent({
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message || "Stripe top up failed. Please retry.");
+      setErrorMessage(tw('deposit_not_confirmed'));
       telegramHaptic('error');
     } finally {
       setProcessing(false);
@@ -657,12 +657,12 @@ function DepositModalContent({
           {activeTab === 'crypto' && hasVerifiedAccountId && (
           <div className="space-y-4">
             <p className="text-caption font-bold text-brand-muted normal-case tracking-normal text-center">
-              Deposit instantly using your connected Web3 wallet.
+              {tw('connected_deposit')}
             </p>
 
             {/* Currency Selector Dropdown */}
             <div className="flex flex-col space-y-1.5 relative">
-              <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Asset</label>
+              <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tw('asset')}</label>
               <button
                 type="button"
                 // Only interactive when more than one asset is offered. Under
@@ -717,7 +717,7 @@ function DepositModalContent({
             {/* Deposit Amount in USD */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col space-y-1.5">
-                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Amount (USD)</label>
+                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tw('amount_usd')}</label>
                 <div className="relative">
                   <span className="absolute left-3 top-3.5 text-brand-muted text-caption font-semibold font-mono">$</span>
                   <input
@@ -734,7 +734,7 @@ function DepositModalContent({
 
               {/* Converted Token Amount */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">Equivalent ({currency})</label>
+                <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tw('equivalent', { currency })}</label>
                 <div className="w-full bg-brand-void/50 border border-brand-border-opacity-10 rounded-lg py-2.5 px-3 text-sm text-brand-primary font-semibold flex items-center space-x-1 shadow-inner h-[40px]">
                   <span className="truncate">{tokenAmount}</span>
                   <span className="text-caption text-brand-muted shrink-0">{currency}</span>
@@ -746,15 +746,15 @@ function DepositModalContent({
             {!isNaN(parseFloat(depositAmount)) && parseFloat(depositAmount) > 0 && (
               <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-caption font-bold normal-case tracking-normal text-brand-muted">
                 <div className="flex justify-between">
-                  <span>Credited to Balance:</span>
+                  <span>{tw('credited_balance')}</span>
                   <span className="text-emerald-400 font-mono">${(parseFloat(depositAmount) * 0.95).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Platform Fee (5%):</span>
+                  <span>{tw('platform_fee')} (5%)</span>
                   <span className="text-rose-400 font-mono">${(parseFloat(depositAmount) * 0.05).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-semibold text-brand-primary">
-                  <span>Total Charged:</span>
+                  <span>{tw('total_charged')}</span>
                   <span className="font-mono">${parseFloat(depositAmount).toFixed(2)}</span>
                 </div>
               </div>
@@ -768,7 +768,7 @@ function DepositModalContent({
                 className="ui-tap-target w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500 text-brand-void text-caption font-semibold normal-case tracking-normal shadow-premium hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FaWallet size={11} />
-                <span>{walletAddress ? "Reconnect Wallet App" : "Connect Wallet to Top Up"}</span>
+                <span>{walletAddress ? tw('reconnect') : tw('connect_to_deposit')}</span>
               </button>
             ) : (
               <button type="button"
@@ -781,7 +781,7 @@ function DepositModalContent({
                 ) : (
                   <FaWallet size={11} />
                 )}
-                <span>{processing ? "Waiting..." : `Top Up via Connected Wallet`}</span>
+                <span>{processing ? tw('waiting') : tw('connected_deposit_cta')}</span>
               </button>
             )}
 
@@ -809,7 +809,7 @@ function DepositModalContent({
                 onClick={() => { setShowManualFallback(!showManualFallback); setMemoConfirmed(false); }}
                 className="ui-tap-target w-full flex items-center justify-between py-1 text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer"
               >
-                <span>Or Pay Manually (Direct Transfer)</span>
+                <span>{tw('manual_transfer')}</span>
                 <span className="text-sm transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </button>
 
@@ -882,7 +882,7 @@ function DepositModalContent({
                 disabled={processing}
                 className="ui-tap-target w-full py-2.5 mt-2 rounded-xl border border-brand-border-opacity-10 bg-brand-surface text-brand-muted text-caption font-bold normal-case tracking-normal hover:border-brand-primary transition-all cursor-pointer"
               >
-                Back
+                {tc('back')}
               </button>
             )}
           </div>

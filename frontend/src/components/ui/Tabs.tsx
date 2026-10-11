@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useId } from 'react';
 import { Badge } from './Badge';
 import { selectionKeyboard } from './selectionKeyboard';
@@ -26,13 +27,14 @@ export function Tabs<T extends string = string>({
   activeTab,
   onChange,
   className = '',
-  'aria-label': ariaLabel = 'View options',
+  'aria-label': ariaLabel,
 }: TabsProps<T>) {
+  const tc = useTranslations('Common');
   const indicatorId = useId();
   return (
     <div
       role="tablist"
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? tc('view_options')}
       aria-orientation="horizontal"
       className={`flex items-center gap-1.5 p-1 bg-brand-elevated border border-brand-border rounded-2xl overflow-x-auto no-scrollbar ${className}`}
     >

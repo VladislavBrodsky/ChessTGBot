@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 export interface AvatarProps {
@@ -35,6 +36,7 @@ export function Avatar({
   badge,
   className = '',
 }: AvatarProps) {
+  const tc = useTranslations('Common');
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const getInitials = (n?: string | null) => {
     if (!n?.trim()) return '?';
@@ -58,7 +60,7 @@ export function Avatar({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
-            alt={name || 'Avatar'}
+            alt={name || tc('avatar')}
             className="w-full h-full object-cover"
             loading="lazy"
             width={64}
@@ -75,7 +77,7 @@ export function Avatar({
           className={`
             absolute ${dotSizeClasses[size]} rounded-full bg-emerald-500 border-2 border-brand-void shadow-[0_0_8px_rgba(16,185,129,0.8)]
           `}
-          aria-label="Online"
+          aria-label={tc('online')}
         />
       )}
       </div>

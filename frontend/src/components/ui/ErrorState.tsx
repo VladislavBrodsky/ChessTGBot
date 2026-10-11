@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card } from './Card';
 import { Button } from './Button';
@@ -13,13 +16,14 @@ export interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = 'Something went wrong',
-  message = 'We encountered an error loading this data. Please try again.',
+  title,
+  message,
   onRetry,
-  retryLabel = 'Try again',
+  retryLabel,
   action,
   className = '',
 }: ErrorStateProps) {
+  const t = useTranslations('Common');
   return (
     <Card
       variant="solid"
@@ -31,15 +35,15 @@ export function ErrorState({
       </div>
 
       <div className="space-y-1 max-w-sm">
-        <h3 className="text-sm font-bold text-brand-primary">{title}</h3>
-        <p className="text-sm leading-relaxed text-brand-muted">{message}</p>
+        <h3 className="text-sm font-bold text-brand-primary">{title ?? t('error_title')}</h3>
+        <p className="text-sm leading-relaxed text-brand-muted">{message ?? t('error_description')}</p>
       </div>
 
       {action ? (
         action
       ) : onRetry ? (
         <Button variant="secondary" size="sm" onClick={onRetry}>
-          {retryLabel}
+          {retryLabel ?? t('retry')}
         </Button>
       ) : null}
     </Card>

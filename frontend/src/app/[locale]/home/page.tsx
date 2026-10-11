@@ -36,6 +36,7 @@ let deepLinkHandled = false;
 
 export default function Home() {
  const t = useTranslations('Index');
+  const tc = useTranslations('Common');
  const locale = useLocale();
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
@@ -88,7 +89,7 @@ export default function Home() {
     <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
     <main className="app-page">
       <PageHeader align="start" eyebrow={t('welcome_greeting')} title={displayName} actions={<>
-        <Button variant="secondary" className="h-11 w-11 p-0" aria-label="Notifications" onClick={() => setShowNotifications(true)}><FiBell size={20} /></Button>
+        <Button variant="secondary" className="h-11 w-11 p-0" aria-label={tc('notifications')} onClick={() => setShowNotifications(true)}><FiBell size={20} /></Button>
         <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button" onClick={() => telegramHaptic('selection')}><FiSettings size={20} /></Link>
       </>} />
       <div className="grid w-full gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">

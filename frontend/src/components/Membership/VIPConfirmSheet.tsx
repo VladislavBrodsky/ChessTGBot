@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,11 +24,13 @@ export default function VIPConfirmSheet({
     title,
     description,
     costText,
-    perks = ['Unlimited Engine Analysis', 'Exclusive Board Themes', 'Priority Matchmaking', 'Daily XP Multipliers'],
+    perks = [],
     loading = false,
     onConfirm,
     onCancel,
 }: VIPConfirmSheetProps) {
+    const t = useTranslations('Membership');
+    const tc = useTranslations('Common');
     useNavbarHideWhileMounted(isOpen);
 
     if (!isOpen) return null;
@@ -56,7 +59,7 @@ export default function VIPConfirmSheet({
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-56 h-56 bg-[radial-gradient(circle,rgba(168,85,247,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
                     {/* Close Button */}
-                    <button aria-label="Close dialog" type="button"
+                    <button aria-label={tc('close_dialog')} type="button"
                         onClick={onCancel}
                         disabled={loading}
                         className="ui-tap-target absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
@@ -71,7 +74,7 @@ export default function VIPConfirmSheet({
 
                     {/* Title */}
                     <span className="text-caption font-semibold block mb-1" style={{ color: 'var(--badge-purple-ink)' }}>
-                        Premium membership
+                        {t('title')}
                     </span>
                     <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight">
                         {title}
@@ -81,13 +84,13 @@ export default function VIPConfirmSheet({
                     </p>
 
                     {/* Perks List */}
-                    <div className="mt-4 p-3.5 rounded-2xl bg-brand-elevated border border-brand-border-opacity-10 text-left space-y-2">
+                    <div className="mt-4 p-3.5 rounded-2xl bg-brand-elevated border border-brand-border-opacity-10 text-start space-y-2">
                         {perks.map((perk, i) => (
                             <div key={i} className="flex items-center gap-2.5 text-sm font-bold text-brand-primary">
                                 <div className="w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
                                     <FaCheck size={9} />
                                 </div>
-                                <span className="truncate">{perk}</span>
+                                <span className="break-words">{perk}</span>
                             </div>
                         ))}
                     </div>
@@ -95,7 +98,7 @@ export default function VIPConfirmSheet({
                     {/* Pricing Summary */}
                     <div className="mt-4 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-between">
                         <span className="text-caption font-semibold normal-case tracking-normal text-purple-400">
-                            PAYMENT AMOUNT
+                            {t('payment_amount')}
                         </span>
                         <span className="text-base font-semibold text-brand-primary">
                             {costText}
@@ -112,7 +115,7 @@ export default function VIPConfirmSheet({
                             {loading ? (
                                 <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
                             ) : (
-                                `CONFIRM UPGRADE`
+                                t('confirm_upgrade')
                             )}
                         </button>
 
@@ -121,7 +124,7 @@ export default function VIPConfirmSheet({
                             disabled={loading}
                             className="ui-tap-target w-full py-3.5 rounded-2xl font-semibold normal-case tracking-normal text-caption text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                         >
-                            CANCEL
+                            {tc('cancel')}
                         </button>
                     </div>
                 </motion.div>

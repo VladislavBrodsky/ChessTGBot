@@ -17,7 +17,7 @@ export const color = {
   mintChip: '#d1ffca',
   voltageYellow: '#fff100',
   brandTile: '#000000',
-  brandSymbol: '#d1ffca',
+  brandSymbol: '#ffffff',
   brandInk: '#000000',
 
   // Semantic aliases

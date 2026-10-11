@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/Badge';
 import { motion } from "framer-motion";
 import { FaLock, FaCheckCircle, FaChevronRight } from "react-icons/fa";
@@ -22,6 +23,9 @@ export default function LessonCard({
   duration = "50 XP",
   onClick,
 }: LessonCardProps) {
+  const t = useTranslations('Academy');
+  const tc = useTranslations('Common');
+  const difficulties: Record<string, string> = { beginner: t('difficulty_beginner'), intermediate: t('difficulty_intermediate'), advanced: t('difficulty_advanced') };
   const isCompleted = progress >= 100;
 
   return (
@@ -47,11 +51,11 @@ export default function LessonCard({
       <div className="relative z-10 p-4 flex flex-col h-full">
         {/* Top row: difficulty badge + status icon */}
         <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
-          <Badge variant="secondary">{difficulty}</Badge>
+          <Badge variant="secondary">{difficulties[difficulty.toLowerCase()] ?? difficulty}</Badge>
           {locked ? (
-            <Badge variant="secondary" icon={<FaLock />}>Locked</Badge>
+            <Badge variant="secondary" icon={<FaLock />}>{tc('locked')}</Badge>
           ) : isCompleted ? (
-            <Badge variant="emerald" icon={<FaCheckCircle />}>Completed</Badge>
+            <Badge variant="emerald" icon={<FaCheckCircle />}>{tc('completed')}</Badge>
           ) : (
             <Badge variant="secondary">{duration}</Badge>
           )}
@@ -82,14 +86,14 @@ export default function LessonCard({
           {/* Status row */}
           <div className="flex justify-between items-center">
             <span className={`text-caption font-medium ${isCompleted ? "text-brand-success" : "text-brand-muted"}`}>
-              {isCompleted ? "Completed" : "Start learning"}
+              {isCompleted ? tc('completed') : t('start_learning')}
             </span>
             {!locked && (
               <motion.span
                 whileHover={{ x: 2 }}
                 className="flex items-center gap-1 text-caption font-semibold text-brand-muted hover:text-brand-primary transition-colors"
               >
-                {isCompleted ? "Review" : "Start"}
+                {isCompleted ? t('lesson_review') : t('lesson_start')}
                 <FaChevronRight size={6} />
               </motion.span>
             )}

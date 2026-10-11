@@ -1,0 +1,40 @@
+{
+  "generated": "2026-10-08T05:39:24.221377+00:00",
+  "collectionFamilies": 7,
+  "responsive": [
+    {
+      "viewport": 320,
+      "documentWidth": 320,
+      "format": "9:16 Reels",
+      "exportsEnabled": true,
+      "guideAlignmentError": 0,
+      "status": "Ready to export."
+    },
+    {
+      "viewport": 390,
+      "documentWidth": 390,
+      "format": "9:16 Story",
+      "exportsEnabled": true,
+      "guideAlignmentError": 0.005208333333371229,
+      "status": "Ready to export."
+    },
+    {
+      "viewport": 1280,
+      "documentWidth": 1280,
+      "format": "9:16 Story",
+      "exportsEnabled": true,
+      "guideAlignmentError": 0.0052083333333143855,
+      "status": "Ready to export."
+    }
+  ],
+  "invalidCopy": {
+    "status": "Fix the layout warnings to export.",
+    "pngEnabled": false,
+    "svgEnabled": false
+  },
+  "copyRestored": true,
+  "screenshots": [
+    "studio-mobile.jpg",
+    "studio-desktop.jpg"
+  ]
+}

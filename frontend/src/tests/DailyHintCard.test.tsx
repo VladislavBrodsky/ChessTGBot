@@ -18,3 +18,12 @@ describe('DailyHintCard', () => {
     }
   });
 });
+
+// Components use the real English catalog; ICU behavior is covered by the Node audit.
+jest.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const messages = require('../messages/en.json');
+    return (key: string) => messages[namespace][key];
+  },
+}));

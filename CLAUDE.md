@@ -34,7 +34,8 @@ Run locally: `cd frontend && npm test` and `cd backend && python -m pytest` (on 
 
 ## iOS Telegram gotchas (hard-won)
 
-- The app calls `tg.requestFullscreen()` (Bot API 8.0+) — on iOS the WebView covers the whole screen and Telegram defines `--tg-content-safe-area-inset-bottom: 0px`. A `var()` fallback chain therefore short-circuits at 0px and never reaches `env(safe-area-inset-bottom)`. Bottom insets MUST be combined with `max()`, not `var()` fallbacks — see `--app-safe-bottom` in `frontend/src/app/globals.css`. Every fixed bottom element must use `--app-safe-bottom`.
+- The app calls `tg.requestFullscreen()` (Bot API 8.0+) — on iOS the WebView covers the whole screen and Telegram defines `--tg-content-safe-area-inset-bottom: 0px`. A `var()` fallback chain therefore short-circuits at 0px and never reaches `env(safe-area-inset-bottom)`. Bottom insets MUST be combined with `max()`, not `var()` fallbacks — see `--app-safe-bottom` in `frontend/src/styles/themes.css`. Every fixed bottom element must use `--app-safe-bottom`.
+- The TOP inset is the opposite case: in fullscreen `--tg-safe-area-inset-top` is the device notch and `--tg-content-safe-area-inset-top` is Telegram's own header (close/menu buttons) below it, so they STACK (`max(tg-safe, env) + tg-content`), see `--app-safe-top`. `max()` over all three tucks titles under Telegram's buttons on iPhone. Never add `tg-safe` and `env` together (same notch reported twice).
 - `viewport-fit=cover` is required (`frontend/src/app/[locale]/layout.tsx`) so iOS exposes non-zero `env(safe-area-inset-*)`.
 - The bottom navbar is NEVER hidden on main dashboard pages (`shouldHideNavbar` in `frontend/src/components/LayoutWrapper.tsx`). Do not add conditional hides there — overlays cover it with z-index >= 100 instead. Past conditional hides (CSS `:has()` rules, stale `activeGameId`, context hides) repeatedly stranded users with no menu.
 

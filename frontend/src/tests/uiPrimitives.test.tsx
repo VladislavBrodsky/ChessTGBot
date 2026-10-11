@@ -127,7 +127,7 @@ describe('UI Primitives Layer', () => {
       render(<Toast toast={toastItem} onDismiss={handleDismiss} />);
       expect(screen.getByText('Settings saved successfully')).toBeInTheDocument();
 
-      const dismissBtn = screen.getByLabelText(/dismiss toast/i);
+      const dismissBtn = screen.getByLabelText(/dismiss notification/i);
       fireEvent.click(dismissBtn);
       expect(handleDismiss).toHaveBeenCalledWith('t-1');
     });
@@ -203,3 +203,12 @@ describe('UI Primitives Layer', () => {
     });
   });
 });
+
+// Components use the real English catalog; ICU behavior is covered by the Node audit.
+jest.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const messages = require('../messages/en.json');
+    return (key: string) => messages[namespace][key];
+  },
+}));

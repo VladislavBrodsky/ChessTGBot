@@ -23,18 +23,6 @@ function formatUci(uci: string): string {
   return `${uci.substring(0, 2)} → ${uci.substring(2, 4)}${uci.substring(4) ? ` (${uci.substring(4)})` : ""}`;
 }
 
-function getClassificationLabel(cat: string, lang: string): string {
-  const labels: { [key: string]: { [lang: string]: string } } = {
-    book: { en: "Book 📖", ru: "Книга 📖" },
-    excellent: { en: "Excellent 🟢", ru: "Отлично 🟢" },
-    good: { en: "Good 🔵", ru: "Хорошо 🔵" },
-    inaccuracy: { en: "Inaccuracy 🟡", ru: "Неточность 🟡" },
-    mistake: { en: "Mistake 🟠", ru: "Ошибка 🟠" },
-    blunder: { en: "Blunder 🔴", ru: "Зевок 🔴" }
-  };
-  return labels[cat]?.[lang === 'ru' ? 'ru' : 'en'] || cat;
-}
-
 function getClassificationVariant(cat: string): BadgeVariant {
   switch (cat) {
     case 'excellent': return 'emerald';
@@ -106,6 +94,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
   const ti = useTranslations('Index');
+  const classificationLabels = { book: tg('classification_book'), excellent: tg('classification_excellent'), good: tg('classification_good'), inaccuracy: tg('classification_inaccuracy'), mistake: tg('classification_mistake'), blunder: tg('classification_blunder') };
 
   const [loading, setLoading] = useState(true);
   const [retryAttempt, setRetryAttempt] = useState(0);
@@ -386,7 +375,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             </div>
           </div>
           {isBlackWinner && (
-            <Badge variant="emerald">Winner</Badge>
+            <Badge variant="emerald">{tg('review_winner')}</Badge>
           )}
         </Card>
 
@@ -450,21 +439,21 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             </div>
           </div>
           {isWhiteWinner && (
-            <Badge variant="emerald">Winner</Badge>
+            <Badge variant="emerald">{tg('review_winner')}</Badge>
           )}
         </Card>
 
         {/* Control Interface */}
-        <div className="w-full flex items-center justify-between px-3 py-2 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl shadow-sm">
+        <div className="w-full flex items-center justify-between gap-1 px-1 py-2 bg-brand-surface border border-brand-border-opacity-10 rounded-2xl shadow-sm">
           <div className="flex items-center gap-1">
-            <button aria-label="Go to first move" type="button"
+            <button aria-label={tg('review_first')} type="button"
               onClick={() => { setCurrentStep(0); setIsPlaying(false); }}
               disabled={currentStep === 0}
               className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaFastBackward size={10} />
             </button>
-            <button aria-label="Previous move" type="button"
+            <button aria-label={tg('review_previous')} type="button"
               onClick={() => { setCurrentStep(prev => Math.max(0, prev - 1)); setIsPlaying(false); }}
               disabled={currentStep === 0}
               className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
@@ -475,30 +464,30 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
 
           <button type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="ui-tap-target px-6 py-2 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center gap-2 text-caption font-semibold normal-case tracking-normal cursor-pointer hover:opacity-90 shadow-sm"
+            className="ui-tap-target min-w-0 px-2 py-2 rounded-xl bg-brand-primary text-brand-void flex items-center justify-center gap-2 text-caption font-semibold normal-case tracking-normal cursor-pointer hover:opacity-90 shadow-sm break-words"
           >
             {isPlaying ? (
               <>
                 <FaPause size={8} />
-                <span>Pause</span>
+                <span>{tg('review_pause')}</span>
               </>
             ) : (
               <>
                 <FaPlay size={8} />
-                <span>Autoplay</span>
+                <span>{tg('review_autoplay')}</span>
               </>
             )}
           </button>
 
           <div className="flex items-center gap-1">
-            <button aria-label="Next move" type="button"
+            <button aria-label={tg('review_next')} type="button"
               onClick={() => { setCurrentStep(prev => Math.min(totalSteps - 1, prev + 1)); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
               className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
             >
               <FaChevronRight size={10} />
             </button>
-            <button aria-label="Go to last move" type="button"
+            <button aria-label={tg('review_last')} type="button"
               onClick={() => { setCurrentStep(totalSteps - 1); setIsPlaying(false); }}
               disabled={currentStep === totalSteps - 1}
               className="ui-tap-target p-2.5 rounded-lg border border-brand-border-opacity-5 hover:bg-brand-void text-brand-muted disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
@@ -517,16 +506,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {!analysis && !isAnalyzing && !analysisError && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3">
             <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
-              Engine review
+              {tg('review_engine')}
             </span>
             <p className="text-caption text-brand-muted normal-case tracking-normal">
-              Run engine analysis to evaluate move accuracy and discover blunders.
+              {tg('review_engine_description')}
             </p>
             <button type="button"
               onClick={runAnalysis}
               className="ui-tap-target w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-sm font-semibold cursor-pointer shadow-premium transition-colors border-0 flex items-center justify-center gap-2"
             >
-              Run engine analysis
+              {tg('review_run')}
             </button>
           </div>
         )}
@@ -538,7 +527,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {isAnalyzing && (
           <div className="w-full p-4 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface text-center space-y-3 animate-pulse">
             <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
-              Analyzing game moves...
+              {tg('review_analyzing')}
             </span>
             <div className="w-full bg-brand-void rounded-full h-2 overflow-hidden border border-brand-border-opacity-5">
               <div 
@@ -547,7 +536,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               />
             </div>
             <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
-              {analysisProgress}% Complete
+              {tg('review_progress', { percent: analysisProgress })}
             </span>
           </div>
         )}
@@ -559,19 +548,19 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
               <div className="flex flex-col gap-2 pb-3 border-b border-brand-border-opacity-10">
                 <div className="flex justify-between items-center">
                   <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
-                    Move Analysis
+                    {tg('review_analysis')}
                   </span>
                   <span className="text-caption font-mono font-bold text-brand-primary">
-                    Eval: {formatEval(analysis.evaluations[currentStep])}
+                    {tg('review_evaluation')}: <bdi>{formatEval(analysis.evaluations[currentStep])}</bdi>
                   </span>
                 </div>
                 <BadgeRow>
                   <Badge variant={getClassificationVariant(analysis.classifications[currentStep])}>
-                    {getClassificationLabel(analysis.classifications[currentStep], locale)}
+                    {classificationLabels[analysis.classifications[currentStep]]}
                   </Badge>
                   {(analysis.classifications[currentStep] === 'blunder' || analysis.classifications[currentStep] === 'mistake') && analysis.bestMoves[currentStep - 1] && (
                     <span className="text-caption font-bold text-amber-400 normal-case tracking-normal">
-                      💡 Best was: {formatUci(analysis.bestMoves[currentStep - 1])}
+                      💡 {tg('review_best', { move: formatUci(analysis.bestMoves[currentStep - 1]) })}
                     </span>
                   )}
                 </BadgeRow>
@@ -581,13 +570,13 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
             {/* Accuracy Standings Summary */}
             <div className="space-y-3">
               <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal block">
-                Move Accuracy Summary
+                {tg('review_accuracy')}
               </span>
               <div className="grid grid-cols-2 gap-4">
                 {/* White stats */}
-                <div className="space-y-1.5 text-left">
+                <div className="space-y-1.5 text-start">
                   <span className="text-caption font-semibold text-brand-primary normal-case tracking-normal block border-b border-brand-border-opacity-5 pb-1">
-                    {gameData.white_name} (White)
+                    {gameData.white_name} ({tg('review_white')})
                   </span>
                   {(() => {
                     const whiteStats = { book: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0 };
@@ -596,25 +585,25 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                     }
                     return (
                       <div className="grid grid-cols-2 gap-y-1 text-caption font-bold font-mono">
-                        <span className="text-emerald-400">Excellent:</span>
-                        <span className="text-right text-brand-primary">{whiteStats.excellent + whiteStats.book}</span>
-                        <span className="text-blue-400">Good:</span>
-                        <span className="text-right text-brand-primary">{whiteStats.good}</span>
-                        <span className="text-yellow-400">Inaccuracy:</span>
-                        <span className="text-right text-brand-primary">{whiteStats.inaccuracy}</span>
-                        <span className="text-orange-400">Mistake:</span>
-                        <span className="text-right text-brand-primary">{whiteStats.mistake}</span>
-                        <span className="text-red-400">Blunder:</span>
-                        <span className="text-right text-brand-primary">{whiteStats.blunder}</span>
+                        <span className="text-emerald-400">{tg('classification_excellent')}:</span>
+                        <span className="text-end text-brand-primary">{whiteStats.excellent + whiteStats.book}</span>
+                        <span className="text-blue-400">{tg('classification_good')}:</span>
+                        <span className="text-end text-brand-primary">{whiteStats.good}</span>
+                        <span className="text-yellow-400">{tg('classification_inaccuracy')}:</span>
+                        <span className="text-end text-brand-primary">{whiteStats.inaccuracy}</span>
+                        <span className="text-orange-400">{tg('classification_mistake')}:</span>
+                        <span className="text-end text-brand-primary">{whiteStats.mistake}</span>
+                        <span className="text-red-400">{tg('classification_blunder')}:</span>
+                        <span className="text-end text-brand-primary">{whiteStats.blunder}</span>
                       </div>
                     );
                   })()}
                 </div>
                 
                 {/* Black stats */}
-                <div className="space-y-1.5 text-left border-l border-brand-border-opacity-10 pl-4">
+                <div className="space-y-1.5 text-start border-s border-brand-border-opacity-10 ps-4">
                   <span className="text-caption font-semibold text-brand-primary normal-case tracking-normal block border-b border-brand-border-opacity-5 pb-1">
-                    {gameData.black_name} (Black)
+                    {gameData.black_name} ({tg('review_black')})
                   </span>
                   {(() => {
                     const blackStats = { book: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0 };
@@ -623,16 +612,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
                     }
                     return (
                       <div className="grid grid-cols-2 gap-y-1 text-caption font-bold font-mono">
-                        <span className="text-emerald-400">Excellent:</span>
-                        <span className="text-right text-brand-primary">{blackStats.excellent + blackStats.book}</span>
-                        <span className="text-blue-400">Good:</span>
-                        <span className="text-right text-brand-primary">{blackStats.good}</span>
-                        <span className="text-yellow-400">Inaccuracy:</span>
-                        <span className="text-right text-brand-primary">{blackStats.inaccuracy}</span>
-                        <span className="text-orange-400">Mistake:</span>
-                        <span className="text-right text-brand-primary">{blackStats.mistake}</span>
-                        <span className="text-red-400">Blunder:</span>
-                        <span className="text-right text-brand-primary">{blackStats.blunder}</span>
+                        <span className="text-emerald-400">{tg('classification_excellent')}:</span>
+                        <span className="text-end text-brand-primary">{blackStats.excellent + blackStats.book}</span>
+                        <span className="text-blue-400">{tg('classification_good')}:</span>
+                        <span className="text-end text-brand-primary">{blackStats.good}</span>
+                        <span className="text-yellow-400">{tg('classification_inaccuracy')}:</span>
+                        <span className="text-end text-brand-primary">{blackStats.inaccuracy}</span>
+                        <span className="text-orange-400">{tg('classification_mistake')}:</span>
+                        <span className="text-end text-brand-primary">{blackStats.mistake}</span>
+                        <span className="text-red-400">{tg('classification_blunder')}:</span>
+                        <span className="text-end text-brand-primary">{blackStats.blunder}</span>
                       </div>
                     );
                   })()}
@@ -646,18 +635,18 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         <Card variant="glass" className="w-full border-brand-border-opacity-10 p-4 rounded-2xl flex flex-col space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-brand-border-opacity-10">
             <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-              Moves
+              {tg('move_history')}
             </span>
             <div className="flex items-center gap-1.5 text-caption font-bold text-brand-muted">
               <FaRegClock />
-              <span>{new Date(gameData.ended_at).toLocaleDateString()}</span>
+              <span>{new Date(gameData.ended_at).toLocaleDateString(locale)}</span>
             </div>
           </div>
 
           <div className="max-h-[140px] overflow-y-auto pr-1 space-y-1.5 custom-scrollbar">
             {movePairs.length === 0 ? (
               <span className="text-caption text-brand-muted normal-case block text-center py-4">
-                No moves played.
+                {tg('review_no_moves')}
               </span>
             ) : (
               <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -706,16 +695,16 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         {/* Game termination banner */}
         <div className="w-full text-center px-4 py-3 rounded-2xl border border-brand-border-opacity-10 bg-brand-surface/40">
           <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted block mb-1">
-            Result
+            {tg('review_result')}
           </span>
           <span className="text-sm font-bold text-brand-primary normal-case tracking-tight block">
             {gameData.result_type === 'timeout' 
-              ? "Defeated by Clock Expired" 
+              ? tg('review_timeout') 
               : gameData.result_type === 'resignation' 
-                ? "Concluded by Resignation" 
+                ? tg('review_resignation') 
                 : gameData.result_type === 'draw' 
-                  ? "Settled by Mutual Agreement (Draw)" 
-                  : "Checkmate"}
+                  ? tg('review_draw') 
+                  : tg('review_checkmate')}
           </span>
         </div>
       </div>

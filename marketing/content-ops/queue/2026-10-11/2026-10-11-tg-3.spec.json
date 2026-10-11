@@ -2,12 +2,12 @@
   "template": "tip",
   "size": "portrait",
   "tag": "Academy",
-  "headline": "Before you move,\n*check the threat.*",
-  "subhead": "Three questions. Ten seconds.",
+  "headline": "One lost move.\n*One new habit.*",
+  "subhead": "Review one decision after your last blitz game.",
   "steps": [
-    "What did their last move change?",
-    "What is attacked now, theirs and mine?",
-    "Does my move survive their best reply?"
+    "Rewind one move.",
+    "Check their forcing reply.",
+    "Write one cue for next time."
   ],
   "cta_label": "Train it in the Academy"
 }

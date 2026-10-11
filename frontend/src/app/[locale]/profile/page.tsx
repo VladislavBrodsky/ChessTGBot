@@ -86,22 +86,10 @@ function EloHistoryChart({ recentGames, currentElo }: { recentGames: any[], curr
 export default function ProfilePage() {
  const t = useTranslations('Index');
  const locale = useLocale();
+  const tc = useTranslations('Common');
 
- // Dynamic locales mapping for Chess.com-style metric parameters
- const localizedLabels: Record<string, Record<string, string>> = {
-   en: { global_rank: "Global Rank", percentile: "Percentile", games_played: "Games Played", total_score: "Total Score", breakdown: "W - D - L Breakdown", wins: "Wins", losses: "Losses", draws: "Draws" },
-   es: { global_rank: "Rango Global", percentile: "Percentil", games_played: "Partidas Jugadas", total_score: "Puntaje Total", breakdown: "Desglose V - E - D", wins: "Victorias", losses: "Derrotas", draws: "Empates" },
-   fr: { global_rank: "Rang Global", percentile: "Centile", games_played: "Parties Jouées", total_score: "Score Total", breakdown: "Détails V - N - D", wins: "Victoires", losses: "Défaites", draws: "Nuls" },
-   de: { global_rank: "Globaler Rang", percentile: "Perzentil", games_played: "Spiele Gespielt", total_score: "Gesamtpunktzahl", breakdown: "S - U - N Details", wins: "Siege", losses: "Niederlagen", draws: "Remis" },
-   ru: { global_rank: "Глобальный Ранг", percentile: "Процентиль", games_played: "Сыграно Игр", total_score: "Всего Очков", breakdown: "Статистика В - Н - П", wins: "Победы", draws: "Ничьи", losses: "Поражения" },
-   ar: { global_rank: "الترتيب العالمي", percentile: "النسبة المئوية", games_played: "المباريات الملعوبة", total_score: "النتيجة الإجمالية", breakdown: "تفاصيل الفوز - التعادل - الخسارة", wins: "فوز", losses: "خسارة", draws: "تعادل" },
-   hi: { global_rank: "वैश्विक रैंक", percentile: "प्रतिशतक", games_played: "खेले गए खेल", total_score: "कुल स्कोर", breakdown: "जीत - ड्रा - हार विवरण", wins: "जीत", losses: "हार", draws: "ड्रा" },
-   ja: { global_rank: "グローバルランク", percentile: "パーセンタイル", games_played: "プレイ済みのゲーム", total_score: "トータルスコア", breakdown: "勝 - 分 - 敗 詳細", wins: "勝利", losses: "敗北", draws: "引き分け" },
-   pt: { global_rank: "Classificação Global", percentile: "Percentil", games_played: "Jogos Jogados", total_score: "Pontuação Total", breakdown: "Detalhes V - E - D", wins: "Vitórias", losses: "Derrotas", draws: "Empates" },
-   zh: { global_rank: "全球排名", percentile: "百分位数", games_played: "已玩游戏", total_score: "总积分", breakdown: "胜 - 平 - 负 详情", wins: "获胜", losses: "失败", draws: "平局" }
- };
+ const tp = useTranslations('Profile');
 
- const labels = localizedLabels[locale] || localizedLabels['en'];
 
  const { stats, statsError, syncStats } = useUser();
   const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
@@ -160,7 +148,7 @@ export default function ProfilePage() {
         <span className="ui-stat__label">{t('elo')}</span>
         <span className="ui-stat__value">{Number.isFinite(stats.elo) ? stats.elo : '—'}</span>
         <span className="ui-stat__meta">
-          {labels.global_rank} {Number.isFinite(stats.global_rank) ? `#${stats.global_rank}` : '—'} · {labels.percentile} {Number.isFinite(stats.percentile) ? `${stats.percentile.toFixed(0)}%` : '—'}
+          {tp('global_rank')} {Number.isFinite(stats.global_rank) ? `#${stats.global_rank}` : '—'} · {tp('percentile')} {Number.isFinite(stats.percentile) ? `${stats.percentile.toFixed(0)}%` : '—'}
         </span>
       </div>
     )}
@@ -170,9 +158,9 @@ export default function ProfilePage() {
       <StatTileSkeleton metaLines={2} />
     ) : (
       <div className="ui-stat">
-        <span className="ui-stat__label">{labels.games_played}</span>
+        <span className="ui-stat__label">{tp('games_played')}</span>
         <span className="ui-stat__value">{stats.games_played || 0}</span>
-        <span className="ui-stat__meta">{labels.total_score}: {stats.total_score?.toFixed(1) || "0.0"} pts</span>
+        <span className="ui-stat__meta">{tp('total_score')}: {stats.total_score?.toFixed(1) || "0.0"} pts</span>
       </div>
     )}
   </div>
@@ -183,7 +171,7 @@ export default function ProfilePage() {
   ) : (
     <div className="w-full p-3 rounded-2xl border border-brand-border bg-brand-surface space-y-2.5 shadow-sm">
       <div className="flex justify-between items-center px-0.5">
-        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{labels.breakdown}</span>
+        <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tp('breakdown')}</span>
         <span className="text-caption font-semibold text-brand-success">{stats.win_rate?.toFixed(1) || 0}% {t('win_rate')}</span>
       </div>
 
@@ -203,17 +191,17 @@ export default function ProfilePage() {
       {/* Metric readouts */}
       <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
         <div className="flex flex-col">
-          <span className="text-caption font-semibold normal-case text-brand-success tracking-normal">{labels.wins}</span>
+          <span className="text-caption font-semibold normal-case text-brand-success tracking-normal">{tp('wins')}</span>
           <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.wins || 0}</span>
           <span className="text-caption font-bold text-brand-muted">({stats.win_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col border-x border-brand-border-opacity-10">
-          <span className="text-caption font-semibold text-brand-muted">{labels.draws}</span>
+          <span className="text-caption font-semibold text-brand-muted">{tp('draws')}</span>
           <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.draws || 0}</span>
           <span className="text-caption font-bold text-brand-muted">({stats.draw_rate?.toFixed(0) || 0}%)</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-caption font-semibold normal-case text-brand-danger tracking-normal">{labels.losses}</span>
+          <span className="text-caption font-semibold normal-case text-brand-danger tracking-normal">{tp('losses')}</span>
           <span className="text-sm font-semibold text-brand-primary mt-0.5">{stats.losses || 0}</span>
           <span className="text-caption font-bold text-brand-muted">({stats.loss_rate?.toFixed(0) || 0}%)</span>
         </div>
@@ -240,24 +228,24 @@ export default function ProfilePage() {
  {/* Inventory & Boosters */}
  {stats && (stats.xp_multiplier > 1.0 || unlockedItems.length > 0) && (
    <section aria-labelledby="inventory-heading" className="w-full space-y-2">
-     <SectionHeader id="inventory-heading" title="Inventory & boosters" />
+     <SectionHeader id="inventory-heading" title={tc('inventory')} />
      <div className="grid grid-cols-2 gap-2">
        {/* Active Boosters */}
        {stats.xp_multiplier > 1.0 && (
          <div className="ui-stat ui-stat--premium">
-           <span className="ui-stat__label">Active booster</span>
+           <span className="ui-stat__label">{tc('active_booster')}</span>
            <span className="ui-stat__value">{stats.xp_multiplier}x XP</span>
            {stats.multiplier_expires_at && (
-             <span className="ui-stat__meta">Expires {new Date(stats.multiplier_expires_at).toLocaleDateString()}</span>
+             <span className="ui-stat__meta">{tc('expires')} {new Date(stats.multiplier_expires_at).toLocaleDateString(locale)}</span>
            )}
          </div>
        )}
        {/* Cosmetics Count */}
        {unlockedItems.length > 0 && (
          <div className="ui-stat">
-           <span className="ui-stat__label">Cosmetics owned</span>
+           <span className="ui-stat__label">{tc('cosmetics_owned')}</span>
            <span className="ui-stat__value">{unlockedItems.length}</span>
-           <span className="ui-stat__meta">Profile styles</span>
+           <span className="ui-stat__meta">{tc('profile_styles')}</span>
          </div>
        )}
      </div>

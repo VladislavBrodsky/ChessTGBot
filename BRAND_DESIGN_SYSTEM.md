@@ -339,7 +339,8 @@ Empty: icon tile, one-line reason, **one** action that resolves it. Error: plain
 
 ## 8. Content & i18n
 
-- All product copy lives in `frontend/src/messages/*.json` (10 locales). Add keys to **all** locales (`npm run check:messages`; parity test enforced).
+- All interface copy lives in `frontend/src/messages/*.json` (10 locales), including accessible names, loading states and status badges. Shared primitives use the `Common` namespace; feature components own their translator instead of receiving an untyped translation function through props. Proper names and authored API lesson content retain their supplied language unless the content API supplies a translation.
+- Add keys to **all** locales. `npm run check:messages` validates recursive key parity, duplicate keys, ICU syntax and arguments, and function-scoped translation calls. Its regression fixtures format review move counts in every locale. Keep dynamic key families explicit and covered by tests.
 - Sentence case. Verbs for actions (“Start game”, “Withdraw”). No jargon, no fabricated claims, no income promises.
 - Budget for 40% longer strings (de/ru) and for 320px; no fixed-width labels.
 - Numbers/dates/currency via `Intl` for the active locale; money keeps tabular numerals.

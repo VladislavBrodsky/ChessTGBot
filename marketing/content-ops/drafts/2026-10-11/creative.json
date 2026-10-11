@@ -1,0 +1,28 @@
+{
+  "id": "academy",
+  "number": "04",
+  "name": "One move, one lesson",
+  "purpose": "Academy education / save and practise",
+  "icon": "graduation-cap",
+  "theme": "paper",
+  "art": "academy",
+  "tag": "After the game",
+  "headline": "ONE LOST MOVE.\nONE NEW HABIT.",
+  "body": "Review the threat you missed before your next game.",
+  "cta": "Open the Academy",
+  "note": "Five minutes. One position. One cue.",
+  "alternate": "REVIEW THE MOVE.\nKEEP THE LESSON.",
+  "proof": [
+    "01  Rewind one move",
+    "02  Check their reply",
+    "03  Write your cue"
+  ],
+  "caption": "After a blitz loss, review one consequential decision. Rewind, name the threat, test your move against a forcing reply, and write one cue for next time. Read the full lesson and practise in the Academy.",
+  "destination": "https://web3chess.online/academy",
+  "measure": "Saves per reach; qualified Academy visits; completed practice where measured",
+  "sequence": [
+    "Ask which move changed the game.",
+    "Show the back-rank example: 1...Rxd2? 2.Ra8+.",
+    "Reveal 2...Rd8 3.Rxd8# and write the cue: check the back rank before moving its defender."
+  ]
+}

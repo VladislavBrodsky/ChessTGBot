@@ -1,18 +1,18 @@
 {
   "format": "lesson",
-  "hook": "Before you move: what is your opponent threatening?",
+  "hook": "One lost move. One new habit.",
   "cta": "academy",
-  "text": "<b>Before you move: what is your opponent threatening?</b>\nThe most expensive blunders are not missed brilliancies. They are moves played without looking at the reply. Run the same three checks every time:\n1. What did their last move change?\n2. What is now attacked, theirs and mine?\n3. Does my move still work after their best answer?\nThree questions, about ten seconds. Practise the habit with guided lessons in the Academy.",
+  "text": "<b>One lost move. One new habit.</b>\nAfter a blitz loss, replay one decision. Name the threat, test your move against their forcing reply, and write one cue for next time.\nIn our constructed position, 1...Rxd2? grabbed a pawn but allowed 2.Ra8+ Rd8 3.Rxd8#. The useful note: check the back rank before moving its only defender.\nTry a five-minute review, then practise in the Academy.",
   "creative": {
     "template": "tip",
     "size": "portrait",
     "tag": "Academy",
-    "headline": "Before you move,\n*check the threat.*",
-    "subhead": "Three questions. Ten seconds.",
+    "headline": "One lost move.\n*One new habit.*",
+    "subhead": "Review one decision after your last blitz game.",
     "steps": [
-      "What did their last move change?",
-      "What is attacked now, theirs and mine?",
-      "Does my move survive their best reply?"
+      "Rewind one move.",
+      "Check their forcing reply.",
+      "Write one cue for next time."
     ],
     "cta_label": "Train it in the Academy"
   },

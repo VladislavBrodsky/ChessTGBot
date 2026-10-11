@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { SiVisa } from 'react-icons/si';
 import { FaStripe } from 'react-icons/fa';
@@ -17,6 +18,7 @@ export function CardDepositSection({
   processing,
   onCardTopUp,
 }: CardDepositSectionProps) {
+  const tw = useTranslations('Wallet');
   const parsedAmt = parseFloat(depositAmount);
   const isValidAmt = !isNaN(parsedAmt) && parsedAmt >= 1.0;
 
@@ -26,7 +28,7 @@ export function CardDepositSection({
         <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-caption font-semibold normal-case tracking-normal text-emerald-500">
-            Instant Card Top-Up
+            {tw('card_top_up')}
           </span>
         </div>
       </div>
@@ -42,10 +44,10 @@ export function CardDepositSection({
         </svg>
       </div>
 
-      {/* Amount (USD) */}
+      {/* {tw('amount_usd')} */}
       <div className="flex flex-col space-y-1.5">
         <label className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
-          Amount (USD)
+          {tw('amount_usd')}
         </label>
         <div className="relative">
           <span className="absolute left-3 top-3.5 text-brand-muted text-caption font-semibold font-mono">$</span>
@@ -60,7 +62,7 @@ export function CardDepositSection({
           />
         </div>
         <span className="text-caption font-bold text-brand-muted normal-case tracking-normal">
-          Minimum top-up is $1.00 USD
+          {tw('minimum_card', { amount: '$1.00' })}
         </span>
       </div>
 
@@ -68,15 +70,15 @@ export function CardDepositSection({
       {isValidAmt && (
         <div className="p-3 rounded-lg bg-brand-void border border-brand-border-opacity-10 space-y-1 text-caption font-bold normal-case tracking-normal text-brand-muted animate-fade-in">
           <div className="flex justify-between">
-            <span>Credited to Balance:</span>
+            <span>{tw('credited_balance')}</span>
             <span className="text-emerald-400 font-mono">${(parsedAmt * 0.95).toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span>Platform Fee (5%):</span>
+            <span>{tw('platform_fee')} (5%)</span>
             <span className="text-rose-400 font-mono">${(parsedAmt * 0.05).toFixed(2)}</span>
           </div>
           <div className="flex justify-between border-t border-brand-border-opacity-10 pt-1 font-semibold text-brand-primary">
-            <span>Total Charged:</span>
+            <span>{tw('total_charged')}</span>
             <span className="font-mono">${parsedAmt.toFixed(2)}</span>
           </div>
         </div>
@@ -94,14 +96,14 @@ export function CardDepositSection({
         ) : (
           <FaStripe className="w-12 h-6 text-white shrink-0" />
         )}
-        <span>{processing ? "Initializing Checkout..." : "Checkout securely"}</span>
+        <span>{processing ? tw('checkout_loading') : tw('checkout')}</span>
       </button>
       <div className="flex items-center justify-center gap-2 opacity-50 mt-1">
         <svg className="w-2.5 h-2.5 fill-brand-primary" viewBox="0 0 448 512">
           <path d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z" />
         </svg>
         <span className="text-caption font-bold text-brand-primary normal-case tracking-normal">
-          Guaranteed safe & secure
+          {tw('secure_checkout')}
         </span>
       </div>
     </div>

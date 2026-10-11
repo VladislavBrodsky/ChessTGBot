@@ -32,9 +32,9 @@
   --color-graphite: #2f2f2f;
   --color-mint: #d1ffca;          /* tags, links, active marks */
   --color-voltage: #fff100;       /* small brand and state accents only */
-  --color-brand-tile: #000000;    /* contained logo only */
-  --color-brand-symbol: #d1ffca; /* mint knight on the dark tile */
-  --color-brand-ink: #000000;     /* knight silhouette */
+  --color-brand-tile: #000000;    /* typographic metadata icon */
+  --color-brand-symbol: #ffffff; /* C initial on the dark icon tile */
+  --color-brand-ink: #000000;     /* text-only website lockup */
 
   /* Semantic aliases kept so existing pages resolve */
   --color-ink: #000000;

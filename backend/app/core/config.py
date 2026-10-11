@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     # First Three is live after both services were deployed and verified.
     # Set false to pause new entries; existing entrants retain claim rights.
     ENGAGEMENT_CAMPAIGN_ENABLED: bool = True
+    ADMIN_TELEGRAM_IDS: str | None = None
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
     PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""
     # Production withdrawals are opt-in. Development and tests can use the
@@ -88,7 +89,11 @@ class Settings(BaseSettings):
         """Parse explicitly configured admin IDs without ever granting a fallback."""
         ids: set[int] = set()
         raw = os.getenv("ADMIN_TELEGRAM_IDS")
+        if raw is None:
+            raw = self.ADMIN_TELEGRAM_IDS
         legacy = os.getenv("ADMIN_TELEGRAM_ID")
+        if legacy is None and self.ADMIN_TELEGRAM_ID:
+            legacy = str(self.ADMIN_TELEGRAM_ID)
 
         if raw is not None:
             entries = [part.strip() for part in raw.split(",")]
