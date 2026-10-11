@@ -3,3 +3,7 @@ export * from "./avatar-circles";
 export * from "./marquee";
 export * from "./number-ticker";
 export * from "./icon-cloud";
+export * from "./border-beam";
+export * from "./ripple-button";
+export * from "./pulsating-button";
+export * from "./orbiting-circles";

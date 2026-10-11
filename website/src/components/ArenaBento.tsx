@@ -4,12 +4,15 @@ import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/icons";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { IconCloud } from "@/components/magicui/icon-cloud";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
 
 export function ArenaBento() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {/* ── BENTO 1: Real Crypto PvP Wagers (Hero 2-Col Card) ── */}
       <Card className="flex flex-col justify-between md:col-span-2 p-6 lg:p-8 bg-surface border border-line relative overflow-hidden group">
+        <BorderBeam size={320} duration={14} colorFrom="#10b981" colorTo="#059669" />
         <div className="relative z-10">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <Badge tone="accent" icon="lightning">
@@ -62,9 +65,10 @@ export function ArenaBento() {
         </div>
       </Card>
 
-      {/* ── BENTO 2: Mystery Boxes with 1,000 TON Jackpots ── */}
+      {/* ── BENTO 2: Mystery Boxes with 1,000 TON Jackpots & Orbiting Circles ── */}
       <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-        <div>
+        <BorderBeam size={240} duration={10} colorFrom="#f59e0b" colorTo="#d97706" />
+        <div className="relative z-10">
           <div className="flex items-center justify-between gap-2 mb-4">
             <Badge tone="accent" icon="gift">
               Mystery Vaults
@@ -74,13 +78,38 @@ export function ArenaBento() {
           <h3 className="text-heading-sm font-medium tracking-tight mb-2">
             Win up to 1,000 TON in Mystery Boxes
           </h3>
-          <p className="text-body-sm text-fg-muted mb-5">
-            Turn your earned XP into real rewards. Unlock Knight, Queen, and King mystery chests with guaranteed chances to unbox massive TON prizes, 2× XP boosts, and exclusive 3D board pieces.
+          <p className="text-body-sm text-fg-muted mb-3">
+            Turn your earned XP into real rewards. Unlock mystery chests with chances to unbox TON prizes, 2× XP boosts, and exclusive 3D board pieces.
           </p>
+
+          {/* Orbiting Vault Reward Visualization */}
+          <div className="relative my-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-inset border border-line">
+            <div className="z-10 flex size-9 items-center justify-center rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-600 shadow-xs">
+              <Icon name="gift" size={18} />
+            </div>
+
+            <OrbitingCircles radius={38} duration={12} iconSize={22} path>
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-[11px]">
+                💎
+              </span>
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-[11px]">
+                ⚡
+              </span>
+            </OrbitingCircles>
+
+            <OrbitingCircles radius={56} reverse duration={18} iconSize={22} path>
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-[11px]">
+                👑
+              </span>
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-[11px]">
+                🏆
+              </span>
+            </OrbitingCircles>
+          </div>
         </div>
 
         {/* Vault Tier Badges with NumberTicker */}
-        <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
+        <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption relative z-10">
           <div className="flex items-center justify-between font-medium">
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-amber-400" />

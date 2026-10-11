@@ -19,6 +19,7 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 import { AvatarCircles } from "@/components/magicui/avatar-circles";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
+import { BorderBeam } from "@/components/magicui/border-beam";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -102,7 +103,7 @@ export default function HomePage() {
             </div>
             <div className="hero-details space-y-4">
               <div className="hero-actions flex flex-wrap gap-2.5">
-                <PlayButton size="lg" />
+                <PlayButton size="lg" pulsating />
                 <ButtonLink
                   href="#challenge"
                   variant="ghost"
@@ -445,18 +446,19 @@ export default function HomePage() {
 
         {/* ── HIGH-CONVERTING FINAL CTA BLOCK ── */}
         <section className="shell-wide home-section">
-          <div data-surface="ink" className="statement-panel text-center py-10 sm:py-14 flex flex-col items-center">
-            <Badge tone="accent" icon="trophy" className="mb-4">
+          <div data-surface="ink" className="statement-panel relative overflow-hidden text-center py-10 sm:py-14 flex flex-col items-center">
+            <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
+            <Badge tone="accent" icon="trophy" className="mb-4 relative z-10">
               The Board Is Set
             </Badge>
-            <h2 className="poster text-heading-xl max-w-[20ch]">
+            <h2 className="poster text-heading-xl max-w-[20ch] relative z-10">
               Your next rival is waiting in Telegram
             </h2>
-            <p className="mt-4 max-w-[46ch] text-body text-fg-muted">
+            <p className="mt-4 max-w-[46ch] text-body text-fg-muted relative z-10">
               Join thousands of players competing for real crypto daily. Practice for free or enter real-stakes PvP matches in seconds.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <PlayButton size="lg" />
+            <div className="mt-8 flex flex-wrap justify-center gap-3 relative z-10">
+              <PlayButton size="lg" pulsating />
               <ButtonLink href="/how-it-works" variant="secondary">
                 See how it works
                 <Icon name="arrow-right" size={18} />

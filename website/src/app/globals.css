@@ -926,4 +926,34 @@
     from { transform: translateX(0%); }
     to { transform: translateX(-100%); }
   }
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(calc(var(--angle, 0) * 1deg)) translateY(calc(var(--radius, 100) * 1px)) rotate(calc(var(--angle, 0) * -1deg));
+    }
+    100% {
+      transform: rotate(calc(var(--angle, 0) * 1deg + 360deg)) translateY(calc(var(--radius, 100) * 1px)) rotate(calc((var(--angle, 0) * -1deg) - 360deg));
+    }
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.98);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.06);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scale(1.14);
+      opacity: 0;
+    }
+  }
+
+  @keyframes border-beam {
+    100% {
+      offset-distance: 100%;
+    }
+  }
 }
