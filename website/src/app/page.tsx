@@ -5,7 +5,6 @@ import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { ChessSculpture } from "@/components/ChessSculpture";
-import { MoveOfTheDay } from "@/components/MoveOfTheDay";
 import { MatchPreview } from "@/components/MatchPreview";
 import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
@@ -103,10 +102,10 @@ export default function HomePage() {
               <div className="hero-actions flex flex-wrap gap-2.5">
                 <PlayButton size="lg" pulsating />
                 <ButtonLink
-                  href="#challenge"
+                  href="/how-it-works"
                   variant="ghost"
                 >
-                  Solve a free puzzle
+                  See how it works
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
@@ -175,12 +174,147 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="challenge" className="shell-wide home-section" aria-labelledby="challenge-title">
+        <section id="rewards" className="shell-wide home-section" aria-labelledby="rewards-heading">
           <div className="section-index">
-            <span>01 / Prove your tactical vision</span>
-            <span>Three winning positions</span>
+            <span>01 / Why players choose Web3Chess</span>
+            <span>Real rewards · Zero house edge</span>
           </div>
-          <MoveOfTheDay />
+
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <h2 id="rewards-heading" className="editorial-title">
+                Turn your chess rating into real crypto
+              </h2>
+              <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
+                Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 TON mystery jackpots, and 6-tier passive match rake.
+              </p>
+            </div>
+            <ButtonLink href="/how-it-works" variant="secondary">
+              Explore game ecosystem
+              <Icon name="arrow-right" size={18} />
+            </ButtonLink>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* ── CARD 1: 1,000 TON Mystery Jackpots & Vaults ── */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
+              <BorderBeam size={260} duration={12} colorFrom="#f59e0b" colorTo="#d97706" />
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <Badge tone="accent" icon="gift">
+                    Mystery Vaults
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted">Daily Drops</span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Win up to 1,000 TON in Mystery Boxes
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Every match earns XP. Open Knight, Queen, and King mystery chests with chances to unbox massive TON prizes, 2× XP boosters, and rare 3D pieces.
+                </p>
+              </div>
+
+              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption font-mono">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
+                    <span className="size-2 rounded-full bg-amber-400" />
+                    King’s Dominion
+                  </span>
+                  <span className="font-bold text-amber-600">
+                    <NumberTicker value={1000} suffix=" TON" /> Jackpot
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
+                    <span className="size-2 rounded-full bg-yellow-400" />
+                    Queen’s Treasury
+                  </span>
+                  <span className="font-semibold text-fg-default">Premium + Drops</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
+                    <span className="size-2 rounded-full bg-slate-400" />
+                    Knight’s Gambit
+                  </span>
+                  <span className="font-semibold text-fg-default">2× XP &amp; Skins</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* ── CARD 2: 6-Tier Viral Affiliate Growth Engine ── */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
+              <BorderBeam size={260} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <Badge tone="accent" icon="users-three">
+                    Affiliate Engine
+                  </Badge>
+                  <span className="font-mono text-caption text-emerald-600 font-semibold">
+                    Passive Crypto
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Earn up to 2% lifetime match rake
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Invite friends to Telegram matches once. Receive lifetime USDT commissions across 6 referral tiers every single time your network competes.
+                </p>
+              </div>
+
+              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
+                <div className="flex items-center justify-between font-mono">
+                  <span className="text-fg-muted">Tier 1 Direct Recruits</span>
+                  <span className="font-bold text-emerald-600">1.0% Match Rake</span>
+                </div>
+                <div className="flex items-center justify-between font-mono">
+                  <span className="text-fg-muted">Tier 2 Sub-Recruits</span>
+                  <span className="font-bold text-emerald-600">0.4% Match Rake</span>
+                </div>
+                <div className="flex items-center justify-between font-mono">
+                  <span className="text-fg-muted">Tiers 3–6 Extended</span>
+                  <span className="font-bold text-emerald-600">0.6% Match Rake</span>
+                </div>
+                <div className="border-t border-line pt-2 flex items-center justify-between font-semibold text-fg-default">
+                  <span>Total Affiliate Pool</span>
+                  <span className="poster text-heading-xs text-emerald-600">2.0% of every pot</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* ── CARD 3: Web2 vs Web3Chess (Conversion Hook) ── */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group md:col-span-2 lg:col-span-1">
+              <BorderBeam size={260} duration={10} colorFrom="#8b5cf6" colorTo="#ec4899" />
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <Badge tone="neutral" icon="lightning">
+                    The Modern Edge
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted">Web3 vs Web2</span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Play chess for real crypto rewards
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Compare how Web3Chess transforms standard online chess into a high-reward competitive arena:
+                </p>
+              </div>
+
+              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
+                <div className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold shrink-0 mt-0.5">✕</span>
+                  <span className="text-fg-muted">
+                    <strong className="text-fg-default font-normal">Traditional Chess:</strong> Zero monetary prizes for regular players, pay-to-learn paywalls, ads.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2 border-t border-line pt-2">
+                  <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
+                  <span className="text-fg-muted">
+                    <strong className="text-emerald-700 font-semibold">Web3Chess:</strong> 95% instant cashout, 1-tap Telegram bot play, daily TON jackpots, and free 100-level Academy.
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
         </section>
 
         <section
