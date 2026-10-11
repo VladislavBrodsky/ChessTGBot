@@ -116,7 +116,7 @@ export function Nav() {
             aria-label={`${BRAND.wordmark} home`}
             className="inline-flex min-h-11 items-center pe-3"
           >
-            <Logo />
+            <Logo compact />
           </Link>
           {links()}
           <PlayButton size="sm" className="ms-2" />
