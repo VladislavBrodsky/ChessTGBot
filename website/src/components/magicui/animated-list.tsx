@@ -11,48 +11,46 @@ export interface AnimatedListProps {
 }
 
 export const AnimatedList = React.memo(
-  ({ className = "", children, delay = 2500, maxItems = 4 }: AnimatedListProps) => {
+  ({ className = "", children, delay = 1000, maxItems = 4 }: AnimatedListProps) => {
+    const [index, setIndex] = useState(0);
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
     );
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-
     useEffect(() => {
       if (childrenArray.length === 0) return;
       const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % childrenArray.length);
+        setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
       }, delay);
+
       return () => clearInterval(interval);
     }, [childrenArray.length, delay]);
 
-    // Keep up to `maxItems` items visible, cycling seamlessly
-    const visibleItems = useMemo(() => {
+    const itemsToShow = useMemo(() => {
       if (childrenArray.length === 0) return [];
-      const list = [];
-      for (let i = 0; i < Math.min(maxItems, childrenArray.length); i++) {
-        const idx = (currentIndex - i + childrenArray.length) % childrenArray.length;
-        list.push(childrenArray[idx]);
+      const count = Math.min(maxItems, childrenArray.length);
+      const result = [];
+      for (let i = 0; i < count; i++) {
+        const itemIndex = (index - i + childrenArray.length) % childrenArray.length;
+        result.push(childrenArray[itemIndex]);
       }
-      return list;
-    }, [childrenArray, currentIndex, maxItems]);
+      return result;
+    }, [index, childrenArray, maxItems]);
 
     return (
       <div className={`flex flex-col items-center gap-2.5 ${className}`}>
         <AnimatePresence initial={false}>
-          {visibleItems.map((item, i) => (
-            <motion.div
-              key={React.isValidElement(item) && item.key != null ? String(item.key) : `item-${i}-${currentIndex}`}
-              initial={{ scale: 0.88, opacity: 0, y: -16 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, transition: { duration: 0.2 } }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              layout
-              className="w-full"
+          {itemsToShow.map((item, i) => (
+            <AnimatedListItem
+              key={
+                React.isValidElement(item) && item.key != null
+                  ? String(item.key)
+                  : `item-${(index - i + childrenArray.length) % childrenArray.length}`
+              }
             >
               {item}
-            </motion.div>
+            </AnimatedListItem>
           ))}
         </AnimatePresence>
       </div>
@@ -61,3 +59,18 @@ export const AnimatedList = React.memo(
 );
 
 AnimatedList.displayName = "AnimatedList";
+
+export function AnimatedListItem({ children }: { children: React.ReactNode }) {
+  const animations = {
+    initial: { scale: 0, opacity: 0 },
+    animate: { scale: 1, opacity: 1, originY: 0 },
+    exit: { scale: 0, opacity: 0 },
+    transition: { type: "spring" as const, stiffness: 350, damping: 40 },
+  };
+
+  return (
+    <motion.div {...animations} layout className="mx-auto w-full">
+      {children}
+    </motion.div>
+  );
+}
