@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { BorderBeam } from "@/components/magicui/border-beam";
 import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE } from "@/lib/config";
@@ -32,15 +33,18 @@ export default async function PlayPage() {
           <p className="max-w-[48ch] hero-lead text-fg-muted">Choose your arena. Start with free A.I. practice, then decide how you want to play.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="flex flex-col items-start">
-            <div className="flex w-full items-center justify-between gap-3">
-              <Icon name="telegram-logo" size={28} />
-              <Badge>Recommended</Badge>
-            </div>
-            <h2 className="mt-5 text-heading-sm font-medium">Inside Telegram</h2>
-            <p className="mt-3 text-body text-fg-muted">Open the Mini App with your Telegram profile. No separate chess app to download.</p>
-            <div className="mt-auto w-full pt-6">
-              <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" />
+          <Card className="flex flex-col items-start relative overflow-hidden group">
+            <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
+            <div className="relative z-10 w-full flex flex-col flex-1 items-start">
+              <div className="flex w-full items-center justify-between gap-3">
+                <Icon name="telegram-logo" size={28} />
+                <Badge tone="accent">Recommended</Badge>
+              </div>
+              <h2 className="mt-5 text-heading-sm font-medium">Inside Telegram</h2>
+              <p className="mt-3 text-body text-fg-muted">Open the Mini App with your Telegram profile. No separate chess app to download.</p>
+              <div className="mt-auto w-full pt-6">
+                <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" />
+              </div>
             </div>
           </Card>
           <Card className="flex flex-col items-start">
