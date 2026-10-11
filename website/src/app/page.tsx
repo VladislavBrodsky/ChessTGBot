@@ -6,7 +6,6 @@ import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { MoveOfTheDay } from "@/components/MoveOfTheDay";
-import { WagerDemo } from "@/components/WagerDemo";
 import { MatchPreview } from "@/components/MatchPreview";
 import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
@@ -347,31 +346,109 @@ export default function HomePage() {
 
         <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
-            <span>05 / Transparent pot math</span>
-            <span>Equal stakes · 18+</span>
+            <span>05 / Real-stakes PvP payouts</span>
+            <span>95% winner pot · 18+</span>
           </div>
-          <div className="section-split">
-            <div className="space-y-5">
-              <h2 id="wagers-heading" className="editorial-title">
-                No mystery in the match pot
-              </h2>
-              <p className="max-w-[42ch] section-lead text-fg-muted">
-                Both players stake the exact same amount. A decided match instantly credits {SETTLEMENT.winnerPercent}% of the combined pot to the winner’s balance.
-              </p>
-              <p className="text-body-sm text-fg-muted">
-                Withdrawals to your personal wallet are confirmed with one tap in the bot chat. Track completed transfers on Tonviewer with full on-chain transparency.
-              </p>
-              <ButtonLink href="/wagers" variant="secondary">
-                Calculate your match winnings
-                <Icon name="arrow-right" size={18} />
-              </ButtonLink>
-              <p className="text-caption text-fg-muted">
-                Wager matches involve real money and you can lose your stake. Play responsibly. 18+.
-              </p>
+
+          <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-8 lg:p-10">
+            <BorderBeam size={340} duration={12} colorFrom="#10b981" colorTo="#059669" />
+
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center relative z-10">
+              <div className="space-y-5">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <Badge tone="accent" icon="lightning">
+                    95% Winner Payout
+                  </Badge>
+                  <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Lowest rake in Web3
+                  </span>
+                </div>
+
+                <h2 id="wagers-heading" className="editorial-title">
+                  Turn tactical mastery into real crypto
+                </h2>
+
+                <p className="max-w-[44ch] section-lead text-fg-muted">
+                  Both players stake equal USDT. No luck, no house edge, no pay-to-win cards — only pure tactical chess. The winner claims 95% of the combined pot instantly on-chain.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <ButtonLink href="/wagers" variant="secondary">
+                    Calculate your match winnings
+                    <Icon name="arrow-right" size={18} />
+                  </ButtonLink>
+                  <ButtonLink href="/fair-play" variant="ghost">
+                    Settlement rules
+                    <Icon name="shield-check" size={16} />
+                  </ButtonLink>
+                </div>
+
+                <p className="text-caption text-fg-muted">
+                  Wager matches involve real crypto. You can lose your stake. Play within your limits. 18+.
+                </p>
+              </div>
+
+              {/* Compact Viral Pot Tier Matrix */}
+              <div className="rounded-2xl border border-line bg-inset p-5 sm:p-6 space-y-3.5">
+                <div className="flex items-center justify-between border-b border-line pb-3">
+                  <span className="text-caption font-semibold text-fg-default">
+                    Popular Stakes &amp; Payouts
+                  </span>
+                  <span className="font-mono text-caption text-emerald-600 font-medium">
+                    +90% Net ROI on win
+                  </span>
+                </div>
+
+                <div className="grid gap-2 text-caption">
+                  {[
+                    { tier: "Micro Duel", stake: 1, win: 1.90, net: "+$0.90", hot: false },
+                    { tier: "Blitz Favorite", stake: 5, win: 9.50, net: "+$4.50", hot: true },
+                    { tier: "High Roller", stake: 25, win: 47.50, net: "+$22.50", hot: false },
+                    { tier: "Grandmaster Table", stake: 100, win: 190.00, net: "+$90.00", hot: false },
+                  ].map((item) => (
+                    <div
+                      key={item.tier}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                        item.hot
+                          ? "bg-surface border-emerald-500/40 shadow-xs"
+                          : "bg-surface/60 border-line"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-fg-default">
+                          ${item.stake} USDT
+                        </span>
+                        <span className="text-fg-muted text-[13px]">
+                          ({item.tier})
+                        </span>
+                        {item.hot && (
+                          <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                            Popular
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="font-mono font-bold text-emerald-600 block">
+                          ${item.win.toFixed(2)} USDT
+                        </span>
+                        <span className="text-[12px] font-mono text-fg-muted">
+                          Net: {item.net}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
+                  <span>Fee split: 3% platform · 2% affiliate</span>
+                  <Link href="/wagers" className="text-fg-link hover:underline inline-flex items-center gap-1 font-sans font-semibold">
+                    Full math breakdown
+                    <Icon name="arrow-right" size={14} />
+                  </Link>
+                </div>
+              </div>
             </div>
-            <Card>
-              <WagerDemo />
-            </Card>
           </div>
         </section>
 
