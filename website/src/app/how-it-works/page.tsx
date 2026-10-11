@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
             <>
               One tap.
               <br />
-              Your next rival.
+              Your next rival
             </>
           }
           lead="Chess fits right into your Telegram day. Open the board, choose your pace, and let the next game begin."
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
           <div>
             <span className="eyebrow">A game that fits your day</span>
             <h2 id="tempo-heading" className="editorial-title mt-5">
-              Find your tempo.
+              Find your tempo
             </h2>
             <p className="mt-5 max-w-[42ch] section-lead text-fg-muted">
               A quick burst of bullet or a little more thinking time? Explore
@@ -121,7 +121,7 @@ export default function HowItWorksPage() {
             <span>Four simple steps</span>
           </div>
           <h2 id="journey-heading" className="editorial-title mb-6">
-            An opening anyone can learn.
+            An opening anyone can learn
           </h2>
           <InfoGrid ordered items={steps.map((step) => ({
             title: step.title, body: step.body, note: step.note,
@@ -132,7 +132,7 @@ export default function HowItWorksPage() {
             <span>02 / Your way to play</span>
           </div>
           <h2 id="paths-heading" className="editorial-title mb-6">
-            Warm up. Then decide.
+            Warm up. Then decide
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="flex flex-col items-start">
@@ -180,7 +180,7 @@ export default function HowItWorksPage() {
             <span>Clear answers</span>
           </div>
           <h2 id="questions-heading" className="editorial-title mb-6">
-            Play your way.
+            Play your way
           </h2>
           <InfoGrid items={questions.map(({ question, answer }) => ({ title: question, body: answer }))} />
           <ButtonLink href="/play" variant="secondary" className="mt-6">
@@ -195,7 +195,7 @@ export default function HowItWorksPage() {
               <h2 className="poster text-heading-xl">
                 Know the rules.
                 <br />
-                Enjoy the game.
+                Enjoy the game
               </h2>
               <p className="mt-5 max-w-[48ch] text-body text-fg-muted">
                 Connection issues do not guarantee a paused clock. Reconnect

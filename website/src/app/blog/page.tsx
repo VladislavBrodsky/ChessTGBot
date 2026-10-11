@@ -68,7 +68,7 @@ export default function BlogHubPage() {
             <>
               Moves worth
               <br />
-              reading.
+              reading
             </>
           }
           lead="Opening ideas, tactical patterns, and a closer look at the game we’re building. Take something useful into your next match."
@@ -88,7 +88,7 @@ export default function BlogHubPage() {
         </section>
         <section id="stories" aria-labelledby="stories-heading">
           <h2 id="stories-heading" className="editorial-title mb-6">
-            Find your next idea.
+            Find your next idea
           </h2>
           <BlogFeed posts={summaries} featuredSlug={featured.slug} />
         </section>
@@ -96,7 +96,7 @@ export default function BlogHubPage() {
           <div>
             <Eyebrow>Keep thinking ahead</Eyebrow>
             <h2 className="mt-4 text-heading-sm font-medium">
-              Meet us in Telegram.
+              Meet us in Telegram
             </h2>
             <p className="mt-2 max-w-[55ch] text-body text-fg-muted">
               Join the community for chess conversations and updates from

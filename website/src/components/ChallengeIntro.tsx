@@ -12,13 +12,13 @@ export function ChallengeIntro({
           <>
             That’s your
             <br />
-            brilliant move.
+            brilliant move
           </>
         ) : (
           <>
             One move.
             <br />
-            Big difference.
+            Big difference
           </>
         )}
       </h2>

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE } from "@/lib/config";
+import { BRAND } from "@/lib/brand";
 
 export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/play` },
@@ -21,13 +22,13 @@ export default async function PlayPage() {
   return (
     <div className="shell-wide">
       <header className="site-header flex min-h-20 items-center justify-between gap-4">
-        <Link href="/" aria-label="Web3Chess home" className="inline-flex min-h-11 items-center"><Logo /></Link>
+        <Link href="/" aria-label={`${BRAND.wordmark} home`} className="inline-flex min-h-11 items-center"><Logo /></Link>
         <Link href="/" aria-label="Back to the website" className="site-nav-link gap-2"><Icon name="arrow-left" size={16} /><span className="hidden sm:inline">Website</span></Link>
       </header>
       <main id="main" className="play-page mx-auto max-w-4xl">
         <div className="mb-8 space-y-4 sm:mb-10">
           <Badge tone="accent">Your next move</Badge>
-          <h1 className="poster play-heading">Open the board.</h1>
+          <h1 className="poster play-heading">Open the board</h1>
           <p className="max-w-[48ch] hero-lead text-fg-muted">Choose your arena. Start with free A.I. practice, then decide how you want to play.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -58,7 +59,7 @@ export default async function PlayPage() {
             <div className="size-28 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} role="img" aria-label="QR code that opens Web3Chess in Telegram" />
           </div>
           <div>
-            <h2 className="text-title">Take the board with you.</h2>
+            <h2 className="text-title">Take the board with you</h2>
             <p className="mt-2 max-w-[44ch] text-body text-fg-muted">Scan with your phone camera to open Web3Chess in Telegram.</p>
           </div>
         </div>

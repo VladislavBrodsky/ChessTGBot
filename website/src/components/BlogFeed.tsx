@@ -94,7 +94,7 @@ export function BlogFeed({
       ) : (
         <Card className="text-center">
           <Icon name="book-open-text" size={32} className="mx-auto" />
-          <h3 className="mt-4 text-title">No stories in this position.</h3>
+          <h3 className="mt-4 text-title">No stories in this position</h3>
           <p className="mt-2 text-body text-fg-muted">
             Try another topic or clear the filters.
           </p>

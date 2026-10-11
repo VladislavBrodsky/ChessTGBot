@@ -6,7 +6,7 @@ export const contentType = "image/png";
 export default async function Image() {
   return socialImage({
     art: "howItWorks",
-    title: "One tap. Your next rival.",
+    title: "One tap. Your next rival",
     eyebrow: "HOW IT WORKS",
     description:
       "Choose your pace. Find your match. Play right inside Telegram.",

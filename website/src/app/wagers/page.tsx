@@ -42,7 +42,7 @@ export default function WagersPage() {
             <>
               Your stake.
               <br />
-              The full picture.
+              The full picture
             </>
           }
           lead="Equal stakes. Clear fees. Understand the pot, your balance, and withdrawals before you play."
@@ -67,7 +67,7 @@ export default function WagersPage() {
           <div className="wager-intro">
             <div className="section-index"><span>01 / See a worked example</span></div>
             <h2 id="example-heading" className="editorial-title mt-5">
-              Do the math before the match.
+              Do the math before the match
             </h2>
             <p className="mt-5 max-w-[44ch] section-lead text-fg-muted">
               Choose an example stake and follow each part of the combined pot.
@@ -91,7 +91,7 @@ export default function WagersPage() {
             <span>02 / How your balance moves</span>
           </div>
           <h2 id="balance-heading" className="editorial-title mb-6">
-            From deposit to your own wallet.
+            From deposit to your own wallet
           </h2>
           <InfoGrid ordered items={[
               {
@@ -123,7 +123,7 @@ export default function WagersPage() {
               <h2 className="poster text-heading-xl">
                 Set your limits.
                 <br />
-                Keep your perspective.
+                Keep your perspective
               </h2>
               <p className="mt-5 max-w-[50ch] text-body text-fg-muted">
                 Only play with a stake you can afford to lose. Never chase

@@ -130,7 +130,7 @@ export async function socialImage({
             fontSize: 18,
           }}
         >
-          <span>No download. A whole new arena.</span>
+          <span>No download. A whole new arena</span>
           <span>web3chess.online</span>
         </div>
       </div>

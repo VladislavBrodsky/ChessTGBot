@@ -6,7 +6,7 @@ export const contentType = "image/png";
 export default async function Image() {
   return socialImage({
     art: "wagers",
-    title: "Your stake. The full picture.",
+    title: "Your stake. The full picture",
     eyebrow: "STAKES & SETTLEMENT",
     description:
       "Equal stakes, clear match math, and a balance you can follow. Wagers: 18+. You can lose your stake.",

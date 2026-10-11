@@ -6,7 +6,7 @@ export const contentType = "image/png";
 export default async function Image() {
   return socialImage({
     art: "academy",
-    title: "See more. Play better.",
+    title: "See more. Play better",
     eyebrow: "THE CHESS ACADEMY",
     description:
       "Opening principles, tactical patterns, and free A.I. practice.",

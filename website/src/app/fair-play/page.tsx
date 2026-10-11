@@ -53,7 +53,7 @@ export default function FairPlayPage() {
             <>
               Your mind.
               <br />
-              Your moves.
+              Your moves
             </>
           }
           lead="Great chess needs clear rules and honest opponents. Here’s how the game is validated, and what we expect from everyone at the board."
@@ -70,7 +70,7 @@ export default function FairPlayPage() {
             <span>Fair play starts with you</span>
           </div>
           <h2 id="rules-heading" className="editorial-title mb-6">
-            Same board. Same rules.
+            Same board. Same rules
           </h2>
           <InfoGrid items={pillars.map((pillar) => ({
             title: pillar.title, body: pillar.body,
@@ -82,7 +82,7 @@ export default function FairPlayPage() {
           <h2 className="poster mt-5 text-heading-xl">
             Legal moves.
             <br />
-            Honest play.
+            Honest play
           </h2>
           <p className="mt-5 max-w-[60ch] section-lead text-fg-muted">
             Server validation catches illegal moves. It does not, on its own,

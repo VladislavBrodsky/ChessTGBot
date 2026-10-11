@@ -90,7 +90,7 @@ export default function HomePage() {
         <section className="shell-wide hero-section" aria-labelledby="home-title">
           <div className="hero-copy">
             <div className="hero-intro">
-              <Badge tone="accent" icon="telegram-logo">Chess. Now in Telegram.</Badge>
+              <Badge tone="accent" icon="telegram-logo">Chess. Now in Telegram</Badge>
               <h1 id="home-title" className="poster hero-title">
                 Skill is the
                 <br />
@@ -171,7 +171,7 @@ export default function HomePage() {
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="play-heading" className="editorial-title">
-                Less waiting. More playing.
+                Less waiting. More playing
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Pick a pace. Choose a stake. Keep chatting while we find your
@@ -195,7 +195,7 @@ export default function HomePage() {
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
               <h2 id="fair-heading" className="poster text-heading-xl">
                 You can’t buy
-                <br />a better bishop.
+                <br />a better bishop
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Every piece follows the same rules. Your preparation, your
@@ -242,7 +242,7 @@ export default function HomePage() {
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="academy-heading" className="editorial-title">
-                Make your next move a better one.
+                Make your next move a better one
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Learn opening principles. Spot the fork. Find the endgame plan.
@@ -280,7 +280,7 @@ export default function HomePage() {
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="wagers-heading" className="editorial-title">
-                No mystery in the match pot.
+                No mystery in the match pot
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Both players contribute the same stake. A decided match credits{" "}
@@ -310,11 +310,11 @@ export default function HomePage() {
         <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
             <span>06 / The chess journal</span>
-            <span>Read. Think. Repeat.</span>
+            <span>Read. Think. Repeat</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <h2 id="journal-heading" className="editorial-title">
-              A little knowledge. A better position.
+              A little knowledge. A better position
             </h2>
             <ButtonLink href="/blog" variant="secondary">
               All stories
@@ -330,7 +330,7 @@ export default function HomePage() {
 
         <aside id="philosophy" className="shell-wide home-section" aria-labelledby="break-heading">
           <div className="responsible-note">
-            <h2 id="break-heading">A good player knows when to take a break.</h2>
+            <h2 id="break-heading">A good player knows when to take a break</h2>
             <p>Set limits before you play, never chase losses, and return with a clear head. Free A.I. practice is always there for a game without a stake.</p>
           </div>
         </aside>
@@ -340,7 +340,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <span className="eyebrow">Before your first move</span>
               <h2 id="faq-heading" className="editorial-title">
-                Good questions. Clear answers.
+                Good questions. Clear answers
               </h2>
               <p className="text-body text-fg-muted">
                 The essentials on practice, stakes, deposits, and fair play.

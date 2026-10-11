@@ -49,7 +49,7 @@ export default function AcademyPage() {
             <>
               See more.
               <br />
-              Play better.
+              Play better
             </>
           }
           lead="Build your board vision. Learn an idea, solve a puzzle, and try it in free A.I. practice."
@@ -84,7 +84,7 @@ export default function AcademyPage() {
           <div>
             <span className="eyebrow">A plan you understand</span>
             <h2 id="opening-heading" className="editorial-title mt-5">
-              Make the first moves make sense.
+              Make the first moves make sense
             </h2>
             <p className="mt-5 max-w-[42ch] section-lead text-fg-muted">
               Start with the Italian Game: control the center, develop your
@@ -118,7 +118,7 @@ export default function AcademyPage() {
             <span>Four mastery tracks</span>
           </div>
           <h2 id="tracks-heading" className="editorial-title mb-6">
-            From the first move to the final square.
+            From the first move to the final square
           </h2>
           <InfoGrid ordered items={home.academy.tracks.map((track, i) => ({
             title: track.name, body: descriptions[i], note: track.level,
@@ -134,7 +134,7 @@ export default function AcademyPage() {
             <span>Two practical guides</span>
           </div>
           <h2 id="guides-heading" className="editorial-title mb-6">
-            Learn it. Then try it.
+            Learn it. Then try it
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="flex flex-col items-start">
@@ -170,7 +170,7 @@ export default function AcademyPage() {
               <h2 className="poster text-heading-xl">
                 Try the idea.
                 <br />
-                Learn from the game.
+                Learn from the game
               </h2>
               <p className="mt-5 max-w-[45ch] text-body text-fg-muted">
                 Test a new opening or tactical pattern against the A.I. Pick a

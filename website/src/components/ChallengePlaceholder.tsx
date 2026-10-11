@@ -23,7 +23,7 @@ export function ChallengePlaceholder({ error = false }: { error?: boolean }) {
       </div>
       {error ? (
         <div className="challenge-controls space-y-4">
-          <h3 className="text-heading-sm font-medium">Let’s try that again.</h3>
+          <h3 className="text-heading-sm font-medium">Let’s try that again</h3>
           <p className="text-body text-fg-muted">Your board is here. Reload to try the move controls again.</p>
           <Button onClick={() => window.location.reload()}>Reload challenge<Icon name="arrow-counter-clockwise" size={16} /></Button>
         </div>
