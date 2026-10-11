@@ -279,7 +279,13 @@
     "lifetime_stats": "Lifetime stats",
     "completed_archive": "Completed tasks",
     "referral_dashboard": "Referral dashboard",
-    "new_tasks_tomorrow": "Check back tomorrow for new daily tasks."
+    "new_tasks_tomorrow": "Check back tomorrow for new daily tasks.",
+    "home_screen_verified": "Home screen verified successfully! You can now claim your reward.",
+    "home_screen_verify_failed": "Verification failed. Please add the app to your home screen first.",
+    "home_screen_verify_network_error": "Network error during home screen verification.",
+    "subscription_verified": "Subscription verified successfully! You can now claim your ELO/XP reward.",
+    "subscription_verify_failed": "Verification failed. Please make sure you have joined the channel/group first.",
+    "subscription_verify_network_error": "Network error during subscription verification."
   },
   "Academy": {
     "complete_lesson": "Complete lesson",
@@ -463,7 +469,11 @@
     "quote_1": "Chess is the gymnasium of the mind.",
     "quote_2": "Tactics flow from a superior position.",
     "quote_3": "When you see a good move, look for a better one.",
-    "quote_4": "I don't believe in psychology. I believe in good moves."
+    "quote_4": "I don't believe in psychology. I believe in good moves.",
+    "level_unlocked": "Level {level} unlocked successfully!",
+    "xp_upgrade_alert": "Upgrading to Premium requires 5,000 XP. You currently have {xp} XP.",
+    "upgrade_success": "Upgrade successful! You are now a Premium member.",
+    "subscription_success": "Subscription successful! You are now a Premium member."
   },
   "Game": {
     "review_title": "Match review",

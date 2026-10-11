@@ -188,7 +188,7 @@ export default function AcademyPage() {
           const data = await res.json();
             if (res.ok && data.status === "success") {
               triggerConfetti();
-              telegramAlert(`Level ${id} unlocked successfully!`);
+              telegramAlert(t('level_unlocked', { level: id }));
               mutateStats();
               mutateUnlocked();
               mutatePuzzles();
@@ -209,7 +209,7 @@ export default function AcademyPage() {
   const handleUpgradeWithXp = async () => {
     const currentXp = stats?.xp || 0;
     if (currentXp < 5000) {
-      telegramAlert(`Upgrading requires 5,000 XP. You only have ${currentXp} XP.`);
+      telegramAlert(t('xp_upgrade_alert', { xp: currentXp.toLocaleString(locale) }));
       return;
     }
     try {
@@ -218,7 +218,7 @@ export default function AcademyPage() {
       });
       if (res.ok) {
         triggerConfetti();
-        telegramAlert("Upgrade successful! You are now a Premium member.");
+        telegramAlert(t('upgrade_success'));
         setShowPremiumPromo(false);
         mutateStats();
         mutatePuzzles();
@@ -241,7 +241,7 @@ export default function AcademyPage() {
       });
       if (res.ok) {
         triggerConfetti();
-        telegramAlert("Subscription successful! You are now a Premium member.");
+        telegramAlert(t('subscription_success'));
         setShowPremiumPromo(false);
         mutateStats();
         mutatePuzzles();

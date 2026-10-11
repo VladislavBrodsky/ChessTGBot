@@ -595,8 +595,8 @@ export default function MembershipPage() {
       <VIPConfirmSheet
         isOpen={confirmingXpUpgrade}
         title={tm('xp_upgrade_title')}
-        description="Unlock 30 days of Premium benefits using your accumulated XP."
-        costText="5,000 XP"
+        description={tm('xp_upgrade_desc')}
+        costText={`${(5000).toLocaleString(locale)} XP`}
         balanceText={`${(stats?.xp || 0).toLocaleString(locale)} XP`}
         loading={submitting}
         onConfirm={handleConfirmXpUpgrade}

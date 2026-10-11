@@ -81,13 +81,13 @@ export default function ChallengesPage() {
           const data = await res.json();
           if (res.ok && data.completed) {
             setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
-            telegramAlert("Home screen verified successfully! You can now claim your reward.");
+            telegramAlert(t('home_screen_verified'));
           } else {
-            telegramAlert(data.detail || "Verification failed. Please add the app to your home screen first.");
+            telegramAlert(data.detail || t('home_screen_verify_failed'));
           }
         } catch (err) {
           console.error("Verification failed", err);
-          telegramAlert("Network error during home screen verification.");
+          telegramAlert(t('home_screen_verify_network_error'));
         }
       };
 
@@ -154,13 +154,13 @@ export default function ChallengesPage() {
       const data = await res.json();
       if (res.ok && data.completed) {
         setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
-        telegramAlert("Subscription verified successfully! You can now claim your ELO/XP reward.");
+        telegramAlert(t('subscription_verified'));
       } else {
-        telegramAlert(data.detail || "Verification failed. Please make sure you have joined the channel/group first.");
+        telegramAlert(data.detail || t('subscription_verify_failed'));
       }
     } catch (err) {
       console.error("Verification failed", err);
-      telegramAlert("Network error during subscription verification.");
+      telegramAlert(t('subscription_verify_network_error'));
     }
   };
 
