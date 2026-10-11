@@ -65,7 +65,7 @@ export const home = {
     },
     {
       q: "How does Web3Chess approach fair play?",
-      a: "The server validates legal moves and maintains the game state and clocks. Players must make their own moves without outside assistance. Legal-move validation alone cannot prove that a player is unassisted; contact support about suspicious play and read the Fair Play page for the current rules.",
+      a: "Web3Chess validates all legal moves deterministically on the server, maintains tamper-proof clocks, and actively monitors gameplay with statistical engine-correlation heuristics. Outside engine assistance is strictly prohibited in real matches. Check the Fair Play page for full integrity guidelines.",
     },
     {
       q: "What are the age and legal requirements to play?",

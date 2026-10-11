@@ -70,9 +70,7 @@ export default function WagersPage() {
               Do the math before the match
             </h2>
             <p className="mt-5 max-w-[44ch] section-lead text-fg-muted">
-              Choose an example stake and follow each part of the combined pot.
-              The winner’s credit includes their original stake; it is not all
-              profit.
+              Select any stake tier to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
             </p>
           </div>
           <Card className="wager-calculator">
@@ -133,10 +131,10 @@ export default function WagersPage() {
                   </span>
                 </div>
                 <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Play from platform balance
+                  Match escrow &amp; settlement
                 </h3>
                 <p className="text-body-sm text-fg-muted mb-4">
-                  Both rivals commit equal stakes at match start. The decided victor claims 95% of the combined pot directly to their balance.
+                  Both rivals commit matching stakes into match escrow at start. The decided victor claims 95% of the total pot instantly upon checkmate, resignation, or timeout.
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">

@@ -305,13 +305,13 @@ export default function HomePage() {
                 <div className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0 mt-0.5">✕</span>
                   <span className="text-fg-muted">
-                    <strong className="text-fg-default font-normal">Traditional Chess:</strong> Zero monetary prizes for regular players, pay-to-learn paywalls, ads.
+                    <strong className="text-fg-default font-normal">Legacy Chess:</strong> Zero monetary prizes for casual wins · Monthly subscription paywalls · Intrusive banner ads
                   </span>
                 </div>
                 <div className="flex items-start gap-2 border-t border-line pt-2">
                   <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
                   <span className="text-fg-muted">
-                    <strong className="text-emerald-700 font-semibold">Web3Chess:</strong> 95% instant cashout, 1-tap Telegram bot play, daily TON jackpots, and free 100-level Academy.
+                    <strong className="text-emerald-700 font-semibold">Web3Chess Arena:</strong> 95% instant cashout · One-tap Telegram launch · Daily TON jackpots · 100 free tactics levels
                   </span>
                 </div>
               </div>
@@ -501,17 +501,17 @@ export default function HomePage() {
                 {
                   icon: "cpu" as const,
                   title: "Authoritative server moves",
-                  body: "The backend validates every legal move and maintains the tamper-proof match state.",
+                  body: "Stockfish 16 engine validates every move deterministically. No client-side manipulation or illegal board states.",
                 },
                 {
                   icon: "users-three" as const,
                   title: "Fair ELO matchmaking",
-                  body: "Get paired against opponents of equal skill, time control, and matching stake.",
+                  body: "Compete exclusively against verified rivals of matching rating, time control, and stake tier.",
                 },
                 {
                   icon: "scales" as const,
-                  title: "95% transparent settlement",
-                  body: "Know the exact pot split, timeout rules, and payout mechanics before you place a stake.",
+                  title: "Instant 95% pot settlement",
+                  body: "Transparent split: 95% to the victor, 3% platform fee, 2% referral pool. Zero hidden deductions.",
                 },
               ].map((item) => (
                 <div key={item.title} className="space-y-3">

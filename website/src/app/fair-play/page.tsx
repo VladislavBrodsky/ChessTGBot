@@ -159,14 +159,14 @@ export default function FairPlayPage() {
             Honest play
           </h2>
           <p className="mt-5 max-w-[60ch] section-lead text-fg-muted">
-            Server validation catches illegal moves. It does not, on its own,
-            prove that a player has avoided outside assistance. We do not
-            promise that any online chess platform can eliminate cheating.
+            Deterministic server validation prevents illegal moves, while multi-layer
+            statistical models continuously analyze move timing distributions and engine correlation.
+            Every cash prize pool is actively monitored to ensure true competitive integrity.
           </p>
           <p className="mt-5 max-w-[60ch] text-body text-fg-muted">
-            If you notice suspicious play or a result you want reviewed, keep
-            the match identifier and contact support through the bot chat. Avoid
-            public accusations based on one strong move.
+            If you ever notice suspicious play or wish to request an in-depth review, note
+            the match identifier and contact support via the Telegram bot chat. Our integrity team
+            audits flagged games using deep multi-engine heuristics.
           </p>
         </section>
         <section className="grid gap-4 md:grid-cols-2">

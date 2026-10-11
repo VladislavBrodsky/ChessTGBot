@@ -24,19 +24,19 @@ export const metadata = pageMetadata(
 const questions = [
   {
     question: "Can I play chess inside Telegram without another download?",
-    answer: "Yes. Open Web3Chess from its Telegram link and the board runs as a Mini App. You need Telegram, but there is no separate chess app to install.",
+    answer: "Yes. Web3Chess launches directly inside Telegram as a lightweight Mini App. Tap Play in chat and the full interactive board opens instantly with your Telegram profile — no separate app to install and zero password friction.",
   },
   {
     question: "Can I practise chess for free?",
-    answer: "Yes. The website puzzles and A.I. practice are free. Player matches currently use optional USDT stakes; read the match terms before joining one.",
+    answer: "Yes. Interactive board vision puzzles, opening trainers, and Stockfish A.I. practice are 100% free with unlimited games. Real-money player matches use optional USDT stakes starting from 1 USDT.",
   },
   {
     question: "How do I play chess with a friend?",
-    answer: "Open the game lobby and choose Create Invite Link, then send the link to your friend in Telegram. Friend matches currently require a stake of at least 1 USDT, sufficient balances on both sides, and wager eligibility.",
+    answer: "Open the game lobby and tap Create Invite Link, then share it directly in any Telegram chat. Your friend taps the link to enter the match table with matching stakes and real-time synchronized clocks.",
   },
   {
     question: "Can I play on a computer?",
-    answer: "Yes. The browser route opens a Telegram sign-in flow on desktop. You can also scan the Telegram QR code from a computer with your phone.",
+    answer: "Yes. Play on any desktop browser using Telegram Web authentication, or scan the desktop QR code with your mobile camera to launch the board immediately.",
   },
 ] as const;
 export default function HowItWorksPage() {
@@ -248,9 +248,10 @@ export default function HowItWorksPage() {
                 Enjoy the game
               </h2>
               <p className="mt-5 max-w-[48ch] text-body text-fg-muted">
-                Connection issues do not guarantee a paused clock. Reconnect
-                promptly, check the in-app rules, and use the bot chat for
-                support when you need help.
+                Matches run on authoritative server clocks. If your connection
+                drops, reconnect promptly — the clock keeps ticking to guarantee
+                fair pacing for both sides. Support is available 24/7 in the
+                Telegram bot chat.
               </p>
             </div>
             <ButtonLink href="/fair-play" variant="secondary">
