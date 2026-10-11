@@ -2,10 +2,8 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { color } from "../../../design-system/website/tokens";
-import { BrandMark } from "./BrandMark";
 import { BrandWordmark } from "./BrandWordmark";
 import { BRAND_LETTERING } from "@/lib/brand-lettering";
-import { BRAND } from "@/lib/brand";
 import { chessArt, type ChessArtVariant } from "@/lib/chess-art";
 
 /** One visual language for Telegram, X, and all page previews. */
@@ -32,9 +30,6 @@ export async function socialImage({
   const bodyFont = await readFile(
     join(process.cwd(), "public/fonts/onest.ttf"),
   );
-  const brandSymbol = await readFile(
-    join(process.cwd(), "public/brand", BRAND.socialAsset),
-  );
   return new ImageResponse(
     (
       <div
@@ -58,21 +53,13 @@ export async function socialImage({
             gap: 48,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <BrandMark
-              src={`data:image/png;base64,${brandSymbol.toString("base64")}`}
-              style={{ width: 48, height: 48 }}
-            />
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <BrandWordmark
-                foreground={color.ink}
-                style={{
-                  width: BRAND_LETTERING.wordmark.width,
-                  height: BRAND_LETTERING.wordmark.height,
-                }}
-              />
-            </div>
-          </div>
+          <BrandWordmark
+            foreground={color.ink}
+            style={{
+              width: BRAND_LETTERING.lockup.width,
+              height: BRAND_LETTERING.lockup.height,
+            }}
+          />
           <span
             style={{
               background: color.mintChip,

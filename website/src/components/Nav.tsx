@@ -7,6 +7,7 @@ import { Logo } from "./Logo";
 import { PlayButton } from "./PlayButton";
 import { home } from "@/content/home";
 import { Icon } from "@/icons";
+import { BRAND } from "@/lib/brand";
 
 export function Nav() {
   const path = usePathname();
@@ -76,7 +77,7 @@ export function Nav() {
       <header className="site-header shell-wide flex min-h-20 items-center justify-between gap-3">
         <Link
           href="/"
-          aria-label="Web3Chess home"
+          aria-label={`${BRAND.wordmark} home`}
           className="inline-flex min-h-11 items-center"
         >
           <Logo />
@@ -112,7 +113,7 @@ export function Nav() {
         >
           <Link
             href="/"
-            aria-label="Web3Chess home"
+            aria-label={`${BRAND.wordmark} home`}
             className="inline-flex min-h-11 items-center pe-3"
           >
             <Logo />

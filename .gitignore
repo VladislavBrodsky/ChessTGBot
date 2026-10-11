@@ -42,3 +42,4 @@ chess.db*
 pyrightconfig.json
 *.tsbuildinfo
 
+.env.production

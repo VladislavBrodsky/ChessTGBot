@@ -4,7 +4,6 @@ import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { BrandMark } from "@/components/BrandMark";
 import { Icon, type IconName } from "@/icons";
 
 const suggestions: { href: string; title: string; text: string; icon: IconName }[] = [
@@ -20,7 +19,7 @@ export default function NotFound() {
       <Nav />
       <main id="main" className="shell-wide">
         <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-12 text-center sm:py-20" aria-labelledby="not-found-title">
-          <BrandMark src="/brand/w3chess-symbol.svg" className="size-20 rotate-[-88deg] sm:size-24" />
+          <span className="eyebrow" aria-hidden="true">404</span>
           <h1 id="not-found-title" className="poster text-heading-xl text-fg">This position doesn&apos;t exist</h1>
           <p className="text-body sm:text-lead text-fg-muted">The page you asked for isn&apos;t on the board.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
