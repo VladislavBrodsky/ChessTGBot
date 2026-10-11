@@ -311,7 +311,7 @@ export function ArenaBento() {
         </div>
 
         {/* Live Event Stream via AnimatedList */}
-        <div className="relative my-1 w-full overflow-hidden">
+        <div className="relative my-1 w-full h-[180px] overflow-hidden">
           <AnimatedList delay={2400} maxItems={3}>
             {liveFeed.map((item) => (
               <figure

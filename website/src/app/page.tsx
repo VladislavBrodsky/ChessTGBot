@@ -19,6 +19,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { IconCloud } from "@/components/magicui/icon-cloud";
 import { AnimatedList } from "@/components/magicui/animated-list";
+import { UsdtIcon } from "@/components/UsdtIcon";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -573,7 +574,7 @@ export default function HomePage() {
           <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-8 lg:p-10">
             <BorderBeam size={340} duration={12} colorFrom="#10b981" colorTo="#059669" />
 
-            <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center relative z-10">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start relative z-10">
               <div className="space-y-5">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <Badge tone="accent" icon="lightning">
@@ -628,7 +629,7 @@ export default function HomePage() {
                 </div>
 
                 {/* AnimatedList stream of diverse stakes & prizes */}
-                <div className="relative z-10 w-full overflow-hidden">
+                <div className="relative z-10 w-full h-[276px] overflow-hidden">
                   <AnimatedList delay={2200} maxItems={4}>
                     {[
                       {
@@ -639,7 +640,6 @@ export default function HomePage() {
                         net: "+$0.90",
                         tag: "1-Min Duel",
                         tagColor: "bg-surface border-line text-fg-muted",
-                        icon: "lightning" as const,
                       },
                       {
                         tier: "Blitz Favorite",
@@ -649,7 +649,6 @@ export default function HomePage() {
                         net: "+$4.50",
                         tag: "Most Popular 🔥",
                         tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
-                        icon: "trophy" as const,
                       },
                       {
                         tier: "Arena Contender",
@@ -659,7 +658,6 @@ export default function HomePage() {
                         net: "+$9.00",
                         tag: "Active Pool ⚡",
                         tagColor: "bg-blue-500/15 border-blue-500/30 text-blue-700",
-                        icon: "sword" as const,
                       },
                       {
                         tier: "High Roller",
@@ -669,7 +667,6 @@ export default function HomePage() {
                         net: "+$22.50",
                         tag: "Trending 🚀",
                         tagColor: "bg-amber-500/15 border-amber-500/30 text-amber-700",
-                        icon: "crown-simple" as const,
                       },
                       {
                         tier: "Championship Pot",
@@ -679,7 +676,6 @@ export default function HomePage() {
                         net: "+$45.00",
                         tag: "+90% Net ROI",
                         tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
-                        icon: "trophy" as const,
                       },
                       {
                         tier: "Grandmaster Table",
@@ -689,7 +685,6 @@ export default function HomePage() {
                         net: "+$90.00",
                         tag: "VIP Table 👑",
                         tagColor: "bg-purple-500/15 border-purple-500/30 text-purple-700",
-                        icon: "crown-simple" as const,
                       },
                       {
                         tier: "Whales Arena",
@@ -699,7 +694,6 @@ export default function HomePage() {
                         net: "+$225.00",
                         tag: "Whales Club 💎",
                         tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
-                        icon: "coins" as const,
                       },
                     ].map((item) => (
                       <div
@@ -707,8 +701,8 @@ export default function HomePage() {
                         className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface/90 transition-all duration-200 hover:scale-[101%] hover:border-fg-muted/40 shadow-2xs"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-inset border border-line text-fg-default">
-                            <Icon name={item.icon} size={15} />
+                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#26A17B]/15 border border-[#26A17B]/30 text-[#26A17B]">
+                            <UsdtIcon className="size-4" />
                           </div>
                           <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -739,6 +733,7 @@ export default function HomePage() {
                       </div>
                     ))}
                   </AnimatedList>
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-inset to-transparent z-20" />
                 </div>
 
                 <div className="relative z-10 flex items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
