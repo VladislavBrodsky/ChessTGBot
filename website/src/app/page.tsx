@@ -5,7 +5,6 @@ import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { ChessSculpture } from "@/components/ChessSculpture";
-import { MatchPreview } from "@/components/MatchPreview";
 import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
 import { Footer } from "@/components/Footer";
@@ -18,6 +17,7 @@ import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { IconCloud } from "@/components/magicui/icon-cloud";
+import { Globe } from "@/components/magicui/globe";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 import { home } from "@/content/home";
@@ -378,23 +378,104 @@ export default function HomePage() {
 
         <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
           <div className="section-index">
-            <span>02 / Matchmaking on your schedule</span>
-            <span>Bullet, blitz &amp; rapid</span>
+            <span>02 / Worldwide live matchmaking</span>
+            <span>Over 120 countries · Sub-second pairing</span>
           </div>
-          <div className="section-split">
+
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center">
             <div className="space-y-5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Badge tone="accent" icon="globe">
+                  Global Liquid Arena
+                </Badge>
+                <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Live 24/7 Matchmaking
+                </span>
+              </div>
+
               <h2 id="play-heading" className="editorial-title">
-                Less waiting. More playing
+                Challenge rivals worldwide. Matched in seconds
               </h2>
-              <p className="max-w-[42ch] section-lead text-fg-muted">
-                Pick your time control. Choose your stake. Close the app and keep chatting — Telegram instantly pings you the second an opponent is ready.
+
+              <p className="max-w-[44ch] section-lead text-fg-muted">
+                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Pick your pace, choose your stake, and close Telegram — the bot pings you the second an opponent is paired.
               </p>
-              <ButtonLink href="/how-it-works" variant="secondary">
-                Explore time controls
-                <Icon name="arrow-right" size={18} />
-              </ButtonLink>
+
+              {/* Real-time Global Proof Grid */}
+              <div className="grid grid-cols-3 gap-3 rounded-2xl border border-line bg-inset p-4 text-center font-mono">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Active Rivals</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold flex items-center justify-center gap-1">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                    <NumberTicker value={3840} />+
+                  </span>
+                  <span className="text-[10px] text-emerald-600 block font-medium">In live duels</span>
+                </div>
+                <div className="space-y-0.5 border-x border-line">
+                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Average Queue</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold">
+                    &lt; 2.4s
+                  </span>
+                  <span className="text-[10px] text-fg-muted block font-medium">Auto-pairing</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Global Reach</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold">
+                    120+
+                  </span>
+                  <span className="text-[10px] text-fg-muted block font-medium">Countries</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <PlayButton size="md" pulsating />
+                <ButtonLink href="/how-it-works" variant="secondary">
+                  Explore time controls
+                  <Icon name="arrow-right" size={18} />
+                </ButtonLink>
+              </div>
             </div>
-            <MatchPreview />
+
+            {/* ── 3D INTERACTIVE GLOBE SHOWCASE CARD ── */}
+            <Card className="flex flex-col items-center justify-between p-6 bg-surface border border-line relative overflow-hidden group min-h-[460px]">
+              <BorderBeam size={320} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
+
+              <div className="w-full flex items-center justify-between gap-2 mb-2 relative z-10">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-caption text-fg-default font-semibold">
+                    Global PvP Nodes
+                  </span>
+                </div>
+                <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  60 FPS WebGL
+                </span>
+              </div>
+
+              {/* The Globe Canvas Container */}
+              <div className="relative flex items-center justify-center w-full my-auto overflow-hidden">
+                <Globe className="max-w-[420px]" />
+
+                {/* Floating Live Match Chips */}
+                <div className="pointer-events-none absolute top-2 left-2 z-10 hidden sm:flex items-center gap-2 rounded-full border border-line bg-surface/90 px-3 py-1 font-mono text-[11px] shadow-sm backdrop-blur-xs">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span>New York ⚔️ London</span>
+                  <span className="font-bold text-emerald-600">$25 USDT</span>
+                </div>
+
+                <div className="pointer-events-none absolute bottom-4 right-2 z-10 hidden sm:flex items-center gap-2 rounded-full border border-line bg-surface/90 px-3 py-1 font-mono text-[11px] shadow-sm backdrop-blur-xs">
+                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span>Dubai ⚔️ Tokyo</span>
+                  <span className="font-bold text-emerald-600">$50 USDT</span>
+                </div>
+              </div>
+
+              <div className="w-full pt-3 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono relative z-10">
+                <span>Drag to spin globe</span>
+                <span className="text-fg-default font-semibold">Sub-50ms Global Mesh</span>
+              </div>
+            </Card>
           </div>
         </section>
 
