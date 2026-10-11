@@ -50,5 +50,20 @@ Environment variables:
 
 ## Not built yet
 
-Blog, Academy/Premium/Trust/Fair-play pages, legal pages, i18n, analytics with consent, OG image
-template, real app screenshots and commissioned illustrations. See DESIGN.md §14.3.
+Premium and Trust pages, i18n (the app ships 10 languages; the site is English only), analytics with
+consent, real Mini App screenshots and commissioned illustrations. See DESIGN.md §14.3.
+
+## Gotchas (each one cost a debugging session)
+
+- **Never put a Tailwind display utility (`block`, `flex`, `grid`…) on an element whose `display` a
+  `.component` class toggles.** `globals.css` keeps component rules in `@layer components`; utilities live
+  in a later layer and win regardless of specificity or media queries. This is how the blog's mobile
+  `<select>` and desktop chips both rendered on desktop. Keep such elements free of display utilities.
+- **No `loading.tsx` anywhere under `src/app`.** It wraps every child segment in a Suspense boundary that
+  flushes before `notFound()` runs, so an unknown `/blog/<slug>` returns **200** instead of 404 (a soft 404).
+  `dynamicParams` must stay `true` for scheduled articles, so the boundary can't be worked around. Pages are
+  prerendered, so route skeletons would add nothing anyway. Use `loading-sheen` on genuinely async UI.
+- **`error.tsx` / `global-error.tsx` receive `retry`, not `reset`** in this Next release (check
+  `node_modules/next/dist/docs` before copying patterns from older versions).
+- **Run automated accessibility checks with `reducedMotion: "reduce"`** if scroll-driven animation is ever
+  added: text caught mid-fade is reported as a contrast failure.

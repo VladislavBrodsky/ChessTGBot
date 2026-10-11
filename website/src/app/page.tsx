@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Nav } from "@/components/Nav";
 import { PlayButton } from "@/components/PlayButton";
@@ -154,10 +155,10 @@ export default function HomePage() {
                 {SETTLEMENT.platformFeePercent}% platform fee ·{" "}
                 {SETTLEMENT.referralFeePercent}% referral pool.
               </p>
-              <a href="/wagers" className="facts-link link-inline text-caption">
+              <Link href="/wagers" className="facts-link link-inline text-caption">
                 Stakes & fees
                 <Icon name="arrow-right" size={16} />
-              </a>
+              </Link>
             </div>
           </Card>
         </section>

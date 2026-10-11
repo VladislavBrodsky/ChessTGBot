@@ -10,30 +10,3 @@ export function TelegramIcon({ className = "size-5" }: { className?: string }) {
     </svg>
   );
 }
-
-/** The brand king, same silhouette as the Mini App icon. */
-export function KingMark({
-  className = "size-6",
-  fill = "currentColor",
-  style,
-}: {
-  className?: string;
-  fill?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <svg
-      viewBox="0 0 512 512"
-      aria-hidden="true"
-      className={className}
-      fill={fill}
-      style={style}
-    >
-      <path d="M256 128c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32Z" />
-      <path d="M256 150c-35.3 0-64 28.7-64 64v42h128v-42c0-35.3-28.7-64-64-64Z" />
-      <path d="M192 270h128v40H192z" />
-      <path d="M170 330l-20 90h212l-20-90H170Z" />
-      <rect x="128" y="430" width="256" height="30" rx="10" />
-    </svg>
-  );
-}

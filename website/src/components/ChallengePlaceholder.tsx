@@ -28,7 +28,7 @@ export function ChallengePlaceholder({ error = false }: { error?: boolean }) {
           <Button onClick={() => window.location.reload()}>Reload challenge<Icon name="arrow-counter-clockwise" size={16} /></Button>
         </div>
       ) : (
-        <div className="challenge-controls challenge-loading-controls space-y-4" aria-hidden="true" inert>
+        <div className="challenge-controls challenge-loading-controls loading-sheen space-y-4" aria-hidden="true" inert>
           <div className="challenge-progress">
             <p className="flex flex-wrap items-baseline justify-between gap-2 text-body-sm"><span className="font-semibold">Your progress</span><span className="font-mono tabular-nums">0 / 3 solved</span></p>
             <div className="mt-2 flex gap-2">{CHALLENGES.map(item => <span key={item.id} className="h-1 flex-1 rounded-pill bg-line" />)}</div>

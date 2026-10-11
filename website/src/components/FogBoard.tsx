@@ -1,9 +1,24 @@
 "use client";
 
 import { Chessboard, defaultPieces } from "react-chessboard";
-import { useId, useEffect, useRef, useState } from "react";
+import { Children, cloneElement, isValidElement, useId, useEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { board } from "../../../design-system/website/tokens";
 import { BoardFrame } from "./BoardFrame";
+
+/**
+ * react-chessboard ships its king glyph with a hard-coded `id="path6570"`. Two boards on one page
+ * (Academy) then produce duplicate ids, so the ids are stripped; nothing references them.
+ */
+function withoutIds(node: ReactNode): ReactNode {
+  if (!isValidElement<{ id?: string; children?: ReactNode }>(node)) return node;
+  const { id, children } = node.props;
+  if (id === undefined && children === undefined) return node;
+  return cloneElement(
+    node,
+    id === undefined ? undefined : { id: undefined },
+    ...(children === undefined ? [] : [Children.map(children, withoutIds)]),
+  );
+}
 
 /** Fog Board pieces: white stays white, black becomes Board Ink (never pure black). */
 const pieces = Object.fromEntries(
@@ -14,12 +29,14 @@ const pieces = Object.fromEntries(
       square?: string;
       svgStyle?: React.CSSProperties;
     }) =>
-      render({
-        ...props,
-        fill: key.startsWith("w")
-          ? board.pieceWhite.fill
-          : board.pieceBlack.fill,
-      }),
+      withoutIds(
+        render({
+          ...props,
+          fill: key.startsWith("w")
+            ? board.pieceWhite.fill
+            : board.pieceBlack.fill,
+        }),
+      ) as ReactElement,
   ]),
 );
 

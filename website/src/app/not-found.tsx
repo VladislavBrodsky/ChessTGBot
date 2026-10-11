@@ -1,19 +1,53 @@
-import { ButtonLink } from "@/components/ui/Button";
+import Link from "next/link";
+import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
-import { KingMark } from "@/components/icons";
+import { ButtonLink } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { BrandMark } from "@/components/BrandMark";
+import { Icon, type IconName } from "@/icons";
+
+const suggestions: { href: string; title: string; text: string; icon: IconName }[] = [
+  { href: "/#challenge", title: "Try a free puzzle", text: "Find the winning move in three positions.", icon: "target" },
+  { href: "/academy", title: "Chess Academy", text: "Short lessons on openings, tactics and endgames.", icon: "graduation-cap" },
+  { href: "/blog", title: "The journal", text: "Ideas worth taking into your next game.", icon: "book-open-text" },
+  { href: "/how-it-works", title: "How it works", text: "From a tap in Telegram to your next rival.", icon: "lightning" },
+];
 
 export default function NotFound() {
   return (
-    <main id="main" className="shell-prose flex min-h-screen flex-col items-center justify-center gap-6 py-16 text-center">
-      <KingMark className="h-24 w-auto rotate-[-88deg] text-fg" />
-      <h1 className="poster text-heading-xl text-fg">This position doesn&apos;t exist</h1>
-      <p className="text-body sm:text-lead text-fg-muted">The page you asked for isn&apos;t on the board.</p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <PlayButton size="md" />
-        <ButtonLink href="/" variant="secondary">
-          Back to the website
-        </ButtonLink>
-      </div>
-    </main>
+    <div>
+      <Nav />
+      <main id="main" className="shell-wide">
+        <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-12 text-center sm:py-20" aria-labelledby="not-found-title">
+          <BrandMark src="/brand/w3chess-symbol.svg" className="size-20 rotate-[-88deg] sm:size-24" />
+          <h1 id="not-found-title" className="poster text-heading-xl text-fg">This position doesn&apos;t exist</h1>
+          <p className="text-body sm:text-lead text-fg-muted">The page you asked for isn&apos;t on the board.</p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <PlayButton size="md" />
+            <ButtonLink href="/" variant="secondary">
+              Back to the website
+            </ButtonLink>
+          </div>
+        </section>
+        <section aria-labelledby="not-found-next" className="pb-4">
+          <h2 id="not-found-next" className="mb-4 text-title font-medium">Where to next?</h2>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {suggestions.map((item) => (
+              <li key={item.href}>
+                <Card className="journal-card h-full">
+                  <Icon name={item.icon} size={24} />
+                  <h3 className="journal-title mt-4 font-medium">
+                    <Link href={item.href} className="journal-link">{item.title}</Link>
+                  </h3>
+                  <p className="mt-2 text-body-sm text-fg-muted">{item.text}</p>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

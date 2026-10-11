@@ -90,7 +90,7 @@ export default function BlogHubPage() {
           <h2 id="stories-heading" className="editorial-title mb-6">
             Find your next idea.
           </h2>
-          <BlogFeed posts={summaries} />
+          <BlogFeed posts={summaries} featuredSlug={featured.slug} />
         </section>
         <Card className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>

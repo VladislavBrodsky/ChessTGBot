@@ -125,11 +125,11 @@ export const home = {
         title: "Community",
         links: [
           {
-            label: "Telegram Channel",
+            label: "Telegram channel",
             href: "https://t.me/chess_hub",
           },
           {
-            label: "Telegram Community Chat",
+            label: "Community chat",
             href: "https://t.me/chesshub_chat",
           },
         ],

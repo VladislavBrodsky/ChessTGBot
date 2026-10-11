@@ -19,6 +19,8 @@ import { Icon } from "@/icons";
 import { jsonLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ArticleToc } from "@/components/ArticleToc";
+import { formatDate, headingId } from "@/lib/format";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -86,6 +88,20 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const relatedPosts = getRelatedBlogPosts(post.slug);
   const articleUrl = `${SITE.url}/blog/${post.slug}`;
+
+  // Stable, unique ids for every section heading: deep links, "On this page" rail, scroll-spy.
+  const takenIds = new Set<string>();
+  const headingIds = new Map<number, string>();
+  post.content.forEach((block, index) => {
+    if (block.type !== "heading" || !block.text) return;
+    const id = headingId(block.text, takenIds);
+    takenIds.add(id);
+    headingIds.set(index, id);
+  });
+  const toc = post.content.flatMap((block, index) => {
+    const id = headingIds.get(index);
+    return id && block.text ? [{ id, text: block.text }] : [];
+  });
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -155,6 +171,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
       />
+      <div className="reading-progress" aria-hidden="true" />
       <Nav />
 
       <main
@@ -182,13 +199,15 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Metadata Pill Row */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Badge>{post.category}</Badge>
-            <span className="inline-flex items-center gap-1 font-mono text-caption text-fg-muted">
+            <span className="inline-flex items-center gap-1 text-caption text-fg-muted">
               <Icon name="clock" size={14} />
               {post.readingTime}
             </span>
-            <span className="font-mono text-caption text-fg-muted">
-              <time dateTime={post.publishedAt}>{post.publishedAt}</time>
-              {post.updatedAt && <> · Updated <time dateTime={post.updatedAt}>{post.updatedAt}</time></>}
+            <span className="text-caption text-fg-muted">
+              <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+              {post.updatedAt && post.updatedAt !== post.publishedAt && (
+                <> · Updated <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time></>
+              )}
             </span>
           </div>
 
@@ -216,6 +235,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         </header>
 
+        <div className="article-layout">
+        <div className="article-column space-y-8 md:space-y-12">
         {/* Key Takeaways Box */}
         {post.takeaways && post.takeaways.length > 0 && (
           <section className="site-card bg-surface">
@@ -248,7 +269,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                 return (
                   <h2
                     key={index}
-                    className="font-medium leading-tight text-fg pt-3 first:pt-0"
+                    id={headingIds.get(index)}
+                    className="scroll-mt-28 font-medium leading-tight text-fg pt-3 first:pt-0"
                   >
                     {block.text}
                   </h2>
@@ -342,6 +364,13 @@ export default async function BlogPostPage({ params }: PageProps) {
           <p className="mt-3 text-body text-fg-muted">Build your next chess decision around what you learned.</p>
           <ButtonLink href={post.cta?.href ?? "/play"} className="mt-4">{post.cta?.label ?? "Practise free against A.I."}<Icon name="arrow-up-right" size={18} /></ButtonLink>
         </Card>
+        </div>
+        {toc.length > 1 && (
+          <aside className="article-rail" aria-label="Article navigation">
+            <ArticleToc items={toc} />
+          </aside>
+        )}
+        </div>
 
         {/* Related Articles Section */}
         {relatedPosts.length > 0 && (
