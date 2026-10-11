@@ -1,4 +1,5 @@
-import { Eyebrow } from "@/components/ui/Badge";
+import { Eyebrow, Badge } from "@/components/ui/Badge";
+import { BorderBeam } from "@/components/magicui/border-beam";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
@@ -10,7 +11,6 @@ import { ChessSculpture } from "@/components/ChessSculpture";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
-import { InfoGrid } from "@/components/InfoGrid";
 import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
@@ -89,32 +89,111 @@ export default function WagersPage() {
         <section aria-labelledby="balance-heading">
           <div className="section-index">
             <span>02 / How your balance moves</span>
+            <span>Non-custodial deposit to wallet</span>
           </div>
           <h2 id="balance-heading" className="editorial-title mb-6">
             From deposit to your own wallet
           </h2>
-          <InfoGrid ordered items={[
-              {
-                title: "Deposit USDT on TON",
-                body: "Use the deposit instructions in the Wallet tab, including your unique reference comment. Check the network, token, address, and displayed fee before sending. A swap or purchase into your personal wallet is not a platform deposit.",
-              },
-              {
-                title: "Play from your platform balance",
-                body: "Deposits are credited to a balance held by Web3Chess. Both players commit equal stakes at match start. A decided match settles winnings to the platform balance.",
-              },
-              {
-                title: "Request and confirm a withdrawal",
-                body: "Choose your withdrawal details in the app, then follow the bot chat instructions. Standard requests wait for your confirmation; larger requests may require additional review.",
-              },
-              {
-                title: "Track the completed transfer",
-                body: "Once a transfer is sent, verify it on Tonviewer using the transaction information. Confirmation, review, and network processing mean withdrawal timing can vary.",
-              },
-            ]} />
-          <p className="mt-4 text-body-sm text-fg-muted">
-            Web3Chess holds deposits as a platform balance until withdrawal. It
-            is not a self-custody wallet.
-          </p>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Treasury Step 1: 2 cols */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
+              <BorderBeam size={280} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="accent" icon="wallet">
+                    Deposit Rails
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Sub-cent network gas
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Deposit USDT on TON
+                </h3>
+                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
+                  Use the deposit instructions in the Wallet tab, including your unique reference comment. Check the network, token, address, and displayed fee before sending. Fast finality credits in seconds.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                <span>USDT on TON · Instant credit with ref comment</span>
+              </div>
+            </Card>
+
+            {/* Treasury Step 2: 1 col */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="neutral" icon="lightning">
+                    Match Escrow
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    95% pot credit
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Play from platform balance
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Both rivals commit equal stakes at match start. The decided victor claims 95% of the combined pot directly to their balance.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-blue-500" />
+                <span>Locked pot settlement</span>
+              </div>
+            </Card>
+
+            {/* Treasury Step 3: 1 col */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="neutral" icon="paper-plane-tilt">
+                    Telegram Confirmation
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    1-tap HMAC verification
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Request &amp; confirm withdrawal
+                </h3>
+                <p className="text-body-sm text-fg-muted mb-4">
+                  Choose your withdrawal details in the app, then tap Confirm in the Telegram bot chat. Standard requests process immediately to your wallet.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-amber-500" />
+                <span>Non-custodial release</span>
+              </div>
+            </Card>
+
+            {/* Treasury Step 4: 2 cols */}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
+              <BorderBeam size={280} duration={14} colorFrom="#10b981" colorTo="#059669" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <Badge tone="accent" icon="shield-check">
+                    On-Chain Audit
+                  </Badge>
+                  <span className="font-mono text-caption text-fg-muted font-medium">
+                    Tonviewer verification
+                  </span>
+                </div>
+                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
+                  Track the completed transfer
+                </h3>
+                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
+                  Once a transfer is broadcast, verify it on Tonviewer using the immutable blockchain hash. Web3Chess holds platform balances securely until withdrawal.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                <span>Verifiable on Tonviewer · Public ledger finality</span>
+              </div>
+            </Card>
+          </div>
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>A better starting point</Eyebrow>
