@@ -17,6 +17,7 @@ import { AvatarCircles } from "@/components/magicui/avatar-circles";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
+import { IconCloud } from "@/components/magicui/icon-cloud";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -395,10 +396,94 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── 3D WEB3 & TON ECOSYSTEM CLOUD ── */}
+        <section id="infrastructure" className="shell-wide home-section" aria-labelledby="infrastructure-heading">
+          <div className="section-index">
+            <span>03 / Web3 &amp; TON infrastructure</span>
+            <span>Zero friction · Instant on-chain rails</span>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Badge tone="accent" icon="cpu">
+                  Direct Telegram Rails
+                </Badge>
+                <span className="font-mono text-caption text-fg-muted font-medium">
+                  Sub-second finality
+                </span>
+              </div>
+
+              <h2 id="infrastructure-heading" className="editorial-title">
+                Play seamlessly with TON and USDT
+              </h2>
+
+              <p className="max-w-[44ch] section-lead text-fg-muted">
+                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your favorite non-custodial wallet, and settles match pots directly on-chain.
+              </p>
+
+              <div className="grid gap-3 pt-2 text-body-sm text-fg-muted">
+                <div className="flex items-center gap-2.5">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span><strong>USDT on TON:</strong> Instant deposits with sub-cent network fees.</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span><strong>Telegram profile:</strong> Zero registration friction or passwords.</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span><strong>One-tap withdrawals:</strong> Confirmed securely via Telegram bot chat.</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-3">
+                <PlayButton size="md" pulsating />
+                <ButtonLink href="/how-it-works" variant="secondary">
+                  See how it works
+                  <Icon name="arrow-right" size={18} />
+                </ButtonLink>
+              </div>
+            </div>
+
+            {/* 3D Interactive Web3 Sphere Card */}
+            <Card className="flex flex-col items-center justify-between p-6 bg-surface border border-line relative overflow-hidden group">
+              <BorderBeam size={300} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
+
+              <div className="w-full flex items-center justify-between gap-2 mb-2 relative z-10">
+                <span className="font-mono text-caption text-fg-muted">Supported Protocols</span>
+                <span className="font-mono text-caption font-semibold text-emerald-600">60 FPS 3D</span>
+              </div>
+
+              <div className="py-2 flex justify-center items-center w-full relative z-10">
+                <IconCloud
+                  size={260}
+                  slugs={[
+                    "telegram",
+                    "ton",
+                    "tether",
+                    "ethereum",
+                    "bitcoin",
+                    "walletconnect",
+                    "solana",
+                    "polygon",
+                    "web3dotjs",
+                  ]}
+                />
+              </div>
+
+              <div className="w-full pt-3 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono relative z-10">
+                <span>Drag to spin 3D sphere</span>
+                <span className="text-fg-default font-semibold">Web3 Ecosystem</span>
+              </div>
+            </Card>
+          </div>
+        </section>
+
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel">
             <div className="section-index">
-              <span>03 / Pure skill. Zero pay-to-win</span>
+              <span>04 / Pure skill. Zero pay-to-win</span>
               <Icon name="shield-check" size={20} />
             </div>
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
@@ -444,7 +529,7 @@ export default function HomePage() {
 
         <section id="academy" className="shell-wide home-section" aria-labelledby="academy-heading">
           <div className="section-index">
-            <span>04 / Master your game</span>
+            <span>05 / Master your game</span>
             <span>Practice is 100% free</span>
           </div>
           <div className="section-split">
@@ -480,7 +565,7 @@ export default function HomePage() {
 
         <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
-            <span>05 / Real-stakes PvP payouts</span>
+            <span>06 / Real-stakes PvP payouts</span>
             <span>95% winner pot · 18+</span>
           </div>
 
@@ -588,7 +673,7 @@ export default function HomePage() {
 
         <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
-            <span>06 / Grandmaster tactics</span>
+            <span>07 / Grandmaster tactics</span>
             <span>Read. Think. Win</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
