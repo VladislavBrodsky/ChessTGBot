@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from typing import Optional, Dict  # noqa: E402
+from datetime import datetime, timezone  # noqa: E402
 from sqlalchemy.future import select  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 from app.core.database import AsyncSessionLocal  # noqa: E402
@@ -908,6 +909,8 @@ class GameService:
                         duration_seconds=None,
                         final_fen=state.fen,
                         game_type='computer',
+                        created_at=(datetime.fromtimestamp(state.created_at, timezone.utc).replace(tzinfo=None)
+                                    if state.created_at is not None else None),
                         bid_amount=0,
                         platform_rake=0,
                         payout_amount=0,

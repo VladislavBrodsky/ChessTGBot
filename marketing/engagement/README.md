@@ -20,7 +20,7 @@ The Home card displays progress and odds, rolls back failed optimistic actions, 
 
 | Offer | Mechanism and player value | Share loop | Readiness |
 | --- | --- | --- | --- |
-| First Three / Epic Box | A small, concrete commitment; earned reveal; visible progress | A player invites a chess friend from Profile after claiming | Implemented locally; requires deployment and enablement |
+| First Three / Epic Box | A small, concrete commitment; earned reveal; visible progress | A player invites a chess friend from Profile after claiming | Deployed and enabled; publishing verifies the live contract |
 | Three Games, Three Better Habits | Saveable practice card: threats, recaptures, king safety | Forward the useful card to a friend; both try it | Uses existing practice and tasks |
 | Puzzle Relay | One free position, answer behind a spoiler | Pass the puzzle, compare solutions, then explore Academy | Verified position; channel-ready |
 | Back to the Board | A single useful return game; no streak guilt | Send the practice focus to an inactive chess friend | Uses existing practice |

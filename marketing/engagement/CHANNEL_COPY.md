@@ -20,7 +20,7 @@ Image: marketing/engagement/assets/comeback-square.png
 
 ## Play 3. Unlock Epic.
 
-Status: wait for deployment and campaign enablement
+Status: ready after live campaign contract verification
 
 <b>Play 3. Unlock Epic.</b> 🎁
 

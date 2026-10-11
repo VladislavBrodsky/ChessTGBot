@@ -121,3 +121,30 @@ def test_published_probability_boundaries(monkeypatch, roll, expected):
     monkeypatch.setattr(campaign.secrets, "randbelow", lambda n: roll)
     assert campaign.draw_reward() == expected
     assert sum(r["probability_percent"] for r in campaign.REWARDS) == 100
+
+
+@pytest.mark.asyncio
+async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, monkeypatch):
+    """Exercise the actual AI completion path with a real DB and memory store."""
+    from app.services import game_service
+    from app.services.session_manager import SessionManager
+    db, user = quest
+    monkeypatch.setattr(game_service, "AsyncSessionLocal", async_sessionmaker(db.bind, expire_on_commit=False))
+    monkeypatch.setattr(SessionManager, "_use_memory", True)
+    monkeypatch.setattr(SessionManager, "_redis_client", None)
+    monkeypatch.setattr(SessionManager, "_memory_store", {})
+    service = game_service.GameService()
+    old_start = datetime.now(timezone.utc) - timedelta(hours=1)
+    await campaign.enroll(db, user)
+    for game_id, started in [("quest-before-entry", old_start), ("quest-after-entry", datetime.now(timezone.utc))]:
+        state = await service.create_game(game_id, is_bot_game=True)
+        state.white_player_id = user.telegram_id
+        state.created_at = started.timestamp()
+        state.is_game_over = True
+        state.result_type = "draw"
+        state.move_history = ["g1f3", "g8f6", "f3g1", "f6g8"] * 5
+        await service.end_game(game_id, state)
+        row = (await db.execute(select(GameHistory).where(GameHistory.game_id == game_id))).scalar_one()
+        assert row.created_at == started.replace(tzinfo=None)
+        assert row.ended_at >= started.replace(tzinfo=None)
+    assert (await campaign.status(db, user))["progress"] == 1
