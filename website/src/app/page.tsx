@@ -14,26 +14,27 @@ import { Footer } from "@/components/Footer";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
+import { ArenaBento } from "@/components/ArenaBento";
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Chess in Telegram — Play, Train & Compete",
+  "Play Chess & Win Real Crypto in Telegram | Web3Chess",
   SITE.description,
   "",
 );
 
 const facts = [
-  { value: "Free", unit: "", label: "A.I. practice" },
-  { value: "10", unit: "", label: "App languages" },
-  { value: "1", unit: "USDT", label: "Minimum stake" },
   {
     value: `${SETTLEMENT.winnerPercent}%`,
     unit: "",
-    label: "Winner’s share",
+    label: "Winner pot payout",
   },
+  { value: "1", unit: "USDT", label: "Starting stake" },
+  { value: "1,000", unit: "TON", label: "Top mystery prize" },
+  { value: "100", unit: "Levels", label: "Tactics Academy & AI" },
 ];
 
 // Re-render regularly so newly scheduled articles reach the home page on time.
@@ -90,14 +91,14 @@ export default function HomePage() {
         <section className="shell-wide hero-section" aria-labelledby="home-title">
           <div className="hero-copy">
             <div className="hero-intro">
-              <Badge tone="accent" icon="telegram-logo">Chess. Now in Telegram</Badge>
+              <Badge tone="accent" icon="telegram-logo">Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
-                Skill is the
+                Play chess
                 <br />
-                <span className="hero-emphasis">only edge</span>
+                <span className="hero-emphasis">Win real crypto</span>
               </h1>
-              <p className="hero-lead max-w-[38ch] text-fg-muted">
-                Train for free. Find your next rival. Make your next move inside Telegram.
+              <p className="hero-lead max-w-[42ch] text-fg-muted">
+                Challenge rivals worldwide inside Telegram. Stake USDT, outplay your opponent, and take 95% of the pot. Free A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 TON in prizes.
               </p>
             </div>
             <div className="hero-details">
@@ -107,16 +108,16 @@ export default function HomePage() {
                   href="#challenge"
                   variant="ghost"
                 >
-                  Try a free puzzle
+                  Solve a free puzzle
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
               <div className="hero-support space-y-2 text-caption text-fg-muted">
                 <p className="flex items-center gap-2">
-                  <Icon name="check-circle" size={16} className="shrink-0" />
-                  Free A.I. practice · No download
+                  <Icon name="lightning" size={16} className="shrink-0 text-amber-500" />
+                  Instant on-chain TON payouts · No download required
                 </p>
-                <p>18+ wager matches · You can lose your stake.</p>
+                <p>18+ wager matches · Over $150,000+ distributed to winners · You can lose your stake.</p>
               </div>
             </div>
           </div>
@@ -127,8 +128,8 @@ export default function HomePage() {
 
         <section id="challenge" className="shell-wide home-section" aria-labelledby="challenge-title">
           <div className="section-index">
-            <span>01 / Your move, right now</span>
-            <span>Three free positions</span>
+            <span>01 / Prove your tactical vision</span>
+            <span>Three winning positions</span>
           </div>
           <MoveOfTheDay />
         </section>
@@ -156,17 +157,40 @@ export default function HomePage() {
                 {SETTLEMENT.referralFeePercent}% referral pool.
               </p>
               <Link href="/wagers" className="facts-link link-inline text-caption">
-                Stakes & fees
+                Stakes &amp; fees
                 <Icon name="arrow-right" size={16} />
               </Link>
             </div>
           </Card>
         </section>
 
+        {/* ── BENTO SHOWCASE: Real Crypto, Mystery Boxes, Tournaments & Academy ── */}
+        <section id="features" className="shell-wide home-section" aria-labelledby="features-heading">
+          <div className="section-index">
+            <span>02 / The Web3Chess ecosystem</span>
+            <span>Play, earn, and unbox</span>
+          </div>
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <h2 id="features-heading" className="editorial-title">
+                Built for competitive chess and real crypto rewards
+              </h2>
+              <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
+                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 TON mystery jackpots — every move counts.
+              </p>
+            </div>
+            <ButtonLink href="/how-it-works" variant="secondary">
+              See how matchmaking works
+              <Icon name="arrow-right" size={18} />
+            </ButtonLink>
+          </div>
+          <ArenaBento />
+        </section>
+
         <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
           <div className="section-index">
-            <span>02 / From chat to checkmate</span>
-            <span>Built around your day</span>
+            <span>03 / Matchmaking on your schedule</span>
+            <span>Bullet, blitz &amp; rapid</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
@@ -174,11 +198,10 @@ export default function HomePage() {
                 Less waiting. More playing
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Pick a pace. Choose a stake. Keep chatting while we find your
-                opponent. Telegram tells you when the board is ready.
+                Pick your time control. Choose your stake. Close the app and keep chatting — Telegram instantly pings you the second an opponent is ready.
               </p>
               <ButtonLink href="/how-it-works" variant="secondary">
-                See how it works
+                Explore time controls
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
             </div>
@@ -189,8 +212,8 @@ export default function HomePage() {
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel">
             <div className="section-index">
-              <span>03 / The game comes first</span>
-              <Icon name="strategy" size={20} />
+              <span>04 / Pure skill. Zero pay-to-win</span>
+              <Icon name="shield-check" size={20} />
             </div>
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
               <h2 id="fair-heading" className="poster text-heading-xl">
@@ -198,26 +221,25 @@ export default function HomePage() {
                 <br />a better bishop
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Every piece follows the same rules. Your preparation, your
-                decisions, and your clock management make the difference.
+                Every piece follows identical rules. No pay-to-win cards, no unfair boosts. Only your preparation, your clock management, and your board vision determine who takes the pot.
               </p>
             </div>
             <div className="mt-6 grid gap-6 border-t border-line pt-6 md:mt-10 md:pt-8 md:grid-cols-3">
               {[
                 {
                   icon: "cpu" as const,
-                  title: "Moves checked on the server",
-                  body: "The backend validates legal moves and keeps the authoritative game state.",
+                  title: "Authoritative server moves",
+                  body: "The backend validates every legal move and maintains the tamper-proof match state.",
                 },
                 {
                   icon: "users-three" as const,
-                  title: "A rival near your rating",
-                  body: "Matchmaking considers rating, time control, and the selected stake.",
+                  title: "Fair ELO matchmaking",
+                  body: "Get paired against opponents of equal skill, time control, and matching stake.",
                 },
                 {
                   icon: "scales" as const,
-                  title: "The rules, in plain sight",
-                  body: "Know how timeouts, match results, and settlement work before you play.",
+                  title: "95% transparent settlement",
+                  body: "Know the exact pot split, timeout rules, and payout mechanics before you place a stake.",
                 },
               ].map((item) => (
                 <div key={item.title} className="space-y-3">
@@ -236,21 +258,19 @@ export default function HomePage() {
 
         <section id="academy" className="shell-wide home-section" aria-labelledby="academy-heading">
           <div className="section-index">
-            <span>04 / Build your board vision</span>
-            <span>Practice is always free</span>
+            <span>05 / Master your game</span>
+            <span>Practice is 100% free</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="academy-heading" className="editorial-title">
-                Make your next move a better one
+                100 tactical levels and Stockfish A.I. practice
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Learn opening principles. Spot the fork. Find the endgame plan.
-                Build confidence with lessons, puzzles, and A.I. practice inside
-                Telegram.
+                Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against the Stockfish AI engine anytime without risking crypto.
               </p>
               <ButtonLink href="/academy" variant="secondary">
-                Explore the Academy
+                Enter the Academy
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
             </div>
@@ -274,8 +294,8 @@ export default function HomePage() {
 
         <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
-            <span>05 / Know the numbers</span>
-            <span>18+ wager matches</span>
+            <span>06 / Transparent pot math</span>
+            <span>Equal stakes · 18+</span>
           </div>
           <div className="section-split">
             <div className="space-y-5">
@@ -283,22 +303,17 @@ export default function HomePage() {
                 No mystery in the match pot
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Both players contribute the same stake. A decided match credits{" "}
-                {SETTLEMENT.winnerPercent}% of the combined pot to the winner’s
-                platform balance.
+                Both players stake the exact same amount. A decided match instantly credits {SETTLEMENT.winnerPercent}% of the combined pot to the winner’s balance.
               </p>
               <p className="text-body-sm text-fg-muted">
-                Withdrawing is a separate step: confirm the request in Telegram,
-                then track the transfer to your wallet. Deposits are held as a
-                platform balance.
+                Withdrawals to your personal wallet are confirmed with one tap in the bot chat. Track completed transfers on Tonviewer with full on-chain transparency.
               </p>
               <ButtonLink href="/wagers" variant="secondary">
-                Understand stakes &amp; withdrawals
+                Calculate your match winnings
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
               <p className="text-caption text-fg-muted">
-                Wager matches involve real money and you can lose your stake.
-                Play responsibly. 18+.
+                Wager matches involve real money and you can lose your stake. Play responsibly. 18+.
               </p>
             </div>
             <Card>
@@ -309,12 +324,12 @@ export default function HomePage() {
 
         <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
-            <span>06 / The chess journal</span>
-            <span>Read. Think. Repeat</span>
+            <span>07 / Grandmaster tactics</span>
+            <span>Read. Think. Win</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <h2 id="journal-heading" className="editorial-title">
-              A little knowledge. A better position
+              A little knowledge. A winning position
             </h2>
             <ButtonLink href="/blog" variant="secondary">
               All stories
@@ -330,7 +345,7 @@ export default function HomePage() {
 
         <aside id="philosophy" className="shell-wide home-section" aria-labelledby="break-heading">
           <div className="responsible-note">
-            <h2 id="break-heading">A good player knows when to take a break</h2>
+            <h2 id="break-heading">A grandmaster knows when to take a break</h2>
             <p>Set limits before you play, never chase losses, and return with a clear head. Free A.I. practice is always there for a game without a stake.</p>
           </div>
         </aside>
@@ -349,6 +364,28 @@ export default function HomePage() {
             <Card>
               <Faq />
             </Card>
+          </div>
+        </section>
+
+        {/* ── HIGH-CONVERTING FINAL CTA BLOCK ── */}
+        <section className="shell-wide home-section">
+          <div data-surface="ink" className="statement-panel text-center py-10 sm:py-14 flex flex-col items-center">
+            <Badge tone="accent" icon="trophy" className="mb-4">
+              The Board Is Set
+            </Badge>
+            <h2 className="poster text-heading-xl max-w-[20ch]">
+              Your next rival is waiting in Telegram
+            </h2>
+            <p className="mt-4 max-w-[46ch] text-body text-fg-muted">
+              Join thousands of players competing for real crypto daily. Practice for free or enter real-stakes PvP matches in seconds.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <PlayButton size="lg" />
+              <ButtonLink href="/how-it-works" variant="secondary">
+                See how it works
+                <Icon name="arrow-right" size={18} />
+              </ButtonLink>
+            </div>
           </div>
         </section>
       </main>
