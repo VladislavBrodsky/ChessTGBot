@@ -66,7 +66,7 @@ The launch caption includes every probability and meaningful qualification. The 
 
 ## Release and posting
 
-The backend setting `ENGAGEMENT_CAMPAIGN_ENABLED` defaults to false. Deploy the backend and frontend, verify an actual enrollment/game/claim flow on the release, then set it to true. Do not advertise until the frontend card is present. The public `/api/v1/gamification/engagement/catalog` contract makes the channel publisher refuse a disabled or mismatched offer. The first-three campaign identifier must remain stable once players enroll.
+The launch release enables `ENGAGEMENT_CAMPAIGN_ENABLED` by default after the backend and frontend have been deployed and verified. Set it to false in the backend environment to pause new enrollment while preserving existing players’ claim rights. Verify the quest and public contract before publishing any future offer. The public `/api/v1/gamification/engagement/catalog` contract makes the channel publisher refuse a disabled or mismatched offer. The first-three campaign identifier must remain stable once players enroll.
 
 ```sh
 node marketing/engagement/render-kit.mjs
@@ -88,3 +88,5 @@ Enrollment and claims can be counted from the existing XP ledger using reasons `
 Telegram views, forwards and reactions are channel metrics, not verified task completion. Existing plain Mini App links do not provide per-post attribution; do not claim a post generated particular games without connecting campaign attribution. Use a randomized 10% holdout of otherwise eligible accounts in a later experiment; the current release does not implement experiment assignment. Compare retained qualifying players per 1,000 exposed eligible users, not raw box opens. Stop an offer when farming, excessive reminder opt-outs or reward inflation outweigh retained play.
 
 No 100 TON headline is prepared for posting. A future funded prize campaign needs a reserved budget, explicit probability and eligibility rules, an auditable drawing method, claim handling, and appropriate review for its intended markets before launch.
+
+For channel publishing, save the marketing bot token as `W3_TG_BOT_TOKEN` in the ignored local `backend/.env` file. Keep `TELEGRAM_BOT_TOKEN` reserved for the main chess bot. The marketing bot must have Post Messages permission in `@chess_hub`. Pass `--env-file /absolute/path/to/backend/.env` to the channel command; never commit tokens.

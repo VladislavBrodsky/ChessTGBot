@@ -1,4 +1,4 @@
-"""Real SQLite persistence tests; PostgreSQL locking is tested separately."""
+"""Real SQLite eligibility/idempotency tests; row locking requires PostgreSQL."""
 import json
 from datetime import datetime, timedelta, timezone
 
