@@ -847,6 +847,11 @@
   }
   .site-badge[data-tone='accent'] { background: var(--color-mint); color: var(--color-black); }
   .site-badge[data-tone='outline'] { background: transparent; border-color: var(--line-hairline); color: var(--fg); }
+  .site-badge.self-center,
+  .statement-panel.items-center .site-badge,
+  .statement-panel.text-center .site-badge {
+    align-self: center;
+  }
   .site-badge-label { min-inline-size: 0; overflow-wrap: anywhere; }
   .site-badge-icon { flex: none; inline-size: 1rem; block-size: 1rem; }
   .badge-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-inline-size: 0; }

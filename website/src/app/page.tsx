@@ -14,7 +14,6 @@ import { Footer } from "@/components/Footer";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
-import { ArenaBento } from "@/components/ArenaBento";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { AvatarCircles } from "@/components/magicui/avatar-circles";
 import { Marquee } from "@/components/magicui/marquee";
@@ -241,32 +240,9 @@ export default function HomePage() {
           </Card>
         </section>
 
-        {/* ── BENTO SHOWCASE: Real Crypto, Mystery Boxes, Tournaments & Academy ── */}
-        <section id="features" className="shell-wide home-section" aria-labelledby="features-heading">
-          <div className="section-index">
-            <span>02 / The Web3Chess ecosystem</span>
-            <span>Play, earn, and unbox</span>
-          </div>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
-            <div>
-              <h2 id="features-heading" className="editorial-title">
-                Built for competitive chess and real crypto rewards
-              </h2>
-              <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 TON mystery jackpots — every move counts.
-              </p>
-            </div>
-            <ButtonLink href="/how-it-works" variant="secondary">
-              See how matchmaking works
-              <Icon name="arrow-right" size={18} />
-            </ButtonLink>
-          </div>
-          <ArenaBento />
-        </section>
-
         <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
           <div className="section-index">
-            <span>03 / Matchmaking on your schedule</span>
+            <span>02 / Matchmaking on your schedule</span>
             <span>Bullet, blitz &amp; rapid</span>
           </div>
           <div className="section-split">
@@ -289,7 +265,7 @@ export default function HomePage() {
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel">
             <div className="section-index">
-              <span>04 / Pure skill. Zero pay-to-win</span>
+              <span>03 / Pure skill. Zero pay-to-win</span>
               <Icon name="shield-check" size={20} />
             </div>
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
@@ -335,7 +311,7 @@ export default function HomePage() {
 
         <section id="academy" className="shell-wide home-section" aria-labelledby="academy-heading">
           <div className="section-index">
-            <span>05 / Master your game</span>
+            <span>04 / Master your game</span>
             <span>Practice is 100% free</span>
           </div>
           <div className="section-split">
@@ -371,7 +347,7 @@ export default function HomePage() {
 
         <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
-            <span>06 / Transparent pot math</span>
+            <span>05 / Transparent pot math</span>
             <span>Equal stakes · 18+</span>
           </div>
           <div className="section-split">
@@ -401,7 +377,7 @@ export default function HomePage() {
 
         <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
-            <span>07 / Grandmaster tactics</span>
+            <span>06 / Grandmaster tactics</span>
             <span>Read. Think. Win</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
@@ -448,7 +424,7 @@ export default function HomePage() {
         <section className="shell-wide home-section">
           <div data-surface="ink" className="statement-panel relative overflow-hidden text-center py-10 sm:py-14 flex flex-col items-center">
             <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
-            <Badge tone="accent" icon="trophy" className="mb-4 relative z-10">
+            <Badge tone="accent" icon="trophy" className="mb-4 relative z-10 self-center mx-auto">
               The Board Is Set
             </Badge>
             <h2 className="poster text-heading-xl max-w-[20ch] relative z-10">

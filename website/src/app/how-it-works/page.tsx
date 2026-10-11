@@ -1,4 +1,4 @@
-import { Badge, Eyebrow } from "@/components/ui/Badge";
+import { Eyebrow } from "@/components/ui/Badge";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
@@ -8,10 +8,10 @@ import { PageHero } from "@/components/PageHero";
 import { InfoGrid } from "@/components/InfoGrid";
 import { MatchPreview } from "@/components/MatchPreview";
 import { ChessSculpture } from "@/components/ChessSculpture";
-import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
+import { ArenaBento } from "@/components/ArenaBento";
 
 export const metadata = pageMetadata(
   "Play Chess in Telegram — How It Works",
@@ -127,52 +127,26 @@ export default function HowItWorksPage() {
             title: step.title, body: step.body, note: step.note,
           }))} />
         </section>
-        <section aria-labelledby="paths-heading">
+        <section id="ecosystem" aria-labelledby="ecosystem-heading">
           <div className="section-index">
-            <span>02 / Your way to play</span>
+            <span>02 / The Web3Chess ecosystem</span>
+            <span>Features, rewards &amp; game modes</span>
           </div>
-          <h2 id="paths-heading" className="editorial-title mb-6">
-            Warm up. Then decide
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="flex flex-col items-start">
-              <Badge icon="cpu">Free practice</Badge>
-              <h3 className="mt-5 text-heading-sm font-medium">
-                Room to experiment
-              </h3>
-              <p className="mt-3 text-body text-fg-muted">
-                Learn a pattern, work through an Academy lesson, or test an
-                opening against the A.I. No stake is required.
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <h2 id="ecosystem-heading" className="editorial-title">
+                Built for competitive chess and real crypto rewards
+              </h2>
+              <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
+                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 TON mystery jackpots — every move counts.
               </p>
-              <div className="mt-auto w-full pt-6">
-                <ButtonLink href="/academy" variant="secondary">
-                  Explore training
-                <Icon name="arrow-up-right" size={16} />
-              </ButtonLink>
-              <p className="mt-4 text-caption text-fg-muted">No stake for A.I. practice.</p>
-              </div>
-            </Card>
-            <Card className="flex flex-col items-start">
-              <Badge icon="users-three">Player matches · 18+</Badge>
-              <h3 className="mt-5 text-heading-sm font-medium">
-                Equal stakes, shared rules
-              </h3>
-              <p className="mt-3 text-body text-fg-muted">
-                Choose a USDT stake before entering matchmaking. Both players
-                commit the same amount. Read the settlement rules and fees
-                first.
-              </p>
-              <div className="mt-auto w-full pt-6">
-                <ButtonLink href="/wagers" variant="secondary">
-                  Understand wager matches
-                <Icon name="arrow-up-right" size={16} />
-              </ButtonLink>
-              <p className="mt-4 text-caption text-fg-muted">
-                You can lose your stake. Play within your limits.
-              </p>
-              </div>
-            </Card>
+            </div>
+            <ButtonLink href="/wagers" variant="secondary">
+              Stakes &amp; payout rules
+              <Icon name="arrow-right" size={18} />
+            </ButtonLink>
           </div>
+          <ArenaBento />
         </section>
         <section aria-labelledby="questions-heading">
           <div className="section-index">
