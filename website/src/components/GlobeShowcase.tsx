@@ -336,14 +336,14 @@ export function GlobeShowcase() {
       />
 
       {/* ── Floating Live Match Pill (Compact, modern glass pill) ── */}
-      <div className="relative z-20 mb-3 w-full max-w-[500px] px-2" aria-live="polite">
+      <div className="relative z-20 mb-3 w-full max-w-[520px] px-2" aria-live="polite">
         <div
-          className={`flex items-center justify-between gap-2.5 sm:gap-3 rounded-full border border-line bg-surface/90 px-3.5 sm:px-4 py-2 shadow-sm backdrop-blur-md transition-all duration-200 ${
+          className={`flex items-center justify-between gap-2 sm:gap-3 rounded-full border border-line bg-surface/95 px-3.5 sm:px-4 py-2 shadow-xs backdrop-blur-md transition-all duration-200 ${
             isCrossfading ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
           }`}
         >
           {/* Left: Players */}
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <span className="relative flex size-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
@@ -351,7 +351,7 @@ export function GlobeShowcase() {
             <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
               {current.flag1} {current.p1}
             </span>
-            <span className="text-fg-muted text-[11px] sm:text-[12px] font-mono shrink-0 px-0.5">⚔</span>
+            <span className="text-fg-muted text-[11px] sm:text-[12px] font-mono shrink-0 px-0.5 select-none">⚔</span>
             <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
               {current.flag2} {current.p2}
             </span>

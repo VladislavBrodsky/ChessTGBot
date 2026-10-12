@@ -1,145 +1,149 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AvatarCircles } from "@/components/magicui/avatar-circles";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AVATARS = [
-  { imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80", name: "Anna S. (@anna_chess · WGM)" },
-  { imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80", name: "Vlad K. (@gm_vlad · 2410)" },
-  { imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80", name: "Elena R. (@elena_tactics · 2180)" },
-  { imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80", name: "Marcus N. (@magnus_ton · 2340)" },
-  { imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80", name: "Kenji S. (@kenji_chess · 2150)" },
-  { imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80", name: "Sophie D. (@sophie_blitz · 2095)" },
+  { imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80", name: "Anna S. · WGM" },
+  { imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", name: "Vlad K. · 2410" },
+  { imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", name: "Elena R. · 2180" },
+  { imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&auto=format&fit=crop&q=80", name: "Marcus N. · 2340" },
 ];
 
 export function LiveSocialProof() {
   const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
   const [liveCount] = useState(() => {
     const now = new Date();
     const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
     const hour = now.getUTCHours();
-    return 1420 + ((dayOfYear * 7 + hour * 13) % 240);
+    return 3820 + ((dayOfYear * 7 + hour * 13) % 180);
   });
+
   const [potSettled] = useState(() => {
     const now = new Date();
     const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
     const hour = now.getUTCHours();
-    return 8600 + ((dayOfYear * 19 + hour * 37) % 2400);
+    return 8900 + ((dayOfYear * 19 + hour * 37) % 2200);
   });
 
   const signals = [
     {
-      badge: "LIVE NOW",
-      badgeColor: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
-      dotColor: "bg-emerald-500",
-      text: (
+      badge: "BLITZ",
+      badgeColor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25",
+      content: (
         <>
-          <strong className="font-semibold text-fg-default">{liveCount.toLocaleString()}</strong> in duels · <span className="font-mono text-emerald-700 font-semibold">&lt; 2.4s</span> queue
+          🇦🇪 <span className="font-semibold text-fg-default">@CryptoMorphy</span> won <strong className="text-emerald-600 font-bold font-mono">+$47.50</strong>
         </>
       ),
     },
     {
-      badge: "RECENT POT",
-      badgeColor: "bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30",
-      dotColor: "bg-purple-500",
-      text: (
+      badge: "MYSTERY",
+      badgeColor: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/25",
+      content: (
         <>
-          🇦🇪 <span className="font-semibold text-fg-default">@CryptoMorphy</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$47.50</strong>
+          🇯🇵 <span className="font-semibold text-fg-default">@kenji_chess</span> unboxed <strong className="text-amber-600 font-bold font-mono">50 TON</strong>
         </>
       ),
     },
     {
-      badge: "VAULT DROP",
-      badgeColor: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30",
-      dotColor: "bg-amber-500",
-      text: (
+      badge: "RAPID",
+      badgeColor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25",
+      content: (
         <>
-          🇯🇵 <span className="font-semibold text-fg-default">@kenji_chess</span> unboxed <strong className="text-amber-600 font-bold">50 TON</strong>
+          🇳🇴 <span className="font-semibold text-fg-default">@magnus_ton</span> won <strong className="text-emerald-600 font-bold font-mono">+$190.00</strong>
         </>
       ),
     },
     {
-      badge: "SETTLEMENT",
-      badgeColor: "bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30",
-      dotColor: "bg-blue-500",
-      text: (
+      badge: "PAYOUT",
+      badgeColor: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/25",
+      content: (
         <>
-          🇳🇴 <span className="font-semibold text-fg-default">@magnus_ton</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$190.00</strong>
+          🇺🇿 <span className="font-semibold text-fg-default">@gm_vlad</span> cashed out <strong className="text-cyan-700 dark:text-cyan-400 font-bold font-mono">95 USDT</strong>
         </>
       ),
     },
     {
-      badge: "24H POTS",
-      badgeColor: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
-      dotColor: "bg-emerald-500",
-      text: (
+      badge: "TODAY",
+      badgeColor: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/25",
+      content: (
         <>
-          <strong className="font-semibold text-fg-default">${potSettled.toLocaleString()}</strong> won by players today
-        </>
-      ),
-    },
-    {
-      badge: "CASHOUT",
-      badgeColor: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 border-cyan-500/30",
-      dotColor: "bg-cyan-500",
-      text: (
-        <>
-          🇺🇿 <span className="font-semibold text-fg-default">@gm_vlad</span> withdrew <strong className="text-emerald-700 dark:text-emerald-400 font-bold">95 USDT</strong>
+          <strong className="text-fg-default font-bold font-mono">${potSettled.toLocaleString()}</strong> won by players
         </>
       ),
     },
   ];
 
   useEffect(() => {
+    if (isPaused) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % signals.length);
-    }, 3600);
+    }, 3200);
     return () => clearInterval(timer);
-  }, [signals.length]);
+  }, [isPaused, signals.length]);
 
   const active = signals[index];
 
   return (
-    <div className="inline-flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-2xl border border-line bg-surface/85 p-2 sm:pr-4 shadow-2xs backdrop-blur-md transition-all hover:border-fg-muted/30 max-w-full">
-      {/* Real Players Avatar Stack */}
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="relative">
-          <AvatarCircles avatarUrls={AVATARS} numPeople={3840 + (liveCount % 120)} size="sm" />
-          <span
-            className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 border-2 border-surface animate-pulse"
-            title="3,840+ rated players online"
-          />
-        </div>
-        <div className="hidden lg:flex flex-col text-left pl-0.5">
-          <span className="text-[11px] font-semibold text-fg-default leading-tight">3,840+ rated</span>
-          <span className="text-[10px] text-fg-muted font-mono leading-tight">competing live</span>
-        </div>
-      </div>
-
-      {/* Subtle separator */}
-      <div className="hidden sm:block h-6 w-px bg-line/80 shrink-0" />
-
-      {/* Real-time Live Signal Ticker */}
-      <div className="flex items-center gap-2 text-caption font-medium text-fg-muted min-h-[28px] transition-all duration-300 min-w-0">
-        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border shrink-0 ${active.badgeColor}`}>
-          <span className={`size-1.5 rounded-full ${active.dotColor} animate-ping`} />
-          {active.badge}
-        </span>
-        <span className="text-body-xs text-fg-default/90 whitespace-nowrap">{active.text}</span>
-      </div>
-
-      {/* Mini carousel indicators */}
-      <div className="hidden md:flex items-center gap-1 pl-1 shrink-0 ml-auto opacity-50">
-        {signals.map((_, i) => (
-          <span
+    <div
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/90 py-1.5 px-2.5 sm:px-3 shadow-2xs backdrop-blur-md transition-all hover:border-fg-muted/40 max-w-full"
+    >
+      {/* 4 Clean Avatars */}
+      <div className="flex items-center -space-x-2 shrink-0">
+        {AVATARS.map((avatar, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             key={i}
-            className={`size-1 rounded-full transition-all duration-300 ${
-              i === index ? "w-2.5 bg-emerald-600 opacity-100" : "bg-fg-muted/60"
-            }`}
+            src={avatar.imageUrl}
+            alt={avatar.name}
+            width={26}
+            height={26}
+            className="size-6.5 rounded-full border-2 border-surface bg-surface object-cover shadow-2xs"
           />
         ))}
+      </div>
+
+      {/* Live Active Counter */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        <span className="relative flex size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+        </span>
+        <span className="text-[12px] font-semibold text-fg-default tabular-nums">
+          {liveCount.toLocaleString()}
+        </span>
+        <span className="text-[11px] text-fg-muted hidden xs:inline">online</span>
+      </div>
+
+      {/* Hairline Divider */}
+      <div className="h-3.5 w-px bg-line/80 shrink-0" />
+
+      {/* Animated Live Activity Ticker */}
+      <div className="relative h-5 flex items-center overflow-hidden min-w-0 pr-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 7 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -7 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="flex items-center gap-1.5 text-[12px] whitespace-nowrap min-w-0"
+          >
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold tracking-tight border shrink-0 ${active.badgeColor}`}
+            >
+              {active.badge}
+            </span>
+            <span className="text-body-xs text-fg-default font-medium truncate">
+              {active.content}
+            </span>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
 }
-

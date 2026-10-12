@@ -251,8 +251,8 @@
     display: flex;
   }
   .hero-title {
-    font-size: clamp(4.5rem, 8.2vw, 6.75rem);
-    line-height: 0.91;
+    font-size: clamp(3rem, 5.2vw, 4.85rem);
+    line-height: 0.94;
     letter-spacing: -0.035em;
   }
   .hero-emphasis {
@@ -680,7 +680,7 @@
       padding-block-end: 2rem;
     }
     .hero-title {
-      font-size: clamp(3.75rem, 16vw, 5rem);
+      font-size: clamp(2.1rem, 9.4vw, 3.1rem);
     }
     .page-title {
       font-size: clamp(2.75rem, 12.3vw, 3.375rem);
