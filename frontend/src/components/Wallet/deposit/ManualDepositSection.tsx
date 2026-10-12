@@ -146,7 +146,7 @@ export function ManualDepositSection({
             {processing ? tw('checking') : tw('verify')}
           </button>
         </div>
-        <p className="text-[11px] text-brand-muted leading-relaxed">
+        <p className="text-caption text-brand-muted leading-relaxed">
           ⚡ {tw('listening_tx')}
         </p>
       </div>

@@ -15,7 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { apiFetch } from "@/lib/api";
 import { 
   FaChevronLeft, FaChevronRight, FaPlay, FaPause,
-  FaFastBackward, FaFastForward, FaRegClock, FaRobot, FaUser
+  FaFastBackward, FaFastForward, FaRegClock, FaUser
 } from "react-icons/fa";
 
 function formatUci(uci: string): string {
@@ -359,11 +359,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         }`}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
-              {gameData.black_player_id === -1 ? (
-                <FaRobot className="text-base text-brand-muted" />
-              ) : (
-                <FaUser className="text-sm text-brand-muted" />
-              )}
+              <FaUser className="text-sm text-brand-muted" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">
@@ -423,11 +419,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
         }`}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-brand-void border border-brand-border-opacity-10 flex items-center justify-center overflow-hidden">
-              {gameData.white_player_id === -1 ? (
-                <FaRobot className="text-base text-brand-muted" />
-              ) : (
-                <FaUser className="text-sm text-brand-muted" />
-              )}
+              <FaUser className="text-sm text-brand-muted" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-brand-primary normal-case tracking-tight">

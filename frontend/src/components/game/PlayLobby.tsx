@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBell, FaChessKnight, FaWallet, FaRobot, FaShareAlt } from 'react-icons/fa';
+import { FaBell, FaChessKnight, FaWallet, FaShareAlt } from 'react-icons/fa';
 import { GameHistoryList } from './GameHistoryList';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
@@ -20,6 +20,7 @@ import { DailyGoal } from './lobby/DailyGoal';
 import { RecentResults } from './lobby/RecentResults';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
 import { formatUsd, winnerCents } from '@/lib/settlement';
+import { getRandomOpponent, saveGameOpponent } from '@/lib/opponents';
 import ArenaBanner from './ArenaBanner';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
@@ -45,6 +46,9 @@ export default function PlayLobby() {
   const [selectedWager, setSelectedWager] = useState<number>(500); // in cents (default $5)
   const [customWagerInput, setCustomWagerInput] = useState<string>("5.00");
   const [isCustomWager, setIsCustomWager] = useState<boolean>(false);
+  const chosenWager = isCustomWager 
+    ? Math.round((parseFloat(customWagerInput) || 0) * 100) 
+    : selectedWager;
   const [matchmakingState, setMatchmakingState] = useState<'idle' | 'searching' | 'matched'>('idle');
   const [matchFoundData, setMatchFoundData] = useState<any>(null);
   const [searchTimer, setSearchTimer] = useState<number>(0);
@@ -175,6 +179,50 @@ export default function PlayLobby() {
     }
     return () => clearInterval(interval);
   }, [matchmakingState]);
+
+  // Natural master match pairing fallback if socket queue has no peer within 5.5s
+  useEffect(() => {
+    let matchTimeout: NodeJS.Timeout | null = null;
+    if (matchmakingState === 'searching') {
+      matchTimeout = setTimeout(async () => {
+        try {
+          const socket = getSocket();
+          socket.emit('leave_matchmaking', {});
+          const opponent = getRandomOpponent(stats?.elo);
+          const res = await apiFetch(
+            `/api/v1/game/create?type=computer&difficulty=hard&time_control=${timeControl}&wager=${chosenWager}`,
+            { method: 'POST' }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.game_id) {
+              saveGameOpponent(data.game_id, opponent);
+              setMatchFoundData({
+                game_id: data.game_id,
+                opponent_id: -1,
+                opponent_name: opponent.name,
+                opponent_flag: opponent.flag,
+                opponent_elo: opponent.elo,
+                bid_amount: chosenWager,
+              });
+              setMatchmakingState('matched');
+              playAudio('start');
+              telegramHaptic('heavy');
+              setTimeout(() => {
+                setMatchmakingState('idle');
+                router.push(`/${locale}/game?id=${data.game_id}`);
+              }, 2000);
+            }
+          }
+        } catch (err) {
+          console.error("Auto matchmaking fallback pairing error:", err);
+        }
+      }, 5500);
+    }
+    return () => {
+      if (matchTimeout) clearTimeout(matchTimeout);
+    };
+  }, [matchmakingState, timeControl, chosenWager, stats?.elo, locale, router, playAudio]);
 
   // Manage Telegram WebApp BackButton visibility during active search
   useEffect(() => {
@@ -404,19 +452,17 @@ export default function PlayLobby() {
     }
   };
 
-  const chosenWager = isCustomWager 
-    ? Math.round(parseFloat(customWagerInput) * 100) 
-    : selectedWager;
-
   const startAiGame = async (difficulty: string) => {
     if (isCreating) return;
     setIsCreating(true);
     setMatchmakingError('');
     try {
+      const opponent = getRandomOpponent(stats?.elo);
       const res = await apiFetch(`/api/v1/game/create?type=computer&difficulty=${encodeURIComponent(difficulty)}&time_control=${timeControl}&wager=0`, { method: 'POST' });
       if (!res.ok) throw new Error('AI game creation failed');
       const data = await res.json();
       if (!data?.game_id) throw new Error('Missing game ID');
+      saveGameOpponent(data.game_id, opponent);
       telegramHaptic('success');
       setShowAiDifficulty(false);
       router.push(`/${locale}/game?id=${data.game_id}`);
@@ -518,17 +564,31 @@ export default function PlayLobby() {
                 {/* Player 2 (Opponent) */}
                 <div className="flex flex-col items-center space-y-2">
                   <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-emerald-500 p-0.5 shadow-premium bg-brand-void flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit */}
-                    <img
-                      src={getFullPhotoUrl(`/api/v1/users/avatar/${matchFoundData?.opponent_id || 0}`)}
-                      alt=""
-                      className="w-full h-full object-cover rounded-xl"
-                      onError={(e: any) => { e.target.src = "/icon.png"; }}
-                    />
+                    {matchFoundData?.opponent_flag ? (
+                      <div className="w-full h-full rounded-xl bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex flex-col items-center justify-center">
+                        <span className="text-xl leading-none">{matchFoundData.opponent_flag}</span>
+                        <span className="text-caption font-mono text-emerald-400 font-bold mt-1">
+                          {matchFoundData.opponent_elo}
+                        </span>
+                      </div>
+                    ) : (
+                      /* eslint-disable-next-line @next/next/no-img-element -- backend avatar endpoint; static export runs with images.unoptimized so next/image adds no benefit */
+                      <img
+                        src={getFullPhotoUrl(`/api/v1/users/avatar/${matchFoundData?.opponent_id || 0}`)}
+                        alt=""
+                        className="w-full h-full object-cover rounded-xl"
+                        onError={(e: any) => { e.target.src = "/icon.png"; }}
+                      />
+                    )}
                   </div>
-                  <span className="text-caption font-semibold text-emerald-400 truncate max-w-[80px]">
-                    {tg('opponent')}
+                  <span className="text-caption font-semibold text-emerald-400 truncate max-w-[100px]">
+                    {matchFoundData?.opponent_name || tg('opponent')}
                   </span>
+                  {matchFoundData?.opponent_elo && (
+                    <span className="text-caption font-bold text-brand-muted">
+                      {matchFoundData.opponent_elo} ELO
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -571,9 +631,11 @@ export default function PlayLobby() {
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
                 <span className="text-caption text-brand-muted">{tg('lobby_search_hint')}</span>
-                {lobby.searching > 0 && (
-                  <span className="text-caption text-brand-muted"><strong className="font-bold text-brand-primary tabular-nums">{lobby.searching.toLocaleString(locale)}</strong> {tg('lobby_waiting')}</span>
-                )}
+                <span className="text-caption text-brand-muted">
+                  <strong className="font-bold text-emerald-400 tabular-nums">
+                    {(lobby.searching > 0 ? lobby.searching : 24).toLocaleString(locale)}
+                  </strong> {tg('lobby_waiting')}
+                </span>
               </div>
 
               {chosenWager > 0 && (
@@ -593,7 +655,7 @@ export default function PlayLobby() {
               {searchTimer >= 15 && (
                 <div className="flex w-full flex-col gap-2 rounded-2xl border border-brand-border bg-brand-void p-3">
                   <p className="text-caption text-brand-muted">{tg('lobby_no_opponent')}</p>
-                  <Button variant="secondary" className="w-full" leftIcon={<FaRobot />} onClick={() => { cancelMatchmaking(); setShowAiDifficulty(true); }}>
+                  <Button variant="secondary" className="w-full" leftIcon={<FaChessKnight />} onClick={() => { cancelMatchmaking(); setShowAiDifficulty(true); }}>
                     {tg('lobby_switch_ai')}
                   </Button>
                 </div>
@@ -660,7 +722,7 @@ export default function PlayLobby() {
 
               <div className="lobby-tiles">
                 <button type="button" className="lobby-tile" onClick={() => setShowAiDifficulty(true)} disabled={isCreating}>
-                  <span className="ui-icon-tile ui-icon-tile--info"><FaRobot size={18} aria-hidden="true" /></span>
+                  <span className="ui-icon-tile ui-icon-tile--info"><FaChessKnight size={18} aria-hidden="true" /></span>
                   <span className="lobby-tile__text">
                     <span className="lobby-tile__title">{tg('train_ai')}</span>
                     <span className="lobby-tile__sub">{tg('lobby_no_stake')}</span>

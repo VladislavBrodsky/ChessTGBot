@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import useSWR from 'swr';
-import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { FiGift } from 'react-icons/fi';
 import { FaTrophy, FaFire } from 'react-icons/fa';
 import { apiFetch } from '@/lib/api';
@@ -42,8 +41,6 @@ async function readQuest(): Promise<Quest> {
 
 export default function EngagementQuest() {
   const t = useTranslations('Engagement');
-  const locale = useLocale();
-  const router = useRouter();
   const { stats, syncStats } = useUser();
   const { data, error, isValidating, mutate } = useSWR(stats ? PATH : null, readQuest, { errorRetryCount: 1 });
   const [busy, setBusy] = useState(false);
@@ -104,14 +101,14 @@ export default function EngagementQuest() {
             <p className="t-caption text-brand-muted">{t('subtitle')}</p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
           <FaTrophy className="size-3 text-amber-400" />
           1,000 TON
         </span>
       </div>
 
       {/* Live 24h Viral Social Signal */}
-      <div className="flex items-center gap-1.5 text-[11px] font-mono text-fg-muted bg-brand-elevated/60 px-2.5 py-1 rounded-xl border border-brand-border">
+      <div className="flex items-center gap-1.5 text-caption font-mono text-fg-muted bg-brand-elevated/60 px-2.5 py-1 rounded-xl border border-brand-border">
         <FaFire className="text-amber-500 shrink-0 size-3" />
         <span className="truncate">
           <strong className="text-amber-400 font-bold">{todayBoxesOpened}</strong> mystery boxes unlocked today
@@ -164,7 +161,7 @@ export default function EngagementQuest() {
       <div className="space-y-4">
         {revealed && data.reward_key && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-1">
-            <span className="text-xs uppercase tracking-wider font-mono text-amber-400 font-bold">You Unlocked</span>
+            <span className="ui-eyebrow font-mono text-amber-400 font-bold block">You Unlocked</span>
             <p className="t-title-2 text-white" role="status">{rewardLabel(data.reward_key)}</p>
           </div>
         )}
@@ -177,10 +174,10 @@ export default function EngagementQuest() {
             </span>
             <div>
               <p className="text-xs font-bold text-white">Grand Jackpot Prize</p>
-              <p className="text-[11px] text-amber-400 font-mono font-semibold">Up to 1,000 TON Drop Pool</p>
+              <p className="text-caption text-amber-400 font-mono font-semibold">Up to 1,000 TON Drop Pool</p>
             </div>
           </div>
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500 text-black uppercase">
+          <span className="px-2 py-0.5 rounded-full ui-eyebrow font-mono font-bold bg-amber-500 text-black">
             Top Reward
           </span>
         </div>

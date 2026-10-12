@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { FaArrowDown, FaArrowUp, FaRobot, FaGamepad, FaHistory } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaChessKnight, FaGamepad, FaHistory } from "react-icons/fa";
 import { useTranslations, useLocale } from "next-intl";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -78,7 +78,7 @@ export default function TransactionLedger({
                       ? 'ui-icon-tile--info' :
                     'ui-icon-tile--danger'
                   }`}>
-                    {tx.type === 'game_against_ai' ? <FaRobot className="text-sm" aria-hidden="true" /> :
+                    {tx.type === 'game_against_ai' ? <FaChessKnight className="text-sm" aria-hidden="true" /> :
                      tx.type === 'game_free_pvp' ? <FaGamepad className="text-sm" aria-hidden="true" /> :
                      isPositive ? <FaArrowDown className="text-sm" aria-hidden="true" /> : <FaArrowUp className="text-sm" aria-hidden="true" />}
                   </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
-import { FaRobot, FaGamepad, FaAward } from "react-icons/fa";
+import { FaChessKnight, FaGamepad, FaAward } from "react-icons/fa";
 import { Drawer } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 import { telegramHaptic } from "@/lib/telegram";
@@ -38,7 +38,7 @@ export default function AiDifficultyDrawer({ onClose, onSelect, isCreating }: Ai
       id: "hard",
       title: t("ai_hard"),
       desc: "1600 Elo",
-      icon: <FaRobot size={14} />,
+      icon: <FaChessKnight size={14} />,
       colorClass: "text-rose-400 border-rose-500/30 bg-rose-500/10",
       activeBg: "border-rose-500/50 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.12)]",
     },

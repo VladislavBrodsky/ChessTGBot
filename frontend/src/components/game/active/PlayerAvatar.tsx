@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FaRobot } from 'react-icons/fa';
 import { getFullPhotoUrl } from '@/lib/api';
 
 export interface PlayerAvatarProps {

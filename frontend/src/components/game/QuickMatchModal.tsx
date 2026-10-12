@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChessKnight, FaBolt, FaClock, FaShieldAlt, FaTrophy, FaWallet, FaCheckCircle } from 'react-icons/fa';
 import { useUser } from '@/context/UserContext';
@@ -203,7 +203,7 @@ export default function QuickMatchModal({
               {/* Stake Selector */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-brand-muted uppercase tracking-wider text-[11px]">Select Wager</span>
+                  <span className="ui-eyebrow text-brand-muted font-semibold">Select Wager</span>
                   <span className="text-brand-muted font-mono">
                     Balance: <strong className="text-white">${(walletBalance / 100).toFixed(2)}</strong>
                   </span>
@@ -226,14 +226,14 @@ export default function QuickMatchModal({
                         }`}
                       >
                         {opt.popular && (
-                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500 text-black uppercase tracking-wider">
+                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full ui-eyebrow font-bold bg-emerald-500 text-black">
                             Popular
                           </span>
                         )}
                         <span className={`text-base font-bold font-mono ${isSelected ? 'text-emerald-400' : 'text-white'}`}>
                           {opt.label}
                         </span>
-                        <span className="text-[10px] text-brand-muted font-mono mt-0.5">
+                        <span className="text-caption text-brand-muted font-mono mt-0.5">
                           {opt.sub}
                         </span>
                       </button>
@@ -244,7 +244,7 @@ export default function QuickMatchModal({
 
               {/* Time Control Selector */}
               <div className="space-y-2">
-                <span className="font-semibold text-brand-muted uppercase tracking-wider text-[11px] block">Time Control</span>
+                <span className="ui-eyebrow text-brand-muted font-semibold block">Time Control</span>
                 <div className="grid grid-cols-3 gap-2">
                   {TIME_OPTIONS.map((tOpt) => {
                     const isSelected = timeControl === tOpt.seconds;
@@ -267,7 +267,7 @@ export default function QuickMatchModal({
                         <span className={`text-xs font-bold ${isSelected ? 'text-emerald-400' : 'text-white'}`}>
                           {tOpt.label}
                         </span>
-                        <span className="text-[10px] text-brand-muted">
+                        <span className="text-caption text-brand-muted">
                           {tOpt.type}
                         </span>
                       </button>
@@ -281,7 +281,7 @@ export default function QuickMatchModal({
                 <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between gap-3 animate-in fade-in duration-150">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-rose-400">Insufficient Balance</p>
-                    <p className="text-[11px] text-brand-muted truncate">
+                    <p className="text-caption text-brand-muted truncate">
                       Need ${(wagerCents / 100).toFixed(2)} USDT to enter this match
                     </p>
                   </div>
@@ -409,7 +409,7 @@ export default function QuickMatchModal({
                   <span className="text-xs font-bold text-white mt-1.5 truncate max-w-[90px]">
                     {stats?.first_name || 'You'}
                   </span>
-                  <span className="text-[10px] font-mono text-brand-muted">
+                  <span className="text-caption font-mono text-brand-muted">
                     ELO {stats?.elo || 1200}
                   </span>
                 </div>
@@ -432,7 +432,7 @@ export default function QuickMatchModal({
                   <span className="text-xs font-bold text-white mt-1.5 truncate max-w-[90px]">
                     {matchedOpponent.name}
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400">
+                  <span className="text-caption font-mono text-emerald-400">
                     ELO {matchedOpponent.elo}
                   </span>
                 </div>
