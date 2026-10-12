@@ -74,17 +74,17 @@ class MatchmakerService:
         
         # Retry for up to 3 seconds to acquire the lock
         retries = 30
-        for _ in range(retries):
+        for attempt in range(retries):
             try:
                 # set nx=True, ex=ttl_seconds
                 acquired = await self.redis.set(lock_key, token, nx=True, ex=ttl_seconds)
                 if acquired:
                     return token
             except Exception as e:
-                logger.warning(f"Redis system/connection error during lock acquisition: {e}. Switching to in-memory store immediately.")
-                MatchmakerService._redis_client = None
-                MatchmakerService._use_memory = True
-                return None
+                if attempt == retries - 1:
+                    logger.warning(f"Redis system/connection error during lock acquisition after {retries} attempts: {e}. Switching to in-memory store.")
+                    MatchmakerService._use_memory = True
+                    return None
             await asyncio.sleep(0.1)
             
         logger.error(f"Failed to acquire distributed lock for key {key} after {retries} retries.")

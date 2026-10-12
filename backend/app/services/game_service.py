@@ -44,11 +44,14 @@ async def game_lock(redis_client, game_id: str, use_memory: bool = False):
     
     try:
         for _ in range(retries):
-            # Attempt to set the lock key with a 5 second expiry (ex=5, nx=True)
-            res = await redis_client.set(lock_key, token, nx=True, ex=5)
-            if res:
-                acquired = True
-                break
+            try:
+                # Attempt to set the lock key with a 5 second expiry (ex=5, nx=True)
+                res = await redis_client.set(lock_key, token, nx=True, ex=5)
+                if res:
+                    acquired = True
+                    break
+            except Exception:
+                pass
             await asyncio.sleep(0.1)
             
         if not acquired:

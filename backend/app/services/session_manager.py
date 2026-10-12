@@ -138,8 +138,13 @@ class SessionManager:
             await test_client.ping()
             await test_client.close()
             
-            # Recreate primary client
-            cls._redis_client = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+            # Recreate primary client using application defaults (keepalive, health check, timeout)
+            if cls._redis_client is not None:
+                try:
+                    await cls._redis_client.close()
+                except Exception:
+                    pass
+            cls._redis_client = create_redis_client(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
             cls._use_memory = False
             logger.info("SessionManager successfully reconnected and recovered Redis client from fallback mode.")
             
