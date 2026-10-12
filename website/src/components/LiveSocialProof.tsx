@@ -181,7 +181,16 @@ export function LiveSocialProof() {
       onMouseLeave={() => setIsPaused(false)}
       className="group/proof relative inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-[#0C0D0F]/95 text-white border border-white/[0.12] py-1.5 px-2.5 sm:px-3.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_35px_-5px_rgba(16,185,129,0.2)] max-w-full overflow-hidden"
     >
-      {/* 4 Real Photography Avatars (Changes every 60 minutes) */}
+      {/* 1. Eye-Catching Solid Crimson LIVE Badge (Placed BEFORE avatars) */}
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#E11D48] text-white shadow-[0_0_14px_rgba(225,29,72,0.6)] shrink-0 select-none">
+        <span className="relative flex size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-85" />
+          <span className="relative inline-flex size-2 rounded-full bg-white" />
+        </span>
+        LIVE
+      </span>
+
+      {/* 2. 4 Real Photography Avatars (Changes every 60 minutes) */}
       <div className="flex items-center -space-x-2 shrink-0">
         {activeAvatars.map((avatar) => (
           <img
@@ -195,15 +204,6 @@ export function LiveSocialProof() {
           />
         ))}
       </div>
-
-      {/* Eye-Catching Crimson Red LIVE Badge with Pulsing Ping Dot */}
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/35 shadow-[0_0_12px_rgba(244,63,94,0.3)] shrink-0">
-        <span className="relative flex size-1.5 sm:size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-90" />
-          <span className="relative inline-flex size-1.5 sm:size-2 rounded-full bg-rose-500" />
-        </span>
-        LIVE
-      </span>
 
       {/* Acid Green Pulsing Dot + Online Counter (In range 1,374 to 3,278) */}
       <div
