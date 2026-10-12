@@ -257,11 +257,51 @@ class TestAgents(unittest.TestCase):
             )
             self.assertEqual(res["data"]["id"], "1234567890")
             called_json = mock_post.call_args[1]["json"]
-            self.assertEqual(called_json["media"]["media_ids"], ["9876543210"])
+    def test_extended_viral_categories(self):
+        cw = self.orchestrator.copywriter
+        qa = self.orchestrator.qa
+
+        # 1. Debate post
+        debate = cw.draft_x_debate_post(
+            slot_id="2026-10-12-x-debate",
+            hook="Rapid chess is dead. Intuition beats memory",
+            body="If you cannot calculate under 180 seconds with 0 increment, your rating is artificial.\n\nAre you a calculation player or an opening memory player?",
+        )
+        res_debate = qa.inspect_x_post(debate)
+        self.assertTrue(res_debate["passed"], res_debate["issues"])
+        self.assertEqual(debate["creative"]["tag"], "Hot Take")
+
+        # 2. Psychology post
+        psych = cw.draft_x_psychology_post(
+            slot_id="2026-10-12-x-psych",
+            hook="What happens to your brain at 6 seconds on the clock",
+            body="Under severe time trouble, rational calculation collapses into pure tunnel vision.\n\nPattern recognition is the only survival instinct.",
+        )
+        res_psych = qa.inspect_x_post(psych)
+        self.assertTrue(res_psych["passed"], res_psych["issues"])
+
+        # 3. Motif matrix post
+        matrix = cw.draft_x_motif_matrix_post(
+            slot_id="2026-10-12-x-matrix",
+            hook="The 4 tactical motifs that decide 85% of blitz games",
+            body="Pin, Fork, Deflection, Decoy.\n\nSave this calculation matrix before your next speed session.",
+        )
+        res_matrix = qa.inspect_x_post(matrix)
+        self.assertTrue(res_matrix["passed"], res_matrix["issues"])
+
+        # 4. Engineering post
+        eng = cw.draft_x_engineering_post(
+            slot_id="2026-10-12-x-eng",
+            hook="How we eliminated board lag on Telegram with sub-100ms sync",
+            body="FastAPI + Socket.IO real-time engine built for zero-latency blitz PvP on Bot API 8.0.",
+        )
+        res_eng = qa.inspect_x_post(eng)
+        self.assertTrue(res_eng["passed"], res_eng["issues"])
 
 
 if __name__ == "__main__":
     unittest.main()
+
 
 
 

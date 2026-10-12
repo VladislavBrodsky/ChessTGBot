@@ -260,6 +260,60 @@ class SmmCopywriterAgent:
                     {"label": "Opponent", "text": "Find an in-between check", "piece": "K"},
                 ],
             }
+        elif category == "Chess Debate":
+            post["creative"] = {
+                "template": "culture",
+                "size": canvas_size,
+                "tag": "Hot Take",
+                "headline": "RAPID IS DEAD\n*INTUITION VS MEMORY*",
+                "subhead": "Can you calculate under 180 seconds or do you freeze?",
+                "cta_label": "Join Debate",
+                "panels": [
+                    {"label": "Classical", "text": "Memorize opening lines", "piece": "K"},
+                    {"label": "Blitz PvP", "text": "Pure real-time survival", "piece": "Q"},
+                ],
+            }
+        elif category == "Psychology":
+            post["creative"] = {
+                "template": "culture",
+                "size": canvas_size,
+                "tag": "Neuro Performance",
+                "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+                "subhead": "How tunnel vision destroys calculation in speed chess",
+                "cta_label": "Test Instincts",
+                "panels": [
+                    {"label": "State 1", "text": "Calculation collapses", "piece": "N"},
+                    {"label": "State 2", "text": "Subconscious instinct takes over", "piece": "R"},
+                ],
+            }
+        elif category == "Engineering":
+            post["creative"] = {
+                "template": "product",
+                "size": canvas_size,
+                "tag": "Architecture",
+                "headline": "SUB-100MS SYNC\n*TELEGRAM MINI APP*",
+                "subhead": "Real-time WebSockets vs on-chain latency",
+                "cta_label": "Read Stack",
+                "steps": [
+                    "FastAPI + Socket.IO realtime engine",
+                    "Telegram Bot API 8.0 seamless WebView",
+                    "Sub-100ms board state synchronization",
+                ],
+                "footer": f"Built for high-speed PvP · web3chess.online",
+            }
+        elif category == "Tactical Matrix":
+            post["creative"] = {
+                "template": "culture",
+                "size": canvas_size,
+                "tag": "Pattern Matrix",
+                "headline": "4 MOTIFS MATRIX\n*85% OF BLITZ WINS*",
+                "subhead": "The core tactical patterns every 1500+ player must master",
+                "cta_label": "Save Pattern",
+                "panels": [
+                    {"label": "Deflection", "text": "Remove defender", "piece": "R"},
+                    {"label": "Fork / Pin", "text": "Double attack geometry", "piece": "N"},
+                ],
+            }
 
         reply_content = docked_reply_text
         if not reply_content and docked_link_url:
@@ -339,4 +393,72 @@ class SmmCopywriterAgent:
                 "Let the profile bio funnel interested readers",
             ],
         }
+
+    def draft_x_debate_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        docked_reply: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Crafts a high-velocity contrarian debate post designed for replies and quotes."""
+        reply_text = docked_reply or f"Join the debate and test your speed rating:\nhttps://{self.primary_domain}"
+        return self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Chess Debate",
+            hook=hook,
+            body=body,
+            docked_reply_text=reply_text,
+        )
+
+    def draft_x_psychology_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        docked_reply: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Crafts a cognitive performance & neuro-psychology post appealing to cross-over audiences."""
+        reply_text = docked_reply or f"Train your reaction speed against live players inside Telegram:\n{brand.TG_APP}"
+        return self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Psychology",
+            hook=hook,
+            body=body,
+            docked_reply_text=reply_text,
+        )
+
+    def draft_x_motif_matrix_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        docked_reply: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Crafts a high-utility tactical cheat-sheet post designed as a bookmark magnet."""
+        reply_text = docked_reply or f"Master all 50+ calculation motifs in our free Academy:\nhttps://{self.primary_domain}/academy"
+        return self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Tactical Matrix",
+            hook=hook,
+            body=body,
+            docked_reply_text=reply_text,
+        )
+
+    def draft_x_engineering_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        docked_reply: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Crafts a build-in-public tech & architecture post for developer authority."""
+        reply_text = docked_reply or f"Read our deep-dive architecture benchmarks:\nhttps://{self.primary_domain}/blog"
+        return self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Engineering",
+            hook=hook,
+            body=body,
+            docked_reply_text=reply_text,
+        )
 

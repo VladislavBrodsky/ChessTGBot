@@ -14,7 +14,31 @@ TG_ARENA = f"{TG_APP}?startapp=arena"
 CHANNEL = "https://t.me/chess_hub"
 CHAT = "https://t.me/chesshub_chat"
 
-CATEGORIES = ["Tactics", "Openings", "Academy", "Chess News", "Chess Culture", "Product", "Match Rules"]
+CATEGORIES = [
+    "Tactics", "Openings", "Academy", "Chess News", "Chess Culture",
+    "Product", "Match Rules", "Chess Debate", "Psychology", "Engineering", "Tactical Matrix"
+]
+
+VIRAL_KEYWORD_CLUSTERS = {
+    "tactics": [
+        "blitz", "bullet", "premove", "time scramble", "time trouble", "flagging",
+        "tactics", "puzzle", "checkmate", "calculation", "grandmaster", "elo rating",
+        "smothered mate", "deflection", "fork", "pin", "zugzwang"
+    ],
+    "psychology": [
+        "pattern recognition", "reaction time", "cognitive speed", "decision fatigue",
+        "decision-making under pressure", "adrenaline", "tunnel vision", "nervous system",
+        "tilt", "flow state", "mental stamina"
+    ],
+    "telegram": [
+        "Telegram Mini App", "Telegram game", "Bot API 8.0", "TON ecosystem", "instant PvP",
+        "zero latency", "sub-100ms sync", "no app download", "play in group chat"
+    ],
+    "skill_wager": [
+        "skill-based gaming", "anti-brainrot", "zero-sum", "prize vault", "arena brackets",
+        "USDT payout", "instant settlement"
+    ]
+}
 
 # CTA registry: id -> (button label, url, wager?)
 CTAS = {
