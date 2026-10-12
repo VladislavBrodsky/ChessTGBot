@@ -17,7 +17,7 @@ import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { ChessEcosystemOrbit } from "@/components/ChessEcosystemOrbit";
-import { Globe } from "@/components/magicui/globe";
+import { GlobeShowcase } from "@/components/GlobeShowcase";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 import { home } from "@/content/home";
@@ -504,47 +504,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* ── 3D INTERACTIVE GLOBE SHOWCASE (CLEAN, MINIMAL, ATMOSPHERIC) ── */}
-            <div className="flex flex-col items-center justify-center relative select-none min-h-[500px] w-full group">
-              {/* Ethereal Ambient Glow Behind Globe */}
-              <div
-                className="pointer-events-none absolute -inset-6 sm:-inset-10 rounded-full bg-radial from-emerald-500/12 via-blue-500/6 to-transparent blur-3xl opacity-80"
-                aria-hidden="true"
-              />
-
-              {/* 3D Globe Visualizer with Floating Contact Shadow */}
-              <div className="relative flex items-center justify-center w-full">
-                {/* Background Radar Rings */}
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="size-[380px] rounded-full border border-line/40 opacity-50" />
-                  <div className="size-[280px] rounded-full border border-dashed border-line/30 opacity-40" />
-                </div>
-
-                {/* Soft Elliptical Contact Shadow Beneath 3D Globe */}
-                <div
-                  className="pointer-events-none absolute bottom-4 sm:bottom-6 w-[260px] sm:w-[300px] h-7 rounded-[100%] bg-black/15 blur-xl"
-                  aria-hidden="true"
-                />
-
-                <Globe className="max-w-[460px]" />
-
-                {/* Single Elegant Live Duel Chip */}
-                <div className="pointer-events-none absolute top-4 left-4 z-10 flex items-center gap-2 rounded-full border border-line bg-surface/85 px-3 py-1 font-mono text-caption shadow-xs backdrop-blur-md">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-semibold text-fg-default">Dubai ⚔️ London</span>
-                  <span className="text-fg-muted">·</span>
-                  <span className="font-bold text-emerald-600 font-sans">50 USDT</span>
-                </div>
-              </div>
-
-              {/* Minimal Interaction Hint */}
-              <div className="pt-2 text-center relative z-10">
-                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
-                  <Icon name="arrow-counter-clockwise" size={13} className="text-fg-muted" />
-                  Drag to rotate globe
-                </span>
-              </div>
-            </div>
+            {/* ── 3D INTERACTIVE GLOBE SHOWCASE ── */}
+            <GlobeShowcase />
           </div>
         </section>
 
