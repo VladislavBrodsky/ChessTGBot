@@ -927,6 +927,40 @@ export default function HomePage() {
               <BlogCard key={post.slug} post={post} />
             ))}
           </div>
+
+          <div className="mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <span className="eyebrow">Trending Guides &amp; Opening Weapons</span>
+              <Link href="/blog" className="text-caption font-mono font-semibold text-fg-link hover:underline inline-flex items-center gap-1">
+                Explore all 34 guides
+                <Icon name="arrow-right" size={13} />
+              </Link>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { title: "Can You Make Money on Chess.com?", href: "/blog/can-you-make-money-on-chess-com", cat: "Chess Culture" },
+                { title: "The Fried Liver Attack: Punish f7", href: "/blog/the-fried-liver-attack-punish-weak-f7-pawns", cat: "Openings" },
+                { title: "Dirty Blitz Tricks & Mind Games", href: "/blog/dirty-blitz-tricks-and-psychological-warfare", cat: "Tactics" },
+                { title: "Smith-Morra Gambit: Beat Sicilian", href: "/blog/smith-morra-gambit-crush-the-sicilian-defense", cat: "Openings" },
+                { title: "Chess Rules for Beginners (Step-by-Step)", href: "/rules", cat: "FIDE Rules" },
+                { title: "Chess Cheating Scandals & Telemetry", href: "/blog/chess-cheating-scandals-and-stockfish-telemetry", cat: "Chess News" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex flex-col justify-between p-3.5 rounded-xl border border-line bg-inset/50 hover:bg-surface hover:border-line-strong transition-all"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-[11px] font-mono text-fg-muted uppercase tracking-wider">{item.cat}</span>
+                    <Icon name="arrow-up-right" size={14} className="text-fg-muted group-hover:text-fg transition-colors" />
+                  </div>
+                  <span className="text-body-sm font-medium text-fg group-hover:text-fg-link transition-colors line-clamp-1">
+                    {item.title}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </section>
 
         <aside id="philosophy" className="shell-wide home-section" aria-labelledby="break-heading">

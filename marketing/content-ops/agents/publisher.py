@@ -75,6 +75,13 @@ class PublisherAgent:
             kind = e.get("kind")
             eid = e.get("id")
             if kind == "x_post":
+                img_path = e.get("image")
+                if not img_path and e.get("creative"):
+                    # Check if rendered file exists in queue/<day>/<id>.png
+                    cand = queue.QUEUE / e["date"] / f"{eid}.png"
+                    if cand.exists():
+                        img_path = str(cand)
+
                 item = {
                     "id": eid,
                     "kind": "x_post",
@@ -82,8 +89,33 @@ class PublisherAgent:
                     "char_count": len(e.get("text", "")),
                     "docked_reply": (e.get("docked_reply") or {}).get("text"),
                     "creative_template": (e.get("creative") or {}).get("template"),
-                    "status": "ready_to_publish" if dry_run else "published",
+                    "image": img_path,
+                    "status": "ready_to_publish" if dry_run else "pending",
                 }
+
+                if not dry_run:
+                    try:
+                        from pipeline import x_publisher
+                        docked_text = (e.get("docked_reply") or {}).get("text")
+                        if docked_text:
+                            res = x_publisher.post_tweet_with_docked_reply(
+                                root_text=e["text"],
+                                reply_text=docked_text,
+                                image_path=img_path,
+                            )
+                        else:
+                            res = x_publisher.post_tweet(
+                                text=e["text"],
+                                image_path=img_path,
+                            )
+                        item["receipt"] = res
+                        item["status"] = "published"
+                        e["x_receipt"] = res
+                        queue.set_status(e, "published")
+                        queue.save(e)
+                    except Exception as err:
+                        item["status"] = "failed"
+                        item["error"] = str(err)
             else:
                 item = {
                     "id": eid,
@@ -91,8 +123,23 @@ class PublisherAgent:
                     "topic": e.get("topic"),
                     "tweets_count": len(e.get("tweets", [])),
                     "tweets": [t.get("text") for t in e.get("tweets", [])],
-                    "status": "ready_to_publish" if dry_run else "published",
+                    "status": "ready_to_publish" if dry_run else "pending",
                 }
+
+                if not dry_run:
+                    try:
+                        from pipeline import x_publisher
+                        tweet_texts = [t.get("text") for t in e.get("tweets", [])]
+                        res = x_publisher.post_thread(tweet_texts)
+                        item["receipt"] = res
+                        item["status"] = "published"
+                        e["x_receipt"] = res
+                        queue.set_status(e, "published")
+                        queue.save(e)
+                    except Exception as err:
+                        item["status"] = "failed"
+                        item["error"] = str(err)
+
             dispatched.append(item)
 
         return {

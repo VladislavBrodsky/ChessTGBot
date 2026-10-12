@@ -14,6 +14,10 @@ export const home = {
       label: "Academy",
     },
     {
+      href: "/rules",
+      label: "Rules",
+    },
+    {
       href: "/blog",
       label: "Blog",
     },

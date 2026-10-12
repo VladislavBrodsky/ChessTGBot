@@ -74,7 +74,7 @@ class ContentEngineOrchestrator:
         tg_post = self.copywriter.draft_viral_telegram_post(
             slot_id=slot_id,
             category="Tactics",
-            hook="White to move. One knight move ends the game on the spot.",
+            hook="White to move. One knight move ends the game on the spot",
             body=(
                 "Black's king on h8 is boxed in by its own rook on g8 and pawns on g7 and h7.\n\n"
                 "Pick the winning move and react below:\n"
@@ -315,7 +315,7 @@ class ContentEngineOrchestrator:
             {
                 "slot": 1,
                 "category": "Tactics",
-                "hook": "White to move. The knight guards the escape squares. Find the mate.",
+                "hook": "White to move. The knight guards the escape squares. Find the mate",
                 "body": (
                     "Black's king on h8 is locked down by White's knight on f6.\n"
                     "One rook move delivers instant checkmate.\n\n"
@@ -338,7 +338,7 @@ class ContentEngineOrchestrator:
             {
                 "slot": 2,
                 "category": "Chess News",
-                "hook": "3 seconds on the digital clock. That was the margin between a win and a flag fall.",
+                "hook": "3 seconds on the digital clock. That was the margin between a win and a flag fall",
                 "body": (
                     "Speed chess in 2026 is decided in the final five moves of the scramble.\n"
                     "When clocks dip under 10 seconds, calculation gives way to muscle memory and premove discipline.\n\n"
@@ -358,7 +358,7 @@ class ContentEngineOrchestrator:
             {
                 "slot": 3,
                 "category": "Openings",
-                "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3.",
+                "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3",
                 "body": (
                     "The Blackburne-Shilling Gambit looks like a beginner blunder when Black plays 3...Nd4.\n"
                     "White thought: \"A free pawn on e5 with an attack on f7!\"\n"
@@ -396,7 +396,7 @@ class ContentEngineOrchestrator:
             {
                 "slot": 5,
                 "category": "Product",
-                "hook": "Arena Alert: The 20:00 UTC Blitz Arena registration locks in 15 minutes.",
+                "hook": "Arena Alert: The 20:00 UTC Blitz Arena registration locks in 15 minutes",
                 "body": (
                     "⚡ <b>The night's premier global tournament window is open.</b>\n\n"
                     "3-Minute Blitz • Synchronized matchmaking • $500 USDT Vault.\n"
@@ -892,7 +892,7 @@ class ContentEngineOrchestrator:
         x1_post = self.copywriter.draft_x_single_post(
             slot_id=x1_id,
             category="Tactics",
-            hook="White to move. One knight move ends the game on the spot.",
+            hook="White to move. One knight move ends the game on the spot",
             body=(
                 "Black's king is boxed in on h8 by its own rook and pawns.\n\n"
                 "What is White's only winning move? ♟️"
@@ -920,7 +920,7 @@ class ContentEngineOrchestrator:
         x2_post = self.copywriter.draft_x_single_post(
             slot_id=x2_id,
             category="Chess Culture",
-            hook="4 seconds left on the clock. Up a full queen.",
+            hook="4 seconds left on the clock. Up a full queen",
             body=(
                 "Black premoves into a back-rank mate.\n\n"
                 "The clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival."
@@ -929,7 +929,7 @@ class ContentEngineOrchestrator:
                 "Speed chess is 20% opening theory, 80% nervous system control.\n\n"
                 f"Challenge a friend to a 3-minute blitz duel in Telegram:\n{brand.TG_APP}"
             ),
-            size="wide",
+            size="square",
         )
         x2_qa = self.qa.inspect_x_post(x2_post)
         if not x2_qa["passed"]:
@@ -944,7 +944,7 @@ class ContentEngineOrchestrator:
         x3_post = self.copywriter.draft_x_single_post(
             slot_id=x3_id,
             category="Product",
-            hook="The 20:00 UTC Arena Vault opens in 15 minutes.",
+            hook="The 20:00 UTC Arena Vault opens in 15 minutes",
             body=(
                 "$500 Prize Vault. Once the round timer starts, brackets lock.\n\n"
                 "USDT matches are for adults (18+) where permitted. You can lose your stake."
@@ -953,7 +953,7 @@ class ContentEngineOrchestrator:
                 "Enter the arena lobby inside Telegram:\n"
                 f"{brand.TG_ARENA}"
             ),
-            size="wide",
+            size="square",
         )
         x3_qa = self.qa.inspect_x_post(x3_post)
         if not x3_qa["passed"]:

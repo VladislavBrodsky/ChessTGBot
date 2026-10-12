@@ -69,7 +69,7 @@ export function prepare(input) {
 
 export async function createRenderer() {
   const browser = await chromium.launch({
-    args: ['--disable-gpu', '--font-render-hinting=none', '--disable-lcd-text', '--force-color-profile=srgb', '--hide-scrollbars'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--single-process', '--disable-gpu', '--font-render-hinting=none', '--disable-lcd-text', '--force-color-profile=srgb', '--hide-scrollbars'],
   });
 
   async function render(input, outPath) {

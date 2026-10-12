@@ -39,7 +39,7 @@ class TestAgents(unittest.TestCase):
 
     def test_audit_post_analysis(self):
         sample_post = {
-            "hook": "White to move. One knight move ends the game on the spot.",
+            "hook": "White to move. One knight move ends the game on the spot",
             "text": "White to move. Answer with reactions: ❤ Nf7# 🔥 Nxh7",
             "category": "Tactics",
         }
@@ -60,6 +60,13 @@ class TestAgents(unittest.TestCase):
         self.assertTrue(valid["valid"])
         self.assertEqual(valid["issues"], [])
 
+    def test_chess_editor_validation(self):
+        valid = self.orchestrator.chess_editor.verify_position_and_solution(
+            "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1", ["Nf7#"], "mate_in_1"
+        )
+        self.assertTrue(valid["valid"])
+        self.assertEqual(valid["issues"], [])
+
         invalid = self.orchestrator.chess_editor.verify_position_and_solution(
             "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1", ["Nxh7"], "mate_in_1"
         )
@@ -69,7 +76,7 @@ class TestAgents(unittest.TestCase):
         post = self.orchestrator.copywriter.draft_viral_telegram_post(
             slot_id="2026-10-11-tg-1",
             category="Tactics",
-            hook="White to move. One knight move ends the game on the spot.",
+            hook="White to move. One knight move ends the game on the spot",
             body="Black's king on h8 is boxed in by its own rook on g8 and pawns on g7 and h7.\n❤ Nf7#   🔥 Nxh7   👏 Ne6\nAnswer lands in replies.",
             cta="play",
             fen="6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
@@ -91,7 +98,7 @@ class TestAgents(unittest.TestCase):
         post = self.orchestrator.copywriter.draft_x_single_post(
             slot_id="2026-10-11-x-1",
             category="Tactics",
-            hook="White to move. One knight move ends the game on the spot.",
+            hook="White to move. One knight move ends the game on the spot",
             body="Black's king is boxed in on h8 by its own rook and pawns.\n\nWhat is White's only winning move? ♟️",
             docked_reply_text="Solution: 1. Nf7# (Smothered Mate).\n\nPractise on https://web3chess.online/academy",
             fen="6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
@@ -193,8 +200,68 @@ class TestAgents(unittest.TestCase):
         self.assertEqual(match["target"], "Hikaru Nakamura")
         self.assertTrue(len(match["recommended_comment"]) > 20)
 
+    def test_x_post_creative_must_be_square(self):
+        post = self.orchestrator.copywriter.draft_x_single_post(
+            slot_id="2026-10-12-x-test",
+            category="Tactics",
+            hook="White to move. Find the mate",
+            body="Tactical calculation challenge.",
+            fen="6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+            solution=["Nf7#"],
+            claim="mate_in_1",
+            size="square",
+        )
+        qa_res = self.orchestrator.qa.inspect_x_post(post)
+        self.assertTrue(qa_res["passed"])
+
+        # Force a non-square canvas (e.g. wide) and assert QA rejection
+        bad_post = dict(post)
+        bad_post["creative"] = dict(post["creative"])
+        bad_post["creative"]["size"] = "wide"
+        bad_qa = self.orchestrator.qa.inspect_x_post(bad_post)
+        self.assertFalse(bad_qa["passed"])
+        self.assertTrue(any("1:1 format" in issue for issue in bad_qa["issues"]))
+
+    def test_cmo_x_post_alignment(self):
+        good_post = {
+            "kind": "x_post",
+            "category": "Tactics",
+            "hook": "White to move. One knight move ends the game on the spot?",
+            "text": "White to move. One knight move ends the game on the spot?\n\nBlack is boxed in.",
+            "docked_reply": {"text": "Solution: 1. Nf7#"},
+            "creative": {"size": "square"},
+        }
+        res = self.orchestrator.cmo.review_slot_alignment(good_post)
+        self.assertTrue(res["approved_by_cmo"])
+        self.assertTrue(res["viral_score"] >= 80)
+
+        # Post with link in root text violates Docked Link Law
+        bad_post = dict(good_post)
+        bad_post["text"] = "White to move. Play now at https://web3chess.online"
+        bad_res = self.orchestrator.cmo.review_slot_alignment(bad_post)
+        self.assertFalse(bad_res["approved_by_cmo"])
+        self.assertTrue(any("Docked Link Law" in issue for issue in bad_res["strategic_notes"]))
+
+    def test_x_publisher_image_dispatch(self):
+        from unittest.mock import patch
+        from pipeline import x_publisher
+
+        with patch("requests.post") as mock_post:
+            mock_post.return_value.ok = True
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.json.return_value = {"data": {"id": "1234567890"}}
+
+            res = x_publisher.post_tweet(
+                text="Test tweet from @defi_ambassador",
+                media_ids=["9876543210"],
+            )
+            self.assertEqual(res["data"]["id"], "1234567890")
+            called_json = mock_post.call_args[1]["json"]
+            self.assertEqual(called_json["media"]["media_ids"], ["9876543210"])
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
 

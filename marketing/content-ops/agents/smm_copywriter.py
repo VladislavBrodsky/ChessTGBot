@@ -61,7 +61,7 @@ class SmmCopywriterAgent:
                 "template": "puzzle",
                 "size": canvas_size,
                 "tag": claim.replace("_", " ").title() if claim else "Tactics Challenge",
-                "headline": "White to play.\n*One decisive move.*",
+                "headline": "White to play\n*One decisive move*",
                 "subhead": "Can you spot the tactical finish?",
                 "fen": fen,
                 "cta_label": "Solve in Mini App",
@@ -98,7 +98,7 @@ class SmmCopywriterAgent:
     ) -> Dict[str, Any]:
         """Crafts a high-urgency arena countdown alert adhering to 18+ wager disclosures."""
         canvas_size = size if size in ("square", "wide") else "square"
-        hook = f"Arena Alert: {tournament_name} locks in {minutes_remaining} minutes."
+        hook = f"Arena Alert: {tournament_name} locks in {minutes_remaining} minutes"
         body = (
             f"⚡ <b>The {start_time_utc} Arena countdown is live.</b>\n\n"
             f"3-Minute Blitz • Double-elimination bracket • Instant TON settlement.\n"
@@ -121,7 +121,7 @@ class SmmCopywriterAgent:
                 "template": "product",
                 "size": canvas_size,
                 "tag": "Daily Arena",
-                "headline": "BLITZ ARENA.\n*VAULT CLOSES SOON.*",
+                "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
                 "subhead": f"{start_time_utc} • Instant PvP Matchmaking",
                 "cta_label": "Enter Arena",
                 "steps": [
@@ -195,17 +195,20 @@ class SmmCopywriterAgent:
         fen: Optional[str] = None,
         solution: Optional[List[str]] = None,
         claim: Optional[str] = None,
-        size: str = "wide",
+        size: str = "square",
+        creative_spec: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Crafts a verified single X (Twitter) post adhering to the 280-char limit and docked link rule."""
-        canvas_size = size if size in ("square", "wide") else "wide"
-        post_text = f"{hook.strip()}\n\n{body.strip()}".strip()
+        """Crafts a verified single X (Twitter) post adhering to the 280-char limit, docked link rule, and 1:1 canvas standards."""
+        # Strictly enforce 1:1 format ("square": 1080x1080) for X posts
+        canvas_size = "square"
+        clean_hook = hook.strip().rstrip(".")
+        post_text = f"{clean_hook}\n\n{body.strip()}".strip()
         post: Dict[str, Any] = {
             "id": slot_id,
             "kind": "x_post",
             "date": slot_id[:10] if len(slot_id) >= 10 else queue.utcnow().date().isoformat(),
             "category": category,
-            "hook": hook.strip(),
+            "hook": clean_hook,
             "text": post_text,
             "status": "draft",
             "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
@@ -222,6 +225,40 @@ class SmmCopywriterAgent:
                 "size": canvas_size,
                 "fen": fen,
                 "tag": claim.replace("_", " ").title() if claim else "Tactics Challenge",
+                "headline": "White to play\n*One decisive move*",
+                "subhead": "Can you spot the tactical finish?",
+                "cta_label": "Solve in Mini App",
+                "footer": "Answer with reactions or in replies.",
+            }
+        elif creative_spec:
+            post["creative"] = {**creative_spec, "size": canvas_size}
+        elif category == "Product":
+            post["creative"] = {
+                "template": "product",
+                "size": canvas_size,
+                "tag": "Daily Arena",
+                "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+                "subhead": "20:00 UTC • Instant PvP Matchmaking",
+                "cta_label": "Enter Arena",
+                "steps": [
+                    "Open Mini App",
+                    "Choose stake tier",
+                    "Win 95% of the pot",
+                ],
+                "footer": f"18+ only · You can lose your stake · Rules at {self.primary_domain}/wagers",
+            }
+        elif category in ("Chess Culture", "Chess News"):
+            post["creative"] = {
+                "template": "culture",
+                "size": canvas_size,
+                "tag": "Blitz Culture",
+                "headline": "4 SECONDS LEFT\n*PREMOVE COLLAPSE*",
+                "subhead": "Under 5 seconds, calculation collapses into survival",
+                "cta_label": "Play in Telegram",
+                "panels": [
+                    {"label": "You", "text": "Premove a queen recapture", "piece": "Q"},
+                    {"label": "Opponent", "text": "Find an in-between check", "piece": "K"},
+                ],
             }
 
         reply_content = docked_reply_text

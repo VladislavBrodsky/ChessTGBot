@@ -48,7 +48,8 @@ confident explanation, restrained wit. Show the move or mechanism behind the hea
 Rules: no hype, no income or profit claims, no fake urgency, no invented numbers, testimonials or quotes.
 At most 3 emoji, none as bullets. One idea, one CTA. Never copy a source's wording, structure or images;
 rebuild the idea from our own position and explanation. Wager mentions always carry the adult disclosure
-and are never paired with youth content. Name the move (SAN) and the square; give the reader something to try."""
+and are never paired with youth content. Name the move (SAN) and the square; give the reader something to try.
+Hook Rule: NEVER end a hook or headline with a period ('.'). Periods act as a psychological stop sign and destroy curiosity momentum."""
 
 def with_utm(url: str, campaign: str, content: str, medium: str = "social", source: str = "telegram") -> str:
     """Add UTM tags to our own web URLs. t.me links are left untouched (they ignore tags)."""

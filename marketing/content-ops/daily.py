@@ -59,17 +59,22 @@ def _gate(entry: dict):
     corpus = [c for c in _published_corpus(entry["kind"])]
     if entry["kind"] == "telegram":
         result = qa.check_telegram(entry, corpus)
+    elif entry["kind"] == "x_post":
+        result = qa.check_x_post(entry, corpus)
+    elif entry["kind"] == "x_thread":
+        result = qa.check_x_thread(entry, corpus)
     else:
         refs = [s.get("excerpt", "") for s in entry.get("references", []) if s.get("excerpt")]
         result = qa.check_article({**entry["article"], "category": entry["article"].get("category", entry["category"])}, corpus, refs)
     entry["qa"] = {**result, "checked_at": queue.iso(queue.utcnow())}
-    if result["passed"] and entry["kind"] == "telegram" and entry.get("creative"):
+    if result["passed"] and entry["kind"] in ("telegram", "x_post") and entry.get("creative"):
         renderer.render(entry)
         rendered = entry.get("render", {})
         if not rendered.get("ok") and not rendered.get("skipped"):
             result = {"passed": False, "issues": result["issues"] + ["creative render failed: " + rendered.get("error", "unknown")]}
             entry["qa"] = {**result, "checked_at": queue.iso(queue.utcnow())}
-    mode = queue.CONFIG["mode"]["telegram" if entry["kind"] == "telegram" else "site"]
+    kind_key = "telegram" if entry["kind"] in ("telegram", "x_post", "x_thread") else "site"
+    mode = queue.CONFIG["mode"].get(kind_key, "review")
     if not result["passed"]:
         queue.set_status(entry, "rejected")
     elif mode == "auto":
@@ -86,7 +91,7 @@ def cmd_submit(args):
 
 def cmd_qa(args):
     for entry in queue.all_entries(day=_day(args).isoformat()):
-        if entry["status"] in {"draft", "rejected"} and (entry.get("text") or entry.get("article")):
+        if entry["status"] in {"draft", "rejected"} and (entry.get("text") or entry.get("article") or entry.get("tweets")):
             _gate(entry)
     cmd_status(args)
 
@@ -97,8 +102,8 @@ def cmd_decide(args):
     queue.set_status(entry, "approved" if args.command == "approve" else "rejected", approved_by="human")
 
 def cmd_render(args):
-    for entry in queue.all_entries("telegram", day=_day(args).isoformat()):
-        if entry.get("creative") and entry["status"] in {"draft", "approved", "rejected", "published"}:
+    for entry in queue.all_entries(day=_day(args).isoformat()):
+        if entry.get("kind") in ("telegram", "x_post") and entry.get("creative") and entry["status"] in {"draft", "approved", "rejected", "published"}:
             renderer.render(entry); queue.save(entry)
             print(entry["id"], entry.get("render"))
 

@@ -112,6 +112,7 @@ def check_telegram(post: dict, corpus: list[str] | None = None) -> dict:
     first = body.split("\n")[0][:200] if "\n" in body else body[:200]
     hook = plain(post.get("hook", "") or text.split("\n")[0])
     if not hook or len(hook) > 110: issues.append("hook missing or over 110 chars")
+    if hook.rstrip().endswith("."): issues.append("hook must not end with a period (kill-switch on curiosity/momentum)")
     ctas = [post.get("cta")] + list(post.get("extra_buttons", []))
     ctas = [c for c in ctas if c]
     if not ctas: issues.append("a CTA is required")
@@ -188,6 +189,8 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     hook = plain(post.get("hook", "") or text.split("\n")[0])
     if hook and len(hook) > 100:
         issues.append("hook over 100 chars")
+    if hook.rstrip().endswith("."):
+        issues.append("hook must not end with a period (kill-switch on curiosity/momentum)")
     hashtags = re.findall(r"#\w+", text)
     if len(hashtags) > 1:
         issues.append("more than 1 hashtag; X algorithm penalizes multi-hashtag clutter")
@@ -210,6 +213,12 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     chess_spec = post.get("chess")
     if chess_spec:
         issues += chesscheck.verify_puzzle(chess_spec["fen"], chess_spec.get("solution", []), chess_spec.get("claim"))
+
+    if post.get("creative"):
+        issues += renderer.check(post)
+        size = post["creative"].get("size")
+        if size and size != "square":
+            issues.append(f"X creative must use 1:1 format (size='square'); got '{size}'")
 
     return {"passed": not issues, "issues": issues}
 

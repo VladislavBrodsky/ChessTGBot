@@ -86,6 +86,7 @@ class CmoAgent:
             "viral_hook_formulas": self.directive.viral_hooks,
             "golden_rules": [
                 "Hook in the first 90 characters: No fluff, immediate tension or mystery.",
+                "Hook Punctuation Law: NEVER end hooks or headlines with a period ('.'); keep them open, punchy, or end with '?' to preserve curiosity momentum.",
                 "Anti-brainrot high-status framing: Chess players are cerebral tacticians.",
                 "1-Tap frictionless CTA: Direct deep link to Telegram Mini App or Blog on web3chess.online.",
                 "Zero deceptive hype: Authentic FOMO comes from real arena clocks, tournament cutoffs, and streak limits.",
@@ -96,8 +97,9 @@ class CmoAgent:
         }
 
     def review_slot_alignment(self, entry: Dict[str, Any]) -> Dict[str, Any]:
-        """Executive review of whether a content slot aligns with current CMO goals."""
+        """Executive review of whether a content slot aligns with current CMO goals across Telegram and X."""
         issues: List[str] = []
+        kind = entry.get("kind", "telegram")
         category = entry.get("category", "")
         text = entry.get("text", "") or ""
         hook = entry.get("hook", "") or ""
@@ -109,19 +111,42 @@ class CmoAgent:
         # Check hook impact
         if len(hook) > 110:
             issues.append(f"Hook too long for mobile preview ({len(hook)} chars > 110 max)")
+        if hook.rstrip().endswith("."):
+            issues.append("Hook must never end with a period ('.')")
 
-        # Evaluate viral potential score (0 to 100)
         score = 70
         low = (text + " " + hook).lower()
-        if any(trigger in low for trigger in ["clock", "mate", "trap", "arena", "streak", "seconds", "puzzle"]):
-            score += 15
-        if "<tg-spoiler>" in text or "reaction" in low or "❤" in text or "🔥" in text:
-            score += 15
+
+        if kind in ("x_post", "x_thread"):
+            # X Specific Golden Rules
+            if kind == "x_post" and "http" in text:
+                issues.append("Root tweet violates Docked Link Law; outbound URLs belong in docked reply")
+            if kind == "x_post" and len(text) > 280:
+                issues.append(f"Tweet exceeds 280-char limit ({len(text)} chars)")
+            creative = entry.get("creative")
+            if creative and creative.get("size") != "square":
+                issues.append(f"X creative must use 1:1 format (size='square'); got '{creative.get('size')}'")
+
+            # X Viral & Bookmark score triggers
+            if any(trigger in low for trigger in ["clock", "mate", "trap", "arena", "streak", "seconds", "puzzle", "white to move", "only move"]):
+                score += 15
+            if "?" in hook or "🧵" in text or entry.get("docked_reply"):
+                score += 15
+        else:
+            # Telegram Specific triggers
+            if any(trigger in low for trigger in ["clock", "mate", "trap", "arena", "streak", "seconds", "puzzle"]):
+                score += 15
+            if "<tg-spoiler>" in text or "reaction" in low or "❤" in text or "🔥" in text:
+                score += 15
+
+        notes = issues if issues else [
+            f"Slot aligns with Q4 2026 Viral/FOMO directives on {kind.upper()}"
+        ]
 
         return {
             "approved_by_cmo": len(issues) == 0,
             "viral_score": min(score, 100),
-            "strategic_notes": issues if issues else ["Slot aligns with Q4 2026 Viral/FOMO directives"],
+            "strategic_notes": notes,
         }
 
     def generate_executive_report(self, planned_entries: List[Dict[str, Any]]) -> str:

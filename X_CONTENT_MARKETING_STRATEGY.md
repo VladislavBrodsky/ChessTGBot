@@ -51,6 +51,10 @@ The open-source X recommendation algorithm weights user engagements as follows:
    - A tweet that receives 20 replies in the first 30 minutes triggers the virality flywheel. If the author replies back (creating reply chains), reach surges 2x–4x.
    - *The Playbook*: Every tactical puzzle asks for a move ("What is White's only winning move? Drop your candidate below"). The social operator or bot engages with commenters within 10 minutes.
 
+5. **The Hook Punctuation Law (Never End Hooks with a Period)**:
+   - A period (`.`) at the end of an opening hook or visual headline acts as a subconscious cognitive stop sign. In high-speed mobile feeds, periods kill reading momentum and lower engagement.
+   - *The Standard*: **Never end hooks or headlines with a period (`.`)**. Keep hooks open, suspenseful, or end with a question mark (`?`), an emoji, or a colon (`:`).
+
 ---
 
 ## 2. Converting Profile Funnel Architecture
