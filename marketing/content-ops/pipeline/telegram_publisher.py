@@ -11,7 +11,9 @@ API = "https://api.telegram.org"
 
 def _credentials():
     cfg = queue.CONFIG["telegram"]
-    return os.environ.get(cfg["token_env"]), os.environ.get(cfg["channel_env"])
+    token = os.environ.get(cfg["token_env"]) or os.environ.get("TELEGRAM_BOT_TOKEN")
+    channel = os.environ.get(cfg["channel_env"]) or os.environ.get("TELEGRAM_CHANNEL") or "@chess_hub"
+    return token, channel
 
 def build_keyboard(post: dict) -> dict:
     ids = [c for c in [post.get("cta"), *post.get("extra_buttons", [])] if c]
@@ -73,6 +75,20 @@ def publish(post: dict, dry_run: bool | None = None) -> dict:
     assert_live_offer(post)
     return {"dry_run": False, "message_id": _deliver(token, channel, post["text"], image, markup)}
 
+def publish_post_by_id(post_id: str, dry_run: bool | None = None) -> dict:
+    post = queue.load(post_id)
+    token, channel = _credentials()
+    live = bool(token and channel) and dry_run is not True
+    if live: queue.set_status(post, "publishing")
+    try:
+        outcome = publish(post, dry_run)
+    except Exception as exc:
+        if live: queue.set_status(post, "approved", last_error=str(exc)[:200])
+        raise
+    if not outcome.get("dry_run"):
+        queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
+    return {"id": post_id, **outcome}
+
 def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
     """Send each published puzzle's answer as a threaded reply once `reveal.after_hours` have passed (once only)."""
     now = now or queue.utcnow()
@@ -100,10 +116,10 @@ def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
         report.append({"id": post["id"], "revealed": message_id})
     return report
 
-def publish_due(now=None, dry_run: bool | None = None, limit: int = 5) -> list[dict]:
+def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str | None = None) -> list[dict]:
     now = now or queue.utcnow()
     report = []
-    for post in queue.all_entries("telegram", "approved"):
+    for post in queue.all_entries("telegram", "approved", day=day):
         if post["scheduled_at"] > queue.iso(now) or len(report) >= limit: continue
         live = all(_credentials()) and dry_run is not True
         if live: queue.set_status(post, "publishing")  # at-most-once: a crash mid-send must not double-post

@@ -5,7 +5,7 @@
   "slot": 2,
   "category": "Chess News",
   "scheduled_at": "2026-10-12T11:00:00Z",
-  "status": "approved",
+  "status": "published",
   "qa": {
     "passed": true,
     "issues": [],
@@ -23,5 +23,9 @@
     }
   ],
   "approved_by": "cmo_orchestrator",
-  "updated_at": "2026-10-12T13:55:11Z"
+  "updated_at": "2026-10-12T14:22:28Z",
+  "published": {
+    "message_id": 13,
+    "at": "2026-10-12T14:22:28Z"
+  }
 }

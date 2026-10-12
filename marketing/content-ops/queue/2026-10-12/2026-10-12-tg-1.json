@@ -5,7 +5,7 @@
   "slot": 1,
   "category": "Tactics",
   "scheduled_at": "2026-10-12T07:30:00Z",
-  "status": "approved",
+  "status": "published",
   "qa": {
     "passed": true,
     "issues": [],
@@ -54,9 +54,19 @@
       "subhead": "Calculated to the end.",
       "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
       "cta_label": "Play Next Puzzle"
-    }
+    },
+    "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-1.reveal.png"
+  },
+  "approved_by": "cmo_orchestrator",
+  "updated_at": "2026-10-12T14:21:47Z",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
   },
   "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-1.png",
-  "approved_by": "cmo_orchestrator",
-  "updated_at": "2026-10-12T13:55:11Z"
+  "published": {
+    "message_id": 12,
+    "at": "2026-10-12T14:21:47Z"
+  }
 }

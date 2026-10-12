@@ -5,7 +5,7 @@
   "slot": 5,
   "category": "Product",
   "scheduled_at": "2026-10-12T20:30:00Z",
-  "status": "approved",
+  "status": "published",
   "qa": {
     "passed": true,
     "issues": [],
@@ -29,8 +29,23 @@
     "headline": "BLITZ ARENA.\n*VAULT CLOSES SOON.*",
     "subhead": "20:00 UTC • Instant PvP Matchmaking",
     "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
     "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
   },
   "approved_by": "cmo_orchestrator",
-  "updated_at": "2026-10-12T13:55:11Z"
+  "updated_at": "2026-10-12T14:23:58Z",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-5.png",
+  "published": {
+    "message_id": 16,
+    "at": "2026-10-12T14:23:58Z"
+  }
 }

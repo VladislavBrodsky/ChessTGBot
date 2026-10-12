@@ -117,6 +117,11 @@ class SmmCopywriterAgent:
                 "headline": "BLITZ ARENA.\n*VAULT CLOSES SOON.*",
                 "subhead": f"{start_time_utc} • Instant PvP Matchmaking",
                 "cta_label": "Enter Arena",
+                "steps": [
+                    "Open Mini App",
+                    "Choose stake tier",
+                    "Win 95% of the pot",
+                ],
                 "footer": f"18+ only · You can lose your stake · Rules at {self.primary_domain}/wagers",
             },
         }

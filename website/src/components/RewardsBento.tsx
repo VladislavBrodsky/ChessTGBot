@@ -180,7 +180,7 @@ export function RewardsBento() {
             {/* GRAM — Orbit 1, angle 0 */}
             <div
               className="absolute pointer-events-auto"
-              style={{ animation: 'vault-orbit-cw 12s linear infinite' }}
+              style={{ animation: 'vault-orbit-cw 12s linear infinite', willChange: 'transform' }}
             >
               <GramToken />
             </div>
@@ -188,7 +188,7 @@ export function RewardsBento() {
             {/* BTC — Orbit 1, angle 180 (opposite GRAM) */}
             <div
               className="absolute pointer-events-auto"
-              style={{ animation: 'vault-orbit-cw 12s linear infinite -6s' }}
+              style={{ animation: 'vault-orbit-cw 12s linear infinite -6s', willChange: 'transform' }}
             >
               <BtcToken />
             </div>
@@ -196,7 +196,7 @@ export function RewardsBento() {
             {/* USDT — Orbit 2 (counter-orbit), angle 0 */}
             <div
               className="absolute pointer-events-auto"
-              style={{ animation: 'vault-orbit-ccw 10s linear infinite' }}
+              style={{ animation: 'vault-orbit-ccw 10s linear infinite', willChange: 'transform' }}
             >
               <UsdtToken />
             </div>
@@ -204,7 +204,7 @@ export function RewardsBento() {
             {/* KING CHESS — Orbit 2 (counter-orbit), angle 180 (opposite USDT) */}
             <div
               className="absolute pointer-events-auto"
-              style={{ animation: 'vault-orbit-ccw 10s linear infinite -5s' }}
+              style={{ animation: 'vault-orbit-ccw 10s linear infinite -5s', willChange: 'transform' }}
             >
               <KingChessToken />
             </div>

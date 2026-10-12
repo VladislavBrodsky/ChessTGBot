@@ -56,9 +56,6 @@ export default function RootLayout({
       dir="ltr"
       className={`${onest.variable} ${condensed.variable}`}
     >
-      <head>
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-      </head>
       <body>
         <Script
           id="gtag-base"

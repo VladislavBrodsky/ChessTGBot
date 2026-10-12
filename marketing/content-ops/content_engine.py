@@ -47,7 +47,9 @@ def main():
     parser.add_argument("--days", type=int, default=1, help="Number of days to plan (default: 1)")
     parser.add_argument("--stage", action="store_true", help="Stage all approved articles into website/src/content/articles/")
     parser.add_argument("--publish", action="store_true", help="Publish due Telegram broadcasts")
-    parser.add_argument("--dry-run", action="store_true", default=True, help="Run Telegram publishing in dry-run mode (default: True)")
+    parser.add_argument("--live", dest="dry_run", action="store_false", default=True, help="Execute live publication to Telegram (requires bot token)")
+    parser.add_argument("--post-id", default=None, help="Specific post ID to publish (e.g. 2026-10-12-tg-1)")
+    parser.add_argument("--date", default=None, help="Filter date (e.g. 2026-10-12)")
     parser.add_argument("--domain", default="web3chess.online", help="Target landing page domain (default: web3chess.online)")
 
     args = parser.parse_args()
@@ -92,8 +94,12 @@ def main():
         print(json.dumps(reports, indent=2))
 
     elif args.publish:
-        print(f"\n📡 Dispatching Telegram broadcasts (dry_run={args.dry_run})...")
-        dispatch = orchestrator.publisher.dispatch_telegram_broadcast(dry_run=args.dry_run)
+        target_day = args.date or queue.utcnow().date().isoformat()
+        mode_str = "LIVE" if not args.dry_run else "DRY-RUN"
+        print(f"\n📡 Dispatching Telegram broadcasts ({mode_str}, date={target_day}, post_id={args.post_id})...")
+        dispatch = orchestrator.publisher.dispatch_telegram_broadcast(
+            dry_run=args.dry_run, day=target_day, post_id=args.post_id
+        )
         print(json.dumps(dispatch, indent=2))
 
     else:

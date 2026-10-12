@@ -44,9 +44,16 @@ class PublisherAgent:
                 results.append(res)
         return results
 
-    def dispatch_telegram_broadcast(self, dry_run: bool = True) -> Dict[str, Any]:
+    def dispatch_telegram_broadcast(self, dry_run: bool = True, day: Optional[str] = None, post_id: Optional[str] = None) -> Dict[str, Any]:
         """Dispatches due approved Telegram posts and scheduled reveals."""
-        posts = telegram_publisher.publish_due(dry_run=dry_run)
+        if post_id:
+            res = telegram_publisher.publish_post_by_id(post_id, dry_run=dry_run)
+            return {
+                "dry_run": dry_run,
+                "posts_dispatched": [res],
+                "reveals_dispatched": [],
+            }
+        posts = telegram_publisher.publish_due(dry_run=dry_run, day=day)
         reveals = telegram_publisher.publish_reveals(dry_run=dry_run)
         return {
             "dry_run": dry_run,
