@@ -15,9 +15,19 @@ import { AcademyRoadmap } from "@/components/AcademyRoadmap";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Free Chess Puzzles Online: 100 Tactics & Stockfish",
-  "Solve free interactive chess puzzles with zero paywalls. Master 100 tactical levels, opening traps, and play unlimited practice vs Stockfish 16 in Telegram.",
+  "Free Chess Puzzles Online & Tactics Trainer",
+  "Solve free chess puzzles online with instant feedback. Practice 100 tactical levels, master opening traps, and play unlimited games vs Stockfish 16 for free.",
   "/academy",
+  [
+    "free chess puzzles online",
+    "online chess tactics trainer",
+    "play chess vs stockfish online",
+    "chess puzzles free",
+    "chess tactics trainer",
+    "learn chess tactics",
+    "stockfish 16 chess practice",
+    "free chess academy",
+  ],
 );
 
 export default function AcademyPage() {
@@ -33,20 +43,20 @@ export default function AcademyPage() {
           dangerouslySetInnerHTML={{
             __html: jsonLd(breadcrumbData([
               { name: "Home", path: "" },
-              { name: "Chess Academy", path: "/academy" },
+              { name: "Free Chess Puzzles & Academy", path: "/academy" },
             ])),
           }}
         />
         <PageHero
-          eyebrow="Free chess academy"
+          eyebrow="Free Chess Tactics Academy"
           title={
             <>
-              See more.
+              Free chess puzzles
               <br />
-              Play better
+              &amp; Stockfish trainer
             </>
           }
-          lead="Build your board vision. Learn an idea, solve a puzzle, and try it in free A.I. practice."
+          lead="Sharpen your tactical vision. Solve 100 interactive puzzle levels, master opening traps, and play unlimited practice games vs Stockfish 16 for free."
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">

@@ -49,11 +49,20 @@ export async function generateMetadata({
   }
 
   const url = `${SITE.url}/blog/${post.slug}`;
+  const keywords = [
+    post.title,
+    post.category,
+    "chess tactics",
+    "speed chess",
+    "chess strategy",
+    "play chess online",
+    ...post.slug.split("-"),
+  ];
 
   return {
     title: post.title,
-    description:
-      post.metaDescription ?? post.excerpt,
+    description: post.metaDescription ?? post.excerpt,
+    keywords,
     authors: [{ name: post.author.name }],
     openGraph: {
       title: post.title,
@@ -65,15 +74,33 @@ export async function generateMetadata({
       modifiedTime: new Date(post.updatedAt ?? post.publishedAt).toISOString(),
       authors: [post.author.name],
       section: post.category,
-      tags: post.takeaways.slice(0, 3),
+      tags: keywords.slice(0, 5),
+      images: [
+        {
+          url: `${url}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      images: [`${url}/opengraph-image`],
     },
     alternates: {
       canonical: url,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+      },
     },
   };
 }
@@ -112,6 +139,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         headline: post.title,
         description: post.excerpt,
         articleSection: post.category,
+        keywords: [post.title, post.category, ...post.takeaways].join(", "),
         inLanguage: "en-US",
         author: {
           "@type": post.author.kind ?? "Person",

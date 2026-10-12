@@ -10,12 +10,20 @@ import { ChessSculpture } from "@/components/ChessSculpture";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Fair Play & Chess Match Rules",
-  "Learn how Web3Chess validates moves, handles match clocks, and expects players to compete without outside assistance.",
+  "Fair Play & Anti-Cheat Engine: Stockfish 16 Validation",
+  "Learn how Web3Chess protects matches with server-side Stockfish 16 validation, tamper-proof clocks, anti-cheat engine correlation, and automated pot escrow.",
   "/fair-play",
+  [
+    "chess anti cheat engine",
+    "stockfish 16 cheat detection",
+    "fair play chess rules",
+    "skill based chess",
+    "tamper proof chess clocks",
+    "web3 chess integrity",
+  ],
 );
 export default function FairPlayPage() {
   return (
@@ -25,16 +33,25 @@ export default function FairPlayPage() {
         id="main"
         className="shell-wide page-flow"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd(breadcrumbData([
+              { name: "Home", path: "" },
+              { name: "Fair Play & Anti-Cheat", path: "/fair-play" },
+            ])),
+          }}
+        />
         <PageHero
-          eyebrow="Respect the board"
+          eyebrow="Integrity &amp; Anti-Cheat"
           title={
             <>
-              Your mind.
+              Fair play &amp;
               <br />
-              Your moves
+              anti-cheat engine
             </>
           }
-          lead="Great chess needs clear rules and honest opponents. Here’s how the game is validated, and what we expect from everyone at the board."
+          lead="Great chess needs clear rules, tamper-proof clocks, and honest opponents. Every move is validated server-side by Stockfish 16 with zero client manipulation."
           visual={<ChessSculpture variant="fairPlay" />}
         >
           <ButtonLink href="#fair-play-rules" variant="secondary">

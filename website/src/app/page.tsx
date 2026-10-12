@@ -47,9 +47,22 @@ import { SITE, SETTLEMENT } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Play Chess & Win Real Crypto in Telegram | Web3Chess",
-  SITE.description,
+  "Play Chess Online in Telegram & Win Real Crypto",
+  "Play chess inside Telegram with Web3Chess. Challenge players worldwide in the #1 Telegram chess bot: free Stockfish A.I. practice, 100 tactical puzzles, and real USDT cash duels.",
   "",
+  [
+    "telegram chess bot",
+    "play chess in telegram",
+    "telegram chess mini app",
+    "crypto chess game",
+    "play chess for crypto",
+    "earn crypto playing chess",
+    "free chess puzzles online",
+    "online chess tactics trainer",
+    "play chess vs stockfish online",
+    "usdt chess wager",
+    "web3 chess",
+  ],
 );
 
 // Re-render regularly so newly scheduled articles reach the home page on time.
@@ -75,6 +88,18 @@ export default function HomePage() {
         description: SITE.description,
         inLanguage: "en",
         publisher: { "@id": `${SITE.url}/#organization` },
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: "Web3Chess Telegram Chess Bot",
+        applicationCategory: "GameApplication",
+        operatingSystem: "Telegram, iOS, Android, Web, macOS, Windows",
+        url: `${SITE.url}/play`,
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
       },
       {
         "@type": "VideoGame",
@@ -106,10 +131,10 @@ export default function HomePage() {
         <section className="shell-wide hero-section" aria-labelledby="home-title">
           <div className="hero-copy">
             <div className="hero-intro">
-              <Badge tone="accent" icon="telegram-logo">Live PvP Arena · Real Crypto Stakes</Badge>
+              <Badge tone="accent" icon="telegram-logo">Telegram Chess Bot · Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
                 <span className="block whitespace-nowrap">
-                  Play chess
+                  Play chess in Telegram
                 </span>
                 <span className="block whitespace-nowrap">
                   <span className="hero-emphasis inline-block">
@@ -118,7 +143,7 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
-                Challenge rivals worldwide inside Telegram. Stake USDT, outplay your opponent, and take 95% of the pot. Free A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 GRAM in prizes.
+                Challenge rivals worldwide inside Telegram with the #1 Telegram chess bot. Stake USDT, outplay your opponent, and take 95% of the pot. Free Stockfish A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 GRAM in prizes.
               </p>
             </div>
             <div className="hero-details space-y-4">
@@ -236,7 +261,7 @@ export default function HomePage() {
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <div>
               <h2 id="rewards-heading" className="editorial-title">
-                Turn your chess rating into real crypto
+                Turn your chess rating into real crypto: 95% pot payouts
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
                 Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 GRAM mystery jackpots, and 6-tier passive match rake.
@@ -608,7 +633,7 @@ export default function HomePage() {
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="academy-heading" className="editorial-title">
-                100 tactical levels and Stockfish A.I. practice
+                Free chess puzzles online &amp; Stockfish A.I. practice
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
                 Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against the Stockfish AI engine anytime without risking crypto.
@@ -723,7 +748,7 @@ export default function HomePage() {
                 </div>
 
                 <h2 id="wagers-heading" className="editorial-title">
-                  Turn tactical mastery into real crypto
+                  Play chess for money: USDT stakes and 95% winner pot
                 </h2>
 
                 <p className="max-w-[44ch] section-lead text-fg-muted">
@@ -890,7 +915,7 @@ export default function HomePage() {
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <h2 id="journal-heading" className="editorial-title">
-              A little knowledge. A winning position
+              Online chess tactics, opening traps &amp; speed chess guides
             </h2>
             <ButtonLink href="/blog" variant="secondary">
               All stories

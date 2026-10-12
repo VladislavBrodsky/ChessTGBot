@@ -3,7 +3,27 @@ import { SITE } from "@/lib/config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/" },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+      },
+      {
+        userAgent: [
+          "Googlebot",
+          "Bingbot",
+          "AhrefsBot",
+          "SemrushBot",
+          "DuckDuckBot",
+          "Applebot",
+          "YandexBot",
+          "GPTBot",
+          "PerplexityBot",
+        ],
+        allow: "/",
+      },
+    ],
     sitemap: `${SITE.url}/sitemap.xml`,
+    host: SITE.url,
   };
 }

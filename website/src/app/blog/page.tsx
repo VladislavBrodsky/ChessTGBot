@@ -16,9 +16,20 @@ import { ChessSculpture } from "@/components/ChessSculpture";
 import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata = pageMetadata(
-  "Chess Strategy & Training Journal",
-  "Explore chess opening ideas, tactical patterns, training advice, and the thinking behind Web3Chess in our chess journal.",
+  "Chess Strategy, Tactics & Opening Guides",
+  "Master speed chess with grandmaster tactics, opening traps, blitz time management routines, and Web3 chess game analysis in the Web3Chess Chronicles.",
   "/blog",
+  [
+    "chess strategy guides",
+    "chess opening traps",
+    "speed chess tactics",
+    "blitz chess tips",
+    "smothered mate chess puzzle",
+    "arabian mate tactics",
+    "zwischenzug in chess",
+    "blackburne shilling gambit trap",
+    "web3 chess blog",
+  ],
 );
 export const revalidate = 600;
 

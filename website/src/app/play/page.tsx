@@ -10,18 +10,43 @@ import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE } from "@/lib/config";
 import { BRAND } from "@/lib/brand";
+import { pageMetadata, jsonLd, softwareApplicationData, breadcrumbData } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  alternates: { canonical: `${SITE.url}/play` },
-  title: "Play",
-  description:
-    "Open the Web3Chess arena in Telegram, or sign in to play chess in your browser.",
-};
+export const metadata: Metadata = pageMetadata(
+  "Play Chess Online: Telegram Bot & Web Arena",
+  "Launch the #1 Telegram chess bot or play in your web browser. Free Stockfish 16 A.I. practice, 100 tactical puzzles, and real-money USDT matches with instant on-chain payouts.",
+  "/play",
+  [
+    "telegram chess bot",
+    "play chess in telegram",
+    "telegram chess mini app",
+    "play chess online telegram",
+    "chess bot telegram",
+    "web3 chess app",
+    "crypto chess bot",
+    "play chess online",
+  ],
+);
 
 export default async function PlayPage() {
   const svg = await qrSvg(telegramLink("arena"));
   return (
     <div className="shell-wide">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@graph": [
+              breadcrumbData([
+                { name: "Home", path: "" },
+                { name: "Play Chess Online", path: "/play" },
+              ]),
+              softwareApplicationData(),
+            ],
+          }),
+        }}
+      />
       <header className="site-header flex min-h-20 items-center justify-between gap-4">
         <Link href="/" aria-label={`${BRAND.wordmark} home`} className="inline-flex min-h-11 items-center"><Logo /></Link>
         <Link href="/" aria-label="Back to the website" className="site-nav-link gap-2"><Icon name="arrow-left" size={16} /><span className="hidden sm:inline">Website</span></Link>
@@ -37,9 +62,9 @@ export default async function PlayPage() {
               Live Arena · 3,840+ Active Rivals
             </span>
           </div>
-          <h1 className="poster play-heading">Open the board</h1>
+          <h1 className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
-            Launch directly in Telegram or play in your desktop browser. Start with free A.I. practice, solve puzzles, or enter live USDT matches on GRAM rails.
+            Launch directly in Telegram with the premier Telegram chess bot or play in your desktop browser. Enjoy free Stockfish A.I. practice, solve 100 tactics puzzles, or enter live USDT matches on GRAM rails.
           </p>
         </div>
 
@@ -54,7 +79,7 @@ export default async function PlayPage() {
                 </div>
                 <Badge tone="accent">Recommended</Badge>
               </div>
-              <h2 className="mt-5 text-heading-sm font-medium tracking-tight">Inside Telegram</h2>
+              <h2 className="mt-5 text-heading-sm font-medium tracking-tight">Telegram Chess Bot &amp; Mini App</h2>
               <p className="mt-2 text-body-sm text-fg-muted">
                 Open the Mini App with your Telegram profile. Zero friction, zero passwords, and no separate app download.
               </p>

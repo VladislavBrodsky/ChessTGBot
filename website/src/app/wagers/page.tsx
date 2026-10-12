@@ -15,9 +15,20 @@ import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Play Chess For Money: USDT Stakes & Instant Cashouts",
-  "Challenge rivals worldwide in real-money chess matches. Stake $1 to $250 USDT, win 95% of the pot upon checkmate, and withdraw on-chain in seconds inside Telegram.",
+  "Play Chess for Money: Real USDT Stakes",
+  "Play chess for money online with real crypto stakes. Challenge rivals worldwide in $1 to $250 USDT chess duels. Winner takes 95% of the pot with automated escrow inside Telegram.",
   "/wagers",
+  [
+    "play chess for money",
+    "play chess for money online",
+    "play chess for crypto",
+    "usdt chess wager",
+    "real money chess online",
+    "chess cash games",
+    "earn crypto playing chess",
+    "crypto chess stakes",
+    "web3 chess betting",
+  ],
 );
 export default function WagersPage() {
   return (
@@ -32,20 +43,20 @@ export default function WagersPage() {
           dangerouslySetInnerHTML={{
             __html: jsonLd(breadcrumbData([
               { name: "Home", path: "" },
-              { name: "USDT chess matches", path: "/wagers" },
+              { name: "Play Chess for Money", path: "/wagers" },
             ])),
           }}
         />
         <PageHero
-          eyebrow="Know the numbers · 18+"
+          eyebrow="Real-Money Chess · 18+"
           title={
             <>
-              Your stake.
+              Play chess for money
               <br />
-              The full picture
+              with USDT stakes
             </>
           }
-          lead="Equal stakes. Clear fees. Understand the pot, your balance, and withdrawals before you play."
+          lead="Equal stakes. Clear 95% winner pots. Zero house edge. Stake $1 to $250 USDT, outplay your rival, and withdraw on-chain in seconds."
           visual={<ChessSculpture variant="wagers" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">

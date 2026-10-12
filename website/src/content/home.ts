@@ -79,23 +79,23 @@ export const home = {
         title: "Platform",
         links: [
           {
-            label: "Ways to play",
+            label: "Telegram Chess Bot",
             href: "/play",
           },
           {
-            label: "How It Works",
+            label: "How to Play on Telegram",
             href: "/how-it-works",
           },
           {
-            label: "Stakes & fees",
+            label: "Play Chess for USDT",
             href: "/wagers",
           },
           {
-            label: "Chess Academy",
+            label: "Free Chess Puzzles",
             href: "/academy",
           },
           {
-            label: "Chess journal",
+            label: "Chess Strategy Guides",
             href: "/blog",
           },
         ],
@@ -104,7 +104,7 @@ export const home = {
         title: "Integrity",
         links: [
           {
-            label: "Fair play",
+            label: "Fair Play & Anti-Cheat",
             href: "/fair-play",
           },
           {

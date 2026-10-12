@@ -12,13 +12,22 @@ import { MatchPreview } from "@/components/MatchPreview";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
-import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData, faqData, howToData } from "@/lib/seo";
 import { ArenaBento } from "@/components/ArenaBento";
 
 export const metadata = pageMetadata(
-  "Play Chess in Telegram — How It Works",
-  "Open chess inside Telegram or in your browser, try free A.I. practice, and learn how invitations, time controls, and optional USDT matches work.",
+  "How to Play Chess in Telegram: Match Guide",
+  "Complete guide on how to play chess in Telegram with Web3Chess. Learn how to launch the bot, challenge friends, choose time controls, and play for optional USDT crypto prizes.",
   "/how-it-works",
+  [
+    "how to play chess in telegram",
+    "play chess in telegram",
+    "telegram chess bot",
+    "telegram chess guide",
+    "play chess with friends telegram",
+    "telegram chess rules",
+    "earn crypto playing chess",
+  ],
 );
 
 const questions = [
@@ -50,22 +59,37 @@ export default function HowItWorksPage() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd(breadcrumbData([
-              { name: "Home", path: "" },
-              { name: "How it works", path: "/how-it-works" },
-            ])),
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@graph": [
+                breadcrumbData([
+                  { name: "Home", path: "" },
+                  { name: "How to Play Chess in Telegram", path: "/how-it-works" },
+                ]),
+                faqData(questions),
+                howToData({
+                  name: "How to Play Chess in Telegram",
+                  description: "Step-by-step guide to starting a chess match in Telegram using Web3Chess",
+                  steps: [
+                    { name: "Launch Web3Chess", text: "Tap Play inside any Telegram chat to open the lightweight Mini App." },
+                    { name: "Choose Game Mode", text: "Select free Stockfish AI practice, Tactics Academy, or PvP Arena." },
+                    { name: "Pair Opponent or Invite Friends", text: "Match with a global rival or share an invite link in Telegram chat." },
+                  ],
+                }),
+              ],
+            }),
           }}
         />
         <PageHero
           eyebrow="From chat to checkmate"
           title={
             <>
-              One tap.
+              How to play chess
               <br />
-              Your next rival
+              in Telegram
             </>
           }
-          lead="Chess fits right into your Telegram day. Open the board, choose your pace, and let the next game begin."
+          lead="Launch the #1 Telegram chess bot, invite friends, and choose your pace. Enjoy free Stockfish A.I. practice or enter live USDT matches in seconds."
           visual={<ChessSculpture variant="howItWorks" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">

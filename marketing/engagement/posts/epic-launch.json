@@ -11,7 +11,7 @@
   "text": "<b>Play 3. Unlock Epic.</b> 🎁\n\nYour next three games come with a reveal.\n\nJoin the quest on Home, then complete 3 free AI games with at least 10 moves per side. Win, lose or draw: all count. Open your free Epic Mystery Box on Home.\n\nInside: 250 XP (60%), a 1.5× XP boost for 24 hours (30%), or a gold profile border (10%). Already own the border? Receive 250 XP instead. An active stronger boost is preserved and extended.\n\nOne box per account. Games count only after joining. No deadline, deposit or purchase. Virtual in-app rewards with no cash value; no TON or Telegram Gifts.\n\nTap below, find the quest on Home, and join.",
   "creative": {
     "template": "reward",
-    "size": "portrait",
+    "size": "square",
     "theme": "ink",
     "tag": "Free quest",
     "headline": "PLAY 3.\n*UNLOCK EPIC.*",
@@ -26,7 +26,7 @@
     "footer": "One box per account · Virtual rewards · Rules in caption"
   },
   "requires_campaign": "first-three-v1",
-  "image": "marketing/engagement/assets/epic-launch-portrait.png",
+  "image": "marketing/engagement/assets/epic-launch-square.png",
   "render": {
     "ok": true,
     "template": "reward"
