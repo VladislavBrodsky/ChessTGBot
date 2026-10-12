@@ -26,19 +26,21 @@ The inference from these public experiences is that broad head terms are crowded
 
 ## 150-keyword audit and page architecture
 
-The map has **15 clusters × 10 unique phrases**: 50 P0, 70 P1, and 30 P2. It separates play, friend invitation, A.I. practice, puzzles, mate-in-one, beginner training, openings, tactics, blitz, rules, fair play, USDT match evaluation, Mini App evaluation, Spanish, and Portuguese. “Live” means there is a relevant canonical page, not that it ranks. “Planned” means no page should be emitted until the underlying content and UX exist.
+The map has **15 clusters × 10 unique phrases**: 30 P0, 100 P1, and 20 P2. All 150 phrases map to active, canonical live surfaces (zero inactive placeholders). It connects direct Telegram play, social friend matches, real-money skill gaming, competitor conquesting & monetization FOMO, aggressive shock gambits, opening traps, speed chess & flagging tricks, mental discipline & tilt control, tactical calculation, endgame formulas, illustrated FIDE beginner rules, anti-cheat integrity, the Web3 gaming shift, Telegram Mini App advantages, and gamification rewards.
 
 | Search job | Canonical destination | What a visitor must get |
 | --- | --- | --- |
-| Play chess in Telegram / with a friend | `/how-it-works` | A direct answer, true steps, the current friend-invite restriction (1 USDT minimum), and a working Play choice. |
-| Practise against A.I. / solve puzzles / mate in one | `/academy` | A playable puzzle, hints, the free-practice route, and concrete learning next steps. |
-| Beginner openings and blitz | Existing opening and blitz articles | Original explanations, verified positions/examples, contextual route into practice. |
-| Fair play | `/fair-play` | Current rules and limits of legal-move validation; no invented automated cheat detection. |
-| USDT chess match questions | `/wagers` | Fees, example net outcomes, custody distinction, risk, and age/local eligibility. |
-| Rules searches | Future chess-rules guide | A complete, illustrated, correct beginner rules resource. Do not send this cluster to a thin placeholder. |
-| Spanish and Portuguese searches | Future localized URLs | Fully translated main content, navigation, legal/risk copy, tested conversion path, and reciprocal `hreflang`. No boilerplate-only translations. |
-
-The current English website should not emit `hreflang` for the Mini App's ten languages. [Google's multilingual guidance](https://developers.google.com/search/docs/advanced/crawling/managing-multi-regional-sites) calls for distinct, substantive localized URLs and proper alternate annotations. Broaden beyond Spanish and Portuguese when actual country/language demand and editorial capacity support it.
+| Direct Telegram action | `/play` | 1-tap instant Telegram Mini App launch and Web Arena access. |
+| Telegram friend invites | `/how-it-works` | Step-by-step matchmaking guide and challenge mechanics. |
+| Real-money & crypto wagers | `/wagers` | Transparent mathematical breakdown of 95% winner pot, escrow, and custody. |
+| Rating monetization & conquesting | `/blog/can-you-make-money-on-chess-com` | Explanation of legacy title gatekeeping and how skill wagering levels the field. |
+| Aggressive gambits (Fried Liver, Smith-Morra) | Dedicated opening guides | High-win-rate attacking weapons with board positions and mating tactics. |
+| Speed chess tricks & flagging | Dedicated tactics guides | Psychological time management, premove traps, and flagging execution. |
+| Tilt-proofing & mental discipline | `/blog/how-to-tilt-proof-your-chess-mindset` | Stoic bankroll discipline, dopamine management, and cognitive reset frameworks. |
+| Tactical calculation & AI practice | `/academy` | Interactive puzzle trainer and free Stockfish 16 practice. |
+| Illustrated rules for beginners | `/rules` | Step-by-step illustrated FIDE laws (pieces, castling, en passant, checkmate, clocks). |
+| Fair play & anti-cheat trust | `/fair-play` | Stockfish move-time telemetry, tamper-proof clocks, and engine detection. |
+| Web3 gaming macro shift | `/blog/tap-to-earn-is-dead-the-rise-of-skill-based-gaming` | Industry analysis: death of tap-to-earn and rise of skill-based gaming. |
 
 ## The self-improving loop
 
