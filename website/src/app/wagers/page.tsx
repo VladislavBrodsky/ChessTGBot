@@ -60,29 +60,35 @@ export default function WagersPage() {
             before playing.
           </p>
         </PageHero>
-        <section
-          aria-labelledby="example-heading"
-          className="wager-workspace"
-        >
-          <div className="wager-intro">
-            <div className="section-index"><span>01 / See a worked example</span></div>
-            <h2 id="example-heading" className="editorial-title mt-5">
-              Do the math before the match
-            </h2>
-            <p className="mt-5 max-w-[44ch] section-lead text-fg-muted">
-              Select any stake tier to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
-            </p>
+        <section aria-labelledby="example-heading">
+          <div className="section-index">
+            <span>01 / See a worked example</span>
+            <span>Real-time pot &amp; fee breakdown</span>
           </div>
-          <Card className="wager-calculator">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
+            <div>
+              <h2 id="example-heading" className="editorial-title">
+                Do the math before the match
+              </h2>
+              <p className="mt-3 max-w-[56ch] section-lead text-fg-muted">
+                Select any stake tier to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
+              </p>
+            </div>
+            <div className="shrink-0 flex items-center gap-2 text-caption font-mono text-fg-muted">
+              <span className="size-2 rounded-full bg-emerald-500" />
+              <span>Transparent 95/5 settlement</span>
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2 items-stretch" data-interactive-workspace>
             <WagerDemo />
-          </Card>
-          <div className="wager-split" aria-label="Combined pot allocation">
             <SettlementBreakdown />
-            <p className="mt-4 text-caption text-fg-muted">
-              Applies to decided matches. Draws follow separate match rules.
-              You can lose your stake. 18+.
-            </p>
           </div>
+
+          <p className="mt-4 text-caption text-fg-muted text-center sm:text-left">
+            Applies to decided matches. Draws follow separate match rules.
+            You can lose your stake. 18+.
+          </p>
         </section>
         <section aria-labelledby="balance-heading">
           <div className="section-index">

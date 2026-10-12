@@ -16,7 +16,7 @@ import { AvatarCircles } from "@/components/magicui/avatar-circles";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
-import { IconCloud } from "@/components/magicui/icon-cloud";
+import { ChessEcosystemOrbit } from "@/components/ChessEcosystemOrbit";
 import { Globe } from "@/components/magicui/globe";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
@@ -629,37 +629,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 3D Interactive Web3 Sphere Card */}
-            <Card className="flex flex-col items-center justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <BorderBeam size={300} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
-
-              <div className="w-full flex items-center justify-between gap-2 mb-2 relative z-10">
-                <span className="font-mono text-caption text-fg-muted">Supported Protocols</span>
-                <span className="font-mono text-caption font-semibold text-emerald-600">60 FPS 3D</span>
-              </div>
-
-              <div className="py-2 flex justify-center items-center w-full relative z-10">
-                <IconCloud
-                  size={260}
-                  slugs={[
-                    "telegram",
-                    "ton",
-                    "tether",
-                    "ethereum",
-                    "bitcoin",
-                    "walletconnect",
-                    "solana",
-                    "polygon",
-                    "web3dotjs",
-                  ]}
-                />
-              </div>
-
-              <div className="w-full pt-3 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono relative z-10">
-                <span>Drag to spin 3D sphere</span>
-                <span className="text-fg-default font-semibold">Web3 Ecosystem</span>
-              </div>
-            </Card>
+            {/* Frameless Chess & Crypto Ecosystem Orbit Showcase */}
+            <ChessEcosystemOrbit />
           </div>
         </section>
 

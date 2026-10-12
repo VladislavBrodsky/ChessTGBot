@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run content:check && next build",
+    "build": "npm run content:check && next build --webpack",
     "content:check": "node scripts/check-content.mjs",
     "seo:check": "node scripts/check-seo.mjs",
     "start": "next start",
