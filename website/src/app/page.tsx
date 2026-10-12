@@ -864,7 +864,13 @@ export default function HomePage() {
 
         {/* ── HIGH-CONVERTING FINAL CTA BLOCK ── */}
         <section className="shell-wide home-section">
-          <div data-surface="ink" className="statement-panel relative overflow-hidden text-center py-10 sm:py-14 flex flex-col items-center">
+          <div
+            data-surface="ink"
+            className="statement-panel relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)] text-center py-10 sm:py-14 flex flex-col items-center"
+          >
+            {/* Ambient atmospheric lighting */}
+            <div className="pointer-events-none absolute -top-20 -left-20 size-80 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-20 -right-20 size-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden="true" />
             <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
             <Badge tone="accent" icon="trophy" className="mb-4 relative z-10 self-center mx-auto">
               The Board Is Set
