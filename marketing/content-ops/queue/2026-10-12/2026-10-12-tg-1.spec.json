@@ -1,6 +1,6 @@
 {
   "template": "puzzle",
-  "size": "portrait",
+  "size": "square",
   "tag": "Mate In 1",
   "headline": "White to play.\n*One decisive move.*",
   "subhead": "Can you spot the tactical finish?",

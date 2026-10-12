@@ -1,6 +1,6 @@
 {
   "template": "puzzle",
-  "size": "portrait",
+  "size": "square",
   "reveal": true,
   "moves": [
     "Rh7#"

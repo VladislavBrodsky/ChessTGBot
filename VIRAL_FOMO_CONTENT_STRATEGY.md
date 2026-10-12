@@ -113,11 +113,11 @@ All broadcasts sync with global player traffic patterns and the 4 Daily Arena wi
 
 | Slot | Time (UTC) | Content Pillar | Format & Visual | Psychological Motive & Trigger |
 | :--- | :--- | :--- | :--- | :--- |
-| **S1** | **07:30** | **Tactics** | `puzzle` (1:1 portrait)<br>Threaded reveal at 14:30 | **Habit Formation & Curiosity**: Morning calculation quiz. 4 candidate moves with emoji reaction voting. |
+| **S1** | **07:30** | **Tactics** | `puzzle` (1:1 square: 1080×1080)<br>Threaded reveal at 14:30 | **Habit Formation & Curiosity**: Morning calculation quiz. 4 candidate moves with emoji reaction voting. |
 | **S2** | **11:00** | **Chess News** | `news` (1:1 or 16:9)<br>Number-first headline | **Timeliness & Authority**: Breaking FIDE/GM tournament drama with one practical tactical takeaway. |
-| **S3** | **14:30** | **Openings** | `trap` (carousel or 1:1)<br>Defensive sequence | **Mistake Relief**: "Survive the Trap" (Stafford, Englund, Fried Liver). Shows how to punish aggressive speed blitz gambits. |
-| **S4** | **17:30** | **Chess Culture** | `culture` (meme / quote)<br>Board graphic | **Spectator Thrill & Relatability**: Brutal 3-second scramble blunder breakdowns and relatable time-trouble humor. |
-| **S5** | **20:30** | **Product / Arena** | `product` / `rules`<br>Arena countdown card | **Peak FOMO & Conversion**: Synchronized Arena alert ($500 prize vault). Clear 18+ wager rules and 1-tap Mini App button. |
+| **S3** | **14:30** | **Openings** | `trap` (1:1 square)<br>Defensive sequence | **Mistake Relief**: "Survive the Trap" (Stafford, Englund, Fried Liver). Shows how to punish aggressive speed blitz gambits. |
+| **S4** | **17:30** | **Chess Culture** | `culture` (1:1 or 16:9)<br>Board graphic | **Spectator Thrill & Relatability**: Brutal 3-second scramble blunder breakdowns and relatable time-trouble humor. |
+| **S5** | **20:30** | **Product / Arena** | `product` (1:1 square or 16:9)<br>Arena countdown card | **Peak FOMO & Conversion**: Synchronized Arena alert ($500 prize vault). Clear 18+ wager rules and 1-tap Mini App button. |
 
 ### Landing Page Blog Sync (`web3chess.online/blog`)
 For every major tactical debate or opening guide, the Blog hosts the **authoritative long-form breakdown**:

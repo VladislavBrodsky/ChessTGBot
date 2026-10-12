@@ -98,7 +98,7 @@ def cmd_decide(args):
 
 def cmd_render(args):
     for entry in queue.all_entries("telegram", day=_day(args).isoformat()):
-        if entry.get("creative") and entry["status"] in {"draft", "approved", "rejected"}:
+        if entry.get("creative") and entry["status"] in {"draft", "approved", "rejected", "published"}:
             renderer.render(entry); queue.save(entry)
             print(entry["id"], entry.get("render"))
 
