@@ -1,5 +1,4 @@
-import { Eyebrow, Badge } from "@/components/ui/Badge";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { Eyebrow } from "@/components/ui/Badge";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
@@ -12,6 +11,7 @@ import { MoveOfTheDay } from "@/components/MoveOfTheDay";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
+import { AcademyRoadmap } from "@/components/AcademyRoadmap";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
@@ -19,12 +19,7 @@ export const metadata = pageMetadata(
   "Solve free chess puzzles, study opening principles and tactical patterns, then practise against A.I. in the Web3Chess Telegram Mini App.",
   "/academy",
 );
-const descriptions = [
-  "Get comfortable with the board, the pieces, and the ideas that make chess worth learning.",
-  "Control the center, develop your pieces, and bring your king to safety. Build an opening plan you understand.",
-  "Recognize forks, pins, skewers, and mating patterns. Practise looking for checks, captures, and threats.",
-  "Learn how to activate your king, create passed pawns, and make a small advantage count.",
-];
+
 export default function AcademyPage() {
   return (
     <div>
@@ -113,115 +108,13 @@ export default function AcademyPage() {
         </section>
         <section aria-labelledby="tracks-heading">
           <div className="section-index">
-            <span>02 / Find your next lesson</span>
-            <span>Four mastery tracks</span>
+            <span>02 / Tactical mastery roadmap</span>
+            <span>100-Level Academy Pipeline</span>
           </div>
           <h2 id="tracks-heading" className="editorial-title mb-6">
             From the first move to the final square
           </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Track 01: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="graduation-cap">
-                    Track 01
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Start here
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Origins & Motivation
-                </h3>
-                <p className="text-body text-fg-muted mb-4">
-                  {descriptions[0]}
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-blue-500" />
-                <span>Board geometry · Core rules</span>
-              </div>
-            </Card>
-
-            {/* Track 02: 2 cols with BorderBeam */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="strategy">
-                    Track 02
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Develop with purpose
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Opening Principles
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  {descriptions[1]}
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
-                <span>Center control · King safety · Sound plans</span>
-              </div>
-            </Card>
-
-            {/* Track 03: 2 cols with BorderBeam */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={14} colorFrom="#f59e0b" colorTo="#10b981" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="lightning">
-                    Track 03
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Calculate tactics
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Tactical Patterns
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  {descriptions[2]}
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-amber-500" />
-                <span>Forks · Pins · Skewers · Mating nets</span>
-              </div>
-            </Card>
-
-            {/* Track 04: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="crown-simple">
-                    Track 04
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Convert advantages
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Endgame Magic
-                </h3>
-                <p className="text-body text-fg-muted mb-4">
-                  {descriptions[3]}
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-purple-500" />
-                <span>King activity · Passed pawns · Precision</span>
-              </div>
-            </Card>
-          </div>
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <PlayButton variant="ghost" label="Browse lessons in Telegram" />
-            <p className="text-caption text-fg-muted">Open the Mini App, then choose Academy.</p>
-          </div>
+          <AcademyRoadmap />
         </section>
         <section aria-labelledby="guides-heading">
           <div className="section-index">
