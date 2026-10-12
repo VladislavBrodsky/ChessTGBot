@@ -295,7 +295,9 @@ async def fetch_all_prices() -> dict:
 class BalanceResponse(BaseModel):
     balance: int
     wallet_address: Optional[str] = None
-    master_wallet_address: str
+    master_wallet_address: Optional[str] = None
+    telegram_id: Optional[int] = None
+    deposit_memo: Optional[str] = None
 
 class DepositVerifyRequest(BaseModel):
     message_hash: str
@@ -335,7 +337,9 @@ async def get_wallet_balance(
     return BalanceResponse(
         balance=current_user.balance,
         wallet_address=current_user.wallet_address,
-        master_wallet_address=settings.MASTER_WALLET_ADDRESS
+        master_wallet_address=settings.MASTER_WALLET_ADDRESS,
+        telegram_id=current_user.telegram_id,
+        deposit_memo=f"ref_{current_user.telegram_id}" if current_user.telegram_id else None
     )
 
 @router.post("/connect", response_model=BalanceResponse)
@@ -347,13 +351,18 @@ async def connect_web3_wallet(
     """
     Connect a TON web3 wallet address to the user's account.
     """
+    from app.core.config import get_settings
+    settings = get_settings()
     try:
         updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return BalanceResponse(
         balance=updated_user.balance,
-        wallet_address=updated_user.wallet_address
+        wallet_address=updated_user.wallet_address,
+        master_wallet_address=settings.MASTER_WALLET_ADDRESS,
+        telegram_id=updated_user.telegram_id,
+        deposit_memo=f"ref_{updated_user.telegram_id}" if updated_user.telegram_id else None
     )
 
 @router.post("/withdraw", response_model=WithdrawResponse, dependencies=[Depends(rate_limit(limit=3, window=60))])
@@ -1086,12 +1095,22 @@ async def verify_deposit(
     from app.core.database import AsyncSessionLocal
     settings = get_settings()
 
-    message_hash = request.message_hash
+    raw_hash = request.message_hash.strip()
+    if "/" in raw_hash:
+        raw_hash = raw_hash.rstrip("/").split("/")[-1]
+    if "?" in raw_hash:
+        raw_hash = raw_hash.split("?")[0]
+    message_hash = raw_hash.strip()
 
     # Enforce replay protection
     async with AsyncSessionLocal() as db:
         existing_tx_result = await db.execute(
-            select(Transaction).filter(Transaction.reference_id == message_hash)
+            select(Transaction).filter(
+                or_(
+                    Transaction.reference_id == message_hash,
+                    Transaction.reference_id == f"tx_{message_hash}"
+                )
+            )
         )
         if existing_tx_result.scalars().first():
             raise HTTPException(
@@ -1160,6 +1179,8 @@ async def verify_deposit(
     # clear "only USDT" error instead of a generic verification failure.
     non_usdt_detected = False
 
+    expected_ref = f"ref_{telegram_id}"
+
     for action in actions:
         if action.get("status") != "ok":
             continue
@@ -1179,7 +1200,9 @@ async def verify_deposit(
 
             # Native TON is not a creditable deposit asset under USDT-only
             # settlement. Detect the attempt but never credit it.
-            if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
+            clean_comment = comment.strip()
+            is_matching_ref = (clean_comment == expected_ref) or clean_comment.startswith(f"{expected_ref}_")
+            if recipient_raw == master_raw and is_matching_ref:
                 non_usdt_detected = True
                 continue
 
@@ -1198,7 +1221,9 @@ async def verify_deposit(
             except Exception:
                 continue
 
-            if recipient_raw == master_raw and comment == f"ref_{telegram_id}":
+            clean_comment = comment.strip()
+            is_matching_ref = (clean_comment == expected_ref) or clean_comment.startswith(f"{expected_ref}_")
+            if recipient_raw == master_raw and is_matching_ref:
                 if _is_usdt_master(jetton_master):
                     # Verified USDT transfer — credit at face value (6 decimals,
                     # 1 USDT = 100 cents). No price feed needed.

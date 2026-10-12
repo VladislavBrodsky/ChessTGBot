@@ -59,7 +59,7 @@ function DepositModalContent({
   const ti = useTranslations('Index');
   const { stats, loadingStats, syncStats } = useUser();
 
-  const [activeTab, setActiveTab] = useState<'crypto' | 'card'>('crypto');
+  const [activeTab, setActiveTab] = useState<'crypto' | 'direct' | 'card'>('crypto');
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
@@ -95,11 +95,13 @@ function DepositModalContent({
   const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
   const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
+  const [balanceTelegramId, setBalanceTelegramId] = useState<number | null>(null);
+  const [balanceMemo, setBalanceMemo] = useState<string>("");
 
   // The memo must identify the account confirmed by the API, never client-only Telegram data.
-  const tgId = Number(stats?.telegram_id);
-  const hasVerifiedAccountId = Number.isSafeInteger(tgId) && tgId > 0;
-  const memoComment = hasVerifiedAccountId ? `ref_${tgId}` : '';
+  const tgId = Number(stats?.telegram_id || balanceTelegramId);
+  const hasVerifiedAccountId = (Number.isSafeInteger(tgId) && tgId > 0) || Boolean(balanceMemo);
+  const memoComment = balanceMemo || (hasVerifiedAccountId ? `ref_${tgId}` : '');
 
   useEffect(() => {
     logTelemetryEvent('deposit_modal_open', {
@@ -151,6 +153,12 @@ function DepositModalContent({
           const data = await balanceRes.json();
           if (data.master_wallet_address) {
             setMasterWallet(data.master_wallet_address);
+          }
+          if (data.telegram_id) {
+            setBalanceTelegramId(Number(data.telegram_id));
+          }
+          if (data.deposit_memo) {
+            setBalanceMemo(String(data.deposit_memo));
           }
         }
       } catch (err) {
@@ -438,9 +446,20 @@ function DepositModalContent({
           setSuccessMessage("");
         }, 3000);
       } else {
-        const _errData = await verifyRes.json().catch(() => ({}));
+        const errData = await verifyRes.json().catch(() => ({}));
         setSuccessMessage("");
-        setErrorMessage(tw('verification_failed'));
+        if (verifyRes.status === 404) {
+          setErrorMessage("");
+          setSuccessMessage(tw('pending_transaction'));
+          telegramHaptic('success');
+          setTimeout(() => {
+            closeDeposit();
+            setSuccessMessage("");
+          }, 6000);
+        } else {
+          setErrorMessage(errData?.detail || tw('verification_failed'));
+          telegramHaptic('error');
+        }
       }
     } catch (err: any) {
       console.error(err);

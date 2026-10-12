@@ -784,6 +784,7 @@
     "tx_refund": "Wager Refund",
     "tab_crypto": "Crypto Wallet",
     "tab_card": "Card · Apple Pay",
+    "tab_direct": "Direct Transfer",
     "card_desc": "Buy USDT with Visa, Mastercard, Apple Pay or Google Pay via Transak — delivered to your connected wallet.",
     "card_min_notice": "Minimum {min} USD. Identity verification (KYC) via Transak may be required.",
     "connect_wallet_cta": "Connect Wallet to Continue",

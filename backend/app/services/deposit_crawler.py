@@ -98,12 +98,14 @@ async def start_deposit_crawler():
                                     except Exception:
                                         continue
 
-                                    if recipient_raw == master_raw and comment.startswith("ref_"):
+                                    clean_comment = comment.strip()
+                                    if recipient_raw == master_raw and clean_comment.startswith("ref_"):
                                         # Native TON is not creditable under USDT-only.
                                         non_usdt_detected = True
                                         non_usdt_symbol = "TON"
                                         try:
-                                            non_usdt_tg = int(comment[4:])
+                                            ref_part = clean_comment[4:].split("_")[0].strip()
+                                            non_usdt_tg = int(ref_part)
                                         except Exception:
                                             non_usdt_tg = None
                                         continue
@@ -123,10 +125,12 @@ async def start_deposit_crawler():
                                     except Exception:
                                         continue
 
-                                    if recipient_raw == master_raw and comment.startswith("ref_"):
+                                    clean_comment = comment.strip()
+                                    if recipient_raw == master_raw and clean_comment.startswith("ref_"):
                                         if _is_usdt_master(jetton_master):
                                             try:
-                                                telegram_id = int(comment[4:])
+                                                ref_part = clean_comment[4:].split("_")[0].strip()
+                                                telegram_id = int(ref_part)
                                                 # USDT: 6 decimals, credit at face value.
                                                 token_amount = amount_raw / (10 ** 6)
                                                 amount_cents = int(round(token_amount * 100))
@@ -141,7 +145,8 @@ async def start_deposit_crawler():
                                             non_usdt_detected = True
                                             non_usdt_symbol = jetton_symbol or "JETTON"
                                             try:
-                                                non_usdt_tg = int(comment[4:])
+                                                ref_part = clean_comment[4:].split("_")[0].strip()
+                                                non_usdt_tg = int(ref_part)
                                             except Exception:
                                                 non_usdt_tg = None
                                             continue

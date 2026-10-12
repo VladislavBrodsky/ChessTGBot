@@ -780,6 +780,7 @@
     "tx_rake": "Frais de plateforme",
     "tab_crypto": "Portefeuille Crypto",
     "tab_card": "Carte · Apple Pay",
+    "tab_direct": "Virement direct",
     "card_desc": "Achetez de l’USDT par Visa, Mastercard, Apple Pay ou Google Pay via Transak — livré sur votre portefeuille connecté.",
     "card_min_notice": "Minimum {min} USD. Une vérification d’identité (KYC) via Transak peut être requise.",
     "connect_wallet_cta": "Connecter le portefeuille",

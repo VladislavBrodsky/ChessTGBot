@@ -780,6 +780,7 @@
     "tx_rake": "عمولة المنصة",
     "tab_crypto": "محفظة الكريبتو",
     "tab_card": "بطاقة · Apple Pay",
+    "tab_direct": "تحويل مباشر",
     "card_desc": "اشترِ USDT عبر Visa أو Mastercard أو Apple Pay أو Google Pay من خلال Transak — يُرسل إلى محفظتك المتصلة.",
     "card_min_notice": "الحد الأدنى {min} دولار. قد يلزم التحقق من الهوية (KYC) عبر Transak.",
     "connect_wallet_cta": "اربط المحفظة للمتابعة",

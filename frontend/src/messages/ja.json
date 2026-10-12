@@ -780,6 +780,7 @@
     "tx_rake": "プラットフォーム手数料",
     "tab_crypto": "暗号ウォレット",
     "tab_card": "カード · Apple Pay",
+    "tab_direct": "直接送金",
     "card_desc": "Transak経由でVisa、Mastercard、Apple Pay、Google PayでUSDTを購入。接続中のウォレットに届きます。",
     "card_min_notice": "最低 {min} USD。Transakで本人確認（KYC）が必要な場合があります。",
     "connect_wallet_cta": "ウォレットを接続して続行",
