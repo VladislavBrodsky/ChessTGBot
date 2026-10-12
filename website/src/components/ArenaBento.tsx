@@ -98,26 +98,26 @@ export function ArenaBento() {
             <span className="font-mono">Match ID #48291 · Decided</span>
           </div>
           <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-            <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line">
-              <span className="text-overline uppercase text-fg-muted block mb-1">Player Stake</span>
-              <span className="poster text-heading-sm">
+            <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line min-w-0">
+              <span className="text-overline uppercase text-fg-muted block mb-1 truncate">Player Stake</span>
+              <span className="poster text-base sm:text-heading-sm block font-bold truncate">
                 <NumberTicker value={25} prefix="$" decimalPlaces={2} />
               </span>
-              <span className="text-caption text-fg-muted block">Equal stake</span>
+              <span className="text-caption text-fg-muted block truncate">Equal stake</span>
             </div>
-            <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line">
-              <span className="text-overline uppercase text-fg-muted block mb-1">Combined Pot</span>
-              <span className="poster text-heading-sm">
+            <div className="p-2 sm:p-3 rounded-xl bg-surface border border-line min-w-0">
+              <span className="text-overline uppercase text-fg-muted block mb-1 truncate">Combined Pot</span>
+              <span className="poster text-base sm:text-heading-sm block font-bold truncate">
                 <NumberTicker value={50} prefix="$" decimalPlaces={2} />
               </span>
-              <span className="text-caption text-fg-muted block">Locked in pot</span>
+              <span className="text-caption text-fg-muted block truncate">Locked in pot</span>
             </div>
-            <div className="p-2 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-950">
-              <span className="text-overline uppercase font-bold text-emerald-700 block mb-1">Winner Payout</span>
-              <span className="poster text-heading-sm text-emerald-600">
+            <div className="p-2 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-950 min-w-0">
+              <span className="text-overline uppercase font-bold text-emerald-700 block mb-1 truncate">Winner Payout</span>
+              <span className="poster text-base sm:text-heading-sm text-emerald-600 block font-bold truncate">
                 <NumberTicker value={47.5} prefix="+$" decimalPlaces={2} />
               </span>
-              <span className="text-caption font-semibold text-emerald-700 block">95% instant payout</span>
+              <span className="text-caption font-semibold text-emerald-700 block truncate">95% payout</span>
             </div>
           </div>
         </div>

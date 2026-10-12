@@ -16,6 +16,11 @@ export function MobileCta() {
     );
     const footer = document.querySelector("footer");
     const workspaces = Array.from(document.querySelectorAll<HTMLElement>("[data-interactive-workspace]"));
+    const inlineCtas = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-track-cta="play_in_telegram"]:not([data-mobile-cta] *)',
+      ),
+    );
     const mobile = window.matchMedia("(max-width: 1023px)");
     const update = () => {
       if (!mobile.matches) {
@@ -35,7 +40,12 @@ export function MobileCta() {
         const bounds = workspace.getBoundingClientRect();
         return bounds.top < window.innerHeight && bounds.bottom > 0;
       });
-      setShow(heroPassed && !nearFooter && !editing && !workspaceVisible);
+      // Do not duplicate CTA when an inline play button is already visible in viewport
+      const inlineCtaVisible = inlineCtas.some((btn) => {
+        const bounds = btn.getBoundingClientRect();
+        return bounds.top < window.innerHeight + 20 && bounds.bottom > -20;
+      });
+      setShow(heroPassed && !nearFooter && !editing && !workspaceVisible && !inlineCtaVisible);
     };
     const schedule = () => {
       cancelAnimationFrame(frame);
@@ -45,6 +55,7 @@ export function MobileCta() {
     const observer = new ResizeObserver(schedule);
     if (heroActions) observer.observe(heroActions);
     workspaces.forEach((workspace) => observer.observe(workspace));
+    inlineCtas.forEach((cta) => observer.observe(cta));
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     document.addEventListener("focusin", schedule);
@@ -64,8 +75,8 @@ export function MobileCta() {
       data-mobile-cta
       inert={!show}
       aria-hidden={!show}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas px-4 pt-3 transition-transform duration-200 lg:hidden ${
-        show ? "translate-y-0" : "translate-y-full"
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/92 backdrop-blur-lg px-4 pt-2.5 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 lg:hidden ${
+        show ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
       }`}
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >

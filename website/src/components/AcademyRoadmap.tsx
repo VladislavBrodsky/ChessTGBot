@@ -347,7 +347,7 @@ export function AcademyRoadmap() {
 
       {/* ── 3. BOTTOM CURRICULUM SUMMARY HUD ── */}
       <div className="rounded-2xl border border-line bg-surface/60 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-line w-full md:w-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 sm:divide-x divide-line w-full md:w-auto">
           <div className="space-y-0.5">
             <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
               Total Levels
@@ -356,15 +356,15 @@ export function AcademyRoadmap() {
               100 Levels
             </div>
           </div>
-          <div className="space-y-0.5 sm:pl-6 pt-2 sm:pt-0">
+          <div className="space-y-0.5 sm:pl-6">
             <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
-              Puzzles & Drills
+              Puzzles &amp; Drills
             </span>
             <div className="font-mono text-heading-xs font-bold text-emerald-600">
               275+ Tactical Drills
             </div>
           </div>
-          <div className="space-y-0.5 sm:pl-6 pt-2 sm:pt-0">
+          <div className="space-y-0.5 sm:pl-6">
             <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
               Neural Engine
             </span>
@@ -372,7 +372,7 @@ export function AcademyRoadmap() {
               Stockfish 17 (800–2800)
             </div>
           </div>
-          <div className="space-y-0.5 sm:pl-6 pt-2 sm:pt-0">
+          <div className="space-y-0.5 sm:pl-6">
             <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
               Entry Cost
             </span>

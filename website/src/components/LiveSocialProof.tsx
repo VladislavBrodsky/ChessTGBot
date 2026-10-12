@@ -209,9 +209,9 @@ export function LiveSocialProof() {
         LIVE
       </span>
 
-      {/* 2. 4 Real Photography Avatars (Changes every 60 minutes) */}
+      {/* 2. Real Photography Avatars (2 on mobile, 4 on desktop) */}
       <div className="flex items-center -space-x-2 shrink-0">
-        {activeAvatars.map((avatar) => (
+        {activeAvatars.map((avatar, idx) => (
           <Image
             key={avatar.id}
             src={avatar.src}
@@ -221,7 +221,9 @@ export function LiveSocialProof() {
             height={28}
             sizes="28px"
             quality={75}
-            className="size-6 sm:size-7 rounded-full border-2 border-[#0C0D0F] bg-[#1A1B1E] object-cover shadow-sm transition-transform duration-200 hover:scale-125 hover:z-30 cursor-pointer"
+            className={`size-6 sm:size-7 rounded-full border-2 border-[#0C0D0F] bg-[#1A1B1E] object-cover shadow-sm transition-transform duration-200 hover:scale-125 hover:z-30 cursor-pointer ${
+              idx >= 2 ? "hidden sm:block" : "block"
+            }`}
           />
         ))}
       </div>
@@ -238,14 +240,14 @@ export function LiveSocialProof() {
         <span className="text-[12px] sm:text-[13px] font-semibold text-white tabular-nums">
           {liveCount.toLocaleString()}
         </span>
-        <span className="text-[11px] text-white/50 hidden xs:inline">online</span>
+        <span className="text-[11px] text-white/50 hidden sm:inline">online</span>
       </div>
 
       {/* Hairline Glass Divider */}
       <div className="h-3.5 w-px bg-white/20 shrink-0" />
 
       {/* Animated Live Activity Ticker (Zero Blitz/Rapid game type badges) */}
-      <div className="relative h-5 flex items-center overflow-hidden min-w-0 pr-1">
+      <div className="relative h-5 flex-1 min-w-0 flex items-center overflow-hidden pr-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
@@ -253,17 +255,17 @@ export function LiveSocialProof() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="flex items-center gap-1.5 text-[12px] sm:text-[13px] whitespace-nowrap min-w-0"
+            className="flex items-center gap-1.5 text-[12px] sm:text-[13px] whitespace-nowrap min-w-0 w-full"
           >
             <span className="shrink-0">{active.flag}</span>
-            <span className="font-semibold text-white truncate max-w-[110px] sm:max-w-none">
+            <span className="font-semibold text-white truncate max-w-[70px] sm:max-w-none">
               @{active.user}
             </span>
-            <span className="text-white/60 text-[11px] sm:text-[12px]">
+            <span className="text-white/60 text-[11px] sm:text-[12px] shrink-0">
               {active.action}
             </span>
             <strong
-              className={`font-mono font-bold ${
+              className={`font-mono font-bold shrink-0 ${
                 active.tone === "amber"
                   ? "text-amber-400"
                   : active.tone === "cyan"

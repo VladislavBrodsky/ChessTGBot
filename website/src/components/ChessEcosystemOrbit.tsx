@@ -143,6 +143,19 @@ const CRYPTO_TOKENS: OrbitItem[] = [
 
 export function ChessEcosystemOrbit() {
   const [activeItem, setActiveItem] = useState<OrbitItem | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const innerRadius = isMobile ? 80 : 105;
+  const outerRadius = isMobile ? 135 : 168;
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full select-none py-2 group/orbit">
@@ -164,64 +177,66 @@ export function ChessEcosystemOrbit() {
             </span>
           ) : (
             <span className="font-mono text-caption text-fg-muted">
-              Hover any piece or token to inspect live rails
+              Hover or tap any piece or token to inspect live rails
             </span>
           )}
         </div>
       </div>
 
       {/* ── Concentric Orbit Stage ── */}
-      <div className="relative flex h-[380px] sm:h-[420px] w-full items-center justify-center overflow-hidden">
+      <div className="relative flex h-[350px] sm:h-[420px] w-full items-center justify-center overflow-hidden">
         {/* ── Center Stage Core Hub ── */}
         <div className="relative z-10 flex flex-col items-center justify-center">
           {/* Subtle breathing pulse ring */}
           <div className="absolute -inset-3 rounded-full bg-emerald-500/12 animate-pulse pointer-events-none" />
 
-          <div className="flex size-20 flex-col items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-transform duration-300 hover:scale-105">
-            <KingIcon className="size-7 text-fg-default" />
-            <span className="mt-1 font-mono text-[10px] font-bold tracking-widest text-emerald-600">
+          <div className="flex size-16 sm:size-20 flex-col items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-transform duration-300 hover:scale-105">
+            <KingIcon className="size-6 sm:size-7 text-fg-default" />
+            <span className="mt-1 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-emerald-600">
               ARENA
             </span>
           </div>
         </div>
 
-        {/* ── Inner Orbit: 6 Chess Figures (Radius: 105px) ── */}
+        {/* ── Inner Orbit: 6 Chess Figures (Responsive Radius) ── */}
         <OrbitingCircles
-          radius={105}
+          radius={innerRadius}
           duration={24}
           delay={0}
-          iconSize={42}
+          iconSize={isMobile ? 36 : 42}
           path={true}
           className="group-hover/orbit:[animation-play-state:paused] hover:[animation-play-state:paused]"
         >
           {CHESS_PIECES.map((piece) => (
             <div
               key={piece.id}
+              onClick={() => setActiveItem((prev) => (prev?.id === piece.id ? null : piece))}
               onMouseEnter={() => setActiveItem(piece)}
               onMouseLeave={() => setActiveItem(null)}
-              className="group/item relative flex size-10 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer"
+              className="group/item relative flex size-9 sm:size-10 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer active:scale-110"
             >
               {piece.element}
             </div>
           ))}
         </OrbitingCircles>
 
-        {/* ── Outer Orbit: 5 Crypto Assets (Radius: 168px, Reverse Direction) ── */}
+        {/* ── Outer Orbit: 5 Crypto Assets (Responsive Radius, Reverse Direction) ── */}
         <OrbitingCircles
-          radius={168}
+          radius={outerRadius}
           duration={32}
           delay={0}
           reverse={true}
-          iconSize={46}
+          iconSize={isMobile ? 40 : 46}
           path={true}
           className="group-hover/orbit:[animation-play-state:paused] hover:[animation-play-state:paused]"
         >
           {CRYPTO_TOKENS.map((token) => (
             <div
               key={token.id}
+              onClick={() => setActiveItem((prev) => (prev?.id === token.id ? null : token))}
               onMouseEnter={() => setActiveItem(token)}
               onMouseLeave={() => setActiveItem(null)}
-              className="group/item relative flex size-11 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer"
+              className="group/item relative flex size-10 sm:size-11 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer active:scale-110"
             >
               {token.element}
             </div>

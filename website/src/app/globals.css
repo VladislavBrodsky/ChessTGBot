@@ -4,27 +4,33 @@
 /* Tailwind scans this app's source for utility usage. */
 @source "../";
 
-/* Anti-copy & selection protection across the marketing website */
-html,
-body,
-*,
-*::before,
-*::after {
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-  user-select: none !important;
-  -webkit-touch-callout: none !important;
+/* Document viewport safety and overflow control */
+html {
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  max-width: 100%;
+  overflow-x: clip;
+  min-height: 100dvh;
+}
+
+/* Prevent accidental drag and text selection on non-text interactive canvas & game elements */
+.chess-sculpture,
+.chess-stage,
+canvas,
+[aria-hidden="true"] {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 ::selection {
-  background-color: transparent !important;
-  color: inherit !important;
-}
-
-::-moz-selection {
-  background-color: transparent !important;
-  color: inherit !important;
+  background-color: rgba(16, 185, 129, 0.25);
+  color: inherit;
 }
 
 /* Preserve form typing and cursor interaction inside inputs */
@@ -32,17 +38,8 @@ input,
 textarea,
 [contenteditable="true"],
 [contenteditable="true"] * {
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  user-select: text !important;
-  -webkit-touch-callout: default !important;
-}
-
-input::selection,
-textarea::selection {
-  background-color: rgba(0, 0, 0, 0.15) !important;
-  color: inherit !important;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 @layer components {
@@ -99,6 +96,7 @@ textarea::selection {
     display: grid;
     gap: clamp(2.5rem, 5vw, 4rem);
     padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    padding-bottom: clamp(4.5rem, 10vw, 6.5rem);
   }
   .page-flow > script { display: none; }
   .page-flow > * {
@@ -248,6 +246,9 @@ textarea::selection {
   .opening-steps strong { display: block; font-weight: 500; color: var(--fg-default); }
   .wager-result { display: flex; align-items: baseline; gap: 0.5rem; }
   .wager-result-unit { font-family: var(--font-sans); font-size: var(--text-title); font-weight: 500; }
+  .home-main {
+    padding-bottom: clamp(4.5rem, 10vw, 6.5rem);
+  }
   .home-main > .home-section {
     padding-block: clamp(1.5rem, 2.7vw, 2.25rem);
     content-visibility: auto;
@@ -298,9 +299,11 @@ textarea::selection {
     display: flex;
   }
   .hero-title {
-    font-size: clamp(3rem, 5.2vw, 4.85rem);
-    line-height: 0.94;
+    font-size: clamp(2.35rem, 7.5vw, 4.85rem);
+    line-height: 0.96;
     letter-spacing: -0.035em;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .hero-emphasis {
     position: relative;
@@ -311,8 +314,9 @@ textarea::selection {
     position: absolute;
     z-index: -1;
     inset-inline: -0.02em;
-    bottom: 0.015em;
-    height: 0.14em;
+    bottom: 0.04em;
+    height: 0.18em;
+    border-radius: 2px;
     background: var(--color-mint);
   }
   .editorial-title {
@@ -323,6 +327,8 @@ textarea::selection {
     line-height: 1.15;
     letter-spacing: -0.025em;
     text-transform: none;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .challenge-layout {
     display: grid;
@@ -490,9 +496,11 @@ textarea::selection {
     gap: 2.5rem;
   }
   .page-title {
-    font-size: clamp(3.6rem, 6.3vw, 6rem);
-    line-height: 0.94;
+    font-size: clamp(2.35rem, 7.5vw, 6rem);
+    line-height: 0.96;
     letter-spacing: -0.03em;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .journal-card { position: relative; display: flex; flex-direction: column; }
   .journal-title { font-size: clamp(1.375rem, 1.2rem + 0.4vw, 1.5rem); line-height: 1.25; letter-spacing: -0.025em; }
@@ -513,7 +521,7 @@ textarea::selection {
   .responsible-note h2 { font-size: 1.25rem; line-height: 1.3; font-weight: 500; letter-spacing: -0.02em; }
   .responsible-note p { max-width: 65ch; font-size: var(--text-caption); color: var(--fg-muted); }
   .play-page { padding-block: clamp(2rem, 6vw, 5rem); }
-  .play-heading { max-width: 18ch; font-size: clamp(3rem, 6vw, 5rem); line-height: 0.94; letter-spacing: -0.03em; }
+  .play-heading { max-width: 18ch; font-size: clamp(2.35rem, 7.5vw, 5rem); line-height: 0.96; letter-spacing: -0.03em; overflow-wrap: break-word; word-break: break-word; }
   .faq-question { font-size: var(--text-title); font-weight: 500; line-height: 1.35; }
   @media (hover: hover) {
     .journal-card:hover .journal-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }

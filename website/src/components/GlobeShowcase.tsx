@@ -348,16 +348,16 @@ export function GlobeShowcase() {
           }`}
         >
           {/* Left: Players */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
             <span className="relative flex size-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
+            <span className="font-semibold text-fg-default text-[11.5px] sm:text-[13px] truncate max-w-[75px] sm:max-w-none">
               {current.flag1} {current.p1}
             </span>
             <span className="text-fg-muted text-[11px] sm:text-[12px] font-mono shrink-0 px-0.5 select-none">⚔</span>
-            <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
+            <span className="font-semibold text-fg-default text-[11.5px] sm:text-[13px] truncate max-w-[75px] sm:max-w-none">
               {current.flag2} {current.p2}
             </span>
           </div>
@@ -388,7 +388,7 @@ export function GlobeShowcase() {
         {/* COBE WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          className="size-full opacity-0 transition-opacity duration-700 cursor-grab active:cursor-grabbing [contain:layout_paint_size]"
+          className="size-full opacity-0 transition-opacity duration-700 cursor-grab active:cursor-grabbing [contain:layout_paint_size] touch-pan-y"
           onPointerDown={(e) => {
             pointerInteracting.current = e.clientX - pointerInteractionMovement.current;
           }}

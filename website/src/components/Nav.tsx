@@ -152,7 +152,10 @@ export function Nav() {
       >
         <div
           className="mx-auto max-h-full overflow-y-auto rounded-b-card bg-canvas p-6"
-          style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+          style={{
+            paddingTop: "max(1.5rem, env(safe-area-inset-top))",
+            paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+          }}
         >
           <div className="flex items-center justify-between">
             <Logo />

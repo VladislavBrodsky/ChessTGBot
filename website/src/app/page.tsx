@@ -27,7 +27,12 @@ const ChessEcosystemOrbit = dynamic(
       (m) => m.ChessEcosystemOrbit,
     ),
   {
-    loading: () => <div className="min-h-[380px] w-full" />,
+    loading: () => (
+      <div className="relative flex flex-col items-center justify-center w-full py-2 min-h-[350px] sm:min-h-[420px]">
+        <div className="size-16 sm:size-20 rounded-2xl bg-surface border border-line/40 opacity-50 animate-pulse" />
+        <div className="absolute size-56 sm:size-72 rounded-full border border-dashed border-line/30 opacity-40 animate-pulse pointer-events-none" />
+      </div>
+    ),
   },
 );
 
@@ -35,8 +40,8 @@ const GlobeShowcase = dynamic(
   () => import("@/components/GlobeShowcase").then((m) => m.GlobeShowcase),
   {
     loading: () => (
-      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[460px]">
-        <div className="size-80 rounded-full bg-surface border border-line/40 opacity-40 animate-pulse" />
+      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[420px] sm:min-h-[460px]">
+        <div className="size-64 sm:size-80 rounded-full bg-surface border border-line/40 opacity-40 animate-pulse max-w-[80vw] max-h-[80vw]" />
       </div>
     ),
   },
@@ -133,10 +138,10 @@ export default function HomePage() {
             <div className="hero-intro">
               <Badge tone="accent" icon="telegram-logo">Telegram Chess Bot · Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
-                <span className="block whitespace-nowrap">
+                <span className="block whitespace-normal sm:whitespace-nowrap">
                   Play chess in Telegram
                 </span>
-                <span className="block whitespace-nowrap">
+                <span className="block whitespace-normal sm:whitespace-nowrap">
                   <span className="hero-emphasis inline-block">
                     Win real crypto
                   </span>
@@ -161,11 +166,11 @@ export default function HomePage() {
               {/* ── Real-time Social Proof & Match Activity ── */}
               <LiveSocialProof />
 
-              <div className="hero-support flex flex-wrap items-center gap-x-3 gap-y-1.5 text-caption text-fg-muted">
-                <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="hero-support flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-caption text-fg-muted">
+                <div className="inline-flex items-center gap-1.5 flex-wrap">
                   <Icon name="lightning" size={15} className="shrink-0 text-amber-500" />
-                  <span>Instant on-chain</span>
-                  <span className="inline-flex items-center gap-1.5 font-semibold">
+                  <span className="shrink-0">Instant on-chain</span>
+                  <span className="inline-flex items-center gap-1.5 font-semibold shrink-0">
                     {/* Eye-catching GRAM Currency Badge */}
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#0098EA]/10 border border-[#0098EA]/30 text-[#0098EA] text-[11px] font-mono font-bold shadow-2xs">
                       <span className="flex size-3.5 items-center justify-center rounded-full bg-[#0098EA] text-white shadow-xs">
@@ -195,7 +200,7 @@ export default function HomePage() {
                   </span>
                 </div>
                 <span className="text-line hidden sm:inline">·</span>
-                <span>No download required</span>
+                <span className="shrink-0">No download required</span>
               </div>
             </div>
           </div>
@@ -206,10 +211,10 @@ export default function HomePage() {
 
         {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
         <section className="shell-wide my-3" aria-label="Live PvP match activity">
-          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-2xs backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
+          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-2xs backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
             {/* Smooth optical edge fades */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-surface via-surface/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-4 sm:w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-4 sm:w-16 bg-gradient-to-l from-surface via-surface/80 to-transparent z-10" />
 
             <Marquee duration={35} pauseOnHover>
               <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
@@ -403,18 +408,18 @@ export default function HomePage() {
               </div>
 
               {/* ── Airy Proof Metrics Bar (Inline, borderless) ── */}
-              <div className="flex flex-wrap items-center gap-6 pt-2 font-mono text-caption text-fg-muted border-t border-line/60">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6 pt-2 font-mono text-caption text-fg-muted border-t border-line/60">
                 <div className="flex items-center gap-2">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="poster text-heading-xs text-fg-default font-bold">3,840+</span>
                   <span className="text-[11px] text-fg-muted">in duels</span>
                 </div>
-                <div className="h-4 w-px bg-line" aria-hidden="true" />
+                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
                 <div className="flex items-center gap-1.5">
                   <span className="poster text-heading-xs text-fg-default font-bold">&lt; 2.4s</span>
                   <span className="text-[11px] text-fg-muted">avg queue</span>
                 </div>
-                <div className="h-4 w-px bg-line" aria-hidden="true" />
+                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
                 <div className="flex items-center gap-1.5">
                   <span className="poster text-heading-xs text-fg-default font-bold">120+</span>
                   <span className="text-[11px] text-fg-muted">countries</span>
@@ -606,7 +611,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Footer Guarantee */}
-                  <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-stone-400 flex items-center justify-between">
+                  <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-stone-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <span className="flex items-center gap-1.5 text-stone-400">
                       <Icon name="shield-check" size={13} className="text-emerald-400 shrink-0" />
                       Guarantee:
@@ -645,7 +650,7 @@ export default function HomePage() {
             </div>
             <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
               <BorderBeam size={280} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <Badge tone="accent" icon="graduation-cap">
                     100 Tactical Levels
@@ -654,7 +659,7 @@ export default function HomePage() {
                     100% Free
                   </span>
                 </div>
-                <span className="font-mono text-caption text-fg-muted">
+                <span className="font-mono text-[11px] sm:text-caption text-fg-muted">
                   Stockfish 16 Engine
                 </span>
               </div>
@@ -718,7 +723,7 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <div className="pt-4 mt-4 border-t border-line flex items-center justify-between text-caption font-mono text-fg-muted">
+              <div className="pt-4 mt-4 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-caption font-mono text-fg-muted">
                 <span>Stockfish A.I. Practice · Unlimited games</span>
                 <span className="text-emerald-600 font-semibold">Zero stake needed</span>
               </div>
@@ -773,7 +778,7 @@ export default function HomePage() {
 
               {/* Dynamic Viral Wager & Prize Matrix powered by AnimatedList */}
               <div className="relative rounded-2xl border border-line bg-inset p-5 sm:p-6 overflow-hidden space-y-3.5">
-                <div className="relative z-10 flex items-center justify-between border-b border-line pb-3">
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-caption font-semibold text-fg-default">
                       Popular Stakes &amp; Payouts
@@ -783,7 +788,7 @@ export default function HomePage() {
                       Live Pools
                     </span>
                   </div>
-                  <span className="font-mono text-caption text-emerald-600 font-medium">
+                  <span className="font-mono text-[11px] sm:text-caption text-emerald-600 font-medium">
                     +90% Net ROI on win
                   </span>
                 </div>
@@ -869,7 +874,7 @@ export default function HomePage() {
                               <span className="font-semibold text-fg-default text-[13px]">
                                 ${item.stake} USDT
                               </span>
-                              <span className="text-fg-muted text-[12px]">
+                              <span className="text-fg-muted text-[12px] hidden sm:inline">
                                 ({item.tier})
                               </span>
                               <span className={`rounded-full border px-1.5 py-0.2 text-[10px] font-semibold ${item.tagColor}`}>

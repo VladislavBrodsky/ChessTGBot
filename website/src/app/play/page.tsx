@@ -178,16 +178,16 @@ export default async function PlayPage() {
         </div>
 
         {/* Trust & Safe Space Guarantees */}
-        <div className="mt-6 grid grid-cols-3 gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium py-1 sm:py-0">
             <Icon name="shield-check" size={16} className="text-emerald-600 shrink-0" />
             <span>Automated Match Escrow</span>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium border-x border-line">
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium border-y sm:border-y-0 sm:border-x border-line py-2 sm:py-0">
             <Icon name="lightning" size={16} className="text-amber-500 shrink-0" />
             <span>Sub-Second Finality</span>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium">
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium py-1 sm:py-0">
             <Icon name="cpu" size={16} className="text-blue-600 shrink-0" />
             <span>Stockfish Anti-Cheat</span>
           </div>
