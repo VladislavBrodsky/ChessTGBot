@@ -38,6 +38,7 @@ export default function MatchOverModal({
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
+  const te = useTranslations('Engagement');
 
   const [animatedElo, setAnimatedElo] = useState<number>(0);
   const [animatedPayout, setAnimatedPayout] = useState<number>(0);
@@ -197,10 +198,10 @@ export default function MatchOverModal({
         <div className="w-full rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-brand-elevated to-amber-500/10 p-2.5 text-center shadow-[0_0_15px_rgba(245,158,11,0.08)]">
           <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-amber-300">
             <span>🎁</span>
-            <span>{tg('jackpot_ton_1000')}</span>
+            <span>{te('rewards.jackpot_ton_1000')}</span>
           </div>
           <p className="mt-0.5 text-[10px] font-medium text-brand-muted">
-            {tg('engagement_desc')}
+            {te('virtual_only')}
           </p>
         </div>
 
