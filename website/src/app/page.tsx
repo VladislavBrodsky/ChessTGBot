@@ -265,105 +265,115 @@ export default function HomePage() {
             <span>120+ countries · Sub-second pairing</span>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_1.1fr] lg:items-center">
             <div className="space-y-6">
-              {/* Badge row */}
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge tone="accent" icon="shield-check">
-                  Fair-Play Verified Arena
+              {/* Refined Eyebrow */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Badge tone="accent" icon="lightning">
+                  Global Arena
                 </Badge>
-                <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
+                <span className="font-mono text-caption text-emerald-700 font-semibold flex items-center gap-1.5">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Global liquidity · Automated escrow
+                  Sub-second pairing across 120+ nations
                 </span>
               </div>
 
               {/* Headline */}
               <h2 id="play-heading" className="editorial-title">
                 Challenge rivals worldwide.<br />
-                Matched in seconds
+                <span className="text-fg-muted font-normal">Matched in seconds</span>
               </h2>
 
-              {/* Short lead — one sentence, not a paragraph */}
-              <p className="max-w-[42ch] text-body text-fg-muted">
-                120+ countries, around the clock. Every duel is escrow-protected — no trust required.
+              {/* Punchy Value Prop Lead */}
+              <p className="max-w-[48ch] text-body text-fg-muted">
+                Stake USDT with confidence. Automated escrow locks both deposits until checkmate, with Stockfish 16 move telemetry and millisecond FIDE clock sync.
               </p>
 
-              {/* ── Compact feature chips (icon + title + one-line hint) ── */}
-              <div className="grid gap-2">
+              {/* ── 3 Sleek Feature Guarantees ── */}
+              <div className="space-y-2.5">
                 {[
                   {
-                    icon: "lock"         as const,
+                    icon: "lock" as const,
                     title: "Automated Match Escrow",
-                    hint: "Stakes lock before move 1. 95% releases instantly on win",
-                    tag: "Locked at Start",
-                    tagColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+                    body: "Both stakes lock before move 1. 95% of the pot credits instantly upon checkmate or clock flag.",
+                    badge: "Instant Payout",
+                    badgeColor: "text-emerald-700 bg-emerald-500/10 border-emerald-500/20",
                     iconColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
                   },
                   {
                     icon: "shield-check" as const,
-                    title: "Stockfish 16 Anti-Cheat Shield",
-                    hint: "Every move audited in real-time. Auto-refund on detection",
-                    tag: "Real-Time",
-                    tagColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+                    title: "Stockfish 16 Anti-Cheat",
+                    body: "Moves audited in real-time for timing variance and engine correlation. Instant stake refund on foul play.",
+                    badge: "Live Telemetry",
+                    badgeColor: "text-blue-700 bg-blue-500/10 border-blue-500/20",
                     iconColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
                   },
                   {
-                    icon: "lightning"    as const,
-                    title: "Lag-Compensated Clocks",
-                    hint: "Authoritative server timing. Zero ping abuse",
-                    tag: "FIDE Timing",
-                    tagColor: "text-purple-600 bg-purple-500/10 border-purple-500/20",
+                    icon: "lightning" as const,
+                    title: "FIDE-Grade Latency Clocks",
+                    body: "Authoritative server timekeeping with network latency compensation. Zero ping advantage or disconnect stalls.",
+                    badge: "Zero Ping Abuse",
+                    badgeColor: "text-purple-700 bg-purple-500/10 border-purple-500/20",
                     iconColor: "text-purple-600 bg-purple-500/10 border-purple-500/20",
                   },
-                ].map((f) => (
+                ].map((item) => (
                   <div
-                    key={f.title}
-                    className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3.5 py-2.5 transition-colors hover:bg-inset/50"
+                    key={item.title}
+                    className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface p-3.5 transition-all hover:bg-surface-inset/60 hover:border-fg-muted/30 shadow-2xs"
                   >
-                    <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${f.iconColor}`}>
-                      <Icon name={f.icon} size={16} />
+                    <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl border mt-0.5 ${item.iconColor}`}>
+                      <Icon name={item.icon} size={17} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className="block font-semibold text-fg-default text-[13px] leading-snug">{f.title}</span>
-                      <span className="block text-[11px] text-fg-muted leading-snug mt-0.5">{f.hint}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-fg-default text-[13px]">
+                          {item.title}
+                        </span>
+                        <span className={`hidden sm:inline-flex font-mono text-[10px] font-semibold border px-2 py-0.5 rounded-full ${item.badgeColor}`}>
+                          {item.badge}
+                        </span>
+                      </div>
+                      <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
+                        {item.body}
+                      </p>
                     </div>
-                    <span className={`shrink-0 hidden sm:inline-flex font-mono text-[10px] font-semibold border px-2 py-0.5 rounded-full ${f.tagColor}`}>
-                      {f.tag}
-                    </span>
                   </div>
                 ))}
               </div>
 
-              {/* ── Stat strip (inline, not a full card) ── */}
-              <div className="flex items-center divide-x divide-line rounded-xl border border-line bg-inset overflow-hidden text-center">
-                {[
-                  { label: "Active rivals", value: "3,840+", sub: "live duels", dot: true },
-                  { label: "Avg queue",     value: "< 2.4s", sub: "auto-pairing" },
-                  { label: "Global reach",  value: "120+",   sub: "countries" },
-                ].map((s) => (
-                  <div key={s.label} className="flex-1 py-3 space-y-0.5">
-                    <span className="text-[10px] uppercase tracking-wide text-fg-muted block font-sans">{s.label}</span>
-                    <span className="poster text-heading-xs font-bold text-fg-default flex items-center justify-center gap-1">
-                      {s.dot && <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />}
-                      {s.value}
-                    </span>
-                    <span className="text-[10px] text-fg-muted block">{s.sub}</span>
-                  </div>
-                ))}
+              {/* ── Refined Proof Metrics Strip ── */}
+              <div className="flex items-center divide-x divide-line rounded-2xl border border-line bg-inset p-1 text-center font-mono">
+                <div className="flex-1 py-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Active Rivals</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold flex items-center justify-center gap-1.5 mt-0.5">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                    3,840+
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-medium block">In live duels</span>
+                </div>
+                <div className="flex-1 py-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Avg Queue</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold block mt-0.5">&lt; 2.4s</span>
+                  <span className="text-[10px] text-fg-muted block">Auto-pairing</span>
+                </div>
+                <div className="flex-1 py-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Global Reach</span>
+                  <span className="poster text-heading-xs text-fg-default font-bold block mt-0.5">120+</span>
+                  <span className="text-[10px] text-fg-muted block">Countries</span>
+                </div>
               </div>
 
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <PlayButton size="md" pulsating />
                 <ButtonLink href="/how-it-works" variant="secondary">
-                  How it works
+                  How matchmaking works
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
             </div>
 
-            {/* ── 3D INTERACTIVE GLOBE SHOWCASE ── */}
+            {/* ── 3D INTERACTIVE GLOBE & LIVE DUEL ARENA HUD ── */}
             <GlobeShowcase />
           </div>
         </section>
