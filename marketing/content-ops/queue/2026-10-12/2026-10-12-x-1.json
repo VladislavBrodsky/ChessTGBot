@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "White to move. One knight move ends the game on the spot",
   "text": "White to move. One knight move ends the game on the spot\n\nBlack's king is boxed in on h8 by its own rook and pawns.\n\nWhat is White's only winning move? ♟️",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -44,5 +44,12 @@
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "x_receipt": {
+    "success": true,
+    "root_id": "2109741220180148653",
+    "reply_id": "2109741222604558409",
+    "root_url": "https://x.com/defi_ambassador/status/2109741220180148653"
+  },
+  "updated_at": "2026-10-12T20:21:19Z"
 }
