@@ -193,7 +193,6 @@ export function GlobeShowcase() {
   const pointerInteractionMovement = useRef(0);
   const phiRef = useRef(0);
   const animationRef = useRef<number>(0);
-  const tickerRef = useRef<HTMLDivElement>(null);
 
   const [isVisible, setIsVisible] = useState(false);
   const [matchIndex, setMatchIndex] = useState(0);
@@ -206,7 +205,7 @@ export function GlobeShowcase() {
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      { rootMargin: "300px" }
+      { rootMargin: "60px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -249,9 +248,9 @@ export function GlobeShowcase() {
     const onResize = () => { width = canvas.offsetWidth; };
     window.addEventListener("resize", onResize);
 
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, isMobile ? 1.5 : 2);
-    const mapSamples = isMobile ? 6000 : 10000;
+    const isMobile = typeof window !== "undefined" && (window.innerWidth < 768 || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 1));
+    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, isMobile ? 1.4 : 1.8);
+    const mapSamples = isMobile ? 3600 : 8000;
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: dpr,
@@ -276,8 +275,13 @@ export function GlobeShowcase() {
     });
 
     const animate = () => {
+      if (document.hidden) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       if (pointerInteracting.current === null) {
-        phiRef.current += 0.0016; // Smooth, luxurious rotation
+        phiRef.current += isMobile ? 0.0012 : 0.0016;
       }
 
       const { city1, city2, color } = activeArcRef.current;
@@ -286,13 +290,11 @@ export function GlobeShowcase() {
         phi: phiRef.current + pointerInteractionMovement.current,
         width: (width || 500) * 2,
         height: (width || 500) * 2,
-        // The two active cities have large, prominent, glowing dots
         markers: [
           ...BASE_MARKERS,
           { location: city1, size: 0.085 },
           { location: city2, size: 0.085 },
         ],
-        // Dynamic arc connecting City 1 -> City 2 + subtle background routes
         arcs: [
           ...AMBIENT_ARCS,
           { from: city1, to: city2, color },
@@ -313,7 +315,7 @@ export function GlobeShowcase() {
     };
   }, [isVisible]);
 
-  // Smooth match flip every 3.2s only when visible
+  // Smooth match flip every 3.5s only when visible
   useEffect(() => {
     if (!isVisible) return;
     const timer = setInterval(() => {
@@ -322,28 +324,8 @@ export function GlobeShowcase() {
         setMatchIndex((i) => (i + 1) % LIVE_MATCHES.length);
         setIsCrossfading(false);
       }, 200);
-    }, 3200);
+    }, 3500);
     return () => clearInterval(timer);
-  }, [isVisible]);
-
-  // Continuous smooth ticker scroll only when visible
-  useEffect(() => {
-    if (!isVisible) return;
-    let pos = 0;
-    let raf: number;
-    const tick = () => {
-      if (!tickerRef.current) {
-        raf = requestAnimationFrame(tick);
-        return;
-      }
-      const half = tickerRef.current.scrollWidth / 2;
-      pos += 0.35;
-      if (pos >= half) pos -= half;
-      tickerRef.current.style.transform = `translateX(-${pos}px)`;
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
   }, [isVisible]);
 
   return (
@@ -425,14 +407,14 @@ export function GlobeShowcase() {
         />
       </div>
 
-      {/* ── Live Nodes Ticker (Frameless, borderless ticker) ── */}
-      <div className="relative z-10 w-full max-w-[460px] mt-3 overflow-hidden" aria-hidden="true">
-        <div className="whitespace-nowrap overflow-hidden">
-          <div ref={tickerRef} className="inline-flex items-center gap-4 will-change-transform">
+      {/* ── Live Nodes Ticker (Frameless, GPU-accelerated CSS animation) ── */}
+      <div className="relative z-10 w-full max-w-[460px] mt-3 overflow-hidden select-none" aria-hidden="true">
+        <div className="whitespace-nowrap overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)]">
+          <div className="inline-flex items-center gap-4 animate-[node-marquee_24s_linear_infinite] will-change-transform">
             {[...NODES, ...NODES].map((n, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 font-mono text-[11px] text-fg-muted"
+                className="inline-flex items-center gap-1.5 font-mono text-[11px] text-fg-muted shrink-0"
               >
                 <span className="size-1 rounded-full bg-emerald-500 opacity-80" />
                 <span>{n.flag}</span>

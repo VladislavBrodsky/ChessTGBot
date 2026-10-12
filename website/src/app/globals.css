@@ -952,6 +952,11 @@ textarea::selection {
     to { transform: translateX(-100%); }
   }
 
+  @keyframes node-marquee {
+    from { transform: translateX(0%); }
+    to { transform: translateX(-50%); }
+  }
+
   @keyframes orbit {
     0% {
       transform: rotate(calc(var(--angle, 0) * 1deg)) translateY(calc(var(--radius, 100) * 1px)) rotate(calc(var(--angle, 0) * -1deg));

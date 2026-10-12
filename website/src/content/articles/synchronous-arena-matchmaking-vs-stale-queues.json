@@ -1,6 +1,6 @@
 {
   "slug": "synchronous-arena-matchmaking-vs-stale-queues",
-  "title": "Synchronous Tournament Matchmaking: Why Scheduled Game Drops Beat Dead Queues",
+  "title": "Tournament Matchmaking: Scheduled Drops Beat Dead Queues",
   "subtitle": "Concentrating player liquidity into four global daily windows creates peak competition and fair pairings.",
   "excerpt": "Explore the architecture of synchronous chess arenas. See why daily scheduled tournament drops deliver faster matchmaking, tighter ratings, and higher stakes.",
   "metaDescription": "Explore the architecture of synchronous chess arenas. See why daily scheduled tournament drops deliver faster matchmaking, tighter ratings, and higher stakes.",
