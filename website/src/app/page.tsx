@@ -12,9 +12,9 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
 import { TextAnimate } from "@/components/magicui/text-animate";
-import { AvatarCircles } from "@/components/magicui/avatar-circles";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
+import { LiveSocialProof } from "@/components/LiveSocialProof";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { ChessEcosystemOrbit } from "@/components/ChessEcosystemOrbit";
 import { GlobeShowcase } from "@/components/GlobeShowcase";
@@ -115,22 +115,7 @@ export default function HomePage() {
               </div>
 
               {/* ── MAGIC UI AVATAR CIRCLES: Real-time Social Proof ── */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <AvatarCircles
-                  avatarUrls={[
-                    { imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80", name: "Grandmaster Anna" },
-                    { imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80", name: "Blitz King Dave" },
-                    { imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80", name: "Tactics Pro Sarah" },
-                    { imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80", name: "Pawn Hunter Leo" },
-                  ]}
-                  numPeople={3840}
-                  size="sm"
-                />
-                <div className="text-caption font-medium text-fg-muted flex items-center gap-1.5">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-semibold text-fg-default">3,840+</span> active grandmasters
-                </div>
-              </div>
+              <LiveSocialProof />
 
               <div className="hero-support space-y-2 text-caption text-fg-muted">
                 <p className="flex items-center gap-2">
@@ -289,77 +274,61 @@ export default function HomePage() {
                 Stake USDT with confidence. Automated escrow locks both deposits until checkmate, with Stockfish 16 move telemetry and millisecond FIDE clock sync.
               </p>
 
-              {/* ── 3 Sleek Feature Guarantees ── */}
-              <div className="space-y-2.5">
-                {[
-                  {
-                    icon: "lock" as const,
-                    title: "Automated Match Escrow",
-                    body: "Both stakes lock before move 1. 95% of the pot credits instantly upon checkmate or clock flag.",
-                    badge: "Instant Payout",
-                    badgeColor: "text-emerald-700 bg-emerald-500/10 border-emerald-500/20",
-                    iconColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
-                  },
-                  {
-                    icon: "shield-check" as const,
-                    title: "Stockfish 16 Anti-Cheat",
-                    body: "Moves audited in real-time for timing variance and engine correlation. Instant stake refund on foul play.",
-                    badge: "Live Telemetry",
-                    badgeColor: "text-blue-700 bg-blue-500/10 border-blue-500/20",
-                    iconColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
-                  },
-                  {
-                    icon: "lightning" as const,
-                    title: "FIDE-Grade Latency Clocks",
-                    body: "Authoritative server timekeeping with network latency compensation. Zero ping advantage or disconnect stalls.",
-                    badge: "Zero Ping Abuse",
-                    badgeColor: "text-purple-700 bg-purple-500/10 border-purple-500/20",
-                    iconColor: "text-purple-600 bg-purple-500/10 border-purple-500/20",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface p-3.5 transition-all hover:bg-surface-inset/60 hover:border-fg-muted/30 shadow-2xs"
-                  >
-                    <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl border mt-0.5 ${item.iconColor}`}>
-                      <Icon name={item.icon} size={17} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-fg-default text-[13px]">
-                          {item.title}
-                        </span>
-                        <span className={`hidden sm:inline-flex font-mono text-[10px] font-semibold border px-2 py-0.5 rounded-full ${item.badgeColor}`}>
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
-                        {item.body}
-                      </p>
-                    </div>
+              {/* ── 3 Sleek Compact Security Pillars (Horizontal 3-column, zero carditis) ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 mb-2.5">
+                    <Icon name="lock" size={16} />
                   </div>
-                ))}
+                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                    Instant Escrow
+                  </h3>
+                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
+                    Stakes lock at move 1. 95% pot released automatically upon checkmate.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 mb-2.5">
+                    <Icon name="shield-check" size={16} />
+                  </div>
+                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                    Anti-Cheat Engine
+                  </h3>
+                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
+                    Stockfish 16 audits move timing and correlation. Instant refund on foul play.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 mb-2.5">
+                    <Icon name="lightning" size={16} />
+                  </div>
+                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                    FIDE Server Clocks
+                  </h3>
+                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
+                    Authoritative server timestamps with lag compensation. Zero ping abuse.
+                  </p>
+                </div>
               </div>
 
-              {/* ── Refined Proof Metrics Strip ── */}
-              <div className="flex items-center divide-x divide-line rounded-2xl border border-line bg-inset p-1 text-center font-mono">
-                <div className="flex-1 py-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Active Rivals</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold flex items-center justify-center gap-1.5 mt-0.5">
-                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                    3,840+
-                  </span>
-                  <span className="text-[10px] text-emerald-700 font-medium block">In live duels</span>
+              {/* ── Airy Proof Metrics Bar (Inline, borderless) ── */}
+              <div className="flex flex-wrap items-center gap-6 pt-2 font-mono text-caption text-fg-muted border-t border-line/60">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="poster text-heading-xs text-fg-default font-bold">3,840+</span>
+                  <span className="text-[11px] text-fg-muted">in duels</span>
                 </div>
-                <div className="flex-1 py-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Avg Queue</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold block mt-0.5">&lt; 2.4s</span>
-                  <span className="text-[10px] text-fg-muted block">Auto-pairing</span>
+                <div className="h-4 w-px bg-line" aria-hidden="true" />
+                <div className="flex items-center gap-1.5">
+                  <span className="poster text-heading-xs text-fg-default font-bold">&lt; 2.4s</span>
+                  <span className="text-[11px] text-fg-muted">avg queue</span>
                 </div>
-                <div className="flex-1 py-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-fg-muted block font-sans">Global Reach</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold block mt-0.5">120+</span>
-                  <span className="text-[10px] text-fg-muted block">Countries</span>
+                <div className="h-4 w-px bg-line" aria-hidden="true" />
+                <div className="flex items-center gap-1.5">
+                  <span className="poster text-heading-xs text-fg-default font-bold">120+</span>
+                  <span className="text-[11px] text-fg-muted">countries</span>
                 </div>
               </div>
 
