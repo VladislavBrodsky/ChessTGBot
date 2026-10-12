@@ -1,4 +1,5 @@
 import { waitForInitData } from '@/lib/telegramAuth';
+import { clearStoredWebAuth } from '@/lib/sessionAuth';
 
 interface ReadCacheEntry {
   response: Response;
@@ -139,7 +140,7 @@ export const apiFetch = async (path: string, options: RequestInit = {}) => {
   if (res.status === 401 && initData) {
     if (typeof window !== "undefined") {
       console.warn(`[apiFetch] 401 Unauthorized for ${cleanPath}. Clearing session and redirecting to login.`);
-      try { localStorage.removeItem('telegram_web_auth'); } catch { /* storage blocked */ }
+      clearStoredWebAuth();
       const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/);
       const locale = localeMatch ? localeMatch[1] : 'en';
       if (!window.location.pathname.includes('/login')) {

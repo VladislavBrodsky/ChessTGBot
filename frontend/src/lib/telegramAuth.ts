@@ -1,4 +1,5 @@
 import { E2E_TEST_INIT_DATA, hasE2ETestIdentity } from '@/lib/e2eTestMode';
+import { getStoredWebAuth } from '@/lib/sessionAuth';
 
 /**
  * Cold-start auth readiness gate.
@@ -37,13 +38,7 @@ export function getInitDataNow(): string {
 
   if (hasE2ETestIdentity()) return E2E_TEST_INIT_DATA;
 
-  // localStorage can throw a SecurityError inside Telegram Web's cross-origin
-  // (third-party) iframe when the browser blocks third-party storage.
-  try {
-    return localStorage.getItem('telegram_web_auth') || '';
-  } catch {
-    return '';
-  }
+  return getStoredWebAuth();
 }
 
 /**

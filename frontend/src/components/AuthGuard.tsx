@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { FaChessKnight } from 'react-icons/fa';
 import { Backdrop } from '@/components/ui/Backdrop';
 import { hasE2ETestIdentity } from '@/lib/e2eTestMode';
+import { getStoredWebAuth } from '@/lib/sessionAuth';
 
 const VALID_LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'pt', 'zh', 'hi', 'ar', 'ja'];
 
@@ -70,8 +71,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             // localStorage can throw a SecurityError inside Telegram Web's cross-origin
             // (third-party) iframe when the browser blocks third-party storage. Never let
             // that crash the render — a Telegram session is identified by initData anyway.
-            let hasWebAuth = false;
-            try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
+            const hasWebAuth = !!getStoredWebAuth();
 
             if (isTMA || hasWebAuth || hasE2ETestIdentity()) {
                 setAuthState('authed');

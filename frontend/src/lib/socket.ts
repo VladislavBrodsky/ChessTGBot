@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 import { hasE2ETestIdentity } from "@/lib/e2eTestMode";
+import { getStoredWebAuth } from "@/lib/sessionAuth";
 
 // Prevent multiple connections
 let socket: ReturnType<typeof io>;
@@ -115,11 +116,7 @@ export const getSocket = () => {
             if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
                 initData = (window.Telegram.WebApp as any).initData;
             } else {
-                try {
-                    initData = localStorage.getItem('telegram_web_auth') || "";
-                } catch {
-                    initData = "";
-                }
+                initData = getStoredWebAuth();
             }
         }
 
@@ -155,11 +152,7 @@ export const getSocket = () => {
         if (window.Telegram?.WebApp && (window.Telegram.WebApp as any).initData) {
             freshInitData = (window.Telegram.WebApp as any).initData;
         } else {
-            try {
-                freshInitData = localStorage.getItem('telegram_web_auth') || "";
-            } catch {
-                freshInitData = "";
-            }
+            freshInitData = getStoredWebAuth();
         }
         
         if (freshInitData) {

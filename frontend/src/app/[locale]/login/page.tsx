@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Backdrop } from '@/components/ui/Backdrop';
 import { telegramHaptic } from '@/lib/telegram';
 
+import { getStoredWebAuth, setStoredWebAuth } from '@/lib/sessionAuth';
+
 export default function LoginPage() {
   const router = useRouter();
   const locale = useLocale();
@@ -21,8 +23,7 @@ export default function LoginPage() {
   useEffect(() => {
     setMounted(true);
     const isTMA = !!(window as any).Telegram?.WebApp?.initData;
-    let hasWebAuth = false;
-    try { hasWebAuth = !!localStorage.getItem('telegram_web_auth'); } catch { /* storage blocked */ }
+    const hasWebAuth = !!getStoredWebAuth();
     if (isTMA) {
       try { (window as any).Telegram?.WebApp?.ready(); (window as any).Telegram?.WebApp?.expand(); } catch { /* noop */ }
     }
@@ -37,7 +38,7 @@ export default function LoginPage() {
       }
     });
     const authString = parts.join('&');
-    try { localStorage.setItem('telegram_web_auth', authString); } catch { /* storage blocked */ }
+    setStoredWebAuth(authString);
     setIsRedirecting(true);
     router.replace(`/${locale}/home`);
   }, [locale, router]);

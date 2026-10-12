@@ -11,6 +11,7 @@ import { telegramHaptic } from '@/lib/telegram';
 import { useDesktopNavigation } from '@/hooks/useDesktopNavigation';
 import { Button } from './ui/Button';
 import { useClaimableTasks } from '@/hooks/useClaimableTasks';
+import { clearStoredWebAuth } from '@/lib/sessionAuth';
 
 const NAV_ITEMS = [
   { icon: FiHome, href: '/home', key: 'nav_home' },
@@ -79,7 +80,7 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
       </ul>
       {desktop && (
         <Button variant="ghost" className="mt-6 w-full justify-start" leftIcon={<FiLogOut size={18} />}
-          onClick={() => { localStorage.removeItem('telegram_web_auth'); window.location.href = `/${locale}/login`; }}>
+          onClick={() => { clearStoredWebAuth(); window.location.href = `/${locale}/login`; }}>
           {t('nav_logout')}
         </Button>
       )}
