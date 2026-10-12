@@ -114,10 +114,17 @@ def cmd_publish(args):
     dry = True if args.dry_run else None
     print(json.dumps({"posts": telegram_publisher.publish_due(dry_run=dry), "reveals": telegram_publisher.publish_reveals(dry_run=dry)}, indent=2))
 
+def cmd_publish_x(args):
+    from agents.publisher import PublisherAgent
+    agent = PublisherAgent()
+    day = _day(args).isoformat() if getattr(args, "date", None) else None
+    res = agent.dispatch_x_posts(day=day, post_id=getattr(args, "id", None), dry_run=args.dry_run)
+    print(json.dumps(res, indent=2))
+
 def cmd_status(args):
     for entry in queue.all_entries(day=_day(args).isoformat()):
         issues = len((entry.get("qa") or {}).get("issues", []))
-        print(f"{entry['id']:<22} {entry['scheduled_at'][11:16]}Z {entry['category']:<14} {entry['status']:<10} issues={issues}")
+        print(f"{entry['id']:<22} {entry.get('scheduled_at', '2026-10-12T00:00:00Z')[11:16]}Z {entry.get('category', 'General'):<14} {entry['status']:<10} issues={issues}")
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -126,6 +133,11 @@ def main():
         p = sub.add_parser(name); p.add_argument("--date"); p.set_defaults(run=fn)
         if name == "plan": p.add_argument("--days", type=int, default=1)
         if name == "publish": p.add_argument("--dry-run", action="store_true")
+    p_x = sub.add_parser("publish-x")
+    p_x.add_argument("--date")
+    p_x.add_argument("--id")
+    p_x.add_argument("--dry-run", action="store_true")
+    p_x.set_defaults(run=cmd_publish_x)
     p = sub.add_parser("submit"); p.add_argument("id"); p.add_argument("file"); p.set_defaults(run=cmd_submit)
     for name in ("approve", "reject"):
         p = sub.add_parser(name); p.add_argument("id"); p.set_defaults(run=cmd_decide)
