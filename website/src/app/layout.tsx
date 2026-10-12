@@ -55,6 +55,11 @@ export default function RootLayout({
       className={`${onest.variable} ${condensed.variable}`}
     >
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){function isEditable(el){if(!el)return false;var tag=el.tagName;return tag==='INPUT'||tag==='TEXTAREA'||el.isContentEditable;}document.addEventListener('copy',function(e){if(!isEditable(e.target)){e.preventDefault();if(e.clipboardData){e.clipboardData.clearData();}}},true);document.addEventListener('cut',function(e){if(!isEditable(e.target)){e.preventDefault();if(e.clipboardData){e.clipboardData.clearData();}}},true);document.addEventListener('selectstart',function(e){if(!isEditable(e.target)){e.preventDefault();}},true);document.addEventListener('dragstart',function(e){if(!isEditable(e.target)){e.preventDefault();}},true);document.addEventListener('keydown',function(e){if(!isEditable(e.target)&&(e.ctrlKey||e.metaKey)){var k=(e.key||'').toLowerCase();if(k==='c'||k==='x'||k==='a'){e.preventDefault();}}},true);document.addEventListener('selectionchange',function(){if(!isEditable(document.activeElement)){var sel=window.getSelection();if(sel&&sel.rangeCount>0&&!sel.isCollapsed){sel.removeAllRanges();}}});})();`,
+          }}
+        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[140] focus:rounded-control focus:bg-surface focus:px-4 focus:py-3 focus:text-body focus:font-semibold focus:text-fg focus:border focus:border-line"
