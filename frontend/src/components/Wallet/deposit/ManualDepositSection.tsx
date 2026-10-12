@@ -133,7 +133,7 @@ export function ManualDepositSection({
             value={manualTxHash}
             disabled={processing || !memoConfirmed}
             onChange={(e) => setManualTxHash(e.target.value)}
-            placeholder="e.g. 0:abcd... or msg_hash..."
+            placeholder="e.g. tx_hash or tonviewer link..."
             dir="ltr"
             className="min-w-0 flex-1 bg-brand-void border border-brand-border-opacity-20 rounded-xl py-2.5 px-3.5 text-caption text-brand-primary font-mono focus:outline-none focus:border-brand-primary/50 transition-colors"
           />
@@ -146,6 +146,9 @@ export function ManualDepositSection({
             {processing ? tw('checking') : tw('verify')}
           </button>
         </div>
+        <p className="text-[11px] text-brand-muted leading-relaxed">
+          ⚡ {tw('listening_tx')}
+        </p>
       </div>
     </div>
   );

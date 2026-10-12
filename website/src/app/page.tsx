@@ -200,14 +200,15 @@ export default function HomePage() {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* ── CARD 1: 1,000 TON Mystery Jackpots & Vaults ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <BorderBeam size={260} duration={12} colorFrom="#f59e0b" colorTo="#d97706" />
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group hover:border-fg-muted/40 transition-colors shadow-xs">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <Badge tone="accent" icon="gift">
                     Mystery Vaults
                   </Badge>
-                  <span className="font-mono text-caption text-fg-muted">Daily Drops</span>
+                  <span className="font-mono text-[11px] text-amber-600 font-semibold bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                    Daily Drops
+                  </span>
                 </div>
                 <h3 className="text-heading-sm font-medium tracking-tight mb-2">
                   Win up to 1,000 TON in Mystery Boxes
@@ -219,41 +220,44 @@ export default function HomePage() {
 
               <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption font-mono">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
+                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
                     <span className="size-2 rounded-full bg-amber-400" />
                     King’s Dominion
                   </span>
-                  <span className="font-bold text-amber-600">
-                    <NumberTicker value={1000} suffix=" TON" /> Jackpot
+                  <span className="font-bold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full text-[11px]">
+                    <NumberTicker value={1000} suffix=" TON" />
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
-                    <span className="size-2 rounded-full bg-yellow-400" />
+                <div className="flex items-center justify-between border-t border-line/60 pt-2">
+                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
+                    <span className="size-2 rounded-full bg-purple-400" />
                     Queen’s Treasury
                   </span>
-                  <span className="font-semibold text-fg-default">Premium + Drops</span>
+                  <span className="font-semibold text-purple-600 text-[11px]">
+                    Rare 3D Pieces
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-fg-default font-sans font-medium">
-                    <span className="size-2 rounded-full bg-slate-400" />
+                <div className="flex items-center justify-between border-t border-line/60 pt-2">
+                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
+                    <span className="size-2 rounded-full bg-blue-400" />
                     Knight’s Gambit
                   </span>
-                  <span className="font-semibold text-fg-default">2× XP &amp; Skins</span>
+                  <span className="font-semibold text-blue-600 text-[11px]">
+                    2× XP Boosters
+                  </span>
                 </div>
               </div>
             </Card>
 
             {/* ── CARD 2: 6-Tier Viral Affiliate Growth Engine ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <BorderBeam size={260} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group hover:border-fg-muted/40 transition-colors shadow-xs">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <Badge tone="accent" icon="users-three">
                     Affiliate Engine
                   </Badge>
-                  <span className="font-mono text-caption text-emerald-600 font-semibold">
-                    Passive Crypto
+                  <span className="font-mono text-[11px] text-emerald-600 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    Passive Rake
                   </span>
                 </div>
                 <h3 className="text-heading-sm font-medium tracking-tight mb-2">
@@ -266,33 +270,42 @@ export default function HomePage() {
 
               <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
                 <div className="flex items-center justify-between font-mono">
-                  <span className="text-fg-muted">Tier 1 Direct Recruits</span>
-                  <span className="font-bold text-emerald-600">1.0% Match Rake</span>
+                  <span className="text-fg-muted">Tier 1 Direct</span>
+                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
+                    1.0% Rake
+                  </span>
                 </div>
-                <div className="flex items-center justify-between font-mono">
-                  <span className="text-fg-muted">Tier 2 Sub-Recruits</span>
-                  <span className="font-bold text-emerald-600">0.4% Match Rake</span>
+                <div className="flex items-center justify-between font-mono border-t border-line/60 pt-2">
+                  <span className="text-fg-muted">Tier 2 Network</span>
+                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
+                    0.4% Rake
+                  </span>
                 </div>
-                <div className="flex items-center justify-between font-mono">
-                  <span className="text-fg-muted">Tiers 3–6 Extended</span>
-                  <span className="font-bold text-emerald-600">0.6% Match Rake</span>
+                <div className="flex items-center justify-between font-mono border-t border-line/60 pt-2">
+                  <span className="text-fg-muted">Tiers 3–6 Pool</span>
+                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
+                    0.6% Rake
+                  </span>
                 </div>
                 <div className="border-t border-line pt-2 flex items-center justify-between font-semibold text-fg-default">
-                  <span>Total Affiliate Pool</span>
-                  <span className="poster text-heading-xs text-emerald-600">2.0% of every pot</span>
+                  <span className="font-sans text-[12px]">Total Referral Pool</span>
+                  <span className="font-mono text-[11px] font-bold text-emerald-600 bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                    2.0% of every pot
+                  </span>
                 </div>
               </div>
             </Card>
 
             {/* ── CARD 3: Web2 vs Web3Chess (Conversion Hook) ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group md:col-span-2 lg:col-span-1">
-              <BorderBeam size={260} duration={10} colorFrom="#8b5cf6" colorTo="#ec4899" />
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group md:col-span-2 lg:col-span-1 hover:border-fg-muted/40 transition-colors shadow-xs">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <Badge tone="neutral" icon="lightning">
                     The Modern Edge
                   </Badge>
-                  <span className="font-mono text-caption text-fg-muted">Web3 vs Web2</span>
+                  <span className="font-mono text-[11px] text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
+                    Web3 vs Web2
+                  </span>
                 </div>
                 <h3 className="text-heading-sm font-medium tracking-tight mb-2">
                   Play chess for real crypto rewards
@@ -303,17 +316,20 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
-                <div className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0 mt-0.5">✕</span>
-                  <span className="text-fg-muted">
-                    <strong className="text-fg-default font-normal">Legacy Chess:</strong> Zero monetary prizes for casual wins · Monthly subscription paywalls · Intrusive banner ads
-                  </span>
+                <div className="flex items-start gap-2.5 rounded-lg bg-surface/80 p-2.5 border border-line/60">
+                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 font-bold text-[11px] mt-0.5">✕</span>
+                  <div className="min-w-0">
+                    <span className="font-medium text-fg-default text-[12px] block">Legacy Chess</span>
+                    <span className="text-[11px] text-fg-muted leading-tight block mt-0.5">Zero prizes for casual wins · Paywalls &amp; ads</span>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2 border-t border-line pt-2">
-                  <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
-                  <span className="text-fg-muted">
-                    <strong className="text-emerald-700 font-semibold">Web3Chess Arena:</strong> 95% instant cashout · One-tap Telegram launch · Daily TON jackpots · 100 free tactics levels
-                  </span>
+
+                <div className="flex items-start gap-2.5 rounded-lg bg-emerald-500/5 p-2.5 border border-emerald-500/20">
+                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 font-bold text-[11px] mt-0.5">✓</span>
+                  <div className="min-w-0">
+                    <span className="font-semibold text-emerald-700 text-[12px] block">Web3Chess Arena</span>
+                    <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">95% Winner pot · Daily TON vaults · 1-tap Telegram</span>
+                  </div>
                 </div>
               </div>
             </Card>

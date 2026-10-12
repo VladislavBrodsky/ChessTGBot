@@ -645,10 +645,16 @@ function DepositModalContent({
           {cardEnabled && (
             <div className="relative flex p-1 rounded-xl bg-brand-elevated border border-brand-border shadow-inner overflow-hidden">
               <div 
-                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
-                style={{ left: activeTab === 'crypto' ? '4px' : 'calc(50%)' }}
+                className="absolute top-1 bottom-1 w-[calc(33.333%-3px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
+                style={{
+                  left: activeTab === 'crypto'
+                    ? '4px'
+                    : activeTab === 'direct'
+                    ? 'calc(33.333% + 1px)'
+                    : 'calc(66.666% - 1px)',
+                }}
               />
-              {(['crypto', 'card'] as const).map((tab) => (
+              {(['crypto', 'direct', 'card'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
@@ -656,7 +662,7 @@ function DepositModalContent({
                   onClick={() => { telegramHaptic('light'); setActiveTab(tab); setErrorMessage(""); }}
                   className={`ui-tap-target relative z-10 flex-1 py-2 rounded-lg text-caption font-semibold normal-case tracking-normal transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
                 >
-                  {tab === 'crypto' ? tw('tab_crypto') : tw('tab_card')}
+                  {tab === 'crypto' ? tw('tab_crypto') : tab === 'direct' ? tw('tab_direct') : tw('tab_card')}
                 </button>
               ))}
             </div>
@@ -821,57 +827,19 @@ function DepositModalContent({
               </div>
             )}
 
-            {/* Direct manual transfer fallback */}
+            {/* Switch to Direct Transfer */}
             <div className="border-t border-brand-border-opacity-10 pt-3.5 flex flex-col">
               <button
                 type="button"
-                onClick={() => { setShowManualFallback(!showManualFallback); setMemoConfirmed(false); }}
+                onClick={() => {
+                  telegramHaptic('light');
+                  setActiveTab('direct');
+                }}
                 className="ui-tap-target w-full flex items-center justify-between py-1 text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer"
               >
                 <span>{tw('manual_transfer')}</span>
-                <span className="text-sm transition-transform duration-200" style={{ transform: showManualFallback ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+                <span className="text-caption text-brand-muted font-bold">→</span>
               </button>
-
-              {showManualFallback && (
-                <ManualDepositSection
-                  masterWallet={masterWallet}
-                  memoComment={memoComment}
-                  copiedWallet={copiedWallet}
-                  copiedMemo={copiedMemo}
-                  memoConfirmed={memoConfirmed}
-                  manualTxHash={manualTxHash}
-                  processing={processing}
-                  onCopyWallet={() => {
-                    copyToClipboard(masterWallet).then((ok) => {
-                      if (!ok) return;
-                      setCopiedWallet(true);
-                      logTelemetryEvent('deposit_address_copied', {
-                        field: 'master_wallet',
-                        method: 'manual_transfer',
-                      });
-                      telegramHaptic('light');
-                      setTimeout(() => setCopiedWallet(false), 2000);
-                    });
-                  }}
-                  onCopyMemo={() => {
-                    copyToClipboard(memoComment).then((ok) => {
-                      if (!ok) return;
-                      setCopiedMemo(true);
-                      setMemoConfirmed(true);
-                      logTelemetryEvent('deposit_address_copied', {
-                        field: 'memo',
-                        method: 'manual_transfer',
-                      });
-                      telegramHaptic('medium');
-                      setTimeout(() => setCopiedMemo(false), 2500);
-                    });
-                  }}
-                  setMemoConfirmed={setMemoConfirmed}
-                  setManualTxHash={setManualTxHash}
-                  onManualVerify={handleManualVerify}
-                  commentMemoText={tw('comment_memo')}
-                />
-              )}
             </div>
 
             {/* Commission Alert */}
@@ -879,6 +847,68 @@ function DepositModalContent({
               <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
             </div>
           </div>
+          )}
+
+          {activeTab === 'direct' && !hasVerifiedAccountId && (
+            loadingStats ? <Skeleton variant="rectangular" width="100%" height={120} /> : (
+              <ErrorState
+                title={ti('load_failed')}
+                message={tw('account_unavailable')}
+                onRetry={() => { void syncStats(); }}
+                retryLabel={ti('retry')}
+              />
+            )
+          )}
+
+          {activeTab === 'direct' && hasVerifiedAccountId && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-brand-void/50 border border-brand-border-opacity-10 flex items-center justify-between text-caption font-semibold">
+                <span className="text-brand-muted">{tw('asset')} & Network:</span>
+                <span className="text-emerald-400 font-mono">TON · USDT (Jetton)</span>
+              </div>
+              <ManualDepositSection
+                masterWallet={masterWallet}
+                memoComment={memoComment}
+                copiedWallet={copiedWallet}
+                copiedMemo={copiedMemo}
+                memoConfirmed={memoConfirmed}
+                manualTxHash={manualTxHash}
+                processing={processing}
+                onCopyWallet={() => {
+                  copyToClipboard(masterWallet).then((ok) => {
+                    if (!ok) return;
+                    setCopiedWallet(true);
+                    logTelemetryEvent('deposit_address_copied', {
+                      field: 'master_wallet',
+                      method: 'manual_transfer',
+                    });
+                    telegramHaptic('light');
+                    setTimeout(() => setCopiedWallet(false), 2000);
+                  });
+                }}
+                onCopyMemo={() => {
+                  copyToClipboard(memoComment).then((ok) => {
+                    if (!ok) return;
+                    setCopiedMemo(true);
+                    setMemoConfirmed(true);
+                    logTelemetryEvent('deposit_address_copied', {
+                      field: 'memo',
+                      method: 'manual_transfer',
+                    });
+                    telegramHaptic('medium');
+                    setTimeout(() => setCopiedMemo(false), 2500);
+                  });
+                }}
+                setMemoConfirmed={setMemoConfirmed}
+                setManualTxHash={setManualTxHash}
+                onManualVerify={handleManualVerify}
+                commentMemoText={tw('comment_memo')}
+              />
+              {/* Commission Alert */}
+              <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-caption font-bold text-brand-muted normal-case tracking-normal">
+                <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
+              </div>
+            </div>
           )}
 
           {activeTab === 'card' && (
