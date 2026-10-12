@@ -23,7 +23,7 @@ export default function NotFound() {
           <h1 id="not-found-title" className="poster text-heading-xl text-fg">This position doesn&apos;t exist</h1>
           <p className="text-body sm:text-lead text-fg-muted">The page you asked for isn&apos;t on the board.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <PlayButton size="md" />
+            <PlayButton size="md" trackingLocation="not_found_page" />
             <ButtonLink href="/" variant="secondary">
               Back to the website
             </ButtonLink>
