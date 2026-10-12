@@ -759,7 +759,6 @@ export default function HomePage() {
 
               {/* Dynamic Viral Wager & Prize Matrix powered by AnimatedList */}
               <div className="relative rounded-2xl border border-line bg-inset p-5 sm:p-6 overflow-hidden space-y-3.5">
-                <BorderBeam size={280} duration={12} colorFrom="#10b981" colorTo="#3b82f6" />
                 <div className="relative z-10 flex items-center justify-between border-b border-line pb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-caption font-semibold text-fg-default">
